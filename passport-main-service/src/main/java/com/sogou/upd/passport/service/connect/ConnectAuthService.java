@@ -1,8 +1,10 @@
 package com.sogou.upd.passport.service.connect;
 
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.app.ConnectConfig;
+import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
@@ -51,18 +53,6 @@ public interface ConnectAuthService {
 
 
     /**
-     * 从搜狗数据库及缓存中获取第三方个人资料
-     *
-     * @param passportId
-     * @param provider
-     * @param appKey
-     * @return
-     * @throws ServiceException
-     */
-    public ConnectUserInfoVO obtainConnectUserInfo(String passportId, int provider, String appKey) throws ServiceException;
-
-
-    /**
      * 更新第三方个人资料缓存
      *
      * @param passportId
@@ -80,4 +70,19 @@ public interface ConnectAuthService {
      * @throws ServiceException
      */
     public ConnectUserInfoVO obtainCachedConnectUserInfo(String passportId);
+
+
+    /**
+     * 获取第三方个人资料，先从搜狗获取，如果没有获取到，再从第三方获取，获取成功后，更新到搜狗库中
+     *
+     * @param connectToken
+     * @param original
+     * @return
+     * @throws com.sogou.upd.passport.exception.ServiceException
+     *
+     * @throws java.io.IOException
+     * @throws com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException
+     *
+     */
+    public ConnectUserInfoVO obtainConnectUserInfo(ConnectToken connectToken, int original) throws ServiceException, IOException, OAuthProblemException;
 }

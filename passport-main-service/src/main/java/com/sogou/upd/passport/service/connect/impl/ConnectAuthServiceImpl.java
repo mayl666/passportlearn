@@ -5,6 +5,8 @@ import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -50,6 +52,10 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     private DBShardRedisUtils dbShardRedisUtils;
     @Autowired
     private ConnectTokenService connectTokenService;
+
+
+    private final static int WITH_CONNECT_ORIGINAL = 1;      //1表示需要从第三方获取原始信息
+    private final static int NOT_WITH_CONNECT_ORIGINAL = 0;  //0表示不需要从第三方获取原始信息，默认为0
 
     @Override
     public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer,
@@ -141,31 +147,69 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         return userProfileFromConnect;
     }
 
+
     @Override
-    public ConnectUserInfoVO obtainConnectUserInfo(String passportId, int provider, String appKey) throws ServiceException {
+    public ConnectUserInfoVO obtainConnectUserInfo(ConnectToken connectToken, int original) throws ServiceException, IOException, OAuthProblemException {
+        ConnectUserInfoVO connectUserInfoVo = null;
         try {
-            ConnectToken connectToken = connectTokenService.queryConnectToken(passportId, provider, appKey);
-            if (connectToken != null) {
-                String nickname = connectToken.getConnectUniqname();
-                String avatarSmall = connectToken.getAvatarSmall();
-                String avatarMiddle = connectToken.getAvatarMiddle();
-                String avatarLarge = connectToken.getAvatarLarge();
-                String gender = connectToken.getGender();
-                if (isNotEmpty(nickname,avatarSmall, avatarMiddle, avatarLarge, gender)) {
-                    ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
-                    connectUserInfoVO.setNickname(nickname);
-                    connectUserInfoVO.setAvatarSmall(avatarSmall);
-                    connectUserInfoVO.setAvatarMiddle(avatarMiddle);
-                    connectUserInfoVO.setAvatarLarge(avatarLarge);
-                    connectUserInfoVO.setGender(Integer.parseInt(gender));
-                    return connectUserInfoVO;
+            String appKey = connectToken.getAppKey();
+            int provider = connectToken.getProvider();
+            //如果需要返回第三方原始信息，则调用第三方openapi
+            if (original == WITH_CONNECT_ORIGINAL) {
+                connectUserInfoVo = getConnectUserInfo(provider, appKey, connectToken);
+            } else {
+                //从搜狗获取第三方个人资料
+                connectUserInfoVo = obtainConnectUserInfo(connectToken);
+                if (connectUserInfoVo == null) { //从搜狗获取失败，读第三方
+                    connectUserInfoVo = getConnectUserInfo(provider, appKey, connectToken);
+                    connectUserInfoVo.setOriginal(null); //屏蔽第三方原始信息
                 }
             }
         } catch (Exception e) {
-            logger.error("[ConnectUserInfoVO] service method obtainConnectUserInfoFromSogou error.{}", e);
-            return null;
+            logger.error("[mananger]method handleObtainConnectUserInfo error.{}", e);
         }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return connectUserInfoVo;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private ConnectUserInfoVO getConnectUserInfo(int provider, String appKey, ConnectToken connectToken) throws IOException, OAuthProblemException {
+        ConnectConfig connectConfig = new ConnectConfig();
+        connectConfig.setAppKey(appKey);
+        String openid = connectToken.getOpenid();
+        String accessToken = connectToken.getAccessToken();
+        OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+        //调用第三方openapi获取个人资料
+        ConnectUserInfoVO connectUserInfoVo = obtainConnectUserInfo(provider, connectConfig, openid, accessToken, oAuthConsumer);
+        if (connectUserInfoVo != null) {
+            connectToken.setConnectUniqname(connectUserInfoVo.getNickname());
+            connectToken.setAvatarSmall(connectUserInfoVo.getAvatarSmall());
+            connectToken.setAvatarMiddle(connectUserInfoVo.getAvatarMiddle());
+            connectToken.setAvatarLarge(connectUserInfoVo.getAvatarLarge());
+            connectToken.setGender(String.valueOf(connectUserInfoVo.getGender()));
+            //更新connect_token表
+            boolean isSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
+            if (isSuccess) {
+                return connectUserInfoVo;
+            }
+        }
+        return null;
+    }
+
+    private ConnectUserInfoVO obtainConnectUserInfo(ConnectToken connectToken) {
+        String nickname = connectToken.getConnectUniqname();
+        String avatarSmall = connectToken.getAvatarSmall();
+        String avatarMiddle = connectToken.getAvatarMiddle();
+        String avatarLarge = connectToken.getAvatarLarge();
+        String gender = connectToken.getGender();
+        if (isNotEmpty(nickname, avatarSmall, avatarMiddle, avatarLarge, gender)) {
+            ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
+            connectUserInfoVO.setNickname(nickname);
+            connectUserInfoVO.setAvatarSmall(avatarSmall);
+            connectUserInfoVO.setAvatarMiddle(avatarMiddle);
+            connectUserInfoVO.setAvatarLarge(avatarLarge);
+            connectUserInfoVO.setGender(Integer.parseInt(gender));
+            return connectUserInfoVO;
+        }
+        return null;
     }
 
     @Override
