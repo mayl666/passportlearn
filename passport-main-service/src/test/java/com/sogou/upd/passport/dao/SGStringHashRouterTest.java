@@ -47,7 +47,6 @@ public class SGStringHashRouterTest extends TestCase {
                 if (!name.equals("account_31")) {
                     bw.write(passportId + "\n");
                     bw.flush();
-                    continue;
                 }
             }
             Assert.assertTrue(true);

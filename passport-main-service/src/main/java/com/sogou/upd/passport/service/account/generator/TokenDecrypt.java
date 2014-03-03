@@ -3,8 +3,6 @@ package com.sogou.upd.passport.service.account.generator;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.AES;
-import com.sogou.upd.passport.service.account.dataobject.RefreshTokenCipherDO;
-import com.sogou.upd.passport.service.account.dataobject.TokenCipherDO;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -25,47 +23,6 @@ import java.security.spec.X509EncodedKeySpec;
 public class TokenDecrypt {
 
     private static Logger logger = LoggerFactory.getLogger(TokenDecrypt.class);
-
-    // 公钥
-    public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKg+nmc1UwpMGKHQP58jhJg/hLucm4oLBTBMyRBmCAKK\n" +
-            "7rU/9UWJqy8li64i5bYtx7rE8+I4EdC00To5kz6D61UCAwEAAQ==";
-
-    /**
-     * access_token解密方法
-     * 返回passportId
-     * 解密完成后需要验证appKey是否正确，vaild_timestamp是否大于当前时刻
-     * 如果失效了，返回null
-     *
-     * @param accessToken
-     * @return
-     * @throws Exception
-     */
-    public static TokenCipherDO decryptAccessToken(String accessToken) throws Exception {
-        TokenCipherDO accessTokenCipherDO;
-        try {
-            byte[] tokenByte = Base64.decodeBase64(accessToken);
-            String decryTokenStr = decryptByPublicKey(tokenByte, PUBLIC_KEY);
-            accessTokenCipherDO = TokenCipherDO.parseEncryptString(decryTokenStr);
-            return accessTokenCipherDO;
-        } catch (Exception e) {
-            logger.error("Access Token decryptURLSafeString Base64 fail, accessToken:{}", accessToken);
-            throw e;
-        }
-    }
-
-    /**
-     * 根据refreshToken解密,并返回passportId
-     */
-    public static RefreshTokenCipherDO decryptRefreshToken(String refreshToken) throws Exception {
-        try {
-            String decryptStr = AES.decryptURLSafeString(refreshToken, TokenGenerator.SECRET_KEY);
-            RefreshTokenCipherDO refreshTokenCipherDO = RefreshTokenCipherDO.parseEncryptString(decryptStr);
-            return refreshTokenCipherDO;
-        } catch (Exception e) {
-            logger.error("Refresh Token decryptURLSafeString Base62 fail, refreshToken:{}", refreshToken);
-            throw e;
-        }
-    }
 
     /**
      * 根据refreshToken解密,并返回passportId
@@ -106,9 +63,6 @@ public class TokenDecrypt {
             return null;
         }
     }
-
-
-
 
     /**
      * 解密<br>

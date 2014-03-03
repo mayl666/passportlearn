@@ -53,7 +53,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
     @Autowired
     private ConnectConfigService connectConfigService;
     @Autowired
-    private ConnectApiManager connectApiManager;
+    private ConnectApiManager sgConnectApiManager;
 
     @Override
     public Result accountLogin(WapLoginParams loginParams, String ip) {
@@ -170,7 +170,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
         // sohu创建第三方账号
         int provider = AccountTypeEnum.QQ.getValue();
         OAuthTokenVO oAuthTokenVO = bulidOAuthTokenVO(accessToken, openId, nickname, expires_in);
-        Result connectAccountResult = connectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
+        Result connectAccountResult = sgConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
 
         if (connectAccountResult.isSuccess()) {
             //创建sgid

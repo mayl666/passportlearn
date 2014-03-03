@@ -22,6 +22,7 @@ import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.ConnectConfig;
+import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
@@ -75,7 +76,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
     @Autowired
-    private ConnectApiManager connectApiManager;
+    private ConnectApiManager sgConnectApiManager;
 
     @Override
     public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type, String httpOrHttps) {
@@ -127,10 +128,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             }
 
             // 创建第三方账号
-            Result connectAccountResult = connectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
+            Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
 
             if (connectAccountResult.isSuccess()) {
-                String passportId = (String) connectAccountResult.getModels().get("userid");
+                ConnectToken connectToken = (ConnectToken) connectAccountResult.getModels().get("connectToken");
+                String passportId = connectToken.getPassportId();
                 result.setDefaultModel("userid", passportId);
                 String userId = passportId;
                 //更新个人资料缓存
