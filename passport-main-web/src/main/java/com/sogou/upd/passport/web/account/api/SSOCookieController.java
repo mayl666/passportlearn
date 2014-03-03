@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.common.validation.constraints.RuValidator;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.form.SSOCookieParams;
@@ -68,7 +69,9 @@ public class SSOCookieController extends BaseController {
     }
 
     private String returnErrMsg(HttpServletResponse response, String ru,String errorCode,String errorMsg)throws Exception{
-        if (Strings.isNullOrEmpty(ru)){
+        RuValidator ruValidator=new RuValidator();
+        boolean isValid = ruValidator.isValid(ru,null);
+        if (Strings.isNullOrEmpty(ru) || !isValid){
             ru = DEFAULT_URL;
         }
         response.sendRedirect(ru + "?errorCode="+errorCode+"&errorMsg="+ Coder.encodeUTF8(errorMsg));
