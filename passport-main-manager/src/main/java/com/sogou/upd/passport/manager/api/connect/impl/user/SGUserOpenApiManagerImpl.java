@@ -76,9 +76,10 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             String openId;
             String accessToken;
             Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
+            ConnectToken connectToken;
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
-                ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
+                connectToken = (ConnectToken) openResult.getModels().get("connectToken");
                 openId = connectToken.getOpenid();
                 accessToken = connectToken.getAccessToken();
             } else {
