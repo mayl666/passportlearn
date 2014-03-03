@@ -11,6 +11,7 @@ import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
+import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,7 +45,7 @@ public class ConnectAuthServiceTest extends BaseTest {
     }
 
     @Test
-    private void testObtainConnectUserInfo() {
+    public void testObtainConnectUserInfo() {
         int provider = 3;
         int client_id = 1120;
         String passportId = "02BB90BF300D0E08F5CE9F2F6B1C6B06@qq.sohu.com";
@@ -66,8 +67,8 @@ public class ConnectAuthServiceTest extends BaseTest {
             connectToken.setGender("1");
             connectToken.setAppKey("100294784");
             connectToken.setUpdateTime(new Date());
-            connectTokenDAO.insertOrUpdateAccountConnect(passportId, connectToken);
-
+            int row = connectTokenDAO.insertOrUpdateAccountConnect(passportId, connectToken);
+            Assert.assertTrue(row == 1);
         } catch (OAuthProblemException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (IOException e) {
