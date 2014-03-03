@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
@@ -121,7 +122,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                     oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
                     oAuthTokenVO.setOpenid(openid);
                     oAuthTokenVO.setAccessToken(accessToken);
-                    Result result = connectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
+                    Result result = sgConnectApiManager.buildConnectAccount(appKey, provider, oAuthTokenVO);
                     if (result.isSuccess()) {
                         return connectUserInfoVO;
                     }
