@@ -79,7 +79,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private ConnectApiManager sgConnectApiManager;
 
     @Autowired
-    private ConnectApiManager connectApiManager;
+    private ConnectApiManager proxyConnectApiManager;
 
     @Override
     public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type, String httpOrHttps) {
@@ -131,7 +131,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             }
 
             // 创建第三方账号
-//            Result tmpconnectAccountResult = connectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
+            Result tmpconnectAccountResult = proxyConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
+
 
             Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
 
