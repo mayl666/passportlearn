@@ -116,21 +116,21 @@ public class AccountInfoServiceImpl implements AccountInfoService {
             int row = accountInfoDAO.saveInfoOrInsert(passportId, accountInfo);
             if (row != 0) {
                 // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
-                String cacheKey = buildAccountInfoKey(passportId);
-                AccountInfo accountInfoTmp=null;
-                if ((accountInfoTmp = (AccountInfo) redisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
-                    accountInfoTmp.setBirthday(accountInfo.getBirthday());
-                    accountInfoTmp.setCity(accountInfo.getCity());
-                    accountInfoTmp.setGender(accountInfo.getGender());
-                    accountInfoTmp.setProvince(accountInfo.getProvince());
-                    accountInfoTmp.setFullname(accountInfo.getFullname());
-                    accountInfoTmp.setPersonalid(accountInfo.getPersonalid());
-                    accountInfoTmp.setModifyip(accountInfo.getModifyip());
-                    accountInfoTmp.setUpdateTime(new Date());
-                } else {
-                    accountInfoTmp = accountInfoDAO.getAccountInfoByPassportId(passportId);
-                }
-                redisUtils.set(cacheKey, accountInfoTmp);
+//                String cacheKey = buildAccountInfoKey(passportId);
+//                AccountInfo accountInfoTmp=null;
+//                if ((accountInfoTmp = (AccountInfo) redisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
+//                    accountInfoTmp.setBirthday(accountInfo.getBirthday());
+//                    accountInfoTmp.setCity(accountInfo.getCity());
+//                    accountInfoTmp.setGender(accountInfo.getGender());
+//                    accountInfoTmp.setProvince(accountInfo.getProvince());
+//                    accountInfoTmp.setFullname(accountInfo.getFullname());
+//                    accountInfoTmp.setPersonalid(accountInfo.getPersonalid());
+//                    accountInfoTmp.setModifyip(accountInfo.getModifyip());
+//                    accountInfoTmp.setUpdateTime(new Date());
+//                } else {
+//                    accountInfoTmp = accountInfoDAO.getAccountInfoByPassportId(passportId);
+//                }
+//                redisUtils.set(cacheKey, accountInfoTmp);
                 return true;
             }
         } catch (Exception e) {

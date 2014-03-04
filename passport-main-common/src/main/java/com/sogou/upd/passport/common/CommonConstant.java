@@ -41,6 +41,7 @@ public class CommonConstant {
     public static final String QQ_SERVER_NAME = "openapi.tencentyun.com";   //QQ正式环境可以使用域名，http的，需要sig签名
     public static final String QQ_SERVER_NAME_GRAPH = "graph.qq.com";   //QQ https请求域名，不需要sig签名
     public static final String QQ_SERVER_NAME_OPENMOBILE = "openmobile.qq.com"; //QQ https请求域名，不需要sig签名
+    public static final int WITH_CONNECT_ORIGINAL = 1;      //1表示需要从第三方获取原始信息,默认为0，不返回第三方原始信息
 
     public static final String CLIENT_ID = "client_id";
     public static final String APP_ID = "appid";

@@ -55,6 +55,7 @@ public class MoveBaseInfoToAccountThread implements Runnable {
                     writer.close();
                     continue;
                 }
+                //todo 先查一下account表
                 Account account = new Account();
                 account.setPassportId(passportId);
                 account.setUniqname(accountBaseInfo.getUniqname()); //昵称

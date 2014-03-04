@@ -101,7 +101,7 @@ public class SecureInfoToAccountThread implements Runnable {
                     }
                     //创建时间
                     SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date date_createtime;
+                    Date date_createtime = null;
                     if (!Strings.isNullOrEmpty(createTime)) {
                         try {
                             date_createtime = sdf1.parse(createTime);
@@ -113,13 +113,6 @@ public class SecureInfoToAccountThread implements Runnable {
                             writer.close();
                             continue;
                         }
-                    } else {
-                        //记录下来create_time为空的记录
-                        FileWriter writer = new FileWriter("/search/passport/log/liuling/create_time_null.txt", true);
-                        writer.write(passportIdString + ",connect user create_time in sohu is null");
-                        writer.write("\r\n");
-                        writer.close();
-                        continue;
                     }
                     //生日
                     SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
@@ -159,33 +152,19 @@ public class SecureInfoToAccountThread implements Runnable {
                         continue;
                     }
                     if (isInsertSuccess) {
-                        Account accountReturn;
-                        try {
-                            accountReturn = accountDAO.getAccountByPassportId(passportIdString);
-                        } catch (Exception e) {
-                            //查询account表异常
-                            FileWriter writer = new FileWriter("/search/passport/log/liuling/update_account_exception.txt", true);
-                            writer.write(passportIdString + ",query account table exception");
-                            writer.write("\r\n");
-                            writer.close();
-                            continue;
-                        }
-                        if (accountReturn == null) {
-                            //查询account表中是否有此记录，理论上来讲，这些passportId在account表中都存在
-                            FileWriter writer = new FileWriter("/search/passport/log/liuling/update_account_failed.txt", true);
-                            writer.write(passportIdString + ",account table is not this passportId");
-                            writer.write("\r\n");
-                            writer.close();
-                            continue;
-                        }
                         int row;
                         try {
-                            //写account表的创建ip与创建时间
-                            Account account = new Account();
-                            account.setPassportId(passportIdString);
-                            account.setRegIp(createIp);
-                            account.setRegTime(date_createtime);
-                            row = accountDAO.insertOrUpdateAccount(passportIdString, account);
+                            if (!Strings.isNullOrEmpty(createIp) || date_createtime != null) {
+                                //写account表的创建ip与创建时间
+                                Account account = new Account();
+                                account.setPassportId(passportIdString);
+                                account.setRegIp(createIp);
+                                account.setRegTime(date_createtime);
+                                account.setPasswordtype(Account.NO_PASSWORD);
+                                row = accountDAO.insertOrUpdateAccount(passportIdString, account);
+                            } else {
+                                continue;
+                            }
                         } catch (Exception e) {
                             //插入到account表异常
                             FileWriter writer = new FileWriter("/search/passport/log/liuling/update_account_exception.txt", true);

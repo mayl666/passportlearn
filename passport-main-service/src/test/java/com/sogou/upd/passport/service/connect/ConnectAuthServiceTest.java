@@ -35,14 +35,24 @@ public class ConnectAuthServiceTest extends BaseTest {
 
     private final static String passportId = "0115BAD1B6B4E49A27824FCC2398A1BA@qq.sohu.com";
 
-
-    @Test
-    public void testObtainConnectUserInfoFromSogou() {
-        int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-        ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfoFromSogou(passportId, provider, CommonConstant.APP_CONNECT_KEY);
-        System.out.println(connectUserInfoVO);
-
-    }
+//
+//    @Test
+//    public void testObtainConnectUserInfoFromSogou() {
+//        int provider = AccountTypeEnum.getAccountType(passportId).getValue();
+//        ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(passportId, provider, CommonConstant.APP_CONNECT_KEY);
+//        if (connectUserInfoVO != null) {
+//            System.out.println("----------------------结果如下-----------------");
+//            System.out.println(connectUserInfoVO.getNickname());
+//            System.out.println(connectUserInfoVO.getAvatarSmall());
+//            System.out.println(connectUserInfoVO.getAvatarMiddle());
+//            System.out.println(connectUserInfoVO.getAvatarLarge());
+//            System.out.println(connectUserInfoVO.getGender());
+//        } else {
+//            System.out.println("从搜狗获取用户信息失败");
+//        }
+//
+//
+//    }
 
     @Test
     public void testObtainConnectUserInfo() {

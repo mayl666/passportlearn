@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.connect.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -50,6 +51,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     private DBShardRedisUtils dbShardRedisUtils;
     @Autowired
     private ConnectTokenService connectTokenService;
+
 
     @Override
     public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer,
@@ -141,34 +143,80 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         return userProfileFromConnect;
     }
 
+
     @Override
-    public ConnectUserInfoVO obtainConnectUserInfoFromSogou(String passportId, int provider, String appKey) throws ServiceException {
+    public ConnectUserInfoVO obtainConnectUserInfo(ConnectToken connectToken, int original) throws ServiceException, IOException, OAuthProblemException {
+        ConnectUserInfoVO connectUserInfoVo = null;
         try {
-            ConnectToken connectToken = connectTokenService.queryConnectToken(passportId, provider, appKey);
-            if (connectToken != null) {
-                ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
-                connectUserInfoVO.setNickname(connectToken.getConnectUniqname());
-                connectUserInfoVO.setAvatarSmall(connectToken.getAvatarSmall());
-                connectUserInfoVO.setAvatarMiddle(connectToken.getAvatarMiddle());
-                connectUserInfoVO.setAvatarLarge(connectToken.getAvatarLarge());
-                String gender = connectToken.getGender();
-                if (!Strings.isNullOrEmpty(gender)) {
-                    connectUserInfoVO.setGender(Integer.parseInt(gender));
+            String appKey = connectToken.getAppKey();
+            int provider = connectToken.getProvider();
+            //如果需要返回第三方原始信息，则调用第三方openapi
+            if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {
+                connectUserInfoVo = getConnectUserInfo(provider, appKey, connectToken);
+            } else {
+                //从搜狗获取第三方个人资料
+                connectUserInfoVo = obtainConnectUserInfo(connectToken);
+                if (connectUserInfoVo == null) { //从搜狗获取失败，读第三方
+                    connectUserInfoVo = getConnectUserInfo(provider, appKey, connectToken);
+                    connectUserInfoVo.setOriginal(null); //屏蔽第三方原始信息
                 }
-                return connectUserInfoVO;
             }
         } catch (Exception e) {
-            logger.error("[ConnectUserInfoVO] service method obtainConnectUserInfoFromSogou error.{}", e);
-            return null;
+            logger.error("[mananger]method obtainConnectUserInfo error.{}", e);
         }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return connectUserInfoVo;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private ConnectUserInfoVO getConnectUserInfo(int provider, String appKey, ConnectToken connectToken) throws IOException, OAuthProblemException {
+        ConnectConfig connectConfig = new ConnectConfig();
+        connectConfig.setAppKey(appKey);
+        String openid = connectToken.getOpenid();
+        String accessToken = connectToken.getAccessToken();
+        OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+        //调用第三方openapi获取个人资料
+        ConnectUserInfoVO connectUserInfoVo = obtainConnectUserInfo(provider, connectConfig, openid, accessToken, oAuthConsumer);
+        if (connectUserInfoVo != null) {
+            connectToken.setConnectUniqname(connectUserInfoVo.getNickname());
+            connectToken.setAvatarSmall(connectUserInfoVo.getAvatarSmall());
+            connectToken.setAvatarMiddle(connectUserInfoVo.getAvatarMiddle());
+            connectToken.setAvatarLarge(connectUserInfoVo.getAvatarLarge());
+            connectToken.setGender(String.valueOf(connectUserInfoVo.getGender()));
+            //更新connect_token表
+            boolean isSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
+            if (isSuccess) {
+                return connectUserInfoVo;
+            }
+        }
+        return null;
+    }
+
+    private ConnectUserInfoVO obtainConnectUserInfo(ConnectToken connectToken) {
+        String nickname = connectToken.getConnectUniqname();
+        String avatarSmall = connectToken.getAvatarSmall();
+        String avatarMiddle = connectToken.getAvatarMiddle();
+        String avatarLarge = connectToken.getAvatarLarge();
+        String gender = connectToken.getGender();
+        if (isNotEmpty(nickname, avatarSmall, avatarMiddle, avatarLarge, gender)) {
+            ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
+            connectUserInfoVO.setNickname(nickname);
+            connectUserInfoVO.setAvatarSmall(avatarSmall);
+            connectUserInfoVO.setAvatarMiddle(avatarMiddle);
+            connectUserInfoVO.setAvatarLarge(avatarLarge);
+            connectUserInfoVO.setGender(Integer.parseInt(gender));
+            return connectUserInfoVO;
+        }
+        return null;
     }
 
     @Override
-    public boolean initialOrUpdateConnectUserInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) throws ServiceException {
+    public boolean initialOrUpdateConnectUserInfo(String passportId, int original, ConnectUserInfoVO connectUserInfoVO) throws ServiceException {
         try {
-            String cacheKey = buildConnectUserInfoCacheKey(passportId);
-            dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
+            String cacheKey = buildConnectUserInfoCacheKey(passportId, original);
+            if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {  //原始数据缓存1天
+                dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
+            } else {                                 //非原始数据缓存3个月
+                dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.THREE_MONTH);
+            }
             return true;
         } catch (Exception e) {
             logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error.{}", e);
@@ -177,9 +225,9 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
-    public ConnectUserInfoVO obtainCachedConnectUserInfo(String passportId) {
+    public ConnectUserInfoVO obtainCachedConnectUserInfo(String passportId, int original) {
         try {
-            String cacheKey = buildConnectUserInfoCacheKey(passportId);
+            String cacheKey = buildConnectUserInfoCacheKey(passportId, original);
             ConnectUserInfoVO connectUserInfoVO = dbShardRedisUtils.getObject(cacheKey, ConnectUserInfoVO.class);
             return connectUserInfoVO;
         } catch (Exception e) {
@@ -188,7 +236,16 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         }
     }
 
-    private String buildConnectUserInfoCacheKey(String passportId) {
-        return CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO + passportId;
+    private String buildConnectUserInfoCacheKey(String passportId, int original) {
+        return CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO + passportId + original;
+    }
+
+    private boolean isNotEmpty(String... args) {
+        for (int i = 0; i < args.length; i++) {
+            if (Strings.isNullOrEmpty(args[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 }
