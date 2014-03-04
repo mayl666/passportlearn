@@ -101,7 +101,6 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
                         UserOpenApiParams userOpenApiParams=new UserOpenApiParams();
                         userOpenApiParams.setClient_id(client_id);
                         userOpenApiParams.setUserid(passportId);
-                        userOpenApiParams.setAccessToken(accessToken);
                         result=sgUserOpenApiManager.getUserInfo(userOpenApiParams);
                     }
                     break;
