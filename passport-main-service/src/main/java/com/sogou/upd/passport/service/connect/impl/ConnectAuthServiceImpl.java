@@ -237,7 +237,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     private String buildConnectUserInfoCacheKey(String passportId, int original) {
-        return CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO + passportId + original;
+        return CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO + passportId + "_" + original;
     }
 
     private boolean isNotEmpty(String... args) {
