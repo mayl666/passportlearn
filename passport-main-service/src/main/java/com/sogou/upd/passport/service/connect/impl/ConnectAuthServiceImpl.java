@@ -162,7 +162,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                 }
             }
         } catch (Exception e) {
-            logger.error("[mananger]method handleObtainConnectUserInfo error.{}", e);
+            logger.error("[mananger]method obtainConnectUserInfo error.{}", e);
         }
         return connectUserInfoVo;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -212,12 +212,11 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     public boolean initialOrUpdateConnectUserInfo(String passportId, int original, ConnectUserInfoVO connectUserInfoVO) throws ServiceException {
         try {
             String cacheKey = buildConnectUserInfoCacheKey(passportId, original);
-            if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {  //原始数据缓存1个小时
+            if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {  //原始数据缓存1天
                 dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
-            } else {                                 //非原始数据缓存1天
+            } else {                                 //非原始数据缓存3个月
                 dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.THREE_MONTH);
             }
-
             return true;
         } catch (Exception e) {
             logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error.{}", e);
