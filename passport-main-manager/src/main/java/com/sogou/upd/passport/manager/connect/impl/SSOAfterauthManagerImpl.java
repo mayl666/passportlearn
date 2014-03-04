@@ -1,22 +1,14 @@
 package com.sogou.upd.passport.manager.connect.impl;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
-import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
-import com.sogou.upd.passport.manager.account.PCAccountManager;
-import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
-import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
-import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
-import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
 import com.sogou.upd.passport.manager.connect.SSOAfterauthManager;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
@@ -24,14 +16,8 @@ import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
-import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
-import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
-import com.sogou.upd.passport.service.account.AccountBaseInfoService;
-import com.sogou.upd.passport.service.account.MappTokenService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.slf4j.Logger;
@@ -56,8 +42,6 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
     private ConnectConfigService connectConfigService;
     @Autowired
     private AccountInfoManager accountInfoManager;
-    @Autowired
-    private UserOpenApiManager sgUserOpenApiManager;
     @Autowired
     private ConnectApiManager sgConnectApiManager;
     @Autowired
