@@ -214,9 +214,9 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         try {
             String cacheKey = buildConnectUserInfoCacheKey(passportId, original);
             if (original == WITH_CONNECT_ORIGINAL) {  //原始数据缓存1个小时
-                dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
-            } else {                                 //非原始数据缓存1天
                 dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
+            } else {                                 //非原始数据缓存1天
+                dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.THREE_MONTH);
             }
 
             return true;
