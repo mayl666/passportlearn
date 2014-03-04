@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.connect.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -51,8 +52,6 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     @Autowired
     private ConnectTokenService connectTokenService;
 
-
-    private final static int WITH_CONNECT_ORIGINAL = 1;      //1表示需要从第三方获取原始信息,默认为0，不返回第三方原始信息
 
     @Override
     public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer,
@@ -152,7 +151,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             String appKey = connectToken.getAppKey();
             int provider = connectToken.getProvider();
             //如果需要返回第三方原始信息，则调用第三方openapi
-            if (original == WITH_CONNECT_ORIGINAL) {
+            if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {
                 connectUserInfoVo = getConnectUserInfo(provider, appKey, connectToken);
             } else {
                 //从搜狗获取第三方个人资料
@@ -213,7 +212,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     public boolean initialOrUpdateConnectUserInfo(String passportId, int original, ConnectUserInfoVO connectUserInfoVO) throws ServiceException {
         try {
             String cacheKey = buildConnectUserInfoCacheKey(passportId, original);
-            if (original == WITH_CONNECT_ORIGINAL) {  //原始数据缓存1个小时
+            if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {  //原始数据缓存1个小时
                 dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
             } else {                                 //非原始数据缓存1天
                 dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.THREE_MONTH);

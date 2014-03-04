@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.connect.impl.user;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -40,7 +41,6 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     @Autowired
     private ConnectApiManager sgConnectApiManager;
 
-
     @Override
     public Result getUserInfo(UserOpenApiParams userOpenApiParams) {
         Result result = new APIResultSupport(false);
@@ -49,7 +49,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             int original = userOpenApiParams.getOriginal();
             ConnectUserInfoVO cacheConnectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId, original);
             if (cacheConnectUserInfoVO != null) {
-                result = buildSuccResult(cacheConnectUserInfoVO, passportId);
+                result = buildSuccResult(cacheConnectUserInfoVO, passportId, original);
                 return result;
             }
 
@@ -76,7 +76,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
                 return result;
             }
-            result = buildSuccResult(connectUserInfoVO, passportId);
+            result = buildSuccResult(connectUserInfoVO, passportId, original);
             connectAuthService.initialOrUpdateConnectUserInfo(passportId, original, connectUserInfoVO);
             return result;
         } catch (IOException e) {
@@ -118,7 +118,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         return result;
     }
 
-    private Result buildSuccResult(ConnectUserInfoVO connectUserInfoVO, String userid) {
+    private Result buildSuccResult(ConnectUserInfoVO connectUserInfoVO, String userid, int original) {
         Result userInfoResult = new APIResultSupport(true);
         Map<String, Object> data = Maps.newHashMap();
         Map<String, Object> result_value_data = Maps.newHashMap();
@@ -132,7 +132,9 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         result_value_data.put("location", province + " " + city + " " + region);
         result_value_data.put("headurl", connectUserInfoVO.getAvatarLarge());
         data.put("result", result_value_data);
-        data.put("original", CollectionUtils.isEmpty(connectUserInfoVO.getOriginal()) ? "" : connectUserInfoVO.getOriginal());
+        if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {
+            data.put("original", CollectionUtils.isEmpty(connectUserInfoVO.getOriginal()) ? "" : connectUserInfoVO.getOriginal());
+        }
         data.put("userid", userid);
         data.put("openid", userid);
         userInfoResult.setModels(data);

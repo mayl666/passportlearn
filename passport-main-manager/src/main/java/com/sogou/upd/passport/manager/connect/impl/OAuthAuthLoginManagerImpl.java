@@ -78,8 +78,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private ConnectApiManager sgConnectApiManager;
 
-    private final static int WITH_CONNECT_ORIGINAL = 1;      //1表示需要从第三方获取原始信息,默认为0,不返回第三方原始信息
-
     @Override
     public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type, String httpOrHttps) {
         Result result = new APIResultSupport(false);
@@ -138,7 +136,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setDefaultModel("userid", passportId);
                 String userId = passportId;
                 //更新个人资料缓存
-                connectAuthService.initialOrUpdateConnectUserInfo(userId, WITH_CONNECT_ORIGINAL, connectUserInfoVO);
+                connectAuthService.initialOrUpdateConnectUserInfo(userId, CommonConstant.WITH_CONNECT_ORIGINAL, connectUserInfoVO);
 
                 if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
                     Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
