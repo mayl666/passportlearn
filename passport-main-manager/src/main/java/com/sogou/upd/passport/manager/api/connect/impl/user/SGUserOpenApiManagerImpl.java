@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.connect.impl.user;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -44,7 +46,8 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         Result result = new APIResultSupport(false);
         try {
             String passportId = userOpenApiParams.getUserid();
-            ConnectUserInfoVO cacheConnectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId);
+            int original = userOpenApiParams.getOriginal();
+            ConnectUserInfoVO cacheConnectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId, original);
             if (cacheConnectUserInfoVO != null) {
                 result = buildSuccResult(cacheConnectUserInfoVO, passportId);
                 return result;
@@ -66,7 +69,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND);
                 return result;
             }
-            int original = userOpenApiParams.getOriginal();
+
             //获取第三方用户信息
             ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(connectToken, original);
             if (connectUserInfoVO == null) {
@@ -74,7 +77,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 return result;
             }
             result = buildSuccResult(connectUserInfoVO, passportId);
-            connectAuthService.initialOrUpdateConnectUserInfo(passportId, connectUserInfoVO);
+            connectAuthService.initialOrUpdateConnectUserInfo(passportId, original, connectUserInfoVO);
             return result;
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
@@ -123,10 +126,13 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         result_value_data.put("birthday", "");
         result_value_data.put("sex", connectUserInfoVO.getGender());
         result_value_data.put("nick", connectUserInfoVO.getNickname());
-        result_value_data.put("location", connectUserInfoVO.getProvince() + " " + connectUserInfoVO.getCity() + " " + connectUserInfoVO.getRegion());
+        String province = Strings.isNullOrEmpty(connectUserInfoVO.getProvince()) ? "" : connectUserInfoVO.getProvince();
+        String city = Strings.isNullOrEmpty(connectUserInfoVO.getCity()) ? "" : connectUserInfoVO.getCity();
+        String region = Strings.isNullOrEmpty(connectUserInfoVO.getRegion()) ? "" : connectUserInfoVO.getRegion();
+        result_value_data.put("location", province + " " + city + " " + region);
         result_value_data.put("headurl", connectUserInfoVO.getAvatarLarge());
         data.put("result", result_value_data);
-        data.put("original", connectUserInfoVO.getOriginal());
+        data.put("original", CollectionUtils.isEmpty(connectUserInfoVO.getOriginal()) ? "" : connectUserInfoVO.getOriginal());
         data.put("userid", userid);
         data.put("openid", userid);
         userInfoResult.setModels(data);

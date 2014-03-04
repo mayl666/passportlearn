@@ -5,8 +5,6 @@ import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.result.APIResultSupport;
-import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -54,8 +52,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     private ConnectTokenService connectTokenService;
 
 
-    private final static int WITH_CONNECT_ORIGINAL = 1;      //1表示需要从第三方获取原始信息
-    private final static int NOT_WITH_CONNECT_ORIGINAL = 0;  //0表示不需要从第三方获取原始信息，默认为0
+    private final static int WITH_CONNECT_ORIGINAL = 1;      //1表示需要从第三方获取原始信息,默认为0，不返回第三方原始信息
 
     @Override
     public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer,
@@ -213,10 +210,15 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
-    public boolean initialOrUpdateConnectUserInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) throws ServiceException {
+    public boolean initialOrUpdateConnectUserInfo(String passportId, int original, ConnectUserInfoVO connectUserInfoVO) throws ServiceException {
         try {
-            String cacheKey = buildConnectUserInfoCacheKey(passportId);
-            dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
+            String cacheKey = buildConnectUserInfoCacheKey(passportId, original);
+            if (original == WITH_CONNECT_ORIGINAL) {  //原始数据缓存1个小时
+                dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
+            } else {                                 //非原始数据缓存1天
+                dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
+            }
+
             return true;
         } catch (Exception e) {
             logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error.{}", e);
@@ -225,9 +227,9 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
-    public ConnectUserInfoVO obtainCachedConnectUserInfo(String passportId) {
+    public ConnectUserInfoVO obtainCachedConnectUserInfo(String passportId, int original) {
         try {
-            String cacheKey = buildConnectUserInfoCacheKey(passportId);
+            String cacheKey = buildConnectUserInfoCacheKey(passportId, original);
             ConnectUserInfoVO connectUserInfoVO = dbShardRedisUtils.getObject(cacheKey, ConnectUserInfoVO.class);
             return connectUserInfoVO;
         } catch (Exception e) {
@@ -236,14 +238,16 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         }
     }
 
-    private String buildConnectUserInfoCacheKey(String passportId) {
-        return CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO + passportId;
+    private String buildConnectUserInfoCacheKey(String passportId, int original) {
+        return CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO + passportId + original;
     }
 
-    private boolean isNotEmpty(String nickname, String avatarSmall, String avatarMiddle, String avatarLarge, String gender) {
-        if (!Strings.isNullOrEmpty(nickname) && !Strings.isNullOrEmpty(avatarSmall) && !Strings.isNullOrEmpty(avatarMiddle) && !Strings.isNullOrEmpty(avatarLarge) && !Strings.isNullOrEmpty(gender)) {
-            return true;
+    private boolean isNotEmpty(String... args) {
+        for (int i = 0; i < args.length; i++) {
+            if (Strings.isNullOrEmpty(args[i])) {
+                return false;
+            }
         }
-        return false;
+        return true;
     }
 }

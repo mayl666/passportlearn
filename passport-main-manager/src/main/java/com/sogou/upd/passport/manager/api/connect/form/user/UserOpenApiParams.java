@@ -2,7 +2,7 @@ package com.sogou.upd.passport.manager.api.connect.form.user;
 
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 
-import java.util.Date;
+import javax.validation.constraints.AssertTrue;
 
 /**
  * 用户信息类
@@ -12,24 +12,15 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 public class UserOpenApiParams extends BaseOpenApiParams {
-    private String accessToken;
-    private Date updateTime;
     private int original;
 
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
+    @AssertTrue(message = "请输入正确的original值!")
+    private boolean isObtainOriginal() {
+        if (original == 1 || original == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public int getOriginal() {
