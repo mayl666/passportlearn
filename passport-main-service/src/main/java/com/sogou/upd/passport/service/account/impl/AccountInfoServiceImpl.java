@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.account.impl;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountInfoDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -30,6 +31,8 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     private AccountInfoDAO accountInfoDAO;
     @Autowired
     private RedisUtils redisUtils;
+    @Autowired
+    private DBShardRedisUtils dbShardRedisUtils;
 
     @Override
     public AccountInfo queryAccountInfoByPassportId(String passportId) throws ServiceException {
@@ -118,7 +121,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
                 String cacheKey = buildAccountInfoKey(passportId);
                 AccountInfo accountInfoTmp=null;
-                if ((accountInfoTmp = (AccountInfo) redisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
+                if ((accountInfoTmp = (AccountInfo) dbShardRedisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
                     accountInfoTmp.setBirthday(accountInfo.getBirthday());
                     accountInfoTmp.setCity(accountInfo.getCity());
                     accountInfoTmp.setGender(accountInfo.getGender());
@@ -130,7 +133,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 } else {
                     accountInfoTmp = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
-                redisUtils.set(cacheKey, accountInfoTmp);
+                dbShardRedisUtils.set(cacheKey, accountInfoTmp);
                 return true;
             }
         } catch (Exception e) {
