@@ -49,7 +49,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         try {
             String passportId = userOpenApiParams.getUserid();
             int original = userOpenApiParams.getOriginal();
-            ConnectUserInfoVO cacheConnectUserInfoVO;
+            ConnectUserInfoVO connectUserInfoVO;
             int clientId = userOpenApiParams.getClient_id();
             if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {
                 //读第三方个人资料原始信息
@@ -61,8 +61,8 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             if (!result.isSuccess()) {
                 return result;
             }
-            cacheConnectUserInfoVO = (ConnectUserInfoVO) result.getModels().get("cacheConnectUserInfoVO");
-            result = buildSuccResult(cacheConnectUserInfoVO, passportId, original);
+            connectUserInfoVO = (ConnectUserInfoVO) result.getModels().get("connectUserInfoVO");
+            result = buildSuccResult(connectUserInfoVO, passportId, original);
             return result;
 
         } catch (IOException e) {
@@ -86,8 +86,8 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
 
     private Result obtainConnectOriginalUserInfo(String passportId, int clientId) throws ServiceException, IOException, OAuthProblemException {
         Result result = new APIResultSupport(false);
-        ConnectUserInfoVO cacheConnectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId);
-        if (cacheConnectUserInfoVO == null) {
+        ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId);
+        if (connectUserInfoVO == null) {
             result = sgConnectApiManager.obtainConnectToken(passportId, clientId);
             ConnectToken connectToken;
             if (result.isSuccess()) {
@@ -95,10 +95,10 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 int provider = AccountTypeEnum.getAccountType(passportId).getValue();
                 String appKey = ConnectTypeEnum.getAppKey(provider);
                 //读第三方api获取第三方用户信息,并更新搜狗DB的connect_token表
-                cacheConnectUserInfoVO = connectAuthService.getConnectUserInfo(provider, appKey, connectToken);
-                if (cacheConnectUserInfoVO != null) {
+                connectUserInfoVO = connectAuthService.getConnectUserInfo(provider, appKey, connectToken);
+                if (connectUserInfoVO != null) {
                     //原始信息写缓存
-                    connectAuthService.initialOrUpdateConnectUserInfo(connectToken.getPassportId(), cacheConnectUserInfoVO);
+                    connectAuthService.initialOrUpdateConnectUserInfo(connectToken.getPassportId(), connectUserInfoVO);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
                     return result;
@@ -108,7 +108,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             }
         }
         result.setSuccess(true);
-        result.setDefaultModel("cacheConnectUserInfoVO", cacheConnectUserInfoVO);
+        result.setDefaultModel("connectUserInfoVO", connectUserInfoVO);
         return result;
     }
 
@@ -116,18 +116,18 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         Result result;
         int provider = AccountTypeEnum.getAccountType(passportId).getValue();
         String appKey = ConnectTypeEnum.getAppKey(provider);
-        ConnectUserInfoVO cacheConnectUserInfoVO;
+        ConnectUserInfoVO connectUserInfoVO;
         ConnectToken connectToken;
         result = sgConnectApiManager.obtainConnectToken(passportId, clientId);
         if (result.isSuccess()) {
             connectToken = (ConnectToken) result.getModels().get("connectToken");
-            cacheConnectUserInfoVO = buildConnectUserInfoVO(connectToken);
-            if (cacheConnectUserInfoVO == null) { //创建vo不成功时（即头像、昵称、性别信息皆为空），读第三方api并更新搜狗DB的connect_token表
-                cacheConnectUserInfoVO = connectAuthService.getConnectUserInfo(provider, appKey, connectToken);
-                if (cacheConnectUserInfoVO != null) {
-                    cacheConnectUserInfoVO.setOriginal(null); //屏蔽第三方原始信息
+            connectUserInfoVO = buildConnectUserInfoVO(connectToken);
+            if (connectUserInfoVO == null) { //创建vo不成功时（即头像、昵称、性别信息皆为空），读第三方api并更新搜狗DB的connect_token表
+                connectUserInfoVO = connectAuthService.getConnectUserInfo(provider, appKey, connectToken);
+                if (connectUserInfoVO != null) {
+                    connectUserInfoVO.setOriginal(null); //屏蔽第三方原始信息
                     result.setSuccess(true);
-                    result.setDefaultModel("cacheConnectUserInfoVO", cacheConnectUserInfoVO);
+                    result.setDefaultModel("connectUserInfoVO", connectUserInfoVO);
                     return result;
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
@@ -135,7 +135,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 }
             } else {
                 result.setSuccess(true);
-                result.setDefaultModel("cacheConnectUserInfoVO", cacheConnectUserInfoVO);
+                result.setDefaultModel("connectUserInfoVO", connectUserInfoVO);
                 return result;
             }
         }
