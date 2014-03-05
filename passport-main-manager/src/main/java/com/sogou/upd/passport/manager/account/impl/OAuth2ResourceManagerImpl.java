@@ -329,19 +329,27 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             //第三方账户先从account里获取
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             if (domain == AccountDomainEnum.THIRD) {
-                Account account=accountService.queryAccountByPassportId(passportId);
-                if(account !=null){
-                    avatarurl=account.getAvatar();
-                } else {
-                    ConnectToken connectToken= getConnectToken(passportId,clientId);
-                    if(connectToken!=null){
-                        large_avatar = connectToken.getAvatarLarge();
-                        mid_avatar = connectToken.getAvatarMiddle();
-                        tiny_avatar = connectToken.getAvatarSmall();
+                Account account = accountService.queryAccountByPassportId(passportId);
+                ConnectToken connectToken = null;
+                if (account != null) {
+                    uniqname = account.getUniqname();
+                    avatarurl = account.getAvatar();
+                    if (Strings.isNullOrEmpty(uniqname) || Strings.isNullOrEmpty(avatarurl)) {
+                        connectToken = getConnectToken(passportId, clientId);
+                        if (connectToken != null) {
+                            if (Strings.isNullOrEmpty(uniqname)) {
+                                uniqname = connectToken.getConnectUniqname();
+                            }
+                            if (Strings.isNullOrEmpty(avatarurl)) {
+                                large_avatar = connectToken.getAvatarLarge();
+                                mid_avatar = connectToken.getAvatarMiddle();
+                                tiny_avatar = connectToken.getAvatarSmall();
+                            } else {
+                                result.setDefaultModel("avatarurl",avatarurl);
+                            }
+                        }
                     }
                 }
-                uniqname=getUniqname(passportId,clientId);
-                result.setDefaultModel("avatarurl",avatarurl);
             } else {
                 accountBaseInfo = getBaseInfo(passportId);
 
@@ -351,9 +359,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                     large_avatar = (String) getPhotoResult.getModels().get("img_180");
                     mid_avatar = (String) getPhotoResult.getModels().get("img_50");
                     tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
+                    uniqname = getAndUpdateUniqname(passportId, accountBaseInfo, uniqname);
                 }
             }
-            uniqname = getAndUpdateUniqname(passportId, accountBaseInfo, uniqname);
             result.setSuccess(true);
             result.setDefaultModel("uniqname", uniqname);
             result.setDefaultModel("img_30", tiny_avatar);
