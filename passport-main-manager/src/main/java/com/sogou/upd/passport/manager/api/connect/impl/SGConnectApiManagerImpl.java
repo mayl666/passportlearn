@@ -169,7 +169,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             ConnectToken connectToken;
             if (connectConfig != null) {
                 connectToken = connectTokenService.queryConnectToken(passportId, provider, connectConfig.getAppKey());
-                if (connectToken == null || !connectTokenService.verifyAccessToken(connectToken, connectConfig)) {           //判断accessToken是否过期，是否需要刷新
+                if (connectToken == null || !verifyAccessToken(connectToken, connectConfig)) {           //判断accessToken是否过期，是否需要刷新
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND);
                     return result;
                 }
@@ -221,6 +221,47 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         connectRelation.setPassportId(passportId);
         connectRelation.setProvider(provider);
         return connectRelation;
+    }
+
+    /**
+     * 根据refreshToken是否过期，来决定是否用refreshToken来刷新accessToken
+     *
+     * @param connectToken
+     * @param connectConfig
+     * @return
+     * @throws IOException
+     * @throws OAuthProblemException
+     */
+    private boolean verifyAccessToken(ConnectToken connectToken, ConnectConfig connectConfig) throws IOException, OAuthProblemException {
+        if (!isValidToken(connectToken.getUpdateTime(), connectToken.getExpiresIn())) {
+            String refreshToken = connectToken.getRefreshToken();
+            //refreshToken不为空，则刷新token
+            if (!Strings.isNullOrEmpty(refreshToken)) {
+                OAuthTokenVO oAuthTokenVO = connectAuthService.refreshAccessToken(refreshToken, connectConfig);
+                if (oAuthTokenVO == null) {
+                    return false;
+                }
+                //如果SG库中有token信息，但是过期了，此时使用refreshToken刷新成功了，这时要双写搜狗、搜狐数据库
+                connectToken.setAccessToken(oAuthTokenVO.getAccessToken());
+                connectToken.setExpiresIn(oAuthTokenVO.getExpiresIn());
+                connectToken.setRefreshToken(oAuthTokenVO.getRefreshToken());
+                connectToken.setUpdateTime(new Date());
+                boolean isUpdateSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
+                return isUpdateSuccess;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 验证Token是否失效,返回true表示有效，false表示过期
+     */
+    private boolean isValidToken(Date createTime, long expiresIn) {
+        long currentTime = System.currentTimeMillis() / (1000);
+        long tokenTime = createTime.getTime() / (1000);
+        return currentTime < tokenTime + expiresIn;
     }
 
     /*
