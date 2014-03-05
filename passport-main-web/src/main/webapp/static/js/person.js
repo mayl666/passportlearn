@@ -615,7 +615,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                     monthS.append("<option value=" + i + ">" +(i+1)+ "</option>");
                 }
                 //Sever offers the month at 1.Damn.
-                monthS.val(+birthday[1]-1 );
+                monthS.val(+birthday[1] );
 
                 //Note that Jan has 31 days,even not 1st or 1987.
                 //If u wanna change the default month,u may need to change here.
