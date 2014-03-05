@@ -3,7 +3,6 @@ package com.sogou.upd.passport.service.connect.impl;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.HttpConstant;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -25,7 +24,6 @@ import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
 import com.sogou.upd.passport.oauth2.openresource.response.user.*;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
-import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
@@ -51,8 +49,6 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     private DBShardRedisUtils dbShardRedisUtils;
     @Autowired
     private ConnectTokenService connectTokenService;
-    @Autowired
-    private ConnectConfigService connectConfigService;
 
 
     @Override
@@ -146,76 +142,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
-    public ConnectUserInfoVO obtainConnectOriginalUserInfo(String passportId, int clientId) throws ServiceException, IOException, OAuthProblemException {
-        ConnectUserInfoVO cacheConnectUserInfoVO = obtainCachedConnectUserInfo(passportId);
-        if (cacheConnectUserInfoVO == null) {
-            int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-            if (connectConfig != null) {
-                String appKey = connectConfig.getAppKey();
-                //读token
-                ConnectToken connectToken = connectTokenService.queryConnectToken(passportId, provider, appKey);
-                if (connectToken != null) {
-                    //判断token有效性
-                    boolean isValidAccessToken = connectTokenService.verifyAccessToken(connectToken, connectConfig);
-                    if (isValidAccessToken) {
-                        //读第三方api获取个人资料并更新搜狗DB
-                        cacheConnectUserInfoVO = getConnectUserInfo(provider, appKey, connectToken);
-                        if (cacheConnectUserInfoVO != null) {
-                            //原始信息写缓存
-                            initialOrUpdateConnectUserInfo(connectToken.getPassportId(), cacheConnectUserInfoVO);
-                        }
-                    }
-                }
-            }
-        }
-        return cacheConnectUserInfoVO;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public ConnectUserInfoVO obtainConnectUserInfo(String passportId, int clientId) throws ServiceException, IOException, OAuthProblemException {
-        int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-        if (connectConfig == null) {
-            return null;
-        }
-        String appKey = connectConfig.getAppKey();
-        //读原始信息缓存
-        ConnectToken connectToken = connectTokenService.obtainCachedConnectToken(passportId, provider, appKey);
-        ConnectUserInfoVO cacheConnectUserInfoVO;
-        //读搜狗DB
-        if (connectToken == null) {
-            connectToken = connectTokenService.queryConnectToken(passportId, provider, appKey);
-            if (connectToken != null) {
-                //判断token有效性
-                boolean isValidAccessToken = connectTokenService.verifyAccessToken(connectToken, connectConfig);
-                if (isValidAccessToken) {
-                    //从搜狗获取第三方个人资料
-                    cacheConnectUserInfoVO = obtainConnectUserInfo(connectToken);
-                    if (cacheConnectUserInfoVO == null) { //从搜狗获取失败，读第三方
-                        cacheConnectUserInfoVO = getConnectUserInfo(provider, appKey, connectToken);
-                        cacheConnectUserInfoVO.setOriginal(null); //屏蔽第三方原始信息
-                        return cacheConnectUserInfoVO;
-                    }
-                }
-            }
-        } else {
-            cacheConnectUserInfoVO = new ConnectUserInfoVO();
-            convertToConnectUserInfoVo(cacheConnectUserInfoVO, connectToken);
-            return cacheConnectUserInfoVO;
-        }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    private void convertToConnectUserInfoVo(ConnectUserInfoVO connectUserInfoVo, ConnectToken connectToken) {
-        connectUserInfoVo.setNickname(connectToken.getConnectUniqname());
-        connectUserInfoVo.setAvatarSmall(connectToken.getAvatarSmall());
-        connectUserInfoVo.setAvatarMiddle(connectToken.getAvatarMiddle());
-        connectUserInfoVo.setAvatarLarge(connectToken.getAvatarLarge());
-        connectUserInfoVo.setGender(Integer.parseInt(connectToken.getGender()));
-    }
-
-    private ConnectUserInfoVO getConnectUserInfo(int provider, String appKey, ConnectToken connectToken) throws IOException, OAuthProblemException {
+    public ConnectUserInfoVO getConnectUserInfo(int provider, String appKey, ConnectToken connectToken) throws IOException, OAuthProblemException {
         ConnectConfig connectConfig = new ConnectConfig();
         connectConfig.setAppKey(appKey);
         String openid = connectToken.getOpenid();
@@ -234,24 +161,6 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             if (isSuccess) {
                 return connectUserInfoVo;
             }
-        }
-        return null;
-    }
-
-    private ConnectUserInfoVO obtainConnectUserInfo(ConnectToken connectToken) {
-        String nickname = connectToken.getConnectUniqname();
-        String avatarSmall = connectToken.getAvatarSmall();
-        String avatarMiddle = connectToken.getAvatarMiddle();
-        String avatarLarge = connectToken.getAvatarLarge();
-        String gender = connectToken.getGender();
-        if (StringUtil.isNotEmpty(nickname, avatarSmall, avatarMiddle, avatarLarge, gender)) {
-            ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
-            connectUserInfoVO.setNickname(nickname);
-            connectUserInfoVO.setAvatarSmall(avatarSmall);
-            connectUserInfoVO.setAvatarMiddle(avatarMiddle);
-            connectUserInfoVO.setAvatarLarge(avatarLarge);
-            connectUserInfoVO.setGender(Integer.parseInt(gender));
-            return connectUserInfoVO;
         }
         return null;
     }
