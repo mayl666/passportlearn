@@ -23,10 +23,8 @@ import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.service.SHPlusConstant;
 import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
-import com.sogou.upd.passport.service.account.SHPlusTokenService;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang.StringUtils;
@@ -68,8 +66,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     private PCAccountManager pcAccountManager;
     @Autowired
     private UserInfoApiManager shPlusUserInfoApiManager;
-    @Autowired
-    private SHPlusTokenService shPlusTokenService;
     @Autowired
     private PCAccountTokenService pcAccountTokenService;
     @Autowired
