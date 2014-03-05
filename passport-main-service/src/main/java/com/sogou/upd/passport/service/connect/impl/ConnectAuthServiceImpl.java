@@ -161,6 +161,10 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                     connectUserInfoVo.setOriginal(null); //屏蔽第三方原始信息
                 }
             }
+            if (connectUserInfoVo != null) {
+                //写缓存
+                initialOrUpdateConnectUserInfo(connectToken.getPassportId(), original, connectUserInfoVo);
+            }
         } catch (Exception e) {
             logger.error("[mananger]method obtainConnectUserInfo error.{}", e);
         }

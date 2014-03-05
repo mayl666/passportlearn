@@ -77,7 +77,6 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 return result;
             }
             result = buildSuccResult(connectUserInfoVO, passportId, original);
-            connectAuthService.initialOrUpdateConnectUserInfo(passportId, original, connectUserInfoVO);
             return result;
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
@@ -122,7 +121,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         Result userInfoResult = new APIResultSupport(true);
         Map<String, Object> data = Maps.newHashMap();
         Map<String, Object> result_value_data = Maps.newHashMap();
-        result_value_data.put("id", "");
+        result_value_data.put("id", AccountTypeEnum.getOpenIdByPassportId(userid));
         result_value_data.put("birthday", "");
         result_value_data.put("sex", connectUserInfoVO.getGender());
         result_value_data.put("nick", connectUserInfoVO.getNickname());
