@@ -51,7 +51,7 @@ public class TestCheckSohuDataController {
     private static ExecutorService service = Executors.newFixedThreadPool(50);
 
     /**
-     * 验证sohu导出的数据与sohu线上是否一致
+     * 验证sohu导出的数据与sohu线上是否一致 done
      *
      * @return
      * @throws Exception
@@ -79,7 +79,7 @@ public class TestCheckSohuDataController {
     }
 
     /**
-     * 线下方式调用第三方API补全第三方用户信息
+     * 线下方式调用第三方API补全第三方用户信息 done
      *
      * @return
      */
@@ -167,6 +167,7 @@ public class TestCheckSohuDataController {
 
     /**
      * 将03线上库中account表中第三方账号的个人资料从sohu移入03库中的account_info表中，数据源用验证token的10个open_token_1至open_token_10
+     * done
      *
      * @return
      * @throws Exception

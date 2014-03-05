@@ -55,15 +55,11 @@ public class MoveBaseInfoToAccountThread implements Runnable {
                     writer.close();
                     continue;
                 }
-                //todo 先查一下account表
-                Account account = new Account();
-                account.setPassportId(passportId);
-                account.setUniqname(accountBaseInfo.getUniqname()); //昵称
-                account.setAvatar(accountBaseInfo.getAvatar());   //头像
-                account.setPasswordtype(Account.NO_PASSWORD); //密码类型
+                queryAccount.setUniqname(accountBaseInfo.getUniqname()); //昵称
+                queryAccount.setAvatar(accountBaseInfo.getAvatar());   //头像
                 long id;
                 try {
-                    id = accountDAO.insertOrUpdateAccount(passportId, account);
+                    id = accountDAO.insertOrUpdateAccount(passportId, queryAccount);
                 } catch (Exception e) {
                     //1.插入或更新表异常
                     FileWriter writer = new FileWriter("D:\\transfer\\account_base_info\\update_exception.txt", true);
