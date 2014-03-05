@@ -533,7 +533,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                         } else {
                             if(month<10)month="0"+String(month);
                             if(day<10)day="0"+String(day);
-                            $("#birthday").val(year + "-" + month + "-" + day);//like 1987-01-01
+                            $("#birthday").val(year + "-" + (1+month )+ "-" + day);//like 1987-01-01
                         }
 
                         $("#flag").val($("#NicknameIpt").val()==decodeURIComponent(data.uniqname)?0:1);
