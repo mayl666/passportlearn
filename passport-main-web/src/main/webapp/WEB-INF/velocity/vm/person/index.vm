@@ -74,7 +74,7 @@
                         <div class="form-item">
     <label for="UniqnameIpt">昵称：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require uniqname" type="text" name="uniqname" id="UniqnameIpt" value="" data-desc="请输入您的昵称" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require uniqname" type="text" name="uniqname" id="UniqnameIpt" value="" data-desc="请输入您的昵称" class="" placeholder=""/>
     </span>
 </div>
                         <div class="form-item">
@@ -154,7 +154,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/person.js?t=2014030555"></script>
+    <script type="text/javascript" src="/./static/js/person.js?t=2014030504"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
