@@ -16,6 +16,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.HttpClientUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -24,6 +25,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
@@ -44,6 +46,10 @@ import java.util.Map;
 public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
 
     private static Logger log = LoggerFactory.getLogger(ProxyLoginApiManagerImpl.class);
+    private static String PP_COOKIE_URL = "http://account.sogou.com/sso/setPPCookie";
+
+    @Autowired
+    private CommonManager commonManager;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
@@ -86,7 +92,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                 shUrl = SHPPUrlConstant.HTTPS_SET_COOKIE;
             }
             RequestModel requestModel = new RequestModel(shUrl);
-            requestModel.addParam("userid",userId);
+            requestModel.addParam("userid", userId);
             requestModel.addParam("appid", SHPPUrlConstant.APP_ID);
             requestModel.addParam("ct", ct);
             requestModel.addParam("code", code);
@@ -113,25 +119,28 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     @Override
-    public Result getCookieInfo(CookieApiParams cookieApiParams){
+    public Result getCookieInfo(CookieApiParams cookieApiParams) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_COOKIE_VALUE_FROM_SOHU, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(cookieApiParams);
-        requestModelXml.getParams().put("result_type","json");       //sohu 传 xml参数，返回json
+        requestModelXml.getParams().put("result_type", "json");       //sohu 传 xml参数，返回json
         Result result = executeResult(requestModelXml);
         if (result.isSuccess()) {
-            Object obj= result.getModels().get("data");
-            if(obj!=null && obj instanceof List) {
+            Object obj = result.getModels().get("data");
+            if (obj != null && obj instanceof List) {
                 List<Map<String, String>> listMap = (List<Map<String, String>>) obj;
-                if(CollectionUtils.isNotEmpty(listMap)){
-                    for (Map<String,String>map:listMap){
-                         String key=map.get("name");
-                         String value=map.get("value");
-                         if("ppinf".equals(key)){
-                             result.getModels().put("ppinf",value);
-                         }
-                         if("pprdig".equals(key)){
-                             result.getModels().put("pprdig",value);
-                         }
+                if (CollectionUtils.isNotEmpty(listMap)) {
+                    for (Map<String, String> map : listMap) {
+                        String key = map.get("name");
+                        String value = map.get("value");
+                        if ("ppinf".equals(key)) {
+                            result.getModels().put("ppinf", value);
+                        }
+                        if ("pprdig".equals(key)) {
+                            result.getModels().put("pprdig", value);
+                        }
+                        if ("passport".equals(key)) {
+                            result.getModels().put("passport", value);
+                        }
                     }
                 }
             }
@@ -143,36 +152,42 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
-        Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams, false, false);
-
-        String url = (String) cookieUrlResult.getModels().get("url");
-//        RequestModel requestModel = (RequestModel) cookieUrlResult.getModels().get("requestModel");
-//        Header[] headers = SGHttpClient.executeHeaders(requestModel);
-//        start = System.currentTimeMillis();
-        Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
-//        CommonHelper.recordTimestamp(start,"getCookieValue-getCookieValue");
-
+        //生成cookie
+        CookieApiParams cookieApiParams = new CookieApiParams();
+        cookieApiParams.setUserid(createCookieUrlApiParams.getUserid());
+        cookieApiParams.setClient_id(CommonConstant.PC_CLIENTID);
+        cookieApiParams.setRu(createCookieUrlApiParams.getRu());
+        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+        cookieApiParams.setPersistentcookie(String.valueOf(1));
+        Result cookieInfoResult = getCookieInfo(cookieApiParams);
         Result result = new APIResultSupport(false);
-        if (headers != null) {
-            String locationKey = "Location";
-            String locationUrl = "";
-            for (Header header : headers) {
-                if (locationKey.equals(header.getName())) {
-                    locationUrl = header.getValue();
-                }
-            }
-            if (!Strings.isNullOrEmpty(locationUrl)) {
-                Map paramMap = StringUtil.extractParameterMap(locationUrl);
-                String status = (String) paramMap.get("status");
-                if (Strings.isNullOrEmpty(status)) {
-                    result.setSuccess(true);
-                    result.setDefaultModel("ppinf", paramMap.get("ppinf"));
-                    result.setDefaultModel("pprdig", paramMap.get("pprdig"));
-                    result.setDefaultModel("passport", paramMap.get("passport"));
-                    locationUrl = modifyClientRu(locationUrl);  // 输入法Mac要求Location里的ru不能decode
-                }
-            }
-            result.setDefaultModel("redirectUrl", locationUrl);
+        if (cookieInfoResult != null) {
+            String ppinf = (String)cookieInfoResult.getModels().get("ppinf");
+            String pprdig = (String) cookieInfoResult.getModels().get("pprdig");
+            String passport = (String) cookieInfoResult.getModels().get("passport");
+
+            result.setSuccess(true);
+            result.setDefaultModel("ppinf", ppinf);
+            result.setDefaultModel("pprdig", pprdig);
+            result.setDefaultModel("passport", passport);
+
+            long ct = System.currentTimeMillis() / 1000;
+            String code1 = commonManager.getCode(ppinf,CommonConstant.PC_CLIENTID,ct);
+            String code2 = commonManager.getCode(pprdig,CommonConstant.PC_CLIENTID,ct);
+            String code3 = commonManager.getCode(passport,CommonConstant.PC_CLIENTID,ct);
+
+            StringBuilder locationUrlBuilder = new StringBuilder(PP_COOKIE_URL);
+            locationUrlBuilder.append("?").append("ppinf=").append(ppinf)
+                    .append("&pprdig=").append(pprdig)
+                    .append("&passport=").append(passport)
+                    .append("&code1=").append(code1)
+                    .append("&code2=").append(code2)
+                    .append("&code3=").append(code3)
+                    .append("&s=").append(ct)
+                    .append("&lastdomain=").append(0)
+                    .append("&ru=").append(createCookieUrlApiParams.getRu());
+
+            result.setDefaultModel("redirectUrl", locationUrlBuilder.toString());
         } else {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }

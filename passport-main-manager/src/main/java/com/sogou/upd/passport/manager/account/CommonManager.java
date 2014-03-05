@@ -125,4 +125,13 @@ public interface CommonManager {
      */
     public String buildCreateSSOCookieUrl(String domain,int client_id, String passportId,String uniqname,String refnick, String ru, String ip);
 
+    /**
+     * 根据字符串获取code值
+     * @param firstStr
+     * @param clientId
+     * @param ct
+     * @return
+     */
+    public String getCode(String firstStr, int clientId, long ct);
+
 }

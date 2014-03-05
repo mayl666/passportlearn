@@ -237,6 +237,7 @@ public class CommonManagerImpl implements CommonManager {
         }
     }
 
+    @Override
     public String getCode(String firstStr, int clientId, long ct) {
         AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
         if (appConfig == null) {

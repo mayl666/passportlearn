@@ -13,6 +13,7 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.common.validation.constraints.RuValidator;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
+import com.sogou.upd.passport.manager.form.PPCookieParams;
 import com.sogou.upd.passport.manager.form.SSOCookieParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -58,13 +59,13 @@ public class SSOCookieController extends BaseController {
 
         String ru = ssoCookieParams.getRu();
         if(!result.isSuccess()){
-            log(request,ru,result.getCode());
+            log(request,"sso_setcookie",ru,result.getCode());
             return returnErrMsg(response,ru,result.getCode(),result.getMessage());
         }
         if (!StringUtils.isBlank(ru)) {
             response.sendRedirect(ru);
         }
-        log(request,ru,"0");
+        log(request,"sso_setcookie",ru,"0");
         return "";
     }
 
@@ -78,9 +79,9 @@ public class SSOCookieController extends BaseController {
         return "";
     }
 
-    private void log(HttpServletRequest request,String ru,String resultCode){
+    private void log(HttpServletRequest request,String passportId,String ru,String resultCode){
         //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog("sso_setcookie", request.getRequestURI(), "", resultCode, getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), "", resultCode, getIp(request));
         userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
         userOperationLog.putOtherMessage("ru", ru);
         UserOperationLogUtil.log(userOperationLog);
@@ -114,5 +115,32 @@ public class SSOCookieController extends BaseController {
         }
         return "";
     }
+
+    @RequestMapping(value = "/sso/setPPCookie", method = RequestMethod.GET)
+    public String setPPCookie(HttpServletRequest request, HttpServletResponse response, PPCookieParams ppCookieParams)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(ppCookieParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return returnErrMsg(response, ppCookieParams.getRu(),result.getCode(), result.getMessage());
+        }
+
+        result = cookieManager.setPPCookie(response,ppCookieParams);
+
+        String ru = ppCookieParams.getRu();
+        if(!result.isSuccess()){
+            log(request,"pp_setcookie",ru,result.getCode());
+            return returnErrMsg(response,ru,result.getCode(),result.getMessage());
+        }
+        if (!StringUtils.isBlank(ru)) {
+            response.sendRedirect(ru);
+        }
+        log(request,"pp_setcookie",ru,"0");
+        return "";
+    }
+
 
 }
