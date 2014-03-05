@@ -74,10 +74,6 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     //调用 获取昵称接口 拼接返回的result map
                     result = oAuth2ResourceManager.getUserInfo(infoApiparams.getUserid(), infoApiparams.getClient_id());
 
-                    ConnectToken connectToken = null;
-                    if (result.isSuccess()) {
-                        connectToken = (ConnectToken) result.getModels().get("connectToken");
-                    }
                     //检查是否有绑定手机
                     if (ArrayUtils.contains(paramArray, "mobile")) {
                         Account account = accountService.queryAccountByPassportId(passportId);
