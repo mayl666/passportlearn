@@ -391,7 +391,7 @@ public class PCOAuth2AccountController extends BaseController {
             return "";
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
-        String redirectUrl = "/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
+        String redirectUrl;
         if(oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_AVATARURL)){
             redirectUrl = "/web/userinfo/avatarurl?client_id=" +  oauth2PcIndexParams.getClient_id();
         }else if(oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_PASSWORD)){
