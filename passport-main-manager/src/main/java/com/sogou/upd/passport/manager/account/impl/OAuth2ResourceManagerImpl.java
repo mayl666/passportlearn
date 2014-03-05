@@ -28,11 +28,7 @@ import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
-import com.sogou.upd.passport.service.SHPlusConstant;
-import com.sogou.upd.passport.service.account.AccountBaseInfoService;
-import com.sogou.upd.passport.service.account.PCAccountTokenService;
-import com.sogou.upd.passport.service.account.SHPlusTokenService;
-import com.sogou.upd.passport.service.account.SnamePassportMappingService;
+import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
@@ -57,13 +53,7 @@ import java.util.Map;
 public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
 
     private Logger log = LoggerFactory.getLogger(OAuth2ResourceManagerImpl.class);
-    private static final Logger shPlusTokenLog = LoggerFactory.getLogger("shPlusTokenLogger");
-
-    public static final String DATA = "data";
     public static final String RESOURCE = "resource";
-    public static final String SNAME = "sname";
-    public static final String SID = "sid";
-
 
     @Autowired
     private AppConfigService appConfigService;
@@ -76,8 +66,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     @Autowired
     private UserInfoApiManager shPlusUserInfoApiManager;
     @Autowired
-    private SHPlusTokenService shPlusTokenService;
-    @Autowired
     private PCAccountTokenService pcAccountTokenService;
     @Autowired
     private PhotoUtils photoUtils;
@@ -86,7 +74,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     @Autowired
     private AccountBaseInfoService accountBaseInfoService;
     @Autowired
-    private CommonManager commonManager;
+    private AccountService accountService;
     @Autowired
     private ConnectTokenService connectTokenService;
     @Autowired
@@ -289,7 +277,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             //第三方账户先从account里获取
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             if (domain == AccountDomainEnum.THIRD) {
-                Account account=commonManager.queryAccountByPassportId(passportId);
+                Account account=accountService.queryAccountByPassportId(passportId);
                 if(account!=null && !Strings.isNullOrEmpty(account.getUniqname())){
                     uniqname=account.getUniqname();
                 }else {
@@ -341,11 +329,11 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             //第三方账户先从account里获取
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             if (domain == AccountDomainEnum.THIRD) {
-                Account account=commonManager.queryAccountByPassportId(passportId);
+                Account account=accountService.queryAccountByPassportId(passportId);
                 if(account !=null){
                     avatarurl=account.getAvatar();
                 } else {
-                    ConnectToken connectToken=getConnectToken(passportId,clientId);
+                    ConnectToken connectToken= getConnectToken(passportId,clientId);
                     if(connectToken!=null){
                         large_avatar = connectToken.getAvatarLarge();
                         mid_avatar = connectToken.getAvatarMiddle();
