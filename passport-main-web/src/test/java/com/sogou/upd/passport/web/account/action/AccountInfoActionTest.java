@@ -36,7 +36,7 @@ public class AccountInfoActionTest extends BaseActionTest {
     @Test
     public void testUpdateUserinfo() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
-        String uniqname = "dasfds大发";
+        String uniqname = "dasfds大发1";
         int clientId = 1110;
         String serverSecret = "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr";
         long ct = System.currentTimeMillis();
@@ -44,7 +44,7 @@ public class AccountInfoActionTest extends BaseActionTest {
         System.out.println("code:" + code);
         params.put("client_id", String.valueOf(clientId));
         params.put("userid", "906F1673C8D9EFA13B40F3293D5C4655@qq.sohu.com");
-//        params.put("uniqname", uniqname);
+        params.put("uniqname", uniqname);
         params.put("birthday","2010-01-01") ;
 //        params.put("personalId","110108198305051414");
         params.put("modifyip","192.168.0.1");

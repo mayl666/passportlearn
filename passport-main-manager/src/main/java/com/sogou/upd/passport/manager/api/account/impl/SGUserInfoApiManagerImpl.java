@@ -174,39 +174,44 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         try {
             Account account= accountService.queryAccountByPassportId(params.getUserid());
             if(account!=null){
-                //更新昵称 Account表
-                if(accountService.updateUniqName(account, params.getUniqname())){
+                //判断昵称是否存在
+                if(Strings.isNullOrEmpty(accountService.checkUniqName(params.getUniqname()))){
+                    //更新昵称 Account表
+                    if(accountService.updateUniqName(account, params.getUniqname())){
 
-                    AccountInfo info=new AccountInfo();
-                    info.setPassportId(params.getUserid());
+                        AccountInfo info=new AccountInfo();
+                        info.setPassportId(params.getUserid());
 
-                    String[] birthday = !Strings.isNullOrEmpty(params.getBirthday()) ? params.getBirthday().split("-") : null;
-                    Calendar calendar = Calendar.getInstance();
-                    if (birthday != null) {
-                        calendar.set(Calendar.YEAR, Integer.valueOf(birthday[0]));
-                        calendar.set(Calendar.MONTH, Integer.valueOf(birthday[1])-1);
-                        calendar.set(Calendar.DATE, Integer.valueOf(birthday[2]));
-                    }
+                        String[] birthday = !Strings.isNullOrEmpty(params.getBirthday()) ? params.getBirthday().split("-") : null;
+                        Calendar calendar = Calendar.getInstance();
+                        if (birthday != null) {
+                            calendar.set(Calendar.YEAR, Integer.valueOf(birthday[0]));
+                            calendar.set(Calendar.MONTH, Integer.valueOf(birthday[1])-1);
+                            calendar.set(Calendar.DATE, Integer.valueOf(birthday[2]));
+                        }
 
-                    info.setBirthday(calendar.getTime());
-                    info.setGender(params.getGender());
-                    info.setProvince(params.getProvince());
-                    info.setCity(params.getCity());
-                    info.setFullname(params.getUsername());
-                    info.setPersonalid(params.getPersonalId());
-                    info.setModifyip(params.getModifyip());
-                    info.setUpdateTime(new Date());
+                        info.setBirthday(calendar.getTime());
+                        info.setGender(params.getGender());
+                        info.setProvince(params.getProvince());
+                        info.setCity(params.getCity());
+                        info.setFullname(params.getUsername());
+                        info.setPersonalid(params.getPersonalId());
+                        info.setModifyip(params.getModifyip());
+                        info.setUpdateTime(new Date());
 
-                    //更新用户信息AccountInfo
-                    boolean updateResult=accountInfoService.updateAccountInfo(info);
-                    if(updateResult){
-                        result.setSuccess(true);
-                        result.setMessage("修改个人资料成功");
-                    }else{
+                        //更新用户信息AccountInfo
+                        boolean updateResult=accountInfoService.updateAccountInfo(info);
+                        if(updateResult){
+                            result.setSuccess(true);
+                            result.setMessage("修改个人资料成功");
+                        }else{
+                            result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
+                        }
+                    } else{
                         result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
                     }
-                } else{
-                    result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
                 }
             } else{
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
