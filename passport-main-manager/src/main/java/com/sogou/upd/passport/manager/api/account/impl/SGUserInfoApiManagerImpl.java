@@ -184,7 +184,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     Calendar calendar = Calendar.getInstance();
                     if (birthday != null) {
                         calendar.set(Calendar.YEAR, Integer.valueOf(birthday[0]));
-                        calendar.set(Calendar.MONTH, Integer.valueOf(birthday[1]));
+                        calendar.set(Calendar.MONTH, Integer.valueOf(birthday[1])-1);
                         calendar.set(Calendar.DATE, Integer.valueOf(birthday[2]));
                     }
 
