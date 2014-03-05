@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.dao.connect.ConnectTokenDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.connect.ConnectToken;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
@@ -69,6 +70,32 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
         }
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initialOrUpdateConnectTokenCache", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public boolean initialOrUpdateConnectTokenCache(String passportId, ConnectToken connectToken) throws ServiceException {
+        try {
+            String cacheKey = buildConnectTokenCacheKey(passportId, connectToken.getProvider(), connectToken.getAppKey());
+            dbShardRedisUtils.setWithinSeconds(cacheKey, connectToken, DateAndNumTimesConstant.THREE_MONTH);
+            return true;
+        } catch (Exception e) {
+            logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error.{}", e);
+            return false;
+        }
+    }
+
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_obtainCachedConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public ConnectToken obtainCachedConnectToken(String passportId, int provider, String appKey) {
+        try {
+            String cacheKey = buildConnectTokenCacheKey(passportId, provider, appKey);
+            ConnectToken connectToken = dbShardRedisUtils.getObject(cacheKey, ConnectToken.class);
+            return connectToken;
+        } catch (Exception e) {
+            logger.error("[ConnectToken] service method obtainCachedConnectToken error.{}", e);
+            return null;
+        }
+    }
+
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_insertOrUpdateConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean insertOrUpdateConnectToken(ConnectToken connectToken) throws ServiceException {
@@ -77,7 +104,6 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
             String passportId = connectToken.getPassportId();
             row = connectTokenDAO.insertOrUpdateAccountConnect(passportId, connectToken);
             if (row != 0) {
-                //todo 更新个人资料暂时不写缓存,更新完成后注释去掉
                 String cacheKey = buildConnectTokenCacheKey(passportId, connectToken.getProvider(), connectToken.getAppKey());
                 dbShardRedisUtils.setWithinSeconds(cacheKey, connectToken, DateAndNumTimesConstant.THREE_MONTH);
                 return true;

@@ -56,12 +56,11 @@ public interface ConnectAuthService {
      * 更新第三方个人资料缓存
      *
      * @param passportId
-     * @param original
      * @param connectUserInfoVO
      * @return
      * @throws ServiceException
      */
-    public boolean initialOrUpdateConnectUserInfo(String passportId, int original, ConnectUserInfoVO connectUserInfoVO) throws ServiceException;
+    public boolean initialOrUpdateConnectUserInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) throws ServiceException;
 
     /**
      * 通过缓存获取个人资料
@@ -70,7 +69,7 @@ public interface ConnectAuthService {
      * @return
      * @throws ServiceException
      */
-    public ConnectUserInfoVO obtainCachedConnectUserInfo(String passportId, int original);
+    public ConnectUserInfoVO obtainCachedConnectUserInfo(String passportId);
 
 
     /**
