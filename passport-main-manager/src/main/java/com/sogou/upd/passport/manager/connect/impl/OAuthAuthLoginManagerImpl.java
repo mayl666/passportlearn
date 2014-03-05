@@ -135,8 +135,14 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 String passportId = connectToken.getPassportId();
                 result.setDefaultModel("userid", passportId);
                 String userId = passportId;
+                int original;
+                if (provider == AccountTypeEnum.QQ.getValue()) {
+                    original = CommonConstant.NOT_WITH_CONNECT_ORIGINAL;
+                } else {
+                    original = CommonConstant.WITH_CONNECT_ORIGINAL;
+                }
                 //更新个人资料缓存
-                connectAuthService.initialOrUpdateConnectUserInfo(userId, CommonConstant.WITH_CONNECT_ORIGINAL, connectUserInfoVO);
+                connectAuthService.initialOrUpdateConnectUserInfo(userId, original, connectUserInfoVO);
 
                 if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
                     Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);

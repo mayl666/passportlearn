@@ -161,6 +161,10 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                     connectUserInfoVo.setOriginal(null); //屏蔽第三方原始信息
                 }
             }
+            if (connectUserInfoVo != null) {
+                //写缓存
+                initialOrUpdateConnectUserInfo(connectToken.getPassportId(), original, connectUserInfoVo);
+            }
         } catch (Exception e) {
             logger.error("[mananger]method obtainConnectUserInfo error.{}", e);
         }
@@ -237,7 +241,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     private String buildConnectUserInfoCacheKey(String passportId, int original) {
-        return CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO + passportId + original;
+        return CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO + passportId + "_" + original;
     }
 
     private boolean isNotEmpty(String... args) {
