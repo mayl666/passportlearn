@@ -80,7 +80,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     }
                     //检查是否有绑定手机
                     if (ArrayUtils.contains(paramArray, "mobile")) {
-                        Account account = commonManager.queryAccountByPassportId(passportId);
+                        Account account = accountService.queryAccountByPassportId(passportId);
                         if (account != null) {
                             result.setDefaultModel("sec_mobile", account.getMobile());
                         }
@@ -176,7 +176,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     public Result updateUserInfo(UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
         try {
-            Account account= commonManager.queryAccountByPassportId(params.getUserid());
+            Account account= accountService.queryAccountByPassportId(params.getUserid());
             if(account!=null){
                 //更新昵称 Account表
                 if(accountService.updateUniqName(account, params.getUniqname())){

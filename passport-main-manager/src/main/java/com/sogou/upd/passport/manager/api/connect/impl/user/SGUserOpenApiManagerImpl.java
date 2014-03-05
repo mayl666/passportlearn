@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.ConnectTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -15,6 +16,7 @@ import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
+import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,8 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     @Autowired
     private ConnectAuthService connectAuthService;
     @Autowired
+    private ConnectTokenService connectTokenService;
+    @Autowired
     private ConnectApiManager sgConnectApiManager;
 
     @Override
@@ -47,15 +51,26 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         try {
             String passportId = userOpenApiParams.getUserid();
             int original = userOpenApiParams.getOriginal();
-            ConnectUserInfoVO cacheConnectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId, original);
+            String providerStr = getProviderByUserid(passportId);
+            int provider = AccountTypeEnum.getProvider(providerStr);
+            ConnectUserInfoVO cacheConnectUserInfoVO = null;
+            //读第三方个人资料原始缓存
+            if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {
+                cacheConnectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId);
+            } else {
+                String appKey = ConnectTypeEnum.getAppKey(provider);
+                //读connect_token表非原始信息缓存
+                ConnectToken connectToken = connectTokenService.obtainCachedConnectToken(passportId, provider, appKey);
+                if (connectToken != null) {
+                    convertToConnectUserInfoVo(cacheConnectUserInfoVO, connectToken);
+                }
+            }
             if (cacheConnectUserInfoVO != null) {
                 result = buildSuccResult(cacheConnectUserInfoVO, passportId, original);
                 return result;
             }
-
             int clientId = userOpenApiParams.getClient_id();
-            //获取第三方信息
-            String providerStr = getProviderByUserid(passportId);
+            //获取第三方用户信息
             if (StringUtils.isBlank(providerStr)) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_USERID_TYPE_ERROR);
                 return result;
@@ -69,8 +84,6 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND);
                 return result;
             }
-
-            //获取第三方用户信息
             ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(connectToken, original);
             if (connectUserInfoVO == null) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
@@ -97,6 +110,14 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
 
     }
 
+    private void convertToConnectUserInfoVo(ConnectUserInfoVO connectUserInfoVo, ConnectToken connectToken) {
+        connectUserInfoVo = new ConnectUserInfoVO();
+        connectUserInfoVo.setNickname(connectToken.getConnectUniqname());
+        connectUserInfoVo.setAvatarSmall(connectToken.getAvatarSmall());
+        connectUserInfoVo.setAvatarMiddle(connectToken.getAvatarMiddle());
+        connectUserInfoVo.setAvatarLarge(connectToken.getAvatarLarge());
+        connectUserInfoVo.setGender(Integer.parseInt(connectToken.getGender()));
+    }
 
     private String getProviderByUserid(String userid) {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userid);
