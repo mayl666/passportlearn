@@ -45,10 +45,10 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             ConnectUserInfoVO cacheConnectUserInfoVO;
             int clientId = userOpenApiParams.getClient_id();
             if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {
-                //读第三方个人资料原始缓存
+                //读第三方个人资料原始信息
                 cacheConnectUserInfoVO = connectAuthService.obtainConnectOriginalUserInfo(passportId, clientId);
             } else {
-                //读第三方个人资料非原始缓存
+                //读第三方个人资料非原始信息
                 cacheConnectUserInfoVO = connectAuthService.obtainConnectUserInfo(passportId, clientId);
             }
             if (cacheConnectUserInfoVO == null) {
