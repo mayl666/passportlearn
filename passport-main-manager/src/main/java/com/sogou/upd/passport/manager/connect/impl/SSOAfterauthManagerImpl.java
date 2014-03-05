@@ -24,6 +24,7 @@ import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
+import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthAuthzClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
@@ -91,6 +92,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
             }
             // 获取第三方个人资料
             ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
+
             //isthird=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
             if (isthird == 0) {
                 if (provider == AccountTypeEnum.QQ.getValue()) {
@@ -98,8 +100,30 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
                     ObtainAccountInfoParams params=new ObtainAccountInfoParams();
                     params.setUsername(passportId);
                     params.setClient_id(String.valueOf(client_id));
-                    params.setFields("uniqname");
+                    params.setFields("uniqname,sex");
                     result = accountInfoManager.getUserInfo(params);
+                    if(result.isSuccess()){
+                        String img180= (String) result.getModels().get("img_180");
+                        String img50= (String) result.getModels().get("img_50");
+                        String img30= (String) result.getModels().get("img_30");
+                        String uniqname= (String) result.getModels().get("uniqname");
+                        String sex= (String) result.getModels().get("sex");
+
+                        result.getModels().put("large_avatar",Strings.isNullOrEmpty(img180)?"":img180) ;
+                        result.getModels().put("mid_avatar",Strings.isNullOrEmpty(img50)?"":img50) ;
+                        result.getModels().put("tiny_avatar",Strings.isNullOrEmpty(img30)?"":img30) ;
+                        result.getModels().put("uniqname",Strings.isNullOrEmpty(uniqname)?"":uniqname) ;
+                        result.getModels().put("sex", Strings.isNullOrEmpty(sex) ? 0 : Integer.parseInt(sex)) ;
+                    }
+                }
+            }else {
+                if(connectUserInfoVO!=null){
+
+                    result.getModels().put("large_avatar",connectUserInfoVO.getAvatarLarge()) ;
+                    result.getModels().put("mid_avatar",connectUserInfoVO.getAvatarMiddle()) ;
+                    result.getModels().put("tiny_avatar",connectUserInfoVO.getAvatarSmall()) ;
+                    result.getModels().put("uniqname",connectUserInfoVO.getNickname()) ;
+                    result.getModels().put("sex",connectUserInfoVO.getGender()) ;
                 }
             }
 
@@ -118,102 +142,50 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
             Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
             if(connectAccountResult.isSuccess()){
                 ConnectToken connectToken=(ConnectToken)connectAccountResult.getDefaultModel();
+
+                String passportId= connectToken.getPassportId();
+                result.getModels().put("passport_id", passportId);
                 //写session 数据库
-                Result sessionResult = sessionServerManager.createSession(connectToken.getPassportId());
+                Result sessionResult = sessionServerManager.createSession(passportId);
                 String sgid = null;
                 if (sessionResult.isSuccess()) {
                     sgid = (String) sessionResult.getModels().get("sgid");
                     if (!Strings.isNullOrEmpty(sgid)) {
-//                        result.setSuccess(true);
-//                        result.getModels().put("sgid", sgid);
+                        result.getModels().put("sgid",sgid);
+                        result.setSuccess(true);
+                        removeParam(result);
                     }
                 } else {
 //                    result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
                 }
             }
-            SSOAfterAuthResult ssoAfterAuthResult=new SSOAfterAuthResult();
-
-
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
-//            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException");
+            result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException");
         } catch (ServiceException se) {
             logger.error("query connect config Exception!", se);
-//            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "query connect config Exception");
+            result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "query connect config Exception");
        } catch (OAuthProblemException ope) {
             logger.error("handle oauth authroize code error!", ope);
-//            result = buildErrorResult(type, ru, ope.getError(), ope.getDescription());
+            result = buildErrorResult(ope.getError(), ope.getDescription());
         } catch (Exception exp) {
-//            logger.error("handle oauth authroize code system error!", exp);
+            logger.error("handle oauth authroize code system error!", exp);
 //            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "system error!");
         }
 
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return result;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+    private void removeParam(Result result){
+        result.getModels().remove("img_30");
+        result.getModels().remove("img_50");
+        result.getModels().remove("img_180");
+        result.getModels().remove("avatarurl");
+    }
+    private Result buildErrorResult(String errorCode, String errorText) {
+        Result result = new APIResultSupport(false);
+        result.setCode(errorCode);
+        result.setMessage(errorText);
+        return result;
     }
 }
 
-class SSOAfterAuthResult{
-    private String passportId;
-    private String sgid;
-    private String uniqname;
-    private String sex;
-    private String large_avatar;
-    private String mid_avatar;
-    private String tiny_avatar;
-
-    public String getPassportId() {
-        return passportId;
-    }
-
-    public void setPassportId(String passportId) {
-        this.passportId = passportId;
-    }
-
-    public String getSgid() {
-        return sgid;
-    }
-
-    public void setSgid(String sgid) {
-        this.sgid = sgid;
-    }
-
-    public String getUniqname() {
-        return uniqname;
-    }
-
-    public void setUniqname(String uniqname) {
-        this.uniqname = uniqname;
-    }
-
-    public String getSex() {
-        return sex;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
-    public String getLarge_avatar() {
-        return large_avatar;
-    }
-
-    public void setLarge_avatar(String large_avatar) {
-        this.large_avatar = large_avatar;
-    }
-
-    public String getMid_avatar() {
-        return mid_avatar;
-    }
-
-    public void setMid_avatar(String mid_avatar) {
-        this.mid_avatar = mid_avatar;
-    }
-
-    public String getTiny_avatar() {
-        return tiny_avatar;
-    }
-
-    public void setTiny_avatar(String tiny_avatar) {
-        this.tiny_avatar = tiny_avatar;
-    }
-}

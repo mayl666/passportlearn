@@ -86,6 +86,10 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
 //                                paramArray=ArrayUtils.remove(paramArray,ArrayUtils.indexOf(paramArray,"avatarurl"));
 //                            }
 //                        }
+                        ConnectToken connectToken=null;
+                        if(result.isSuccess()){
+                              connectToken= (ConnectToken) result.getModels().get("connectToken");
+                        }
                         //检查是否有绑定手机
                         if (ArrayUtils.contains(paramArray, "mobile")) {
                             Account account=commonManager.queryAccountByPassportId(passportId);
@@ -116,6 +120,11 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                         if("fullname".equals(paramArray[i])){
                                             String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
                                             result.setDefaultModel("fullname",value);
+                                            continue;
+                                        }
+                                        if("sex".equals(paramArray[i])){
+                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                            result.setDefaultModel("sex",value);
                                             continue;
                                         }
                                         String value = BeanUtils.getProperty(accountInfo, paramArray[i]);

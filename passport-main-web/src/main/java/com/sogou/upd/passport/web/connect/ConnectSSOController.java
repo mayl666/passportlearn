@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +40,7 @@ public class ConnectSSOController extends BaseConnectController {
 
     //登陆后获取登录信息接口
     @RequestMapping("/afterauth/{providerStr}")
+    @ResponseBody
     public String sso_afterauth(HttpServletRequest req, HttpServletResponse res,
                                          @PathVariable("providerStr") String providerStr,
                                          AfterAuthParams params) {
@@ -66,9 +68,11 @@ public class ConnectSSOController extends BaseConnectController {
         }
 
         result = sSOAfterauthManager.handleSSOAfterauth(req, providerStr);
+        if(result.isSuccess()){
 
+        }
 
-        return null;
+        return result.toString();
     }
     //openid+ client_id +access_token+expires_in+isthird +instance_id+ client _secret
     private Result checkCodeIsCorrect(String openid,
