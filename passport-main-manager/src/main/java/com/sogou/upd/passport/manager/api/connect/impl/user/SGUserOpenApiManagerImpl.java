@@ -49,7 +49,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         try {
             String passportId = userOpenApiParams.getUserid();
             int original = userOpenApiParams.getOriginal();
-            ConnectUserInfoVO cacheConnectUserInfoVO = null;
+            ConnectUserInfoVO cacheConnectUserInfoVO;
             int clientId = userOpenApiParams.getClient_id();
             if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {
                 //读第三方个人资料原始信息
@@ -58,13 +58,10 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 //读第三方个人资料非原始信息
                 result = obtainConnectUserInfo(passportId, clientId);
             }
-            if (result.isSuccess()) {
-                cacheConnectUserInfoVO = (ConnectUserInfoVO) result.getModels().get("cacheConnectUserInfoVO");
-            }
-            if (cacheConnectUserInfoVO == null) {
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
+            if (!result.isSuccess()) {
                 return result;
             }
+            cacheConnectUserInfoVO = (ConnectUserInfoVO) result.getModels().get("cacheConnectUserInfoVO");
             result = buildSuccResult(cacheConnectUserInfoVO, passportId, original);
             return result;
 
