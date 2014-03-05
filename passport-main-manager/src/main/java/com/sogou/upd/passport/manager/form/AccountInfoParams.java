@@ -28,7 +28,7 @@ public class AccountInfoParams {
     private String fullname;  //姓名
     @IdCard
     private String personalid;     //身份证号
-    private String nickname;
+    private String uniqname;
 
     @AssertTrue(message = "省市参数错误！")
     public boolean isCheckProvinceAndCity() {
@@ -69,12 +69,12 @@ public class AccountInfoParams {
         this.username = username;
     }
 
-    public String getNickname() {
-        return nickname;
+    public String getUniqname() {
+        return uniqname;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setUniqname(String uniqname) {
+        this.uniqname = uniqname;
     }
 
     public String getBirthday() {
