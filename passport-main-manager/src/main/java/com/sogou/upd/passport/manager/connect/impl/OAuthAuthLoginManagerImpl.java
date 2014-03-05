@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.connect.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -36,6 +37,7 @@ import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import com.sogou.upd.passport.service.account.MappTokenService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
+import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +68,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private ConnectAuthService connectAuthService;
     @Autowired
-    private AccountBaseInfoService accountBaseInfoService;
+    private ConnectTokenService connectTokenService;
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
@@ -135,14 +137,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 String passportId = connectToken.getPassportId();
                 result.setDefaultModel("userid", passportId);
                 String userId = passportId;
-                int original;
-                if (provider == AccountTypeEnum.QQ.getValue()) {
-                    original = CommonConstant.NOT_WITH_CONNECT_ORIGINAL;
-                } else {
-                    original = CommonConstant.WITH_CONNECT_ORIGINAL;
-                }
-                //更新个人资料缓存
-                connectAuthService.initialOrUpdateConnectUserInfo(userId, original, connectUserInfoVO);
+                //更新第三方个人资料缓存
+                connectAuthService.initialOrUpdateConnectUserInfo(userId, connectUserInfoVO);
 
                 if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
                     Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
