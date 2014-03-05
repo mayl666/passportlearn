@@ -218,7 +218,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Override
     public Result updateUserInfo(AccountInfoParams infoParams,String ip) {
 
-        Result result;
+        Result result = new APIResultSupport(false);
 
         UpdateUserInfoApiParams updateUserInfoApiParams = null;
         // 调用内部接口
@@ -274,7 +274,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
 
     @Override
     public Result getUserInfo(ObtainAccountInfoParams params) {
-        Result result;
+        Result result = new APIResultSupport(false);
         GetUserInfoApiparams infoApiparams=buildGetUserInfoApiparams(params);
         // 调用内部接口
         String passportId=params.getUsername();

@@ -70,34 +70,22 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
 
                 String []paramArray=params.split(",");
 
-                if(ArrayUtils.isNotEmpty(paramArray)){
+                if (ArrayUtils.isNotEmpty(paramArray)) {
                     //调用 获取昵称接口 拼接返回的result map
-                    result=oAuth2ResourceManager.getUserInfo(infoApiparams.getUserid(),infoApiparams.getClient_id());
+                    result = oAuth2ResourceManager.getUserInfo(infoApiparams.getUserid(), infoApiparams.getClient_id());
 
-//                        if(ArrayUtils.contains(paramArray,"uniqname")){
-//                            result.setDefaultModel("uniqname",account.getUniqname());
-//                            paramArray=ArrayUtils.remove(paramArray,ArrayUtils.indexOf(paramArray,"uniqname"));
-//                        }
-//                        //检查是否有头像
-//                        if(ArrayUtils.contains(paramArray,"avatarurl")){
-//                            Result result1=accountInfoManager.obtainPhoto(passportId,"50");
-//                            if(result1.isSuccess()){
-//                                result.setDefaultModel("avatarurl",result1.getModels().get("50"));
-//                                paramArray=ArrayUtils.remove(paramArray,ArrayUtils.indexOf(paramArray,"avatarurl"));
-//                            }
-//                        }
-                        ConnectToken connectToken=null;
-                        if(result.isSuccess()){
-                              connectToken= (ConnectToken) result.getModels().get("connectToken");
+                    ConnectToken connectToken = null;
+                    if (result.isSuccess()) {
+                        connectToken = (ConnectToken) result.getModels().get("connectToken");
+                    }
+                    //检查是否有绑定手机
+                    if (ArrayUtils.contains(paramArray, "mobile")) {
+                        Account account = commonManager.queryAccountByPassportId(passportId);
+                        if (account != null) {
+                            result.setDefaultModel("sec_mobile", account.getMobile());
                         }
-                        //检查是否有绑定手机
-                        if (ArrayUtils.contains(paramArray, "mobile")) {
-                            Account account=commonManager.queryAccountByPassportId(passportId);
-                            if(account!=null){
-                                result.setDefaultModel("sec_mobile", account.getMobile());
-                            }
-                            paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "mobile"));
-                        }
+                        paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "mobile"));
+                    }
 
                     //查询其他的个人信息 参数匹配
                     AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
@@ -106,32 +94,32 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                             result.setSuccess(true);
                             for (int i = 0; i < paramArray.length; i++) {
                                 try {
-                                    if(!"birthday".equals(paramArray[i])){
-                                        if("email".equals(paramArray[i])){
+                                    if (!"birthday".equals(paramArray[i])) {
+                                        if ("email".equals(paramArray[i])) {
                                             String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("sec_email",value);
+                                            result.setDefaultModel("sec_email", value);
                                             continue;
                                         }
-                                        if("question".equals(paramArray[i])){
+                                        if ("question".equals(paramArray[i])) {
                                             String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("sec_ques",value);
+                                            result.setDefaultModel("sec_ques", value);
                                             continue;
                                         }
-                                        if("fullname".equals(paramArray[i])){
+                                        if ("fullname".equals(paramArray[i])) {
                                             String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("fullname",value);
+                                            result.setDefaultModel("fullname", value);
                                             continue;
                                         }
-                                        if("sex".equals(paramArray[i])){
+                                        if ("sex".equals(paramArray[i])) {
                                             String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("sex",value);
+                                            result.setDefaultModel("sex", value);
                                             continue;
                                         }
                                         String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                        result.setDefaultModel(paramArray[i],value);
-                                    }else {
-                                        Date birthday=accountInfo.getBirthday();
-                                        result.setDefaultModel(paramArray[i],new SimpleDateFormat("yyyy-MM-dd").format(birthday));
+                                        result.setDefaultModel(paramArray[i], value);
+                                    } else {
+                                        Date birthday = accountInfo.getBirthday();
+                                        result.setDefaultModel(paramArray[i], new SimpleDateFormat("yyyy-MM-dd").format(birthday));
                                     }
                                 } catch (Exception e) {
                                     paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, paramArray[i]));
@@ -139,7 +127,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                             }
                         }
                     }
-                    if(!result.getModels().isEmpty()){
+                    if (!result.getModels().isEmpty()) {
                         result.setSuccess(true);
                     }
                 }
