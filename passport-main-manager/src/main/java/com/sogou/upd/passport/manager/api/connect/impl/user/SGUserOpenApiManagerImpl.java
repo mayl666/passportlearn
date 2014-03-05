@@ -125,10 +125,13 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         result_value_data.put("birthday", "");
         result_value_data.put("sex", connectUserInfoVO.getGender());
         result_value_data.put("nick", connectUserInfoVO.getNickname());
-        String province = Strings.isNullOrEmpty(connectUserInfoVO.getProvince()) ? "" : connectUserInfoVO.getProvince();
-        String city = Strings.isNullOrEmpty(connectUserInfoVO.getCity()) ? "" : connectUserInfoVO.getCity();
-        String region = Strings.isNullOrEmpty(connectUserInfoVO.getRegion()) ? "" : connectUserInfoVO.getRegion();
-        result_value_data.put("location", province + " " + city + " " + region);
+        if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {
+            String province = Strings.isNullOrEmpty(connectUserInfoVO.getProvince()) ? "" : connectUserInfoVO.getProvince();
+            String city = Strings.isNullOrEmpty(connectUserInfoVO.getCity()) ? "" : " " + connectUserInfoVO.getCity();
+            result_value_data.put("location", province + city);
+        } else {
+            result_value_data.put("location", "");
+        }
         result_value_data.put("headurl", connectUserInfoVO.getAvatarLarge());
         data.put("result", result_value_data);
         if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {
