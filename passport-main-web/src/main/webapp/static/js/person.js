@@ -522,16 +522,14 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
 
                         //As we have a sync validating,post here.
 
-                        //Server accepts date like '2013-08-02' ,which means Sep 02 2013.
                         var year = $("#s-year").val();
                         var month = $("#s-month").val();
                         var day = $("#s-day").val();
-                        var date = new Date(year, month, day);//may be a invalid date
+                        var date = new Date(year, month-1, day);//may be a invalid date
                         //Check whether the date is illegal
-                        if (!(date.getFullYear() == year && date.getMonth() == month && date.getDate() == day)) {
+                        if (!(date.getFullYear() == year && date.getMonth() == month-1 && date.getDate() == day)) {
                             return alert("日期不合法");
                         } else {
-                            ++month;
                             if(month<10)month="0"+String(month);
                             if(day<10)day="0"+String(day);
                             $("#birthday").val(year + "-" + month + "-" + day);//like 1987-01-01
@@ -613,7 +611,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                 yearS.val(+birthday[0]);
 
                 for (var i = 0; i <=11; ++i) {
-                    monthS.append("<option value=" + i + ">" +(i+1)+ "</option>");
+                    monthS.append("<option value=" +(1+ i )+ ">" +(i+1)+ "</option>");
                 }
                 //Sever offers the month at 1.Damn.
                 monthS.val(+birthday[1] );
