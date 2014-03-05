@@ -121,7 +121,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
                 String cacheKey = buildAccountInfoKey(passportId);
                 AccountInfo accountInfoTmp=null;
-                if ((accountInfoTmp = (AccountInfo) redisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
+                if ((accountInfoTmp = (AccountInfo) dbShardRedisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
                     accountInfoTmp.setBirthday(accountInfo.getBirthday());
                     accountInfoTmp.setCity(accountInfo.getCity());
                     accountInfoTmp.setGender(accountInfo.getGender());
