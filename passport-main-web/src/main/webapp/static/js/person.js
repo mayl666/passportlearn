@@ -531,6 +531,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                         if (!(date.getFullYear() == year && date.getMonth() == month && date.getDate() == day)) {
                             return alert("日期不合法");
                         } else {
+                            ++month;
                             if(month<10)month="0"+String(month);
                             if(day<10)day="0"+String(day);
                             $("#birthday").val(year + "-" + month + "-" + day);//like 1987-01-01
