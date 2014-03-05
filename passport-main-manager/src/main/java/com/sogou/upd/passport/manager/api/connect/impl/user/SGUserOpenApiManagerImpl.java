@@ -129,6 +129,9 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                     result.setSuccess(true);
                     result.setDefaultModel("cacheConnectUserInfoVO", cacheConnectUserInfoVO);
                     return result;
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
+                    return result;
                 }
             } else {
                 result.setSuccess(true);
