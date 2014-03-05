@@ -1,11 +1,7 @@
 package com.sogou.upd.passport.service.connect;
 
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
-import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-
-import java.io.IOException;
 
 /**
  * Account_Connect表服务接口
@@ -73,17 +69,5 @@ public interface ConnectTokenService {
      * @return
      */
     public ConnectToken obtainCachedConnectToken(String passportId, int provider, String appKey);
-
-
-    /**
-     * 确认token是否过期，并刷新
-     *
-     * @param connectToken
-     * @param connectConfig
-     * @return
-     * @throws IOException
-     * @throws OAuthProblemException
-     */
-    public boolean verifyAccessToken(ConnectToken connectToken, ConnectConfig connectConfig) throws IOException, OAuthProblemException;
 
 }

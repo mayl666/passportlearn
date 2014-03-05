@@ -39,11 +39,11 @@ public class AccountInfoServiceImpl implements AccountInfoService {
         AccountInfo accountInfo;
         try {
             String cacheKey = buildAccountInfoKey(passportId);
-            accountInfo = redisUtils.getObject(cacheKey, AccountInfo.class);
+            accountInfo = dbShardRedisUtils.getObject(cacheKey, AccountInfo.class);
             if (accountInfo == null) {
                 accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 if (accountInfo != null) {
-                    redisUtils.set(cacheKey, accountInfo);
+                    dbShardRedisUtils.set(cacheKey, accountInfo);
                 }
             }
         } catch (Exception e) {

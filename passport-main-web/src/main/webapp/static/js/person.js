@@ -522,13 +522,12 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
 
                         //As we have a sync validating,post here.
 
-                        //Server accepts date like '2013-08-02' ,which means Sep 02 2013.
                         var year = $("#s-year").val();
                         var month = $("#s-month").val();
                         var day = $("#s-day").val();
-                        var date = new Date(year, month, day);//may be a invalid date
+                        var date = new Date(year, month-1, day);//may be a invalid date
                         //Check whether the date is illegal
-                        if (!(date.getFullYear() == year && date.getMonth() == month && date.getDate() == day)) {
+                        if (!(date.getFullYear() == year && date.getMonth() == month-1 && date.getDate() == day)) {
                             return alert("日期不合法");
                         } else {
                             if(month<10)month="0"+String(month);
@@ -536,13 +535,13 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                             $("#birthday").val(year + "-" + month + "-" + day);//like 1987-01-01
                         }
 
-                        $("#flag").val($("#NicknameIpt").val()==data.uniqname?0:1);
+                        $("#flag").val($("#NicknameIpt").val()==decodeURIComponent(data.uniqname)?0:1);
 
                         //Maybe city&province,gender,personalid should be validated again,
                         //as DOM could be modified.
 
                         //if nickname has never changed,do not check
-                        if ($("#NicknameIpt").val() != data.uniqname) {
+                        if ($("#NicknameIpt").val() != decodeURIComponent(data.uniqname)) {
                             checkNickname($el, function(status) {
                                 if (!+status) {
                                     $.post($el.attr('action'), $el.serialize(), function(data) {
@@ -612,10 +611,10 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                 yearS.val(+birthday[0]);
 
                 for (var i = 0; i <=11; ++i) {
-                    monthS.append("<option value=" + i + ">" +(i+1)+ "</option>");
+                    monthS.append("<option value=" +(1+ i )+ ">" +(i+1)+ "</option>");
                 }
                 //Sever offers the month at 1.Damn.
-                monthS.val(+birthday[1]-1 );
+                monthS.val(+birthday[1] );
 
                 //Note that Jan has 31 days,even not 1st or 1987.
                 //If u wanna change the default month,u may need to change here.
@@ -697,7 +696,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                 $("#s-province").change(changeCities).trigger('change'); //show the list before set city value.
                 $("#s-city").val(data.city || "");
                 $("#FullnameIpt").val(data.fullname || "");
-                $("#NicknameIpt").val(decodeURIComponent(data.uniqname) || ""); //Uniqname or nickname?I cannot tell.
+                $("#UniqnameIpt").val(decodeURIComponent(data.uniqname) || ""); //Uniqname or nickname?I cannot tell.
                 $("#PersonalidIpt").val(data.personalid || ""); //Note:if the personalid is not empty,we think it not editable!
                 if(data.personalid){
                     $('#PersonalidIpt').parent('span').attr('class','form-text').empty().append("****************** 已验证");

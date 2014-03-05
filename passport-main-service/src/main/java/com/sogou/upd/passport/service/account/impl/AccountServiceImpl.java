@@ -494,6 +494,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean updateUniqName(Account account, String uniqname) throws ServiceException {
         try {
+
             String oldUniqName = account.getUniqname();
             String passportId = account.getPassportId();
 

@@ -36,23 +36,23 @@ public class AccountInfoActionTest extends BaseActionTest {
     @Test
     public void testUpdateUserinfo() throws IOException {
         Map<String, String> params = new HashMap<String, String>();
-        String uniqname = "dasfds大发";
+        String uniqname = "dasfds大发1";
         int clientId = 1110;
         String serverSecret = "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr";
         long ct = System.currentTimeMillis();
-        String code = ManagerHelper.generatorCode("pqmagic20061@sohu.com", clientId, serverSecret, ct) ;
+        String code = ManagerHelper.generatorCode("906F1673C8D9EFA13B40F3293D5C4655@qq.sohu.com", clientId, serverSecret, ct) ;
         System.out.println("code:" + code);
         params.put("client_id", String.valueOf(clientId));
-        params.put("userid", "pqmagic20061@sohu.com");
+        params.put("userid", "906F1673C8D9EFA13B40F3293D5C4655@qq.sohu.com");
         params.put("uniqname", uniqname);
-        params.put("birthday","2012-02-05") ;
-        params.put("personalId","110108198305051414");
+        params.put("birthday","2010-01-01") ;
+//        params.put("personalId","110108198305051414");
         params.put("modifyip","192.168.0.1");
-        params.put("city","320501");
-        params.put("gender","1");
+//        params.put("city","320501");
+//        params.put("gender","1");
         params.put("code", code);
         params.put("ct", String.valueOf(ct));
-        String result = sendPost("http://127.0.0.1/internal/account/updateuserinfo", params);
+        String result = sendPost("http://10.11.211.152:8090/internal/account/updateuserinfo", params);
         System.out.println(result);
     }
 
