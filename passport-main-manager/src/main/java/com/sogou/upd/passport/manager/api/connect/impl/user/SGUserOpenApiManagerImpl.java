@@ -111,6 +111,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     }
 
     private void convertToConnectUserInfoVo(ConnectUserInfoVO connectUserInfoVo, ConnectToken connectToken) {
+        connectUserInfoVo = new ConnectUserInfoVO();
         connectUserInfoVo.setNickname(connectToken.getConnectUniqname());
         connectUserInfoVo.setAvatarSmall(connectToken.getAvatarSmall());
         connectUserInfoVo.setAvatarMiddle(connectToken.getAvatarMiddle());
