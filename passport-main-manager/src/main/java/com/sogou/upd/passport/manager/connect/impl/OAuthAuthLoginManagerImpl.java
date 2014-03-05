@@ -176,18 +176,20 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
-                        result.setSuccess(true);
 
-                        AccountBaseInfo accountBaseInfo = null;
-                        if (connectUserInfoVO != null) {
-                            passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
-                            accountBaseInfo = accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO);// TODO 后续更新其他个人资料，并移至buildConnectAccount()里
-                        }
-                        if (accountBaseInfo == null || StringUtil.isEmpty(accountBaseInfo.getUniqname())) {
-                            uniqname = oAuth2ResourceManager.defaultUniqname(userId);
-                        }
+
+//                        AccountBaseInfo accountBaseInfo = null;
+//                        if (connectUserInfoVO != null) {
+//                            passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
+//                            accountBaseInfo = accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO);// TODO 后续更新其他个人资料，并移至buildConnectAccount()里
+//                        }
+//                        if (accountBaseInfo == null || StringUtil.isEmpty(accountBaseInfo.getUniqname())) {
+//                            uniqname = oAuth2ResourceManager.defaultUniqname(userId);
+//                        }
+                        uniqname = oAuth2ResourceManager.getUniqname(passportId, clientId);
                         uniqname = StringUtil.filterSpecialChar(uniqname);  // 昵称需处理,浏览器的js解析不了昵称就会白屏
                         ManagerHelper.setModelForOAuthResult(result, uniqname, accountToken, providerStr);
+                        result.setSuccess(true);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, "/oauth2pc/connectlogin");
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
