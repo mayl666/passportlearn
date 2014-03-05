@@ -3,20 +3,15 @@ package com.sogou.upd.passport.manager.api.connect.impl.user;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.ConnectTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
-import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
-import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +35,6 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
 
     @Autowired
     private ConnectAuthService connectAuthService;
-    @Autowired
-    private ConnectTokenService connectTokenService;
-    @Autowired
-    private ConnectApiManager sgConnectApiManager;
 
     @Override
     public Result getUserInfo(UserOpenApiParams userOpenApiParams) {
@@ -51,46 +42,22 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         try {
             String passportId = userOpenApiParams.getUserid();
             int original = userOpenApiParams.getOriginal();
-            String providerStr = getProviderByUserid(passportId);
-            int provider = AccountTypeEnum.getProvider(providerStr);
-            ConnectUserInfoVO cacheConnectUserInfoVO = null;
-            //读第三方个人资料原始缓存
-            if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {
-                cacheConnectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId);
-            } else {
-                String appKey = ConnectTypeEnum.getAppKey(provider);
-                //读connect_token表非原始信息缓存
-                ConnectToken connectToken = connectTokenService.obtainCachedConnectToken(passportId, provider, appKey);
-                if (connectToken != null) {
-                    convertToConnectUserInfoVo(cacheConnectUserInfoVO, connectToken);
-                }
-            }
-            if (cacheConnectUserInfoVO != null) {
-                result = buildSuccResult(cacheConnectUserInfoVO, passportId, original);
-                return result;
-            }
+            ConnectUserInfoVO cacheConnectUserInfoVO;
             int clientId = userOpenApiParams.getClient_id();
-            //获取第三方用户信息
-            if (StringUtils.isBlank(providerStr)) {
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_USERID_TYPE_ERROR);
-                return result;
-            }
-            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
-            ConnectToken connectToken;
-            if (openResult.isSuccess()) {
-                //获取用户的openId/openKey
-                connectToken = (ConnectToken) openResult.getModels().get("connectToken");
+            if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {
+                //读第三方个人资料原始缓存
+                cacheConnectUserInfoVO = connectAuthService.obtainConnectOriginalUserInfo(passportId, clientId);
             } else {
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND);
-                return result;
+                //读第三方个人资料非原始缓存
+                cacheConnectUserInfoVO = connectAuthService.obtainConnectUserInfo(passportId, clientId);
             }
-            ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(connectToken, original);
-            if (connectUserInfoVO == null) {
+            if (cacheConnectUserInfoVO == null) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
                 return result;
             }
-            result = buildSuccResult(connectUserInfoVO, passportId, original);
+            result = buildSuccResult(cacheConnectUserInfoVO, passportId, original);
             return result;
+
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
         } catch (OAuthProblemException ope) {
@@ -108,27 +75,6 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         }
         return result;
 
-    }
-
-    private void convertToConnectUserInfoVo(ConnectUserInfoVO connectUserInfoVo, ConnectToken connectToken) {
-        connectUserInfoVo = new ConnectUserInfoVO();
-        connectUserInfoVo.setNickname(connectToken.getConnectUniqname());
-        connectUserInfoVo.setAvatarSmall(connectToken.getAvatarSmall());
-        connectUserInfoVo.setAvatarMiddle(connectToken.getAvatarMiddle());
-        connectUserInfoVo.setAvatarLarge(connectToken.getAvatarLarge());
-        connectUserInfoVo.setGender(Integer.parseInt(connectToken.getGender()));
-    }
-
-    private String getProviderByUserid(String userid) {
-        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userid);
-        if (domain != AccountDomainEnum.THIRD) {
-            return "";
-        }
-        AccountTypeEnum accountTypeEnum = AccountTypeEnum.getAccountType(userid);
-        if (accountTypeEnum == AccountTypeEnum.UNKNOWN) {
-            return "";
-        }
-        return accountTypeEnum.toString();
     }
 
     private Result buildErrorResult(String errorCode, String errorText) {
