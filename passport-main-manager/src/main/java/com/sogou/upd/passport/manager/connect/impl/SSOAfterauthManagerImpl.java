@@ -74,7 +74,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
             long expires_in = Long.parseLong(req.getParameter("expires_in"));
             int client_id = Integer.parseInt(req.getParameter("client_id"));
             int isthird = Integer.parseInt(req.getParameter("isthird"));
-            String instance_id = req.getParameter("instance_id");
+//            String instance_id = req.getParameter("instance_id");
 
             int provider = AccountTypeEnum.getProvider(providerStr);
 

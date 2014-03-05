@@ -55,49 +55,33 @@ public class ConnectSSOController extends BaseConnectController {
         }
 
         //验证code是否有效
-        result = checkCodeIsCorrect(params.getOpenid(),
-                                    params.getClient_id(),
-                                    params.getAccess_token(),
-                                    params.getExpires_in(),
-                                    params.getIsthird(),
-                                    params.getInstance_id(),
-                                    params.getCode()
-                );
+        result = checkCodeIsCorrect(params);
         if (!result.isSuccess()) {
             return result.toString();
         }
 
         result = sSOAfterauthManager.handleSSOAfterauth(req, providerStr);
-        if(result.isSuccess()){
-
-        }
 
         return result.toString();
     }
     //openid+ client_id +access_token+expires_in+isthird +instance_id+ client _secret
-    private Result checkCodeIsCorrect(String openid,
-                                      int client_id,
-                                      String access_token,
-                                      long expires_in,
-                                      int isthird,
-                                      String instance_id,
-                                      String originalCode) {
+    private Result checkCodeIsCorrect(AfterAuthParams params) {
         Result result = new APIResultSupport(false);
 
-        AppConfig appConfig = cookieManager.queryAppConfigByClientId(client_id);
+        AppConfig appConfig = cookieManager.queryAppConfigByClientId(params.getClient_id());
         if (appConfig != null) {
             String secret = appConfig.getClientSecret();
 
             //计算默认的code
             String code = "";
             try {
-                code = openid + client_id + access_token + expires_in + isthird + instance_id +secret;
+                code = params.getOpenid() + params.getClient_id() + params.getAccess_token() + params.getExpires_in() + params.getIsthird() + params.getInstance_id() +secret;
                 code = Coder.encryptMD5GBK(code);
             } catch (Exception e) {
                 logger.error("calculate default code error", e);
             }
 
-            if (code.equalsIgnoreCase(originalCode)) {
+            if (code.equalsIgnoreCase(params.getCode())) {
                 result.setSuccess(true);
                 result.setMessage("内部接口code签名正确！");
             } else {

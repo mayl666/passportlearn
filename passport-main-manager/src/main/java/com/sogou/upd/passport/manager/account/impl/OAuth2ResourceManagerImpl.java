@@ -14,7 +14,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -28,7 +27,10 @@ import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
-import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.account.AccountBaseInfoService;
+import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.PCAccountTokenService;
+import com.sogou.upd.passport.service.account.SnamePassportMappingService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
@@ -205,8 +207,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         }
     }
 
-    private String getPassportIdByUsername(String passportId,String accessToken, int clientId, String clientSecret, String instanceId, String username){
-        if(StringUtils.isBlank(passportId) && AccountDomainEnum.isPassportId(username)){
+    private String getPassportIdByUsername(String passportId, String accessToken, int clientId, String clientSecret, String instanceId, String username) {
+        if (StringUtils.isBlank(passportId) && AccountDomainEnum.isPassportId(username)) {
             passportId = username;
         }
         if (!StringUtils.isBlank(passportId)) {
@@ -234,7 +236,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
 
-            Result getUserInfoResult = getUserInfo(passportId,clientId);
+            Result getUserInfoResult = getUserInfo(passportId, clientId);
             String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
             if (getUserInfoResult.isSuccess()) {
                 uniqname = (String) getUserInfoResult.getModels().get("uniqname");
@@ -259,6 +261,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         }
         return result;
     }
+
     private ConnectToken getConnectToken(String userId, int clientId) {
         //从connect_token中获取
         int provider = AccountTypeEnum.getAccountType(userId).getValue();
@@ -271,19 +274,19 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     @Override
-    public String getUniqname(String passportId,int clientId) {
+    public String getUniqname(String passportId, int clientId) {
         String uniqname = null;
         try {
             //第三方账户先从account里获取
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             if (domain == AccountDomainEnum.THIRD) {
-                Account account=accountService.queryAccountByPassportId(passportId);
-                if(account!=null && !Strings.isNullOrEmpty(account.getUniqname())){
-                    uniqname=account.getUniqname();
-                }else {
-                    ConnectToken connectToken=getConnectToken(passportId,clientId);
-                    if(connectToken!=null){
-                        uniqname=connectToken.getConnectUniqname();
+                Account account = accountService.queryAccountByPassportId(passportId);
+                if (account != null && !Strings.isNullOrEmpty(account.getUniqname())) {
+                    uniqname = account.getUniqname();
+                } else {
+                    ConnectToken connectToken = getConnectToken(passportId, clientId);
+                    if (connectToken != null) {
+                        uniqname = connectToken.getConnectUniqname();
                     }
                 }
             } else {
@@ -294,16 +297,16 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 uniqname = getAndUpdateUniqname(passportId, accountBaseInfo, uniqname);
             }
 
-        }catch (Exception e){
-            log.error("getUniqname error! passportId:"+passportId,e);
+        } catch (Exception e) {
+            log.error("getUniqname error! passportId:" + passportId, e);
         }
-        return Strings.isNullOrEmpty(uniqname)?passportId:uniqname;
+        return Strings.isNullOrEmpty(uniqname) ? passportId : uniqname;
     }
 
     @Override
-    public String getEncodedUniqname(String passportId,int clientId) {
-        String uniqname = getUniqname(passportId,clientId);
-        if(!StringUtils.isBlank(uniqname)){
+    public String getEncodedUniqname(String passportId, int clientId) {
+        String uniqname = getUniqname(passportId, clientId);
+        if (!StringUtils.isBlank(uniqname)) {
             uniqname = Coder.encode(uniqname, "UTF-8");
         }
         return uniqname;
@@ -319,48 +322,59 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     @Override
-    public Result getUserInfo(String passportId,int clientId) {
+    public Result getUserInfo(String passportId, int clientId) {
         Result result = new APIResultSupport(false);
 
-        String avatarurl=null;
+        String avatarurl;
         String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
-        AccountBaseInfo accountBaseInfo=null;
+        AccountBaseInfo accountBaseInfo;
         try {
             //第三方账户先从account里获取
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             if (domain == AccountDomainEnum.THIRD) {
-                Account account=accountService.queryAccountByPassportId(passportId);
-                if(account !=null){
-                    avatarurl=account.getAvatar();
-                } else {
-                    ConnectToken connectToken= getConnectToken(passportId,clientId);
-                    if(connectToken!=null){
-                        large_avatar = connectToken.getAvatarLarge();
-                        mid_avatar = connectToken.getAvatarMiddle();
-                        tiny_avatar = connectToken.getAvatarSmall();
+                Account account = accountService.queryAccountByPassportId(passportId);
+                ConnectToken connectToken;
+                if (account != null) {
+                    uniqname = account.getUniqname();
+                    avatarurl = account.getAvatar();
+                    if (Strings.isNullOrEmpty(uniqname) || Strings.isNullOrEmpty(avatarurl)) {
+                        connectToken = getConnectToken(passportId, clientId);
+                        if (connectToken != null) {
+                            if (Strings.isNullOrEmpty(uniqname)) {
+                                uniqname = connectToken.getConnectUniqname();
+                            }
+                            if (Strings.isNullOrEmpty(avatarurl)) {
+                                large_avatar = connectToken.getAvatarLarge();
+                                mid_avatar = connectToken.getAvatarMiddle();
+                                tiny_avatar = connectToken.getAvatarSmall();
+                            } else {
+                                //获取不同尺寸头像
+                                Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
+                                large_avatar = (String) getPhotoResult.getModels().get("img_180");
+                                mid_avatar = (String) getPhotoResult.getModels().get("img_50");
+                                tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
+                            }
+                        }
                     }
                 }
-                uniqname=getUniqname(passportId,clientId);
-                result.setDefaultModel("avatarurl",avatarurl);
             } else {
                 accountBaseInfo = getBaseInfo(passportId);
-
                 if (accountBaseInfo != null) {
                     uniqname = accountBaseInfo.getUniqname();
                     Result getPhotoResult = photoUtils.obtainPhoto(accountBaseInfo.getAvatar(), "30,50,180");
                     large_avatar = (String) getPhotoResult.getModels().get("img_180");
                     mid_avatar = (String) getPhotoResult.getModels().get("img_50");
                     tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
+                    uniqname = getAndUpdateUniqname(passportId, accountBaseInfo, uniqname);
                 }
             }
-            uniqname = getAndUpdateUniqname(passportId, accountBaseInfo, uniqname);
             result.setSuccess(true);
             result.setDefaultModel("uniqname", uniqname);
             result.setDefaultModel("img_30", tiny_avatar);
             result.setDefaultModel("img_50", mid_avatar);
             result.setDefaultModel("img_180", large_avatar);
-        }catch (Exception e){
-            log.error("getUserInfo error! passportId:"+passportId,e);
+        } catch (Exception e) {
+            log.error("getUserInfo error! passportId:" + passportId, e);
         }
 
         return result;
