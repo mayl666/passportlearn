@@ -246,7 +246,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
 
             updateUserInfoApiParams.setBirthday(birthday);
             updateUserInfoApiParams.setUsername(infoParams.getFullname());
-            updateUserInfoApiParams.setUniqname(infoParams.getNickname());
+            updateUserInfoApiParams.setUniqname(infoParams.getUniqname());
 
             updateUserInfoApiParams.setProvince(infoParams.getProvince());
 
@@ -261,7 +261,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             } else {
                 result = proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
                 //更新昵称
-                updateUserInfoApiParams.setUniqname(infoParams.getNickname());
+                updateUserInfoApiParams.setUniqname(infoParams.getUniqname());
                 result=shPlusUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
             }
         } else {
@@ -314,7 +314,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         UpdateUserInfoApiParams updateUserInfoApiParams=new UpdateUserInfoApiParams();
         try {
             updateUserInfoApiParams.setClient_id(Integer.parseInt(infoParams.getClient_id()));
-            updateUserInfoApiParams.setUniqname(infoParams.getNickname());
+            updateUserInfoApiParams.setUniqname(infoParams.getUniqname());
             updateUserInfoApiParams.setUserid(infoParams.getUsername());
 
             String []birthday=!Strings.isNullOrEmpty(infoParams.getBirthday())?infoParams.getBirthday().split("-"):null;
