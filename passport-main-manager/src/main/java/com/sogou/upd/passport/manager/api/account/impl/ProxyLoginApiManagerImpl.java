@@ -185,7 +185,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     .append("&code3=").append(code3)
                     .append("&s=").append(ct)
                     .append("&lastdomain=").append(0)
-                    .append("&ru=").append(createCookieUrlApiParams.getRu());
+                    .append("&ru=").append(createCookieUrlApiParams.getRu()+"?status=0");
 
             result.setDefaultModel("redirectUrl", locationUrlBuilder.toString());
         } else {
