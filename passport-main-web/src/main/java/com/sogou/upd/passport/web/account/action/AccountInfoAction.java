@@ -137,7 +137,7 @@ public class AccountInfoAction extends BaseController {
 
             params.setUsername(userId);
             result = accountInfoManager.getUserInfo(params);
-            result.getModels().put("uniqname",(String)result.getModels().get("uniqname"));
+            result.getModels().put("uniqname",oAuth2ResourceManager.getEncodedUniqname(params.getUsername(),clientId));
 
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
