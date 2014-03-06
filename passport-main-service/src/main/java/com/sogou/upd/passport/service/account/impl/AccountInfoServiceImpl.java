@@ -58,18 +58,19 @@ public class AccountInfoServiceImpl implements AccountInfoService {
         AccountInfo accountInfo;
         try {
             accountInfo = new AccountInfo(passportId);
+
             accountInfo.setEmail(email);
             int row = accountInfoDAO.saveEmailOrInsert(passportId, accountInfo);
             if (row != 0) {
                 // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
                 String cacheKey = buildAccountInfoKey(passportId);
 
-                if ((accountInfo = redisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
+                if ((accountInfo = dbShardRedisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
                     accountInfo.setEmail(email);
                 } else {
                     accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
-                redisUtils.set(cacheKey, accountInfo);
+                dbShardRedisUtils.set(cacheKey, accountInfo);
                 return accountInfo;
             }
         } catch (Exception e) {
@@ -92,13 +93,13 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
                 String cacheKey = buildAccountInfoKey(passportId);
 
-                if ((accountInfo = redisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
+                if ((accountInfo = dbShardRedisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
                     accountInfo.setQuestion(question);
                     accountInfo.setAnswer(answer);
                 } else {
                     accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
-                redisUtils.set(cacheKey, accountInfo);
+                dbShardRedisUtils.set(cacheKey, accountInfo);
                 return accountInfo;
             }
             return null;
