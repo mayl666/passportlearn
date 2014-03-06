@@ -37,7 +37,7 @@ public class ConnectLoginController extends BaseConnectController {
 
     @RequestMapping(value = "/connect/login")
     @ResponseBody
-    public String authorize(HttpServletRequest req, HttpServletResponse res, ConnectLoginParams connectLoginParams) throws IOException {
+    public Object authorize(HttpServletRequest req, HttpServletResponse res, ConnectLoginParams connectLoginParams) throws IOException {
 
         // 校验参数
         String url;
