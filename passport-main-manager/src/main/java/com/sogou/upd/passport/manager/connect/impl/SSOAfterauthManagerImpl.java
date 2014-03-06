@@ -118,7 +118,6 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
                 }
             }else {
                 if(connectUserInfoVO!=null){
-
                     result.getModels().put("large_avatar",connectUserInfoVO.getAvatarLarge()) ;
                     result.getModels().put("mid_avatar",connectUserInfoVO.getAvatarMiddle()) ;
                     result.getModels().put("tiny_avatar",connectUserInfoVO.getAvatarSmall()) ;
@@ -156,8 +155,10 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
                         removeParam(result);
                     }
                 } else {
-//                    result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
+                    result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
                 }
+            }else{
+                result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
             }
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
@@ -170,10 +171,9 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
             result = buildErrorResult(ope.getError(), ope.getDescription());
         } catch (Exception exp) {
             logger.error("handle oauth authroize code system error!", exp);
-//            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "system error!");
         }
 
-        return result;  //To change body of implemented methods use File | Settings | File Templates.
+        return result;
     }
     private void removeParam(Result result){
         result.getModels().remove("img_30");

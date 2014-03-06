@@ -154,6 +154,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_UNIQNAME_FORBID = "20249";
     // 删除cookie失败
     public static final String ERR_CODE_REMOVE_COOKIE_FAILED = "20255";
+    //SSOAfterauth失败
+    public static final String ERR_CODE_SSO_After_Auth_FAILED = "20256";
 
 
     /* ============================================================================ */
@@ -399,6 +401,9 @@ public class ErrorUtil {
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_CREATE_COOKIE_FAILED, "生成cookie失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_REMOVE_COOKIE_FAILED, "删除cookie失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_After_Auth_FAILED, "SSOAfterauth失败");
+
+
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED, "该邮箱当日邮件发送次数已达上限");

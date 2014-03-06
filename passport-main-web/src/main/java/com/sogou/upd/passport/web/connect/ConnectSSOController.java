@@ -83,7 +83,7 @@ public class ConnectSSOController extends BaseConnectController {
 
             if (code.equalsIgnoreCase(params.getCode())) {
                 result.setSuccess(true);
-                result.setMessage("内部接口code签名正确！");
+                result.setMessage("接口code签名正确！");
             } else {
                 result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
             }
