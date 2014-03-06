@@ -24,7 +24,7 @@ import java.util.Set;
  * Time: 上午11:31
  */
 public class DBShardRedisUtils {
-    private static Logger logger = LoggerFactory.getLogger(RedisUtils.class);
+    private static Logger logger = LoggerFactory.getLogger(DBShardRedisUtils.class);
     private static final Logger redisMissLogger = LoggerFactory.getLogger("redisMissLogger");
     private static ObjectMapper jsonMapper = JacksonJsonMapperUtil.getMapper();
 

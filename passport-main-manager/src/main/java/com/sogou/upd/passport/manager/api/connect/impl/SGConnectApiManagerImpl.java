@@ -148,8 +148,14 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                 return result;
             }
+            // type=pc时需要昵称字段
+            String uniqName = account.getUniqname();
+            if(Strings.isNullOrEmpty(uniqName)){
+                uniqName = connectToken.getConnectUniqname();
+            }
             result.setSuccess(true);
             result.setDefaultModel("connectToken", connectToken);
+            result.setDefaultModel("uniqName", uniqName);
         } catch (ServiceException se) {
             logger.error("[connect]method buildConnectAccount ServiceException: database operation error.{}", se);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);

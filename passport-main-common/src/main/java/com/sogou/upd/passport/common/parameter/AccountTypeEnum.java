@@ -115,12 +115,23 @@ public enum AccountTypeEnum {
 
     /**
      * 生成第三方账号的passportId
+     *
      * @param openid
      * @param provider
      * @return
      */
-    public static String generateThirdPassportId(String openid, String provider){
-        return openid+"@" + provider + ".sohu.com";
+    public static String generateThirdPassportId(String openid, String provider) {
+        return openid + "@" + provider + ".sohu.com";
+    }
+
+    /**
+     * 根据passportId,截取openid
+     *
+     * @param passportId
+     * @return
+     */
+    public static String getOpenIdByPassportId(String passportId) {
+        return passportId.split("@")[0];
     }
 
     @Override
