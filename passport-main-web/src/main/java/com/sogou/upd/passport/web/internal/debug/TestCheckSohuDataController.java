@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.internal.debug;
 
+import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -47,6 +48,8 @@ public class TestCheckSohuDataController {
     private AccountDAO accountDAO;
     @Autowired
     private AccountBaseInfoDAO accountBaseInfoDAO;
+    @Autowired
+    private DBShardRedisUtils dbShardRedisUtils;
 
     private static ExecutorService service = Executors.newFixedThreadPool(50);
 
@@ -106,6 +109,34 @@ public class TestCheckSohuDataController {
 
     }
 
+    /**
+     * 线下方式调用第三方API补全第三方用户信息 done
+     *
+     * @return
+     */
+    @RequestMapping(value = "/move/add")
+    @ResponseBody
+    public Object moveAddBaseInfoToAccountDB() throws Exception {
+        long time = System.currentTimeMillis();
+        String fileRoot = "D:\\transfer\\account_base_info\\";
+        //从03线上库中的connect_token的32张表中导出的数据
+        String[] fileNames = {"update_exception.txt"};
+
+        int size = fileNames.length;
+
+        CountDownLatch latch = new CountDownLatch(size);
+
+        for (int i = 0; i < size; i++) {
+            String fileName = fileRoot + fileNames[i];
+            service.execute(new ReMoveBaseInfoToAccountThread(latch, accountDAO, accountBaseInfoDAO, fileName));
+        }
+        latch.await();
+        System.out.println("总执行时间：" + (System.currentTimeMillis() - time));
+        return buildSuccess("", null);
+
+
+    }
+
     private List<List<AccountBaseInfo>> buildListRange(List<AccountBaseInfo> listConnectBaseInfo) throws IOException {
         int dbsize = listConnectBaseInfo.size();
         List<List<AccountBaseInfo>> listRange = new ArrayList<>();
@@ -155,7 +186,7 @@ public class TestCheckSohuDataController {
             CountDownLatch latch = new CountDownLatch(listRange.size());
             for (int j = 0; j < listRange.size(); j++) {
                 List<AccountBaseInfo> listItem = listRange.get(j);
-                service.execute(new MoveBaseInfoToAccountThread(latch, accountDAO, listItem));
+                service.execute(new MoveBaseInfoToAccountThread(latch, accountDAO, dbShardRedisUtils, listItem));
             }
             latch.await();
             System.out.println(i + "次循环总执行时间：" + (System.currentTimeMillis() - t));
