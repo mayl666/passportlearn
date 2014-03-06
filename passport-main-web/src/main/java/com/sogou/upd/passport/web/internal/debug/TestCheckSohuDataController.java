@@ -139,8 +139,8 @@ public class TestCheckSohuDataController {
     public Object moveBaseInfoToAccountDB() throws Exception {
         long time = System.currentTimeMillis();
         int totalCount = accountBaseInfoDAO.getConnectTotalCount(); //记录总数
-        int pageSize = 10000; //每次处理记录的条数,暂定每次取1W
-        int pageCount;  //循环次数，也即处理次数
+        int pageSize = 20000; //每次处理记录的条数,暂定每次取1W
+        int pageCount;  //循环次数，也即总处理次数
         if (totalCount % pageSize == 0) {
             pageCount = totalCount / pageSize;
         } else {
@@ -148,6 +148,7 @@ public class TestCheckSohuDataController {
         }
         int currentPage = 0; //当前处理环数
         for (int i = 0; i < pageCount; i++) {
+            long t = System.currentTimeMillis();
             int pageIndex = (pageSize + 1) * currentPage;
             List<AccountBaseInfo> listConnectBaseInfo = accountBaseInfoDAO.listConnectBaseInfoByPage(pageIndex, pageSize);
             List<List<AccountBaseInfo>> listRange = buildListRange(listConnectBaseInfo);
@@ -157,9 +158,10 @@ public class TestCheckSohuDataController {
                 service.execute(new MoveBaseInfoToAccountThread(latch, accountDAO, listItem));
             }
             latch.await();
-            System.out.println(i + "次循环总执行时间：" + (System.currentTimeMillis() - time));
+            System.out.println(i + "次循环总执行时间：" + (System.currentTimeMillis() - t));
             currentPage++;
         }
+        System.out.println("循环总执行时间：" + (System.currentTimeMillis() - time));
         return buildSuccess("", null);
 
 
