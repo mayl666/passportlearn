@@ -28,8 +28,8 @@ public class SGStringHashRouterTest extends TestCase {
      * 测试sg-string-hash计算是否正确
      */
     public void testRoute() {
-        router = new SGStringHashRouter("id", "connect_token_{0}", 3);
-        String id = "2327267612@sina.sohu.com";
+        router = new SGStringHashRouter("id", "account_{0}", 32);
+        String id = "343CC20F90768ED835435A6BC1619751@qq.sohu.com";
         String name = router.doRoute(id);
         System.out.println(name);
 //        Assert.assertEquals(name, "account_18");
