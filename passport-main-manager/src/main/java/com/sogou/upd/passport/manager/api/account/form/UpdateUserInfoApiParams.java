@@ -5,11 +5,9 @@ import com.sogou.upd.passport.common.utils.ProvinceAndCityUtil;
 import com.sogou.upd.passport.common.utils.UniqNameUtil;
 import com.sogou.upd.passport.common.validation.constraints.IdCard;
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.AssertTrue;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * 用于更新用户基本信息接口参数
@@ -30,10 +28,10 @@ public class UpdateUserInfoApiParams extends BaseUserApiParams{
     private String gender;
 
     //省份
-    private Integer province;
+    private String province;
 
-    //城市
-    private Integer city;
+    //省份
+    private String city;
 
     //昵称
     private String uniqname;
@@ -142,19 +140,19 @@ public class UpdateUserInfoApiParams extends BaseUserApiParams{
         this.gender = gender;
     }
 
-    public Integer getProvince() {
+    public String getProvince() {
         return province;
     }
 
-    public void setProvince(Integer province) {
+    public void setProvince(String province) {
         this.province = province;
     }
 
-    public Integer getCity() {
+    public String getCity() {
         return city;
     }
 
-    public void setCity(Integer city) {
+    public void setCity(String city) {
         this.city = city;
     }
 

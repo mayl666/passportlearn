@@ -10,6 +10,7 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
+import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
@@ -24,6 +25,7 @@ import com.sogou.upd.passport.oauth2.openresource.response.user.*;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
+import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,9 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
 
     @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
+    @Autowired
+    private ConnectTokenService connectTokenService;
+
 
     @Override
     public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer,
@@ -137,6 +142,30 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
+    public ConnectUserInfoVO getConnectUserInfo(int provider, String appKey, ConnectToken connectToken) throws IOException, OAuthProblemException {
+        ConnectConfig connectConfig = new ConnectConfig();
+        connectConfig.setAppKey(appKey);
+        String openid = connectToken.getOpenid();
+        String accessToken = connectToken.getAccessToken();
+        OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+        //调用第三方openapi获取个人资料
+        ConnectUserInfoVO connectUserInfoVo = obtainConnectUserInfo(provider, connectConfig, openid, accessToken, oAuthConsumer);
+        if (connectUserInfoVo != null) {
+            connectToken.setConnectUniqname(connectUserInfoVo.getNickname());
+            connectToken.setAvatarSmall(connectUserInfoVo.getAvatarSmall());
+            connectToken.setAvatarMiddle(connectUserInfoVo.getAvatarMiddle());
+            connectToken.setAvatarLarge(connectUserInfoVo.getAvatarLarge());
+            connectToken.setGender(String.valueOf(connectUserInfoVo.getGender()));
+            //更新connect_token表
+            boolean isSuccess = connectTokenService.insertOrUpdateConnectToken(connectToken);
+            if (isSuccess) {
+                return connectUserInfoVo;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public boolean initialOrUpdateConnectUserInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) throws ServiceException {
         try {
             String cacheKey = buildConnectUserInfoCacheKey(passportId);
@@ -163,4 +192,5 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     private String buildConnectUserInfoCacheKey(String passportId) {
         return CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO + passportId;
     }
+
 }

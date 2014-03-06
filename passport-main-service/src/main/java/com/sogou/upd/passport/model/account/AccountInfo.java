@@ -1,9 +1,12 @@
 package com.sogou.upd.passport.model.account;
 
+import java.util.Date;
+
 /**
- * 账号信息表，包括绑定邮箱、密保问题、个人资料等
- * Created with IntelliJ IDEA. User: hujunfei Date: 13-4-25 Time: 下午4:27 To change this template use
- * File | Settings | File Templates.
+ * 账号信息表，包括绑定邮箱、密保问题、个人资料
+ * User: mayan
+ * Date: 13-8-8
+ * Time: 下午9:50
  */
 public class AccountInfo {
 
@@ -12,14 +15,30 @@ public class AccountInfo {
     private String email;
     private String question;
     private String answer;
-
-    public AccountInfo() {
-
-    }
+    private String modifyip;
+    //用户生日
+    private Date birthday;
+    //用户性别
+    private String gender;
+    //省份
+    private String province;
+    //城市
+    private String city;
+    //姓名
+    private String fullname;
+    //身份证号
+    private String personalid;
+    //记录修改时间
+    private Date updateTime;
+    //记录创建时间
+    private Date createTime;
 
     public AccountInfo(String passportId) {
         this.passportId = passportId;
     }
+
+    public AccountInfo() { }
+
 
     public long getId() {
         return id;
@@ -59,5 +78,77 @@ public class AccountInfo {
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    public String getModifyip() {
+        return modifyip;
+    }
+
+    public void setModifyip(String modifyip) {
+        this.modifyip = modifyip;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public String getPersonalid() {
+        return personalid;
+    }
+
+    public void setPersonalid(String personalid) {
+        this.personalid = personalid;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 }

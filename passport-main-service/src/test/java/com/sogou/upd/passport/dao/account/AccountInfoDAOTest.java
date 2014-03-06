@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
+
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-3 Time: 下午2:54 To change this template use
  * File | Settings | File Templates.
@@ -51,6 +53,9 @@ public class AccountInfoDAOTest extends BaseDAOTest {
     @Test
     public void testModifyEmail() {
         AccountInfo accountInfo = accountInfoDAO.getAccountInfoByPassportId(PASSPORT_ID);
+        if(accountInfo==null){
+            accountInfo.setCreateTime(new Date());
+        }
         accountInfo.setEmail(NEW_EMAIL);
         int row = accountInfoDAO.saveEmailOrInsert(PASSPORT_ID, accountInfo);
 
