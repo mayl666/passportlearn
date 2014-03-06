@@ -63,8 +63,8 @@ public interface AccountInfoDAO {
     @SQL(
             "insert into " +
                     TABLE_NAME +
-                    "(passport_id, email, question, answer) "
-                    + "values(:passport_id,:accountInfo.email,:accountInfo.question,:accountInfo.answer) on duplicate key "
+                    "(passport_id, email, question, answer,create_time) "
+                    + "values(:passport_id,:accountInfo.email,:accountInfo.question,:accountInfo.answer,now()) on duplicate key "
                     + "update email = :accountInfo.email")
     public int saveEmailOrInsert(@ShardBy @SQLParam("passport_id") String passport_id,
                                  @SQLParam("accountInfo") AccountInfo account_info)
@@ -76,8 +76,8 @@ public interface AccountInfoDAO {
     @SQL(
             "insert into " +
                     TABLE_NAME +
-                    "(passport_id, email, question, answer)"
-                    + "values(:passport_id,:accountInfo.email,:accountInfo.question,:accountInfo.answer) on duplicate key "
+                    "(passport_id, email, question, answer,create_time)"
+                    + "values(:passport_id,:accountInfo.email,:accountInfo.question,:accountInfo.answer,now()) on duplicate key "
                     + "update question = :accountInfo.question, answer = :accountInfo.answer")
     public int saveQuesOrInsert(@ShardBy @SQLParam("passport_id") String passport_id,
                                 @SQLParam("accountInfo") AccountInfo account_info)
@@ -102,8 +102,8 @@ public interface AccountInfoDAO {
     @SQL(
             "insert into " +
                     TABLE_NAME +
-                    "(passport_id,email,question,answer) "
-                    + "values (:passport_id,:accountInfo.email,:accountInfo.question,:accountInfo.answer)")
+                    "(passport_id,email,question,answer,create_time) "
+                    + "values (:passport_id,:accountInfo.email,:accountInfo.question,:accountInfo.answer,now())")
     public int insertAccountInfo(@ShardBy @SQLParam("passport_id") String passport_id,
                                  @SQLParam("accountInfo") AccountInfo account_info)
             throws DataAccessException;
