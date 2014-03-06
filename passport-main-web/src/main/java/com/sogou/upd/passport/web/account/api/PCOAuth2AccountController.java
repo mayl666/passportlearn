@@ -151,6 +151,7 @@ public class PCOAuth2AccountController extends BaseController {
             result.setCode("0");
         }
         UserOperationLog userOperationLog = new UserOperationLog(params.getUsername(), "/oauth2/resource/?resource_type="+params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        userOperationLog.putOtherMessage("access_token", params.getAccess_token());
         userOperationLog.putOtherMessage("instance_id", params.getInstance_id());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
