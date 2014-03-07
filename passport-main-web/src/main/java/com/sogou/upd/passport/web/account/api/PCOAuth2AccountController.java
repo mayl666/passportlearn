@@ -358,8 +358,7 @@ public class PCOAuth2AccountController extends BaseController {
 
     //个人中心页面
     @RequestMapping(value = "/sogou/profile/basic/edit", method = RequestMethod.GET)
-    @ResponseBody
-    public String pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
+    public void pcindex(HttpServletRequest request, HttpServletResponse response, PCOAuth2IndexParams oauth2PcIndexParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(oauth2PcIndexParams);
@@ -367,7 +366,7 @@ public class PCOAuth2AccountController extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             response.sendRedirect("/tokenerror");
-            return "";
+            return;
         }
 
         //当前页面cookie
@@ -388,7 +387,7 @@ public class PCOAuth2AccountController extends BaseController {
         if (!queryPassportIdResult.isSuccess()) {
             //token 验证出错，跳出到登录页
             response.sendRedirect("/tokenerror");
-            return "";
+            return;
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
         String redirectUrl;
@@ -404,10 +403,10 @@ public class PCOAuth2AccountController extends BaseController {
         if (!Strings.isNullOrEmpty(cookieUserId)) {
             if (!cookieUserId.equals(passportId)) {
                 response.sendRedirect("/web/logout_redirect");
-                return "";
+                return;
             }
             response.sendRedirect(redirectUrl);
-            return "";
+            return;
         }
 
         String sogouRu ="https://account.sogou.com";
@@ -415,10 +414,10 @@ public class PCOAuth2AccountController extends BaseController {
         result = commonManager.setCookie(response,passportId,oauth2PcIndexParams.getClient_id(),getIp(request),-1,sogouRu,0,sohuRu);
         if (result.isSuccess()) {
             response.sendRedirect((String) result.getModels().get("cookieUrl"));
-            return "";
+            return;
         }
         response.sendRedirect(redirectUrl);
-        return "";
+        return;
     }
 
     @RequestMapping(value = "/oauth2/errorMsg")
