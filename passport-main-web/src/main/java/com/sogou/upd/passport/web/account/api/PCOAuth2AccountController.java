@@ -310,7 +310,7 @@ public class PCOAuth2AccountController extends BaseController {
             Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
             result.setDefaultModel("autologin", loginParams.getRememberMe());
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-            ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(userId), accountToken, "sogou");
+            ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(userId,clientId), accountToken, "sogou");
             loginManager.doAfterLoginSuccess(username, ip, userId, clientId);
         } else {
             loginManager.doAfterLoginFailed(username, ip);
@@ -391,7 +391,7 @@ public class PCOAuth2AccountController extends BaseController {
             return "";
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
-        String redirectUrl = "/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
+        String redirectUrl;
         if(oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_AVATARURL)){
             redirectUrl = "/web/userinfo/avatarurl?client_id=" +  oauth2PcIndexParams.getClient_id();
         }else if(oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_PASSWORD)){

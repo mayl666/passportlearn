@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.util.Date;
+
 /**
  * Created with IntelliJ IDEA. User: shipengzhi Date: 13-3-24 Time: 下午8:08 To change this template
  * use File | Settings | File Templates.
@@ -66,6 +69,32 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
         } catch (Exception e) {
             logger.error("[ConnectToken] service method updateConnectToken error.{}", e);
             throw new ServiceException(e);
+        }
+    }
+
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initialOrUpdateConnectTokenCache", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public boolean initialOrUpdateConnectTokenCache(String passportId, ConnectToken connectToken) throws ServiceException {
+        try {
+            String cacheKey = buildConnectTokenCacheKey(passportId, connectToken.getProvider(), connectToken.getAppKey());
+            dbShardRedisUtils.setWithinSeconds(cacheKey, connectToken, DateAndNumTimesConstant.THREE_MONTH);
+            return true;
+        } catch (Exception e) {
+            logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error.{}", e);
+            return false;
+        }
+    }
+
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_obtainCachedConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public ConnectToken obtainCachedConnectToken(String passportId, int provider, String appKey) {
+        try {
+            String cacheKey = buildConnectTokenCacheKey(passportId, provider, appKey);
+            ConnectToken connectToken = dbShardRedisUtils.getObject(cacheKey, ConnectToken.class);
+            return connectToken;
+        } catch (Exception e) {
+            logger.error("[ConnectToken] service method obtainCachedConnectToken error.{}", e);
+            return null;
         }
     }
 

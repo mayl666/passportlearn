@@ -46,7 +46,7 @@ public class RuValidatorTest  extends TestCase {
 
         url="http://ie.account.sogou.com?clientid=10002";
         result=ru.isValid(url,null);
-        assertEquals(false,result);
+        assertEquals(true,result);
 
 
         url="http://www.qq.com_521_qq_diao_yu_wangzhan_789.com";
