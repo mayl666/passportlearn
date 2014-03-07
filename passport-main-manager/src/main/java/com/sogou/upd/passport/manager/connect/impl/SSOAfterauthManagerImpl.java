@@ -140,7 +140,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
             // 创建第三方账号
             Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
             if(connectAccountResult.isSuccess()){
-                ConnectToken connectToken=(ConnectToken)connectAccountResult.getDefaultModel();
+                ConnectToken connectToken=(ConnectToken)connectAccountResult.getModels().get("connectToken");
 
                 String passportId= connectToken.getPassportId();
                 result.getModels().put("passport_id", passportId);
