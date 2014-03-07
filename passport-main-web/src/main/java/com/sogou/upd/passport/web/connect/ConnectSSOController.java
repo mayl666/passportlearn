@@ -61,10 +61,6 @@ public class ConnectSSOController extends BaseConnectController {
         }
 
         result = sSOAfterauthManager.handleSSOAfterauth(req, providerStr);
-        if(result.isSuccess()){
-            result.setSuccess(true);
-            result.setMessage("success");
-        }
 
         return result.toString();
     }

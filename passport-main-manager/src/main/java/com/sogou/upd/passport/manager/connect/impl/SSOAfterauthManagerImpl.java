@@ -152,6 +152,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
                     if (!Strings.isNullOrEmpty(sgid)) {
                         result.getModels().put("sgid",sgid);
                         result.setSuccess(true);
+                        result.setMessage("success");
                         removeParam(result);
                     }
                 } else {
