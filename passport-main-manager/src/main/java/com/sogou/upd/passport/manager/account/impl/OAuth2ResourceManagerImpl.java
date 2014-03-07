@@ -333,7 +333,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             if (domain == AccountDomainEnum.THIRD) {
                 Account account = accountService.queryAccountByPassportId(passportId);
-                ConnectToken connectToken;
+                ConnectToken connectToken = null;
                 if (account != null) {
                     uniqname = account.getUniqname();
                     avatarurl = account.getAvatar();
@@ -356,6 +356,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                             }
                         }
                     }
+                    result.setDefaultModel("userid",account.getPassportId());
                 }
             } else {
                 accountBaseInfo = getBaseInfo(passportId);
