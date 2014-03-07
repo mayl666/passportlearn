@@ -40,7 +40,7 @@ public class RuValidator implements ConstraintValidator<Ru, String> {
         }
         String rootPath;
         try {
-            Pattern p = Pattern.compile("^(https?:\\/\\/)?[\\w\\-.]+\\.(sogou|sohu|qq|soso|go2map)\\.com($|\\/|\\\\|:[\\d])", Pattern.CASE_INSENSITIVE);
+            Pattern p = Pattern.compile("^(https?:\\/\\/)?[\\w\\-.]+\\.(sogou|sohu|qq|soso|go2map)\\.com($|\\?|\\/|\\\\|:[\\d])", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(value);
             if(matcher.find()){
                 return true;
