@@ -134,4 +134,12 @@ public interface CommonManager {
      */
     public String getCode(String firstStr, int clientId, long ct);
 
+    /**
+     * 判断时间戳是否有效
+     * @param ct
+     * @param currentTime
+     * @return
+     */
+    public boolean isCtValid(long ct,long currentTime);
+
 }

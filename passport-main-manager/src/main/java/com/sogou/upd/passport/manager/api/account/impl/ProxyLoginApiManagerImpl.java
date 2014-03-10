@@ -171,7 +171,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             result.setDefaultModel("pprdig", pprdig);
             result.setDefaultModel("passport", passport);
 
-            long ct = System.currentTimeMillis() / 1000;
+            long ct = System.currentTimeMillis();
             String code1 = commonManager.getCode(ppinf,CommonConstant.PC_CLIENTID,ct);
             String code2 = commonManager.getCode(pprdig,CommonConstant.PC_CLIENTID,ct);
             String code3 = commonManager.getCode(passport,CommonConstant.PC_CLIENTID,ct);

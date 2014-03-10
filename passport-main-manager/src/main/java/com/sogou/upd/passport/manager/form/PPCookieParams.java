@@ -21,14 +21,14 @@ public class PPCookieParams {
     protected String code1;
     @NotBlank(message = "code2不允许为空")
     protected String code2;
-    @NotBlank(message = "code3不允许为空")
-    protected String code3;
+    @NotBlank(message = "code不允许为空")
+    protected String code;
 
 
     @NotBlank(message = "lastdomain不允许为空")
     private String lastdomain;
 
-    private long s=0;
+    private long s=0; //时间戳，单位毫秒
 
     @NotBlank(message = "ru不允许为空")
     @Ru
@@ -74,14 +74,6 @@ public class PPCookieParams {
         this.code2 = code2;
     }
 
-    public String getCode3() {
-        return code3;
-    }
-
-    public void setCode3(String code3) {
-        this.code3 = code3;
-    }
-
     public String getLastdomain() {
         return lastdomain;
     }
@@ -104,5 +96,13 @@ public class PPCookieParams {
 
     public void setRu(String ru) {
         this.ru = ru;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

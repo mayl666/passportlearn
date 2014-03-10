@@ -99,6 +99,14 @@ public class CookieManagerImpl implements CookieManager {
             result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
             return result;
         }
+        long currentTime = System.currentTimeMillis()/1000;
+        boolean isCtValid = commonManager.isCtValid(ct,currentTime);
+        if (!isCtValid) {
+            result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
+            return result;
+        }
+
         int maxAge = getMaxAge(et);
         String domain = ssoCookieParams.getDomain();
         ServletUtil.setCookie(response, LoginConstant.COOKIE_SGINF, sginf, maxAge, domain);
@@ -128,8 +136,15 @@ public class CookieManagerImpl implements CookieManager {
             result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
             return result;
         }
-        boolean code3Res = commonManager.isCodeRight(passport, CommonConstant.PC_CLIENTID, ct, ppCookieParams.getCode3());
-        if (!code3Res) {
+        boolean codeRes = commonManager.isCodeRight(passport, CommonConstant.PC_CLIENTID, ct, ppCookieParams.getCode());
+        if (!codeRes) {
+            result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
+            return result;
+        }
+        long currentTime = System.currentTimeMillis();
+        boolean isCtValid = commonManager.isCtValid(ct,currentTime);
+        if (!isCtValid) {
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
             result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
             return result;
@@ -137,8 +152,8 @@ public class CookieManagerImpl implements CookieManager {
 
         int maxAge = -1;
         ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-        ServletUtil.setCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-        ServletUtil.setCookie(response, LoginConstant.COOKIE_PASSPORT, passport, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
+        ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
+        ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN);
         result.setSuccess(true);
         return result;
     }
