@@ -114,7 +114,7 @@ public class SSOCookieController extends BaseController {
         return;
     }
 
-    @RequestMapping(value = "/sso/setPPCookie", method = RequestMethod.GET)
+    @RequestMapping(value = "/sso/setppcookie", method = RequestMethod.GET)
     public void setPPCookie(HttpServletRequest request, HttpServletResponse response, PPCookieParams ppCookieParams)
             throws Exception {
         Result result = new APIResultSupport(false);
