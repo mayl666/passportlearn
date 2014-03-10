@@ -135,11 +135,17 @@ public interface CommonManager {
     public String getCode(String firstStr, int clientId, long ct);
 
     /**
-     * 判断时间戳是否有效
+     * 判断时间戳（秒）是否有效
      * @param ct
-     * @param currentTime
      * @return
      */
-    public boolean isCtValid(long ct,long currentTime);
+    public boolean isSecCtValid(long ct);
+
+    /**
+     * 判断时间戳（毫秒）是否有效
+     * @param ct
+     * @return
+     */
+    public boolean isMillCtValid(long ct);
 
 }

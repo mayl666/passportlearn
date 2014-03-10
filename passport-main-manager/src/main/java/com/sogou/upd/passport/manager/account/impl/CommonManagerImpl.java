@@ -232,7 +232,15 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public boolean isCtValid(long ct,long currentTime){
+    public boolean isMillCtValid(long ct){
+        long currentTime = System.currentTimeMillis();
+        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM_IN_MILLI;
+        return timeRight;
+    }
+
+    @Override
+    public boolean isSecCtValid(long ct){
+        long currentTime = System.currentTimeMillis()/1000;
         boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
         return timeRight;
     }
