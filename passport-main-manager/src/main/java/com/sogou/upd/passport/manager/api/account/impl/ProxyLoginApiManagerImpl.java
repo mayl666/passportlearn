@@ -182,7 +182,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     .append("&passport=").append(passport)
                     .append("&code1=").append(code1)
                     .append("&code2=").append(code2)
-                    .append("&code3=").append(code3)
+                    .append("&code=").append(code3)
                     .append("&s=").append(ct)
                     .append("&lastdomain=").append(0)
                     .append("&ru=").append(createCookieUrlApiParams.getRu()+"?status=0");
