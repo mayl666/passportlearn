@@ -143,7 +143,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
                 ConnectToken connectToken=(ConnectToken)connectAccountResult.getModels().get("connectToken");
 
                 String passportId= connectToken.getPassportId();
-                result.getModels().put("passport_id", passportId);
+//                result.getModels().put("passport_id", passportId);
                 //写session 数据库
                 Result sessionResult = sessionServerManager.createSession(passportId);
                 String sgid = null;
