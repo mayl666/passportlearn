@@ -167,7 +167,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
             logger.error("query connect config Exception!", se);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "query connect config Exception");
        } catch (OAuthProblemException ope) {
-            logger.error("handle oauth authroize code error!", ope);
+            logger.warn("handle oauth authroize code error!", ope);
             result = buildErrorResult(ope.getError(), ope.getDescription());
         } catch (Exception exp) {
             logger.error("handle oauth authroize code system error!", exp);
