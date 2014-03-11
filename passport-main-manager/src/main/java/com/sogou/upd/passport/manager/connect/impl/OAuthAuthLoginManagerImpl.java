@@ -111,7 +111,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain,thirdInfo);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain, thirdInfo);
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
@@ -171,41 +171,39 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     }
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
                     if (!Strings.isNullOrEmpty(from) && "sso".equals(from)) {
-                       //todo 创建sgid，返回用户信息
-                        String sgid = "",avatarSmall="",avatarMiddle="",avatarLarge="",sex="";
+                        String sgid = "", avatarSmall = "", avatarMiddle = "", avatarLarge = "", sex = "";
                         Result sessionResult = sessionServerManager.createSession(userId);
-                        if (sessionResult.isSuccess()) {
-                            sgid = (String) sessionResult.getModels().get("sgid");
-                            if (!Strings.isNullOrEmpty(sgid)) {
-                                result.setSuccess(true);
-                                result.getModels().put("sgid", sgid);
-                            }
-                        } else {
+                        if (!sessionResult.isSuccess()) {
                             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
+                            return result;
                         }
+                        sgid = (String) sessionResult.getModels().get("sgid");
+                        result.setSuccess(true);
+                        result.getModels().put("sgid", sgid);
 
                         if (!Strings.isNullOrEmpty(thirdInfo) && "0".equals(thirdInfo)) {
-                            ObtainAccountInfoParams params=new ObtainAccountInfoParams();
+                            //获取搜狗用户信息
+                            ObtainAccountInfoParams params = new ObtainAccountInfoParams();
                             params.setUsername(passportId);
-                            params.setClient_id(String.valueOf(1120));
+                            params.setClient_id(String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID));
                             params.setFields("uniqname,sex");
                             result = accountInfoManager.getUserInfo(params);
-                            if(result.isSuccess()){
-                                avatarLarge= (String) result.getModels().get("img_180");
-                                avatarMiddle= (String) result.getModels().get("img_50");
-                                avatarSmall= (String) result.getModels().get("img_30");
-                                uniqname= (String) result.getModels().get("uniqname");
-                                sex= (String) result.getModels().get("sex");
+                            if (result.isSuccess()) {
+                                avatarLarge = (String) result.getModels().get("img_180");
+                                avatarMiddle = (String) result.getModels().get("img_50");
+                                avatarSmall = (String) result.getModels().get("img_30");
+                                uniqname = (String) result.getModels().get("uniqname");
+                                sex = (String) result.getModels().get("sex");
                             }
-                        }else {
-                            avatarLarge =  connectUserInfoVO.getAvatarLarge();
-                            avatarMiddle=connectUserInfoVO.getAvatarMiddle();
-                            avatarSmall =connectUserInfoVO.getAvatarSmall();
+                        } else {
+                            avatarLarge = connectUserInfoVO.getAvatarLarge();
+                            avatarMiddle = connectUserInfoVO.getAvatarMiddle();
+                            avatarSmall = connectUserInfoVO.getAvatarSmall();
                             sex = String.valueOf(connectUserInfoVO.getGender());
                         }
-                        String url = buildSDKSuccessRu(ru, sgid, uniqname, sex,avatarLarge,avatarMiddle,avatarSmall);
+                        String url = buildSSOSuccessRu(ru, sgid, uniqname, sex, avatarLarge, avatarMiddle, avatarSmall);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
-                    }else {
+                    } else {
                         String token = mappTokenService.saveToken(userId);
                         String url = buildMAppSuccessRu(ru, userId, token, uniqname);
                         result.setSuccess(true);
@@ -339,7 +337,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return ru;
     }
 
-    private String buildSDKSuccessRu(String ru, String sgid,String uniqname,String sex,String avatarLarge,String avatarMiddle,String avatarSmall) {
+    private String buildSSOSuccessRu(String ru, String sgid, String uniqname, String sex, String avatarLarge, String avatarMiddle, String avatarSmall) {
         Map params = Maps.newHashMap();
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
@@ -349,11 +347,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         }
         //ru后缀一个sgid
         params.put("sgid", sgid);
-        params.put("uniqname",uniqname);
-        params.put("sex",sex);
-        params.put("avatarLarge",avatarLarge);
-        params.put("avatarMiddle",avatarMiddle);
-        params.put("avatarSmall",avatarSmall);
+        params.put("uniqname", uniqname);
+        params.put("sex", sex);
+        params.put("avatarLarge", avatarLarge);
+        params.put("avatarMiddle", avatarMiddle);
+        params.put("avatarSmall", avatarSmall);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }

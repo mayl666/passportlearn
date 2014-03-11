@@ -34,7 +34,7 @@ public class ConnectLoginParams {
     private String display;  // 样式
     private boolean forcelogin = true;   // 是否强制输入用户名、密码登录
     private String type = "web";     // 应用类型；
-    private String from = ""; //浏览器移动端，type=token时，from=mob；样式均为移动端上的样式；单点登录时，from=sdk,返回sgid和用户信息；
+    private String from = ""; //浏览器移动端，type=token时，from=mob；样式均为移动端上的样式；单点登录时，type=mapp,from=sso,返回sgid和用户信息；
     private String ts;   //终端的实例ID
 
     private String viewPage; // qq为搜狗产品定制化页面， sgIME为输入法PC端弹泡样式
