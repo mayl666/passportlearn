@@ -170,7 +170,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
-                    if (!Strings.isNullOrEmpty(from) && "sdk".equals(from)) {
+                    if (!Strings.isNullOrEmpty(from) && "sso".equals(from)) {
                        //todo 创建sgid，返回用户信息
                         String sgid = "",avatarSmall="",avatarMiddle="",avatarLarge="",sex="";
                         Result sessionResult = sessionServerManager.createSession(userId);
@@ -179,7 +179,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                             if (!Strings.isNullOrEmpty(sgid)) {
                                 result.setSuccess(true);
                                 result.getModels().put("sgid", sgid);
-                                ru = buildWapSuccessRu(ru, sgid);
                             }
                         } else {
                             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
