@@ -12,12 +12,14 @@ import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
+import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
@@ -76,7 +78,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private SessionServerManager sessionServerManager;
     @Autowired
-    private OAuth2ResourceManager oAuth2ResourceManager;
+    private AccountInfoManager accountInfoManager;
     @Autowired
     private ConnectApiManager sgConnectApiManager;
 
@@ -170,8 +172,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
                     if (!Strings.isNullOrEmpty(from) && "sdk".equals(from)) {
                        //todo 创建sgid，返回用户信息
+                        String sgid = "",avatarSmall="",avatarMiddle="",avatarLarge="",sex="";
                         Result sessionResult = sessionServerManager.createSession(userId);
-                        String sgid = null;
                         if (sessionResult.isSuccess()) {
                             sgid = (String) sessionResult.getModels().get("sgid");
                             if (!Strings.isNullOrEmpty(sgid)) {
@@ -182,7 +184,28 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         } else {
                             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
                         }
-                        result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
+
+                        if (!Strings.isNullOrEmpty(thirdInfo) && "0".equals(thirdInfo)) {
+                            ObtainAccountInfoParams params=new ObtainAccountInfoParams();
+                            params.setUsername(passportId);
+                            params.setClient_id(String.valueOf(1120));
+                            params.setFields("uniqname,sex");
+                            result = accountInfoManager.getUserInfo(params);
+                            if(result.isSuccess()){
+                                avatarLarge= (String) result.getModels().get("img_180");
+                                avatarMiddle= (String) result.getModels().get("img_50");
+                                avatarSmall= (String) result.getModels().get("img_30");
+                                uniqname= (String) result.getModels().get("uniqname");
+                                sex= (String) result.getModels().get("sex");
+                            }
+                        }else {
+                            avatarLarge =  connectUserInfoVO.getAvatarLarge();
+                            avatarMiddle=connectUserInfoVO.getAvatarMiddle();
+                            avatarSmall =connectUserInfoVO.getAvatarSmall();
+                            sex = String.valueOf(connectUserInfoVO.getGender());
+                        }
+                        String url = buildSDKSuccessRu(ru, sgid, uniqname, sex,avatarLarge,avatarMiddle,avatarSmall);
+                        result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                     }else {
                         String token = mappTokenService.saveToken(userId);
                         String url = buildMAppSuccessRu(ru, userId, token, uniqname);
@@ -215,7 +238,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         if (!Strings.isNullOrEmpty(sgid)) {
                             result.setSuccess(true);
                             result.getModels().put("sgid", sgid);
-                            ru = buildSDKSuccessRu(ru, sgid);
+                            ru = buildWapSuccessRu(ru, sgid);
                         }
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
@@ -317,7 +340,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return ru;
     }
 
-    private String buildSDKSuccessRu(String ru, String sgid) {
+    private String buildSDKSuccessRu(String ru, String sgid,String uniqname,String sex,String avatarLarge,String avatarMiddle,String avatarSmall) {
         Map params = Maps.newHashMap();
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
@@ -327,6 +350,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         }
         //ru后缀一个sgid
         params.put("sgid", sgid);
+        params.put("uniqname",uniqname);
+        params.put("sex",sex);
+        params.put("avatarLarge",avatarLarge);
+        params.put("avatarMiddle",avatarMiddle);
+        params.put("avatarSmall",avatarSmall);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }
