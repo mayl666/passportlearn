@@ -146,7 +146,7 @@ public class LoginApiController extends BaseController {
                 String userId = result.getModels().get("userid").toString();
                 loginManager.doAfterLoginSuccess(params.getUserid(), createip, userId, params.getClient_id());
             } else {
-                loginManager.doAfterLoginFailed(params.getUserid(), createip);
+                loginManager.doAfterLoginFailed(params.getUserid(), createip,result.getCode());
                 result.setMessage("用户名或密码错误");
             }
         } catch (Exception e) {

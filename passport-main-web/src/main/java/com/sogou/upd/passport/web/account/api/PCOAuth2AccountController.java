@@ -313,7 +313,7 @@ public class PCOAuth2AccountController extends BaseController {
             ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(userId,clientId), accountToken, "sogou");
             loginManager.doAfterLoginSuccess(username, ip, userId, clientId);
         } else {
-            loginManager.doAfterLoginFailed(username, ip);
+            loginManager.doAfterLoginFailed(username, ip,result.getCode());
             //校验是否需要验证码
             boolean needCaptcha = loginManager.needCaptchaCheck(String.valueOf(clientId), username, ip);
             if (needCaptcha) {

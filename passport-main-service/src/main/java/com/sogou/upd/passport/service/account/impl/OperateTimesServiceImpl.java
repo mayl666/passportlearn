@@ -203,6 +203,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     num = Integer.parseInt(username_failedNum);
                     if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
                         blackItemService.addIPOrUsernameToLoginBlackList(username,BlackItem.FAILED_LIMIT,false);
+                        redisUtils.delete(userName_hKey);
                         return true;
                     }
                 }
@@ -211,6 +212,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     num = Integer.parseInt(username_successNum);
                     if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
                         blackItemService.addIPOrUsernameToLoginBlackList(username,BlackItem.SUCCESS_LIMIT,false);
+                        redisUtils.delete(userName_hKey);
                         return true;
 
                     }
@@ -228,12 +230,14 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                         if (checkInSubIpList(ip)) {
                             if (num >= LoginConstant.LOGIN_FAILED_SUB_IP_LIMIT_COUNT) {
                                 blackItemService.addIPOrUsernameToLoginBlackList(ip,BlackItem.FAILED_LIMIT,true);
+                                redisUtils.delete(ip_hKey);
                                 return true;
 
                             }
                         } else {
                             if (num >= LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT) {
                                 blackItemService.addIPOrUsernameToLoginBlackList(ip,BlackItem.FAILED_LIMIT,true);
+                                redisUtils.delete(ip_hKey);
                                 return true;
 
                             }
@@ -244,6 +248,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                         num = Integer.parseInt(ip_successNum);
                         if (num >= LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
                             blackItemService.addIPOrUsernameToLoginBlackList(ip,BlackItem.SUCCESS_LIMIT,true);
+                            redisUtils.delete(ip_hKey);
                             return true;
 
                         }

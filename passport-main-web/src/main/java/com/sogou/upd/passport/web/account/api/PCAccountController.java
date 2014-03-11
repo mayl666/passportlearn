@@ -185,7 +185,7 @@ public class PCAccountController extends BaseController {
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
             if (!CommonHelper.isIePinyinToken(appid)) {
-                loginManager.doAfterLoginFailed(reqParams.getUserid(), ip);
+                loginManager.doAfterLoginFailed(reqParams.getUserid(), ip,result.getCode());
             }
         }
 
