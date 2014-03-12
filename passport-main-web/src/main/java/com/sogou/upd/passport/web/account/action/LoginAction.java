@@ -38,6 +38,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * User: mayan
@@ -73,6 +75,13 @@ public class LoginAction extends BaseController {
     @ResponseBody
     public String checkNeedCaptcha(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
+        StringBuffer sb = new StringBuffer();
+        Map<String,String> map = request.getParameterMap();
+        Set<String> set = map.keySet();
+        for (String ob:set){
+            sb.append(ob).append("=").append(map.get(ob)).append("&");
+        }
+        String s = sb.toString();
 
         Result result = new APIResultSupport(false);
         //参数验证
@@ -119,6 +128,14 @@ public class LoginAction extends BaseController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(HttpServletRequest request, HttpServletResponse response, Model model, WebLoginParams loginParams)
             throws Exception {
+        StringBuffer sb = new StringBuffer();
+        Map<String,String> map = request.getParameterMap();
+        Set<String> set = map.keySet();
+        for (String ob:set){
+            sb.append(ob).append("=").append(map.get(ob)).append("&");
+        }
+        String s = sb.toString();
+
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
 
