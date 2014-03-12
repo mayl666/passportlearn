@@ -80,6 +80,7 @@ public class LoginAction extends BaseController {
         Set<Object> set = map.keySet();
         for (Object ob:set){
             String obStr= ob.toString();
+            Object obValue = map.get(ob);
             String value= (String)(map.get(ob));
             sb.append(obStr).append("=").append(value).append("&");
         }
@@ -135,6 +136,7 @@ public class LoginAction extends BaseController {
         Set<Object> set = map.keySet();
         for (Object ob:set){
             String obStr= ob.toString();
+            Object obValue = map.get(ob);
             String value= (String)(map.get(ob));
             sb.append(obStr).append("=").append(value).append("&");
         }
