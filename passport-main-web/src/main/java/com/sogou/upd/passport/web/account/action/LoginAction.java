@@ -76,11 +76,11 @@ public class LoginAction extends BaseController {
     public String checkNeedCaptcha(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        Map<Object,Object> map = request.getParameterMap();
+        Map map = request.getParameterMap();
         Set<Object> set = map.keySet();
         for (Object ob:set){
             String obStr= ob.toString();
-            String value= ((String)map.get(ob));
+            String value= (String)(map.get(ob));
             sb.append(obStr).append("=").append(value).append("&");
         }
         String s = sb.toString();
@@ -131,11 +131,11 @@ public class LoginAction extends BaseController {
     public String login(HttpServletRequest request, HttpServletResponse response, Model model, WebLoginParams loginParams)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        Map<Object,Object> map = request.getParameterMap();
+        Map map = request.getParameterMap();
         Set<Object> set = map.keySet();
         for (Object ob:set){
             String obStr= ob.toString();
-            String value= ((String)map.get(ob));
+            String value= (String)(map.get(ob));
             sb.append(obStr).append("=").append(value).append("&");
         }
         String s = sb.toString();
