@@ -75,18 +75,6 @@ public class LoginAction extends BaseController {
     @ResponseBody
     public String checkNeedCaptcha(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
-        StringBuffer sb = new StringBuffer();
-        Map map = request.getParameterMap();
-        Set<Object> set = map.keySet();
-        for (Object ob:set){
-            String obStr= ob.toString();
-            Object[] obValue = (Object[])map.get(ob);
-            String value= obValue[0].toString();
-//            String value= (String)(map.get(ob));
-            sb.append(obStr).append("=").append(value).append("&");
-        }
-        String s = sb.toString();
-
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(checkParam);
@@ -132,18 +120,6 @@ public class LoginAction extends BaseController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(HttpServletRequest request, HttpServletResponse response, Model model, WebLoginParams loginParams)
             throws Exception {
-        StringBuffer sb = new StringBuffer();
-        Map map = request.getParameterMap();
-        Set<Object> set = map.keySet();
-        for (Object ob:set){
-            String obStr= ob.toString();
-            Object[] obValue = (Object[])map.get(ob);
-            String value= obValue[0].toString();
-//            String value= (String)(map.get(ob));
-            sb.append(obStr).append("=").append(value).append("&");
-        }
-        String s = sb.toString();
-
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
 
