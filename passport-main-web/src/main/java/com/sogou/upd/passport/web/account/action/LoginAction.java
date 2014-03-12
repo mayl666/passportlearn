@@ -79,7 +79,7 @@ public class LoginAction extends BaseController {
         Map<String,String> map = request.getParameterMap();
         Set<String> set = map.keySet();
         for (String ob:set){
-            sb.append(ob).append("=").append(map.get(ob)).append("&");
+            sb.append(ob).append("=").append(map.get(ob).toString()).append("&");
         }
         String s = sb.toString();
 
@@ -132,7 +132,7 @@ public class LoginAction extends BaseController {
         Map<String,String> map = request.getParameterMap();
         Set<String> set = map.keySet();
         for (String ob:set){
-            sb.append(ob).append("=").append(map.get(ob)).append("&");
+            sb.append(ob).append("=").append(map.get(ob).toString()).append("&");
         }
         String s = sb.toString();
 
