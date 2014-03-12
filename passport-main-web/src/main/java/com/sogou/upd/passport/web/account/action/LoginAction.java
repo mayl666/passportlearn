@@ -76,10 +76,12 @@ public class LoginAction extends BaseController {
     public String checkNeedCaptcha(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        Map<String,String> map = request.getParameterMap();
-        Set<String> set = map.keySet();
-        for (String ob:set){
-            sb.append(ob).append("=").append(map.get(ob).toString()).append("&");
+        Map<Object,Object> map = request.getParameterMap();
+        Set<Object> set = map.keySet();
+        for (Object ob:set){
+            String obStr= ob.toString();
+            String value= (map.get(ob)).toString();
+            sb.append(obStr).append("=").append(value).append("&");
         }
         String s = sb.toString();
 
@@ -129,10 +131,12 @@ public class LoginAction extends BaseController {
     public String login(HttpServletRequest request, HttpServletResponse response, Model model, WebLoginParams loginParams)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        Map<String,String> map = request.getParameterMap();
-        Set<String> set = map.keySet();
-        for (String ob:set){
-            sb.append(ob).append("=").append(map.get(ob).toString()).append("&");
+        Map<Object,Object> map = request.getParameterMap();
+        Set<Object> set = map.keySet();
+        for (Object ob:set){
+            String obStr= ob.toString();
+            String value= (map.get(ob)).toString();
+            sb.append(obStr).append("=").append(value).append("&");
         }
         String s = sb.toString();
 
