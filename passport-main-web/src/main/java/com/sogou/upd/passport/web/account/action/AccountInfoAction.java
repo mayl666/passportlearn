@@ -89,7 +89,7 @@ public class AccountInfoAction extends BaseController {
     }
 
     /**
-     * 没有用到此方法！
+     * 没有应用调用此方法！
      *
      * @param request
      * @param checkOrUpdateNickNameParams

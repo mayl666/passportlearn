@@ -218,9 +218,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Override
     public Result updateUserInfo(AccountInfoParams infoParams,String ip) {
 
-        Result result = new APIResultSupport(false);
+        Result result;
 
-        UpdateUserInfoApiParams updateUserInfoApiParams = null;
+        UpdateUserInfoApiParams updateUserInfoApiParams;
         // 调用内部接口
         if (ManagerHelper.isInvokeProxyApi(infoParams.getUsername())) {
             updateUserInfoApiParams = new UpdateUserInfoApiParams();

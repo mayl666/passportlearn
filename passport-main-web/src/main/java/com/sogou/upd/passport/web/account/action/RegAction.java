@@ -324,7 +324,6 @@ public class RegAction extends BaseController {
     private Result checkAccountNotExists(String username, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         //校验是否是搜狐域内用户
-
         if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
             result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
             return result;
@@ -334,7 +333,6 @@ public class RegAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOGOU_REGISTER);
             return result;
         }
-
         //判断是否是个性账号
         if (username.indexOf("@") == -1) {
             //判断是否是手机号注册
