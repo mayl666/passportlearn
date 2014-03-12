@@ -63,7 +63,13 @@ public class AccountInfoAction extends BaseController {
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
 
-
+    /**
+     * 检查用户昵称是否唯一
+     *
+     * @param request
+     * @param checkOrUpdateNickNameParams
+     * @return
+     */
     @RequestMapping(value = "/userinfo/checknickname", method = RequestMethod.GET)
     @ResponseBody
     public Object checkNickName(HttpServletRequest request, CheckOrUpdateNickNameParams checkOrUpdateNickNameParams) {
@@ -82,6 +88,14 @@ public class AccountInfoAction extends BaseController {
         return result.toString();
     }
 
+    /**
+     * 没有用到此方法！
+     *
+     * @param request
+     * @param checkOrUpdateNickNameParams
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/userinfo/updatenickname", method = RequestMethod.POST)
     @LoginRequired(resultType = ResponseResultType.redirect)
     @ResponseBody
@@ -138,7 +152,7 @@ public class AccountInfoAction extends BaseController {
             params.setUsername(userId);
             result = accountInfoManager.getUserInfo(params);
 //            result.getModels().put("uniqname",(String)result.getModels().get("uniqname"));
-            result.getModels().put("uniqname",oAuth2ResourceManager.getEncodedUniqname(params.getUsername(),clientId));
+            result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(params.getUsername(), clientId));
 
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
@@ -256,7 +270,7 @@ public class AccountInfoAction extends BaseController {
     }
 
 
-    //头像上传
+    //头像上传url跳转
     @RequestMapping(value = "/userinfo/avatarurl", method = RequestMethod.GET)
     @LoginRequired(resultType = ResponseResultType.redirect)
     public String uploadAvatarurl(HttpServletRequest request, Model model) throws Exception {
