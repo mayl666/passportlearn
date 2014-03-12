@@ -136,31 +136,35 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
                 oAuthTokenVO.setAccessToken(accessToken);
                 oAuthTokenVO.setOpenid(openId);
                 oAuthTokenVO.setExpiresIn(expires_in);
-            }
-            // 创建第三方账号
-            Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
-            if(connectAccountResult.isSuccess()){
-                ConnectToken connectToken=(ConnectToken)connectAccountResult.getModels().get("connectToken");
 
-                String passportId= connectToken.getPassportId();
+                // 创建第三方账号
+                Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
+                if(connectAccountResult.isSuccess()){
+                    ConnectToken connectToken=(ConnectToken)connectAccountResult.getModels().get("connectToken");
+
+                    String passportId= connectToken.getPassportId();
 //                result.getModels().put("passport_id", passportId);
-                //写session 数据库
-                Result sessionResult = sessionServerManager.createSession(passportId);
-                String sgid = null;
-                if (sessionResult.isSuccess()) {
-                    sgid = (String) sessionResult.getModels().get("sgid");
-                    if (!Strings.isNullOrEmpty(sgid)) {
-                        result.getModels().put("sgid",sgid);
-                        result.setSuccess(true);
-                        result.setMessage("success");
-                        removeParam(result);
+                    //写session 数据库
+                    Result sessionResult = sessionServerManager.createSession(passportId);
+                    String sgid = null;
+                    if (sessionResult.isSuccess()) {
+                        sgid = (String) sessionResult.getModels().get("sgid");
+                        if (!Strings.isNullOrEmpty(sgid)) {
+                            result.getModels().put("sgid",sgid);
+                            result.setSuccess(true);
+                            result.setMessage("success");
+                            removeParam(result);
+                        }
+                    } else {
+                        result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
                     }
-                } else {
+                }else{
                     result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
                 }
-            }else{
+            }else {
                 result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
             }
+
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException");
