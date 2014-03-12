@@ -391,7 +391,7 @@ public class SecureAction extends BaseController {
     /*
      * 验证绑定邮件
      */
-    @RequestMapping(value = "checkemail", method = RequestMethod.GET)
+    @RequestMapping(value = "/checkemail", method = RequestMethod.GET)
     public String checkEmailForBind(AccountScodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
