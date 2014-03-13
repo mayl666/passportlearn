@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.common.utils.SignatureUtils;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.TreeMap;
 
 /**
  * mapp相关操作
@@ -104,11 +106,15 @@ public class MappAction extends BaseController {
         if (appConfig != null) {
             String secret = appConfig.getClientSecret();
 
+            TreeMap map=new TreeMap();
+            map.put("sgid",sgid);
+            map.put("client_id",client_id);
+            map.put("instance_id",instance_id);
+
             //计算默认的code
             String code = "";
             try {
-                code = sgid + clientId + instance_id + secret;
-                code = Coder.encryptMD5GBK(code);
+                code = SignatureUtils.generateSignature(map, secret);
             } catch (Exception e) {
                 logger.error("calculate default code error", e);
             }
