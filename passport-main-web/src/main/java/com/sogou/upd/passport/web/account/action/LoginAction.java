@@ -38,6 +38,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * User: mayan
@@ -73,7 +75,6 @@ public class LoginAction extends BaseController {
     @ResponseBody
     public String checkNeedCaptcha(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
-
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(checkParam);

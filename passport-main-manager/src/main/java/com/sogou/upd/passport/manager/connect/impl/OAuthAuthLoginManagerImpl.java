@@ -348,7 +348,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         //ru后缀一个sgid
         params.put("sgid", sgid);
         params.put("uniqname", uniqname);
-        params.put("sex", sex);
+        params.put("gender", sex);
         params.put("avatarLarge", avatarLarge);
         params.put("avatarMiddle", avatarMiddle);
         params.put("avatarSmall", avatarSmall);
