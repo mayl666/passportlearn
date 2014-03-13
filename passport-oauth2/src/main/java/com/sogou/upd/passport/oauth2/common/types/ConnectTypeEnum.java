@@ -19,7 +19,7 @@ public enum ConnectTypeEnum {
     MAPP("mapp"),   //手机app，基于服务器端调用检验token的接口
     MOBILE("mobile"),  //仅搜狗地图的移动端使用
     WAP("wap"),  //手机wap
-    PC("pc"); //pc客户端，地图4.2版本
+    PC("pc"); //pc客户端，浏览器4.2以上版本
 
     private String connectType;
 
