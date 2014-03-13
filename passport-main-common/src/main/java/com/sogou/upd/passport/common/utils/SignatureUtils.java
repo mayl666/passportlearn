@@ -20,14 +20,8 @@ public class SignatureUtils {
         for (String key : sortKeys) {
             paramsBase.append(key).append("=").append(params.get(key)).append("&");
         }
-        String enParams;
-        try {
-            enParams = urlEncodeUTF8(paramsBase.toString());
-            enParams = enParams.replace("+", "%20");
-            enParams = enParams.replace("*", "%2A");
-        } catch (Exception e) {
-            return null;
-        }
+        String enParams=paramsBase.toString();
+
         String baseStr = enParams + secret;
         return Coder.encryptMD5(baseStr);
     }
