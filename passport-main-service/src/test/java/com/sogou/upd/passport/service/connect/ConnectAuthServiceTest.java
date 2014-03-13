@@ -60,26 +60,27 @@ public class ConnectAuthServiceTest extends BaseTest {
         int provider = 3;
         int client_id = 1120;
         String passportId = "02BB90BF300D0E08F5CE9F2F6B1C6B06@qq.sohu.com";
-        String openId = "02BB90BF300D0E08F5CE9F2F6B1C6B06";
-        String accessToken = "B2553A801D4197A05A6B93E950DAC6C6";
+        String openId = "05D74F458E9BA0E25C48585CB6AD0488";
+        String accessToken = "79DF2A5475E6CD6F77E6C91067E94679";
         try {
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             ConnectConfig connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
             ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
-            ConnectToken connectToken = new ConnectToken();
-            connectToken.setPassportId(passportId);
-            connectToken.setOpenid(openId);
-            connectToken.setProvider(provider);
-            connectToken.setAccessToken(accessToken);
-            connectToken.setExpiresIn(777600);
-            connectToken.setRefreshToken("456");
-            connectToken.setConnectUniqname(connectUserInfoVO.getNickname());
-            connectToken.setAvatarSmall(connectUserInfoVO.getAvatarSmall());
-            connectToken.setGender("1");
-            connectToken.setAppKey("100294784");
-            connectToken.setUpdateTime(new Date());
-            int row = connectTokenDAO.insertOrUpdateAccountConnect(passportId, connectToken);
-            Assert.assertTrue(row == 1);
+            System.out.println(11);
+//            ConnectToken connectToken = new ConnectToken();
+//            connectToken.setPassportId(passportId);
+//            connectToken.setOpenid(openId);
+//            connectToken.setProvider(provider);
+//            connectToken.setAccessToken(accessToken);
+//            connectToken.setExpiresIn(777600);
+//            connectToken.setRefreshToken("456");
+//            connectToken.setConnectUniqname(connectUserInfoVO.getNickname());
+//            connectToken.setAvatarSmall(connectUserInfoVO.getAvatarSmall());
+//            connectToken.setGender("1");
+//            connectToken.setAppKey("100294784");
+//            connectToken.setUpdateTime(new Date());
+//            int row = connectTokenDAO.insertOrUpdateAccountConnect(passportId, connectToken);
+//            Assert.assertTrue(row == 1);
         } catch (OAuthProblemException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (IOException e) {

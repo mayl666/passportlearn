@@ -14,7 +14,7 @@ import java.util.TreeMap;
  * Time: 下午2:51
  */
 public class SignatureUtils {
-    public static String generateSignature(TreeMap<String, String> params, String secret) throws Exception {
+    public static String generateSignature(TreeMap params, String secret) throws Exception {
         StringBuilder paramsBase = new StringBuilder("");
         Set<String> sortKeys = params.keySet();
         for (String key : sortKeys) {
