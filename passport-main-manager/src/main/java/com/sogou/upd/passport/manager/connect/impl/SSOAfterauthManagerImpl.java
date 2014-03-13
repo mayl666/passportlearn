@@ -107,14 +107,18 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
                         String img50= (String) result.getModels().get("img_50");
                         String img30= (String) result.getModels().get("img_30");
                         String uniqname= (String) result.getModels().get("uniqname");
-                        String sex= (String) result.getModels().get("sex");
+                        String gender= (String) result.getModels().get("sex");
 
                         result.getModels().put("large_avatar",Strings.isNullOrEmpty(img180)?"":img180) ;
                         result.getModels().put("mid_avatar",Strings.isNullOrEmpty(img50)?"":img50) ;
                         result.getModels().put("tiny_avatar",Strings.isNullOrEmpty(img30)?"":img30) ;
                         result.getModels().put("uniqname",Strings.isNullOrEmpty(uniqname)?"":uniqname) ;
-                        result.getModels().put("sex", Strings.isNullOrEmpty(sex) ? 0 : Integer.parseInt(sex)) ;
+                        result.getModels().put("gender", Strings.isNullOrEmpty(gender) ? 0 : Integer.parseInt(gender)) ;
                     }
+                }else if (provider == AccountTypeEnum.SINA.getValue()){
+
+                }else if(provider == AccountTypeEnum.RENREN.getValue()){
+
                 }
             }else {
                 if(connectUserInfoVO!=null){
@@ -122,7 +126,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
                     result.getModels().put("mid_avatar",connectUserInfoVO.getAvatarMiddle()) ;
                     result.getModels().put("tiny_avatar",connectUserInfoVO.getAvatarSmall()) ;
                     result.getModels().put("uniqname",connectUserInfoVO.getNickname()) ;
-                    result.getModels().put("sex",connectUserInfoVO.getGender()) ;
+                    result.getModels().put("gender",connectUserInfoVO.getGender()) ;
                 }
             }
 

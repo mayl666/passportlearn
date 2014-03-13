@@ -5,9 +5,11 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.SignatureUtils;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.connect.SSOAfterauthManager;
 import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.AfterAuthParams;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.TreeMap;
 
 /**
  * User: mayan
@@ -36,7 +39,7 @@ public class ConnectSSOController extends BaseConnectController {
     @Autowired
     private SSOAfterauthManager sSOAfterauthManager;
     @Autowired
-    private CookieManager cookieManager;
+    private AppConfigService appConfigService;
 
     //登陆后获取登录信息接口
     @RequestMapping("/afterauth/{providerStr}")
@@ -68,15 +71,25 @@ public class ConnectSSOController extends BaseConnectController {
     private Result checkCodeIsCorrect(AfterAuthParams params) {
         Result result = new APIResultSupport(false);
 
-        AppConfig appConfig = cookieManager.queryAppConfigByClientId(params.getClient_id());
+        AppConfig appConfig = appConfigService.queryAppConfigByClientId(params.getClient_id());
         if (appConfig != null) {
             String secret = appConfig.getClientSecret();
+
+            TreeMap map=new TreeMap();
+            map.put("openid",params.getOpenid());
+            map.put("access_token",params.getAccess_token());
+            map.put("expires_in",params.getExpires_in());
+            map.put("client_id",params.getClient_id());
+            map.put("isthird",params.getIsthird());
+            if(!Strings.isNullOrEmpty(params.getRefresh_token())){
+                map.put("refresh_token",params.getRefresh_token());
+            }
+            map.put("instance_id",params.getInstance_id());
 
             //计算默认的code
             String code = "";
             try {
-                code = params.getOpenid() + params.getClient_id() + params.getAccess_token() + params.getExpires_in() + params.getIsthird() + params.getInstance_id() +secret;
-                code = Coder.encryptMD5GBK(code);
+                code = SignatureUtils.generateSignature(map,secret);
             } catch (Exception e) {
                 logger.error("calculate default code error", e);
             }
