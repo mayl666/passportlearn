@@ -99,6 +99,10 @@ public class CacheConstant {
     public static final String KV_PREFIX_PASSPORTID_TOKEN = "20002/account_token/";
     public static final String KV_PREFIX_TEST = "0/0/";
 
+    /*==================token相关缓存常量========================*/
+    public static final String CORE_KV_PREFIX_PASSPROTID_TOKEN = "13008/account_token/"; //kv迁移，核心kv集群
+
+
     /*==================登陆相关缓存常量========================*/
     public static final String CACHE_PREFIX_USERNAME_LOGINNUM = "SP.USERNAME:LOGINNUM_HASH_"; //username连续登陆的次数
     public static final String CACHE_PREFIX_IP_LOGINNUM = "SP.IP:LOGINNUM_HASH_"; //IP连续登陆的次数

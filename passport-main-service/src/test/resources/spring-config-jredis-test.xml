@@ -72,6 +72,12 @@
     <bean id="kvUtils" class="com.sogou.upd.passport.common.utils.KvUtils">
         <property name="kvTemplate" ref="kvTemplate"/>
     </bean>
+    <!-- core kv 集群  -->
+    <bean id="coreKvTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
+          p:connectionFactory-ref="kvConnectionFactory"/>
+    <bean id="coreKvUtils" class="com.sogou.upd.passport.common.utils.CoreKvUtils">
+        <property name="coreKvTemplate" ref="coreKvTemplate"/>
+    </bean>
 
     <!-- token redis utils-->
     <bean id="tokenPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
@@ -121,7 +127,8 @@
 
     <!--热切换redis-->
     <bean id="monitor" class="com.sogou.upd.passport.zk.Monitor" destroy-method="destory">
-        <constructor-arg name="zks" value="10.16.135.181:2181"/>
+        <!--<constructor-arg name="zks" value="10.16.135.181:2181"/>-->
+        <constructor-arg name="zks" value="10.16.135.181:3181"/>
     </bean>
     <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">
         <constructor-arg name="monitor" ref="monitor"/>
