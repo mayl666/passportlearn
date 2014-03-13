@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.connect;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.app.ConnectConfig;
+import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
@@ -49,6 +50,7 @@ public interface ConnectAuthService {
     public ConnectUserInfoVO obtainConnectUserInfo(int provider, ConnectConfig connectConfig, String openid, String accessToken,
                                                    OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException;
 
+
     /**
      * 更新第三方个人资料缓存
      *
@@ -67,4 +69,16 @@ public interface ConnectAuthService {
      * @throws ServiceException
      */
     public ConnectUserInfoVO obtainCachedConnectUserInfo(String passportId);
+
+    /**
+     * 调用第三方api获取用户个人资料
+     *
+     * @param provider
+     * @param appKey
+     * @param connectToken
+     * @return
+     * @throws IOException
+     * @throws OAuthProblemException
+     */
+    public ConnectUserInfoVO getConnectUserInfo(int provider, String appKey, ConnectToken connectToken) throws IOException, OAuthProblemException;
 }

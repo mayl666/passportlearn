@@ -14,4 +14,5 @@ public interface UserOpenApiManager {
 
     public Result getUserInfo(UserOpenApiParams userOpenApiParams);
 
+
 }

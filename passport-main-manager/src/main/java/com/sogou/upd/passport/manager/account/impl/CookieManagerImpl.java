@@ -36,6 +36,7 @@ public class CookieManagerImpl implements CookieManager {
     private String PPRDIG = "kOdlRIxptgVY2ZRcjKYchIY9JBWkqGM_MjQy11OTC0fB9ACztDrs0lnjzAgHenjfCb8_Bgc6RAxO15TIaR5DeJTTQQUGiz-afCzDU9dYUUfge_WJLfiXjfR7iEGBDlBIQ5eSTV0oyMdLQHE-8UlVLYjbohSOzVVUPqRfoDvLE0w";
 
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
+    private static final int SG_COOKIE_MIN_LEN = 3;
 
     @Autowired
     private AppConfigService appConfigService;
@@ -82,6 +83,12 @@ public class CookieManagerImpl implements CookieManager {
         String sginf = ssoCookieParams.getSginf();
         String sgrdig = ssoCookieParams.getSgrdig();
         String cookieData[] = sginf.split("\\" + CommonConstant.SEPARATOR_1);
+        if(cookieData.length < SG_COOKIE_MIN_LEN){
+            result.setCode(ErrorUtil.ERR_CODE_ERROR_COOKIE);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ERROR_COOKIE));
+            return result;
+        }
+
         String createtime = cookieData[1];
         String expiretime = cookieData[2];
         long ct = new Long(createtime);

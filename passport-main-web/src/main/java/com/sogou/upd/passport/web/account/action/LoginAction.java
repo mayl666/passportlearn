@@ -157,7 +157,7 @@ public class LoginAction extends BaseController {
             }
 
         } else {
-            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
+            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip,result.getCode());
             //校验是否需要验证码
             boolean needCaptcha = loginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
             if (needCaptcha) {

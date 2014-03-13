@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.connect.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -36,6 +37,7 @@ import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import com.sogou.upd.passport.service.account.MappTokenService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
+import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +68,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private ConnectAuthService connectAuthService;
     @Autowired
-    private AccountBaseInfoService accountBaseInfoService;
+    private ConnectTokenService connectTokenService;
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
@@ -141,8 +143,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 String passportId = connectToken.getPassportId();
                 result.setDefaultModel("userid", passportId);
                 String userId = passportId;
-                //更新个人资料缓存
-                connectAuthService.initialOrUpdateConnectUserInfo(userId, connectUserInfoVO);
+                if (provider != AccountTypeEnum.QQ.getValue()) {
+                    //更新第三方个人资料缓存
+                    connectAuthService.initialOrUpdateConnectUserInfo(userId, connectUserInfoVO);
+                }
 
                 if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
                     Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
@@ -176,18 +180,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
-                        result.setSuccess(true);
-
-                        AccountBaseInfo accountBaseInfo = null;
-                        if (connectUserInfoVO != null) {
-                            passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
-                            accountBaseInfo = accountBaseInfoService.initConnectAccountBaseInfo(passportId, connectUserInfoVO);// TODO 后续更新其他个人资料，并移至buildConnectAccount()里
-                        }
-                        if (accountBaseInfo == null || StringUtil.isEmpty(accountBaseInfo.getUniqname())) {
-                            uniqname = oAuth2ResourceManager.defaultUniqname(userId);
-                        }
+                        uniqname = (String) connectAccountResult.getModels().get("uniqName");
                         uniqname = StringUtil.filterSpecialChar(uniqname);  // 昵称需处理,浏览器的js解析不了昵称就会白屏
                         ManagerHelper.setModelForOAuthResult(result, uniqname, accountToken, providerStr);
+                        result.setSuccess(true);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, "/oauth2pc/connectlogin");
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
@@ -223,7 +219,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             logger.error("query connect config Exception!", se);
             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "query connect config Exception");
         } catch (OAuthProblemException ope) {
-            logger.error("handle oauth authroize code error!", ope);
+            logger.warn("handle oauth authroize code error!", ope);
             result = buildErrorResult(type, ru, ope.getError(), ope.getDescription());
         } catch (Exception exp) {
 //            logger.error("handle oauth authroize code system error!", exp);

@@ -36,8 +36,7 @@ public class ConnectLoginController extends BaseConnectController {
     private ConfigureManager configureManager;
 
     @RequestMapping(value = "/connect/login")
-    @ResponseBody
-    public String authorize(HttpServletRequest req, HttpServletResponse res, ConnectLoginParams connectLoginParams) throws IOException {
+    public void authorize(HttpServletRequest req, HttpServletResponse res, ConnectLoginParams connectLoginParams) throws IOException {
 
         // 校验参数
         String url;
@@ -50,7 +49,7 @@ public class ConnectLoginController extends BaseConnectController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 url = buildAppErrorRu(type, providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 res.sendRedirect(url);
-                return "";
+                return ;
             }
 
             int provider = AccountTypeEnum.getProvider(providerStr);
@@ -63,18 +62,17 @@ public class ConnectLoginController extends BaseConnectController {
             if (!configureManager.checkAppIsExist(clientId)) {
                 url = buildAppErrorRu(type, providerStr, ru, ErrorUtil.INVALID_CLIENTID, null);
                 res.sendRedirect(url);
-                return "";
+                return;
             }
 
             String uuid = UUID.randomUUID().toString();
             url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps);
-
             res.sendRedirect(url);
-            return "";
+            return;
         } catch (OAuthProblemException e) {
             url = buildAppErrorRu(type, providerStr, ru, e.getError(), e.getDescription());
             res.sendRedirect(url);
-            return "";
+            return;
         } finally {
             //用户登陆log--二期迁移到callback中记录log
             UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
