@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.connect;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.dao.connect.ConnectTokenDAO;
 import com.sogou.upd.passport.model.OAuthConsumer;
@@ -85,4 +86,22 @@ public class ConnectAuthServiceTest extends BaseTest {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
+
+    @Test
+    public void testCode() {
+        int provider = 3;
+        int client_id = 1120;
+        String passportId = "02BB90BF300D0E08F5CE9F2F6B1C6B06@qq.sohu.com";
+        String openId = "02BB90BF300D0E08F5CE9F2F6B1C6B06";
+        String accessToken = "B2553A801D4197A05A6B93E950DAC6C6";
+        String str="accessToken=B2553A801D4197A05A6B93E950DAC6C6&client_id=1120&expires_in=777600&instance_id=1&isthird=0&openid=02BB90BF300D0E08F5CE9F2F6B1C6B06&yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
+       try {
+           String code = Coder.encryptMD5(str);
+           System.out.println("result code:"+code);
+       } catch (Exception ex){
+
+       }
+    }
+
+
 }
