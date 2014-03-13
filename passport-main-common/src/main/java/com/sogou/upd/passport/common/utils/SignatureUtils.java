@@ -28,7 +28,7 @@ public class SignatureUtils {
         } catch (Exception e) {
             return null;
         }
-        String baseStr = enParams + "&" + secret;
+        String baseStr = enParams + secret;
         return Coder.encryptMD5(baseStr);
     }
 
