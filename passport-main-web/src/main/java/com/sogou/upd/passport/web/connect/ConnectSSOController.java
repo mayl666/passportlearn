@@ -78,9 +78,9 @@ public class ConnectSSOController extends BaseConnectController {
             TreeMap map=new TreeMap();
             map.put("openid",params.getOpenid());
             map.put("access_token",params.getAccess_token());
-            map.put("expires_in",params.getExpires_in());
-            map.put("client_id",params.getClient_id());
-            map.put("isthird",params.getIsthird());
+            map.put("expires_in",Long.toString(params.getExpires_in()));
+            map.put("client_id",Integer.toString(params.getClient_id()));
+            map.put("isthird",Integer.toString(params.getIsthird()));
             if(!Strings.isNullOrEmpty(params.getRefresh_token())){
                 map.put("refresh_token",params.getRefresh_token());
             }
