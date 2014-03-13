@@ -18,7 +18,7 @@ public class SignatureUtils {
         StringBuilder paramsBase = new StringBuilder("");
         Set<String> sortKeys = params.keySet();
         for (String key : sortKeys) {
-            paramsBase.append(key).append("=").append(params.get(key));
+            paramsBase.append(key).append("=").append(params.get(key)).append("&");
         }
         String enParams;
         try {
