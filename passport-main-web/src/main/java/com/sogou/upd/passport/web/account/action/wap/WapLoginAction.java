@@ -132,7 +132,7 @@ public class WapLoginAction extends BaseController {
             return "empty";
         } else {
             int isNeedCaptcha = 0;
-            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
+            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip,result.getCode());
             //校验是否需要验证码
             boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
             if (needCaptcha) {

@@ -72,7 +72,7 @@
         <!--c3p0是异步操作的，缓慢的JDBC操作通过帮助进程完成。扩展这些操作可以有效的提升性能
         通过多线程实现多个操作同时被执行。Default: 3-->
         <property name="numHelperThreads">
-        <value>10</value>
+            <value>10</value>
         </property>
     </bean>
 
@@ -121,7 +121,7 @@
         <property name="breakAfterAcquireFailure" value="false"/>
         <property name="testConnectionOnCheckout" value="false"/>
         <property name="numHelperThreads">
-        <value>10</value>
+            <value>10</value>
         </property>
     </bean>
 
