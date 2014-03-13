@@ -125,4 +125,27 @@ public interface CommonManager {
      */
     public String buildCreateSSOCookieUrl(String domain,int client_id, String passportId,String uniqname,String refnick, String ru, String ip);
 
+    /**
+     * 根据字符串获取code值
+     * @param firstStr
+     * @param clientId
+     * @param ct
+     * @return
+     */
+    public String getCode(String firstStr, int clientId, long ct);
+
+    /**
+     * 判断时间戳（秒）是否有效
+     * @param ct
+     * @return
+     */
+    public boolean isSecCtValid(long ct);
+
+    /**
+     * 判断时间戳（毫秒）是否有效
+     * @param ct
+     * @return
+     */
+    public boolean isMillCtValid(long ct);
+
 }

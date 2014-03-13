@@ -227,16 +227,25 @@ public class CommonManagerImpl implements CommonManager {
     @Override
     public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {
         String code = getCode(firstStr.toString(), clientId, ct);
-        long currentTime = System.currentTimeMillis() / 1000;
         boolean isCodeEqual = code.equalsIgnoreCase(originalCode);
-        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
-        if (isCodeEqual && timeRight) {
-            return true;
-        } else {
-            return false;
-        }
+        return isCodeEqual;
     }
 
+    @Override
+    public boolean isMillCtValid(long ct){
+        long currentTime = System.currentTimeMillis();
+        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM_IN_MILLI;
+        return timeRight;
+    }
+
+    @Override
+    public boolean isSecCtValid(long ct){
+        long currentTime = System.currentTimeMillis()/1000;
+        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
+        return timeRight;
+    }
+
+    @Override
     public String getCode(String firstStr, int clientId, long ct) {
         AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
         if (appConfig == null) {
