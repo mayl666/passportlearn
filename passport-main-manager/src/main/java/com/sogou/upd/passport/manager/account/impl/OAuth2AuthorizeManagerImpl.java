@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
 
     private static final Logger logger = LoggerFactory.getLogger(OAuth2AuthorizeManagerImpl.class);
-    private static final Logger shPlusTokenLog = LoggerFactory.getLogger("shPlusTokenLogger");
 
     @Autowired
     private AppConfigService appConfigService;
@@ -55,8 +54,7 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
             AccountToken renewAccountToken;
             if (GrantTypeEnum.HEART_BEAT.toString().equals(grantType)) {
                 String refreshToken = oauthRequest.getRefreshToken();
-                String sid = oauthRequest.getSid();
-                boolean isRightPcRToken = isRightPcRToken(passportId, clientId, instanceId, refreshToken, sid);
+                boolean isRightPcRToken = pcAccountManager.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
                 if (!isRightPcRToken) {
                     result.setCode(ErrorUtil.INVALID_REFRESH_TOKEN);
                     return result;
@@ -87,10 +85,6 @@ public class OAuth2AuthorizeManagerImpl implements OAuth2AuthorizeManager {
         }
     }
 
-    private boolean isRightPcRToken(String passportId, int clientId, String instanceId, String refreshToken, String sid) throws Exception {
-        boolean isRightPcRToken = pcAccountManager.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
-        return isRightPcRToken;
-    }
 }
 
 
