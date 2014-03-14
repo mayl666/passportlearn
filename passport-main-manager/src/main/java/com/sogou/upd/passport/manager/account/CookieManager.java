@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.form.PPCookieParams;
 import com.sogou.upd.passport.manager.form.SSOCookieParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 
@@ -42,5 +43,13 @@ public interface CookieManager {
      * @return
      */
     public Result setSSOCookie(HttpServletResponse response, SSOCookieParams ssoCookieParams);
+
+    /**
+     *
+     * @param response
+     * @param ppCookieParams
+     * @return
+     */
+    public Result setPPCookie(HttpServletResponse response, PPCookieParams ppCookieParams);
 
 }
