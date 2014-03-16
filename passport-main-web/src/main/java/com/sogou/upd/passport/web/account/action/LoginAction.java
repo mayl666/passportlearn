@@ -13,6 +13,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
@@ -55,7 +56,7 @@ public class LoginAction extends BaseController {
     @Autowired
     private RegManager regManager;
     @Autowired
-    private CommonManager commonManager;
+    private CookieManager cookieManager;
 
     @Autowired
     private HostHolder hostHolder;
@@ -149,9 +150,9 @@ public class LoginAction extends BaseController {
             if (Strings.isNullOrEmpty(sogouRu)) {
                 sogouRu = LOGIN_INDEX_URL;
             }
-            result = commonManager.setCookie(response, userId, clientId, ip, sogouMaxAge, sogouRu, autoLogin, COOKIE_URL_SOHURU);
+            result = cookieManager.setCookie(response, userId, clientId, ip,sogouRu,sogouMaxAge);
             if (result.isSuccess()) {
-                result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
+//                result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
                 result.setDefaultModel("userid", userId);
                 loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
             }

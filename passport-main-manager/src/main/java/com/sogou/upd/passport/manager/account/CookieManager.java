@@ -37,6 +37,31 @@ public interface CookieManager {
     public Result setCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int persistentcookie);
 
     /**
+     * 通过参数种cookie;
+     * @param response
+     * @param passportId
+     * @param client_id
+     * @param ip
+     * @param ru
+     * @param maxAge
+     * @return
+     */
+    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip,String ru,int maxAge);
+
+    /**
+     * 生成设置sso cookie的url
+     * @param domain
+     * @param client_id
+     * @param passportId
+     * @param uniqname
+     * @param refnick
+     * @param ru
+     * @param ip
+     * @return
+     */
+    public String buildCreateSSOCookieUrl(String domain,int client_id, String passportId,String uniqname,String refnick, String ru, String ip);
+
+    /**
      * 种SSO cookie
      * @param response
      * @param ssoCookieParams

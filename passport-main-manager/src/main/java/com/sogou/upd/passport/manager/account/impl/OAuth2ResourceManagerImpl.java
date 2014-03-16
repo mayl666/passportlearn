@@ -131,10 +131,15 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
 
-            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams(passportId,
-                    CommonConstant.DEFAULT_CONNECT_REDIRECT_URL, 1, "sogou.com");
             if (CommonHelper.isBuildNewCookie()) {
-                cookieResult = sgLoginApiManager.getCookieValue(createCookieUrlApiParams);
+                //生成cookie
+                CookieApiParams cookieApiParams = new CookieApiParams();
+                cookieApiParams.setUserid(passportId);
+                cookieApiParams.setClient_id(clientId);
+                cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
+                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+                cookieApiParams.setPersistentcookie(String.valueOf(1));
+                cookieResult = sgLoginApiManager.getCookieInfo(cookieApiParams);
             } else {
                 //生成cookie
                 CookieApiParams cookieApiParams = new CookieApiParams();

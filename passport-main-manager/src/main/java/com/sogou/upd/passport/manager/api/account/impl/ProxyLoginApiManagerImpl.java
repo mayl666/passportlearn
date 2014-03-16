@@ -151,7 +151,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     @Override
-    public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
+    public Result getCookieInfoWithRedirectUrl(CreateCookieUrlApiParams createCookieUrlApiParams) {
         //生成cookie
         CookieApiParams cookieApiParams = new CookieApiParams();
         cookieApiParams.setUserid(createCookieUrlApiParams.getUserid());

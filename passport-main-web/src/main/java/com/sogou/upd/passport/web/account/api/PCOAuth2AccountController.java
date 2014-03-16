@@ -76,6 +76,9 @@ public class PCOAuth2AccountController extends BaseController {
     private HostHolder hostHolder;
     @Autowired
     private PCOAuth2LoginManager pcOAuth2LoginManager;
+    @Autowired
+    private CookieManager cookieManager;
+
 
     @RequestMapping(value = "/sogou/fastreg", method = RequestMethod.GET)
     public String fastreg(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "instanceid", defaultValue = "") String instanceid, Model model) throws Exception {
@@ -411,12 +414,7 @@ public class PCOAuth2AccountController extends BaseController {
         }
 
         String sogouRu ="https://account.sogou.com";
-        String sohuRu = "https://account.sogou.com"+ redirectUrl;
-        result = commonManager.setCookie(response,passportId,oauth2PcIndexParams.getClient_id(),getIp(request),-1,sogouRu,0,sohuRu);
-        if (result.isSuccess()) {
-            response.sendRedirect((String) result.getModels().get("cookieUrl"));
-            return;
-        }
+        cookieManager.setCookie(response,passportId,oauth2PcIndexParams.getClient_id(),getIp(request),sogouRu,-1);
         response.sendRedirect(redirectUrl);
         return;
     }
