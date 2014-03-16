@@ -356,7 +356,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                         mid_avatar = (String) getPhotoResult.getModels().get("img_50");
                         tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
                     }
-                    result.setDefaultModel("userid",account.getPassportId());
+                    result.setDefaultModel("userid", account.getPassportId());
                 }
             } else {
                 accountBaseInfo = getBaseInfo(passportId);
