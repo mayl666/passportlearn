@@ -152,7 +152,7 @@ public class LoginAction extends BaseController {
             }
             result = cookieManager.setCookie(response, userId, clientId, ip,sogouRu,sogouMaxAge);
             if (result.isSuccess()) {
-//                result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
+                result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
                 result.setDefaultModel("userid", userId);
                 loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
             }
