@@ -412,9 +412,7 @@ public class PCOAuth2AccountController extends BaseController {
             response.sendRedirect(redirectUrl);
             return;
         }
-
-        String sogouRu ="https://account.sogou.com";
-        cookieManager.setCookie(response,passportId,oauth2PcIndexParams.getClient_id(),getIp(request),sogouRu,-1);
+        cookieManager.setCookie(response,passportId,oauth2PcIndexParams.getClient_id(),getIp(request),CommonConstant.DEFAULT_INDEX_URL,-1);
         response.sendRedirect(redirectUrl);
         return;
     }

@@ -14,38 +14,6 @@ import javax.servlet.http.HttpServletResponse;
  * To change this template use File | Settings | File Templates.
  */
 public interface CommonManager {
-
-    /**
-     * username包括email和手机号
-     *
-     * @param username
-     * @return
-     */
-    public boolean isAccountExists(String username) throws Exception;
-
-    /**
-     * @param passportId
-     * @return
-     * @throws Exception
-     */
-    public Account queryAccountByPassportId(String passportId) throws Exception;
-
-    /**
-     * @param account
-     * @return
-     * @throws Exception
-     */
-    public boolean updateState(Account account, int newState) throws Exception;
-
-    /**
-     * @param account
-     * @param password
-     * @param needMD5
-     * @return
-     * @throws Exception
-     */
-    public boolean resetPassword(Account account, String password, boolean needMD5) throws Exception;
-
     /**
      * 用户注册时ip次数的累加
      *

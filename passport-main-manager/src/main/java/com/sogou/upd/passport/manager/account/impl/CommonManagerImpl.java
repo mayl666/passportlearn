@@ -38,54 +38,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Component
 public class CommonManagerImpl implements CommonManager {
-
     private static Logger log = LoggerFactory.getLogger(CommonManagerImpl.class);
 
-
-    @Autowired
-    private AccountService accountService;
-    @Autowired
-    private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private OperateTimesService operateTimesService;
     @Autowired
     private AppConfigService appConfigService;
-
-    @Override
-    public boolean isAccountExists(String username) throws Exception {
-        try {
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
-                if (!Strings.isNullOrEmpty(passportId)) {
-                    return true;
-                }
-            } else {
-                Account account = accountService.queryAccountByPassportId(username);
-                if (account != null) {
-                    return true;
-                }
-            }
-        } catch (ServiceException e) {
-            log.error("Check account is exists Exception, username:" + username, e);
-            throw new Exception(e);
-        }
-        return false;
-    }
-
-    @Override
-    public Account queryAccountByPassportId(String passportId) throws Exception {
-        return accountService.queryAccountByPassportId(passportId);
-    }
-
-    @Override
-    public boolean updateState(Account account, int newState) throws Exception {
-        return accountService.updateState(account, newState);
-    }
-
-    @Override
-    public boolean resetPassword(Account account, String password, boolean needMD5) throws Exception {
-        return accountService.resetPassword(account, password, needMD5);
-    }
 
     @Override
     public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {

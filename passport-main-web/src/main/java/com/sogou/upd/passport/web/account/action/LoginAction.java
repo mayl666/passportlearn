@@ -61,9 +61,6 @@ public class LoginAction extends BaseController {
     @Autowired
     private HostHolder hostHolder;
 
-    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
-    private static final String COOKIE_URL_SOHURU = "https://account.sogou.com/static/api/ru.htm";   //种完sohu域要跳转的URL
-
 
     /**
      * 用户登录检查是否显示验证码
@@ -148,7 +145,7 @@ public class LoginAction extends BaseController {
             int sogouMaxAge = autoLogin == 0 ? -1 : (int) DateAndNumTimesConstant.TWO_WEEKS;
             String sogouRu = loginParams.getRu();
             if (Strings.isNullOrEmpty(sogouRu)) {
-                sogouRu = LOGIN_INDEX_URL;
+                sogouRu = CommonConstant.DEFAULT_INDEX_URL;
             }
             result = cookieManager.setCookie(response, userId, clientId, ip,sogouRu,sogouMaxAge);
             if (result.isSuccess()) {
