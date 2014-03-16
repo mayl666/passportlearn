@@ -1,15 +1,11 @@
 package com.sogou.upd.passport.manager.account.impl;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -19,7 +15,6 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
 import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
@@ -41,13 +36,9 @@ public class CommonManagerImpl implements CommonManager {
 
     private static Logger log = LoggerFactory.getLogger(CommonManagerImpl.class);
     private static final String COOKIE_URL_RUSTR = "://account.sogou.com/static/api/ru.htm";
-    private static final String COOKIE_URL_RU = "https://account.sogou.com/static/api/ru.htm";
-
 
     @Autowired
     private AccountService accountService;
-    @Autowired
-    private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private LoginApiManager sgLoginApiManager;
     @Autowired
@@ -56,32 +47,6 @@ public class CommonManagerImpl implements CommonManager {
     private OperateTimesService operateTimesService;
     @Autowired
     private AppConfigService appConfigService;
-
-    @Override
-    public boolean isAccountExists(String username) throws Exception {
-        try {
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
-                if (!Strings.isNullOrEmpty(passportId)) {
-                    return true;
-                }
-            } else {
-                Account account = accountService.queryAccountByPassportId(username);
-                if (account != null) {
-                    return true;
-                }
-            }
-        } catch (ServiceException e) {
-            log.error("Check account is exists Exception, username:" + username, e);
-            throw new Exception(e);
-        }
-        return false;
-    }
-
-    @Override
-    public Account queryAccountByPassportId(String passportId) throws Exception {
-        return accountService.queryAccountByPassportId(passportId);
-    }
 
     @Override
     public boolean updateState(Account account, int newState) throws Exception {

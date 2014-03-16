@@ -53,31 +53,6 @@ public class CookieManagerImpl implements CookieManager {
     }
 
     @Override
-    public Result setCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int maxAge) {
-        Result result = new APIResultSupport(false);
-        if (ManagerHelper.isUsedSohuProxyApiToGetCookie()) {  //使用sohu新提供的getcookieinfo接口
-            result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-        } else {       //使用之前的从location里拿的cookie的接口，为回滚做准备
-            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-            createCookieUrlApiParams.setUserid(cookieApiParams.getUserid());
-            String ru = Strings.isNullOrEmpty(cookieApiParams.getRu()) ? LOGIN_INDEX_URL : cookieApiParams.getRu();
-            createCookieUrlApiParams.setRu(ru);
-            createCookieUrlApiParams.setDomain("sogou.com");
-            result = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
-        }
-        //获取cookie成功，种sogou域cookie
-        if (result.isSuccess()) {
-            String ppinf = (String) result.getModels().get("ppinf");
-            String pprdig = (String) result.getModels().get("pprdig");
-            ServletUtil.setCookie(response, "ppinf", ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-            ServletUtil.setCookie(response, "pprdig", pprdig, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-            result.setSuccess(true);
-            result.setDefaultModel("userid", cookieApiParams.getUserid());
-        }
-        return result;
-    }
-
-    @Override
     public Result setSSOCookie(HttpServletResponse response, SSOCookieParams ssoCookieParams){
         Result result = new APIResultSupport(false);
         //验证code

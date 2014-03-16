@@ -16,21 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 public interface CommonManager {
 
     /**
-     * username包括email和手机号
-     *
-     * @param username
-     * @return
-     */
-    public boolean isAccountExists(String username) throws Exception;
-
-    /**
-     * @param passportId
-     * @return
-     * @throws Exception
-     */
-    public Account queryAccountByPassportId(String passportId) throws Exception;
-
-    /**
      * @param account
      * @return
      * @throws Exception
