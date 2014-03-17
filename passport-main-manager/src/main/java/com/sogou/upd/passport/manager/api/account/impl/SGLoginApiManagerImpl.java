@@ -109,7 +109,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     }
 
     @Override
-    public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
+    public Result getCookieInfoWithRedirectUrl(CreateCookieUrlApiParams createCookieUrlApiParams) {
         return null;
     }
 

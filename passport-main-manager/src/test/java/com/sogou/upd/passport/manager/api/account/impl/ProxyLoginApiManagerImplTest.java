@@ -97,7 +97,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
         createCookieUrlApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
         createCookieUrlApiParams.setPersistentcookie(1);
         createCookieUrlApiParams.setDomain("sogou.com");
-        Result result = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+        Result result = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
         System.out.println(result);
     }
 

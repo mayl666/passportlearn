@@ -33,6 +33,10 @@ public class CookieApiParams extends BaseApiParams {
     public CookieApiParams() {
     }
 
+    public CookieApiParams(String userid, int client_id, String ru, String ip) {
+        this(userid, client_id, IS_ACTIVE, ru, ip, "1", null, null);
+    }
+
     public CookieApiParams(String userid, int client_id, String ru, String ip, String uniqname, String refnick) {
         this(userid, client_id, IS_ACTIVE, ru, ip, "1", uniqname, refnick);
     }
