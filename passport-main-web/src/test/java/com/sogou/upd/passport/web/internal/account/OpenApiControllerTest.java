@@ -38,7 +38,7 @@ public class OpenApiControllerTest extends BaseActionTest {
         params.put("openid", openid);
         params.put("code", code);
         params.put("ct", String.valueOf(ct));
-        params.put("openApiName", "/v3/user/sogou_flag");
+        params.put("openApiName", "/v3/user/get_qqclub_face");
         Map<String, String> maps = new HashMap<String, String>();
         maps.put("format", "json");
         maps.put("opt", "set");
@@ -47,7 +47,7 @@ public class OpenApiControllerTest extends BaseActionTest {
         maps.put("userip", "10.128.134.167");
         String mapString = JacksonJsonMapperUtil.getMapper().writeValueAsString(maps);
         params.put("params", mapString);
-        String result = sendPost("http://localhost/internal/connect/qq/light", params);
+        String result = sendPost("http://localhost/internal/connect/qq/clubface", params);
         System.out.println(result);
     }
 
