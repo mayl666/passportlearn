@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.account;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -34,11 +35,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testInitialAccount() throws Exception {
         Account account = accountService.initialAccount(MOBILE, PASSWORD, true, IP, PROVIDER);
-        if (account != null) {
-            System.out.println("插入account表成功...");
-        } else {
-            System.out.println("插入account表不成功!!!");
-        }
+        Assert.assertNotNull(account);
     }
 
     /**

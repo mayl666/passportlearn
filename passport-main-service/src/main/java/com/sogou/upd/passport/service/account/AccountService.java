@@ -57,6 +57,17 @@ public interface AccountService {
   public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException;
 
   /**
+     * 根据passwordType验证用户密码是否正确
+     *
+     * @param password 用户需要验证的密码
+     * @param account  用户实体类
+     * @param needMD5  当passwordType=2时用到此参数
+     * @return
+     * @throws ServiceException
+     */
+    public Result verifyUserPwdValidByPasswordType(Result result, String password, Account account, Boolean needMD5) throws ServiceException;
+
+    /**
    * 根据passportId删除Account，内部debug接口使用
    */
   public boolean deleteAccountByPassportId(String passportId) throws ServiceException;
@@ -85,6 +96,7 @@ public interface AccountService {
    * @return
    */
   public boolean activeEmail(String username,String token,int clientId) throws Exception;
+
   /**
    * 种根域和子域下的cookie
    *
@@ -96,6 +108,7 @@ public interface AccountService {
    *获取验证码
    */
   public Map<String,Object> getCaptchaCode(String code);
+
   /**
    * 校验验证码是否匹配
    *
@@ -124,16 +137,33 @@ public interface AccountService {
 
   public boolean updateState(Account account, int newState) throws ServiceException;
 
+    /**
+     * 更新或设置头像
+     *
+     * @param account
+     * @param photoUrl
+     * @return
+     * @throws ServiceException
+     */
+
+    public boolean updateImage(Account account, String photoUrl) throws ServiceException;
+
+
   /*
    *检查验证码
    */
   public boolean checkCaptchaCode(String token, String captchaCode) throws Exception;
 
+    /*
+     *检查昵称是否存在
+     */
+    public String checkUniqName(String nickname) throws Exception;
 
     /*
        *更新昵称
        */
     public boolean updateUniqName(Account account, String nickname);
+
     /*
        *更新头像
        */
@@ -146,8 +176,8 @@ public interface AccountService {
     public boolean removeUniqName(String nickname) throws ServiceException;
 
     /*
-     *检查昵称是否存在
+     *获取激活信息
      */
-    public String checkUniqName(String nickname) throws Exception;
+    public Map<String, String> getActiveInfo(String username);
 
 }

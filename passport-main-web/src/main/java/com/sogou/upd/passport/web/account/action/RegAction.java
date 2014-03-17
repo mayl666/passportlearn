@@ -10,16 +10,11 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.ManagerHelper;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BaseMobileApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
@@ -57,8 +52,6 @@ public class RegAction extends BaseController {
     @Autowired
     private SecureManager secureManager;
     @Autowired
-    private RegisterApiManager proxyRegisterApiManager;
-    @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private CookieManager cookieManager;
@@ -80,7 +73,6 @@ public class RegAction extends BaseController {
             return result.toString();
         }
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-
         String clientIdStr = checkParam.getClient_id();
         int clientId = !Strings.isNullOrEmpty(clientIdStr) ? Integer.valueOf(clientIdStr) : CommonConstant.SGPP_DEFAULT_CLIENTID;
         result = checkAccountNotExists(username, clientId);
@@ -147,7 +139,7 @@ public class RegAction extends BaseController {
         } catch (Exception e) {
             logger.error("reguser:User Register Is Failed,Username is " + regParams.getUsername(), e);
         } finally {
-            String logCode = null;
+            String logCode;
             if (!Strings.isNullOrEmpty(finalCode)) {
                 logCode = finalCode;
             } else {
@@ -248,12 +240,8 @@ public class RegAction extends BaseController {
 
             String mobile = reqParams.getMobile();
             //为了数据迁移三个阶段，这里需要转换下参数类
-            BaseMoblieApiParams baseMoblieApiParams = buildProxyApiParams(clientId, mobile);
-            if (ManagerHelper.isInvokeProxyApi(mobile)) {
-                result = proxyRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
-            } else {
-                result = sgRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
-            }
+            BaseMobileApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
+            result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
         } catch (Exception e) {
             logger.error("method[sendMobileCode] send mobile sms error.{}", e);
         } finally {
@@ -273,11 +261,11 @@ public class RegAction extends BaseController {
         return result.toString();
     }
 
-    private BaseMoblieApiParams buildProxyApiParams(int clientId, String mobile) {
-        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-        baseMoblieApiParams.setMobile(mobile);
-        baseMoblieApiParams.setClient_id(clientId);
-        return baseMoblieApiParams;
+    private BaseMobileApiParams buildProxyApiParams(int clientId, String mobile) {
+        BaseMobileApiParams baseMobileApiParams = new BaseMobileApiParams();
+        baseMobileApiParams.setMobile(mobile);
+        baseMobileApiParams.setClient_id(clientId);
+        return baseMobileApiParams;
     }
 
     //检查用户是否存在
@@ -297,13 +285,13 @@ public class RegAction extends BaseController {
         if (username.indexOf("@") == -1) {
             //判断是否是手机号注册
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                result = regManager.isAccountNotExists(username, true, clientId);
+                result = regManager.isAccountNotExists(username, clientId);
             } else {
                 username = username + "@sogou.com";
-                result = regManager.isAccountNotExists(username, false, clientId);
+                result = regManager.isAccountNotExists(username, clientId);
             }
         } else {
-            result = regManager.isAccountNotExists(username, false, clientId);
+            result = regManager.isAccountNotExists(username, clientId);
         }
         return result;
     }

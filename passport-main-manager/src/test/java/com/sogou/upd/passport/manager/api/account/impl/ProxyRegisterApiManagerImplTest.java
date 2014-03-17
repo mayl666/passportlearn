@@ -34,9 +34,9 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
 
     @Test
     public void testSendMobileRegCaptcha() {
-        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-        baseMoblieApiParams.setMobile("18952461329");
-        Result result = proxyRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
+        BaseMobileApiParams baseMobileApiParams = new BaseMobileApiParams();
+        baseMobileApiParams.setMobile("18952461329");
+        Result result = proxyRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
         System.out.println(result);
     }
 

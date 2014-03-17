@@ -60,10 +60,10 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
     }
 
     @Override
-    public Result sendMobileRegCaptcha(BaseMoblieApiParams baseMoblieApiParams) {
+    public Result sendMobileRegCaptcha(BaseMobileApiParams baseMobileApiParams) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.SEND_MOBILE_REG_CAPTCHA, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParams(baseMoblieApiParams);
-        String mobile = baseMoblieApiParams.getMobile();
+        requestModelXml.addParams(baseMobileApiParams);
+        String mobile = baseMobileApiParams.getMobile();
         Result result = executeResult(requestModelXml, mobile);
         if (result.isSuccess()) {
             result.setMessage("验证码已发送至" + mobile);

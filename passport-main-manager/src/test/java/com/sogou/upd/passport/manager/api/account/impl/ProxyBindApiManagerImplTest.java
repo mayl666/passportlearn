@@ -5,7 +5,7 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BaseMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 //
 //
 //    public void testUnbindMobile(){
-//        BaseMoblieApiParams unBindMobileApiParams =new BaseMoblieApiParams();
+//        BaseMobileApiParams unBindMobileApiParams =new BaseMobileApiParams();
 //        unBindMobileApiParams.setMobile("18210193340");
 //        unBindMobileApiParams.setClient_id(clientId);
 //        Result result = proxyBindApiManager.updateBindMobile(unBindMobileApiParams);
@@ -60,7 +60,7 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 //    public void testUnbindMobile(){
 //        String mobile="13940075348";
 //        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UNBING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-//        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+//        BaseMobileApiParams baseMoblieApiParams = new BaseMobileApiParams();
 //        baseMoblieApiParams.setMobile(mobile);
 //        requestModelXml.addParams(baseMoblieApiParams);
 //        Result result= baseProxyManager.executeResult(requestModelXml,mobile);
@@ -116,9 +116,9 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 
     @Test
     public void testGetPassportIdFromMobile(){
-        BaseMoblieApiParams baseMoblieApiParams=new BaseMoblieApiParams();
-        baseMoblieApiParams.setMobile("18910872912");
-        Result result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+        BaseMobileApiParams baseMobileApiParams =new BaseMobileApiParams();
+        baseMobileApiParams.setMobile("18910872912");
+        Result result = proxyBindApiManager.getPassportIdByMobile(baseMobileApiParams);
         System.out.println(result.toString());
     }
 }

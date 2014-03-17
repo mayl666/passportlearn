@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Time: 下午9:13
  * To change this template use File | Settings | File Templates.
  */
-public class RegMobileCaptchaApiParams extends BaseMoblieApiParams {
+public class RegMobileCaptchaApiParams extends BaseMobileApiParams {
 
     @NotBlank(message = "密码不允许为空")
     private String password;  //必须为md5

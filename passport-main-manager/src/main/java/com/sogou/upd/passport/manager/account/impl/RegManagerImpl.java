@@ -9,12 +9,9 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.ManagerHelper;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
-import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BaseMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
@@ -44,14 +41,6 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
-    private RegisterApiManager proxyRegisterApiManager;
-    @Autowired
-    private BindApiManager proxyBindApiManager;
-    @Autowired
-    private BindApiManager sgBindApiManager;
-    @Autowired
-    private CommonManager commonManager;
-    @Autowired
     private OperateTimesService operateTimesService;
     @Autowired
     private SnamePassportMappingService snamePassportMappingService;
@@ -66,7 +55,7 @@ public class RegManagerImpl implements RegManager {
     public Result webRegister(WebRegisterParams regParams, String ip) throws Exception {
 
         Result result = new APIResultSupport(false);
-        String username = null;
+        String username;
         try {
             int clientId = Integer.parseInt(regParams.getClient_id());
             username = regParams.getUsername().trim().toLowerCase();
@@ -110,19 +99,11 @@ public class RegManagerImpl implements RegManager {
                     }
                     RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                             clientId, ru);
-                    if (ManagerHelper.isInvokeProxyApi(username)) {
-                        result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
-                    } else {
-                        result = sgRegisterApiManager.regMailUser(regEmailApiParams);
-                    }
+                    result = sgRegisterApiManager.regMailUser(regEmailApiParams);
                     break;
                 case PHONE://手机号
                     RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);
-                    if (ManagerHelper.isInvokeProxyApi(username)) {
-                        result = proxyRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
-                    } else {
-                        result = sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
-                    }
+                    result = sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
                     break;
             }
         } catch (ServiceException e) {
@@ -181,7 +162,7 @@ public class RegManagerImpl implements RegManager {
                 //激活失败
                 Account account = accountService.queryAccountByPassportId(username);
                 if (account != null) {
-                    if (account.getFlag() == AccountStatusEnum.REGULAR.getValue()) {
+                    if (Integer.parseInt(account.getFlag()) == AccountStatusEnum.REGULAR.getValue()) {
                         //已经激活，无需再次激活
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED);
                         return result;
@@ -207,41 +188,16 @@ public class RegManagerImpl implements RegManager {
         return accountService.getCaptchaCode(code);
     }
 
-    //type为true表明是手机用户，false为个性账号和外域
     @Override
-    public Result isAccountNotExists(String username, boolean type, int clientId) throws Exception {
+    public Result isAccountNotExists(String username, int clientId) throws Exception {
         Result result;
         try {
             CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
-            BaseMoblieApiParams params = new BaseMoblieApiParams();
+            BaseMobileApiParams params = new BaseMobileApiParams();
             params.setMobile(username);
-            if (ManagerHelper.isInvokeProxyApi(username)) {
-                //搜狐流程暂时保留，用于自测
-                if (type) {
-                    //手机号 判断绑定账户
-                    result = proxyBindApiManager.getPassportIdByMobile(params);
-                    if (result.isSuccess()) {
-                        result = new APIResultSupport(false);
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        return result;
-                    } else if (CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username);
-                    } else {
-                        result.setSuccess(true);
-                        result.setMessage("账户未被占用");
-                    }
-                } else {
-                    result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-                    if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username);
-                    }
-                }
-            } else {
-                //搜狗流程
-                result = sgRegisterApiManager.checkUser(checkUserApiParams);
-                if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
-                    result = isSohuplusUser(username);
-                }
+            result = sgRegisterApiManager.checkUser(checkUserApiParams);
+            if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
+                result = isSohuplusUser(username);
             }
         } catch (ServiceException e) {
             logger.error("Check account is exists Exception, username:" + username, e);

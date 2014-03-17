@@ -10,9 +10,9 @@ import java.util.Date;
  */
 public class Account {
 
-    public static final int NO_PASSWORD = 0; //无密码
-    public static final int NEW_ACCOUNT_VERSION = 1; // sogou-passport新生成的账号
-    public static final int OLD_ACCOUNT_VERSION = 2; // sohu-passport迁移过来的账号
+    public static final String NO_PASSWORD = "0"; //无密码
+    public static final String NEW_ACCOUNT_VERSION = "1";
+    public static final String OLD_ACCOUNT_VERSION = "2";
 
     private long id;
     private String passportId;
@@ -20,9 +20,9 @@ public class Account {
     private String mobile;
     private Date regTime;
     private String regIp;
-    private int flag;   // 1-正式用户，2-未激活账号，3-锁定或封杀用户
-    private int passwordtype;  // 密码类型,默认为0
-    private int accountType; // 账号类型，1-email，2-phone，3-qq，4-sina，5-renren，6-taobao；7-baidu；
+    private String flag;   //0：未激活 1：激活 2：封杀用户
+    private String passwordType;  //  0-原密码 1：md5 2：crypt(MD5（password）, salt )salt  salt = 8位随机的a-zA-Z0-9
+    private int accountType; // 账号类型，1-email，2-phone，3-qq，4-sina，5-renren，6-taobao；7-baidu；8-sogou
     private String uniqname; // 昵称
     private String avatar;  // 头像url
 
@@ -45,7 +45,7 @@ public class Account {
     }
 
     public Account(long id, String passportId, String password, String mobile, Date regTime,
-                   String regIp, int flag, int passwordtype, int accountType) {
+                   String regIp, String flag, String passwordType, int accountType) {
         this.id = id;
         this.passportId = passportId;
         this.password = password;
@@ -53,7 +53,7 @@ public class Account {
         this.regTime = regTime;
         this.regIp = regIp;
         this.flag = flag;
-        this.passwordtype = passwordtype;
+        this.passwordType = passwordType;
         this.accountType = accountType;
     }
 
@@ -73,13 +73,6 @@ public class Account {
         this.passportId = passportId;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getMobile() {
         return mobile;
@@ -105,20 +98,28 @@ public class Account {
         this.regIp = regIp;
     }
 
-    public int getFlag() {
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getFlag() {
         return flag;
     }
 
-    public void setFlag(int flag) {
+    public void setFlag(String flag) {
         this.flag = flag;
     }
 
-    public int getPasswordtype() {
-        return passwordtype;
+    public String getPasswordType() {
+        return passwordType;
     }
 
-    public void setPasswordtype(int passwordtype) {
-        this.passwordtype = passwordtype;
+    public void setPasswordType(String passwordType) {
+        this.passwordType = passwordType;
     }
 
     public int getAccountType() {
@@ -144,4 +145,6 @@ public class Account {
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
+
+
 }

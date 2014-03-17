@@ -87,13 +87,13 @@ public class LoginAction extends BaseController {
         if (username.indexOf("@") == -1) {
             //判断是否是手机号注册
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                result = regManager.isAccountNotExists(username, true, clientId);
+                result = regManager.isAccountNotExists(username, clientId);
             } else {
                 String tmpUsername = username + "@sogou.com";
-                result = regManager.isAccountNotExists(tmpUsername, false, clientId);
+                result = regManager.isAccountNotExists(tmpUsername, clientId);
             }
         } else {
-            result = regManager.isAccountNotExists(username, false, clientId);
+            result = regManager.isAccountNotExists(username, clientId);
         }
         if (!result.isSuccess()) {
             //校验是否需要验证码

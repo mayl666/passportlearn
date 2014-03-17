@@ -34,7 +34,7 @@ public class AccountDAOTest extends BaseDAOTest {
         account.setRegIp(IP);
         account.setRegTime(new Date());
         account.setFlag(FLAG);
-        account.setPasswordtype(PWDTYPE);
+        account.setPasswordType(PWDTYPE);
         account.setAccountType(ACCOUNT_TYPE);
         account.setUniqname("fdfd");
         account.setAvatar("fdfetrtrt");

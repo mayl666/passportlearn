@@ -235,19 +235,19 @@ public class SecureManagerImpl implements SecureManager {
                 getUserInfoApiparams.setFields(SECURE_FIELDS /*+",uniqname,avatarurl"*/);
                 result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
 
-                Result shPlusResult=shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                if(shPlusResult.isSuccess()){
-                    Object obj= shPlusResult.getModels().get("baseInfo");
-                    if(obj!=null){
-                        AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
-                        String uniqname=baseInfo.getUniqname();
-                        result.getModels().put("uniqname",Coder.encode(Strings.isNullOrEmpty(uniqname)?userId:uniqname,"UTF-8"));
-                        Result photoResult= photoUtils.obtainPhoto(baseInfo.getAvatar(),"50");
-                        if(photoResult.isSuccess()){
-                            result.getModels().put("avatarurl",photoResult.getModels());
+                Result shPlusResult = shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                if (shPlusResult.isSuccess()) {
+                    Object obj = shPlusResult.getModels().get("baseInfo");
+                    if (obj != null) {
+                        AccountBaseInfo baseInfo = (AccountBaseInfo) obj;
+                        String uniqname = baseInfo.getUniqname();
+                        result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
+                        Result photoResult = photoUtils.obtainPhoto(baseInfo.getAvatar(), "50");
+                        if (photoResult.isSuccess()) {
+                            result.getModels().put("avatarurl", photoResult.getModels());
                         }
                     } else {
-                        result.getModels().put("uniqname",userId);
+                        result.getModels().put("uniqname", userId);
                     }
                 }
             } else {
@@ -376,7 +376,7 @@ public class SecureManagerImpl implements SecureManager {
             int clientId = updatePwdApiParams.getClient_id();
 
             //检查是否在ip黑名单里
-            if (operateTimesService.checkIPLimitResetPwd(ip)){
+            if (operateTimesService.checkIPLimitResetPwd(ip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
@@ -424,7 +424,7 @@ public class SecureManagerImpl implements SecureManager {
                                       String newEmail, String oldEmail, String modifyIp, String ru) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (operateTimesService.checkIPBindLimit(modifyIp)){
+            if (operateTimesService.checkIPBindLimit(modifyIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
@@ -519,7 +519,7 @@ public class SecureManagerImpl implements SecureManager {
             boolean saveEmail = true;
             AccountModuleEnum module = AccountModuleEnum.SECURE;
             String newEmail = emailSenderService.checkScodeForEmail(userId, clientId, module, scode, saveEmail);
-            if(StringUtil.isEmpty(newEmail)){
+            if (StringUtil.isEmpty(newEmail)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);
                 return result;
             }
@@ -590,7 +590,7 @@ public class SecureManagerImpl implements SecureManager {
             Account account;
 
             //检查是否在ip黑名单里
-            if (operateTimesService.checkIPBindLimit(modifyIp)){
+            if (operateTimesService.checkIPBindLimit(modifyIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
@@ -683,7 +683,7 @@ public class SecureManagerImpl implements SecureManager {
                                            String smsCode, String scode, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (operateTimesService.checkIPBindLimit(modifyIp)){
+            if (operateTimesService.checkIPBindLimit(modifyIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
@@ -776,7 +776,7 @@ public class SecureManagerImpl implements SecureManager {
                                          String newQues, String newAnswer, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (operateTimesService.checkIPBindLimit(modifyIp)){
+            if (operateTimesService.checkIPBindLimit(modifyIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
@@ -952,19 +952,18 @@ public class SecureManagerImpl implements SecureManager {
     private Result sendSmsCodeToMobile(String mobile, int clientId, AccountModuleEnum module) throws Exception {
         Result result = new APIResultSupport(false);
         try {
+            //校验手机号格式
             if (Strings.isNullOrEmpty(mobile) || !PhoneUtil.verifyPhoneNumberFormat(mobile)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
                 return result;
             }
-            // 验证错误次数是否小于限制次数
+            // 验证码验证错误次数是否小于限制次数,一天不超过10次
             boolean checkFailLimited = mobileCodeSenderService.checkLimitForSmsFail(mobile, clientId, module);
             if (!checkFailLimited) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
                 return result;
             }
-
             result = mobileCodeSenderService.sendSmsCode(mobile, clientId, module);
-
             return result;
         } catch (ServiceException e) {
             logger.error("send sms code to mobile Fail:", e);

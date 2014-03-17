@@ -53,10 +53,11 @@ public class ManagerHelper {
 
     /**
      * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
+     *
      * @param passportId passport内部传输的用户id
      * @return
      */
-    public static boolean isInvokeProxyApi(String passportId){
+    public static boolean isInvokeProxyApi(String passportId) {
         return  AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId));
     }
 
@@ -88,6 +89,7 @@ public class ManagerHelper {
         }
         return code;
     }
+
     /**
      * 内部接口方法签名生成
      *

@@ -56,8 +56,8 @@ public interface MobilePassportMappingDAO {
      * @throws DataAccessException
      */
     @SQL("insert into " +
-            "mobile_passportid" +
-            "_mapping(mobile, passport_id) values (:mobile, :passport_id)")
+            TABLE_NAME +
+            "(mobile, passport_id) values (:mobile, :passport_id)")
     public int insertMobilePassportMapping(@SQLParam("mobile") String mobile, @SQLParam("passport_id") String passport_id)
             throws DataAccessException;
 

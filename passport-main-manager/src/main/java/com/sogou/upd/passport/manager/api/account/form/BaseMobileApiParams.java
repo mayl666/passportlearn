@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Time: 下午9:25
  * To change this template use File | Settings | File Templates.
  */
-public class BaseMoblieApiParams extends BaseApiParams {
+public class BaseMobileApiParams extends BaseApiParams {
 
     @Phone
     @NotBlank(message = "手机号不允许为空")
