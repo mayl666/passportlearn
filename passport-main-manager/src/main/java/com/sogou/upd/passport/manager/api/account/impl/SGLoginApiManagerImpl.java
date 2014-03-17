@@ -70,6 +70,11 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
         Result result = new APIResultSupport(false);
         try {
+            String userId = authUserApiParams.getUserid();
+            if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(userId))) {
+                userId = userId + "@sogou.com";
+                authUserApiParams.setUserid(userId);
+            }
             result = accountService.verifyUserPwdVaild(authUserApiParams.getUserid(), authUserApiParams.getPassword(), false);
             return result;
         } catch (Exception e) {
@@ -104,7 +109,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     }
 
     @Override
-    public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
+    public Result getCookieInfoWithRedirectUrl(CreateCookieUrlApiParams createCookieUrlApiParams) {
         return null;
     }
 

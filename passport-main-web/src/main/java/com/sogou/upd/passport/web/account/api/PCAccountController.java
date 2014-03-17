@@ -261,7 +261,7 @@ public class PCAccountController extends BaseController {
             }
             createCookieUrlApiParams.setDomain("sogou.com");
             //TODO sogou域账号迁移后cookie生成问题
-            Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+            Result getCookieValueResult = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
