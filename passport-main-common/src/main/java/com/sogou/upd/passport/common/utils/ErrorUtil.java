@@ -20,8 +20,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_COM_REQURIE = "10002";
     // 内部接口code签名错误或请求超时
     public static final String INTERNAL_REQUEST_INVALID = "10003";
-    // 代理搜狐Passport接口HTTP请求发生异常
-    public static final String PROXY_SHPP_API_EXCEPTION = "10004";
     // access_token错误
     public static final String ERR_ACCESS_TOKEN = "10005";
     // refresh_token错误
@@ -36,7 +34,6 @@ public class ErrorUtil {
     public static final String INVALID_CLIENTID = "10010";
     // 生成token失败
     public static final String CREATE_TOKEN_FAIL = "10011";
-
 
     /* ============================================================================ */
     /*  OAuth2授权错误码                                                             */
@@ -119,8 +116,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_PHONE_BINDED = "20225";
     // 登录失败
     public static final String ERR_CODE_ACCOUNT_LOGIN_FAILED = "20226";
-    // 当前登录账号与所操作账号不一致
-    public static final String ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH = "20228";
     // 账号未登录，请先登录
     public static final String ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED = "20229";
     // 登陆用户或者ip在黑名单中
@@ -151,36 +146,18 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_THIRD_NOTALLOWED = "20244";
     // 手机用户不允许此操作
     public static final String ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED = "20245";
-    // 当前账号、IP或手机校验次数已达上限
-    public static final String ERR_CODE_ACCOUNT_REGISTER_IP_INBLACKLIST = "20246";
     //暂时不支持sogou邮箱注册
     public static final String ERR_CODE_NOTSUPPORT_SOGOU_REGISTER = "20247";
     //用户昵称已经被使用
     public static final String ERR_CODE_UNIQNAME_ALREADY_EXISTS = "20248";
     //昵称包含限制词
     public static final String ERR_CODE_UNIQNAME_FORBID = "20249";
+    // 删除cookie失败
+    public static final String ERR_CODE_REMOVE_COOKIE_FAILED = "20255";
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
     /* ============================================================================ */
-
-    /* ============================================================================ */
-    /*  账号绑定相关的错误代码                                                       */
-    /* ============================================================================ */
-    // 绑定第三方账号失败
-    public static final String BIND_CONNECT_ACCOUNT_FAIL = "20250";
-    // 不能绑定与主账号同一类型的账号
-    public static final String CONNOT_BIND_SAME_TYPE_ACCOUNT = "20251";
-    // 不允许重复绑定同一类型的账号
-    public static final String NOTALLOWED_REPEAT_BIND_SAME_TYPE_ACCOUNT = "20252";
-    // 此账号已经注册或绑定过
-    public static final String ACCOUNT_ALREADY_REG_OR_BIND = "20253";
-    // 调用频次超限
-    public static final String ERR_CODE_CLIENT_INBLACKLIST = "20254";
-
-    // 删除cookie失败
-    public static final String ERR_CODE_REMOVE_COOKIE_FAILED = "20255";
-
     /* ============================================================================ */
     /*  密保方式相关的错误代码                                                       */
     /* ============================================================================ */
@@ -266,8 +243,6 @@ public class ErrorUtil {
     public static final String REQUEST_NO_AUTHORITY = "30010";
     // 第三方自定义错误
     public static final String CONNECT_USER_DEFINED_ERROR = "30011";
-    //第三方openid获取失败,没有此用户
-    public static final String ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR = "30013";
     // 用户取消授权
     public static final String ERR_CODE_CONNECT_USERCANAEL = "30016";
     //不支持此类第三方账号
@@ -276,7 +251,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_PASSTHROUGH = "30018";
     //不支持指定编码以及不支持指定的加密方法
     public static final String ERR_CODE_CONNECT_MAKE_SIGNATURE_ERROR = "30020";
-    //找不到access_token
+    //access_token不存在或已失效
     public static final String ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND = "30021";
     //第三方返回openapi调用失败
     public static final String ERR_CODE_CONNECT_OPENAPI_ERROR = "30023";
@@ -290,8 +265,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_TOKEN_ERROR = "30028";
     //refreshToken不存在
     public static final String ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST = "30029";
-    //refreshToken刷新成功，但accessToken写库失败
-    public static final String ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED = "30030";
     //没有找到此应用对应的第三方平台信息
     public static final String ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND = "30031";
 
@@ -344,7 +317,6 @@ public class ErrorUtil {
     /* ============================================================================ */
     public static final String ERR_CODE_INTERFACE_FREQUENCY = "30606";
 
-
     /* ============================================================================ */
     /*  sohu+接口相关错误代码                                                            */
     /* ============================================================================ */
@@ -363,7 +335,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数");
         ERR_CODE_MSG_MAP.put(INTERNAL_REQUEST_INVALID, "内部接口code签名错误或请求超时");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
-        ERR_CODE_MSG_MAP.put(PROXY_SHPP_API_EXCEPTION, "代理搜狐Passport接口HTTP请求发生异常");
         ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT, "接口调用频次超限");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(ERR_REFRESH_TOKEN, "refresh_token错误");
@@ -398,11 +369,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED, "创建用户失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_FAILED, "用户登录失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_OPERACCOUNT_MISMATCH, "当前登录账号与操作账号不一致");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED, "账号未登录，请先登录");
         ERR_CODE_MSG_MAP.put(ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT, "当日密码输入错误次数过多");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, "当前账号或者IP操作存在异常");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_IP_INBLACKLIST, "当前账号、IP存在异常或验证码错误次数超限");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE, "验证码错误或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机账号不存在或手机号未被绑定");
@@ -428,15 +397,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED, "该邮箱当日邮件发送次数已达上限");
 
-
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SOHU_NOTALLOWED, "SOHU域用户不允许此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_THIRD_NOTALLOWED, "第三方账号不允许此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED, "手机账号不允许此操作");
-        // account bind
-        ERR_CODE_MSG_MAP.put(BIND_CONNECT_ACCOUNT_FAIL, "绑定第三方账号失败");
-        ERR_CODE_MSG_MAP.put(CONNOT_BIND_SAME_TYPE_ACCOUNT, "不能绑定与主账号同一类型的账号");
-        ERR_CODE_MSG_MAP.put(NOTALLOWED_REPEAT_BIND_SAME_TYPE_ACCOUNT, "不允许重复绑定同一类型的账号");
-        ERR_CODE_MSG_MAP.put(ACCOUNT_ALREADY_REG_OR_BIND, "此账号已经注册或绑定过，无法再次绑定");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_UNBIND_FAILED, "手机解除绑定失败");
 
 
@@ -486,20 +449,17 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(UNSUPPORT_THIRDPARTY, "该接口不支持指定第三方");
         ERR_CODE_MSG_MAP.put(INVALID_OPENOAUTH_REQUEST, "无效的OAuth2.0授权验证请求");
         ERR_CODE_MSG_MAP.put(REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OBTAIN_OPENID_ERROR, "第三方openid获取失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERCANAEL, "用户取消授权");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NOT_SUPPORTED, "不支持此类第三方账号调用");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_PASSTHROUGH, "透传失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND, "找不到access_token");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND, "第三方access_token不存在或失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OPENAPI_ERROR, "第三方返回openapi调用失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_PARAMETER, "参数无效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_FAILED, "第三方Api调用失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_TOKEN_PWDERROR, "第三方账号修改密码，导致token失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_TOKEN_ERROR, "token无效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST, "refreshToken没有找到");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_SAVE_ACCESSTOKEN_FAILED, "refreshToken刷新成功，但accessToken写库失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND, "没有找到此应用对应的第三方平台信息");
-
 
         // info
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERID_TYPE_ERROR, "账号非所支持的第三方账号类型");
@@ -523,15 +483,11 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_NOT_LOGIN, "您还未登陆，不能提交反馈");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_ADDTIMES_LIMITED, "您一天内提交反馈的次数超过限制");
 
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CLIENT_INBLACKLIST, "服务器处理失败！");
-
         //sohu+相关接口
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_ACCOUNT, "账号冲突或者异常，请到论坛问题反馈区找回账号");
 
         //SSO setcookie接口
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_SERVERNAME, "非法的服务器名");
-
-
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {
@@ -540,10 +496,6 @@ public class ErrorUtil {
 
     public static String getERR_CODE_MSG(String code) {
         return ERR_CODE_MSG_MAP.get(code);
-    }
-
-    public static void setERR_CODE_MSG_MAP(Map<String, String> eRR_CODE_MSG_MAP) {
-        ERR_CODE_MSG_MAP = eRR_CODE_MSG_MAP;
     }
 
 }

@@ -25,15 +25,4 @@ public interface SHPlusTokenService {
      */
     public String queryATokenByRToken(String passportId, String instanceId, String refreshToken, String sid) throws ServiceException;
 
-    /**
-     * 通过获取token获取资源
-     *
-     * @param instanceId
-     * @param accessToken
-     * @param resourceType
-     * @return
-     * @throws ServiceException
-     */
-    public Map getResourceByToken(String instanceId, String accessToken, OAuth2ResourceTypeEnum resourceType) throws ServiceException;
-
 }

@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.utils.CoreKvUtils;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.KvUtils;
 import com.sogou.upd.passport.common.utils.TokenRedisUtils;
@@ -32,10 +33,18 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
     private static String KEY_PREFIX = CacheConstant.KV_PREFIX_PASSPORTID_TOKEN;
 
+    //kv key 分隔符
+    private static final String KEY_KV_SPLIT = "_";
+    //kv token key 生成规则: KEY_PREFIX + passportId + "_" + clientId + "_" + instanceId
+    private static final String KEY_CORE_KV_FORMAT = "%s" + KEY_KV_SPLIT + "%s" + KEY_KV_SPLIT + "%s";
+    private static final String KEY_DEFAULT_CORE_KV_FORMAT = "%s" + KEY_KV_SPLIT + "%s";
+
     @Autowired
     private KvUtils kvUtils;
     @Autowired
     private TokenRedisUtils tokenRedisUtils;
+    @Autowired
+    private CoreKvUtils coreKvUtils;
 
     @Override
     public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
@@ -76,12 +85,26 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         }
     }
 
+    /**
+     * kv 迁移，同步向核心kv集群写数据
+     *
+     * @param passportId
+     * @param instanceId
+     * @param appConfig
+     * @param accountToken
+     * @throws ServiceException
+     */
     @Override
     public void saveAccountToken(final String passportId, final String instanceId, AppConfig appConfig, AccountToken accountToken) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
             String kvKey = buildKeyStr(passportId, clientId, instanceId);
             kvUtils.set(kvKey, accountToken);
+
+            //kv 写操作同步至核心kv集群  2014-03-13 add by chengang
+            String coreKvKey = buildCoreKvKey(CacheConstant.CORE_KV_PREFIX_PASSPROTID_TOKEN, passportId, clientId, instanceId);
+            coreKvUtils.set(coreKvKey, accountToken);
+
             //重新设置缓存
             String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
             tokenRedisUtils.set(redisKey, accountToken);
@@ -204,6 +227,23 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     }
 
     /**
+     * 构建存储在kv accountToken key
+     *
+     * @param kvPrefix   key前缀
+     * @param passportId
+     * @param clientId
+     * @param instanceId
+     * @return
+     */
+    private static String buildCoreKvKey(String kvPrefix, String passportId, int clientId, String instanceId) {
+        if (Strings.isNullOrEmpty(instanceId)) {
+            return String.format(KEY_DEFAULT_CORE_KV_FORMAT, kvPrefix + passportId, clientId);
+        }
+        return String.format(KEY_CORE_KV_FORMAT, kvPrefix + passportId, clientId, instanceId);
+    }
+
+
+    /**
      * 构造PcAccountToken在redis中的key
      * 格式为：passport_clientId_instanceId
      */
@@ -294,7 +334,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     private boolean isNeedExtendTime(long tokenValidTime, int expiresIn) {
         long currentTime = System.currentTimeMillis();
         long leftTime = tokenValidTime - currentTime;
-        long  expiresIn_long =(long)(expiresIn);
+        long expiresIn_long = (long) (expiresIn);
         long halfExpireTime = expiresIn_long * 500;
         return leftTime < halfExpireTime;
     }

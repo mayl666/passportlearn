@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;

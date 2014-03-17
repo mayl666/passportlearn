@@ -89,16 +89,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
         }
     }
 
-    @Override
-    public String querySpecifyOpenId(String passportId, int provider, String appKey) throws ServiceException {
-        ConnectToken connectToken = queryConnectToken(passportId, provider, appKey);
-        String openId = null;
-        if (connectToken != null) {
-            openId = connectToken.getOpenid();
-        }
-        return openId;
-    }
-
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public ConnectToken queryConnectToken(String passportId, int provider, String appKey) throws ServiceException {
         ConnectToken connectToken;

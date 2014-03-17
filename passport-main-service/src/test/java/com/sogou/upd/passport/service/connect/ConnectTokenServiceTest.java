@@ -18,10 +18,4 @@ public class ConnectTokenServiceTest extends BaseTest {
     @Inject
     private ConnectTokenService accountConnectService;
 
-    //根据userId获取openId
-    @Test
-    public void testGetOpenIdByQuery() {
-        String openid = accountConnectService.querySpecifyOpenId(passportId, provider, appKey);
-        System.out.println("openid:" + openid);
-    }
 }

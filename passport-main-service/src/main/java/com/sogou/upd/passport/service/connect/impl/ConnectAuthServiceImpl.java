@@ -4,7 +4,6 @@ import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -150,9 +149,9 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
-    public ConnectUserInfoVO obtainCachedConnectUserInfo(String userid) {
+    public ConnectUserInfoVO obtainCachedConnectUserInfo(String passportId) {
         try {
-            String cacheKey = buildConnectUserInfoCacheKey(userid);
+            String cacheKey = buildConnectUserInfoCacheKey(passportId);
             ConnectUserInfoVO connectUserInfoVO = dbShardRedisUtils.getObject(cacheKey, ConnectUserInfoVO.class);
             return connectUserInfoVO;
         } catch (Exception e) {

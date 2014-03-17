@@ -6,10 +6,8 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
-import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.web.BaseConnectController;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -57,15 +54,14 @@ public class QQLightOpenApiController extends BaseConnectController {
     public Object getConnectQQApi(HttpServletRequest request, QQLightOpenApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String resultString = "";
+        String passportId = params.getUserid();
+        int clientId = params.getClient_id();
         try {
             // 仅支持qq账号调用此接口
-            String openIdStr = params.getOpenid();
-            String userIdStr = params.getUserid();
-            if (AccountTypeEnum.getAccountType(openIdStr) != AccountTypeEnum.QQ || AccountTypeEnum.getAccountType(userIdStr) != AccountTypeEnum.QQ) {
+            if (AccountTypeEnum.getAccountType(passportId) != AccountTypeEnum.QQ) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
                 return result.toString();
             }
-
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -74,10 +70,7 @@ public class QQLightOpenApiController extends BaseConnectController {
                 return result.toString();
             }
             //调用sohu接口，获取QQ token，openid等参数
-            BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
-            baseOpenApiParams.setUserid(params.getUserid());
-            baseOpenApiParams.setOpenid(params.getOpenid());
-            Result openResult = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
             resultString = openResult.toString();
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
@@ -90,6 +83,9 @@ public class QQLightOpenApiController extends BaseConnectController {
                     if (!Strings.isNullOrEmpty(resp)) {
                         resultString = resp;
                         result.setSuccess(true);
+                    } else {
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
+                        resultString = result.toString();
                     }
                 } else {
                     result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -100,12 +96,16 @@ public class QQLightOpenApiController extends BaseConnectController {
                 resultString = result.toString();
             }
         } catch (Exception e) {
-            logger.error("getConnectQQApi:Get User Info Is Failed,UserId is " + params.getUserid(), e);
+            logger.error("getConnectQQApi:Get User Info Is Failed,UserId is " + passportId, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             resultString = result.toString();
         } finally {
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            String code = result.getCode();
+            if (!resultString.contains("\"ret\":0")) {      //以后改，这样硬编码不行
+                code = ErrorUtil.CONNECT_USER_DEFINED_ERROR;
+            }
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), String.valueOf(clientId), code, getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             userOperationLog.putOtherMessage("qqResult", resultString);

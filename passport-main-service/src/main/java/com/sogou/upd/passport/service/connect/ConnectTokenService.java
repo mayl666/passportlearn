@@ -28,15 +28,6 @@ public interface ConnectTokenService {
      */
     public boolean updateConnectToken(ConnectToken connectToken) throws ServiceException;
 
-
-    /**
-     * 查询指定用户、客户端、第三方平台的openid
-     * 如果获取不到，返回null
-     *
-     * @return
-     */
-    public String querySpecifyOpenId(String passportId, int provider, String appKey) throws ServiceException;
-
     /**
      * 获取ConnectToken对象
      *

@@ -53,7 +53,6 @@ public class RepairDataTest extends BaseTest {
                 if (Strings.isNullOrEmpty(avatar)) {
                     bw.write(passportId + "\n");
                     bw.flush();
-                    continue;
                 } else {
                     if (accountBaseInfo == null) {
                         AccountBaseInfo accountBaseInfo1 = new AccountBaseInfo();

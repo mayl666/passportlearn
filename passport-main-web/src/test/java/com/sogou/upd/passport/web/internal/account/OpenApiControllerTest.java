@@ -2,10 +2,8 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
-import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.web.BaseActionTest;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.HashMap;

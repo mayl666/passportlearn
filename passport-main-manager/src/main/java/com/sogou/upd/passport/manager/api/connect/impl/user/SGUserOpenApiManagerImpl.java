@@ -6,10 +6,8 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
-import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
@@ -50,16 +48,16 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     public Result getUserInfo(UserOpenApiParams userOpenApiParams) {
         Result result = new APIResultSupport(false);
         try {
-            String userid = userOpenApiParams.getUserid();
-            ConnectUserInfoVO cacheConnectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(userid);
+            String passportId = userOpenApiParams.getUserid();
+            ConnectUserInfoVO cacheConnectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId);
             if (cacheConnectUserInfoVO != null) {
-                result = buildSuccResult(cacheConnectUserInfoVO, userid);
+                result = buildSuccResult(cacheConnectUserInfoVO, passportId);
                 return result;
             }
 
             int clientId = userOpenApiParams.getClient_id();
             //获取第三方信息
-            String providerStr = getProviderByUserid(userid);
+            String providerStr = getProviderByUserid(passportId);
             if (StringUtils.isBlank(providerStr)) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_USERID_TYPE_ERROR);
                 return result;
@@ -67,13 +65,9 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             int provider = AccountTypeEnum.getProvider(providerStr);
             ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-            String openId = null;
-            String accessToken = null;
-            //去sohu获取token
-            BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
-            baseOpenApiParams.setOpenid(userid);
-            baseOpenApiParams.setUserid(userid);
-            Result openResult = sgConnectApiManager.obtainConnectToken(baseOpenApiParams, SHPPUrlConstant.APP_ID, SHPPUrlConstant.APP_KEY);
+            String openId;
+            String accessToken;
+            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
@@ -88,8 +82,8 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
                 return result;
             }
-            result = buildSuccResult(connectUserInfoVO, userid);
-            connectAuthService.initialOrUpdateConnectUserInfo(userid, connectUserInfoVO);
+            result = buildSuccResult(connectUserInfoVO, passportId);
+            connectAuthService.initialOrUpdateConnectUserInfo(passportId, connectUserInfoVO);
             return result;
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
