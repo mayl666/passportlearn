@@ -258,7 +258,7 @@ public class SecureAction extends BaseController {
         }
 
         result.setSuccess(true);
-        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId,clientId));
+        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -295,7 +295,7 @@ public class SecureAction extends BaseController {
         result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
 
         result.setSuccess(true);
-        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId,clientId));
+        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -418,7 +418,7 @@ public class SecureAction extends BaseController {
     }
 
     /*
-     * 修改绑定手机，发送短信验证码至原绑定手机
+     * 修改绑定密保手机时，发送短信验证码至原绑定手机
      */
     @RequestMapping(value = "/sendsms", method = RequestMethod.GET)
     @ResponseBody
@@ -473,7 +473,7 @@ public class SecureAction extends BaseController {
     }
 
     /*
-     * 绑定和修改密保手机，发送短信验证码至新绑定手机
+     * 首次绑定和修改绑定密保手机，发送短信验证码至新绑定手机
      */
     @RequestMapping(value = "/sendsmsnew", method = RequestMethod.GET)
     @ResponseBody
@@ -529,7 +529,7 @@ public class SecureAction extends BaseController {
 
 
     /*
-     * 绑定密保手机
+     * 首次绑定密保手机时，保存密保手机
      */
     @RequestMapping(value = "/bindmobile", method = RequestMethod.POST)
     @LoginRequired
@@ -573,7 +573,7 @@ public class SecureAction extends BaseController {
     }
 
     /*
-     * 验证原绑定手机短信验证码
+     * 修改绑定手机时，在原绑定手机页面点击下一步时，验证原绑定手机短信验证码
      */
     @RequestMapping(value = "/checksms", method = RequestMethod.POST)
     @LoginRequired
@@ -607,9 +607,9 @@ public class SecureAction extends BaseController {
     }
 
     /*
-     * 修改密保手机
+     * 修改绑定密保手机时，保存新绑定的密保手机
      */
-    @RequestMapping(value = "bindmobilenew", method = RequestMethod.POST)
+    @RequestMapping(value = "/bindmobilenew", method = RequestMethod.POST)
     @LoginRequired
     @ResponseBody
     public Object modifyMobile(WebModifyMobileParams params, HttpServletRequest request,
