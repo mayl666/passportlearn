@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager;
 
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
