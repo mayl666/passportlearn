@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.utils.DBRedisUtils;
+import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.SnamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -30,6 +31,8 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
     private SnamePassportMappingDAO snamePassportMappingDAO;
     @Autowired
     private DBRedisUtils dbRedisUtils;
+    @Autowired
+    private DBShardRedisUtils dbShardRedisUtils;
 
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryPassportIdBySnameOrPhone", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override

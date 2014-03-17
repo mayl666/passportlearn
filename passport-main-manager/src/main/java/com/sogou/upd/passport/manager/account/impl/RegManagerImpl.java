@@ -212,6 +212,7 @@ public class RegManagerImpl implements RegManager {
         return accountService.getCaptchaCode(code);
     }
 
+    //type为true表明是手机用户，false为个性账号和外域
     @Override
     public Result isAccountNotExists(String username, boolean type, int clientId) throws Exception {
         Result result;
@@ -220,6 +221,7 @@ public class RegManagerImpl implements RegManager {
             BaseMoblieApiParams params = new BaseMoblieApiParams();
             params.setMobile(username);
             if (ManagerHelper.isInvokeProxyApi(username)) {
+                //搜狐流程暂时保留，用于自测
                 if (type) {
                     //手机号 判断绑定账户
                     result = proxyBindApiManager.getPassportIdByMobile(params);
@@ -228,7 +230,7 @@ public class RegManagerImpl implements RegManager {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                         return result;
                     } else if (CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username, clientId);
+                        result = isSohuplusUser(username);
                     } else {
                         result.setSuccess(true);
                         result.setMessage("账户未被占用");
@@ -236,27 +238,14 @@ public class RegManagerImpl implements RegManager {
                 } else {
                     result = proxyRegisterApiManager.checkUser(checkUserApiParams);
                     if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username, clientId);
+                        result = isSohuplusUser(username);
                     }
                 }
             } else {
-                if (type) {
-                    result = sgBindApiManager.getPassportIdByMobile(params);
-                    if (result.isSuccess()) {
-                        result = new APIResultSupport(false);
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        return result;
-                    } else if (CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username, clientId);
-                    } else {
-                        result.setSuccess(true);
-                        result.setMessage("账户未被占用");
-                    }
-                } else {
-                    result = sgRegisterApiManager.checkUser(checkUserApiParams);
-                    if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username, clientId);
-                    }
+                //搜狗流程
+                result = sgRegisterApiManager.checkUser(checkUserApiParams);
+                if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
+                    result = isSohuplusUser(username);
                 }
             }
         } catch (ServiceException e) {
@@ -347,7 +336,7 @@ public class RegManagerImpl implements RegManager {
      * 都有可能是sohuplus的账号，需要判断sohuplus映射表
      * 如果username包含@，则取@前面的
      */
-    private Result isSohuplusUser(String username, int clientId) {
+    private Result isSohuplusUser(String username) {
         Result result = new APIResultSupport(false);
         if (username.contains("@")) {
             username = username.substring(0, username.indexOf("@"));

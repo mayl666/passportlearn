@@ -146,6 +146,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             }
         } catch (ServiceException e) {
             logger.error("Check account is exists Exception, username:" + username, e);
+            throw new ServiceException(e);
         }
         result.setSuccess(true);
         result.setMessage("账户未被占用，可以注册");

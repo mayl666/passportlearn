@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.manager;
 
-import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -52,11 +51,12 @@ public class ManagerHelper {
 
     /**
      * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
+     *
      * @param passportId passport内部传输的用户id
      * @return
      */
-    public static boolean isInvokeProxyApi(String passportId){
-        return true;//
+    public static boolean isInvokeProxyApi(String passportId) {
+        return false;//
 //        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));
     }
 
@@ -88,6 +88,7 @@ public class ManagerHelper {
         }
         return code;
     }
+
     /**
      * 内部接口方法签名生成
      *
