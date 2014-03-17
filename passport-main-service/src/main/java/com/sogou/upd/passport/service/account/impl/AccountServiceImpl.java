@@ -19,6 +19,8 @@ import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,7 +141,6 @@ public class AccountServiceImpl implements AccountService {
         Account account;
         try {
             String cacheKey = buildAccountKey(passportId);
-
             account = dbShardRedisUtils.getObject(cacheKey, Account.class);
             if (account == null) {
                 account = accountDAO.getAccountByPassportId(passportId);
@@ -167,9 +168,33 @@ public class AccountServiceImpl implements AccountService {
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
-            if (PwdGenerator.verify(password, needMD5, userAccount.getPassword())) {
+            result = verifyUserPwdValidByPasswordType(result, password, userAccount, needMD5);
+            return result;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    public Result verifyUserPwdValidByPasswordType(Result result, String password, Account account, Boolean needMD5) {
+        int passwordType = account.getPasswordtype();
+        String storedPwd = account.getPassword();
+        boolean pwdIsTrue = false;
+        try {
+            switch (passwordType) {
+                case 0:   //原密码
+                    pwdIsTrue = verifyPwdWithOriginal(password, storedPwd);
+                    break;
+                case 1:   //MD5
+                    pwdIsTrue = verifyPwdWithMD5(password, storedPwd);
+                    break;
+                case 2:   //Crypt(password,salt)
+                    pwdIsTrue = PwdGenerator.verify(password, needMD5, storedPwd);
+                    break;
+            }
+            if (pwdIsTrue) {
                 result.setSuccess(true);
-                result.setDefaultModel(userAccount);
+                result.setDefaultModel("userid", account.getPassportId());
+                result.setDefaultModel(account);
                 return result;
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
@@ -178,6 +203,21 @@ public class AccountServiceImpl implements AccountService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
+
+    private boolean verifyPwdWithOriginal(String password, String storedPwd) {
+        if (storedPwd.equals(password)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean verifyPwdWithMD5(String password, String storedPwd) {
+        String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
+        if (storedPwd.equals(pwdMD5)) {
+            return true;
+        }
+        return false;
     }
 
     @Override

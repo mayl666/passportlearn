@@ -73,6 +73,13 @@
         <property name="kvTemplate" ref="kvTemplate"/>
     </bean>
 
+    <bean id="coreKvTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
+          p:connectionFactory-ref="kvConnectionFactory"/>
+    <bean id="coreKvUtils" class="com.sogou.upd.passport.common.utils.CoreKvUtils">
+        <property name="coreKvTemplate" ref="coreKvTemplate"/>
+    </bean>
+
+
     <!-- token redis utils-->
     <bean id="tokenPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <property name="maxActive" value="200"/>
