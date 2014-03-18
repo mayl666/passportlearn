@@ -36,7 +36,7 @@ public class CommonConstant {
     public static final String HTTPS = "https";//https请求方式
     public static final String CONNECT_METHOD_GET = "get";//method=get请求方式
     public static final String CONNECT_METHOD_POST = "post";//method=post请求方式
-    public static final String QQ_SERVER_IP = "119.147.19.43";         //QQ测试环境ip：
+    public static final String QQ_SERVER_IP = "openapi.tencentyun.com";         //QQ测试环境ip：
     public static final String QQ_SERVER_NAME = "openapi.tencentyun.com";   //QQ正式环境可以使用域名，http的，需要sig签名
     public static final String QQ_SERVER_NAME_GRAPH = "graph.qq.com";   //QQ https请求域名，不需要sig签名
     public static final String QQ_SERVER_NAME_OPENMOBILE = "openmobile.qq.com"; //QQ https请求域名，不需要sig签名

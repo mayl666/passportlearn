@@ -66,11 +66,12 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
             // 指定OpenApi Cgi名字
             String scriptName = qqOpenApiParams.getOpenApiName();
             // 指定HTTP请求协议类型,目前代理接口走的都是HTTP请求，所以需要sig签名，如果为HTTPS请求，则不需要sig签名
-            String protocol = CommonConstant.HTTPS;
+            String protocol = CommonConstant.HTTP;
             // 填充URL请求参数,用来生成sig签名
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("openid", openid);
             params.put("openkey", openkey);
+            params.put("plat",qqOpenApiParams.getPlat());
             ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
             HashMap<String, String> maps;
             Object paramsObj = qqOpenApiParams.getParams();
