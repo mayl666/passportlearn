@@ -191,12 +191,12 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
-    public Result isSogouAccountNotExists(String username, int clientId) throws Exception {
+    public Result isAccountExists(String username, int clientId) throws Exception {
         Result result;
         try {
             CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
             result = sgRegisterApiManager.checkUser(checkUserApiParams);
-            if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
+            if (!result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
                 result = isSohuplusUser(username);
             }
         } catch (ServiceException e) {
@@ -307,12 +307,11 @@ public class RegManagerImpl implements RegManager {
             username = username.substring(0, username.indexOf("@"));
         }
         String sohuplus_passportId = snamePassportMappingService.queryPassportIdBySnameOrPhone(username);
-        if (!Strings.isNullOrEmpty(sohuplus_passportId)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+        if (Strings.isNullOrEmpty(sohuplus_passportId)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             return result;
         } else {
             result.setSuccess(true);
-            result.setMessage("账户未被占用");
         }
         return result;
     }

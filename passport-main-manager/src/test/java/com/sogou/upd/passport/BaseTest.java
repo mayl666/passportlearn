@@ -17,6 +17,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class BaseTest extends AbstractJUnit4SpringContextTests {
     protected static final String userid = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
 
+    protected static final String mobile = "13426009174";
+
     protected static final String password = "testtest1";
 
     protected static final String uniqname = "你好";

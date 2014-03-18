@@ -130,25 +130,24 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
         try {
             username = checkUserApiParams.getUserid();
             //判断是否是个性账号
-            if (username.indexOf("@") == -1) {
-                if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                    String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
-                    if (!Strings.isNullOrEmpty(passportId)) {
-                        //存在返回false
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                        return result;
-                    } else {
-                        //不存在返回true
-                        result.setSuccess(true);
-                        return result;
-                    }
+            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+                String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
+                if (Strings.isNullOrEmpty(passportId)) {
+                    //不存在返回false
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_BIND_NOTEXIST);
+                    return result;
                 } else {
-                    username = username + "@sogou.com";
+                    //存在返回true
+                    result.setSuccess(true);
+                    return result;
                 }
             }
+            if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(username))) {
+                username = username + "@sogou.com";
+            }
             Account account = accountService.queryAccountByPassportId(username);
-            if (account != null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+            if (account == null) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 return result;
             }
         } catch (ServiceException e) {
@@ -156,7 +155,6 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             throw new ServiceException(e);
         }
         result.setSuccess(true);
-        result.setMessage("账户未被占用，可以注册");
         return result;
     }
 
