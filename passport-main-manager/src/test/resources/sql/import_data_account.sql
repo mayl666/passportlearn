@@ -1,0 +1,1 @@
+insert into `account_16` (`id`, `passport_id`, `password`, `mobile`, `reg_time`, `reg_ip`, `flag`, `passwordtype`, `account_type`, `uniqname`, `avatar`) values('1','13545210241@sohu.com','tKq0YEOG$zYI3BmWipamtF7BAV9jwa/','13545210241','2014-03-17 16:37:22','127.0.0.1','1','2','2',NULL,NULL);

@@ -40,4 +40,10 @@
 
     <bean class="com.codahale.metrics.MetricRegistry"/>
 
+   <!-- <bean name="accountService" class="com.sogou.upd.passport.service.AccountServiceMock" ></bean>  -->
+    <!--<bean name="sgLoginApiManagerTest" class="com.sogou.upd.passport.manager.api.account.impl.SGLoginApiManagerImpl"></bean>-->
+
+
+
+
 </beans>
