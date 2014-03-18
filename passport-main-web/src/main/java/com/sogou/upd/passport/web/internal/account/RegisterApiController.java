@@ -5,12 +5,12 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -34,12 +34,11 @@ import javax.servlet.http.HttpServletRequest;
 public class RegisterApiController extends BaseController {
 
     @Autowired
-    private RegisterApiManager proxyRegisterApiManager;
-
-    @Autowired
-    private BindApiManager proxyBindApiManager;
+    private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private RegManager regManager;
+    @Autowired
+    private ConfigureManager configureManager;
     @Autowired
     private CommonManager commonManager;
 
@@ -55,16 +54,31 @@ public class RegisterApiController extends BaseController {
     @ResponseBody
     public Object sendRegCaptcha(HttpServletRequest request, BaseMobileApiParams params) {
         Result result = new APIResultSupport(false);
-        // 参数校验
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
+        try {
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            //验证client_id是否存在
+            int clientId = params.getClient_id();
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result.toString();
+            }
+            String mobile = params.getMobile();
+            //已注册或绑定的手机号不允许再注册，因此不允许发送手机验证码
+            result = regManager.isAccountNotExists(mobile, clientId);
+            if (!result.isSuccess()) {
+                return result.toString();
+            }
+            // 调用内部接口
+            result = sgRegisterApiManager.sendMobileRegCaptcha(params);
+        } catch (Exception e) {
+            logger.error("sendregcaptcha:send reg captcha is failed", e);
         }
-        // 调用内部接口
-        result = proxyRegisterApiManager.sendMobileRegCaptcha(params);
-
         return result.toString();
     }
 
@@ -89,8 +103,21 @@ public class RegisterApiController extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
+            //验证client_id是否存在
+            int clientId = params.getClient_id();
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result.toString();
+            }
+            String mobile = params.getMobile();
+            //检查账户是否存在，也即该手机号是否已经注册或绑定
+            result = regManager.isAccountNotExists(mobile, clientId);
+            if (!result.isSuccess()) {
+                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED));
+                return result.toString();
+            }
             // 调用内部接口
-            result = proxyRegisterApiManager.regMobileCaptchaUser(params);
+            result = sgRegisterApiManager.regMobileCaptchaUser(params);
         } catch (Exception e) {
             logger.error("regMobileCaptchaUser:Mobile User With Captcha For Internal Is Failed,Mobile is " + params.getMobile(), e);
         } finally {
@@ -130,8 +157,15 @@ public class RegisterApiController extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result.toString();
             }
+            String userid = regSmallPieceParams(params.getUserid());
+            //检查注册账号是否已经存在
+            result = regManager.isAccountNotExists(userid, params.getClient_id());
+            if (!result.isSuccess()) {
+                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_REGED));
+                return result.toString();
+            }
             // 调用内部接口
-            result = proxyRegisterApiManager.regMailUser(params);
+            result = sgRegisterApiManager.regMailUser(params);
         } catch (Exception e) {
             logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + params.getUserid(), e);
         } finally {
@@ -141,6 +175,24 @@ public class RegisterApiController extends BaseController {
         }
         commonManager.incRegTimesForInternal(ip);
         return result.toString();
+    }
+
+    /**
+     * 小纸条规则，如果登录名保护.，则将注册名中的.换成_，再判断该用户名是否已经注册
+     *
+     * @param str
+     * @return
+     */
+    private String regSmallPieceParams(String str) {
+        if (str.indexOf("@") != -1) {
+            String userid = str.substring(0, str.indexOf("@"));
+            if (userid.indexOf(".") != -1) {
+                userid = userid.replace(".", "_");
+                String useridString = userid + str.substring(str.indexOf("@"), str.length());
+                return useridString;
+            }
+        }
+        return str;
     }
 
     /**
@@ -165,8 +217,22 @@ public class RegisterApiController extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
+            //验证client_id是否存在
+            int clientId = params.getClient_id();
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result.toString();
+            }
+            String mobile = params.getMobile();
+            //检查账户是否存在，也即该手机号是否已经注册或绑定
+            result = regManager.isAccountNotExists(mobile, clientId);
+            if (!result.isSuccess()) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED));
+                return result.toString();
+            }
             // 调用内部接口
-            result = proxyRegisterApiManager.regMobileUser(params);
+            result = sgRegisterApiManager.regMobileUser(params);
 
         } catch (Exception e) {
             logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
@@ -203,25 +269,14 @@ public class RegisterApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        // 调用内部接口
-        String userid = params.getUserid();
-        if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
-            BaseMobileApiParams baseMobileApiParams = new BaseMobileApiParams();
-            baseMobileApiParams.setMobile(userid);
-            result = proxyBindApiManager.getPassportIdByMobile(baseMobileApiParams);
-            //如果手机号已经被注册或被绑定其它账号，返回错误信息
-            if (result.isSuccess()) {
-                result.setSuccess(false);
-                result.setDefaultModel("flag", "1");
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED));
-            } else if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND)) {
-                //如果手机号没有被注册或绑定其它账号，返回正确
-                result = new APIResultSupport(true);
-            }
-        } else {
-            result = proxyRegisterApiManager.checkUser(params);
+        //验证client_id是否存在
+        int clientId = params.getClient_id();
+        if (!configureManager.checkAppIsExist(clientId)) {
+            result.setCode(ErrorUtil.INVALID_CLIENTID);
+            return result.toString();
         }
+        // 调用内部接口
+        result = sgRegisterApiManager.checkUser(params);
 
         return result.toString();
     }

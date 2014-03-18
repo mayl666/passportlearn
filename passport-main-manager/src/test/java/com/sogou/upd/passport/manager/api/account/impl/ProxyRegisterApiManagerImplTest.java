@@ -73,7 +73,7 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
     @Test
     public void testRegMobileUser() {
         RegMobileApiParams regMobileCaptchaApiParams = new RegMobileApiParams();
-        regMobileCaptchaApiParams.setMobile("13621009174");
+        regMobileCaptchaApiParams.setMobile("13621009774");
         regMobileCaptchaApiParams.setPassword(PASSWORD);
         Result result = proxyRegisterApiManager.regMobileUser(regMobileCaptchaApiParams);
         System.out.println(result);

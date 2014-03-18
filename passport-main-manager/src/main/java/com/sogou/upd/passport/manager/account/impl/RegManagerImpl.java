@@ -193,8 +193,6 @@ public class RegManagerImpl implements RegManager {
         Result result;
         try {
             CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
-            BaseMobileApiParams params = new BaseMobileApiParams();
-            params.setMobile(username);
             result = sgRegisterApiManager.checkUser(checkUserApiParams);
             if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
                 result = isSohuplusUser(username);

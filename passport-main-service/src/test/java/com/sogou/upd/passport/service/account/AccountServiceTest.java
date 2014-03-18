@@ -22,19 +22,33 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
 
     private static final String MOBILE = "13545210241";
     private static final String NEW_MOBILE = "13800000000";
-    private static final String PASSWORD = "liuling8";
+    private static final String PASSWORD = "111111";
     private static final String PASSPORT_ID1 = "13552848876@sohu.com";
     private static final
     String PASSPORT_ID = PassportIDGenerator.generator(MOBILE, AccountTypeEnum.PHONE.getValue());
     private static final String IP = "127.0.0.1";
     private static final int PROVIDER = AccountTypeEnum.PHONE.getValue();
 
+    private static final String SOGOU = "liuling01@sogou.com";
+    private static final int PROVIDER_EMAIL = AccountTypeEnum.EMAIL.getValue();
+
     /**
      * 测试初始化非第三方用户账号
      */
     @Test
-    public void testInitialAccount() throws Exception {
+    public void testInitialPhoneAccount() throws Exception {
         Account account = accountService.initialAccount(MOBILE, PASSWORD, true, IP, PROVIDER);
+        Assert.assertNotNull(account);
+    }
+
+    /**
+     * 初始化搜狗账号
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInitialSogouAccount() throws Exception {
+        Account account = accountService.initialAccount(SOGOU, PASSWORD, true, IP, PROVIDER_EMAIL);
         Assert.assertNotNull(account);
     }
 

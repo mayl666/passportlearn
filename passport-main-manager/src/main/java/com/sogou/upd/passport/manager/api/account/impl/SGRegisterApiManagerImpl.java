@@ -132,7 +132,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
                 String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                     return result;
                 }
             } else {
@@ -165,7 +165,36 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
 
     @Override
     public Result regMobileUser(RegMobileApiParams regMobileApiParams) {
-
-        return null;
+        Result result = new APIResultSupport(false);
+        String mobile = regMobileApiParams.getMobile();
+        String password = regMobileApiParams.getPassword();
+        try {
+            if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
+                String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
+                if (!Strings.isNullOrEmpty(passportId)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    return result;
+                }
+                Account account = accountService.initialAccount(mobile, password, true, null, AccountTypeEnum
+                        .PHONE.getValue());
+                if (account != null) {
+                    result.setSuccess(true);
+                    result.setDefaultModel("userid", account.getPassportId());
+                    result.setMessage("注册成功！");
+                    result.setDefaultModel("isSetCookie", true);
+                    result.setDefaultModel(account);
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                    return result;
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
+                return result;
+            }
+        } catch (Exception e) {
+            logger.error("mobile reg without captcha failed,mobile " + mobile, e);
+            result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
+        }
+        return result;
     }
 }
