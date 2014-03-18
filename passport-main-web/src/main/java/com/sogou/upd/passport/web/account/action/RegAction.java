@@ -76,7 +76,7 @@ public class RegAction extends BaseController {
         String clientIdStr = checkParam.getClient_id();
         int clientId = !Strings.isNullOrEmpty(clientIdStr) ? Integer.valueOf(clientIdStr) : CommonConstant.SGPP_DEFAULT_CLIENTID;
         result = checkAccountNotExists(username, clientId);
-        if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
+        if (PhoneUtil.verifyPhoneNumberFormat(username) && !result.isSuccess()) {
             result.setMessage("此手机号已注册或已绑定，请直接登录");
         }
         return result.toString();
