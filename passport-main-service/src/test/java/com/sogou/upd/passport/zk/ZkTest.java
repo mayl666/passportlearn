@@ -12,11 +12,13 @@ import java.util.Random;
  * Date: 13-11-1
  * Time: 上午10:33
  */
+@Deprecated
 public class ZkTest extends BaseTest {
 
     @Autowired
     private RedisUtils redisUtils;
 
+    @Deprecated
     @Test
     public void testA() {
         while (true) {
