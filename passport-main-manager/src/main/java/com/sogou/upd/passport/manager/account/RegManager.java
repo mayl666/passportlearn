@@ -83,4 +83,12 @@ public interface RegManager {
      */
     public void incSendTimesForMobile(String ip) throws Exception;
 
+    /**
+     * 检查sohu域账号是否存在
+     * @param username
+     * @return
+     * @throws Exception
+     */
+    public Result isSohuAccountExists(String username) throws Exception;
+
 }

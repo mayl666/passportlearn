@@ -156,7 +156,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_REMOVE_COOKIE_FAILED = "20255";
     //SSOAfterauth失败
     public static final String ERR_CODE_SSO_After_Auth_FAILED = "20256";
-
+    //循环调用
+    public static final String ERR_CODE_LOOP_CALL = "20257";
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -413,7 +414,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_THIRD_NOTALLOWED, "第三方账号不允许此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED, "手机账号不允许此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_UNBIND_FAILED, "手机解除绑定失败");
-
+        ERR_CODE_MSG_MAP.put(ERR_CODE_LOOP_CALL, "接口循环调用");
 
         // acount secure info
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGEMAIL, "未绑定邮箱");

@@ -136,6 +136,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                     return result;
                 }
             } else {
+                //todo  增加检查个性账号
                 Account account = accountService.queryAccountByPassportId(username);
                 if (account != null) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
