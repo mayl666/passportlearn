@@ -234,6 +234,20 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
+    public Result isAccountNotExists(String username, int clientId) throws Exception {
+        Result result = isAccountExists(username, clientId);
+        if (result.isSuccess()) {
+            result.setSuccess(false);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+        } else {
+            result.setSuccess(true);
+            result.setCode("0");
+            result.setMessage("账号未被占用，可以注册");
+        }
+        return result;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public Result isSohuAccountExists(String username) throws Exception {
         Result result;
         try {

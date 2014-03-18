@@ -334,11 +334,7 @@ public class RegAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOGOU_REGISTER);
             return result;
         }
-        result = regManager.isAccountExists(username, clientId);
-        if (!result.isSuccess()) {
-            result.setSuccess(true);
-            result.setCode("账号未被占用，可以注册");
-        }
+        result = regManager.isAccountNotExists(username, clientId);
         return result;
     }
 
