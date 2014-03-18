@@ -50,7 +50,7 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 @Component
-public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
+public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
     private static Logger logger = LoggerFactory.getLogger(SSOAfterauthManagerImpl.class);
 
     @Autowired
@@ -65,7 +65,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
     private SessionServerManager sessionServerManager;
 
     @Override
-    public Result handleSSOAfterauth(HttpServletRequest req,String providerStr) {
+    public Result handleSSOAfterauth(HttpServletRequest req, String providerStr) {
         Result result = new APIResultSupport(false);
 
         try {
@@ -78,95 +78,94 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
 
             int provider = AccountTypeEnum.getProvider(providerStr);
 
-            OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-            if (oAuthConsumer == null) {
-                result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
-                return result;
-            }
 
-            //根据code值获取access_token
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
-            if (connectConfig == null) {
-                result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
-                return result;
-            }
-            // 获取第三方个人资料
-            ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
+            if (AccountTypeEnum.isConnect(provider)) {
+                OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+                if (oAuthConsumer == null) {
+                    result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
+                    return result;
+                }
 
-            //isthird=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
-            if (isthird == 0) {
-                if (provider == AccountTypeEnum.QQ.getValue()) {
-                    String passportId=openId+"@qq.sohu.com";
-                    ObtainAccountInfoParams params=new ObtainAccountInfoParams();
+                //根据code值获取access_token
+                ConnectConfig connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
+                if (connectConfig == null) {
+                    result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
+                    return result;
+                }
+                // 获取第三方个人资料
+                ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
+
+                //isthird=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
+                if (isthird == 0) {
+                    String passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
+                    ObtainAccountInfoParams params = new ObtainAccountInfoParams();
                     params.setUsername(passportId);
                     params.setClient_id(String.valueOf(client_id));
                     params.setFields("uniqname,sex");
                     result = accountInfoManager.getUserInfo(params);
-                    if(result.isSuccess()){
-                        String img180= (String) result.getModels().get("img_180");
-                        String img50= (String) result.getModels().get("img_50");
-                        String img30= (String) result.getModels().get("img_30");
-                        String uniqname= (String) result.getModels().get("uniqname");
-                        String gender= (String) result.getModels().get("sex");
+                    if (result.isSuccess()) {
+                        String img180 = (String) result.getModels().get("img_180");
+                        String img50 = (String) result.getModels().get("img_50");
+                        String img30 = (String) result.getModels().get("img_30");
+                        String uniqname = (String) result.getModels().get("uniqname");
+                        String gender = (String) result.getModels().get("sex");
 
-                        result.getModels().put("large_avatar",Strings.isNullOrEmpty(img180)?"":img180) ;
-                        result.getModels().put("mid_avatar",Strings.isNullOrEmpty(img50)?"":img50) ;
-                        result.getModels().put("tiny_avatar",Strings.isNullOrEmpty(img30)?"":img30) ;
-                        result.getModels().put("uniqname",Strings.isNullOrEmpty(uniqname)?"":uniqname) ;
-                        result.getModels().put("gender", Strings.isNullOrEmpty(gender) ? 0 : Integer.parseInt(gender)) ;
+                        result.getModels().put("large_avatar", Strings.isNullOrEmpty(img180) ? "" : img180);
+                        result.getModels().put("mid_avatar", Strings.isNullOrEmpty(img50) ? "" : img50);
+                        result.getModels().put("tiny_avatar", Strings.isNullOrEmpty(img30) ? "" : img30);
+                        result.getModels().put("uniqname", Strings.isNullOrEmpty(uniqname) ? "" : uniqname);
+                        result.getModels().put("gender", Strings.isNullOrEmpty(gender) ? 0 : Integer.parseInt(gender));
                     }
-                }else if (provider == AccountTypeEnum.SINA.getValue()){
-
-                }else if(provider == AccountTypeEnum.RENREN.getValue()){
-
+                } else {
+                    if (connectUserInfoVO != null) {
+                        result.getModels().put("large_avatar", connectUserInfoVO.getAvatarLarge());
+                        result.getModels().put("mid_avatar", connectUserInfoVO.getAvatarMiddle());
+                        result.getModels().put("tiny_avatar", connectUserInfoVO.getAvatarSmall());
+                        result.getModels().put("uniqname", connectUserInfoVO.getNickname());
+                        result.getModels().put("gender", connectUserInfoVO.getGender());
+                    }
                 }
-            }else {
-                if(connectUserInfoVO!=null){
-                    result.getModels().put("large_avatar",connectUserInfoVO.getAvatarLarge()) ;
-                    result.getModels().put("mid_avatar",connectUserInfoVO.getAvatarMiddle()) ;
-                    result.getModels().put("tiny_avatar",connectUserInfoVO.getAvatarSmall()) ;
-                    result.getModels().put("uniqname",connectUserInfoVO.getNickname()) ;
-                    result.getModels().put("gender",connectUserInfoVO.getGender()) ;
-                }
-            }
 
-            OAuthTokenVO oAuthTokenVO=null;
-            String uniqname = openId;
-            if (connectUserInfoVO != null) {
-                oAuthTokenVO=new OAuthTokenVO();
-                uniqname = connectUserInfoVO.getNickname();
-                oAuthTokenVO.setNickName(uniqname);
-                oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
-                oAuthTokenVO.setAccessToken(accessToken);
-                oAuthTokenVO.setOpenid(openId);
-                oAuthTokenVO.setExpiresIn(expires_in);
+                OAuthTokenVO oAuthTokenVO = null;
+                String uniqname = openId;
+                if (connectUserInfoVO != null) {
+                    oAuthTokenVO = new OAuthTokenVO();
+                    uniqname = connectUserInfoVO.getNickname();
+                    oAuthTokenVO.setNickName(uniqname);
+                    oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
+                    oAuthTokenVO.setAccessToken(accessToken);
+                    oAuthTokenVO.setOpenid(openId);
+                    oAuthTokenVO.setExpiresIn(expires_in);
 
-                // 创建第三方账号
-                Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
-                if(connectAccountResult.isSuccess()){
-                    ConnectToken connectToken=(ConnectToken)connectAccountResult.getModels().get("connectToken");
+                    // 创建第三方账号
+                    Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
+                    if (connectAccountResult.isSuccess()) {
+                        ConnectToken connectToken = (ConnectToken) connectAccountResult.getModels().get("connectToken");
 
-                    String passportId= connectToken.getPassportId();
+                        String passportId = connectToken.getPassportId();
 //                result.getModels().put("passport_id", passportId);
-                    //写session 数据库
-                    Result sessionResult = sessionServerManager.createSession(passportId);
-                    String sgid = null;
-                    if (sessionResult.isSuccess()) {
-                        sgid = (String) sessionResult.getModels().get("sgid");
-                        if (!Strings.isNullOrEmpty(sgid)) {
-                            result.getModels().put("sgid",sgid);
-                            result.setSuccess(true);
-                            result.setMessage("success");
-                            removeParam(result);
+                        //写session 数据库
+                        Result sessionResult = sessionServerManager.createSession(passportId);
+                        String sgid = null;
+                        if (sessionResult.isSuccess()) {
+                            sgid = (String) sessionResult.getModels().get("sgid");
+                            if (!Strings.isNullOrEmpty(sgid)) {
+                                result.getModels().put("sgid", sgid);
+                                result.setSuccess(true);
+                                result.setMessage("success");
+                                removeParam(result);
+                            }
+                        } else {
+                            result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
                         }
                     } else {
                         result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
                     }
-                }else{
+                } else {
                     result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
                 }
             }else {
-                result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_LOGIN);
             }
 
         } catch (IOException e) {
@@ -175,7 +174,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
         } catch (ServiceException se) {
             logger.error("query connect config Exception!", se);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "query connect config Exception");
-       } catch (OAuthProblemException ope) {
+        } catch (OAuthProblemException ope) {
             logger.error("handle oauth authroize code error!", ope);
             result = buildErrorResult(ope.getError(), ope.getDescription());
         } catch (Exception exp) {
@@ -184,12 +183,14 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager{
 
         return result;
     }
-    private void removeParam(Result result){
+
+    private void removeParam(Result result) {
         result.getModels().remove("img_30");
         result.getModels().remove("img_50");
         result.getModels().remove("img_180");
         result.getModels().remove("avatarurl");
     }
+
     private Result buildErrorResult(String errorCode, String errorText) {
         Result result = new APIResultSupport(false);
         result.setCode(errorCode);

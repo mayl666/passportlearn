@@ -270,6 +270,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST = "30029";
     //没有找到此应用对应的第三方平台信息
     public static final String ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND = "30031";
+    //只支持第三方平台账号登录
+    public static final String ERR_CODE_CONNECT_LOGIN = "30032";
 
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
@@ -474,6 +476,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_TOKEN_ERROR, "token无效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST, "refreshToken没有找到");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND, "没有找到此应用对应的第三方平台信息");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_LOGIN, "只支持第三方平台账号登录");
 
         // info
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERID_TYPE_ERROR, "账号非所支持的第三方账号类型");
