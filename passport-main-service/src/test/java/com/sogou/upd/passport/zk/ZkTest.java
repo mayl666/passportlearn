@@ -2,6 +2,7 @@ package com.sogou.upd.passport.zk;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.utils.RedisUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,14 +13,13 @@ import java.util.Random;
  * Date: 13-11-1
  * Time: 上午10:33
  */
-@Deprecated
+@Ignore
 public class ZkTest extends BaseTest {
 
     @Autowired
     private RedisUtils redisUtils;
 
-    @Deprecated
-    @Test
+    @Ignore
     public void testA() {
         while (true) {
             try {
