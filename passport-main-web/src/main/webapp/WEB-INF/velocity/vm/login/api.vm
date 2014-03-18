@@ -1,39 +1,8 @@
 <!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <title></title>
-    </head>
-    <body ></body>
-    <script type="text/javascript">
-        
-        var sdata = eval( '(' + '${data}' + ')' );
-
-        (function(){
-            var xdurl = sdata.data.xd;
-            var status = sdata.status;
-            
-            var xdfunc = function(status){
+<html><head> <meta charset="utf-8" /> <title></title> </head> <body ></body>
+<script type="text/javascript">
+        var sdata = eval( '(' + '${data}' + ')' );     
+        (function(xdurl,status){
                 location.href = xdurl + ( xdurl.indexOf('?') == -1 ? '?' : '&' ) + "status=" + status + "&needcaptcha=" + (+sdata.data.needCaptcha || 0);
-            };
-
-            window['rucallback'] = function(data){
-                xdfunc(data.status || -1);
-            };
-
-
-
-            if( !+status ){
-                var iframe = document.createElement('iframe');
-                iframe.src = sdata.data.cookieUrl;
-                
-                document.body.appendChild(iframe);
-                
-            }else{
-                xdfunc(status);
-            }
-        
-        })();
-        
-    </script>
-</html>
+        })(sdata.data.xd,sdata.status);
+</script> </html>
