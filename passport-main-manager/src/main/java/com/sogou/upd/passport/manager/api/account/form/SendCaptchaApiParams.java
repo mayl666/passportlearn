@@ -6,7 +6,7 @@ package com.sogou.upd.passport.manager.api.account.form;
  * Date: 13-6-13
  * Time: 下午5:28
  */
-public class SendCaptchaApiParams extends BaseMoblieApiParams {
+public class SendCaptchaApiParams extends BaseMobileApiParams {
 
     //下发验证码的类型 3、绑定手机号；4解绑手机号
     private int type;

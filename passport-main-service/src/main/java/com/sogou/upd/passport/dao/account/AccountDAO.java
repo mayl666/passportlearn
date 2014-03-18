@@ -33,7 +33,7 @@ public interface AccountDAO {
     String
             VALUE_FIELD =
             " :passport_id, :account.password, :account.mobile, :account.regTime, :account.regIp, :account.flag, " +
-                    ":account.passwordtype, :account.accountType, :account.uniqname, :account.avatar ";
+                    ":account.passwordType, :account.accountType, :account.uniqname, :account.avatar ";
 
     /**
      * 根据passportId获取Account
@@ -116,11 +116,11 @@ public interface AccountDAO {
                     + "#if(:account.mobile != null){mobile=:account.mobile,} "
                     + "#if(:account.regTime != null){reg_time=:account.regTime,} "
                     + "#if(:account.regIp != null){reg_ip=:account.regIp,} "
-                    + "#if(:account.flag > 0){flag=:account.flag,} "
+                    + "#if(:account.flag != null){flag=:account.flag,} "
                     + "#if(:account.accountType > 0){account_type=:account.accountType,} "
                     + "#if(:account.uniqname != null){uniqname=:account.uniqname,} "
                     + "#if(:account.avatar != null){avatar=:account.avatar,} "
-                    + "#if(:account.passwordtype >= 0){passwordtype=:account.passwordtype} ")
+                    + "#if(:account.passwordType != null){passwordtype=:account.passwordType} ")
     public int insertOrUpdateAccount(@ShardBy @SQLParam("passport_id") String passport_id,
                                      @SQLParam("account") Account account) throws DataAccessException;
 

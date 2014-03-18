@@ -2,7 +2,6 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -39,10 +38,8 @@ public class RegisterApiController extends BaseController {
 
     @Autowired
     private BindApiManager proxyBindApiManager;
-
     @Autowired
     private RegManager regManager;
-
     @Autowired
     private CommonManager commonManager;
 
@@ -56,7 +53,7 @@ public class RegisterApiController extends BaseController {
     @InterfaceSecurity
     @RequestMapping(value = "/sendregcaptcha", method = RequestMethod.POST)
     @ResponseBody
-    public Object sendRegCaptcha(HttpServletRequest request, BaseMoblieApiParams params) {
+    public Object sendRegCaptcha(HttpServletRequest request, BaseMobileApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -209,9 +206,9 @@ public class RegisterApiController extends BaseController {
         // 调用内部接口
         String userid = params.getUserid();
         if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
-            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-            baseMoblieApiParams.setMobile(userid);
-            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            BaseMobileApiParams baseMobileApiParams = new BaseMobileApiParams();
+            baseMobileApiParams.setMobile(userid);
+            result = proxyBindApiManager.getPassportIdByMobile(baseMobileApiParams);
             //如果手机号已经被注册或被绑定其它账号，返回错误信息
             if (result.isSuccess()) {
                 result.setSuccess(false);

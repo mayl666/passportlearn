@@ -90,10 +90,8 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
 
     @Override
     public Result regMobileCaptchaUser(RegMobileCaptchaApiParams regParams) {
-
         Result result = new APIResultSupport(false);
         try {
-
             int clientId = regParams.getClient_id();
             String mobile = regParams.getMobile();
             String password = regParams.getPassword();
@@ -107,7 +105,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                 return result;
             }
 
-            Account account = accountService.initialAccount(mobile, password, false, ip, AccountTypeEnum
+            Account account = accountService.initialAccount(mobile, password, true, ip, AccountTypeEnum
                     .PHONE.getValue());
             if (account != null) {
                 result.setSuccess(true);
@@ -154,7 +152,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
     }
 
     @Override
-    public Result sendMobileRegCaptcha(BaseMoblieApiParams params) {
+    public Result sendMobileRegCaptcha(BaseMobileApiParams params) {
         Result result = new APIResultSupport(false);
         String mobile = params.getMobile();
         try {

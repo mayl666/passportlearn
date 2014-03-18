@@ -10,7 +10,7 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.PCOAuth2RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BaseMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
@@ -67,7 +67,7 @@ public class PCOAuth2RegManagerImpl implements PCOAuth2RegManager {
         //如果sohu+库里没有，说明用户名肯定不会与老用户重复,再验证sohu库里有没有该用户
         if (type) {
             //手机号判断绑定账户
-            BaseMoblieApiParams params = new BaseMoblieApiParams();
+            BaseMobileApiParams params = new BaseMobileApiParams();
             params.setMobile(username);
             //TODO 目前及搜狗账号迁移完成，手机注册都需要查sohu库；全部账号迁移完成后，手机注册查sogou库，不需要查sohu库了
             if (ManagerHelper.isInvokeProxyApi(username)) {

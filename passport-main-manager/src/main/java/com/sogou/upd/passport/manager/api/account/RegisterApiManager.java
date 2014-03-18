@@ -32,10 +32,10 @@ public interface RegisterApiManager {
     /**
      * 注册手机账号，发给用户的验证码。
      * TODO 在SG流程里可以直接调用SG实现类，无需先调用Proxy，以后改SG
-     * @param baseMoblieApiParams
+     * @param baseMobileApiParams
      * @return
      */
-    public Result sendMobileRegCaptcha(BaseMoblieApiParams baseMoblieApiParams);
+    public Result sendMobileRegCaptcha(BaseMobileApiParams baseMobileApiParams);
 
     /**
      * 检查用户名是否已经被注册

@@ -133,9 +133,9 @@ public class SGBindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result getPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams) {
+    public Result getPassportIdByMobile(BaseMobileApiParams baseMobileApiParams) {
         Result result = new APIResultSupport(false);
-        String mobile = baseMoblieApiParams.getMobile();
+        String mobile = baseMobileApiParams.getMobile();
 
         String userId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
         if (userId == null) {

@@ -11,7 +11,7 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BaseMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.SendCaptchaApiParams;
@@ -49,7 +49,7 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
 //        Result result = new APIResultSupport(false);
 //
 //        //检查新手机号是否已经绑定了其他用户
-//        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+//        BaseMobileApiParams baseMoblieApiParams = new BaseMobileApiParams();
 //        baseMoblieApiParams.setMobile(updateBindMobileApiParams.getNewMobile());
 //        Result resultQuery = this.getPassportIdByMobile(baseMoblieApiParams);
 //        switch(resultQuery.getCode()){
@@ -111,7 +111,7 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
 //     * @return
 //     */
 //    private boolean checkBind(String userid, String mobile) {
-//        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+//        BaseMobileApiParams baseMoblieApiParams = new BaseMobileApiParams();
 //        baseMoblieApiParams.setMobile(mobile);
 //        Result result = this.getPassportIdByMobile(baseMoblieApiParams);
 //        if (result.isSuccess() && result.getModels().containsKey("userid")) {
@@ -131,7 +131,7 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
 //     */
 //    private Result unBindMobile(String mobile) {
 //        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UNBING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-//        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+//        BaseMobileApiParams baseMoblieApiParams = new BaseMobileApiParams();
 //        baseMoblieApiParams.setMobile(mobile);
 //        requestModelXml.addParams(baseMoblieApiParams);
 //        return this.executeResult(requestModelXml, baseMoblieApiParams.getMobile());
@@ -147,10 +147,10 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
     }
 
     @Override
-    public Result getPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams) {
+    public Result getPassportIdByMobile(BaseMobileApiParams baseMobileApiParams) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_GET_USERID, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParams(baseMoblieApiParams);
-        return executeResult(requestModelXml, baseMoblieApiParams.getMobile());
+        requestModelXml.addParams(baseMobileApiParams);
+        return executeResult(requestModelXml, baseMobileApiParams.getMobile());
     }
 
     @Override
