@@ -20,7 +20,7 @@ public class Account {
     private String mobile;
     private Date regTime;
     private String regIp;
-    private String flag;   // 1-正式用户，2-未激活账号，3-锁定或封杀用户
+    private String flag;   // 0-未激活账号，1-正式用户，2-锁定或封杀用户
     private String passwordType;  //  0-原密码 1：md5 2：crypt(MD5（password）, salt )salt  salt = 8位随机的a-zA-Z0-9
     private int accountType; // 账号类型，1-email，2-phone，3-qq，4-sina，5-renren，6-taobao；7-baidu；8-sogou
     private String uniqname; // 昵称

@@ -2,7 +2,9 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,14 +17,21 @@ public class SecureManagerTest extends BaseTest {
     private SecureManager secureManager;
 
     private static final String PASSPORT_ID = "13552848876@sohu.com";
-    private static final int CLIENT_ID = 999;
-    private static final String NEW_MOBILE = "13800000000";
+    private static final int CLIENT_ID = 1120;
+    private static final String NEW_MOBILE = "18511531063";
     private static final String EMAIL = "Binding123@163.com";
     private static final String NEW_EMAIL = "hujunfei1986@126.com";
     private static final String QUESTION = "Secure question";
     private static final String NEW_QUESTION = "New secure question";
     private static final String ANSWER = "Secure answer";
     private static final String NEW_ANSWER = "New secure answer";
+
+    @Test
+    public void testSendMobileCode() throws Exception {
+        Result result;
+        result = secureManager.sendMobileCode(NEW_MOBILE, CLIENT_ID, AccountModuleEnum.REGISTER);
+        Assert.assertTrue(result.isSuccess());
+    }
 
     @Test
     public void testAll() {
@@ -52,8 +61,8 @@ public class SecureManagerTest extends BaseTest {
 
     @Test
     public void testActionRecord() {
-        for (int i=0; i<15; i++) {
-            secureManager.logActionRecord(PASSPORT_ID, CLIENT_ID, AccountModuleEnum.LOGIN, "202.106.180." + (i+1), null);
+        for (int i = 0; i < 15; i++) {
+            secureManager.logActionRecord(PASSPORT_ID, CLIENT_ID, AccountModuleEnum.LOGIN, "202.106.180." + (i + 1), null);
         }
 
         Result

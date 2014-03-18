@@ -353,7 +353,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException {
+    public boolean sendActiveEmail(String username, String password, int clientId, String ip, String ru) throws ServiceException {
         boolean flag = true;
         try {
             String code = UUID.randomUUID().toString().replaceAll("-", "");
@@ -391,8 +391,8 @@ public class AccountServiceImpl implements AccountService {
             mailUtils.sendEmail(activeEmail);
 
             //如果重新发送激活邮件，password是为空的，说明不是注册，否则需要临时注册到缓存
-            if (!Strings.isNullOrEmpty(passpord)) {
-                initialAccountToCache(username, passpord, ip);
+            if (!Strings.isNullOrEmpty(password)) {
+                initialAccountToCache(username, password, ip);
                 redisUtils.hPutAll(cacheKey, mapParam);
                 redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
             }

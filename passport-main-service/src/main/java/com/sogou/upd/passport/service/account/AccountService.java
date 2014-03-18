@@ -88,7 +88,7 @@ public interface AccountService {
    *
    * @return Result格式的返回值, 成功或失败，返回提示信息
    */
-  public boolean sendActiveEmail(String username,String passpord,int clientId,String ip,String ru) throws Exception;
+  public boolean sendActiveEmail(String username,String password,int clientId,String ip,String ru) throws Exception;
 
   /**
    * 激活验证邮件

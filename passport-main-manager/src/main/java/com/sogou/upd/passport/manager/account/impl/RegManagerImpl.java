@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -11,16 +12,11 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMobileApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.OperateTimesService;
-import com.sogou.upd.passport.service.account.SnamePassportMappingService;
+import com.sogou.upd.passport.service.account.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +34,12 @@ public class RegManagerImpl implements RegManager {
 
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private MobileCodeSenderService mobileCodeSenderService;
+    @Autowired
+    private MobilePassportMappingService mobilePassportMappingService;
+    @Autowired
+    private EmailSenderService emailSenderService;
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
@@ -93,11 +95,7 @@ public class RegManagerImpl implements RegManager {
 //                    }
                     //发出激活信以后跳转页面，ru为空跳到sogou激活成功页面
                     if (Strings.isNullOrEmpty(ru)) {
-                        if (isSogou) {
-                            ru = LOGIN_INDEX_URL;
-                        } else {
-                            ru = EMAIL_REG_VERIFY_URL;
-                        }
+                        ru = isSogou ? LOGIN_INDEX_URL : EMAIL_REG_VERIFY_URL;
                     }
                     RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                             clientId, ru);
@@ -183,6 +181,34 @@ public class RegManagerImpl implements RegManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
+    }
+
+    @Override
+    public Result resendActiveMail(ResendActiveMailParams resendActiveMailParams) {
+        Result result = new APIResultSupport(false);
+        try {
+            String username = resendActiveMailParams.getUsername();
+            int clientId = Integer.parseInt(resendActiveMailParams.getClient_id());
+            //检测重发激活邮件次数是否已达上限
+            boolean checkSendLimited = emailSenderService.checkLimitForSendEmail(null, clientId, AccountModuleEnum.REGISTER, username);
+            if (!checkSendLimited) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
+                return result;
+            }
+            boolean isSendSuccess = accountService.sendActiveEmail(username, null, clientId, null, EMAIL_REG_VERIFY_URL);
+            if (isSendSuccess) {
+                if (emailSenderService.incLimitForSendEmail(null, clientId, AccountModuleEnum.REGISTER, username)) {
+                    result.setSuccess(true);
+                    result.setMessage("重新发送激活邮件成功，请立即激活账户！");
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED);
+            }
+        } catch (Exception e) {
+            logger.error("Resend Active Mail Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
     }
 
     @Override
