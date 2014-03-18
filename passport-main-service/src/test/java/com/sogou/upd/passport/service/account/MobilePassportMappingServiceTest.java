@@ -1,13 +1,11 @@
 package com.sogou.upd.passport.service.account;
 
-import com.sun.org.apache.xml.internal.security.Init;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.inject.Inject;
-import javax.validation.constraints.AssertTrue;
 
 /**
  * Created with IntelliJ IDEA.

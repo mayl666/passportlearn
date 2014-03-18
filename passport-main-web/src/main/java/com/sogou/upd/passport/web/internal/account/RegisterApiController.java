@@ -70,8 +70,8 @@ public class RegisterApiController extends BaseController {
             }
             String mobile = params.getMobile();
             //已注册或绑定的手机号不允许再注册，因此不允许发送手机验证码
-            result = regManager.isSogouAccountNotExists(mobile, clientId);
-            if (!result.isSuccess()) {
+            result = regManager.isAccountExists(mobile, clientId);
+            if (result.isSuccess()) {
                 return result.toString();
             }
             // 调用内部接口
@@ -111,8 +111,8 @@ public class RegisterApiController extends BaseController {
             }
             String mobile = params.getMobile();
             //检查账户是否存在，也即该手机号是否已经注册或绑定
-            result = regManager.isSogouAccountNotExists(mobile, clientId);
-            if (!result.isSuccess()) {
+            result = regManager.isAccountExists(mobile, clientId);
+            if (result.isSuccess()) {
                 result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED));
                 return result.toString();
             }
@@ -159,8 +159,8 @@ public class RegisterApiController extends BaseController {
             }
             String userid = regSmallPieceParams(params.getUserid());
             //检查注册账号是否已经存在
-            result = regManager.isSogouAccountNotExists(userid, params.getClient_id());
-            if (!result.isSuccess()) {
+            result = regManager.isAccountExists(userid, params.getClient_id());
+            if (result.isSuccess()) {
                 result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_REGED));
                 return result.toString();
             }
@@ -225,8 +225,8 @@ public class RegisterApiController extends BaseController {
             }
             String mobile = params.getMobile();
             //检查账户是否存在，也即该手机号是否已经注册或绑定
-            result = regManager.isSogouAccountNotExists(mobile, clientId);
-            if (!result.isSuccess()) {
+            result = regManager.isAccountExists(mobile, clientId);
+            if (result.isSuccess()) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                 result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED));
                 return result.toString();

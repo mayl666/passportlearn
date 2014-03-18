@@ -18,59 +18,60 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @ContextConfiguration(locations = {"classpath:spring-config-mail.xml"})
-public class TestSendEmail  extends AbstractJUnit4SpringContextTests {
-     @Inject
-     private SendCloud sendCloud;
-  @Test
-  public void send(){
-     try{
-       Message message = new Message("mayan@sogou.com", "Mayan Test");
-       // 正文， 使用html形式，或者纯文本形式
-       message.setBody(
-           "Hi, %name%, 欢迎使用SendCloud") // html
-           .setAltBody("Hi, %name%, 欢迎使用SendCloud"); // 纯文本
+public class TestSendEmail extends AbstractJUnit4SpringContextTests {
+    @Inject
+    private SendCloud sendCloud;
 
-       // 添加to, cc, bcc replyto
-       message.setSubject("SendCloud测试邮件");
+    @Test
+    public void send() {
+        try {
+            Message message = new Message("liuling@sogou.com", "Liuling Test");
+            // 正文， 使用html形式，或者纯文本形式
+            message.setBody(
+                    "Hi, %name%, 欢迎使用SendCloud") // html
+                    .setAltBody("Hi, %name%, 欢迎使用SendCloud"); // 纯文本
 
-       // X-SMTPAPI
-       SmtpApiHeader smtpApiHeader = new SmtpApiHeader();
-       // 添加category字段，只能添加一个
-       smtpApiHeader.addCategory("xsmtpApi category");
-       // 启动取消订阅， 打开跟踪，点击跟踪应用
+            // 添加to, cc, bcc replyto
+            message.setSubject("SendCloud测试邮件");
+
+            // X-SMTPAPI
+            SmtpApiHeader smtpApiHeader = new SmtpApiHeader();
+            // 添加category字段，只能添加一个
+            smtpApiHeader.addCategory("xsmtpApi category");
+            // 启动取消订阅， 打开跟踪，点击跟踪应用
 //         smtpApiHeader.addFilter(AppFilter.ADD_UNSUBSCRIBE, "enable", "1");
 //         smtpApiHeader.addFilter(AppFilter.ADD_HIDDEN_IMAGE, "enable", "1");
 //         smtpApiHeader.addFilter(AppFilter.PROCESS_URL_REPLACE, "enable", "1");
-       // add to
-       List<String> toList = new ArrayList<String>();
-       toList.add("mayan@sogou-inc.com");
+            // add to
+            List<String> toList = new ArrayList<String>();
+            toList.add("liuling@sogou-inc.com");
 //         toList.add("liuling@sogou-inc.com");
 
-       smtpApiHeader.addRecipients(toList);
+            smtpApiHeader.addRecipients(toList);
 
-       //添加sub字段
-       List<String>sub=new ArrayList<String>();
-       sub.add("%bodyMale%");
-       sub.add("%bodyFemale%");
+            //添加sub字段
+            List<String> sub = new ArrayList<String>();
+            sub.add("%bodyMale%");
+            sub.add("%bodyFemale%");
 
-       smtpApiHeader.addSub("%name%", sub);
-       //添加section字段
+            smtpApiHeader.addSub("%name%", sub);
+            //添加section字段
 //         smtpApiHeader.addSection("%bodyFemale%", "liuling");
-       smtpApiHeader.addSection("%bodyMale%", "mayan");
+            smtpApiHeader.addSection("%bodyMale%", "mayan");
 
-       System.out.println(smtpApiHeader.toString());
-       message.setXsmtpapiJsonStr(smtpApiHeader.toString());
+            System.out.println(smtpApiHeader.toString());
+            message.setXsmtpapiJsonStr(smtpApiHeader.toString());
 
-       sendCloud.setMessage(message);
-       sendCloud.send();
+            sendCloud.setMessage(message);
+            sendCloud.send();
 
-       // 获取emailId列表
-       System.out.println(sendCloud.getEmailIdList());
-     }catch (Exception e){
-       e.printStackTrace();
-     }
+            // 获取emailId列表
+            System.out.println(sendCloud.getEmailIdList());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-     }
+    }
 
 //     @Test
 //     public void setMailSender(){
