@@ -75,7 +75,7 @@ public class RegAction extends BaseController {
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
         String clientIdStr = checkParam.getClient_id();
         int clientId = !Strings.isNullOrEmpty(clientIdStr) ? Integer.valueOf(clientIdStr) : CommonConstant.SGPP_DEFAULT_CLIENTID;
-        result = checkAccountNotExists(username, clientId);
+        result = checkAccountNotExists(username,clientId);
         if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
             result.setMessage("此手机号已注册或已绑定，请直接登录");
         }
@@ -281,18 +281,7 @@ public class RegAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOGOU_REGISTER);
             return result;
         }
-        //判断是否是个性账号
-        if (username.indexOf("@") == -1) {
-            //判断是否是手机号注册
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                result = regManager.isAccountNotExists(username, clientId);
-            } else {
-                username = username + "@sogou.com";
-                result = regManager.isAccountNotExists(username, clientId);
-            }
-        } else {
-            result = regManager.isAccountNotExists(username, clientId);
-        }
+        result = regManager.isSogouAccountNotExists(username, clientId);
         return result;
     }
 

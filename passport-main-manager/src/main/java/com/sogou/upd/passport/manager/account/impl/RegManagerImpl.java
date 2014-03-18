@@ -9,7 +9,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMobileApiParams;
@@ -192,7 +191,7 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
-    public Result isAccountNotExists(String username, int clientId) throws Exception {
+    public Result isSogouAccountNotExists(String username, int clientId) throws Exception {
         Result result;
         try {
             CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);

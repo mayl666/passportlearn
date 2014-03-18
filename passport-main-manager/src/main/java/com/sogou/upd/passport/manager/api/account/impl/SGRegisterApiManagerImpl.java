@@ -129,19 +129,27 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
         String username = null;
         try {
             username = checkUserApiParams.getUserid();
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
-                if (!Strings.isNullOrEmpty(passportId)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                    return result;
+            //判断是否是个性账号
+            if (username.indexOf("@") == -1) {
+                if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+                    String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
+                    if (!Strings.isNullOrEmpty(passportId)) {
+                        //存在返回false
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                        return result;
+                    } else {
+                        //不存在返回true
+                        result.setSuccess(true);
+                        return result;
+                    }
+                } else {
+                    username = username + "@sogou.com";
                 }
-            } else {
-                //todo  增加检查个性账号
-                Account account = accountService.queryAccountByPassportId(username);
-                if (account != null) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                    return result;
-                }
+            }
+            Account account = accountService.queryAccountByPassportId(username);
+            if (account != null) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                return result;
             }
         } catch (ServiceException e) {
             logger.error("Check account is exists Exception, username:" + username, e);

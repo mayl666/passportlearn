@@ -41,7 +41,7 @@ public interface RegManager {
      *
      * @return 验证码
      */
-    public Result isAccountNotExists(String username, int clientId) throws Exception;
+    public Result isSogouAccountNotExists(String username, int clientId) throws Exception;
 
     /**
      * 检查一天内某ip注册次数
