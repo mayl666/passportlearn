@@ -9,8 +9,10 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
+import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
@@ -138,8 +140,18 @@ public class LoginApiController extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result.toString();
             }
-            // 调用内部接口
-            result = proxyLoginApiManager.webAuthUser(params);
+
+            if (ManagerHelper.isInvokeProxyApi(params.getUserid())) {
+                //如果是sohu调用，直接返回错误;
+                if(params.getClient_id() == SHPPUrlConstant.SH_APP_ID){
+                    result.setCode(ErrorUtil.ERR_CODE_LOOP_CALL);
+                }else {
+                    result = proxyLoginApiManager.webAuthUser(params);
+                }
+            } else {
+                result = sgLoginApiManager.webAuthUser(params);
+            }
+
             if (result.isSuccess()) {
                 String userId = result.getModels().get("userid").toString();
                 loginManager.doAfterLoginSuccess(params.getUserid(), createip, userId, params.getClient_id());

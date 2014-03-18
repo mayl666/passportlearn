@@ -8,7 +8,7 @@ package com.sogou.upd.passport.manager.api;
  */
 public class SHPPUrlConstant {
 
-
+    public static final int SH_APP_ID = 2015;
     public static final int APP_ID = 1120;
     public static final String APP_KEY = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
 

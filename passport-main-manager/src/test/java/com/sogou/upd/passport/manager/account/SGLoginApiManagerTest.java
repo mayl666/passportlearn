@@ -1,15 +1,15 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.math.RSA;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
-import com.sogou.upd.passport.manager.api.account.impl.SGLoginApiManagerImpl;
 import junit.framework.Assert;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,15 +28,29 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
 
     private static final int clientId = 1100;
 
+    @Before
+    public void before() {
+        System.out.println("SGLoginApiManagerTest.before:" + "before");
+
+    }
+    @After
+    public void after(){
+        System.out.println("SGLoginApiManagerTest.after:" + "after");
+
+    }
     @Test
     public void testAuthUser() {
         try {
+//            sgLoginApiManager
+
             AuthUserApiParams authUserParameters = new AuthUserApiParams();
-            authUserParameters.setUserid("13126693178@sohu.com");
+            authUserParameters.setUserid("13545210241@sohu.com");
             authUserParameters.setClient_id(clientId);
-            authUserParameters.setPassword(Coder.encryptMD5("123456"));
-            authUserParameters.setUsertype(1);
+            authUserParameters.setPassword(Coder.encryptMD5("111111"));
+//            authUserParameters.setUsertype(1);
             Result result = sgLoginApiManager.webAuthUser(authUserParameters);
+            Assert.assertEquals("0",result.getCode());
+
             System.out.println("testAuthUser:" + result);
         } catch (Exception e) {
             e.printStackTrace();

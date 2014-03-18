@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
@@ -9,13 +10,16 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MappTokenService;
+import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,17 +69,25 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
 
     @Autowired
     private MappTokenService mappTokenService;
+    @Autowired
+    private MobilePassportMappingService mobilePassportMappingService;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
         Result result = new APIResultSupport(false);
         try {
             String userId = authUserApiParams.getUserid();
+            if (PhoneUtil.verifyPhoneNumberFormat(userId)) {
+                userId = mobilePassportMappingService.queryPassportIdByMobile(userId);
+                if (StringUtils.isBlank(userId)) {//账号不存在
+                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                    return result;
+                }
+            }
             if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(userId))) {
                 userId = userId + "@sogou.com";
-                authUserApiParams.setUserid(userId);
             }
-            result = accountService.verifyUserPwdVaild(authUserApiParams.getUserid(), authUserApiParams.getPassword(), false);
+            result = accountService.verifyUserPwdVaild(userId, authUserApiParams.getPassword(), false);
             return result;
         } catch (Exception e) {
             logger.error("accountLogin fail,userId:" + authUserApiParams.getUserid(), e);

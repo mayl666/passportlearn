@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMobileApiParams;
@@ -40,6 +41,8 @@ public class RegManagerImpl implements RegManager {
     private AccountService accountService;
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
+    @Autowired
+    private RegisterApiManager proxyRegisterApiManager;
     @Autowired
     private OperateTimesService operateTimesService;
     @Autowired
@@ -204,6 +207,20 @@ public class RegManagerImpl implements RegManager {
         return result;
     }
 
+    @Override
+    public Result isSohuAccountExists(String username) throws Exception {
+        Result result;
+        try {
+            CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
+            BaseMobileApiParams params = new BaseMobileApiParams();
+            params.setMobile(username);
+            result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+        } catch (ServiceException e) {
+            logger.error("Check account is exists Exception, username:" + username, e);
+            throw new Exception(e);
+        }
+        return result;
+    }
 
     @Override
     public Result checkRegInBlackListByIpForInternal(String ip) throws Exception {

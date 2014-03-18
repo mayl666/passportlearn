@@ -160,7 +160,7 @@ public class SecureInfoToAccountThread implements Runnable {
                                 account.setPassportId(passportIdString);
                                 account.setRegIp(createIp);
                                 account.setRegTime(date_createtime);
-                                account.setPasswordtype(Account.NO_PASSWORD);
+                                account.setPasswordType(Account.NO_PASSWORD);
                                 row = accountDAO.insertOrUpdateAccount(passportIdString, account);
                             } else {
                                 continue;
