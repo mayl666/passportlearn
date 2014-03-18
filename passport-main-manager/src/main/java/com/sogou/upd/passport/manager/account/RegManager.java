@@ -91,4 +91,13 @@ public interface RegManager {
      */
     public Result isSohuAccountExists(String username) throws Exception;
 
+    /**
+     * 检查sohu passport或者sogou passport账号是否存在
+     * @param username
+     * @param clientId
+     * @return
+     * @throws Exception
+     */
+    public Result isSohuOrSogouAccountExists(String username, int clientId) throws Exception;
+
 }

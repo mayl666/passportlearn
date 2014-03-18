@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -54,6 +55,8 @@ public class LoginApiController extends BaseController {
     private LoginManager loginManager;
     @Autowired
     private ConfigureManager configureManager;
+    @Autowired
+    private RegManager regManager;
 
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
@@ -76,40 +79,51 @@ public class LoginApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        //验证client_id是否存在
-        int clientId = params.getClient_id();
-        if (!configureManager.checkAppIsExist(clientId)) {
-            result.setCode(ErrorUtil.INVALID_CLIENTID);
+        try {
+            int clientId = params.getClient_id();
+            String passportId = params.getUserid();
+            //验证client_id是否存在
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result.toString();
+            }
+            //检查用户名是否存在
+            result = regManager.isSohuOrSogouAccountExists(params.getUserid(),clientId);
+            if(!result.isSuccess()){
+                return result;
+            }
+
+            //设置来源
+            String ru = params.getRu();
+            if (Strings.isNullOrEmpty(ru)) {
+                ru = LOGIN_INDEX_URL;
+            }
+            String ip = getIp(request);
+            CookieApiParams cookieApiParams = new CookieApiParams(passportId, clientId, ru, ip);
+            Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+            if (getCookieValueResult.isSuccess()) {
+                String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
+                String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
+                result.setSuccess(true);
+                Map<String, String> map = Maps.newHashMap();
+                map.put("userid", passportId);
+                map.put("ppinf", ppinf);
+                map.put("pprdig", pprdig);
+                result.setModels(map);
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+            }
+        }  catch (Exception e) {
+            logger.error("authuser fail,userid:" + params.getUserid(), e);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
+            return result.toString();
+
+        } finally {
+            // 获取记录UserOperationLog的数据
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
             return result.toString();
         }
-        //todo 检查用户名是否存在
-
-        //设置来源
-        String ru = params.getRu();
-        if (Strings.isNullOrEmpty(ru)) {
-            ru = LOGIN_INDEX_URL;
-        }
-
-        String passportId = params.getUserid();
-        String ip = getIp(request);
-        CookieApiParams cookieApiParams = new CookieApiParams(passportId, clientId, ru, ip);
-        Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-        if (getCookieValueResult.isSuccess()) {
-            String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-            String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-            result.setSuccess(true);
-            Map<String, String> map = Maps.newHashMap();
-            map.put("userid", passportId);
-            map.put("ppinf", ppinf);
-            map.put("pprdig", pprdig);
-            result.setModels(map);
-        } else {
-            result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-        }
-        // 获取记录UserOperationLog的数据
-        UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        UserOperationLogUtil.log(userOperationLog);
-        return result.toString();
     }
 
     /**
