@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 
 /**
@@ -17,4 +18,10 @@ public interface AccountManager {
      * @throws Exception
      */
     public Account queryNormalAccount(String passportId) throws Exception;
+
+
+    /**
+     * 根据passportId获取Account
+     */
+    public Account queryAccountByPassportId(String passportId) throws ServiceException;
 }

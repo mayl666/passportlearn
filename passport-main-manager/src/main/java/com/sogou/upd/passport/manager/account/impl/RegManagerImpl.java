@@ -89,11 +89,11 @@ public class RegManagerImpl implements RegManager {
                 case INDIVID:
                     String token = regParams.getToken();
                     //判断验证码
-//                    if (!accountService.checkCaptchaCode(token, captcha)) {
-//                        logger.debug("[webRegister captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captcha);
-//                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-//                        return result;
-//                    }
+                    if (!accountService.checkCaptchaCode(token, captcha)) {
+                        logger.debug("[webRegister captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captcha);
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                        return result;
+                    }
                     //发出激活信以后跳转页面，ru为空跳到sogou激活成功页面
                     if (Strings.isNullOrEmpty(ru)) {
                         ru = isSogou ? LOGIN_INDEX_URL : EMAIL_REG_VERIFY_URL;

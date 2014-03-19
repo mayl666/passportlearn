@@ -229,7 +229,7 @@ public class RegAction extends BaseController {
         }
         String username = params.getUsername();
         //如果账号存在并且状态为未激活，则重新发送激活邮件
-        Account account = accountManager.queryNormalAccount(username);
+        Account account = accountManager.queryAccountByPassportId(username);
         if (account != null) {
             switch (Integer.parseInt(account.getFlag())) {
                 case 0:
