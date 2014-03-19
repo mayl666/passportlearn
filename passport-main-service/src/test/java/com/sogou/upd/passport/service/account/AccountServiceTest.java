@@ -25,7 +25,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
 
     private static final String MOBILE = "13545210241";
     private static final String NEW_MOBILE = "13800000000";
-    private static final String PASSWORD = "222222";
+    private static final String PASSWORD = "111111";
     private static final String PASSPORT_ID1 = "13552848876@sohu.com";
     private static final
     String PASSPORT_ID = PassportIDGenerator.generator(MOBILE, AccountTypeEnum.PHONE.getValue());
@@ -94,13 +94,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testVerifyUserPwdVaild() {
-        String newPassword = null;
-        try {
-            newPassword = PwdGenerator.generatorStoredPwd(PASSWORD, true);
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        Result result = accountService.verifyUserPwdValid(SOGOU, newPassword, false);
+        Result result = accountService.verifyUserPwdValid("tinkame_test@sogou.com", "123456", true);
         Assert.assertTrue(result.isSuccess());
 
     }

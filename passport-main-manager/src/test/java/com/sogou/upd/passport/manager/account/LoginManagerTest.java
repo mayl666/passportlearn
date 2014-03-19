@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import junit.framework.Assert;
 import org.junit.Test;
@@ -33,8 +35,16 @@ public class LoginManagerTest extends BaseTest {
             webLoginParameters.get().setPassword("111111");
             webLoginParameters.get().setClient_id("1100");
             Result result =LoginManagerImpl.accountLogin(webLoginParameters.get(),ip,"http");
-            Assert.assertEquals("0",result.getCode());
-            System.out.println("testAccountLogin:"+result);
+            Assert.assertEquals("0", result.getCode());
+
+
+            WebLoginParams webLoginParams = new WebLoginParams();
+            webLoginParams.setClient_id("1100");
+            webLoginParams.setUsername("tinkame302@sohu.com");
+            webLoginParams.setPassword("123456");
+            Result result_sohu = LoginManagerImpl.accountLogin(webLoginParams,ip,"https");
+            Assert.assertEquals("0", result_sohu.getCode());
+
         } catch (Exception e) {
             e.printStackTrace();
         }

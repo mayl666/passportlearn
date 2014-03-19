@@ -2,16 +2,17 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xsi:schemaLocation="http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context-3.0.xsd
      http://www.springframework.org/schema/beans 
-     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
     <!-- 配置master数据库 -->
     <bean id="masterDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
-            <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
+            <value>jdbc:mysql://10.11.211.18:3306/test_sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
             <value>sogou_passport</value>
@@ -58,7 +59,7 @@
     <bean id="slaveDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
-            <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
+            <value>jdbc:mysql://10.11.211.18:3306/test_sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
             <value>sogou_passport</value>
@@ -128,5 +129,10 @@
     </bean>
 
     <bean class="net.paoding.rose.jade.context.spring.JadeBeanFactoryPostProcessor"/>
+
+    <!-- 初始化数据表结构 与默认数据-->
+    <jdbc:initialize-database data-source="masterDataSource" ignore-failures="ALL">
+        <jdbc:script location="classpath:sql/import_data_account.sql" encoding="UTF-8"/>
+    </jdbc:initialize-database>
 
 </beans>

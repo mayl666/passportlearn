@@ -48,6 +48,15 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
             Result result = sgLoginApiManager.webAuthUser(authUserParameters);
             Assert.assertEquals("0",result.getCode());
             System.out.println("testAuthUser:" + result);
+
+            AuthUserApiParams authUserParameters_sogou = new AuthUserApiParams();
+            authUserParameters_sogou.setUserid("tinkame_test@sogou.com");
+            authUserParameters_sogou.setClient_id(clientId);
+            authUserParameters_sogou.setPassword(Coder.encryptMD5("123456"));
+            Result result_sogou = sgLoginApiManager.webAuthUser(authUserParameters_sogou);
+            Assert.assertEquals("0",result_sogou.getCode());
+            System.out.println("testAuthUser:" + result_sogou);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
