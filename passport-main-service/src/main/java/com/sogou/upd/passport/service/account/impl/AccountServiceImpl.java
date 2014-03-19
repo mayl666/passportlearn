@@ -328,9 +328,8 @@ public class AccountServiceImpl implements AccountService {
         try {
             String code = UUID.randomUUID().toString().replaceAll("-", "");
             String token = Coder.encryptMD5(username + clientId + code);
-            //todo 自测的url，提测时改成域名
             String activeUrl =
-                    PASSPORT_ACTIVE_EMAIL_URL_TEST + "passport_id=" + username +
+                    PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
                             "&client_id=" + clientId +
                             "&token=" + token;
             if (!Strings.isNullOrEmpty(ru)) {
