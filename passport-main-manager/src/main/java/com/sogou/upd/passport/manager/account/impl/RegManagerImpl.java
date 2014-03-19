@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -52,10 +53,6 @@ public class RegManagerImpl implements RegManager {
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
-    private static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
-    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
-
-
     @Override
     public Result webRegister(WebRegisterParams regParams, String ip) throws Exception {
 
@@ -96,7 +93,7 @@ public class RegManagerImpl implements RegManager {
                     }
                     //发出激活信以后跳转页面，ru为空跳到sogou激活成功页面
                     if (Strings.isNullOrEmpty(ru)) {
-                        ru = isSogou ? LOGIN_INDEX_URL : EMAIL_REG_VERIFY_URL;
+                        ru = isSogou ? CommonConstant.LOGIN_INDEX_URL : CommonConstant.EMAIL_REG_VERIFY_URL;
                     }
                     RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                             clientId, ru);
@@ -195,7 +192,7 @@ public class RegManagerImpl implements RegManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
                 return result;
             }
-            boolean isSendSuccess = accountService.sendActiveEmail(username, null, clientId, null, EMAIL_REG_VERIFY_URL);
+            boolean isSendSuccess = accountService.sendActiveEmail(username, null, clientId, null, CommonConstant.EMAIL_REG_VERIFY_URL);
             if (isSendSuccess) {
                 if (emailSenderService.incLimitForSendEmail(null, clientId, AccountModuleEnum.REGISTER, username)) {
                     result.setSuccess(true);

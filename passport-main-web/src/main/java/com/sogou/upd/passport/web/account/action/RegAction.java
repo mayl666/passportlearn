@@ -136,10 +136,15 @@ public class RegAction extends BaseController {
                 //设置来源
                 String ru = regParams.getRu();
                 if (Strings.isNullOrEmpty(ru)) {
-                    ru = LOGIN_INDEX_URL;
+                    ru = CommonConstant.LOGIN_INDEX_URL;
                 }
-                String passportId = (String) result.getModels().get("userid");
-                result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
+                boolean isSetCookie = (Boolean) result.getModels().get("isSetCookie");
+                if (isSetCookie) {
+                    String passportId = (String) result.getModels().get("userid");
+                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
+                } else {
+                    ru = CommonConstant.EMAIL_REG_VERIFY_URL;
+                }
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
             }
         } catch (Exception e) {
