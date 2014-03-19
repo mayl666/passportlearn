@@ -181,7 +181,7 @@ public class RegAction extends BaseController {
      */
     @RequestMapping(value = "/activemail", method = RequestMethod.GET)
     @ResponseBody
-    public Object activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams)
+    public void activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
@@ -189,14 +189,14 @@ public class RegAction extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+//            return result;
         }
         //验证client_id
         int clientId = Integer.parseInt(activeParams.getClient_id());
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result;
+//            return result;
         }
         String ip = getIp(request);
         //邮件激活
@@ -205,8 +205,9 @@ public class RegAction extends BaseController {
             // 种sohu域cookie
             result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
             result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
+            response.sendRedirect(activeParams.getRu());
         }
-        return result.toString();
+//        return result.toString();
     }
 
     /**
