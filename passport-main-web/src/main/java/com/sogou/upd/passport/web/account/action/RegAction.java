@@ -206,7 +206,7 @@ public class RegAction extends BaseController {
             result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
             result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
         }
-        return result;
+        return result.toString();
     }
 
     /**
