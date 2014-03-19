@@ -10,7 +10,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -59,7 +59,8 @@ public class RegAction extends BaseController {
     @Autowired
     private CookieManager cookieManager;
     @Autowired
-    private CommonManager commonManager;
+    private AccountManager accountManager;
+
 
     /**
      * 用户注册检查用户名是否存在
@@ -187,7 +188,6 @@ public class RegAction extends BaseController {
         }
         //验证client_id
         int clientId = Integer.parseInt(activeParams.getClient_id());
-
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
@@ -229,7 +229,7 @@ public class RegAction extends BaseController {
         }
         String username = params.getUsername();
         //如果账号存在并且状态为未激活，则重新发送激活邮件
-        Account account = commonManager.queryAccountByPassportId(username);
+        Account account = accountManager.queryNormalAccount(username);
         if (account != null) {
             switch (Integer.parseInt(account.getFlag())) {
                 case 0:
@@ -346,4 +346,5 @@ public class RegAction extends BaseController {
         //状态码参数
         return "reg/emailsuccess";
     }
+
 }

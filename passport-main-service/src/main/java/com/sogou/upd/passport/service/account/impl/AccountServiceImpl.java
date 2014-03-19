@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,15 +40,8 @@ import java.util.UUID;
 @Service
 public class AccountServiceImpl implements AccountService {
 
-    private static final String CACHE_PREFIX_PASSPORT_ACCOUNT = CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNT;
-    private static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST;
-    private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN;
-    private static final String CACHE_PREFIX_UUID_CAPTCHA = CacheConstant.CACHE_PREFIX_UUID_CAPTCHA;
-    private static final String CACHE_PREFIX_PASSPORTID_RESETPWDNUM = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM;
-    private static final String CACHE_PREFIX_NICKNAME_PASSPORTID = CacheConstant.CACHE_PREFIX_NICKNAME_PASSPORTID;
-
-
     private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
+    private static final String PASSPORT_ACTIVE_EMAIL_URL_TEST = "http://localhost/web/activemail?";
 
 
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
@@ -77,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
                 account.setFlag(String.valueOf(AccountStatusEnum.REGULAR.getValue()));
                 long id = accountDAO.insertOrUpdateAccount(username, account);
                 if (id != 0) {
-                    //删除临时账户缓存，成为正式账户
+                    //更新缓存，成为正式账户
                     dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
                     //更新黑名单缓存
                     cacheKey = buildAccountBlackCacheKey(ip);
@@ -134,27 +128,18 @@ public class AccountServiceImpl implements AccountService {
                 //手机注册时，写mobile与passportId映射表
                 if (PhoneUtil.verifyPhoneNumberFormat(passportId.substring(0, passportId.indexOf("@")))) {
                     int row = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
-                    if (row != 0) {
-                        String cacheKey = buildAccountKey(passportId);
-                        //缓存3个月
-                        dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
-                        return account;
+                    if (row == 0) {
+                        return null;
                     }
-                } else {
-                    String cacheKey = buildAccountKey(passportId);
-                    dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.TIME_TWODAY);
-                    return account;
                 }
+                String cacheKey = buildAccountKey(passportId);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.TIME_TWODAY);
+                return account;
             }
         } catch (Exception e) {
             throw new ServiceException(e);
         }
         return null;
-    }
-
-    @Override
-    public Account initialConnectAccount(String passportId, String ip, int provider) throws ServiceException {
-        return initialAccount(passportId, null, false, ip, provider);
     }
 
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccountByPassportId", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
@@ -177,7 +162,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException {
+    public Result verifyUserPwdValid(String passportId, String password, boolean needMD5) throws ServiceException {
         Result result = new APIResultSupport(false);
         Account userAccount;
         try {
@@ -252,23 +237,8 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
-    @Override
-    public boolean deleteAccountByPassportId(String passportId) throws ServiceException {
-        try {
-            int row = accountDAO.deleteAccountByPassportId(passportId);
-            if (row != 0) {
-                String cacheKey = buildAccountKey(passportId);
-                dbShardRedisUtils.delete(cacheKey);
-                return true;
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        return false;
-    }
-
     private String buildResetPwdCacheKey(String passportId) {
-        return CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
+        return CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
                 DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
     }
 
@@ -325,7 +295,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private String buildAccountBlackCacheKey(String ip) {
-        return CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
+        return CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
     }
 
     @Override
@@ -358,8 +328,9 @@ public class AccountServiceImpl implements AccountService {
         try {
             String code = UUID.randomUUID().toString().replaceAll("-", "");
             String token = Coder.encryptMD5(username + clientId + code);
+            //todo 自测的url，提测时改成域名
             String activeUrl =
-                    PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
+                    PASSPORT_ACTIVE_EMAIL_URL_TEST + "passport_id=" + username +
                             "&client_id=" + clientId +
                             "&token=" + token;
             if (!Strings.isNullOrEmpty(ru)) {
@@ -381,6 +352,7 @@ public class AccountServiceImpl implements AccountService {
             //模版中参数替换
             Map<String, Object> map = Maps.newHashMap();
             map.put("activeUrl", activeUrl);
+            map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             activeEmail.setMap(map);
 
             activeEmail.setTemplateFile("activemail.vm");
@@ -393,9 +365,9 @@ public class AccountServiceImpl implements AccountService {
             //如果重新发送激活邮件，password是为空的，说明不是注册，否则需要临时注册到缓存
             if (!Strings.isNullOrEmpty(password)) {
                 initialAccountToCache(username, password, ip);
-                redisUtils.hPutAll(cacheKey, mapParam);
-                redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
             }
+            redisUtils.hPutAll(cacheKey, mapParam);
+            redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
         } catch (Exception e) {
             flag = false;
         }
@@ -403,7 +375,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private String buildCacheKey(String username) {
-        return CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
+        return CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
     }
 
     @Override
@@ -415,7 +387,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean activeEmail(String username, String token, int clientId) throws ServiceException {
+    public boolean checkToken(String username, String token, int clientId) throws ServiceException {
         try {
             String cacheKey = buildCacheKey(username);
             String tokenCache;
@@ -442,7 +414,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Map<String, Object> getCaptchaCode(String token) throws ServiceException {
-        Map<String, Object> map = null;
+        Map<String, Object> map;
         try {
             if (Strings.isNullOrEmpty(token)) {
                 token = UUID.randomUUID().toString().replaceAll("-", "");
@@ -470,12 +442,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private String buildCaptchaCacheKey(String token) {
-        return CACHE_PREFIX_UUID_CAPTCHA + token;
+        return CacheConstant.CACHE_PREFIX_UUID_CAPTCHA + token;
     }
 
 
     @Override
-    public boolean checkCaptchaCodeIsVaild(String token, String captchaCode) throws ServiceException {
+    public boolean checkCaptchaCodeIsValid(String token, String captchaCode) throws ServiceException {
         try {
             String cacheKey = buildCaptchaCacheKey(token);
             String captchaCodeCache = redisUtils.get(cacheKey);
@@ -569,7 +541,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private String buildAccountKey(String passportId) {
-        return CACHE_PREFIX_PASSPORT_ACCOUNT + passportId;
+        return CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNT + passportId;
     }
 
 
@@ -577,7 +549,7 @@ public class AccountServiceImpl implements AccountService {
     public boolean checkCaptchaCode(String token, String captchaCode) throws Exception {
         try {
             //校验验证码
-            if (!checkCaptchaCodeIsVaild(token, captchaCode)) {
+            if (!checkCaptchaCodeIsValid(token, captchaCode)) {
                 return false;
             }
         } catch (ServiceException e) {
@@ -591,7 +563,7 @@ public class AccountServiceImpl implements AccountService {
     public String checkUniqName(String uniqname) throws ServiceException {
         String passportId = null;
         try {
-            String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+            String cacheKey = buildUniqnameCacheKey(uniqname);
             passportId = dbShardRedisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
@@ -603,6 +575,10 @@ public class AccountServiceImpl implements AccountService {
             logger.error("checkUniqName fail", e);
         }
         return passportId;
+    }
+
+    private String buildUniqnameCacheKey(String uniqname) {
+        return CacheConstant.CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
     }
 
     @Override
@@ -625,7 +601,7 @@ public class AccountServiceImpl implements AccountService {
                         //更新新的映射表
                         row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
                         if (row > 0) {
-                            cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                            cacheKey = buildUniqnameCacheKey(uniqname);
                             dbShardRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
                         }
                     }
@@ -668,7 +644,7 @@ public class AccountServiceImpl implements AccountService {
                 //更新映射
                 int row = uniqNamePassportMappingDAO.deleteUniqNamePassportMapping(uniqname);
                 if (row > 0) {
-                    String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                    String cacheKey = buildUniqnameCacheKey(uniqname);
                     dbShardRedisUtils.delete(cacheKey);
                     return true;
                 }

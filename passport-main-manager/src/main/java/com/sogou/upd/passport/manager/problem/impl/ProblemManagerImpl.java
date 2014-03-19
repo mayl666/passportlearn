@@ -82,7 +82,7 @@ public class ProblemManagerImpl implements ProblemManager {
     }
     private boolean checkCaptcha(String captcha, String token) {
         //校验验证码
-        if (!accountService.checkCaptchaCodeIsVaild(token, captcha)) {
+        if (!accountService.checkCaptchaCodeIsValid(token, captcha)) {
             return false;
         }
         return true;

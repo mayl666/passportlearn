@@ -626,7 +626,7 @@ public class SecureManagerImpl implements SecureManager {
             } else {
 
                 // 直接写实现方法，不调用sgBindApiManager，因不能分拆为两个对应方法同时避免读两次Account
-                result = accountService.verifyUserPwdVaild(userId, password, true);
+                result = accountService.verifyUserPwdValid(userId, password, true);
                 if (!result.isSuccess()) {
                     operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
                     return result;

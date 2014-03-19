@@ -45,10 +45,6 @@ public class CommonManagerImpl implements CommonManager {
         return timeRight;
     }
 
-    @Override
-    public Account queryAccountByPassportId(String passportId) throws Exception {
-        return accountService.queryAccountByPassportId(passportId);
-    }
 
     @Override
     public boolean isSecCtValid(long ct) {

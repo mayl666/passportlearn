@@ -142,14 +142,13 @@ public class RegManagerImpl implements RegManager {
             String username = activeParams.getPassport_id();
             String token = activeParams.getToken();
             int clientId = Integer.parseInt(activeParams.getClient_id());
-            //激活邮件
-            boolean isSuccessActive = accountService.activeEmail(username, token, clientId);
+            //验证token是否正确
+            boolean isSuccess = accountService.checkToken(username, token, clientId);
 
-            if (isSuccessActive) {
+            if (isSuccess) {
                 //激活成功
                 Account account = accountService.initialWebAccount(username, ip);
                 if (account != null) {
-                    //更新缓存
                     result.setDefaultModel(account);
                     result.setDefaultModel("userid", account.getPassportId());
                     result.setSuccess(true);
@@ -237,9 +236,11 @@ public class RegManagerImpl implements RegManager {
     public Result isAccountNotExists(String username, int clientId) throws Exception {
         Result result = isAccountExists(username, clientId);
         if (result.isSuccess()) {
+            //用户存在，则账号被占用，返回false
             result.setSuccess(false);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
         } else {
+            //用户不存在，则可以注册
             result.setSuccess(true);
             result.setCode("0");
             result.setMessage("账号未被占用，可以注册");

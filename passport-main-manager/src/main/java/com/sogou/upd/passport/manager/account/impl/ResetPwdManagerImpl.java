@@ -398,7 +398,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                                           String token, String captcha) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!accountService.checkCaptchaCodeIsVaild(token, captcha)) {
+            if (!accountService.checkCaptchaCodeIsValid(token, captcha)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                 return result;
             }

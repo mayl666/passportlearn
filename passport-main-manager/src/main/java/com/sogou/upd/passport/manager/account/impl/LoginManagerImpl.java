@@ -62,7 +62,7 @@ public class LoginManagerImpl implements LoginManager {
             if (needCaptchaCheck(loginParameters.getClient_id(), username, ip)) {
                 String captchaCode = loginParameters.getCaptcha();
                 String token = loginParameters.getToken();
-                if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
+                if (!accountService.checkCaptchaCodeIsValid(token, captchaCode)) {
                     logger.debug("[accountLogin captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captchaCode);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                     return result;
@@ -84,7 +84,7 @@ public class LoginManagerImpl implements LoginManager {
         Result result = new APIResultSupport(true);
         //校验验证码
         if (needCaptchaCheck(clientId, username, ip)) {
-            if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
+            if (!accountService.checkCaptchaCodeIsValid(token, captchaCode)) {
                 logger.info("[accountLogin captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captchaCode);
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);

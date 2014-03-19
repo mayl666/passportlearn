@@ -22,12 +22,7 @@ public interface CommonManager {
      */
     public void incRegTimes(String ip, String uuidName);
 
-    /**
-     * @param passportId
-     * @return
-     * @throws Exception
-     */
-    public Account queryAccountByPassportId(String passportId) throws Exception;
+
 
     /**
      * 内部接口注册的ip次数累加

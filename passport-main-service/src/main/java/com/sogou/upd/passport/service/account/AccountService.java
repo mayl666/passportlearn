@@ -24,11 +24,6 @@ public interface AccountService {
   public Account initialAccount(String username, String password, boolean needMD5, String ip, int provider)
       throws ServiceException;
 
-  /**
-   * 初始化第三方用户账号
-   */
-  public Account initialConnectAccount(String passportId, String ip, int provider)
-      throws ServiceException;
 
   /**
    * 根据passportId获取Account
@@ -54,7 +49,7 @@ public interface AccountService {
    *
    * @return 用户名或密码不匹配，则返回null
    */
-  public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException;
+  public Result verifyUserPwdValid(String passportId, String password, boolean needMD5) throws ServiceException;
 
   /**
      * 根据passwordType验证用户密码是否正确
@@ -67,10 +62,6 @@ public interface AccountService {
      */
     public Result verifyUserPwdValidByPasswordType(Result result, String password, Account account, Boolean needMD5) throws ServiceException;
 
-    /**
-   * 根据passportId删除Account，内部debug接口使用
-   */
-  public boolean deleteAccountByPassportId(String passportId) throws ServiceException;
 
   /**
    * 重置密码
@@ -95,7 +86,7 @@ public interface AccountService {
    *
    * @return
    */
-  public boolean activeEmail(String username,String token,int clientId) throws Exception;
+  public boolean checkToken(String username,String token,int clientId) throws Exception;
 
   /**
    * 种根域和子域下的cookie
@@ -114,7 +105,7 @@ public interface AccountService {
    *
    * @return 匹配结果
    */
-  public boolean checkCaptchaCodeIsVaild(String token, String captchaCode);
+  public boolean checkCaptchaCodeIsValid(String token, String captchaCode);
 
     /**
      * 修改绑定手机

@@ -115,7 +115,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
         Result result = new APIResultSupport(true);
         //校验验证码
         if (needCaptchaCheck(clientId, username, ip)) {
-            if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
+            if (!accountService.checkCaptchaCodeIsValid(token, captchaCode)) {
                 logger.info("[checkCaptchaVaild captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captchaCode);
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
