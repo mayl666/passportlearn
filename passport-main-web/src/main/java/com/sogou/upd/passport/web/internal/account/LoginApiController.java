@@ -109,6 +109,9 @@ public class LoginApiController extends BaseController {
         } else {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
+        // 获取记录UserOperationLog的数据
+        UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 

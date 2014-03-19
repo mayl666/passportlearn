@@ -152,36 +152,42 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
-        Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams, false, false);
-
-        String url = (String) cookieUrlResult.getModels().get("url");
-//        RequestModel requestModel = (RequestModel) cookieUrlResult.getModels().get("requestModel");
-//        Header[] headers = SGHttpClient.executeHeaders(requestModel);
-//        start = System.currentTimeMillis();
-        Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
-//        CommonHelper.recordTimestamp(start,"getCookieValue-getCookieValue");
-
+        //生成cookie
+        CookieApiParams cookieApiParams = new CookieApiParams();
+        cookieApiParams.setUserid(createCookieUrlApiParams.getUserid());
+        cookieApiParams.setClient_id(CommonConstant.PC_CLIENTID);
+        cookieApiParams.setRu(createCookieUrlApiParams.getRu());
+        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+        cookieApiParams.setPersistentcookie(String.valueOf(1));
+        Result cookieInfoResult = getCookieInfo(cookieApiParams);
         Result result = new APIResultSupport(false);
-        if (headers != null) {
-            String locationKey = "Location";
-            String locationUrl = "";
-            for (Header header : headers) {
-                if (locationKey.equals(header.getName())) {
-                    locationUrl = header.getValue();
-                }
-            }
-            if (!Strings.isNullOrEmpty(locationUrl)) {
-                Map paramMap = StringUtil.extractParameterMap(locationUrl);
-                String status = (String) paramMap.get("status");
-                if (Strings.isNullOrEmpty(status)) {
-                    result.setSuccess(true);
-                    result.setDefaultModel("ppinf", paramMap.get("ppinf"));
-                    result.setDefaultModel("pprdig", paramMap.get("pprdig"));
-                    result.setDefaultModel("passport", paramMap.get("passport"));
-                    locationUrl = modifyClientRu(locationUrl);  // 输入法Mac要求Location里的ru不能decode
-                }
-            }
-            result.setDefaultModel("redirectUrl", locationUrl);
+        if (cookieInfoResult != null) {
+            String ppinf = (String)cookieInfoResult.getModels().get("ppinf");
+            String pprdig = (String) cookieInfoResult.getModels().get("pprdig");
+            String passport = (String) cookieInfoResult.getModels().get("passport");
+
+            result.setSuccess(true);
+            result.setDefaultModel("ppinf", ppinf);
+            result.setDefaultModel("pprdig", pprdig);
+            result.setDefaultModel("passport", passport);
+
+            long ct = System.currentTimeMillis();
+            String code1 = commonManager.getCode(ppinf,CommonConstant.PC_CLIENTID,ct);
+            String code2 = commonManager.getCode(pprdig,CommonConstant.PC_CLIENTID,ct);
+            String code3 = commonManager.getCode(passport,CommonConstant.PC_CLIENTID,ct);
+
+            StringBuilder locationUrlBuilder = new StringBuilder(PP_COOKIE_URL);
+            locationUrlBuilder.append("?").append("ppinf=").append(ppinf)
+                    .append("&pprdig=").append(pprdig)
+                    .append("&passport=").append(passport)
+                    .append("&code1=").append(code1)
+                    .append("&code2=").append(code2)
+                    .append("&code=").append(code3)
+                    .append("&s=").append(ct)
+                    .append("&lastdomain=").append(0)
+                    .append("&ru=").append(createCookieUrlApiParams.getRu()+"?status=0");
+
+            result.setDefaultModel("redirectUrl", locationUrlBuilder.toString());
         } else {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
