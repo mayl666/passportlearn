@@ -73,9 +73,9 @@ public class OpenApiControllerTest extends BaseActionTest {
         params.put("openApiName", "/v3/user/get_qqclub_face");
         Map<String, String> maps = new HashMap<String, String>();
         maps.put("format", "json");
-        maps.put("opt", "set");
+//        maps.put("opt", "set");
         maps.put("pf", "qzone");
-        maps.put("value", "0");
+//        maps.put("value", "0");
         maps.put("userip", "10.128.134.167");
 
         String mapString = JacksonJsonMapperUtil.getMapper().writeValueAsString(maps);

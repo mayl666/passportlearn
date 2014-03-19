@@ -63,7 +63,7 @@ public class AccountInfoActionTest extends BaseActionTest {
         String serverSecret = "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr";
         long ct = System.currentTimeMillis();
 
-        String passportId="caomingming1234@chinaren.com";
+        String passportId="lovemd@sohu.com";
         String code = ManagerHelper.generatorCode(passportId, clientId, serverSecret, ct) ;
         System.out.println("code:" + code);
         params.put("client_id", String.valueOf(clientId));
@@ -73,7 +73,7 @@ public class AccountInfoActionTest extends BaseActionTest {
 //
         params.put("code", code);
         params.put("ct", String.valueOf(ct));
-        String result = sendPost("http://10.11.198.180:8090/internal/account/userinfo", params);
+        String result = sendPost("http://10.16.139.157:8090/internal/account/userinfo", params);
         System.out.println(result);
     }
 }
