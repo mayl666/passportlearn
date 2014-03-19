@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account.impl;
 
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountManager;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -23,4 +24,11 @@ public class AccountManagerImpl implements AccountManager {
     public Account queryNormalAccount(String passportId) throws Exception {
         return accountService.queryAccountByPassportId(passportId);
     }
+
+    @Override
+    public Account queryAccountByPassportId(String passportId) throws ServiceException {
+        return accountService.queryAccountByPassportId(passportId);  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+
 }

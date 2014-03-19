@@ -99,11 +99,11 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
 
             String captcha = regParams.getCaptcha();
             //验证手机号码与验证码是否匹配
-//            result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.REGISTER, captcha);
-//            if (!result.isSuccess()) {
-//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-//                return result;
-//            }
+            result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.REGISTER, captcha);
+            if (!result.isSuccess()) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+                return result;
+            }
 
             Account account = accountService.initialAccount(mobile, password, true, ip, AccountTypeEnum
                     .PHONE.getValue());
