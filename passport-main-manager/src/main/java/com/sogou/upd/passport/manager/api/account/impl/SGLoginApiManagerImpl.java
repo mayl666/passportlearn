@@ -87,7 +87,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
             if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(userId))) {
                 userId = userId + "@sogou.com";
             }
-            result = accountService.verifyUserPwdVaild(userId, authUserApiParams.getPassword(), false);
+            result = accountService.verifyUserPwdValid(userId, authUserApiParams.getPassword(), false);
             return result;
         } catch (Exception e) {
             logger.error("accountLogin fail,userId:" + authUserApiParams.getUserid(), e);

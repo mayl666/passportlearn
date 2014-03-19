@@ -1,6 +1,0 @@
-<html>
-<title>hello！</title>
-<body>
-亲爱的用户：您好，欢迎您使用搜狐通行证服务，为确保用户注册信息的真实性，我们会验证此邮箱是否属于您。请单击以下链接进行激活：<a href="$activeUrl">"+$activeUrl+"</a>
-</body>
-</html>

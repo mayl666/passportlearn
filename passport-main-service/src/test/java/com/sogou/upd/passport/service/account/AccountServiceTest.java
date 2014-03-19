@@ -1,8 +1,11 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
+import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,14 +25,14 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
 
     private static final String MOBILE = "13545210241";
     private static final String NEW_MOBILE = "13800000000";
-    private static final String PASSWORD = "111111";
+    private static final String PASSWORD = "222222";
     private static final String PASSPORT_ID1 = "13552848876@sohu.com";
     private static final
     String PASSPORT_ID = PassportIDGenerator.generator(MOBILE, AccountTypeEnum.PHONE.getValue());
     private static final String IP = "127.0.0.1";
     private static final int PROVIDER = AccountTypeEnum.PHONE.getValue();
 
-    private static final String SOGOU = "liuling01@sogou.com";
+    private static final String SOGOU = "liuling@sogou.com";
     private static final int PROVIDER_EMAIL = AccountTypeEnum.EMAIL.getValue();
 
     /**
@@ -39,6 +42,21 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
     public void testInitialPhoneAccount() throws Exception {
         Account account = accountService.initialAccount(MOBILE, PASSWORD, true, IP, PROVIDER);
         Assert.assertNotNull(account);
+    }
+
+    /**
+     * 发送激活邮件至注册邮箱,自测需要在action里调用，在service中测试会提示找不到.vm文件
+     */
+    @Test
+    public void testSendEmail() {
+        String mail = "erinbeals2012@gmail.com";
+        boolean isSuccess = false;
+        try {
+            isSuccess = accountService.sendActiveEmail(mail, PASSWORD, CommonConstant.SGPP_DEFAULT_CLIENTID, "127.0.0.1", null);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        Assert.assertTrue(isSuccess);
     }
 
     /**
@@ -58,11 +76,8 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testQueryAccountByPassportId() {
         Account account = accountService.queryAccountByPassportId(PASSPORT_ID);
-        if (account == null) {
-            System.out.println("获取不成功!!!");
-        } else {
-            System.out.println("获取成功..");
-        }
+        Assert.assertNotNull(account);
+
     }
 
     /**
@@ -71,11 +86,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testVerifyAccountVaild() {
         Account account = accountService.queryNormalAccount(PASSPORT_ID);
-        if (account != null) {
-            System.out.println("用户存在...");
-        } else {
-            System.out.println("用户不存在!!!");
-        }
+        Assert.assertNotNull(account);
     }
 
     /**
@@ -83,12 +94,15 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testVerifyUserPwdVaild() {
-//        Result result = accountService.verifyUserPwdVaild(MOBILE, PASSWORD, true);
-//        if (result.isSuccess()) {
-//            System.out.println("正确...");
-//        } else {
-//            System.out.println("不正确!!!");
-//        }
+        String newPassword = null;
+        try {
+            newPassword = PwdGenerator.generatorStoredPwd(PASSWORD, true);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        Result result = accountService.verifyUserPwdValid(SOGOU, newPassword, false);
+        Assert.assertTrue(result.isSuccess());
+
     }
 
 

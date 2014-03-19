@@ -94,15 +94,6 @@ public interface AccountDAO {
     public int updateState(@SQLParam("flag") int flag,
                            @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
-    /**
-     * 验证合法，用户注册
-     */
-    @SQL(
-            "insert into " +
-                    TABLE_NAME +
-                    "(" + ALL_FIELD + ") " + "values (" + VALUE_FIELD + ")")
-    public int insertAccount(@ShardBy @SQLParam("passport_id") String passport_id,
-                             @SQLParam("account") Account account) throws DataAccessException;
 
     /**
      * 验证合法，用户注册

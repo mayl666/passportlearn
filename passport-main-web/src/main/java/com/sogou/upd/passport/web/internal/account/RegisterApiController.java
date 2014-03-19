@@ -7,14 +7,12 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
-import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +47,7 @@ public class RegisterApiController extends BaseController {
      * @param params
      * @return
      */
-    @InterfaceSecurity
+//    @InterfaceSecurity
     @RequestMapping(value = "/sendregcaptcha", method = RequestMethod.POST)
     @ResponseBody
     public Object sendRegCaptcha(HttpServletRequest request, BaseMobileApiParams params) {
@@ -70,8 +68,9 @@ public class RegisterApiController extends BaseController {
             }
             String mobile = params.getMobile();
             //已注册或绑定的手机号不允许再注册，因此不允许发送手机验证码
-            result = regManager.isAccountExists(mobile, clientId);
-            if (result.isSuccess()) {
+            result = regManager.isAccountNotExists(mobile, clientId);
+            if (!result.isSuccess()) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                 return result.toString();
             }
             // 调用内部接口
@@ -90,7 +89,7 @@ public class RegisterApiController extends BaseController {
      * @param params
      * @return
      */
-    @InterfaceSecurity
+//    @InterfaceSecurity
     @RequestMapping(value = "/regmobileuser", method = RequestMethod.POST)
     @ResponseBody
     public Object regMobileCaptchaUser(HttpServletRequest request, RegMobileCaptchaApiParams params) {
@@ -111,9 +110,9 @@ public class RegisterApiController extends BaseController {
             }
             String mobile = params.getMobile();
             //检查账户是否存在，也即该手机号是否已经注册或绑定
-            result = regManager.isAccountExists(mobile, clientId);
-            if (result.isSuccess()) {
-                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED));
+            result = regManager.isAccountNotExists(mobile, clientId);
+            if (!result.isSuccess()) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                 return result.toString();
             }
             // 调用内部接口
@@ -136,7 +135,7 @@ public class RegisterApiController extends BaseController {
      * @param params
      * @return
      */
-    @InterfaceSecurity
+//    @InterfaceSecurity
     @RequestMapping(value = "/reguser", method = RequestMethod.POST)
     @ResponseBody
     public Object regMailUser(HttpServletRequest request, RegEmailApiParams params) throws Exception {
@@ -159,8 +158,8 @@ public class RegisterApiController extends BaseController {
             }
             String userid = regSmallPieceParams(params.getUserid());
             //检查注册账号是否已经存在
-            result = regManager.isAccountExists(userid, params.getClient_id());
-            if (result.isSuccess()) {
+            result = regManager.isAccountNotExists(userid, params.getClient_id());
+            if (!result.isSuccess()) {
                 result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_REGED));
                 return result.toString();
             }
@@ -204,7 +203,7 @@ public class RegisterApiController extends BaseController {
      * @param params
      * @return
      */
-    @InterfaceSecurity
+//    @InterfaceSecurity
     @RequestMapping(value = "/regmobile", method = RequestMethod.POST)
     @ResponseBody
     public Object regMobileUser(HttpServletRequest request, RegMobileApiParams params) {
@@ -225,10 +224,9 @@ public class RegisterApiController extends BaseController {
             }
             String mobile = params.getMobile();
             //检查账户是否存在，也即该手机号是否已经注册或绑定
-            result = regManager.isAccountExists(mobile, clientId);
+            result = regManager.isAccountNotExists(mobile, clientId);
             if (result.isSuccess()) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED));
                 return result.toString();
             }
             // 调用内部接口
@@ -257,27 +255,30 @@ public class RegisterApiController extends BaseController {
      * @param params
      * @return
      */
-    @InterfaceSecurity
+//    @InterfaceSecurity
     @RequestMapping(value = "/checkuser", method = RequestMethod.POST)
     @ResponseBody
     public Object checkUser(HttpServletRequest request, CheckUserApiParams params) {
         Result result = new APIResultSupport(false);
-        // 参数校验
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
+        try {
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            //验证client_id是否存在
+            int clientId = params.getClient_id();
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result.toString();
+            }
+            // 调用内部接口
+            result = regManager.isAccountNotExists(params.getUserid(), params.getClient_id());
+        } catch (Exception e) {
+            logger.error("checkuser:Check User Is Failed,Userid Is " + params.getUserid(), e);
         }
-        //验证client_id是否存在
-        int clientId = params.getClient_id();
-        if (!configureManager.checkAppIsExist(clientId)) {
-            result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result.toString();
-        }
-        // 调用内部接口
-        result = sgRegisterApiManager.checkUser(params);
-
         return result.toString();
     }
 

@@ -31,7 +31,7 @@ public class CheckManagerImpl implements CheckManager {
     @Override
     public boolean checkCaptcha(String captcha, String token) throws Exception {
         try {
-            return accountService.checkCaptchaCodeIsVaild(token, captcha);
+            return accountService.checkCaptchaCodeIsValid(token, captcha);
         } catch (ServiceException e) {
             logger.error("check captcha Fail:", e);
             return false;

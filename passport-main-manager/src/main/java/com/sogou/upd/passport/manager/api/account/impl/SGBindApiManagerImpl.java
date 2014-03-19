@@ -118,7 +118,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
             }
         }
 
-        result = accountService.verifyUserPwdVaild(userId, password, true);
+        result = accountService.verifyUserPwdValid(userId, password, true);
         if(!result.isSuccess()){
             return result;
         }

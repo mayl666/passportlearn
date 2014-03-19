@@ -46,7 +46,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         String newPassword = updatePwdApiParams.getNewpassword();
         String modifyIp = updatePwdApiParams.getModifyip();
         int clientId = updatePwdApiParams.getClient_id();
-        result = accountService.verifyUserPwdVaild(userId, password, false);
+        result = accountService.verifyUserPwdValid(userId, password, false);
         if (!result.isSuccess()) {
             operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.RESETPWD);
             return result;
@@ -69,7 +69,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         String modifyIp = updateQuesApiParams.getModifyip();
         int clientId = updateQuesApiParams.getClient_id();
 
-        Result result = accountService.verifyUserPwdVaild(userId, password, true);
+        Result result = accountService.verifyUserPwdValid(userId, password, true);
         result.setDefaultModel(null);
         if (!result.isSuccess()) {
             operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);

@@ -112,7 +112,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                 result.setDefaultModel("userid", account.getPassportId());
                 result.setMessage("注册成功！");
                 result.setDefaultModel("isSetCookie", true);
-                result.setDefaultModel(account);
+//                result.setDefaultModel(account);
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
             }
@@ -189,7 +189,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                     result.setDefaultModel("userid", account.getPassportId());
                     result.setMessage("注册成功！");
                     result.setDefaultModel("isSetCookie", true);
-                    result.setDefaultModel(account);
+//                    result.setDefaultModel(account);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     return result;

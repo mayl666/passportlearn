@@ -39,11 +39,21 @@ public interface RegManager {
     public Map<String, Object> getCaptchaCode(String code);
 
     /**
-     * 判断用户名是否被占用
+     * 查询用户名是否存在
      *
      * @return 验证码
      */
     public Result isAccountExists(String username, int clientId) throws Exception;
+
+
+    /**
+     * 检查用户是否被注册
+     *
+     * @param username
+     * @param clientId
+     * @return
+     */
+    public Result isAccountNotExists(String username, int clientId) throws Exception;
 
     /**
      * 检查一天内某ip注册次数
