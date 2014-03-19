@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
@@ -39,6 +40,18 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
     public void testInitialPhoneAccount() throws Exception {
         Account account = accountService.initialAccount(MOBILE, PASSWORD, true, IP, PROVIDER);
         Assert.assertNotNull(account);
+    }
+
+    @Test
+    public void testSendEmail() {
+        String mail = "fdfdfd@163.com";
+        boolean isSuccess = false;
+        try {
+            isSuccess = accountService.sendActiveEmail(mail, PASSWORD, CommonConstant.SGPP_DEFAULT_CLIENTID, "127.0.0.1", null);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        Assert.assertTrue(isSuccess);
     }
 
     /**

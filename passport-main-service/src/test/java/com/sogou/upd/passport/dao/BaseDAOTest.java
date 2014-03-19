@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.dao;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 
 /**
  * Created with IntelliJ IDEA.
@@ -23,6 +25,20 @@ public class BaseDAOTest extends BaseTest {
     public static final String IP = "10.1.164.65";
     public static final String FLAG = "1";
     public static final String PWDTYPE = "1";
+
+    //Account Test Constant liuling 2014.3.19
+    public static final String PASSPORTID_SOGOU = "liuling@sogou.com";
+    public static final String PASSPORTID_PHONE = "13730129087@sohu.com";
+    public static final String PHONE = "13730129087";
+    public static final String PASSPORTID_MAIL = "liuling9460@163.com";
+    public static final int PHONE_ACCOUNT_TYPE = AccountTypeEnum.PHONE.getValue(); // 手机账号
+    public static final int MAIL_ACCOUNT_TYPE = AccountTypeEnum.EMAIL.getValue(); // 邮箱账号
+    public static final int ORIGINAL_PASSWORD_TYPE = PasswordTypeEnum.ORIGINAL.getValue(); // 无密码
+    public static final int MD5_PASSWORD_TYPE = PasswordTypeEnum.MD5.getValue(); // MD5
+    public static final int CRYPT_PASSWORD_TYPE = PasswordTypeEnum.CRYPT.getValue(); // 加盐
+    public static final String UNIQNAME = "iamhero"; // 加盐
+
+
 
     // AccountInfo Test Constant ---hjf 2013.5.3
     public static final String EMAIL = "Binding123@163.com";
@@ -54,7 +70,7 @@ public class BaseDAOTest extends BaseTest {
     public static final int PRO_STATUS = 0;
     public static final int PRO_TYPE_ID = 1;
     public static final String CONTENT = "在同一款游戏中累计充值1000元以上，即可以成为黄金VIP； 2.在同一款游戏中累计充值10000元以上，即可以成为白金VIP。成为白金VIP的用户将自动获得黄金VIP的一切特权"
-                                         + "请问这个所谓的特权在哪里??? 怎么感觉龙将2这游戏没人管啊.. 要更新什么东西也没有一个提前公告,"
-                                         + "是你们平台无所谓 还是不想让我们好好玩?";
+            + "请问这个所谓的特权在哪里??? 怎么感觉龙将2这游戏没人管啊.. 要更新什么东西也没有一个提前公告,"
+            + "是你们平台无所谓 还是不想让我们好好玩?";
 
 }
