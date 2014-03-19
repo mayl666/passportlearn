@@ -46,7 +46,7 @@ import java.util.Map;
 public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
 
     private static Logger log = LoggerFactory.getLogger(ProxyLoginApiManagerImpl.class);
-    private static String PP_COOKIE_URL = "http://account.sogou.com/sso/setppcookie";
+    private static String PP_COOKIE_URL = "https://account.sogou.com/sso/setppcookie";
 
     @Autowired
     private CommonManager commonManager;
