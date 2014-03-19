@@ -33,6 +33,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -342,15 +343,6 @@ public class RegAction extends BaseController {
         }
         result = regManager.isAccountNotExists(username, clientId);
         return result;
-    }
-
-    /*
-     外域邮箱用户激活成功的页面
-   */
-    @RequestMapping(value = "/reg/emailverify", method = RequestMethod.GET)
-    public String emailVerifySuccess(HttpServletRequest request) throws Exception {
-        //状态码参数
-        return "reg/emailsuccess";
     }
 
 }
