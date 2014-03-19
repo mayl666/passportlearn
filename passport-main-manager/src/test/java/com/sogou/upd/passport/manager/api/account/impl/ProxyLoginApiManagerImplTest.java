@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
+import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,6 +31,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
             authUserParameters.setClient_id(clientId);
             authUserParameters.setPassword(Coder.encryptMD5("Cooperlin#sh7166"));
             Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
+            Assert.assertEquals("0", result.getCode());
             System.out.println(result);
         } catch (Exception e) {
             e.printStackTrace();
