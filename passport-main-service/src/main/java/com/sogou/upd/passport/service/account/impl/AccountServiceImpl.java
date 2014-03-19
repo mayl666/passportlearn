@@ -171,8 +171,16 @@ public class AccountServiceImpl implements AccountService {
             throw e;
         }
         try {
-            if (userAccount == null || !AccountHelper.isNormalAccount(userAccount)) {
+            if (userAccount == null){
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                return result;
+            }
+            if(AccountHelper.isDisabledAccount(userAccount)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);
+                return result;
+            }
+            if(AccountHelper.isKilledAccount(userAccount)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 return result;
             }
             result = verifyUserPwdValidByPasswordType(result, password, userAccount, needMD5);

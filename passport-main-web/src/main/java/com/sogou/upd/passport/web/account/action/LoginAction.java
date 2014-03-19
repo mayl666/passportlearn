@@ -85,7 +85,7 @@ public class LoginAction extends BaseController {
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
         int clientId = Integer.valueOf(checkParam.getClient_id());
         result = regManager.isSohuOrSogouAccountExists(username,clientId);
-        if (!result.isSuccess()) {
+        if (result.isSuccess()) {
             //校验是否需要验证码
             boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
             result.setSuccess(true);
