@@ -100,37 +100,33 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
     }
 
     @Test
-    public void testVerifyUserPwdValidByPasswordType() {
-        try {
-            Account account_0 = new Account();
-            account_0.setId(1);
-            account_0.setAccountType(1);
-            account_0.setPassportId("tinkame_test@sogou.com");
-            account_0.setPasswordType("0");
-            account_0.setPassword("123456");
-            Result result = accountService.verifyUserPwdValidByPasswordType(account_0, "123456", false);
-            Assert.assertTrue(result.isSuccess());
+    public void testVerifyUserPwdValidByPasswordType() throws Exception {
 
-            Account account_1 = new Account();
-            account_1.setId(1);
-            account_1.setAccountType(1);
-            account_1.setPassportId("tinkame_test@sogou.com");
-            account_1.setPasswordType("1");
-            account_1.setPassword(Coder.encryptMD5("123456"));
-            Result result_1 = accountService.verifyUserPwdValidByPasswordType(account_1, "123456", false);
-            Assert.assertTrue(result_1.isSuccess());
+        Account account_0 = getAccount("0", "123456");
+        Result result = accountService.verifyUserPwdValidByPasswordType(account_0, "123456", false);
+        Assert.assertTrue(result.isSuccess());
+        Assert.assertEquals("tinkame_test@sogou.com",result.getModels().get("userid"));
 
-            Account account_2 = new Account();
-            account_2.setId(1);
-            account_2.setAccountType(1);
-            account_2.setPassportId("tinkame_test@sogou.com");
-            account_2.setPasswordType("2");
-            account_2.setPassword(PwdGenerator.generatorStoredPwd("123456",true));
-            Result result_2 = accountService.verifyUserPwdValidByPasswordType(account_2, "123456", true);
-            Assert.assertTrue(result_2.isSuccess());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        Account account_1 = getAccount("1","e10adc3949ba59abbe56e057f20f883e" );
+        Result result_1 = accountService.verifyUserPwdValidByPasswordType(account_1, "123456", false);
+        Assert.assertTrue(result_1.isSuccess());
+        Assert.assertEquals("tinkame_test@sogou.com", result_1.getModels().get("userid"));
+
+        Account account_2 = getAccount("2","LFiINzPk$HjwLuPgGV7/bNfL51pbYA/");
+        Result result_2 = accountService.verifyUserPwdValidByPasswordType(account_2, "123456", true);
+        Assert.assertTrue(result_2.isSuccess());
+        Assert.assertEquals("tinkame_test@sogou.com", result_2.getModels().get("userid"));
+
+    }
+
+    private Account getAccount(String passwordType, String password) {
+        Account account_0 = new Account();
+        account_0.setId(1);
+        account_0.setAccountType(1);
+        account_0.setPassportId("tinkame_test@sogou.com");
+        account_0.setPasswordType(passwordType);
+        account_0.setPassword(password);
+        return account_0;
     }
 
 
