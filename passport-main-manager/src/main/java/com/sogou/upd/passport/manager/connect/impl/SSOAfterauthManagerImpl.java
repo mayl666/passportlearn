@@ -101,6 +101,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                     result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
                 }
 
+                boolean isConnectUserInfo = false;  //如果没有从搜狗方(数据库或缓存)获取到第三方的个人信息，则从第三方VO中获取个人头像信息,默认值为false,不从VO中拿
                 //isthird=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
                 if (isthird == 0) {
                     String passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
@@ -121,8 +122,13 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                         result.getModels().put("tiny_avatar", Strings.isNullOrEmpty(img30) ? "" : img30);
                         result.getModels().put("uniqname", Strings.isNullOrEmpty(uniqname) ? "" : uniqname);
                         result.getModels().put("gender", Strings.isNullOrEmpty(gender) ? 0 : Integer.parseInt(gender));
+                    } else {
+                        isConnectUserInfo = true;
                     }
                 } else {
+                    isConnectUserInfo = true;
+                }
+                if (isConnectUserInfo) {
                     if (connectUserInfoVO != null) {
                         result.getModels().put("large_avatar", connectUserInfoVO.getAvatarLarge());
                         result.getModels().put("mid_avatar", connectUserInfoVO.getAvatarMiddle());
@@ -131,7 +137,6 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                         result.getModels().put("gender", connectUserInfoVO.getGender());
                     }
                 }
-
                 if (connectToken != null) {
                     String passportId = connectToken.getPassportId();
 //                result.getModels().put("passport_id", passportId);
