@@ -33,7 +33,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -182,7 +181,7 @@ public class RegAction extends BaseController {
      */
     @RequestMapping(value = "/activemail", method = RequestMethod.GET)
     @ResponseBody
-    public void activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams)
+    public String activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams, Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
@@ -190,14 +189,16 @@ public class RegAction extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-//            return result;
+            model.addAttribute("data", result.toString());
+            return "";  //todo 返回到错误页面
         }
         //验证client_id
         int clientId = Integer.parseInt(activeParams.getClient_id());
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-//            return result;
+            model.addAttribute("data", result.toString());
+            return "";  //todo 返回到错误页面
         }
         String ip = getIp(request);
         //邮件激活
@@ -208,11 +209,12 @@ public class RegAction extends BaseController {
             if (Strings.isNullOrEmpty(activeParams.getRu())) {
                 activeParams.setRu(CommonConstant.DEFAULT_INDEX_URL);
             }
-//            result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
-            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?ru=" + activeParams.getRu() + "&client_id=" + clientId);
-
+            result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
+            model.addAttribute("data", result.toString());
+            return "/reg/emailsuccess";
         }
-//        return result.toString();
+        model.addAttribute("data", result.toString());
+        return "";//todo 返回错误页面
     }
 
     /**
