@@ -28,22 +28,44 @@
     <div class="inner reg">
         <ul>
             
-            <li ><a href="/">首页</a></li>
+            <li ><a href="/">登录</a></li>
+            
+            <li class="current"><a href="/web/reg/email">搜狗通行证注册</a></li>
             
         </ul>
     </div>
     <span class="underline"></span>
 </div>
 
-<div class="main-content one-col">
-    <div class="inner sys-error" >
-        <div class="desc">
-            抱歉此页面无法访问
+<div class="main-content two-col-r">
+    <div class="col-l">
+        
+        <ul class="nav">
+    
+    <li style="border:none;" class="email current  ">
+        <a href="/web/reg/email">邮箱注册</a>
+    </li>
+    
+    <li  class="tel   ">
+        <a href="/web/reg/mobile">手机注册</a>
+    </li>
+    
+    <li  class="nick   ">
+        <a href="/web/reg/nick">个性帐号</a>
+    </li>
+    
+</ul>
+    </div>
+    <div class="col-r">
+        <div class="inner reg-email">
+            <div  class="form">
+                <div class="binded">
+                    <p id="msg"></p>
+                </div>
+            </div>
         </div>
-        <img src="/./static/img/404.jpg" class="" alt="" />
     </div>
 </div>
-
 
 
         </div>
@@ -55,7 +77,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/404.js?t=2014032041"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2014032041"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
@@ -63,7 +85,7 @@
 var spb_vars = {
     productid:"passport",
     ptype:"web",
-    pcode:"404".split('/').join('_')
+    pcode:"reg_emailfailure".split('/').join('_')
 };
 
 (function() {
@@ -83,8 +105,8 @@ require.config({
 });
 
 
-require(['404'] , function(module){
-    module.init('');
+require(['reg'] , function(module){
+    module.init('emailfailure');
 });
 
 
