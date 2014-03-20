@@ -205,11 +205,12 @@ public class RegAction extends BaseController {
         if (result.isSuccess()) {
             // 种sogou域cookie
 //            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
-            if(Strings.isNullOrEmpty(activeParams.getRu())){
+            if (Strings.isNullOrEmpty(activeParams.getRu())) {
                 activeParams.setRu(CommonConstant.DEFAULT_INDEX_URL);
             }
-            result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
-            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL);
+//            result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?ru=" + activeParams.getRu() + "&client_id" + clientId);
+
         }
 //        return result.toString();
     }
@@ -347,14 +348,4 @@ public class RegAction extends BaseController {
         result = regManager.isAccountNotExists(username, clientId);
         return result;
     }
-
-    /*
-     外域邮箱用户激活成功的页面
-   */
-    @RequestMapping(value = "/reg/emailverify", method = RequestMethod.GET)
-    public String emailVerifySuccess(HttpServletRequest request) throws Exception {
-        //状态码参数
-        return "reg/emailsuccess";
-    }
-
 }
