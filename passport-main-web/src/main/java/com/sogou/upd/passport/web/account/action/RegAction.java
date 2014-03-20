@@ -345,4 +345,13 @@ public class RegAction extends BaseController {
         return result;
     }
 
+    /*
+     外域邮箱用户激活成功的页面
+   */
+    @RequestMapping(value = "/reg/emailverify", method = RequestMethod.GET)
+    public String emailVerifySuccess(HttpServletRequest request) throws Exception {
+        //状态码参数
+        return "reg/emailsuccess";
+    }
+
 }
