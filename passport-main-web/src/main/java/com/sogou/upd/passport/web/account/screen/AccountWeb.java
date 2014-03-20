@@ -45,7 +45,7 @@ public class AccountWeb extends BaseController {
 
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result = paramProcess(result, ru, client_id);
+        result = paramProcess(result, ru, client_id, null, null);
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
@@ -67,7 +67,7 @@ public class AccountWeb extends BaseController {
 
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result = paramProcess(result, ru, client_id);
+        result = paramProcess(result, ru, client_id, null, null);
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
@@ -88,7 +88,7 @@ public class AccountWeb extends BaseController {
 
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result = paramProcess(result, ru, client_id);
+        result = paramProcess(result, ru, client_id, null, null);
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
@@ -121,7 +121,7 @@ public class AccountWeb extends BaseController {
         }
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result = paramProcess(result, ru, client_id);
+        result = paramProcess(result, ru, client_id, null, null);
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
@@ -135,10 +135,10 @@ public class AccountWeb extends BaseController {
    */
     @RequestMapping(value = "/reg/emailverify", method = RequestMethod.GET)
     public String emailVerifySuccess(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String ru,
-                                     @RequestParam(defaultValue = "") String client_id, Model model) throws Exception {
+                                     @RequestParam(defaultValue = "") String code, @RequestParam(defaultValue = "") String message, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result = paramProcess(result, ru, client_id);
+        result = paramProcess(result, ru, null, code, message);
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
@@ -147,11 +147,10 @@ public class AccountWeb extends BaseController {
         return "reg/emailsuccess";
     }
 
-
     /*
     ru跳转
      */
-    private Result paramProcess(Result result, String ru, String client_id) {
+    private Result paramProcess(Result result, String ru, String client_id, String code, String message) {
         Map<String, String> map = Maps.newHashMap();
         if (!Strings.isNullOrEmpty(ru)) {
             result.setSuccess(true);
@@ -160,6 +159,14 @@ public class AccountWeb extends BaseController {
         if (!Strings.isNullOrEmpty(client_id)) {
             result.setSuccess(true);
             map.put(CommonConstant.CLIENT_ID, client_id);
+        }
+        if (!Strings.isNullOrEmpty(code)) {
+            result.setSuccess(true);
+            map.put(CommonConstant.RESQUEST_CODE, code);
+        }
+        if (!Strings.isNullOrEmpty(message)) {
+            result.setSuccess(true);
+            map.put(CommonConstant.MESSAGE, message);
         }
         result.setModels(map);
         return result;

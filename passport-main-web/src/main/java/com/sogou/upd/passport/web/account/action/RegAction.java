@@ -180,24 +180,22 @@ public class RegAction extends BaseController {
      * @param activeParams 传入的参数
      */
     @RequestMapping(value = "/activemail", method = RequestMethod.GET)
-    public String activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams, Model model)
+    public void activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams, Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(activeParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            model.addAttribute("data", result.toString());
-            return "";  //todo 返回到错误页面
+            //todo 返回到错误页面
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode() + "&message=" + ErrorUtil.getERR_CODE_MSG(result.getCode()));
         }
         //验证client_id
         int clientId = Integer.parseInt(activeParams.getClient_id());
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-            model.addAttribute("data", result.toString());
-            return "";  //todo 返回到错误页面
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode() + "&message=" + ErrorUtil.getERR_CODE_MSG(result.getCode()));
         }
         String ip = getIp(request);
         //邮件激活
@@ -205,15 +203,18 @@ public class RegAction extends BaseController {
         if (result.isSuccess()) {
             // 种sogou域cookie
             result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
-            if (Strings.isNullOrEmpty(activeParams.getRu())) {
-                activeParams.setRu(CommonConstant.DEFAULT_INDEX_URL);
+            if (result.isSuccess()) {
+                if (Strings.isNullOrEmpty(activeParams.getRu()) || CommonConstant.EMAIL_REG_VERIFY_URL.equals(activeParams.getRu())) {
+                    activeParams.setRu(CommonConstant.DEFAULT_INDEX_URL);
+                }
+                result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
+                result.setDefaultModel(CommonConstant.CLIENT_ID, clientId);
+                result.setCode("0");
+                response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode() + "&ru=" + activeParams.getRu());
             }
-            result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
-            model.addAttribute("data", result.toString());
-            return "/reg/emailsuccess";
         }
-        model.addAttribute("data", result.toString());
-        return "";//todo 返回错误页面
+        response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode() + "&message=" + ErrorUtil.getERR_CODE_MSG(result.getCode()));
+
     }
 
     /**
