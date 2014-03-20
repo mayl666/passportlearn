@@ -180,7 +180,7 @@ public class AccountServiceImpl implements AccountService {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 return result;
             }
-            result = verifyUserPwdValidByPasswordType(result, password, userAccount, needMD5);
+            result = verifyUserPwdValidByPasswordType(userAccount,password,needMD5);
             return result;
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -188,7 +188,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result verifyUserPwdValidByPasswordType(Result result, String password, Account account, Boolean needMD5) {
+    public Result verifyUserPwdValidByPasswordType( Account account, String password,Boolean needMD5) {
+        Result result =  new APIResultSupport(false);
         String passwordType = account.getPasswordType();
         String storedPwd = account.getPassword();
         boolean pwdIsTrue = false;

@@ -60,7 +60,7 @@ public interface AccountService {
      * @return
      * @throws ServiceException
      */
-    public Result verifyUserPwdValidByPasswordType(Result result, String password, Account account, Boolean needMD5) throws ServiceException;
+    public Result verifyUserPwdValidByPasswordType(Account account, String password,Boolean needMD5) throws ServiceException;
 
 
   /**
