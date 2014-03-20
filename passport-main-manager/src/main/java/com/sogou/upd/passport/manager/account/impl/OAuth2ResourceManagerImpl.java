@@ -355,6 +355,12 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                                 tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
                             }
                         }
+                    } else {
+                        //获取不同尺寸头像
+                        Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
+                        large_avatar = (String) getPhotoResult.getModels().get("img_180");
+                        mid_avatar = (String) getPhotoResult.getModels().get("img_50");
+                        tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
                     }
                 }
             } else {
