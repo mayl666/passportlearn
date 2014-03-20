@@ -18,7 +18,7 @@ import javax.inject.Inject;
 public class MobilePassportMappingServiceTest extends AbstractJUnit4SpringContextTests {
 
     @Inject
-    private MobilePassportMappingService mobilePassportMappingService;
+    private MobilePassportMappingServiceForDelete mobilePassportMappingServiceForDelete;
 
     private static final String mobile = "13545329008";
     private static final String passportId = mobile + "@sohu.com";
@@ -27,13 +27,13 @@ public class MobilePassportMappingServiceTest extends AbstractJUnit4SpringContex
 
     @Test
     public void testInitMobilePassportMapping() {
-        boolean isSuccess = mobilePassportMappingService.initialMobilePassportMapping(mobile, passportId);
+        boolean isSuccess = mobilePassportMappingServiceForDelete.initialMobilePassportMapping(mobile, passportId);
         Assert.assertTrue(isSuccess);
     }
 
     @Test
     public void testQueryPassportIdByMobile() {
-        boolean isDeleteSuccess = mobilePassportMappingService.deleteMobilePassportMapping(mobile);
+        boolean isDeleteSuccess = mobilePassportMappingServiceForDelete.deleteMobilePassportMapping(mobile);
         Assert.assertTrue(isDeleteSuccess);
     }
 

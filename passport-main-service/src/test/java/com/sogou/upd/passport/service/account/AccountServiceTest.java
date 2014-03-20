@@ -22,38 +22,67 @@ import javax.inject.Inject;
 public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
 
     @Inject
-    private AccountService accountService;
+    private AccountServiceForDelete accountServiceForDelete;
+    @Inject
+    private MobilePassportMappingServiceForDelete mobilePassportMappingServiceForDelete;
 
-    private static final String MOBILE = "13545210241";
+    private static final String MOBILE = "18511531063";
     private static final String NEW_MOBILE = "13800000000";
     private static final String PASSWORD = "111111";
     private static final String PASSPORT_ID1 = "13552848876@sohu.com";
     private static final
-    String PASSPORT_ID = PassportIDGenerator.generator(MOBILE, AccountTypeEnum.PHONE.getValue());
+    String PASSPORT_ID_PHONE = PassportIDGenerator.generator(MOBILE, AccountTypeEnum.PHONE.getValue());
     private static final String IP = "127.0.0.1";
     private static final int PROVIDER = AccountTypeEnum.PHONE.getValue();
-
     private static final String SOGOU = "liuling@sogou.com";
+    private static final String EMAIL = "loveerin9460@163.com";
     private static final int PROVIDER_EMAIL = AccountTypeEnum.EMAIL.getValue();
 
     /**
-     * 测试初始化非第三方用户账号
+     * 初始化手机用户账号，并验证是否插入正确
      */
     @Test
     public void testInitialPhoneAccount() throws Exception {
-        Account account = accountService.initialAccount(MOBILE, PASSWORD, true, IP, PROVIDER);
+        Account account = accountServiceForDelete.queryAccountByPassportId(PASSPORT_ID_PHONE);
+        if (account != null) {
+            boolean flag = accountServiceForDelete.deleteAccountByPassportId(PASSPORT_ID_PHONE);
+            Assert.assertTrue(flag);
+            boolean flagDelete = mobilePassportMappingServiceForDelete.deleteMobilePassportMapping(MOBILE);
+            Assert.assertTrue(flagDelete);
+        }
+        String PASSWORD_CRYPT = PwdGenerator.generatorStoredPwd(PASSWORD, true);
+        account = accountServiceForDelete.initialAccount(MOBILE, PASSWORD_CRYPT, true, IP, PROVIDER);
         Assert.assertNotNull(account);
+        Assert.assertEquals(PASSPORT_ID_PHONE, account.getPassportId());
+        String passportId = mobilePassportMappingServiceForDelete.queryPassportIdByMobile(MOBILE);
+        Assert.assertNotNull(passportId);
+        Assert.assertEquals(PASSPORT_ID_PHONE, passportId);
+        Assert.assertEquals(passportId, account.getPassportId());
+    }
+
+
+    /**
+     * 验证插入表中的内容是否与预定值相等
+     *
+     * @throws Exception
+     */
+    @Test
+    public void QueryAccountByPassportId() throws Exception {
+        Account account = accountServiceForDelete.queryAccountByPassportId(PASSPORT_ID_PHONE);
+        Assert.assertNotNull(account);
+        Assert.assertEquals(PASSPORT_ID_PHONE, account.getPassportId());
     }
 
     /**
      * 发送激活邮件至注册邮箱,自测需要在action里调用，在service中测试会提示找不到.vm文件
      */
     @Test
-    public void testSendEmail() {
+    public void testSendEmail() throws Exception {
         String mail = "erinbeals2012@gmail.com";
+        String PASSWORD_CRYPT = PwdGenerator.generatorStoredPwd(PASSWORD, true);
         boolean isSuccess = false;
         try {
-            isSuccess = accountService.sendActiveEmail(mail, PASSWORD, CommonConstant.SGPP_DEFAULT_CLIENTID, "127.0.0.1", null);
+            isSuccess = accountServiceForDelete.sendActiveEmail(mail, PASSWORD_CRYPT, CommonConstant.SGPP_DEFAULT_CLIENTID, "127.0.0.1", null);
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -67,26 +96,62 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testInitialSogouAccount() throws Exception {
-        Account account = accountService.initialAccount(SOGOU, PASSWORD, true, IP, PROVIDER_EMAIL);
+        Account account = accountServiceForDelete.queryAccountByPassportId(SOGOU);
+        if (account != null) {
+            boolean flag = accountServiceForDelete.deleteAccountByPassportId(SOGOU);
+            Assert.assertTrue(flag);
+        }
+        String PASSWORD_CRYPT = PwdGenerator.generatorStoredPwd(PASSWORD, true);
+        account = accountServiceForDelete.initialAccount(SOGOU, PASSWORD_CRYPT, true, IP, PROVIDER_EMAIL);
+        Assert.assertNotNull(account);
+        Assert.assertEquals(SOGOU, account.getPassportId());
         Assert.assertNotNull(account);
     }
 
     /**
-     * 测试根据用户名获取Account对象
+     * 测试根据用户名获取手机用户对象
      */
     @Test
-    public void testQueryAccountByPassportId() {
-        Account account = accountService.queryAccountByPassportId(PASSPORT_ID);
+    public void testQueryPhoneByPassportId() {
+        Account account = accountServiceForDelete.queryAccountByPassportId(PASSPORT_ID_PHONE);
         Assert.assertNotNull(account);
-
+        String passportId = mobilePassportMappingServiceForDelete.queryPassportIdByMobile(MOBILE);
+        Assert.assertNotNull(passportId);
+        Assert.assertEquals(passportId, account.getPassportId());
     }
+
+    /**
+     * 测试根据用户名获取手机用户对象
+     */
+    @Test
+    public void testQuerySogouByPassportId() {
+        Account account = accountServiceForDelete.queryAccountByPassportId(SOGOU);
+        Assert.assertNotNull(account);
+        Assert.assertEquals(SOGOU, account.getPassportId());
+    }
+
+    /**
+     * 测试根据用户名获取手机用户对象
+     */
+    @Test
+    public void testNotInitWebAccount() {
+        Account account = accountServiceForDelete.initialWebAccount(EMAIL, IP);
+        Assert.assertNull(account);
+    }
+
+
+    @Test
+    public void testInitWebAccountToCache() {
+//        accountServiceForDelete.initialAccountToCache();
+    }
+
 
     /**
      * 测试验证账号的有效性，是否为正常用户
      */
     @Test
     public void testVerifyAccountVaild() {
-        Account account = accountService.queryNormalAccount(PASSPORT_ID);
+        Account account = accountServiceForDelete.queryNormalAccount(PASSPORT_ID_PHONE);
         Assert.assertNotNull(account);
     }
 
@@ -95,7 +160,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testVerifyUserPwdVaild() {
-        Result result = accountService.verifyUserPwdValid("tinkame_test@sogou.com", "123456", true);
+        Result result = accountServiceForDelete.verifyUserPwdValid("tinkame_test@sogou.com", "123456", true);
         Assert.assertTrue(result.isSuccess());
     }
 
@@ -108,7 +173,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
             account_0.setPassportId("tinkame_test@sogou.com");
             account_0.setPasswordType("0");
             account_0.setPassword("123456");
-            Result result = accountService.verifyUserPwdValidByPasswordType(account_0, "123456", false);
+            Result result = accountServiceForDelete.verifyUserPwdValidByPasswordType(account_0, "123456", false);
             Assert.assertTrue(result.isSuccess());
 
             Account account_1 = new Account();
@@ -117,7 +182,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
             account_1.setPassportId("tinkame_test@sogou.com");
             account_1.setPasswordType("1");
             account_1.setPassword(Coder.encryptMD5("123456"));
-            Result result_1 = accountService.verifyUserPwdValidByPasswordType(account_1, "123456", false);
+            Result result_1 = accountServiceForDelete.verifyUserPwdValidByPasswordType(account_1, "123456", false);
             Assert.assertTrue(result_1.isSuccess());
 
             Account account_2 = new Account();
@@ -125,8 +190,8 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
             account_2.setAccountType(1);
             account_2.setPassportId("tinkame_test@sogou.com");
             account_2.setPasswordType("2");
-            account_2.setPassword(PwdGenerator.generatorStoredPwd("123456",true));
-            Result result_2 = accountService.verifyUserPwdValidByPasswordType(account_2, "123456", true);
+            account_2.setPassword(PwdGenerator.generatorStoredPwd("123456", true));
+            Result result_2 = accountServiceForDelete.verifyUserPwdValidByPasswordType(account_2, "123456", true);
             Assert.assertTrue(result_2.isSuccess());
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -139,8 +204,8 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testResetPassword() {
-        Account account = accountService.queryNormalAccount(PASSPORT_ID);
-        boolean flag = accountService.resetPassword(account, PASSWORD, true);
+        Account account = accountServiceForDelete.queryNormalAccount(PASSPORT_ID_PHONE);
+        boolean flag = accountServiceForDelete.resetPassword(account, PASSWORD, true);
         if (flag != false) {
             System.out.println("重置成功...");
         } else {
@@ -153,13 +218,13 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testModifyMobile() {
-        Account account = accountService.queryAccountByPassportId(PASSPORT_ID1);
-        boolean flag = accountService.modifyMobile(account, NEW_MOBILE);
+        Account account = accountServiceForDelete.queryAccountByPassportId(PASSPORT_ID1);
+        boolean flag = accountServiceForDelete.modifyMobile(account, NEW_MOBILE);
         if (flag == true) {
-            System.out.println("修改成功：" + accountService.queryAccountByPassportId(PASSPORT_ID1).getMobile());
+            System.out.println("修改成功：" + accountServiceForDelete.queryAccountByPassportId(PASSPORT_ID1).getMobile());
         } else {
             System.out.println("修改失败");
         }
-        accountService.modifyMobile(account, account.getMobile());
+        accountServiceForDelete.modifyMobile(account, account.getMobile());
     }
 }

@@ -545,7 +545,7 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    private String buildAccountKey(String passportId) {
+    protected String buildAccountKey(String passportId) {
         return CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNT + passportId;
     }
 
@@ -660,5 +660,6 @@ public class AccountServiceImpl implements AccountService {
         }
         return false;
     }
+
 
 }
