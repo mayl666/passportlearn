@@ -45,9 +45,9 @@ public class AccountWeb extends BaseController {
 
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result=paramProcess(result,ru,client_id);
+        result = paramProcess(result, ru, client_id);
 
-        if(result.isSuccess()){
+        if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
         }
 
@@ -67,9 +67,9 @@ public class AccountWeb extends BaseController {
 
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result=paramProcess(result,ru,client_id);
+        result = paramProcess(result, ru, client_id);
 
-        if(result.isSuccess()){
+        if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
         }
         return "/reg/tel";
@@ -88,9 +88,9 @@ public class AccountWeb extends BaseController {
 
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result=paramProcess(result,ru,client_id);
+        result = paramProcess(result, ru, client_id);
 
-        if(result.isSuccess()){
+        if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
         }
         return "/reg/nick";
@@ -100,9 +100,9 @@ public class AccountWeb extends BaseController {
 
     */
     @RequestMapping(value = "/remindActivate", method = RequestMethod.GET)
-    private String remind_activate(String email,Model model){
+    private String remind_activate(String email, Model model) {
         Result result = new APIResultSupport(true);
-        result.setDefaultModel("email",email);
+        result.setDefaultModel("email", email);
         model.addAttribute("data", result.toString());
         return "/reg/remind";
     }
@@ -121,22 +121,41 @@ public class AccountWeb extends BaseController {
         }
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result=paramProcess(result,ru,client_id);
+        result = paramProcess(result, ru, client_id);
 
-        if(result.isSuccess()){
+        if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
         }
         return "index";
     }
 
+
+    /*
+     外域邮箱用户激活成功的页面
+   */
+    @RequestMapping(value = "/reg/emailverify", method = RequestMethod.GET)
+    public String emailVerifySuccess(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String ru,
+                                     @RequestParam(defaultValue = "") String client_id, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        //跳转ru client_id
+        result = paramProcess(result, ru, client_id);
+
+        if (result.isSuccess()) {
+            model.addAttribute("data", result.toString());
+        }
+        //状态码参数
+        return "reg/emailsuccess";
+    }
+
+
     /*
     ru跳转
      */
-    private Result paramProcess(Result result,String ru,String client_id) {
-        Map<String,String> map= Maps.newHashMap();
+    private Result paramProcess(Result result, String ru, String client_id) {
+        Map<String, String> map = Maps.newHashMap();
         if (!Strings.isNullOrEmpty(ru)) {
             result.setSuccess(true);
-            map.put(CommonConstant.RESPONSE_RU,ru);
+            map.put(CommonConstant.RESPONSE_RU, ru);
         }
         if (!Strings.isNullOrEmpty(client_id)) {
             result.setSuccess(true);

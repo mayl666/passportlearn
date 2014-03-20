@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.account.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
@@ -39,10 +40,6 @@ import java.util.UUID;
  */
 @Service
 public class AccountServiceImpl implements AccountService {
-
-    private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
-    private static final String PASSPORT_ACTIVE_EMAIL_URL_TEST = "http://localhost/web/activemail?";
-
 
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Autowired
@@ -338,7 +335,7 @@ public class AccountServiceImpl implements AccountService {
             String code = UUID.randomUUID().toString().replaceAll("-", "");
             String token = Coder.encryptMD5(username + clientId + code);
             String activeUrl =
-                    PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
+                    CommonConstant.PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
                             "&client_id=" + clientId +
                             "&token=" + token;
             if (!Strings.isNullOrEmpty(ru)) {

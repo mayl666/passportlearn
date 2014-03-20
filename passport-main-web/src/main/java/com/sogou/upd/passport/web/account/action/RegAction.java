@@ -180,8 +180,7 @@ public class RegAction extends BaseController {
      * @param activeParams 传入的参数
      */
     @RequestMapping(value = "/activemail", method = RequestMethod.GET)
-    @ResponseBody
-    public Object activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams)
+    public String activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams, Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
@@ -189,24 +188,32 @@ public class RegAction extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            return result;
+            model.addAttribute("data", result.toString());
+            return "";  //todo 返回到错误页面
         }
         //验证client_id
         int clientId = Integer.parseInt(activeParams.getClient_id());
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result;
+            model.addAttribute("data", result.toString());
+            return "";  //todo 返回到错误页面
         }
         String ip = getIp(request);
         //邮件激活
         result = regManager.activeEmail(activeParams, ip);
         if (result.isSuccess()) {
-            // 种sohu域cookie
+            // 种sogou域cookie
             result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
+            if (Strings.isNullOrEmpty(activeParams.getRu())) {
+                activeParams.setRu(CommonConstant.DEFAULT_INDEX_URL);
+            }
             result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
+            model.addAttribute("data", result.toString());
+            return "/reg/emailsuccess";
         }
-        return result;
+        model.addAttribute("data", result.toString());
+        return "";//todo 返回错误页面
     }
 
     /**
@@ -342,14 +349,4 @@ public class RegAction extends BaseController {
         result = regManager.isAccountNotExists(username, clientId);
         return result;
     }
-
-    /*
-     外域邮箱用户激活成功的页面
-   */
-    @RequestMapping(value = "/reg/emailverify", method = RequestMethod.GET)
-    public String emailVerifySuccess(HttpServletRequest request) throws Exception {
-        //状态码参数
-        return "reg/emailsuccess";
-    }
-
 }
