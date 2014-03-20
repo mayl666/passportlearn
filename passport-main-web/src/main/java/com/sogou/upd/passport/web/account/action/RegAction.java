@@ -204,7 +204,7 @@ public class RegAction extends BaseController {
         result = regManager.activeEmail(activeParams, ip);
         if (result.isSuccess()) {
             // 种sogou域cookie
-//            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
+            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
             if (Strings.isNullOrEmpty(activeParams.getRu())) {
                 activeParams.setRu(CommonConstant.DEFAULT_INDEX_URL);
             }
