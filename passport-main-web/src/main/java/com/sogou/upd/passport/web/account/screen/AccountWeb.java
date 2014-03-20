@@ -162,11 +162,11 @@ public class AccountWeb extends BaseController {
         }
         if (!Strings.isNullOrEmpty(code)) {
             result.setSuccess(true);
-            map.put(CommonConstant.CLIENT_ID, client_id);
+            map.put(CommonConstant.RESQUEST_CODE, code);
         }
         if (!Strings.isNullOrEmpty(message)) {
             result.setSuccess(true);
-            map.put(CommonConstant.CLIENT_ID, client_id);
+            map.put(CommonConstant.MESSAGE, message);
         }
         result.setModels(map);
         return result;
