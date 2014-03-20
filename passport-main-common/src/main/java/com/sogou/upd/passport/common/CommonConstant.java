@@ -70,6 +70,7 @@ public class CommonConstant {
     public static final String SOHU_ROOT_DOMAIN = ".sohu.com";
     public static final String PASSPORT_ACTIVE_EMAIL_URL = "https://account.sogou.com/web/activemail?";
     public static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
+    public static final String EMAIL_REG_FAILED_URL = "https://account.sogou.com/web/reg/emailfail";
     public static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
     public static final String DEFAULT_AVATAR_URL = "http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar";
