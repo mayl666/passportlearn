@@ -209,7 +209,7 @@ public class RegAction extends BaseController {
                 activeParams.setRu(CommonConstant.DEFAULT_INDEX_URL);
             }
 //            result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
-            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?ru=" + activeParams.getRu() + "&client_id" + clientId);
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?ru=" + activeParams.getRu() + "&client_id=" + clientId);
 
         }
 //        return result.toString();
