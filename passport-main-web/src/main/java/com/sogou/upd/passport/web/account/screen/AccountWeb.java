@@ -147,6 +147,25 @@ public class AccountWeb extends BaseController {
         return "reg/emailsuccess";
     }
 
+
+
+    /*
+     外域邮箱用户激活成功的页面
+   */
+    @RequestMapping(value = "/reg/emailfail", method = RequestMethod.GET)
+    public String emailVerifyFailed(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String ru,
+                                     @RequestParam(defaultValue = "") String code, @RequestParam(defaultValue = "") String message, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        //跳转ru client_id
+        result = paramProcess(result, ru, null, code, message);
+
+        if (result.isSuccess()) {
+            model.addAttribute("data", result.toString());
+        }
+        //状态码参数
+        return "reg/emailfailure";
+    }
+
     /*
     ru跳转
      */

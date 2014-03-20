@@ -93,4 +93,21 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
         return CACHE_PREFIX_MOBILE_PASSPORT + mobile;
     }
 
+
+    @Override
+    public boolean deleteMobilePassportMapping(String mobile) throws ServiceException {
+        try {
+            int row = mobilePassportMappingDAO.deleteMobilePassportMapping(mobile);
+            if (row != 0) {
+                String cacheKey = buildMobilePassportMappingKey(mobile);
+                dbShardRedisUtils.delete(cacheKey);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+
 }
