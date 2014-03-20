@@ -1,12 +1,17 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.DateUtil;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.util.Assert;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -19,25 +24,30 @@ import java.util.Map;
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class MobileCodeSenderServiceTest extends AbstractJUnit4SpringContextTests {
 
-    private static final String MOBILE = "13545210241";
-    private static final String SMSCODE = "13267";
-    private static final int CLIENT_ID = 1001;
+    private static final String MOBILE = "18511531063";
+    private static final String SMSCODE = "27434";
+    private static final int CLIENT_ID = 1120;
     private static final String CACHE_KEY = MOBILE + "_" + CLIENT_ID;
 
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
 
     /**
+     * 发送短信验证码
+     */
+    @Test
+    public void testSendSmsToMobile() {
+        Result result = mobileCodeSenderService.sendSmsCode(MOBILE, CLIENT_ID, AccountModuleEnum.REGISTER);
+        Assert.isTrue(result.isSuccess());
+    }
+
+    /**
      * 测试验证手机号码与验证码是否匹配
      */
     @Test
     public void testCheckSmsInfoFromCache() {
-        boolean flag = mobileCodeSenderService.checkSmsInfoFromCache(MOBILE, CLIENT_ID, AccountModuleEnum.RESETPWD, SMSCODE);
-        if (flag) {
-            System.out.println("匹配...");
-        } else {
-            System.out.println("不匹配!!!");
-        }
+        boolean flag = mobileCodeSenderService.checkSmsInfoFromCache(MOBILE, CLIENT_ID, AccountModuleEnum.REGISTER, SMSCODE);
+        Assert.isTrue(flag);
     }
 
 
@@ -47,11 +57,16 @@ public class MobileCodeSenderServiceTest extends AbstractJUnit4SpringContextTest
     @Test
     public void testCheckCacheKeyIsExist() {
         boolean flag = mobileCodeSenderService.checkIsExistMobileCode(CACHE_KEY);
-        if (flag) {
-            System.out.println("存在...");
-        } else {
-            System.out.println("不存在!!!");
-        }
+        Assert.isTrue(flag);
+    }
+
+    /**
+     * 检测当日验证码输入错误次数是否超过上限
+     */
+    @Test
+    public void testCheckLimitForSmsFail() {
+        boolean flag = mobileCodeSenderService.checkLimitForSmsFail(MOBILE, CLIENT_ID, AccountModuleEnum.REGISTER);
+        Assert.isTrue(flag);
     }
 
     /**
@@ -60,31 +75,6 @@ public class MobileCodeSenderServiceTest extends AbstractJUnit4SpringContextTest
     @Test
     public void testDeleteSmsCache() {
         boolean flag = mobileCodeSenderService.deleteSmsCache(MOBILE, CLIENT_ID);
-        if (flag) {
-            System.out.println("清除成功...");
-        } else {
-            System.out.println("清除失败!!!");
-        }
-    }
-
-    /**
-     * 测试手机验证码的获取与重发
-     */
-    @Test
-    public void testHandleSendSms() {
-        Map<String, Object> mapResult = null;
-        Result
-                result = mobileCodeSenderService.sendSmsCode(MOBILE, CLIENT_ID, AccountModuleEnum.RESETPWD);
-        System.out.println(result);
-    }
-
-    /**
-     * 测试重发验证码时更新缓存状态
-     */
-    @Test
-    public void testUpdateSmsInfo() {
-        Map<String, Object> mapResult = null;
-        boolean isSuccess = mobileCodeSenderService.updateSmsCacheInfo(CACHE_KEY, "","","");
-        System.out.println(isSuccess);
+        Assert.isTrue(flag);
     }
 }
