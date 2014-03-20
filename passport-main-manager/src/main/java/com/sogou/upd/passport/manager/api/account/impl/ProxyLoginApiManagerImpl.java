@@ -150,7 +150,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         return result;
     }
 
-    @Override
+    /*@Override
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
         //生成cookie
         CookieApiParams cookieApiParams = new CookieApiParams();
@@ -192,9 +192,9 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
         return result;
-    }
+    }*/
 
-    /*@Override
+    @Override
     public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams) {
         Result cookieUrlResult = buildCreateCookieUrl(createCookieUrlApiParams, false, false);
 
@@ -230,7 +230,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
         return result;
-    }*/
+    }
     /**
      * 输入法Mac，passport.sogou.com/sso/setcookie？ru=xxx不需要urlencode
      * 手机浏览器跳转的passport.sogou.com/sso/setcookie必须为http
