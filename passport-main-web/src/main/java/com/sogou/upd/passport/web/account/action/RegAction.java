@@ -203,10 +203,13 @@ public class RegAction extends BaseController {
         //邮件激活
         result = regManager.activeEmail(activeParams, ip);
         if (result.isSuccess()) {
-            // 种sohu域cookie
-            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
+            // 种sogou域cookie
+//            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
+            if(Strings.isNullOrEmpty(activeParams.getRu())){
+                activeParams.setRu(CommonConstant.DEFAULT_INDEX_URL);
+            }
             result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
-            response.sendRedirect(activeParams.getRu());
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL);
         }
 //        return result.toString();
     }
