@@ -136,6 +136,9 @@ public class AccountWeb extends BaseController {
     @RequestMapping(value = "/reg/emailverify", method = RequestMethod.GET)
     public String emailVerifySuccess(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String ru,
                                      @RequestParam(defaultValue = "") String code, @RequestParam(defaultValue = "") String message, Model model) throws Exception {
+        if (hostHolder.isLogin()) {
+            return "forward:/";
+        }
         Result result = new APIResultSupport(false);
         //跳转ru client_id
         result = paramProcess(result, ru, null, code, message);
@@ -148,13 +151,15 @@ public class AccountWeb extends BaseController {
     }
 
 
-
     /*
      外域邮箱用户激活成功的页面
    */
     @RequestMapping(value = "/reg/emailfail", method = RequestMethod.GET)
     public String emailVerifyFailed(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String ru,
-                                     @RequestParam(defaultValue = "") String code, @RequestParam(defaultValue = "") String message, Model model) throws Exception {
+                                    @RequestParam(defaultValue = "") String code, @RequestParam(defaultValue = "") String message, Model model) throws Exception {
+        if (hostHolder.isLogin()) {
+            return "forward:/";
+        }
         Result result = new APIResultSupport(false);
         //跳转ru client_id
         result = paramProcess(result, ru, null, code, message);
