@@ -150,7 +150,7 @@ public class AccountWeb extends BaseController {
     /*
      外域邮箱用户激活成功的页面
    */
-    @RequestMapping(value = "/reg/emailfail", method = RequestMethod.GET)
+    @RequestMapping(value = "/reg/emailverifyfail", method = RequestMethod.GET)
     public String emailVerifyFailed(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String code,
                                     @RequestParam(defaultValue = "") String message, Model model) throws Exception {
         Result result = new APIResultSupport(false);
