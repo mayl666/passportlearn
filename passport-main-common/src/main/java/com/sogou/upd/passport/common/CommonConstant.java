@@ -49,6 +49,8 @@ public class CommonConstant {
     public static final String RESQUEST_CT = "ct";
     public static final String RESQUEST_CODE = "code";
     public static final String UNIQNAME = "uniqname";
+    public static final String MESSAGE = "message";
+
 
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
     public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明
@@ -70,7 +72,6 @@ public class CommonConstant {
     public static final String SOHU_ROOT_DOMAIN = ".sohu.com";
     public static final String PASSPORT_ACTIVE_EMAIL_URL = "https://account.sogou.com/web/activemail?";
     public static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
-    public static final String EMAIL_REG_FAILED_URL = "https://account.sogou.com/web/reg/emailverifyfail";
     public static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
     public static final String DEFAULT_AVATAR_URL = "http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar";
