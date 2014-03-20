@@ -176,7 +176,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             String code2 = commonManager.getCode(pprdig,CommonConstant.PC_CLIENTID,ct);
             String code3 = commonManager.getCode(passport,CommonConstant.PC_CLIENTID,ct);
 
-            StringBuilder locationUrlBuilder = new StringBuilder(PP_COOKIE_URL);  // 浏览器端使用https域名会有问题
+            StringBuilder locationUrlBuilder = new StringBuilder(PP_COOKIE_URL);  // 移动浏览器端使用https域名会有问题
             locationUrlBuilder.append("?").append("ppinf=").append(ppinf)
                     .append("&pprdig=").append(pprdig)
                     .append("&passport=").append(passport)
