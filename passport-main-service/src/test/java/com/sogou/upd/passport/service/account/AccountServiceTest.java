@@ -96,7 +96,12 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
     public void testVerifyUserPwdVaild() {
         Result result = accountService.verifyUserPwdValid("tinkame_test@sogou.com", "123456", true);
         Assert.assertTrue(result.isSuccess());
+    }
 
+    @Test
+    public void testVerifyUserPwdValidByPasswordType() {
+//        Result result = accountService.verifyUserPwdValidByPasswordType("tinkame_test@sogou.com", "123456", true);
+//        Assert.assertTrue(result.isSuccess());
     }
 
 
