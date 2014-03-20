@@ -180,7 +180,6 @@ public class RegAction extends BaseController {
      * @param activeParams 传入的参数
      */
     @RequestMapping(value = "/activemail", method = RequestMethod.GET)
-    @ResponseBody
     public String activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams, Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
