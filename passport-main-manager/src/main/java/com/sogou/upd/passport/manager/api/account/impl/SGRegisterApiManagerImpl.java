@@ -59,6 +59,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                             .EMAIL.getValue());
                     if (account != null) {
                         result.setSuccess(true);
+                        result.setCode("0");
                         result.setDefaultModel("userid", account.getPassportId());
                         result.setMessage("注册成功！");
                         result.setDefaultModel("isSetCookie", true);
@@ -72,6 +73,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                     boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip, ru);
                     if (isSendSuccess) {
                         result.setSuccess(true);
+                        result.setCode("0");
                         result.setMessage("感谢注册，请立即激活账户！");
                         result.setDefaultModel("isSetCookie", false);
                     } else {
