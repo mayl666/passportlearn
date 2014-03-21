@@ -143,7 +143,12 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                 }
             }
             if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(username))) {
-                username = username + "@sogou.com";
+                username = username.toLowerCase() + "@sogou.com";
+            }
+            //外域邮箱只处理@后面那一串为小写
+            if(username.indexOf("@") != -1){
+                int index = username.indexOf("@");
+                username = username.substring(0, index) + username.substring(index, username.length()).toLowerCase();
             }
             Account account = accountService.queryAccountByPassportId(username);
             if (account == null) {
