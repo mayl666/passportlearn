@@ -248,12 +248,16 @@ public class RegManagerImpl implements RegManager {
 
     @Override
     public Result isSohuAccountExists(String username) throws Exception {
-        Result result;
+        Result result = new APIResultSupport(false);
         try {
             CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
             BaseMobileApiParams params = new BaseMobileApiParams();
             params.setMobile(username);
-            result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+            Result sohuNotExistResult = proxyRegisterApiManager.checkUser(checkUserApiParams);
+            if(!sohuNotExistResult.isSuccess()){
+                result.setSuccess(true);
+                result.setDefaultModel("userid",sohuNotExistResult.getModels().get("userid"));
+            }
         } catch (ServiceException e) {
             logger.error("Check account is exists Exception, username:" + username, e);
             throw new Exception(e);
