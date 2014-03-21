@@ -181,7 +181,9 @@ public class PCOAuth2AccountController extends BaseController {
         }
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
 
-        result = checkPCAccountNotExists(username);
+        int clientId = Integer.parseInt(checkParam.getClient_id());
+        result = checkPCAccountNotExists(username,clientId);
+
         if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED.equals(result.getCode())) {
             result.setMessage("该手机号已注册或已绑定，请直接登录");
         }
@@ -228,7 +230,7 @@ public class PCOAuth2AccountController extends BaseController {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result.toString();
             }
-            result = checkPCAccountNotExists(pcoAuth2RegisterParams.getUsername());
+            result = checkPCAccountNotExists(pcoAuth2RegisterParams.getUsername(),clientId);
             if (!result.isSuccess()) {
                 return result.toString();
             }
@@ -344,19 +346,14 @@ public class PCOAuth2AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    private Result checkPCAccountNotExists(String username) throws Exception {
+    private Result checkPCAccountNotExists(String username,int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         //不允许邮箱注册
         if (username.indexOf("@") != -1) {
             result.setCode(ErrorUtil.ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED);
             return result;
         }
-        //判断是否是手机号注册
-        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-            result = pcoAuth2RegManager.isPcAccountNotExists(username, true);
-        } else {
-            result = pcoAuth2RegManager.isPcAccountNotExists(username, false);
-        }
+        result = regManager.isAccountNotExists(username, clientId);
         return result;
     }
 
