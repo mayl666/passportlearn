@@ -334,14 +334,14 @@ public class AccountServiceImpl implements AccountService {
         try {
             String code = UUID.randomUUID().toString().replaceAll("-", "");
             String token = Coder.encryptMD5(username + clientId + code);
-            String activeUrl =
-                    CommonConstant.PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
+            String params =
+                    "passport_id=" + username +
                             "&client_id=" + clientId +
                             "&token=" + token;
             if (!Strings.isNullOrEmpty(ru)) {
-                activeUrl = Coder.encodeUTF8(activeUrl + "&ru=" + ru);
+                params = Coder.encodeUTF8(params + "&ru=" + ru);
             }
-
+            String activeUrl = CommonConstant.PASSPORT_ACTIVE_EMAIL_URL + params;
 
             String cacheKey = buildCacheKey(username);
             Map<String, String> mapParam = new HashMap<>();
