@@ -1,10 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
-import com.sogou.upd.passport.manager.form.PcGetTokenParams;
-import com.sogou.upd.passport.manager.form.PcPairTokenParams;
-import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
+import com.sogou.upd.passport.manager.form.*;
 import com.sogou.upd.passport.model.app.AppConfig;
 
 /**
@@ -24,6 +21,14 @@ public interface PCAccountManager {
      * @return
      */
     public Result createPairToken(PcPairTokenParams pcTokenParams);
+
+    /**
+     * 浏览器4.2版本登陆接口
+     * @param loginParams
+     * @param ip
+     * @return
+     */
+    public Result oauth2Login(PCOAuth2LoginParams loginParams, String ip);
 
     /**
      * 根据refreshtoken换一个token用来延长登陆
