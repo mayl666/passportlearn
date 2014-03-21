@@ -335,11 +335,11 @@ public class AccountServiceImpl implements AccountService {
             String code = UUID.randomUUID().toString().replaceAll("-", "");
             String token = Coder.encryptMD5(username + clientId + code);
             String params =
-                    "passport_id=" + username +
-                            "&client_id=" + clientId +
-                            "&token=" + token;
+                    "passport_id=" + Coder.encodeUTF8(username) +
+                            "&client_id=" + Coder.encodeUTF8(String.valueOf(clientId)) +
+                            "&token=" + Coder.encodeUTF8(token);
             if (!Strings.isNullOrEmpty(ru)) {
-                params = Coder.encodeUTF8(params + "&ru=" + ru);
+                params = params + "&ru=" + Coder.encodeUTF8(ru);
             }
             String activeUrl = CommonConstant.PASSPORT_ACTIVE_EMAIL_URL + params;
 
