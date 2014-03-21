@@ -335,7 +335,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         Result result = new APIResultSupport(false);
 
         String avatarurl;
-        String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
+        String uniqname = defaultUniqname(passportId), large_avatar = "", mid_avatar = "", tiny_avatar = "";
         AccountBaseInfo accountBaseInfo;
         try {
             //第三方账户先从account里获取
