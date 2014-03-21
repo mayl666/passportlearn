@@ -187,14 +187,14 @@ public class RegAction extends BaseController {
         String validateResult = ControllerHelper.validateParams(activeParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            response.sendRedirect(CommonConstant.EMAIL_FAILED_VERIFY_URL + "?code=" + result.getCode() + "&message=" + ErrorUtil.getERR_CODE_MSG(result.getCode()));
+            response.sendRedirect(CommonConstant.EMAIL_FAILED_VERIFY_URL + "?code=" + result.getCode());
         }
         //验证client_id
         int clientId = Integer.parseInt(activeParams.getClient_id());
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-            response.sendRedirect(CommonConstant.EMAIL_FAILED_VERIFY_URL + "?code=" + result.getCode() + "&message=" + ErrorUtil.getERR_CODE_MSG(result.getCode()));
+            response.sendRedirect(CommonConstant.EMAIL_FAILED_VERIFY_URL + "?code=" + result.getCode());
         }
         String ip = getIp(request);
         //邮件激活
@@ -212,7 +212,7 @@ public class RegAction extends BaseController {
                 response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode() + "&ru=" + activeParams.getRu());
             }
         }
-        response.sendRedirect(CommonConstant.EMAIL_FAILED_VERIFY_URL + "?code=" + result.getCode() + "&message=" + ErrorUtil.getERR_CODE_MSG(result.getCode()));
+        response.sendRedirect(CommonConstant.EMAIL_FAILED_VERIFY_URL + "?code=" + result.getCode());
 
     }
 
