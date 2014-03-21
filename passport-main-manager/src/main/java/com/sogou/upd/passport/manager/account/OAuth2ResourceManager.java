@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
+import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 
 /**
  * Created with IntelliJ IDEA.
@@ -65,5 +66,13 @@ public interface OAuth2ResourceManager {
      * @return
      */
     public Result getUserInfo(String passportId,int clientId);
+
+    /**
+     * 浏览器PC/移动客户端登录
+     *
+     * @param oauthRequest
+     * @return
+     */
+    public Result oauth2Authorize(OAuthTokenASRequest oauthRequest);
 
 }

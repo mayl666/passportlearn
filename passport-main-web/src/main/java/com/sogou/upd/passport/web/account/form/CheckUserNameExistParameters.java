@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.form;
 
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.manager.form.UsernameParams;
 
 /**
@@ -8,7 +9,7 @@ import com.sogou.upd.passport.manager.form.UsernameParams;
  * Date: 13-4-15 Time: 下午5:15
  */
 public class CheckUserNameExistParameters extends UsernameParams {
-    private String client_id;
+    private String client_id =String.valueOf(CommonConstant.PC_CLIENTID);
 
     public String getClient_id() {
         return client_id;

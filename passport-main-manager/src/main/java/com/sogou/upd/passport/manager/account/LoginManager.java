@@ -11,7 +11,13 @@ import com.sogou.upd.passport.manager.form.WebLoginParams;
  */
 public interface LoginManager {
 
-    public Result accountLogin(WebLoginParams parameters,String ip,String scheme);
+    /**
+     * 校验用户名密码
+     * @param parameters
+     * @param ip
+     * @return
+     */
+    public Result accountLogin(WebLoginParams parameters,String ip);
 
     /**
      * 获取username登陆的时候是否需要登陆验证码
