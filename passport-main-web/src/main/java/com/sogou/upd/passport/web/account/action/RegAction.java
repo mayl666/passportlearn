@@ -187,7 +187,6 @@ public class RegAction extends BaseController {
         String validateResult = ControllerHelper.validateParams(activeParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            //todo 返回到错误页面
             response.sendRedirect(CommonConstant.EMAIL_FAILED_VERIFY_URL + "?code=" + result.getCode() + "&message=" + ErrorUtil.getERR_CODE_MSG(result.getCode()));
         }
         //验证client_id
