@@ -66,7 +66,7 @@
                     <p>您的搜狗通行证还没有被激活<span id="JumpTarget" style="display:none;"></span></p>
                     <p class="warn">请登录您的邮箱进行激活操作</p>
                     <a id="JumpToUrl" href="#" class="long-btn">去邮箱激活</a>
-                    <a id="ResendEmail" href="#" class="long-btn" style="display:none">重发验证邮件</a>
+                    <a id="ResendEmail" href="#" class="long-btn">重发验证邮件</a>
                 </div>
             </div>
         </div>
@@ -84,7 +84,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2014032024"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2014032109"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
