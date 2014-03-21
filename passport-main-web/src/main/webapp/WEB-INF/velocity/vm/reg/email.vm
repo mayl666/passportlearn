@@ -104,6 +104,7 @@
         <p>验证邮件已发送至您的邮箱：<span id="JumpTarget"><{sec_email}></span></p>
         <p class="warn">请您尽快登录邮箱，按邮件中指示完成验证</p>
         <a id="JumpToUrl" href="#" class="long-btn">去邮箱验证</a>
+         <a id="ResendEmail" href="#" class="long-btn">重发验证邮件</a>
     </div>
 
 </script>
@@ -119,7 +120,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2014032024"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2014032142"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
