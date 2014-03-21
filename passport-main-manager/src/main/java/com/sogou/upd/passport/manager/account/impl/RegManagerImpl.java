@@ -197,6 +197,7 @@ public class RegManagerImpl implements RegManager {
                 if (emailSenderService.incLimitForSendEmail(null, clientId, AccountModuleEnum.REGISTER, username)) {
                     result.setSuccess(true);
                     result.setMessage("重新发送激活邮件成功，请立即激活账户！");
+                    result.setCode("0");
                 }
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED);
