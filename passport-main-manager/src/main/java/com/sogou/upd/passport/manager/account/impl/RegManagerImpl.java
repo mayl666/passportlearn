@@ -70,12 +70,12 @@ public class RegManagerImpl implements RegManager {
             if (username.indexOf("@") == -1) {
                 //判断是否是手机号注册
                 if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
-                    username = username + "@sogou.com";
+                    username = username.toLowerCase() + "@sogou.com";  //个性账号不区分大小写
                     isSogou = true;
                 }
             } else {
                 int index = username.indexOf("@");
-                username = username.substring(0, index) + username.substring(index, username.length()).toLowerCase();
+                username = username.substring(0, index) + username.substring(index, username.length()).toLowerCase(); //外域邮箱只处理@后面那一串为小写
             }
             //判断注册账号类型，sogou用户还是手机用户
             AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
@@ -197,6 +197,7 @@ public class RegManagerImpl implements RegManager {
                 if (emailSenderService.incLimitForSendEmail(null, clientId, AccountModuleEnum.REGISTER, username)) {
                     result.setSuccess(true);
                     result.setMessage("重新发送激活邮件成功，请立即激活账户！");
+                    result.setCode("0");
                 }
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED);

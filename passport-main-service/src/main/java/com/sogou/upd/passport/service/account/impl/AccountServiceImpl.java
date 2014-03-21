@@ -168,19 +168,19 @@ public class AccountServiceImpl implements AccountService {
             throw e;
         }
         try {
-            if (userAccount == null){
+            if (userAccount == null) {
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
-            if(AccountHelper.isDisabledAccount(userAccount)) {
+            if (AccountHelper.isDisabledAccount(userAccount)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);
                 return result;
             }
-            if(AccountHelper.isKilledAccount(userAccount)) {
+            if (AccountHelper.isKilledAccount(userAccount)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 return result;
             }
-            result = verifyUserPwdValidByPasswordType(userAccount,password,needMD5);
+            result = verifyUserPwdValidByPasswordType(userAccount, password, needMD5);
             return result;
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -188,8 +188,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result verifyUserPwdValidByPasswordType( Account account, String password,Boolean needMD5) {
-        Result result =  new APIResultSupport(false);
+    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5) {
+        Result result = new APIResultSupport(false);
         String passwordType = account.getPasswordType();
         String storedPwd = account.getPassword();
         boolean pwdIsTrue = false;
@@ -334,14 +334,14 @@ public class AccountServiceImpl implements AccountService {
         try {
             String code = UUID.randomUUID().toString().replaceAll("-", "");
             String token = Coder.encryptMD5(username + clientId + code);
-            String activeUrl =
-                    CommonConstant.PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
-                            "&client_id=" + clientId +
-                            "&token=" + token;
+            String params =
+                    "passport_id=" + Coder.encodeUTF8(username) +
+                            "&client_id=" + Coder.encodeUTF8(String.valueOf(clientId)) +
+                            "&token=" + Coder.encodeUTF8(token);
             if (!Strings.isNullOrEmpty(ru)) {
-                activeUrl = activeUrl + "&ru=" + ru;
+                params = params + "&ru=" + Coder.encodeUTF8(ru);
             }
-
+            String activeUrl = CommonConstant.PASSPORT_ACTIVE_EMAIL_URL + params;
 
             String cacheKey = buildCacheKey(username);
             Map<String, String> mapParam = new HashMap<>();
