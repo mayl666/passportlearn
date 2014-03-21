@@ -46,7 +46,7 @@ import java.util.Map;
 public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
 
     private static Logger log = LoggerFactory.getLogger(ProxyLoginApiManagerImpl.class);
-    private static String PP_COOKIE_URL = "http://account.sogou.com/sso/setppcookie";
+    private static String PP_COOKIE_URL = "http://account.sogou.com/act/setppcookie";
 
     @Autowired
     private CommonManager commonManager;
@@ -176,7 +176,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             String code2 = commonManager.getCode(pprdig,CommonConstant.PC_CLIENTID,ct);
             String code3 = commonManager.getCode(passport,CommonConstant.PC_CLIENTID,ct);
 
-            StringBuilder locationUrlBuilder = new StringBuilder(PP_COOKIE_URL);
+            StringBuilder locationUrlBuilder = new StringBuilder(PP_COOKIE_URL);    // 移动浏览器端使用https域名会有问题
             locationUrlBuilder.append("?").append("ppinf=").append(ppinf)
                     .append("&pprdig=").append(pprdig)
                     .append("&passport=").append(passport)
@@ -185,7 +185,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     .append("&code=").append(code3)
                     .append("&s=").append(ct)
                     .append("&lastdomain=").append(0)
-                    .append("&ru=").append(createCookieUrlApiParams.getRu()+"?status=0");
+                    .append("&ru=").append(createCookieUrlApiParams.getRu()+"?status=0"); // 输入法Mac要求Location里的ru不能decode
 
             result.setDefaultModel("redirectUrl", locationUrlBuilder.toString());
         } else {
