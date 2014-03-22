@@ -59,7 +59,7 @@ public interface CommonManager {
      *
      * @param ip
      */
-    public void incRegTimesForInternal(String ip);
+    public void incRegTimesForInternal(String ip,int client_id);
 
     /**
      * 种sogou域cookie

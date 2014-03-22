@@ -118,6 +118,7 @@ public class RegisterApiController extends BaseController {
     public Object regMailUser(HttpServletRequest request, RegEmailApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String ip = null;
+        int client_id = params.getClient_id();
         try {
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
@@ -126,15 +127,9 @@ public class RegisterApiController extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            int client_id = params.getClient_id();
-            if(client_id == 1115){
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-                return result.toString();
-            }
-
             ip = params.getCreateip();
             //校验用户ip是否允许注册
-            result = regManager.checkRegInBlackListByIpForInternal(ip);
+            result = regManager.checkRegInBlackListByIpForInternal(ip,client_id);
             if (!result.isSuccess()) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result.toString();
@@ -145,10 +140,11 @@ public class RegisterApiController extends BaseController {
             logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + params.getUserid(), e);
         } finally {
             //记录log
+            commonManager.incRegTimesForInternal(ip,client_id);
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), ip);
             UserOperationLogUtil.log(userOperationLog);
         }
-        commonManager.incRegTimesForInternal(ip);
+
         return result.toString();
     }
 
