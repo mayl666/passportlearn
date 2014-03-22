@@ -126,6 +126,12 @@ public class RegisterApiController extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
+            int client_id = params.getClient_id();
+            if(client_id == 1115){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result.toString();
+            }
+
             ip = params.getCreateip();
             //校验用户ip是否允许注册
             result = regManager.checkRegInBlackListByIpForInternal(ip);
