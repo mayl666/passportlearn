@@ -206,7 +206,7 @@ public class LoginAction extends BaseController {
             if (StringUtil.isBlank(referer)) {
                 referer = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
-            ru = URLEncoder.encode(referer, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = referer;
         }
         return new ModelAndView(new RedirectView(ru));
     }
