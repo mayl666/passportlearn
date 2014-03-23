@@ -286,7 +286,7 @@ public class AccountInfoAction extends BaseController {
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
                 if (result.isSuccess()) {
-                    result.getModels().put("uniqname", Coder.encode((String) result.getModels().get("unqiname"), "UTF-8"));
+                    result.getModels().put("uniqname", Coder.encode((String) result.getModels().get("uniqname"), "UTF-8"));
                 }
                 result.setDefaultModel("disable", true);
             }
