@@ -15,6 +15,7 @@ public interface OAuth2ResourceManager {
 
     /**
      * 获取受保护的资源
+     *
      * @param params
      * @return
      */
@@ -22,50 +23,61 @@ public interface OAuth2ResourceManager {
 
     /**
      * 获取cookie值
+     *
      * @return
      */
-    public Result getCookieValue(String accessToken,int clientId, String clientSecret, String instanceId,String username);
+    public Result getCookieValue(String accessToken, int clientId, String clientSecret, String instanceId, String username);
 
     /**
      * 获取完整的个人信息
+     *
      * @return
      */
-    public Result getFullUserInfo(String accessToken,int clientId, String clientSecret, String instanceId,String username);
+    public Result getFullUserInfo(String accessToken, int clientId, String clientSecret, String instanceId, String username);
 
     /**
-     *通过token来获取passportId
+     * 通过token来获取passportId
+     *
      * @param token
      * @param clientId
      * @param instanceId
      * @return
      */
-    public Result queryPassportIdByAccessToken(String token,int clientId,String instanceId,String username);
-    /**
-     * 根据passportId获取昵称
-     * @param passportId
-     * @return
-     */
-    public String getUniqname(String passportId,int clientId);
+    public Result queryPassportIdByAccessToken(String token, int clientId, String instanceId, String username);
 
     /**
-     * 获取账号默认昵称
+     * 根据passportId获取昵称
+     *
      * @param passportId
      * @return
      */
-    public String defaultUniqname(String passportId);
+    public String getUniqname(String passportId, int clientId);
 
     /**
      * 获取urlencode之后的昵称
+     *
      * @param passportId
      * @return
      */
-    public String getEncodedUniqname(String passportId,int clientId);
+    public String getEncodedUniqname(String passportId, int clientId);
+
     /**
-     * 获取用户个人信息
+     * 获取用户的头像和昵称
+     *
      * @param passportId
      * @return
      */
-    public Result getUserInfo(String passportId,int clientId);
+    public Result getUniqNameAndAvatar(String passportId, int clientId);
+
+
+    /**
+     * 获取urlencode之后的昵称及其对应的头像
+     *
+     * @param passportId
+     * @param clientId
+     * @return
+     */
+    public Result getEncodedUniqNameAndAvatar(String passportId, int clientId);
 
     /**
      * 浏览器PC/移动客户端登录

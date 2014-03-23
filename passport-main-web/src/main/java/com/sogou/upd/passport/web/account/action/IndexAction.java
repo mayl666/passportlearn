@@ -31,7 +31,7 @@ public class IndexAction extends BaseController {
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
 
-    @RequestMapping(value = { "/index", "/" })
+    @RequestMapping(value = {"/index", "/"})
     @LoginRequired(value = false)
     public String indexPage(BaseWebParams params, Model model) throws Exception {
         String validateResult = ControllerHelper.validateParams(params);
@@ -43,12 +43,15 @@ public class IndexAction extends BaseController {
             int clientId = Integer.parseInt(params.getClient_id());
 
             // 第三方账号不显示安全信息
-            Result result = new APIResultSupport(false);
+            Result result;
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
-                String uniqname= oAuth2ResourceManager.getEncodedUniqname(userId,clientId);
-                result.setDefaultModel("uniqname", uniqname);
-                result.setDefaultModel("username", uniqname);
+                result = oAuth2ResourceManager.getEncodedUniqNameAndAvatar(userId, clientId);
+                if (result.isSuccess()) {
+                    result.setDefaultModel("uniqname", result.getModels().get("uniqname"));
+                    result.setDefaultModel("username", result.getModels().get("uniqname"));
+                    result.setDefaultModel("avatar", result.getModels().get("img_50"));
+                }
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);
             } else {

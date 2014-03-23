@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
+import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,13 +45,13 @@ public class OAuth2ResourceManagerTest extends BaseTest {
 
     @Test
     public void testGetCookieValue() {
-        Result result = oAuth2ResourceManager.getCookieValue(ACCESS_TOKEN_SG,CLIENT_ID, CLIENT_SECRET, INSTANCEID,"");
+        Result result = oAuth2ResourceManager.getCookieValue(ACCESS_TOKEN_SG, CLIENT_ID, CLIENT_SECRET, INSTANCEID, "");
         System.out.println("get cookie value result" + result.toString());
     }
 
     @Test
     public void testGetFullUserInfo() {
-        Result result = oAuth2ResourceManager.getFullUserInfo( ACCESS_TOKEN_SG, CLIENT_ID,CLIENT_SECRET, INSTANCEID,"");
+        Result result = oAuth2ResourceManager.getFullUserInfo(ACCESS_TOKEN_SG, CLIENT_ID, CLIENT_SECRET, INSTANCEID, "");
         System.out.println("get userinfo result" + result.toString());
     }
 
@@ -71,5 +72,18 @@ public class OAuth2ResourceManagerTest extends BaseTest {
         resourceMap.put("resource", resource);
         result.setModels(resourceMap);
         System.out.println("success result:" + result.toString());
+    }
+
+    /**
+     * 获取头像，昵称
+     */
+    @Test
+    public void testGetUniqNameAndAvatar() {
+        Result result = oAuth2ResourceManager.getUniqNameAndAvatar(userid_sogou, clientId);
+        Assert.assertTrue(result.isSuccess());
+        Assert.assertEquals(userid_sogou_uniqname, result.getModels().get("uniqname"));
+        Assert.assertEquals("", result.getModels().get("img_30"));
+        Assert.assertEquals("", result.getModels().get("img_50"));
+        Assert.assertEquals("", result.getModels().get("img_180"));
     }
 }

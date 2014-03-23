@@ -42,8 +42,6 @@ public class UserInfoApiController extends BaseController {
     }
 
     @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
-    @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
 
     /**
@@ -64,16 +62,10 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        //第三方获取个人资料
-        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(params.getUserid());
         // 调用内部接口
-        if (domain == AccountDomainEnum.THIRD) {
-            result = sgUserInfoApiManager.getUserInfo(params);
-        }else {
-            result = proxyUserInfoApiManager.getUserInfo(params);
-        }
+        result = sgUserInfoApiManager.getUserInfo(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        userOperationLog.putOtherMessage("fields",params.getFields());
+        userOperationLog.putOtherMessage("fields", params.getFields());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
@@ -97,14 +89,8 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(params.getUserid());
         // 调用内部接口
-        if (domain == AccountDomainEnum.THIRD) {
-            result = sgUserInfoApiManager.updateUserInfo(params);
-        }else {
-            result = proxyUserInfoApiManager.updateUserInfo(params);
-        }
-
+        result = sgUserInfoApiManager.updateUserInfo(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), params.getModifyip());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
@@ -130,7 +116,7 @@ public class UserInfoApiController extends BaseController {
             return result.toString();
         }
         //调用检查昵称是否唯一的内部接口
-        result = proxyUserInfoApiManager.checkUniqName(params);
+        result = sgUserInfoApiManager.checkUniqName(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUniqname(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
