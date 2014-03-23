@@ -165,7 +165,7 @@ public class LoginAction extends BaseController {
      * 通过js调用，返回结果
      */
     @RequestMapping(value = "/logout_js", method = RequestMethod.GET)
-    public ModelAndView logoutInjs(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "client_id", required = false) String client_id)
+    public void logoutInjs(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "client_id", required = false) String client_id)
             throws Exception {
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
@@ -179,8 +179,6 @@ public class LoginAction extends BaseController {
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
-
-        return new ModelAndView(new RedirectView(SHPPUrlConstant.CLEAN_COOKIE));
     }
 
     /**
@@ -208,11 +206,8 @@ public class LoginAction extends BaseController {
             if (StringUtil.isBlank(referer)) {
                 referer = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
-            ru = URLEncoder.encode(referer, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = referer;
         }
-        StringBuilder url = new StringBuilder(SHPPUrlConstant.CLEAN_COOKIE_REDIRECT);
-        url.append(ru);
-
-        return new ModelAndView(new RedirectView(url.toString()));
+        return new ModelAndView(new RedirectView(ru));
     }
 }

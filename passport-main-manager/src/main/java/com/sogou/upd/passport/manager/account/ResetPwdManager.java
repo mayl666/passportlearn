@@ -7,18 +7,6 @@ import com.sogou.upd.passport.common.result.Result;
  * File | Settings | File Templates.
  */
 public interface ResetPwdManager {
-
-    /**
-     * 查询密保信息
-     *
-     * @param username
-     * @param clientId
-     * @param doProcess
-     * @return
-     * @throws Exception
-     */
-    public Result queryAccountSecureInfo(String username, int clientId, boolean doProcess) throws Exception;
-
     /**
      * 修改密码，包括检查修改次数
      *
@@ -71,18 +59,15 @@ public interface ResetPwdManager {
     public Result checkMobileCodeResetPwd(String passportId, int clientId, String smsCode) throws Exception;
 
     /**
-     * 重置密码（密保方式）——1.验证密保答案及captcha，成功则返回secureCode记录成功标志。(可用于其他功能模块)
+     * 重置密码（密保方式）——1.验证密保答案成功则返回secureCode记录成功标志。(可用于其他功能模块)
      *
      * @param passportId
      * @param clientId
      * @param answer
-     * @param token
-     * @param captcha
      * @return
      * @throws Exception
      */
-    public Result checkAnswerByPassportId(String passportId, int clientId, String answer, String token,
-                                          String captcha) throws Exception;
+    public Result checkAnswerByPassportId(String passportId, int clientId, String answer) throws Exception;
 
     /**
      * 重置密码（手机和密保方式）——根据secureCode修改密码（secureCode由上一步验证手机或密保问题成功获取）
@@ -91,11 +76,12 @@ public interface ResetPwdManager {
      * @param clientId
      * @param password
      * @param secureCode
+     * @param ip
      * @return
      * @throws Exception
      */
     public Result resetPasswordByScode(String passportId, int clientId, String password,
-                                       String secureCode) throws Exception;
+                                       String secureCode,String ip) throws Exception;
 
     /**
      * 重置用户密码（检查密保答案）——暂不用！！！
@@ -113,6 +99,15 @@ public interface ResetPwdManager {
      */
     public Result resetPasswordByMobile(String passportId, int clientId, String password, String smsCode)
             throws Exception;
+
+    /**
+     *找回密码，发送手机验证码
+     * @param userId
+     * @param clientId
+     * @return
+     * @throws Exception
+     */
+    public Result sendFindPwdMobileCode(String userId, int clientId) throws Exception;
 
     /* ------------------------------------重置密码End------------------------------------ */
 }
