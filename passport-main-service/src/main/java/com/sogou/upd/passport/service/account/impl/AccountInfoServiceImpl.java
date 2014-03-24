@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -116,6 +117,10 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     public boolean updateAccountInfo(AccountInfo accountInfo) throws ServiceException {
         try {
             String passportId = accountInfo.getPassportId();
+            AccountInfo accountInfoOriginal = queryAccountInfoByPassportId(passportId);
+            if (accountInfoOriginal != null && Strings.isNullOrEmpty(accountInfoOriginal.getPersonalid())) {
+                accountInfo.setPersonalid(accountInfoOriginal.getPersonalid());
+            }
             int row = accountInfoDAO.saveInfoOrInsert(passportId, accountInfo);
             if (row != 0) {
                 // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
