@@ -185,7 +185,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     .append("&code1=").append(code1)
                     .append("&code2=").append(code2)
                     .append("&code=").append(code3)
-                    .append("&s=").append(ct)
+                    .append("&s=").append(String.valueOf(ct))
                     .append("&lastdomain=").append(0);
             if (1 == createCookieUrlApiParams.getPersistentcookie()) {
                 locationUrlBuilder.append("&livetime=1");
