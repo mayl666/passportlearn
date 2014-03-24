@@ -56,7 +56,7 @@ public class IndexAction extends BaseController {
                     Map<String, String> map = Maps.newHashMap();
                     map.put("img_30", (String) result.getModels().get("img_30"));
                     map.put("img_50", (String) result.getModels().get("img_50"));
-                    map.put("img_180", (String) result.getModels().get("img_1800"));
+                    map.put("img_180", (String) result.getModels().get("img_180"));
                     result.setDefaultModel("avatarurl", map);
                 }
                 result.setDefaultModel("disable", true);
