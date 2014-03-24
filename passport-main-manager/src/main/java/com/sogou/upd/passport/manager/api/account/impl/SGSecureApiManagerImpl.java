@@ -49,14 +49,14 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         String newPassword = updatePwdApiParams.getNewpassword();
         String modifyIp = updatePwdApiParams.getModifyip();
         int clientId = updatePwdApiParams.getClient_id();
-        result = accountService.verifyUserPwdValid(userId, password, false);
+        result = accountService.verifyUserPwdValid(userId, password, true);
         if (!result.isSuccess()) {
             operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.RESETPWD);
             return result;
         }
         Account account = (Account) result.getDefaultModel();
         result.setDefaultModel(null);
-        if (!accountService.resetPassword(account, newPassword, false)) {
+        if (!accountService.resetPassword(account, newPassword, true)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
         }
         result.setSuccess(true);
@@ -104,7 +104,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
             result = oAuth2ResourceManager.getUniqNameAndAvatar(userId, clientId);
             if (result.isSuccess()) {
                 map.put("uniqname", result.getModels().get("uniqname"));
-                map.put("avatarurl", result.getModels());//此处有与前端的兼容问题
+                map.put("avatarurl", result.getModels());
             }
 
             String mobile = account.getMobile();

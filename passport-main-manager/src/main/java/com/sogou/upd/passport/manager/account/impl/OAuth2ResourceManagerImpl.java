@@ -398,16 +398,15 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     @Override
-    public Result getEncodedUniqNameAndAvatar(String passportId, int clientId) {
+    public String getEncodedUniqNameAndAvatar(String passportId, int clientId) {
         Result result = getUniqNameAndAvatar(passportId, clientId);
+        String uniqname = (String) result.getModels().get("uniqname");
         if (result.isSuccess()) {
-            String uniqname = (String) result.getModels().get("uniqname");
             if (!StringUtils.isBlank(uniqname)) {
                 uniqname = Coder.encode(uniqname, "UTF-8");
-                result.setDefaultModel("uniqname", uniqname);
             }
         }
-        return result;  //To change body of implemented methods use File | Settings | File Templates.
+        return uniqname;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     //处理当头像或昵称为空的情况

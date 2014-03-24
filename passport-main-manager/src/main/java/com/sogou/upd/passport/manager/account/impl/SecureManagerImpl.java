@@ -353,11 +353,11 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            if (ManagerHelper.isInvokeProxyApi(username)) {
-                result = proxySecureApiManager.updatePwd(updatePwdApiParams);
-            } else {
+//            if (ManagerHelper.isInvokeProxyApi(username)) {
+//                result = proxySecureApiManager.updatePwd(updatePwdApiParams);
+//            } else {
                 result = sgSecureApiManager.updatePwd(updatePwdApiParams);
-            }
+//            }
 
             if (result.isSuccess()) {
                 operateTimesService.incLimitResetPwd(updatePwdApiParams.getUserid(), updatePwdApiParams.getClient_id());

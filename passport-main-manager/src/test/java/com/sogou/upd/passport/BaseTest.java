@@ -22,11 +22,12 @@ public class BaseTest extends AbstractJUnit4SpringContextTests {
     protected static final String userid_sogou = "liulingfast@sogou.com";
     protected static final String userid_sogou_uniqname = "liulingfast";
 
-    protected static final String userid_mail = "liulingfast@163.com";
+    protected static final String userid_mail = "loveerin9460@163.com";
 
     protected static final String mobile = "13581695053";
 
     protected static final String password = "111111";
+    protected static final String new_password = "123456";
 
     protected static final String uniqname = "阿沐";
 
