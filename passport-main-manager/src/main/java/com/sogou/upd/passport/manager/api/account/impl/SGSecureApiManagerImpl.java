@@ -104,7 +104,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
             result = oAuth2ResourceManager.getUniqNameAndAvatar(userId, clientId);
             if (result.isSuccess()) {
                 map.put("uniqname", (String) result.getModels().get("uniqname"));
-                map.put("avatar", (String) result.getModels().get("img_50"));
+                map.put("avatarurl", (String) result.getModels().get("img_50"));
             }
 
             String mobile = account.getMobile();
