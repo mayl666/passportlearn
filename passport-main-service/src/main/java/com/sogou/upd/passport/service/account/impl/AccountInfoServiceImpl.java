@@ -117,9 +117,15 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     public boolean updateAccountInfo(AccountInfo accountInfo) throws ServiceException {
         try {
             String passportId = accountInfo.getPassportId();
+            accountInfo.setCreateTime(new Date());
             AccountInfo accountInfoOriginal = queryAccountInfoByPassportId(passportId);
-            if (accountInfoOriginal != null && !Strings.isNullOrEmpty(accountInfoOriginal.getPersonalid())) {
-                accountInfo.setPersonalid(accountInfoOriginal.getPersonalid());
+            if (accountInfoOriginal != null) {
+                if (!Strings.isNullOrEmpty(accountInfoOriginal.getPersonalid())) {
+                    accountInfo.setPersonalid(accountInfoOriginal.getPersonalid());
+                }
+                if (accountInfoOriginal.getCreateTime() != null) {
+                    accountInfo.setCreateTime(accountInfoOriginal.getCreateTime());
+                }
             }
             int row = accountInfoDAO.saveInfoOrInsert(passportId, accountInfo);
             if (row != 0) {

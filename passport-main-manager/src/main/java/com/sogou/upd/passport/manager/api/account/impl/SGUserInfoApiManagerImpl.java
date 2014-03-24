@@ -199,7 +199,6 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                         info.setPersonalid(params.getPersonalId());
                         info.setModifyip(params.getModifyip());
                         info.setUpdateTime(new Date());
-
                         //更新用户信息AccountInfo
                         boolean updateResult = accountInfoService.updateAccountInfo(info);
                         if (updateResult) {
