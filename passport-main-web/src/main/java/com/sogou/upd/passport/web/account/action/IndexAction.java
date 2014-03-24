@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-8 Time: 下午2:12 To change this template use
@@ -43,14 +46,18 @@ public class IndexAction extends BaseController {
             int clientId = Integer.parseInt(params.getClient_id());
 
             // 第三方账号不显示安全信息
-            Result result;
+            Result result = new APIResultSupport(false);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
-                result = oAuth2ResourceManager.getEncodedUniqNameAndAvatar(userId, clientId);
-                if (result.isSuccess()) {
-                    result.setDefaultModel("uniqname", result.getModels().get("uniqname"));
-                    result.setDefaultModel("username", result.getModels().get("uniqname"));
-                    result.setDefaultModel("avatarurl", result.getModels().get("img_50"));
+                Result resultOrg = oAuth2ResourceManager.getUniqNameAndAvatar(userId, clientId);
+                if (resultOrg.isSuccess()) {
+                    result.setDefaultModel("uniqname", resultOrg.getModels().get("uniqname"));
+                    result.setDefaultModel("username", resultOrg.getModels().get("uniqname"));
+                    Map<String, String> map = Maps.newHashMap();
+                    map.put("img_30", (String) resultOrg.getModels().get("img_30"));
+                    map.put("img_50", (String) resultOrg.getModels().get("img_50"));
+                    map.put("img_180", (String) resultOrg.getModels().get("img_180"));
+                    result.setDefaultModel("avatarurl", map);
                 }
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);

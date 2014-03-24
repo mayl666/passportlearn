@@ -640,7 +640,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-    //缓存中移除原来昵称
+    //原昵称如果存在，则移除缓存中的原昵称；如果不存在，则直接新增
     @Override
     public boolean removeUniqName(String uniqname) throws ServiceException {
         try {
@@ -652,6 +652,8 @@ public class AccountServiceImpl implements AccountService {
                     dbShardRedisUtils.delete(cacheKey);
                     return true;
                 }
+            } else {
+                return true;
             }
         } catch (Exception e) {
             logger.error("removeUniqName fail", e);
