@@ -296,6 +296,7 @@ public class PCAccountController extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             returnErrMsg(response, ppCookieParams.getRu(),result.getCode(), result.getMessage());
+            return;
         }
 
         result = cookieManager.setPPCookie(response,ppCookieParams);
@@ -304,6 +305,7 @@ public class PCAccountController extends BaseController {
         if(!result.isSuccess()){
             log(request,"pp_setcookie",ru,result.getCode());
             returnErrMsg(response,ru,result.getCode(),result.getMessage());
+            return;
         }
         if (!StringUtils.isBlank(ru)) {
             response.sendRedirect(ru);

@@ -28,7 +28,8 @@ public class PPCookieParams {
     @NotBlank(message = "lastdomain不允许为空")
     private String lastdomain;
 
-    private long s = 0; //时间戳，单位毫秒
+    @NotBlank(message = "时间戳不允许为空")
+    private String s = "0"; //时间戳，单位毫秒
 
     private String livetime = "0"; //cookie有效期  1为2周
 
@@ -84,11 +85,11 @@ public class PPCookieParams {
         this.lastdomain = lastdomain;
     }
 
-    public long getS() {
+    public String getS() {
         return s;
     }
 
-    public void setS(long s) {
+    public void setS(String s) {
         this.s = s;
     }
 
