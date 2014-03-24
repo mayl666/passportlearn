@@ -74,7 +74,13 @@ public class CookieManagerImpl implements CookieManager {
 
     @Override
     public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip,String ru,int maxAge) {
-        CookieApiParams cookieApiParams = new CookieApiParams(passportId,client_id,ru,ip);
+        CookieApiParams cookieApiParams = new CookieApiParams();
+        cookieApiParams.setUserid(passportId);
+        cookieApiParams.setClient_id(client_id);
+        cookieApiParams.setRu(ru);
+        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+        cookieApiParams.setPersistentcookie(String.valueOf(1));
+        cookieApiParams.setIp(ip);
         Result result = setCookie(response,cookieApiParams,maxAge);
         return result;
     }
