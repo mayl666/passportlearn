@@ -53,9 +53,7 @@ public class IndexAction extends BaseController {
                 if (result.isSuccess()) {
                     result.setDefaultModel("uniqname", result.getModels().get("uniqname"));
                     result.setDefaultModel("username", result.getModels().get("uniqname"));
-                    Map<String, Object> map = Maps.newHashMap();
-                    map.put("avatarurl", result.getModels());
-                    result.setModels(map);
+                    result.setDefaultModel("avatarurl", result.getModels().toString());
                 }
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);
