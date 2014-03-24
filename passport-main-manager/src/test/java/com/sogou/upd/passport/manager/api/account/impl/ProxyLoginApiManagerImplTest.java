@@ -92,7 +92,6 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
         Result result = proxyLoginApiManager.appAuthToken(params);
         System.out.println("result:" + result);
     }
-
     @Test
     public void testgetSHCookieValue() {
         try {
