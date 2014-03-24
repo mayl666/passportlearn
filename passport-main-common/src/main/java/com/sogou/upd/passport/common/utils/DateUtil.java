@@ -7,6 +7,7 @@ package com.sogou.upd.passport.common.utils;
  * @version 1.0
  */
 
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
@@ -287,7 +288,10 @@ public class DateUtil {
     }
 
     public static void main(String args[])throws Exception{
-
+        int maxAge = (int) DateAndNumTimesConstant.TWO_WEEKS;
+        long expire = DateUtil.generatorVaildTime(maxAge);
+        String str = getDateByTimeStamp(expire/1000);
+        System.out.println("str:"+str);
     }
 
 }

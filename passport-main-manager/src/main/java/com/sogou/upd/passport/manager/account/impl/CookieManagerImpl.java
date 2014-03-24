@@ -132,7 +132,7 @@ public class CookieManagerImpl implements CookieManager {
         }
 
         int maxAge = (int)DateAndNumTimesConstant.TWO_WEEKS;
-        long expire = DateUtil.generatorVaildTime(maxAge);
+        long expire = DateUtil.generatorVaildTime(maxAge)/1000;
 //        int maxAge = -1;
         ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
 //        ServletUtil.setCookie(response, LoginConstant.COOKIE_PPRDIG, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
