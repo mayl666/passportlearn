@@ -131,13 +131,20 @@ public class CookieManagerImpl implements CookieManager {
             return result;
         }
 
-        int maxAge = (int)DateAndNumTimesConstant.TWO_WEEKS;
-        long expire = DateUtil.generatorVaildTime(maxAge)/1000;
-//        int maxAge = -1;
-        ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-//        ServletUtil.setCookie(response, LoginConstant.COOKIE_PPRDIG, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-        ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN,expire);
-        ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN,expire);
+        if(!"0".equals(ppCookieParams.getLivetime())){
+            int maxAge = (int)DateAndNumTimesConstant.TWO_WEEKS;
+            long expire = DateUtil.generatorVaildTime(maxAge)/1000;
+//            ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setExpireCookie(response,LoginConstant.COOKIE_PPINF, ppinf,CommonConstant.SOGOU_ROOT_DOMAIN,expire);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN,expire);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN,expire);
+        }else {
+            int maxAge = -1;
+            ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN);
+        }
+
         result.setSuccess(true);
         return result;
     }
