@@ -48,6 +48,10 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
         CookieApiParams cookieApiParams_1 = getCookieApiParams("13621009174@sohu.com");
         Result result_1 = proxyLoginApiManager.getCookieInfo(cookieApiParams_1);
         System.out.println("result_1:" + result_1.toString());
+
+        CookieApiParams cookieApiParams_2 = getCookieApiParams("tinkame001@126.com");
+        Result result_2 = proxyLoginApiManager.getCookieInfo(cookieApiParams_2);
+        System.out.println("result_2:" + result_2.toString());
     }
 
     private CookieApiParams getCookieApiParams(String userId) {
