@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -50,13 +51,11 @@ public class IndexAction extends BaseController {
             if (domain == AccountDomainEnum.THIRD) {
                 result = oAuth2ResourceManager.getUniqNameAndAvatar(userId, clientId);
                 if (result.isSuccess()) {
-                    result.getModels().put("uniqname", result.getModels().get("uniqname"));
-                    result.getModels().put("username", result.getModels().get("uniqname"));
-                    Map<String, String> map = result.getModels();
-                    map.remove("uniqname");
-                    map.remove("username");
-                    map.remove("userid");
-                    result.getModels().put("avatarurl", map);
+                    result.setDefaultModel("uniqname", result.getModels().get("uniqname"));
+                    result.setDefaultModel("username", result.getModels().get("uniqname"));
+                    Map<String, Object> map = Maps.newHashMap();
+                    map.put("avatarurl", result.getModels());
+                    result.setModels(map);
                 }
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);
