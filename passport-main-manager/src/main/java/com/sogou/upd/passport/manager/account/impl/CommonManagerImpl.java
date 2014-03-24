@@ -78,8 +78,8 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public void incRegTimesForInternal(String ip) {
-        operateTimesService.incRegTimesForInternal(ip);
+    public void incRegTimesForInternal(String ip,int client_id) {
+        operateTimesService.incRegTimesForInternal(ip,client_id);
     }
 
     @Override
