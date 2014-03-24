@@ -118,7 +118,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
         try {
             String passportId = accountInfo.getPassportId();
             AccountInfo accountInfoOriginal = queryAccountInfoByPassportId(passportId);
-            if (accountInfoOriginal != null && Strings.isNullOrEmpty(accountInfoOriginal.getPersonalid())) {
+            if (accountInfoOriginal != null && !Strings.isNullOrEmpty(accountInfoOriginal.getPersonalid())) {
                 accountInfo.setPersonalid(accountInfoOriginal.getPersonalid());
             }
             int row = accountInfoDAO.saveInfoOrInsert(passportId, accountInfo);
