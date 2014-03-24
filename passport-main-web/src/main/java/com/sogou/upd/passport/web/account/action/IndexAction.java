@@ -46,17 +46,17 @@ public class IndexAction extends BaseController {
             int clientId = Integer.parseInt(params.getClient_id());
 
             // 第三方账号不显示安全信息
-            Result result;
+            Result result = new APIResultSupport(false);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
-                result = oAuth2ResourceManager.getUniqNameAndAvatar(userId, clientId);
-                if (result.isSuccess()) {
-                    result.setDefaultModel("uniqname", result.getModels().get("uniqname"));
-                    result.setDefaultModel("username", result.getModels().get("uniqname"));
+                Result resultOrg = oAuth2ResourceManager.getUniqNameAndAvatar(userId, clientId);
+                if (resultOrg.isSuccess()) {
+                    result.setDefaultModel("uniqname", resultOrg.getModels().get("uniqname"));
+                    result.setDefaultModel("username", resultOrg.getModels().get("uniqname"));
                     Map<String, String> map = Maps.newHashMap();
-                    map.put("img_30", (String) result.getModels().get("img_30"));
-                    map.put("img_50", (String) result.getModels().get("img_50"));
-                    map.put("img_180", (String) result.getModels().get("img_180"));
+                    map.put("img_30", (String) resultOrg.getModels().get("img_30"));
+                    map.put("img_50", (String) resultOrg.getModels().get("img_50"));
+                    map.put("img_180", (String) resultOrg.getModels().get("img_180"));
                     result.setDefaultModel("avatarurl", map);
                 }
                 result.setDefaultModel("disable", true);
