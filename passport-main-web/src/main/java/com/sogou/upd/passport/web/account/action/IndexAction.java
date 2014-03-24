@@ -48,15 +48,15 @@ public class IndexAction extends BaseController {
             Result result;
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
-                result = oAuth2ResourceManager.getEncodedUniqNameAndAvatar(userId, clientId);
+                result = oAuth2ResourceManager.getUniqNameAndAvatar(userId, clientId);
                 if (result.isSuccess()) {
-                    result.setDefaultModel("uniqname", result.getModels().get("uniqname"));
-                    result.setDefaultModel("username", result.getModels().get("uniqname"));
+                    result.getModels().put("uniqname", result.getModels().get("uniqname"));
+                    result.getModels().put("username", result.getModels().get("uniqname"));
                     Map<String, String> map = result.getModels();
                     map.remove("uniqname");
                     map.remove("username");
                     map.remove("userid");
-                    result.setDefaultModel("avatarurl", map);
+                    result.getModels().put("avatarurl", map);
                 }
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);
