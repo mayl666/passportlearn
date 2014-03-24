@@ -652,6 +652,8 @@ public class AccountServiceImpl implements AccountService {
                     dbShardRedisUtils.delete(cacheKey);
                     return true;
                 }
+            } else {
+                return true;
             }
         } catch (Exception e) {
             logger.error("removeUniqName fail", e);

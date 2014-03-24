@@ -21,7 +21,7 @@ public class ManagerHelperTest extends BaseTest {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
 //        String ct =  "1381915491000";
-        String code = ManagerHelper.generatorCodeGBK("阿沐的昵称", clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCodeGBK("阿沐是专业测试的", clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
 //        try {
