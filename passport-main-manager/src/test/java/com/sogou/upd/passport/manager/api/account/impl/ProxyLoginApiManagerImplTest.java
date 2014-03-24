@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
@@ -44,10 +45,28 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
         CookieApiParams cookieApiParams = getCookieApiParams("15210832767@sohu.com");
         Result result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
         System.out.println("result:" + result.toString());
+        String ppinf = (String)result.getModels().get("ppinf");
+        String pprdig = (String)result.getModels().get("pprdig");
+        Assert.assertTrue(!StringUtils.isBlank(ppinf));
+        Assert.assertTrue(!StringUtils.isBlank(pprdig));
+
+
 
         CookieApiParams cookieApiParams_1 = getCookieApiParams("13621009174@sohu.com");
         Result result_1 = proxyLoginApiManager.getCookieInfo(cookieApiParams_1);
         System.out.println("result_1:" + result_1.toString());
+        String ppinf_1 = (String)result_1.getModels().get("ppinf");
+        String pprdig_1 = (String)result_1.getModels().get("pprdig");
+        Assert.assertTrue(!StringUtils.isBlank(ppinf_1));
+        Assert.assertTrue(!StringUtils.isBlank(pprdig_1));
+
+        CookieApiParams cookieApiParams_2 = getCookieApiParams("tinkame001@126.com");
+        Result result_2 = proxyLoginApiManager.getCookieInfo(cookieApiParams_2);
+        System.out.println("result_2:" + result_2.toString());
+        String ppinf_2 = (String)result_2.getModels().get("ppinf");
+        String pprdig_2 = (String)result_2.getModels().get("pprdig");
+        Assert.assertTrue(!StringUtils.isBlank(ppinf_2));
+        Assert.assertTrue(!StringUtils.isBlank(pprdig_2));
     }
 
     private CookieApiParams getCookieApiParams(String userId) {
