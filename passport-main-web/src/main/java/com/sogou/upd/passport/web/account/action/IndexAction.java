@@ -50,7 +50,7 @@ public class IndexAction extends BaseController {
                 if (result.isSuccess()) {
                     result.setDefaultModel("uniqname", result.getModels().get("uniqname"));
                     result.setDefaultModel("username", result.getModels().get("uniqname"));
-                    result.setDefaultModel("avatarurl", result.getModels().get("img_50"));
+                    result.setDefaultModel("avatarurl", result.getModels());
                 }
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);
