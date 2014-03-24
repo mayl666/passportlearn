@@ -52,7 +52,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
 //                String value = listString.get(i).get("value").toString();
 //                mapString.put(key,value);
 //            }
-            System.out.println(result.toString());
+            System.out.println("result:"+result.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
