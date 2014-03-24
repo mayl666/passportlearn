@@ -174,9 +174,16 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             result.setDefaultModel("passport", passport);
 
             long ct = System.currentTimeMillis();
-            String code1 = commonManager.getCode(ppinf, CommonConstant.PC_CLIENTID, ct);
-            String code2 = commonManager.getCode(pprdig, CommonConstant.PC_CLIENTID, ct);
-            String code3 = commonManager.getCode(passport, CommonConstant.PC_CLIENTID, ct);
+            String code1 ="",code2="",code3="";
+            if(!StringUtil.isBlank(ppinf)){
+                code1 = commonManager.getCode(ppinf, CommonConstant.PC_CLIENTID, ct);
+            }
+            if(!StringUtil.isBlank(ppinf)){
+                code2 = commonManager.getCode(pprdig, CommonConstant.PC_CLIENTID, ct);
+            }
+            if(!StringUtil.isBlank(ppinf)){
+                code3 = commonManager.getCode(passport, CommonConstant.PC_CLIENTID, ct);
+            }
 
             StringBuilder locationUrlBuilder = new StringBuilder(PP_COOKIE_URL);  // 移动浏览器端使用https域名会有问题
             locationUrlBuilder.append("?").append("ppinf=").append(ppinf)
