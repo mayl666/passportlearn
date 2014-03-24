@@ -131,12 +131,12 @@ public class CookieManagerImpl implements CookieManager {
             return result;
         }
 
-        int maxAge = (int)DateAndNumTimesConstant.TWO_WEEKS;
+//        int maxAge = (int)DateAndNumTimesConstant.TWO_WEEKS;
+        int maxAge = -1;
         ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-        ServletUtil.setCookie(response, LoginConstant.COOKIE_PPRDIG, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-
-//        ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN,maxAge);
-        ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN,maxAge);
+//        ServletUtil.setCookie(response, LoginConstant.COOKIE_PPRDIG, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
+        ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
+        ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN);
         result.setSuccess(true);
         return result;
     }
