@@ -286,4 +286,8 @@ public class DateUtil {
         return date;
     }
 
+    public static void main(String args[])throws Exception{
+
+    }
+
 }
