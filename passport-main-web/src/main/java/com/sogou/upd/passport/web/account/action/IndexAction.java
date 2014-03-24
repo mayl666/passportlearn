@@ -17,6 +17,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-8 Time: 下午2:12 To change this template use
  * File | Settings | File Templates.
@@ -50,7 +52,9 @@ public class IndexAction extends BaseController {
                 if (result.isSuccess()) {
                     result.setDefaultModel("uniqname", result.getModels().get("uniqname"));
                     result.setDefaultModel("username", result.getModels().get("uniqname"));
-                    result.setDefaultModel("avatarurl", result.getModels());
+                    Map<String, String> map = result.getModels();
+                    map.remove("uniqname");
+                    result.setDefaultModel("avatarurl", map);
                 }
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);
