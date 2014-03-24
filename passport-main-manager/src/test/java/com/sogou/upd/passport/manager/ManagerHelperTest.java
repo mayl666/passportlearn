@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.manager;
 
-import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.math.Coder;
+import junit.framework.TestCase;
 import org.junit.Test;
 
 /**
@@ -11,7 +11,11 @@ import org.junit.Test;
  * Time: 下午3:37
  * To change this template use File | Settings | File Templates.
  */
-public class ManagerHelperTest extends BaseTest {
+public class ManagerHelperTest extends TestCase {
+
+    private static final int clientId = 2009;
+
+    private static final String serverSecret = "Hpi%#ZT<u@hR.6F)HtfvUKf5ERYR1b";
 
     /**
      * 测试生成内部接口code参数
@@ -21,7 +25,7 @@ public class ManagerHelperTest extends BaseTest {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
 //        String ct =  "1381915491000";
-        String code = ManagerHelper.generatorCodeGBK("3289744374@baidu.sohu.com", clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCodeGBK("2789871477@sina.sohu.com", clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
         /*try {

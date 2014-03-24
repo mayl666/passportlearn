@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -242,10 +243,20 @@ public class CookieManagerImpl implements CookieManager {
             return result;
         }
 
-        int maxAge = -1;
-        ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-        ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
-        ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN);
+        if(!"0".equals(ppCookieParams.getLivetime())){
+            int maxAge = (int)DateAndNumTimesConstant.TWO_WEEKS;
+            long expire = DateUtil.generatorVaildTime(maxAge)/1000;
+//            ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setExpireCookie(response,LoginConstant.COOKIE_PPINF, ppinf,CommonConstant.SOGOU_ROOT_DOMAIN,expire);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN,expire);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN,expire);
+        }else {
+            int maxAge = -1;
+            ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN);
+        }
+
         result.setSuccess(true);
         return result;
     }

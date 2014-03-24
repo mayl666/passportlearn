@@ -33,12 +33,14 @@ public class ConnectLoginParams {
 
     private String display;  // 样式
     private boolean forcelogin = true;   // 是否强制输入用户名、密码登录
-    private String type = "web";     // 应用类型
-    private String from = ""; //浏览器移动端，type=token时，from=mob；样式均为移动端上的样式
+    private String type = "web";     // 应用类型；
+    private String from = ""; //浏览器移动端，type=token时，from=mob；样式均为移动端上的样式；单点登录时，type=mapp,from=sso,返回sgid和用户信息；
     private String ts;   //终端的实例ID
 
     private String viewPage; // qq为搜狗产品定制化页面， sgIME为输入法PC端弹泡样式
     private String domain;   // qq导航所用，种附加域的cookie
+
+    private String thirdInfo="";   // thirdInfo=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
 
     @AssertTrue(message = "Client_id不允许为空")
     private boolean isEmptyClientId(){
@@ -174,5 +176,13 @@ public class ConnectLoginParams {
 
     public void setDomain(String domain) {
         this.domain = domain;
+    }
+
+    public String getThirdInfo() {
+        return thirdInfo;
+    }
+
+    public void setThirdInfo(String thirdInfo) {
+        this.thirdInfo = thirdInfo;
     }
 }

@@ -164,7 +164,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         Result cookieInfoResult = getCookieInfo(cookieApiParams);
         Result result = new APIResultSupport(false);
         if (cookieInfoResult != null) {
-            String ppinf = (String)cookieInfoResult.getModels().get("ppinf");
+            String ppinf = (String) cookieInfoResult.getModels().get("ppinf");
             String pprdig = (String) cookieInfoResult.getModels().get("pprdig");
             String passport = (String) cookieInfoResult.getModels().get("passport");
 
@@ -174,9 +174,9 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             result.setDefaultModel("passport", passport);
 
             long ct = System.currentTimeMillis();
-            String code1 = commonManager.getCode(ppinf,CommonConstant.PC_CLIENTID,ct);
-            String code2 = commonManager.getCode(pprdig,CommonConstant.PC_CLIENTID,ct);
-            String code3 = commonManager.getCode(passport,CommonConstant.PC_CLIENTID,ct);
+            String code1 = commonManager.getCode(ppinf, CommonConstant.PC_CLIENTID, ct);
+            String code2 = commonManager.getCode(pprdig, CommonConstant.PC_CLIENTID, ct);
+            String code3 = commonManager.getCode(passport, CommonConstant.PC_CLIENTID, ct);
 
             StringBuilder locationUrlBuilder = new StringBuilder(PP_COOKIE_URL);  // 移动浏览器端使用https域名会有问题
             locationUrlBuilder.append("?").append("ppinf=").append(ppinf)
@@ -186,9 +186,11 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     .append("&code2=").append(code2)
                     .append("&code=").append(code3)
                     .append("&s=").append(ct)
-                    .append("&lastdomain=").append(0)
-                    .append("&ru=").append(createCookieUrlApiParams.getRu()+"?status=0");   // 输入法Mac要求Location里的ru不能decode
-
+                    .append("&lastdomain=").append(0);
+            if (1 == createCookieUrlApiParams.getPersistentcookie()) {
+                locationUrlBuilder.append("&livetime=1");
+            }
+            locationUrlBuilder.append("&ru=").append(createCookieUrlApiParams.getRu() + "?status=0");   // 输入法Mac要求Location里的ru不能decode
             result.setDefaultModel("redirectUrl", locationUrlBuilder.toString());
         } else {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
@@ -232,7 +234,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
         return result;
-    } */
+    }*/
 
     /**
      * 输入法Mac，passport.sogou.com/sso/setcookie？ru=xxx不需要urlencode
