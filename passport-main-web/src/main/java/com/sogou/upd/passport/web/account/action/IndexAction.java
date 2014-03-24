@@ -54,6 +54,8 @@ public class IndexAction extends BaseController {
                     result.setDefaultModel("username", result.getModels().get("uniqname"));
                     Map<String, String> map = result.getModels();
                     map.remove("uniqname");
+                    map.remove("username");
+                    map.remove("userid");
                     result.setDefaultModel("avatarurl", map);
                 }
                 result.setDefaultModel("disable", true);
