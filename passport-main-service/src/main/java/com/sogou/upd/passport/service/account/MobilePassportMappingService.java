@@ -48,12 +48,16 @@ public interface MobilePassportMappingService {
      */
     public boolean updateMobilePassportMapping(String mobile, String passportId) throws ServiceException;
 
+
     /**
      * 删除mobile和passportId的映射关系
      *
      * @param mobile
      * @return
-     * @throws ServiceException
+     * @throws com.sogou.upd.passport.exception.ServiceException
+     *
      */
     public boolean deleteMobilePassportMapping(String mobile) throws ServiceException;
+
+
 }

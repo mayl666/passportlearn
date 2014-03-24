@@ -57,13 +57,9 @@ import java.util.UUID;
 public class PCOAuth2AccountController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(PCOAuth2AccountController.class);
     @Autowired
-    private OAuth2AuthorizeManager oAuth2AuthorizeManager;
-    @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
     @Autowired
     private ConfigureManager configureManager;
-    @Autowired
-    private PCOAuth2RegManager pcoAuth2RegManager;
     @Autowired
     private LoginManager loginManager;
     @Autowired
@@ -74,8 +70,6 @@ public class PCOAuth2AccountController extends BaseController {
     private CommonManager commonManager;
     @Autowired
     private HostHolder hostHolder;
-    @Autowired
-    private PCOAuth2LoginManager pcOAuth2LoginManager;
     @Autowired
     private CookieManager cookieManager;
 
@@ -125,7 +119,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
 
-        result = oAuth2AuthorizeManager.oauth2Authorize(oauthRequest);
+        result = oAuth2ResourceManager.oauth2Authorize(oauthRequest);
         if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {
             result.setCode("0");
         }
@@ -181,7 +175,9 @@ public class PCOAuth2AccountController extends BaseController {
         }
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
 
-        result = checkPCAccountNotExists(username);
+        int clientId = Integer.parseInt(checkParam.getClient_id());
+        result = checkPCAccountNotExists(username,clientId);
+
         if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED.equals(result.getCode())) {
             result.setMessage("该手机号已注册或已绑定，请直接登录");
         }
@@ -228,7 +224,7 @@ public class PCOAuth2AccountController extends BaseController {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result.toString();
             }
-            result = checkPCAccountNotExists(pcoAuth2RegisterParams.getUsername());
+            result = checkPCAccountNotExists(pcoAuth2RegisterParams.getUsername(),clientId);
             if (!result.isSuccess()) {
                 return result.toString();
             }
@@ -295,7 +291,7 @@ public class PCOAuth2AccountController extends BaseController {
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
-        int clientId = pcOAuth2LoginManager.getClientId(loginParams.getClient_id());
+        int clientId = getClientId(loginParams.getClient_id());
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -304,7 +300,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
         String username = loginParams.getUsername();
-        result = pcOAuth2LoginManager.accountLogin(loginParams, getIp(request), request.getScheme());
+        result = pcAccountManager.oauth2Login(loginParams, getIp(request));
 
         //用户登录log
         if (result.isSuccess()) {
@@ -344,19 +340,14 @@ public class PCOAuth2AccountController extends BaseController {
      * @return
      * @throws Exception
      */
-    private Result checkPCAccountNotExists(String username) throws Exception {
+    private Result checkPCAccountNotExists(String username,int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         //不允许邮箱注册
         if (username.indexOf("@") != -1) {
             result.setCode(ErrorUtil.ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED);
             return result;
         }
-        //判断是否是手机号注册
-        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-            result = pcoAuth2RegManager.isPcAccountNotExists(username, true);
-        } else {
-            result = pcoAuth2RegManager.isPcAccountNotExists(username, false);
-        }
+        result = regManager.isAccountNotExists(username, clientId);
         return result;
     }
 
@@ -378,7 +369,7 @@ public class PCOAuth2AccountController extends BaseController {
         if (hostHolder.isLogin()) {
             cookieUserId = hostHolder.getPassportId();
         }
-        int clientId = pcOAuth2LoginManager.getClientId(oauth2PcIndexParams.getClient_id());
+        int clientId = getClientId(oauth2PcIndexParams.getClient_id());
         Result queryPassportIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), clientId, oauth2PcIndexParams.getInstanceid(),"");
 
         if (StringUtils.isBlank(queryPassportIdResult.getCode()) && queryPassportIdResult.isSuccess()) {
@@ -444,6 +435,11 @@ public class PCOAuth2AccountController extends BaseController {
 
     private String defaultUniqname(String passportId) {
         return passportId.substring(0, passportId.indexOf("@"));
+    }
+
+    private int getClientId(int clientId) {
+        clientId = clientId == 30000004 ? CommonConstant.PC_CLIENTID : clientId;  //兼容浏览器PC端sohu+接口
+        return clientId;
     }
 
 }

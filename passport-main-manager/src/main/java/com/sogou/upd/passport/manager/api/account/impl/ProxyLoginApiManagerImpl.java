@@ -46,7 +46,7 @@ import java.util.Map;
 public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
 
     private static Logger log = LoggerFactory.getLogger(ProxyLoginApiManagerImpl.class);
-    private static String PP_COOKIE_URL = "http://account.sogou.com/sso/setppcookie";
+    private static String PP_COOKIE_URL = "http://account.sogou.com/act/setppcookie";
 
     @Autowired
     private CommonManager commonManager;
@@ -120,12 +120,13 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result getCookieInfo(CookieApiParams cookieApiParams) {
+        Result result = new APIResultSupport(false);
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_COOKIE_VALUE_FROM_SOHU, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(cookieApiParams);
         requestModelXml.getParams().put("result_type", "json");       //sohu 传 xml参数，返回json
-        Result result = executeResult(requestModelXml);
-        if (result.isSuccess()) {
-            Object obj = result.getModels().get("data");
+        Result getCookieInfoResult = executeResult(requestModelXml);
+        if (getCookieInfoResult.isSuccess()) {
+            Object obj = getCookieInfoResult.getModels().get("data");
             if (obj != null && obj instanceof List) {
                 List<Map<String, String>> listMap = (List<Map<String, String>>) obj;
                 if (CollectionUtils.isNotEmpty(listMap)) {
@@ -144,6 +145,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
                     }
                 }
             }
+            result.setSuccess(true);
             result.setMessage("获取cookie成功");
             result.setDefaultModel("userid", cookieApiParams.getUserid());
         }

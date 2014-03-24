@@ -45,7 +45,7 @@ public class AccountWeb extends BaseController {
 
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result = paramProcess(result, ru, client_id, null, null);
+        result = paramProcess(result, ru, client_id, null);
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
@@ -67,7 +67,7 @@ public class AccountWeb extends BaseController {
 
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result = paramProcess(result, ru, client_id, null, null);
+        result = paramProcess(result, ru, client_id, null);
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
@@ -88,7 +88,7 @@ public class AccountWeb extends BaseController {
 
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result = paramProcess(result, ru, client_id, null, null);
+        result = paramProcess(result, ru, client_id, null);
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
@@ -121,7 +121,7 @@ public class AccountWeb extends BaseController {
         }
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result = paramProcess(result, ru, client_id, null, null);
+        result = paramProcess(result, ru, client_id, null);
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
@@ -135,10 +135,13 @@ public class AccountWeb extends BaseController {
    */
     @RequestMapping(value = "/reg/emailverify", method = RequestMethod.GET)
     public String emailVerifySuccess(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String ru,
-                                     @RequestParam(defaultValue = "") String code, @RequestParam(defaultValue = "") String message, Model model) throws Exception {
+                                     @RequestParam(defaultValue = "") String code, Model model) throws Exception {
+        if (hostHolder.isLogin()) {
+            return "forward:/";
+        }
         Result result = new APIResultSupport(false);
         //跳转ru client_id
-        result = paramProcess(result, ru, null, code, message);
+        result = paramProcess(result, ru, null, code);
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
@@ -147,10 +150,31 @@ public class AccountWeb extends BaseController {
         return "reg/emailsuccess";
     }
 
+
+    /*
+     外域邮箱用户激活成功的页面
+   */
+    @RequestMapping(value = "/reg/emailfail", method = RequestMethod.GET)
+    public String emailVerifyFailed(HttpServletRequest request, HttpServletResponse response,
+                                    @RequestParam(defaultValue = "") String code, Model model) throws Exception {
+        if (hostHolder.isLogin()) {
+            return "forward:/";
+        }
+        Result result = new APIResultSupport(false);
+        //跳转ru client_id
+        result = paramProcess(result, null, null, code);
+
+        if (result.isSuccess()) {
+            model.addAttribute("data", result.toString());
+        }
+        //状态码参数
+        return "reg/emailfailure";
+    }
+
     /*
     ru跳转
      */
-    private Result paramProcess(Result result, String ru, String client_id, String code, String message) {
+    private Result paramProcess(Result result, String ru, String client_id, String code) {
         Map<String, String> map = Maps.newHashMap();
         if (!Strings.isNullOrEmpty(ru)) {
             result.setSuccess(true);
@@ -163,10 +187,6 @@ public class AccountWeb extends BaseController {
         if (!Strings.isNullOrEmpty(code)) {
             result.setSuccess(true);
             map.put(CommonConstant.RESQUEST_CODE, code);
-        }
-        if (!Strings.isNullOrEmpty(message)) {
-            result.setSuccess(true);
-            map.put(CommonConstant.MESSAGE, message);
         }
         result.setModels(map);
         return result;

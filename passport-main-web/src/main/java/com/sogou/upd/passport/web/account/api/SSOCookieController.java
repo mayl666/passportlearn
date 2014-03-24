@@ -114,31 +114,4 @@ public class SSOCookieController extends BaseController {
         return;
     }
 
-    @RequestMapping(value = "/sso/setppcookie", method = RequestMethod.GET)
-    public void setPPCookie(HttpServletRequest request, HttpServletResponse response, PPCookieParams ppCookieParams)
-            throws Exception {
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(ppCookieParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            returnErrMsg(response, ppCookieParams.getRu(),result.getCode(), result.getMessage());
-        }
-
-        result = cookieManager.setPPCookie(response,ppCookieParams);
-
-        String ru = ppCookieParams.getRu();
-        if(!result.isSuccess()){
-            log(request,"pp_setcookie",ru,result.getCode());
-            returnErrMsg(response,ru,result.getCode(),result.getMessage());
-        }
-        if (!StringUtils.isBlank(ru)) {
-            response.sendRedirect(ru);
-        }
-        log(request,"pp_setcookie",ru,"0");
-        return;
-    }
-
-
 }

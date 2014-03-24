@@ -43,12 +43,10 @@ public class LoginManagerImpl implements LoginManager {
     @Autowired
     private LoginApiManager sgLoginApiManager;
     @Autowired
-    private CommonManager commonManager;
-    @Autowired
     private SecureManager secureManager;
 
     @Override
-    public Result accountLogin(WebLoginParams loginParameters, String ip, String scheme) {
+    public Result accountLogin(WebLoginParams loginParameters, String ip) {
         Result result = new APIResultSupport(false);
         String username = loginParameters.getUsername();
         String password = loginParameters.getPassword();

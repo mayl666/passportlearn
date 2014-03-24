@@ -24,14 +24,22 @@ public class SGStringHashRouterTest extends TestCase {
         router = new SGStringHashRouter("id", "account_{0}", 32);
     }
 
+    public void testRoute_Account() {
+        router = new SGStringHashRouter("id", "account_{0}", 32);
+        String id = "tinkame001@126.com";
+        String name = router.doRoute(id);
+        System.out.println("table id:"+name);
+//        Assert.assertEquals(name, "account_18");
+    }
+
     /**
      * 测试sg-string-hash计算是否正确
      */
     public void testRoute() {
-        router = new SGStringHashRouter("id", "account_{0}", 32);
-        String id = "loveerin9460@163.com";
+        router = new SGStringHashRouter("id", "account_info_{0}", 32);
+        String id = "tinkame001@126.com";
         String name = router.doRoute(id);
-        System.out.println(name);
+        System.out.println("table id:"+name);
 //        Assert.assertEquals(name, "account_18");
     }
 

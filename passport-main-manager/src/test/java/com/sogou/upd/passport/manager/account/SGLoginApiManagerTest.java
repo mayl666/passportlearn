@@ -33,42 +33,42 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
         System.out.println("SGLoginApiManagerTest.before:" + "before");
 
     }
+
     @After
-    public void after(){
+    public void after() {
         System.out.println("SGLoginApiManagerTest.after:" + "after");
 
     }
+
     @Test
-    public void testAuthUser() {
-        try {
-            AuthUserApiParams authUserParameters_email = new AuthUserApiParams();
-            authUserParameters_email.setUserid("tinkame@126.com");
-            authUserParameters_email.setClient_id(clientId);
-            authUserParameters_email.setPassword(Coder.encryptMD5("123456"));
-            Result result_email = sgLoginApiManager.webAuthUser(authUserParameters_email);
-            Assert.assertEquals("0",result_email.getCode());
-            System.out.println("testAuthUser:" + result_email);
+    public void testAuthUser() throws Exception {
+
+        AuthUserApiParams authUserParameters_email = new AuthUserApiParams();
+        authUserParameters_email.setUserid("tinkame@126.com");
+        authUserParameters_email.setClient_id(clientId);
+        authUserParameters_email.setPassword(Coder.encryptMD5("123456"));
+        Result result_email = sgLoginApiManager.webAuthUser(authUserParameters_email);
+        Assert.assertEquals("0", result_email.getCode());
+        Assert.assertEquals("tinkame@126.com", (String) result_email.getModels().get("userid"));
 
 
-            AuthUserApiParams authUserParameters = new AuthUserApiParams();
-            authUserParameters.setUserid("13545210241@sohu.com");
-            authUserParameters.setClient_id(clientId);
-            authUserParameters.setPassword(Coder.encryptMD5("111111"));
-            Result result = sgLoginApiManager.webAuthUser(authUserParameters);
-            Assert.assertEquals("0",result.getCode());
-            System.out.println("testAuthUser:" + result);
+        AuthUserApiParams authUserParameters = new AuthUserApiParams();
+        authUserParameters.setUserid("13545210241@sohu.com");
+        authUserParameters.setClient_id(clientId);
+        authUserParameters.setPassword(Coder.encryptMD5("111111"));
+        Result result = sgLoginApiManager.webAuthUser(authUserParameters);
+        Assert.assertEquals("0", result.getCode());
+        Assert.assertEquals("13545210241@sohu.com", (String) result.getModels().get("userid"));
 
-            AuthUserApiParams authUserParameters_sogou = new AuthUserApiParams();
-            authUserParameters_sogou.setUserid("tinkame_test@sogou.com");
-            authUserParameters_sogou.setClient_id(clientId);
-            authUserParameters_sogou.setPassword(Coder.encryptMD5("123456"));
-            Result result_sogou = sgLoginApiManager.webAuthUser(authUserParameters_sogou);
-            Assert.assertEquals("0",result_sogou.getCode());
-            System.out.println("testAuthUser:" + result_sogou);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        AuthUserApiParams authUserParameters_sogou = new AuthUserApiParams();
+        authUserParameters_sogou.setUserid("tinkame_test@sogou.com");
+        authUserParameters_sogou.setClient_id(clientId);
+        authUserParameters_sogou.setPassword(Coder.encryptMD5("123456"));
+        Result result_sogou = sgLoginApiManager.webAuthUser(authUserParameters_sogou);
+        Assert.assertEquals("0", result_sogou.getCode());
+        Assert.assertEquals("tinkame_test@sogou.com", (String) result_sogou.getModels().get("userid"));
+
     }
 
     @Test

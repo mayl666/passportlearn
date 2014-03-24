@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.ResetPasswordBySecQuesApiParams;
@@ -37,6 +38,8 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
     private AccountInfoService accountInfoService;
     @Autowired
     private OperateTimesService operateTimesService;
+    @Autowired
+    private OAuth2ResourceManager oAuth2ResourceManager;
 
     @Override
     public Result updatePwd(UpdatePwdApiParams updatePwdApiParams) {
@@ -46,14 +49,14 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         String newPassword = updatePwdApiParams.getNewpassword();
         String modifyIp = updatePwdApiParams.getModifyip();
         int clientId = updatePwdApiParams.getClient_id();
-        result = accountService.verifyUserPwdValid(userId, password, false);
+        result = accountService.verifyUserPwdValid(userId, password, true);
         if (!result.isSuccess()) {
             operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.RESETPWD);
             return result;
         }
         Account account = (Account) result.getDefaultModel();
         result.setDefaultModel(null);
-        if (!accountService.resetPassword(account, newPassword, false)) {
+        if (!accountService.resetPassword(account, newPassword, true)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
         }
         result.setSuccess(true);
@@ -89,7 +92,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
     @Override
     public Result getUserSecureInfo(GetSecureInfoApiParams getSecureInfoApiParams) {
         String userId = getSecureInfoApiParams.getUserid();
-
+        int clientId = getSecureInfoApiParams.getClient_id();
         Result result = new APIResultSupport(false);
         try {
             Account account = accountService.queryNormalAccount(userId);
@@ -97,7 +100,13 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
-            Map<String, String> map = Maps.newHashMap();
+            Map<String, Object> map = Maps.newHashMap();
+            result = oAuth2ResourceManager.getUniqNameAndAvatar(userId, clientId);
+            if (result.isSuccess()) {
+                map.put("uniqname", result.getModels().get("uniqname"));
+                map.put("avatarurl", result.getModels());
+            }
+
             String mobile = account.getMobile();
             map.put("sec_mobile", mobile);
             AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(userId);

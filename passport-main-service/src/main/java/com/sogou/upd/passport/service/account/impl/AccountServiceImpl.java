@@ -168,19 +168,19 @@ public class AccountServiceImpl implements AccountService {
             throw e;
         }
         try {
-            if (userAccount == null){
+            if (userAccount == null) {
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
-            if(AccountHelper.isDisabledAccount(userAccount)) {
+            if (AccountHelper.isDisabledAccount(userAccount)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);
                 return result;
             }
-            if(AccountHelper.isKilledAccount(userAccount)) {
+            if (AccountHelper.isKilledAccount(userAccount)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 return result;
             }
-            result = verifyUserPwdValidByPasswordType(userAccount,password,needMD5);
+            result = verifyUserPwdValidByPasswordType(userAccount, password, needMD5);
             return result;
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -188,8 +188,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result verifyUserPwdValidByPasswordType( Account account, String password,Boolean needMD5) {
-        Result result =  new APIResultSupport(false);
+    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5) {
+        Result result = new APIResultSupport(false);
         String passwordType = account.getPasswordType();
         String storedPwd = account.getPassword();
         boolean pwdIsTrue = false;
@@ -334,14 +334,14 @@ public class AccountServiceImpl implements AccountService {
         try {
             String code = UUID.randomUUID().toString().replaceAll("-", "");
             String token = Coder.encryptMD5(username + clientId + code);
-            String activeUrl =
-                    CommonConstant.PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
-                            "&client_id=" + clientId +
-                            "&token=" + token;
+            String params =
+                    "passport_id=" + Coder.encodeUTF8(username) +
+                            "&client_id=" + Coder.encodeUTF8(String.valueOf(clientId)) +
+                            "&token=" + Coder.encodeUTF8(token);
             if (!Strings.isNullOrEmpty(ru)) {
-                activeUrl = activeUrl + "&ru=" + ru;
+                params = params + "&ru=" + Coder.encodeUTF8(ru);
             }
-
+            String activeUrl = CommonConstant.PASSPORT_ACTIVE_EMAIL_URL + params;
 
             String cacheKey = buildCacheKey(username);
             Map<String, String> mapParam = new HashMap<>();
@@ -545,7 +545,7 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    private String buildAccountKey(String passportId) {
+    protected String buildAccountKey(String passportId) {
         return CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNT + passportId;
     }
 
@@ -592,7 +592,7 @@ public class AccountServiceImpl implements AccountService {
 
             String oldUniqName = account.getUniqname();
             String passportId = account.getPassportId();
-
+            //如果新昵称不为空且与原昵称不重复，则更新数据库及缓存
             if (!Strings.isNullOrEmpty(uniqname) && !uniqname.equals(oldUniqName)) {
                 //更新数据库
                 int row = accountDAO.updateUniqName(uniqname, passportId);
@@ -624,7 +624,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean updateAvatar(Account account, String avatar) {
         try {
-            String oldUniqName = account.getUniqname();
             String passportId = account.getPassportId();
             //更新数据库
             int row = accountDAO.updateAvatar(avatar, passportId);
@@ -641,7 +640,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-    //缓存中移除原来昵称
+    //原昵称如果存在，则移除缓存中的原昵称；如果不存在，则直接新增
     @Override
     public boolean removeUniqName(String uniqname) throws ServiceException {
         try {
@@ -653,6 +652,8 @@ public class AccountServiceImpl implements AccountService {
                     dbShardRedisUtils.delete(cacheKey);
                     return true;
                 }
+            } else {
+                return true;
             }
         } catch (Exception e) {
             logger.error("removeUniqName fail", e);
@@ -660,5 +661,6 @@ public class AccountServiceImpl implements AccountService {
         }
         return false;
     }
+
 
 }

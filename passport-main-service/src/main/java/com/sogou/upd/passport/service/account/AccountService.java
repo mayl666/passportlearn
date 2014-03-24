@@ -12,46 +12,48 @@ import java.util.Map;
  */
 public interface AccountService {
 
-  /**
-   * 初始化web用户账号
-   */
-  public Account initialWebAccount(String username,String ip)
-      throws ServiceException;
+    /**
+     * 初始化web用户账号
+     */
+    public Account initialWebAccount(String username, String ip)
+            throws ServiceException;
 
-  /**
-   * 初始化非第三方用户账号
-   */
-  public Account initialAccount(String username, String password, boolean needMD5, String ip, int provider)
-      throws ServiceException;
+    /**
+     * 初始化非第三方用户账号
+     */
+    public Account initialAccount(String username, String password, boolean needMD5, String ip, int provider)
+            throws ServiceException;
 
 
-  /**
-   * 根据passportId获取Account
-   */
-  public Account queryAccountByPassportId(String passportId) throws ServiceException;
-  /**
-   * 检测密码修改次数是否超出每天限制
-   *
-   * @param passportId
-   * @return 不超出返回true，超出返回false
-   * @throws ServiceException
-   */
-  public boolean checkLimitResetPwd(String passportId) throws ServiceException;
-  /**
-   * 验证账号的有效性，返回正常用户
-   *
-   * @return 验证不通过，则返回null
-   */
-  public Account queryNormalAccount(String passportId) throws ServiceException;
+    /**
+     * 根据passportId获取Account
+     */
+    public Account queryAccountByPassportId(String passportId) throws ServiceException;
 
-  /**
-   * 验证用户名密码是否正确
-   *
-   * @return 用户名或密码不匹配，则返回null
-   */
-  public Result verifyUserPwdValid(String passportId, String password, boolean needMD5) throws ServiceException;
+    /**
+     * 检测密码修改次数是否超出每天限制
+     *
+     * @param passportId
+     * @return 不超出返回true，超出返回false
+     * @throws ServiceException
+     */
+    public boolean checkLimitResetPwd(String passportId) throws ServiceException;
 
-  /**
+    /**
+     * 验证账号的有效性，返回正常用户
+     *
+     * @return 验证不通过，则返回null
+     */
+    public Account queryNormalAccount(String passportId) throws ServiceException;
+
+    /**
+     * 验证用户名密码是否正确
+     *
+     * @return 用户名或密码不匹配，则返回null
+     */
+    public Result verifyUserPwdValid(String passportId, String password, boolean needMD5) throws ServiceException;
+
+    /**
      * 根据passwordType验证用户密码是否正确
      *
      * @param password 用户需要验证的密码
@@ -60,52 +62,52 @@ public interface AccountService {
      * @return
      * @throws ServiceException
      */
-    public Result verifyUserPwdValidByPasswordType(Account account, String password,Boolean needMD5) throws ServiceException;
+    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5) throws ServiceException;
 
 
-  /**
-   * 重置密码
-   */
-  public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException;
+    /**
+     * 重置密码
+     */
+    public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException;
 
-  /**
-   * 根据ip看是否在黑名单中
-   */
-  public boolean isInAccountBlackListByIp(String passportId, String ip)
-      throws ServiceException;
+    /**
+     * 根据ip看是否在黑名单中
+     */
+    public boolean isInAccountBlackListByIp(String passportId, String ip)
+            throws ServiceException;
 
-  /**
-   * 激活验证邮件
-   *
-   * @return Result格式的返回值, 成功或失败，返回提示信息
-   */
-  public boolean sendActiveEmail(String username,String password,int clientId,String ip,String ru) throws Exception;
+    /**
+     * 激活验证邮件
+     *
+     * @return Result格式的返回值, 成功或失败，返回提示信息
+     */
+    public boolean sendActiveEmail(String username, String password, int clientId, String ip, String ru) throws Exception;
 
-  /**
-   * 激活验证邮件
-   *
-   * @return
-   */
-  public boolean checkToken(String username,String token,int clientId) throws Exception;
+    /**
+     * 激活验证邮件
+     *
+     * @return
+     */
+    public boolean checkToken(String username, String token, int clientId) throws Exception;
 
-  /**
-   * 种根域和子域下的cookie
-   *
-   * @return
-   */
-  public boolean setCookie() throws Exception;
+    /**
+     * 种根域和子域下的cookie
+     *
+     * @return
+     */
+    public boolean setCookie() throws Exception;
 
-  /*
-   *获取验证码
-   */
-  public Map<String,Object> getCaptchaCode(String code);
+    /*
+     *获取验证码
+     */
+    public Map<String, Object> getCaptchaCode(String code);
 
-  /**
-   * 校验验证码是否匹配
-   *
-   * @return 匹配结果
-   */
-  public boolean checkCaptchaCodeIsValid(String token, String captchaCode);
+    /**
+     * 校验验证码是否匹配
+     *
+     * @return 匹配结果
+     */
+    public boolean checkCaptchaCodeIsValid(String token, String captchaCode);
 
     /**
      * 修改绑定手机
@@ -115,18 +117,18 @@ public interface AccountService {
      * @return
      * @throws ServiceException
      */
-  public boolean modifyMobile(Account account, String newMobile);
+    public boolean modifyMobile(Account account, String newMobile);
 
-  /**
-   * 解禁或封禁用户
-   *
-   * @param account
-   * @param newState
-   * @return
-   * @throws ServiceException
-   */
+    /**
+     * 解禁或封禁用户
+     *
+     * @param account
+     * @param newState
+     * @return
+     * @throws ServiceException
+     */
 
-  public boolean updateState(Account account, int newState) throws ServiceException;
+    public boolean updateState(Account account, int newState) throws ServiceException;
 
     /**
      * 更新或设置头像
@@ -140,10 +142,10 @@ public interface AccountService {
     public boolean updateImage(Account account, String photoUrl) throws ServiceException;
 
 
-  /*
-   *检查验证码
-   */
-  public boolean checkCaptchaCode(String token, String captchaCode) throws Exception;
+    /*
+     *检查验证码
+     */
+    public boolean checkCaptchaCode(String token, String captchaCode) throws Exception;
 
     /*
      *检查昵称是否存在
@@ -170,5 +172,7 @@ public interface AccountService {
      *获取激活信息
      */
     public Map<String, String> getActiveInfo(String username);
+
+
 
 }

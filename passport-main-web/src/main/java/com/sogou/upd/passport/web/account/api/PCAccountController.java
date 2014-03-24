@@ -4,25 +4,26 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.common.validation.constraints.RuValidator;
+import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
-import com.sogou.upd.passport.manager.form.PcGetTokenParams;
-import com.sogou.upd.passport.manager.form.PcPairTokenParams;
-import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
+import com.sogou.upd.passport.manager.form.*;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.PcAccountWebParams;
+import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
@@ -56,6 +57,10 @@ public class PCAccountController extends BaseController {
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginManager loginManager;
+    @Autowired
+    private CookieManager cookieManager;
+
+    private static final String DEFAULT_URL = "https://account.sogou.com";
 
     @RequestMapping(value = "/act/pclogin", method = RequestMethod.GET)
     public String pcLogin(HttpServletRequest request, PcAccountWebParams pcAccountWebParams, Model model)
@@ -281,10 +286,54 @@ public class PCAccountController extends BaseController {
         return;
     }
 
+    @RequestMapping(value = "/act/setppcookie", method = RequestMethod.GET)
+    public void setPPCookie(HttpServletRequest request, HttpServletResponse response, PPCookieParams ppCookieParams)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(ppCookieParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            returnErrMsg(response, ppCookieParams.getRu(),result.getCode(), result.getMessage());
+        }
+
+        result = cookieManager.setPPCookie(response,ppCookieParams);
+
+        String ru = ppCookieParams.getRu();
+        if(!result.isSuccess()){
+            log(request,"pp_setcookie",ru,result.getCode());
+            returnErrMsg(response,ru,result.getCode(),result.getMessage());
+        }
+        if (!StringUtils.isBlank(ru)) {
+            response.sendRedirect(ru);
+        }
+        log(request,"pp_setcookie",ru,"0");
+        return;
+    }
+
     @RequestMapping(value = "/act/errorMsg")
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
+    }
+
+    private void log(HttpServletRequest request,String passportId,String ru,String resultCode){
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), "", resultCode, getIp(request));
+        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+        userOperationLog.putOtherMessage("ru", ru);
+        UserOperationLogUtil.log(userOperationLog);
+    }
+
+    private void returnErrMsg(HttpServletResponse response, String ru,String errorCode,String errorMsg)throws Exception{
+        RuValidator ruValidator=new RuValidator();
+        boolean isValid = ruValidator.isValid(ru,null);
+        if (Strings.isNullOrEmpty(ru) || !isValid){
+            ru = DEFAULT_URL;
+        }
+        response.sendRedirect(ru + "?errorCode="+errorCode+"&errorMsg="+ Coder.encodeUTF8(errorMsg));
+        return;
     }
 
     private boolean isCleanString(String cb) {

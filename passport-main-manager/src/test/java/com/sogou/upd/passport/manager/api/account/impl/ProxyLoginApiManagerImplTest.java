@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
@@ -39,25 +40,45 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     }
 
     @Test
-    public void testGetCookieInfo() {
-        String userId = "llslzs@sohu.com";
-        try {
-            CookieApiParams cookieApiParams = new CookieApiParams();
-            cookieApiParams.setUserid(userId);
-            cookieApiParams.setIp("200.0.98.23");
-            Result result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-//            Map<String, Object> map = result.getModels();
-//            List<Map<String, String>> listString = (List<Map<String, String>>) map.get("data");
-//            Map<String, String> mapString = new HashMap<String, String>();
-//            for (int i = 0; i < listString.size(); i++) {
-//                String key = listString.get(i).get("name").toString();
-//                String value = listString.get(i).get("value").toString();
-//                mapString.put(key,value);
-//            }
-            System.out.println(result.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void testGetCookieInfo() throws Exception {
+        //已有账号的密保手机的手机账号
+        CookieApiParams cookieApiParams = getCookieApiParams("15210832767@sohu.com");
+        Result result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+        System.out.println("result:" + result.toString());
+        String ppinf = (String)result.getModels().get("ppinf");
+        String pprdig = (String)result.getModels().get("pprdig");
+        Assert.assertTrue(!StringUtils.isBlank(ppinf));
+        Assert.assertTrue(!StringUtils.isBlank(pprdig));
+
+
+
+        CookieApiParams cookieApiParams_1 = getCookieApiParams("13621009174@sohu.com");
+        Result result_1 = proxyLoginApiManager.getCookieInfo(cookieApiParams_1);
+        System.out.println("result_1:" + result_1.toString());
+        String ppinf_1 = (String)result_1.getModels().get("ppinf");
+        String pprdig_1 = (String)result_1.getModels().get("pprdig");
+        Assert.assertTrue(!StringUtils.isBlank(ppinf_1));
+        Assert.assertTrue(!StringUtils.isBlank(pprdig_1));
+
+        CookieApiParams cookieApiParams_2 = getCookieApiParams("tinkame001@126.com");
+        Result result_2 = proxyLoginApiManager.getCookieInfo(cookieApiParams_2);
+        System.out.println("result_2:" + result_2.toString());
+        String ppinf_2 = (String)result_2.getModels().get("ppinf");
+        String pprdig_2 = (String)result_2.getModels().get("pprdig");
+        Assert.assertTrue(!StringUtils.isBlank(ppinf_2));
+        Assert.assertTrue(!StringUtils.isBlank(pprdig_2));
+    }
+
+    private CookieApiParams getCookieApiParams(String userId) {
+        CookieApiParams cookieApiParams = new CookieApiParams();
+        cookieApiParams.setUserid(userId);
+        cookieApiParams.setIp("200.0.98.23");
+        cookieApiParams.setClient_id(1120);
+        cookieApiParams.setRu(ru);
+        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+        cookieApiParams.setPersistentcookie(String.valueOf(1));
+
+        return cookieApiParams;
     }
 
     @Test
@@ -69,26 +90,26 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
         params.setType(2);
         params.setCt(1160703204);
         Result result = proxyLoginApiManager.appAuthToken(params);
-        System.out.println("result:"+result);
+        System.out.println("result:" + result);
     }
     @Test
     public void testgetSHCookieValue() {
-       try {
-           String userid =  "大大大31231@focus.cn";
+        try {
+            String userid = "大大大31231@focus.cn";
 //           String utfUserId = new String(userid.getBytes(),"gbk");
-           CookieApiParams cookieApiParams = new CookieApiParams();
-           cookieApiParams.setUserid(userid);
-           cookieApiParams.setClient_id(1044);
-           cookieApiParams.setRu("https://account.sogou.com/");
-           cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-           cookieApiParams.setPersistentcookie(String.valueOf(1));
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(userid);
+            cookieApiParams.setClient_id(1044);
+            cookieApiParams.setRu("https://account.sogou.com/");
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            cookieApiParams.setPersistentcookie(String.valueOf(1));
 
-           //TODO sogou域账号迁移后cookie生成问题
-           Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-           System.out.println(getCookieValueResult.toString());
-       }catch (Exception ex){
+            //TODO sogou域账号迁移后cookie生成问题
+            Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+            System.out.println(getCookieValueResult.toString());
+        } catch (Exception ex) {
 
-       }
+        }
 
     }
 

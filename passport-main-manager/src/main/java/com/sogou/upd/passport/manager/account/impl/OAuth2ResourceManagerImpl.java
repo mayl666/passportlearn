@@ -16,17 +16,20 @@ import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
+import com.sogou.upd.passport.manager.account.vo.OAuth2TokenVO;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
+import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
+import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
+import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
@@ -67,6 +70,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     private PCAccountManager pcAccountManager;
     @Autowired
     private UserInfoApiManager shPlusUserInfoApiManager;
+    @Autowired
+    private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
     private PCAccountTokenService pcAccountTokenService;
     @Autowired
@@ -241,7 +246,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
 
-            Result getUserInfoResult = getUserInfo(passportId, clientId);
+            Result getUserInfoResult = getUniqNameAndAvatar(passportId, clientId);
             String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
             if (getUserInfoResult.isSuccess()) {
                 uniqname = (String) getUserInfoResult.getModels().get("uniqname");
@@ -317,62 +322,69 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         return uniqname;
     }
 
-
-    @Override
-    public String defaultUniqname(String passportId) {
-        if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(passportId)) {
-            return "搜狗用户";
+    private String defaultUniqname(String passportId) {
+        AccountDomainEnum accountType = AccountDomainEnum.getAccountDomain(passportId);
+        switch (accountType) {
+            case THIRD:
+            case SOGOU:
+            case PHONE:
+                //第三方，@sogou.com，手机账号默认昵称为@前面那一串
+                return passportId.substring(0, passportId.indexOf("@"));
+            case OTHER:
+            case SOHU:
+                //外域邮箱，sohu账号显示passportId
+                return passportId;
         }
-        return passportId.substring(0, passportId.indexOf("@"));
+        return passportId;
     }
 
     @Override
-    public Result getUserInfo(String passportId, int clientId) {
+    public Result getUniqNameAndAvatar(String passportId, int clientId) {
         Result result = new APIResultSupport(false);
-
         String avatarurl;
-        String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
-        AccountBaseInfo accountBaseInfo;
+        String uniqname = defaultUniqname(passportId), large_avatar = "", mid_avatar = "", tiny_avatar = "";
+        boolean isHandleAvatar = false; //是否获取不同尺寸的头像
         try {
-            //第三方账户先从account里获取
-            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
-            if (domain == AccountDomainEnum.THIRD) {
-                Account account = accountService.queryAccountByPassportId(passportId);
-                ConnectToken connectToken = null;
-                if (account != null) {
-                    uniqname = account.getUniqname();
-                    avatarurl = account.getAvatar();
-                    if (Strings.isNullOrEmpty(uniqname) || Strings.isNullOrEmpty(avatarurl)) {
-                        connectToken = getConnectToken(passportId, clientId);
-                        if (connectToken != null) {
-                            if (Strings.isNullOrEmpty(uniqname)) {
-                                uniqname = connectToken.getConnectUniqname();
-                            }
-                            if (Strings.isNullOrEmpty(avatarurl)) {
-                                large_avatar = connectToken.getAvatarLarge();
-                                mid_avatar = connectToken.getAvatarMiddle();
-                                tiny_avatar = connectToken.getAvatarSmall();
-                            }
+            Account account = accountService.queryAccountByPassportId(passportId);
+            if (account != null) {
+                uniqname = account.getUniqname();
+                avatarurl = account.getAvatar();
+                //头像、昵称都不为空时，头像需要处理成不同尺寸
+                if (!Strings.isNullOrEmpty(uniqname) && !Strings.isNullOrEmpty(avatarurl)) {
+                    isHandleAvatar = true;
+                } else {
+                    Result handleResult;
+                    //头像或昵称至少有一个为空时
+                    if (Strings.isNullOrEmpty(uniqname)) {
+                        //处理头像
+                        handleResult = handleUniqnameOrAvatar(account, clientId);
+                        if (handleResult.isSuccess()) {
+                            uniqname = (String) handleResult.getModels().get("uniqname");
+                        }
+                    }
+                    if (Strings.isNullOrEmpty(avatarurl)) {
+                        //处理昵称
+                        handleResult = handleUniqnameOrAvatar(account, clientId);
+                        if (handleResult.isSuccess()) {
+                            tiny_avatar = (String) handleResult.getModels().get("tiny_avatar");
+                            mid_avatar = (String) handleResult.getModels().get("mid_avatar");
+                            large_avatar = (String) handleResult.getModels().get("large_avatar");
                         }
                     } else {
-                        //获取不同尺寸头像
-                        Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
-                        large_avatar = (String) getPhotoResult.getModels().get("img_180");
-                        mid_avatar = (String) getPhotoResult.getModels().get("img_50");
-                        tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
+                        isHandleAvatar = true;
                     }
-                    result.setDefaultModel("userid", account.getPassportId());
                 }
-            } else {
-                accountBaseInfo = getBaseInfo(passportId);
-                if (accountBaseInfo != null) {
-                    uniqname = accountBaseInfo.getUniqname();
-                    Result getPhotoResult = photoUtils.obtainPhoto(accountBaseInfo.getAvatar(), "30,50,180");
+                if (isHandleAvatar) {
+                    //获取不同尺寸头像
+                    Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
                     large_avatar = (String) getPhotoResult.getModels().get("img_180");
                     mid_avatar = (String) getPhotoResult.getModels().get("img_50");
                     tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
-                    uniqname = getAndUpdateUniqname(passportId, accountBaseInfo, uniqname);
                 }
+                result.setDefaultModel("userid", passportId);
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                return result;
             }
             result.setSuccess(true);
             result.setDefaultModel("uniqname", uniqname);
@@ -382,7 +394,58 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         } catch (Exception e) {
             log.error("getUserInfo error! passportId:" + passportId, e);
         }
+        return result;
+    }
 
+    @Override
+    public String getEncodedUniqNameAndAvatar(String passportId, int clientId) {
+        Result result = getUniqNameAndAvatar(passportId, clientId);
+        String uniqname = (String) result.getModels().get("uniqname");
+        if (result.isSuccess()) {
+            if (!StringUtils.isBlank(uniqname)) {
+                uniqname = Coder.encode(uniqname, "UTF-8");
+            }
+        }
+        return uniqname;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    //处理当头像或昵称为空的情况
+    private Result handleUniqnameOrAvatar(Account account, int clientId) {
+        Result result = new APIResultSupport(false);
+        String uniqname = account.getUniqname();
+        String avatarurl = account.getAvatar();
+        String passportId = account.getPassportId();
+        ConnectToken connectToken;
+        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+        if (AccountDomainEnum.THIRD.equals(domain)) {
+            connectToken = getConnectToken(passportId, clientId);
+            if (connectToken != null) {
+                //1.昵称为空：如果是第三方，查token表，当token表昵称不为空时，赋值并且更新account表及缓存的昵称字段;否则，取默认昵称
+                if (Strings.isNullOrEmpty(uniqname)) {
+                    if (!Strings.isNullOrEmpty(connectToken.getConnectUniqname())) {
+                        uniqname = connectToken.getConnectUniqname();
+                        result.setDefaultModel("uniqname", uniqname);
+                        result.setSuccess(true);
+                    }
+                }
+                //2.头像为空： 如果是第三方，查token表，当token表头像不为空时，赋值并更新account表用缓存的头像字段；否则，处理头像
+                if (Strings.isNullOrEmpty(avatarurl)) {
+                    result.setDefaultModel("tiny_avatar", connectToken.getAvatarSmall());
+                    result.setDefaultModel("mid_avatar", connectToken.getAvatarMiddle());
+                    result.setDefaultModel("large_avatar", connectToken.getAvatarLarge());
+                    result.setSuccess(true);
+                }
+            }
+        } else {
+            //去浏览器论坛取昵称
+            if (Strings.isNullOrEmpty(uniqname)) {
+                uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
+                if (!Strings.isNullOrEmpty(uniqname)) {
+                    result.setDefaultModel("uniqname", uniqname);
+                    result.setSuccess(true);
+                }
+            }
+        }
         return result;
     }
 
@@ -425,5 +488,56 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         }
         return null;
     }
+
+    @Override
+    public Result oauth2Authorize(OAuthTokenASRequest oauthRequest) {
+        Result result = new OAuthResultSupport(false);
+        int clientId = oauthRequest.getClientId();
+        String instanceId = oauthRequest.getInstanceId();
+
+        try {
+            clientId = clientId == 30000004 ? CommonConstant.PC_CLIENTID : clientId;  //兼容浏览器PC端sohu+接口
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                result.setCode(ErrorUtil.INVALID_CLIENT);
+                return result;
+            }
+
+            String passportId = oauthRequest.getUsername();
+            String grantType = oauthRequest.getGrantType();
+            AccountToken renewAccountToken;
+            if (GrantTypeEnum.HEART_BEAT.toString().equals(grantType)) {
+                String refreshToken = oauthRequest.getRefreshToken();
+                boolean isRightPcRToken = pcAccountManager.verifyRefreshToken(passportId, clientId, instanceId, refreshToken);
+                if (!isRightPcRToken) {
+                    result.setCode(ErrorUtil.INVALID_REFRESH_TOKEN);
+                    return result;
+                }
+                renewAccountToken = pcAccountTokenService.updateAccountToken(passportId, instanceId, appConfig);
+            } else {
+                result.setCode(ErrorUtil.UNSUPPORTED_GRANT_TYPE);
+                return result;
+            }
+
+            if (renewAccountToken != null) { // 登录成功
+                OAuth2TokenVO oAuth2TokenVO = new OAuth2TokenVO();
+                oAuth2TokenVO.setAccess_token(renewAccountToken.getAccessToken());
+                oAuth2TokenVO.setExpires_time(renewAccountToken.getAccessValidTime());
+                oAuth2TokenVO.setRefresh_token(renewAccountToken.getRefreshToken());
+                oAuth2TokenVO.setSid(passportId);
+                result.setSuccess(true);
+                result.setDefaultModel(oAuth2TokenVO);
+                return result;
+            } else { // 登录失败，更新AccountToken表发生异常
+                result.setCode(ErrorUtil.AUTHORIZE_FAIL);
+                return result;
+            }
+        } catch (Exception e) {
+            log.error("OAuth Authorize Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+    }
+
 
 }

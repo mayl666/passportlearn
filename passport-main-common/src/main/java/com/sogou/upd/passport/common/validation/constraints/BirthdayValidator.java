@@ -4,6 +4,10 @@ import com.google.common.base.Strings;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.SimpleFormatter;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,9 +35,19 @@ public class BirthdayValidator implements ConstraintValidator<Birthday, String> 
             return true;
         }
         String regx = "^(19|20)\\d{2}-(1[0-2]|0[0-9])-(0[1-9]|[1-2][0-9]|3[0-1])$";
-        boolean flag = value.matches(regx);
         if (!value.matches(regx)) {
             return false;
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date;
+        try {
+            date = sdf.parse(value);
+        } catch (ParseException e) {
+            return false;
+        }
+        //date大于当前时间返回false
+        if(date.after(new Date())){
+           return false;
         }
         return true;  //To change body of implemented methods use File | Settings | File Templates.
     }

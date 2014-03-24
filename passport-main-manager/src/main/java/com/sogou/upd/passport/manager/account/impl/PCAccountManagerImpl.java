@@ -5,21 +5,22 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.HttpClientUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
-import com.sogou.upd.passport.manager.form.PcPairTokenParams;
-import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
+import com.sogou.upd.passport.manager.form.*;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
+import com.sogou.upd.passport.service.account.SnamePassportMappingService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private PCAccountTokenService pcAccountService;
     @Autowired
     private AppConfigService appConfigService;
+    @Autowired
+    private LoginManager loginManager;
+    @Autowired
+    SnamePassportMappingService snamePassportMappingService;
 
     @Override
     public Result createPairToken(PcPairTokenParams pcTokenParams) {
@@ -91,6 +96,49 @@ public class PCAccountManagerImpl implements PCAccountManager {
             return finalResult;
         }
     }
+
+    @Override
+    public Result oauth2Login(PCOAuth2LoginParams loginParams, String ip){
+        String sogou_passportId = loginParams.getUsername();
+        Result sohu_result = null;
+        if (AccountDomainEnum.isPhoneOrIndivid(sogou_passportId)) {
+            String sohu_passportId = snamePassportMappingService.queryPassportIdBySnameOrPhone(sogou_passportId);
+            if (!Strings.isNullOrEmpty(sohu_passportId)) {
+                //避免sname为abc,passportId为sname@sogou.com情况
+                String individPassportId = loginManager.getIndividPassportIdByUsername(sogou_passportId);
+                if (!sohu_passportId.equals(sogou_passportId) && !sohu_passportId.equals(individPassportId)) {
+                    sohu_result = authuser(loginParams, ip, sohu_passportId);
+                }
+            }
+        }
+        Result sogou_result = authuser(loginParams, ip, sogou_passportId);
+        if (sohu_result == null || !sohu_result.isSuccess()) {
+            return sogou_result;
+        } else if (sohu_result.isSuccess() && !sogou_result.isSuccess()) {
+            return sohu_result;
+        } else {
+            //二者都能验证成功，产生账号冲突，人工解决
+            Result error_result = new APIResultSupport(false);
+            error_result.setCode(ErrorUtil.ERR_CODE_ERROR_ACCOUNT);
+            error_result.setMessage("账号冲突或者异常，请到论坛问题反馈区找回账号");
+            return error_result;
+        }
+    }
+
+    private Result authuser(PCOAuth2LoginParams loginParams, String ip, String passportId) {
+        WebLoginParams webLoginParams = new WebLoginParams();
+        webLoginParams.setUsername(passportId);
+        webLoginParams.setPassword(loginParams.getPassword());
+        webLoginParams.setPwdtype(loginParams.getPwdtype());
+        webLoginParams.setCaptcha(loginParams.getCaptcha());
+        webLoginParams.setToken(loginParams.getToken());
+        int  clientId = loginParams.getClient_id();
+        clientId = clientId == 30000004 ? CommonConstant.PC_CLIENTID : clientId;  //兼容浏览器PC端sohu+接口
+        webLoginParams.setClient_id(String.valueOf(clientId));
+        Result result = loginManager.accountLogin(webLoginParams, ip);
+        return result;
+    }
+
 
     @Override
     public Result authRefreshToken(PcRefreshTokenParams pcRefreshTokenParams) {

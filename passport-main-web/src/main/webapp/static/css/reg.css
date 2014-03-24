@@ -24,3 +24,5 @@
 
 .form-item input.nick-holder{width:81px; }
 .suffix{float: left;line-height: 17px;height: 25px;top: 10px;padding: 4px 0 0 4px;_height:24px;position: relative;}
+
+#msg a{color:#6da700;}

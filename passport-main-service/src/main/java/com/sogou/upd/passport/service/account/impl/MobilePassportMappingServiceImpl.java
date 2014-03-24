@@ -37,7 +37,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
+                    dbShardRedisUtils.set(cacheKey, passportId,(int)DateAndNumTimesConstant.THREE_MONTH );
                 }
             }
         } catch (Exception e) {
@@ -88,6 +88,12 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
         return false;
     }
 
+
+    protected String buildMobilePassportMappingKey(String mobile) {
+        return CACHE_PREFIX_MOBILE_PASSPORT + mobile;
+    }
+
+
     @Override
     public boolean deleteMobilePassportMapping(String mobile) throws ServiceException {
         try {
@@ -103,8 +109,5 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
         return false;
     }
 
-    private String buildMobilePassportMappingKey(String mobile) {
-        return CACHE_PREFIX_MOBILE_PASSPORT + mobile;
-    }
 
 }

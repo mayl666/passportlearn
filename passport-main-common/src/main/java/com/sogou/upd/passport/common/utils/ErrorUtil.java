@@ -326,6 +326,17 @@ public class ErrorUtil {
     /* ============================================================================ */
     public static final String ERR_CODE_ERROR_ACCOUNT = "30701";
 
+    /* ============================================================================ */
+    /*  找回密码相关错误代码                                                            */
+    /* ============================================================================ */
+    //能提交找回密码请求次数超过限制
+    public static final String ERR_CODE_FINDPWD_LIMITED = "30706";
+    public static final String ERR_CODE_FINDPWD_SCODE_FAILED = "30702";
+    public static final String ERR_CODE_FINDPWD_ACCOUNT_DOMAIN_FAILED = "30703";
+    public static final String ERR_CODE_FINDPWD_TYPE_FAILED = "30704";
+    public static final String ERR_CODE_FINDPWD_EMAIL_FAILED = "30705";
+    /* ============================================================================ */
+
     //cookie值无效
     public static final String ERR_CODE_ERROR_COOKIE = "30710";
 

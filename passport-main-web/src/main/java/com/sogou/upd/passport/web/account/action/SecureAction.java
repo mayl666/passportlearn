@@ -258,7 +258,7 @@ public class SecureAction extends BaseController {
         }
 
         result.setSuccess(true);
-        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId, clientId));
+        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqNameAndAvatar(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -295,7 +295,7 @@ public class SecureAction extends BaseController {
         result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
 
         result.setSuccess(true);
-        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId, clientId));
+        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqNameAndAvatar(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }

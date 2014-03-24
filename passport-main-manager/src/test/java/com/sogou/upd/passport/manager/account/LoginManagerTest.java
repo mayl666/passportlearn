@@ -34,7 +34,7 @@ public class LoginManagerTest extends BaseTest {
             webLoginParameters.get().setUsername("13545210241@sohu.com");
             webLoginParameters.get().setPassword("111111");
             webLoginParameters.get().setClient_id("1100");
-            Result result =LoginManagerImpl.accountLogin(webLoginParameters.get(),ip,"http");
+            Result result =LoginManagerImpl.accountLogin(webLoginParameters.get(),ip);
             Assert.assertEquals("0", result.getCode());
 
 
@@ -42,7 +42,7 @@ public class LoginManagerTest extends BaseTest {
             webLoginParams.setClient_id("1100");
             webLoginParams.setUsername("tinkame302@sohu.com");
             webLoginParams.setPassword("123456");
-            Result result_sohu = LoginManagerImpl.accountLogin(webLoginParams,ip,"https");
+            Result result_sohu = LoginManagerImpl.accountLogin(webLoginParams,ip);
             Assert.assertEquals("0", result_sohu.getCode());
 
         } catch (Exception e) {
