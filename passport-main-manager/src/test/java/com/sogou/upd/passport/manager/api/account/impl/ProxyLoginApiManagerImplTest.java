@@ -42,6 +42,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
         try {
             CookieApiParams cookieApiParams = new CookieApiParams();
             cookieApiParams.setUserid(userId);
+            cookieApiParams.setTrust(1);
             cookieApiParams.setIp("200.0.98.23");
             Result result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
 //            Map<String, Object> map = result.getModels();
