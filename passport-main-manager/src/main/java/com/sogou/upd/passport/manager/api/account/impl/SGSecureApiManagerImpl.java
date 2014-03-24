@@ -101,7 +101,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
                 return result;
             }
             Map<String, String> map = Maps.newHashMap();
-            result = oAuth2ResourceManager.getEncodedUniqNameAndAvatar(userId, clientId);
+            result = oAuth2ResourceManager.getUniqNameAndAvatar(userId, clientId);
             if (result.isSuccess()) {
                 map.put("uniqname", (String) result.getModels().get("uniqname"));
                 map.put("avatar", (String) result.getModels().get("img_50"));

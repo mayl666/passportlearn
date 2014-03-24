@@ -353,21 +353,22 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 if (!Strings.isNullOrEmpty(uniqname) && !Strings.isNullOrEmpty(avatarurl)) {
                     isHandleAvatar = true;
                 } else {
+                    Result handleResult;
                     //头像或昵称至少有一个为空时
                     if (Strings.isNullOrEmpty(uniqname)) {
                         //处理头像
-                        result = handleUniqnameOrAvatar(account, clientId);
-                        if (result.isSuccess()) {
-                            uniqname = (String) result.getModels().get("uniqname");
+                        handleResult = handleUniqnameOrAvatar(account, clientId);
+                        if (handleResult.isSuccess()) {
+                            uniqname = (String) handleResult.getModels().get("uniqname");
                         }
                     }
                     if (Strings.isNullOrEmpty(avatarurl)) {
                         //处理昵称
-                        result = handleUniqnameOrAvatar(account, clientId);
-                        if (result.isSuccess()) {
-                            tiny_avatar = (String) result.getModels().get("tiny_avatar");
-                            mid_avatar = (String) result.getModels().get("mid_avatar");
-                            large_avatar = (String) result.getModels().get("large_avatar");
+                        handleResult = handleUniqnameOrAvatar(account, clientId);
+                        if (handleResult.isSuccess()) {
+                            tiny_avatar = (String) handleResult.getModels().get("tiny_avatar");
+                            mid_avatar = (String) handleResult.getModels().get("mid_avatar");
+                            large_avatar = (String) handleResult.getModels().get("large_avatar");
                         }
                     } else {
                         isHandleAvatar = true;
