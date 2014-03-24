@@ -104,7 +104,7 @@ public class AccountServiceImpl implements AccountService {
             account.setFlag(String.valueOf(AccountStatusEnum.REGULAR.getValue()));
             if (AccountTypeEnum.isConnect(provider)) {
                 //对于第三方来讲，无密码  todo 搜狗账号迁移完成后，需要增加一个值表示无密码
-                account.setPasswordType(String.valueOf(PasswordTypeEnum.ORIGINAL.getValue()));
+                account.setPasswordType(String.valueOf(PasswordTypeEnum.NOPASSWORD.getValue()));
             } else {
                 //其它新注册的搜狗账号密码类型都为2，即需要加盐
                 account.setPasswordType(String.valueOf(PasswordTypeEnum.CRYPT.getValue()));

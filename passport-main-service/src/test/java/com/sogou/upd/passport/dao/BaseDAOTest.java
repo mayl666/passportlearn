@@ -33,7 +33,7 @@ public class BaseDAOTest extends BaseTest {
     public static final String PASSPORTID_MAIL = "liuling9460@163.com";
     public static final int PHONE_ACCOUNT_TYPE = AccountTypeEnum.PHONE.getValue(); // 手机账号
     public static final int MAIL_ACCOUNT_TYPE = AccountTypeEnum.EMAIL.getValue(); // 邮箱账号
-    public static final int ORIGINAL_PASSWORD_TYPE = PasswordTypeEnum.ORIGINAL.getValue(); // 无密码
+    public static final int NO_PASSWORD_TYPE = PasswordTypeEnum.NOPASSWORD.getValue(); // 无密码
     public static final int MD5_PASSWORD_TYPE = PasswordTypeEnum.MD5.getValue(); // MD5
     public static final int CRYPT_PASSWORD_TYPE = PasswordTypeEnum.CRYPT.getValue(); // 加盐
     public static final String UNIQNAME = "iamhero"; // 加盐
