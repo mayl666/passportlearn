@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.ResetPasswordBySecQuesApiParams;
@@ -37,6 +38,8 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
     private AccountInfoService accountInfoService;
     @Autowired
     private OperateTimesService operateTimesService;
+    @Autowired
+    private OAuth2ResourceManager oAuth2ResourceManager;
 
     @Override
     public Result updatePwd(UpdatePwdApiParams updatePwdApiParams) {
@@ -89,7 +92,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
     @Override
     public Result getUserSecureInfo(GetSecureInfoApiParams getSecureInfoApiParams) {
         String userId = getSecureInfoApiParams.getUserid();
-
+        int clientId = getSecureInfoApiParams.getClient_id();
         Result result = new APIResultSupport(false);
         try {
             Account account = accountService.queryNormalAccount(userId);
@@ -98,6 +101,12 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
                 return result;
             }
             Map<String, String> map = Maps.newHashMap();
+            result = oAuth2ResourceManager.getUniqNameAndAvatar(userId, clientId);
+            if (result.isSuccess()) {
+                result.getModels().put("uniqname", result.getModels().get("uniqname"));
+                result.getModels().put("avatarurl", result.getModels());//此处有与前端的兼容问题
+            }
+
             String mobile = account.getMobile();
             map.put("sec_mobile", mobile);
             AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(userId);

@@ -212,7 +212,6 @@ public class SecureManagerImpl implements SecureManager {
         }
     }
 
-    // 接口代理OK
     @Override
     public Result queryAccountSecureInfo(String userId, int clientId, boolean doProcess) throws Exception {
         Result result = new APIResultSupport(false);
@@ -222,52 +221,20 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result;
             }
-
             int score = 0; // 安全系数
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
-
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
-                // 代理接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-                getUserInfoApiparams.setUserid(userId);
-                getUserInfoApiparams.setClient_id(clientId);
-//                getUserInfoApiparams.setImagesize("50");
-                getUserInfoApiparams.setFields(SECURE_FIELDS /*+",uniqname,avatarurl"*/);
-                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-
-                Result shPlusResult = shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                if (shPlusResult.isSuccess()) {
-                    Object obj = shPlusResult.getModels().get("baseInfo");
-                    if (obj != null) {
-                        AccountBaseInfo baseInfo = (AccountBaseInfo) obj;
-                        String uniqname = baseInfo.getUniqname();
-                        result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
-                        Result photoResult = photoUtils.obtainPhoto(baseInfo.getAvatar(), "50");
-                        if (photoResult.isSuccess()) {
-                            result.getModels().put("avatarurl", photoResult.getModels());
-                        }
-                    } else {
-                        result.getModels().put("uniqname", userId);
-                    }
-                }
-            } else {
-                GetSecureInfoApiParams params = new GetSecureInfoApiParams();
-                params.setUserid(userId);
-                params.setClient_id(clientId);
-                result = sgSecureApiManager.getUserSecureInfo(params);
-            }
-
+            GetSecureInfoApiParams params = new GetSecureInfoApiParams();
+            params.setUserid(userId);
+            params.setClient_id(clientId);
+            result = sgSecureApiManager.getUserSecureInfo(params);
             Map<String, String> map = result.getModels();
             result.setModels(map);
-
             if (!result.isSuccess()) {
                 return result;
             }
-
             String mobile = map.get("sec_mobile");
             String emailBind = map.get("sec_email");
             String question = map.get("sec_ques");
-
             if (doProcess) {
                 if (!Strings.isNullOrEmpty(emailBind)) {
                     String emailProcessed = StringUtil.processEmail(emailBind);

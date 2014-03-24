@@ -592,7 +592,7 @@ public class AccountServiceImpl implements AccountService {
 
             String oldUniqName = account.getUniqname();
             String passportId = account.getPassportId();
-
+            //如果新昵称不为空且与原昵称不重复，则更新数据库及缓存
             if (!Strings.isNullOrEmpty(uniqname) && !uniqname.equals(oldUniqName)) {
                 //更新数据库
                 int row = accountDAO.updateUniqName(uniqname, passportId);
@@ -624,7 +624,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean updateAvatar(Account account, String avatar) {
         try {
-            String oldUniqName = account.getUniqname();
             String passportId = account.getPassportId();
             //更新数据库
             int row = accountDAO.updateAvatar(avatar, passportId);

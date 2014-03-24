@@ -1,12 +1,12 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
-import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -49,8 +49,6 @@ public class AccountInfoAction extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(AccountInfoAction.class);
 
     @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
-    @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
     private HostHolder hostHolder;
@@ -60,8 +58,6 @@ public class AccountInfoAction extends BaseController {
     private ConfigureManager configureManager;
     @Autowired
     private SecureManager secureManager;
-    @Autowired
-    private OAuth2ResourceManager oAuth2ResourceManager;
 
     /**
      * 检查用户昵称是否唯一
@@ -117,7 +113,7 @@ public class AccountInfoAction extends BaseController {
         params.setUserid(userId);
         params.setModifyip(getIp(request));
         params.setUniqname(checkOrUpdateNickNameParams.getNickname());
-        result = proxyUserInfoApiManager.updateUserInfo(params);
+        result = sgUserInfoApiManager.updateUserInfo(params);
         return result.toString();
 
     }
@@ -151,10 +147,9 @@ public class AccountInfoAction extends BaseController {
 
             params.setUsername(userId);
             result = accountInfoManager.getUserInfo(params);
-//            result.getModels().put("uniqname",(String)result.getModels().get("uniqname"));
-            result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(params.getUsername(), clientId));
-
-
+            if (result.isSuccess()) {
+                result.getModels().put("uniqname", Coder.encode((String) result.getModels().get("uniqname"), "UTF-8"));
+            }
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (result.isSuccess()) {
                 if (domain == AccountDomainEnum.THIRD) {
@@ -232,7 +227,6 @@ public class AccountInfoAction extends BaseController {
 
             byte[] byteArr = multipartFile.getBytes();
             result = accountInfoManager.uploadImg(byteArr, userId, "0");
-
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
@@ -291,8 +285,9 @@ public class AccountInfoAction extends BaseController {
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
-                result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(userId, 1120));
-
+                if (result.isSuccess()) {
+                    result.getModels().put("uniqname", Coder.encode((String) result.getModels().get("uniqname"), "UTF-8"));
+                }
                 result.setDefaultModel("disable", true);
             }
             model.addAttribute("data", result.toString());
