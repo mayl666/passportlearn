@@ -40,7 +40,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
 
     @Test
     public void testGetCookieInfo() {
-        String userId = "testliu94608@sogou.com";
+        String userId = "llslzs@sohu.com";
         try {
             CookieApiParams cookieApiParams = new CookieApiParams();
             cookieApiParams.setUserid(userId);

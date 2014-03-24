@@ -37,10 +37,6 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private AccountService accountService;
     @Autowired
-    private MobileCodeSenderService mobileCodeSenderService;
-    @Autowired
-    private MobilePassportMappingService mobilePassportMappingService;
-    @Autowired
     private EmailSenderService emailSenderService;
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
@@ -242,7 +238,7 @@ public class RegManagerImpl implements RegManager {
             result.setCode("0");
             result.setMessage("账号未被占用，可以注册");
         }
-        return result;  //To change body of implemented methods use File | Settings | File Templates.
+        return result;
     }
 
     @Override
