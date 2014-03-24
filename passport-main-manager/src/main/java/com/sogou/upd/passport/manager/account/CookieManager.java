@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.form.PPCookieParams;
 import com.sogou.upd.passport.manager.form.SSOCookieParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 
@@ -26,21 +27,22 @@ public interface CookieManager {
     public AppConfig queryAppConfigByClientId(int clientId);
 
     /**
-     * 种sogou域cookie接口
-     *
-     * @param response
-     * @param cookieApiParams  获取cookie值必须传递的参数
-     * @param persistentcookie //是否自动登录（0：否 1：是）或是否使用持久cookie 0:session级别的cookie 1:长时间有效的cookie，目前是两天
-     * @return
-     */
-    public Result setCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int persistentcookie);
-
-    /**
-     * 种SSO cookie
+     * qq导航、qq输入法需要在qq的三级域名下种搜狗cookie
+     * 这里生成的cookie是sogou新cookie，sginf、sgrdig
      * @param response
      * @param ssoCookieParams
      * @return
      */
     public Result setSSOCookie(HttpServletResponse response, SSOCookieParams ssoCookieParams);
+
+    /**
+     * 调用/sso/setppcookie接口的manager方法
+     * /authtoken接口成功后302到/sso/setppcookie
+     * 浏览器客户端拦截302请求并获取cookie值
+     * @param response
+     * @param ppCookieParams
+     * @return
+     */
+    public Result setPPCookie(HttpServletResponse response, PPCookieParams ppCookieParams);
 
 }

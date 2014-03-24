@@ -71,7 +71,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             String errorCode = ope.getError();
             String errMsg = ErrorUtil.getERR_CODE_MSG(errorCode);
             if (StringUtils.isBlank(errMsg)) {
-                logger.error("handle oauth authroize code error!", ope);
+                logger.warn("handle oauth authroize code error!", ope);
                 result = buildErrorResult(errorCode, ope.getDescription());
             } else {
                 result = buildErrorResult(errorCode, errMsg);

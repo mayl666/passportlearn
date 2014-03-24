@@ -109,6 +109,9 @@ public class LoginApiController extends BaseController {
         } else {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
+        // 获取记录UserOperationLog的数据
+        UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -146,7 +149,7 @@ public class LoginApiController extends BaseController {
                 String userId = result.getModels().get("userid").toString();
                 loginManager.doAfterLoginSuccess(params.getUserid(), createip, userId, params.getClient_id());
             } else {
-                loginManager.doAfterLoginFailed(params.getUserid(), createip);
+                loginManager.doAfterLoginFailed(params.getUserid(), createip,result.getCode());
                 result.setMessage("用户名或密码错误");
             }
         } catch (Exception e) {

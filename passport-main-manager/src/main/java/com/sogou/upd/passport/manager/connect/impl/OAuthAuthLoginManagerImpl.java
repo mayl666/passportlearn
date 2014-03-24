@@ -257,7 +257,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             logger.error("query connect config Exception!", se);
             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "query connect config Exception");
         } catch (OAuthProblemException ope) {
-            logger.error("handle oauth authroize code error!", ope);
+            logger.warn("handle oauth authroize code error!", ope);
             result = buildErrorResult(type, ru, ope.getError(), ope.getDescription());
         } catch (Exception exp) {
 //            logger.error("handle oauth authroize code system error!", exp);

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -14,6 +15,7 @@ import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.form.PPCookieParams;
 import com.sogou.upd.passport.manager.form.SSOCookieParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -36,6 +38,7 @@ public class CookieManagerImpl implements CookieManager {
     private String PPRDIG = "kOdlRIxptgVY2ZRcjKYchIY9JBWkqGM_MjQy11OTC0fB9ACztDrs0lnjzAgHenjfCb8_Bgc6RAxO15TIaR5DeJTTQQUGiz-afCzDU9dYUUfge_WJLfiXjfR7iEGBDlBIQ5eSTV0oyMdLQHE-8UlVLYjbohSOzVVUPqRfoDvLE0w";
 
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
+    private static final int SG_COOKIE_MIN_LEN = 3;
 
     @Autowired
     private AppConfigService appConfigService;
@@ -51,37 +54,18 @@ public class CookieManagerImpl implements CookieManager {
     }
 
     @Override
-    public Result setCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int maxAge) {
-        Result result = new APIResultSupport(false);
-        if (ManagerHelper.isUsedSohuProxyApiToGetCookie()) {  //使用sohu新提供的getcookieinfo接口
-            result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-        } else {       //使用之前的从location里拿的cookie的接口，为回滚做准备
-            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-            createCookieUrlApiParams.setUserid(cookieApiParams.getUserid());
-            String ru = Strings.isNullOrEmpty(cookieApiParams.getRu()) ? LOGIN_INDEX_URL : cookieApiParams.getRu();
-            createCookieUrlApiParams.setRu(ru);
-            createCookieUrlApiParams.setDomain("sogou.com");
-            result = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
-        }
-        //获取cookie成功，种sogou域cookie
-        if (result.isSuccess()) {
-            String ppinf = (String) result.getModels().get("ppinf");
-            String pprdig = (String) result.getModels().get("pprdig");
-            ServletUtil.setCookie(response, "ppinf", ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-            ServletUtil.setCookie(response, "pprdig", pprdig, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-            result.setSuccess(true);
-            result.setDefaultModel("userid", cookieApiParams.getUserid());
-        }
-        return result;
-    }
-
-    @Override
     public Result setSSOCookie(HttpServletResponse response, SSOCookieParams ssoCookieParams){
         Result result = new APIResultSupport(false);
         //验证code
         String sginf = ssoCookieParams.getSginf();
         String sgrdig = ssoCookieParams.getSgrdig();
         String cookieData[] = sginf.split("\\" + CommonConstant.SEPARATOR_1);
+        if(cookieData.length < SG_COOKIE_MIN_LEN){
+            result.setCode(ErrorUtil.ERR_CODE_ERROR_COOKIE);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ERROR_COOKIE));
+            return result;
+        }
+
         String createtime = cookieData[1];
         String expiretime = cookieData[2];
         long ct = new Long(createtime);
@@ -98,10 +82,69 @@ public class CookieManagerImpl implements CookieManager {
             result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
             return result;
         }
+        boolean isCtValid = commonManager.isSecCtValid(ct);
+        if (!isCtValid) {
+            result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
+            return result;
+        }
+
         int maxAge = getMaxAge(et);
         String domain = ssoCookieParams.getDomain();
         ServletUtil.setCookie(response, LoginConstant.COOKIE_SGINF, sginf, maxAge, domain);
         ServletUtil.setCookie(response, LoginConstant.COOKIE_SGRDIG, sgrdig, maxAge, domain);
+        result.setSuccess(true);
+        return result;
+    }
+
+    @Override
+    public Result setPPCookie(HttpServletResponse response, PPCookieParams ppCookieParams){
+        Result result = new APIResultSupport(false);
+        //验证code
+        String ppinf = ppCookieParams.getPpinf();
+        String pprdig = ppCookieParams.getPprdig();
+        String passport = ppCookieParams.getPassport();
+        long ct = ppCookieParams.getS();
+
+        boolean code1Res = commonManager.isCodeRight(ppinf, CommonConstant.PC_CLIENTID, ct, ppCookieParams.getCode1());
+        if (!code1Res) {
+            result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
+            return result;
+        }
+        boolean code2Res = commonManager.isCodeRight(pprdig, CommonConstant.PC_CLIENTID, ct, ppCookieParams.getCode2());
+        if (!code2Res) {
+            result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
+            return result;
+        }
+        boolean codeRes = commonManager.isCodeRight(passport, CommonConstant.PC_CLIENTID, ct, ppCookieParams.getCode());
+        if (!codeRes) {
+            result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
+            return result;
+        }
+        boolean isCtValid = commonManager.isMillCtValid(ct);
+        if (!isCtValid) {
+            result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
+            return result;
+        }
+
+        if(!"0".equals(ppCookieParams.getLivetime())){
+            int maxAge = (int)DateAndNumTimesConstant.TWO_WEEKS;
+            long expire = DateUtil.generatorVaildTime(maxAge)/1000;
+//            ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setExpireCookie(response,LoginConstant.COOKIE_PPINF, ppinf,CommonConstant.SOGOU_ROOT_DOMAIN,expire);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN,expire);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN,expire);
+        }else {
+            int maxAge = -1;
+            ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN);
+        }
+
         result.setSuccess(true);
         return result;
     }

@@ -17,6 +17,7 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORT_ACCOUNTTOKEN = "SP.PASSPORTID:ACCOUNTTOKEN_"; // passportId:Map<client_id+instance_id, accountToken>
     public static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = "SP.PASSPORTID:IPBLACKLIST_"; // passportId与ip blacklist映射
     public static final String CACHE_PREFIX_REGISTER_IPBLACKLIST = "SP.REGISTER:IPBLACKLIST_SET_"; // ip与注册次数映射
+    public static final String CACHE_PREFIX_REGISTER_CLIENTIDBLACKLIST = "SP.REGISTER:CLIENTIDBLACKLIST_SET_"; // ip与注册次数映射
     public static final String CACHE_PREFIX_REGISTER_COOKIEBLACKLIST = "SP.REGISTER:COOKIEBLACKLIST_"; // cookie与注册次数映射
     public static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = "SP.PASSPORTID:ACTIVEMAILTOKEN_"; //passportId 与第三方邮件注册token有效期验证
     public static final String CACHE_PREFIX_NICKNAME_PASSPORTID = "SP.NICKNAME:PASSPORTID_"; //昵称与passportId映射
@@ -98,6 +99,12 @@ public class CacheConstant {
     /*==================token相关缓存常量========================*/
     public static final String KV_PREFIX_PASSPORTID_TOKEN = "20002/account_token/";
     public static final String KV_PREFIX_TEST = "0/0/";
+
+    /*==================核心kv 动作记录相关缓存常量=====================*/
+    public static final String CORE_KV_PREFIX_PASSPORTID_ACTIONRECORD = "13008/action_records/SP.PASSPORTID:ACTIONRECORD_LIST_";
+    /*==================核心kv token相关缓存常量========================*/
+    public static final String CORE_KV_PREFIX_PASSPROTID_TOKEN = "13008/account_token/"; //kv迁移，核心kv集群
+
 
     /*==================登陆相关缓存常量========================*/
     public static final String CACHE_PREFIX_USERNAME_LOGINNUM = "SP.USERNAME:LOGINNUM_HASH_"; //username连续登陆的次数

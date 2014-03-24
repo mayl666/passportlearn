@@ -326,14 +326,14 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         Result result = new APIResultSupport(false);
 
         String avatarurl;
-        String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
+        String uniqname = defaultUniqname(passportId), large_avatar = "", mid_avatar = "", tiny_avatar = "";
         AccountBaseInfo accountBaseInfo;
         try {
             //第三方账户先从account里获取
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             if (domain == AccountDomainEnum.THIRD) {
                 Account account = accountService.queryAccountByPassportId(passportId);
-                ConnectToken connectToken;
+                ConnectToken connectToken = null;
                 if (account != null) {
                     uniqname = account.getUniqname();
                     avatarurl = account.getAvatar();
@@ -347,12 +347,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                                 large_avatar = connectToken.getAvatarLarge();
                                 mid_avatar = connectToken.getAvatarMiddle();
                                 tiny_avatar = connectToken.getAvatarSmall();
-                            } else {
-                                //获取不同尺寸头像
-                                Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
-                                large_avatar = (String) getPhotoResult.getModels().get("img_180");
-                                mid_avatar = (String) getPhotoResult.getModels().get("img_50");
-                                tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
                             }
                         }
                     } else {
@@ -362,6 +356,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                         mid_avatar = (String) getPhotoResult.getModels().get("img_50");
                         tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
                     }
+                    result.setDefaultModel("userid",account.getPassportId());
                 }
             } else {
                 accountBaseInfo = getBaseInfo(passportId);

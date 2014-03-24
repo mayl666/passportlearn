@@ -16,21 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 public interface CommonManager {
 
     /**
-     * username包括email和手机号
-     *
-     * @param username
-     * @return
-     */
-    public boolean isAccountExists(String username) throws Exception;
-
-    /**
-     * @param passportId
-     * @return
-     * @throws Exception
-     */
-    public Account queryAccountByPassportId(String passportId) throws Exception;
-
-    /**
      * @param account
      * @return
      * @throws Exception
@@ -74,7 +59,7 @@ public interface CommonManager {
      *
      * @param ip
      */
-    public void incRegTimesForInternal(String ip);
+    public void incRegTimesForInternal(String ip,int client_id);
 
     /**
      * 种sogou域cookie
@@ -124,5 +109,28 @@ public interface CommonManager {
      * @return
      */
     public String buildCreateSSOCookieUrl(String domain,int client_id, String passportId,String uniqname,String refnick, String ru, String ip);
+
+    /**
+     * 根据字符串获取code值
+     * @param firstStr
+     * @param clientId
+     * @param ct
+     * @return
+     */
+    public String getCode(String firstStr, int clientId, long ct);
+
+    /**
+     * 判断时间戳（秒）是否有效
+     * @param ct
+     * @return
+     */
+    public boolean isSecCtValid(long ct);
+
+    /**
+     * 判断时间戳（毫秒）是否有效
+     * @param ct
+     * @return
+     */
+    public boolean isMillCtValid(long ct);
 
 }

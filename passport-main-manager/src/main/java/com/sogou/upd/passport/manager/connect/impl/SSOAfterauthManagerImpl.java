@@ -191,4 +191,3 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
         return result;
     }
 }
-

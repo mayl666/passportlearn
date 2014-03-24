@@ -132,7 +132,7 @@ public class WapLoginAction extends BaseController {
             return "empty";
         } else {
             int isNeedCaptcha = 0;
-            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
+            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip,result.getCode());
             //校验是否需要验证码
             boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
             if (needCaptcha) {
@@ -240,8 +240,7 @@ public class WapLoginAction extends BaseController {
      * 页面直接跳转，回跳到之前的地址
      */
     @RequestMapping(value = "/wap/logout_redirect", method = RequestMethod.GET)
-    @ResponseBody
-    public String logoutWithRu(HttpServletRequest request,
+    public void logoutWithRu(HttpServletRequest request,
                                HttpServletResponse response,
                                WapLogoutParams params) {
         // 校验参数
@@ -254,7 +253,7 @@ public class WapLoginAction extends BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 ru = buildErrorRu(CommonConstant.DEFAULT_WAP_URL, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 response.sendRedirect(ru);
-                return "";
+                return ;
             }
 
             sgid = ServletUtil.getCookie(request, LoginConstant.COOKIE_SGID);
@@ -271,7 +270,7 @@ public class WapLoginAction extends BaseController {
                 //清除cookie
                 ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGID);
                 response.sendRedirect(ru);
-                return "";
+                return;
             }
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
@@ -293,7 +292,7 @@ public class WapLoginAction extends BaseController {
                 logger.debug("logout_redirect " + "sgid:" + sgid + ",client_id:" + client_id);
             }
         }
-        return "";
+        return;
     }
 
     /**

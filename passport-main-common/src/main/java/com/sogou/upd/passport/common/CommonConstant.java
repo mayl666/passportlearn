@@ -78,6 +78,8 @@ public class CommonConstant {
     public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 1; // 默认种cookie的有效期，1小时
     public static final long API_REQUEST_VAILD_TERM = 500000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒
     public static final long COOKIE_REQUEST_VAILD_TERM = 5 * 60; //接口请求的有效期为5分钟，单位为秒
+    public static final long COOKIE_REQUEST_VAILD_TERM_IN_MILLI = 5 * 60*1000; //接口请求的有效期为5分钟，单位为秒
+
 
     public static final String LOGIN_IN_BLACKLIST = "1"; //用户名或者ip在黑名单的标识
 

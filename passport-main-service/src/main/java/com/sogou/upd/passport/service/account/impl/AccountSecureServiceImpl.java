@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.utils.CoreKvUtils;
 import com.sogou.upd.passport.common.utils.KvUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -39,6 +40,8 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     private RedisUtils redisUtils;
     @Autowired
     private KvUtils kvUtils;
+    @Autowired
+    private CoreKvUtils coreKvUtils;
     @Autowired
     private TaskExecutor discardTaskExecutor;
 
@@ -94,7 +97,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
     @Override
     public void setActionRecord(final String userId, final int clientId, final AccountModuleEnum action,
-            final String ip, final String note) {
+                                final String ip, final String note) {
         discardTaskExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -103,6 +106,10 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
                 String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
                 storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
+
+                //保存用户行为记录到核心kv
+                String coreKvKey = buildCoreKvKeyForActionRecord(userId, action);
+                coreKvStoreRecord(coreKvKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
             }
         });
 
@@ -125,6 +132,10 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
                 String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
                 storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
+
+                //保存用户行为记录到核心kv
+                String coreKvKey = buildCoreKvKeyForActionRecord(userId, action);
+                coreKvStoreRecord(coreKvKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
             }
         });
     }
@@ -183,6 +194,18 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         kvUtils.pushObjectWithMaxLen(key, record, maxLen);
     }
 
+    /**
+     * 保存用户操作行为到核心kv集群
+     *
+     * @param key
+     * @param record
+     * @param maxLen
+     * @param <T>
+     */
+    private <T> void coreKvStoreRecord(String key, T record, int maxLen) {
+        coreKvUtils.pushObjectWithMaxLen(key, record, maxLen);
+    }
+
     // 方便以后修改存储方式
     private <T> List<T> queryRecords(String key, Class<T> clazz) {
         // return redisUtils.getList(key, clazz);
@@ -196,6 +219,17 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
     private String buildCacheKeyForActionRecord(String userId, int clientId, AccountModuleEnum action) {
         return KV_PREFIX_PASSPORTID_ACTIONRECORD + action + "_" + userId;
+    }
+
+    /**
+     * 构建保存至核心kv集群 用户行为记录key
+     *
+     * @param userId
+     * @param action
+     * @return
+     */
+    private String buildCoreKvKeyForActionRecord(String userId, AccountModuleEnum action) {
+        return CacheConstant.CORE_KV_PREFIX_PASSPORTID_ACTIONRECORD + action + "_" + userId;
     }
 
 }
