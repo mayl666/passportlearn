@@ -222,7 +222,7 @@ public class CookieManagerImpl implements CookieManager {
         String ppinf = ppCookieParams.getPpinf();
         String pprdig = ppCookieParams.getPprdig();
         String passport = ppCookieParams.getPassport();
-        long ct =Long.parseLong(ppCookieParams.getS());
+        long ct = new Long(Long.parseLong(ppCookieParams.getS()));
 
         boolean code1Res = commonManager.isCodeRight(ppinf, CommonConstant.PC_CLIENTID, ct, ppCookieParams.getCode1());
         if (!code1Res) {
