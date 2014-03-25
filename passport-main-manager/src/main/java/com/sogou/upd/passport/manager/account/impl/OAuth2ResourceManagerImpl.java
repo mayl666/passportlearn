@@ -131,10 +131,15 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
 
-            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams(passportId,
-                    CommonConstant.DEFAULT_CONNECT_REDIRECT_URL, 1, "sogou.com");
             if (CommonHelper.isBuildNewCookie()) {
-                cookieResult = sgLoginApiManager.getCookieValue(createCookieUrlApiParams);
+                //生成cookie
+                CookieApiParams cookieApiParams = new CookieApiParams();
+                cookieApiParams.setUserid(passportId);
+                cookieApiParams.setClient_id(clientId);
+                cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
+                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+                cookieApiParams.setPersistentcookie(String.valueOf(1));
+                cookieResult = sgLoginApiManager.getCookieInfo(cookieApiParams);
             } else {
                 //生成cookie
                 CookieApiParams cookieApiParams = new CookieApiParams();
@@ -180,6 +185,30 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return finalResult;
             }
             String passportId = getPassportIdByToken(token, clientId, appConfig.getClientSecret(), instanceId, username);
+            if (Strings.isNullOrEmpty(passportId)) {
+                finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
+                return finalResult;
+            }
+            finalResult.setSuccess(true);
+            finalResult.setDefaultModel(passportId);
+            return finalResult;
+        } catch (Exception e) {
+            log.error("createToken fail", e);
+            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return finalResult;
+        }
+    }
+
+    @Override
+    public Result getPassportIdByToken(String accessToken, int clientId) {
+        Result finalResult = new APIResultSupport(false);
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
+                return finalResult;
+            }
+            String passportId =  pcAccountTokenService.getPassportIdByToken(accessToken, appConfig.getClientSecret());;
             if (Strings.isNullOrEmpty(passportId)) {
                 finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return finalResult;
@@ -326,7 +355,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         Result result = new APIResultSupport(false);
 
         String avatarurl;
-        String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
+        String uniqname = defaultUniqname(passportId), large_avatar = "", mid_avatar = "", tiny_avatar = "";
         AccountBaseInfo accountBaseInfo;
         try {
             //第三方账户先从account里获取

@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
@@ -45,7 +46,7 @@ public class ConnectCallbackController extends BaseConnectController {
     @Autowired
     private OAuthAuthLoginManager oAuthAuthLoginManager;
     @Autowired
-    private CommonManager commonManager;
+    private CookieManager cookieManager;
 
     @RequestMapping("/callback/{providerStr}")
     public String handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
@@ -92,12 +93,12 @@ public class ConnectCallbackController extends BaseConnectController {
                 return viewUrl;
             } else if (ConnectTypeEnum.WEB.toString().equals(type)) {
                 int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
-                commonManager.setSogouCookie(res, passportId, clientId, getIp(req), (int) DateAndNumTimesConstant.TWO_WEEKS, ru);
+                cookieManager.setCookie(res, passportId, clientId, getIp(req),ru,(int) DateAndNumTimesConstant.TWO_WEEKS);
                 String domain = req.getParameter("domain");
                 if (!Strings.isNullOrEmpty(domain)) {
                     String refnick =  (String)result.getModels().get("refnick");
                     //uniqname： 对qq导航应用，传qq昵称
-                    String creeateSSOCookieUrl = commonManager.buildCreateSSOCookieUrl(domain, clientId,passportId,refnick,refnick,ru, getIp(req));
+                    String creeateSSOCookieUrl = cookieManager.buildCreateSSOCookieUrl(domain, clientId,passportId,refnick,refnick,ru, getIp(req));
                     logger.debug("create sso cookie url:"+creeateSSOCookieUrl);
                     res.sendRedirect(creeateSSOCookieUrl);
                 } else {

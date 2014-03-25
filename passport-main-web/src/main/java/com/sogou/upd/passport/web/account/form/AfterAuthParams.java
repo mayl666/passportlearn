@@ -21,7 +21,8 @@ public class AfterAuthParams {
     @Min(0)
     private int client_id;
     @Min(0)
-    private int isthird;
+    private int isthird=0;
+    private String refresh_token;
     @NotBlank(message = "客户端唯一标识不允许为空！")
     private String instance_id;
     @NotBlank(message = "code不允许为空！")
@@ -82,5 +83,13 @@ public class AfterAuthParams {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getRefresh_token() {
+        return refresh_token;
+    }
+
+    public void setRefresh_token(String refresh_token) {
+        this.refresh_token = refresh_token;
     }
 }

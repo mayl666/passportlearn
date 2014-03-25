@@ -65,7 +65,7 @@ public interface RegManager {
      * @return
      * @throws Exception
      */
-    public Result checkRegInBlackListByIpForInternal(String ip) throws Exception;
+    public Result checkRegInBlackListByIpForInternal(String ip,int clientId) throws Exception;
 
     /**
      * 检查手机注册ip是否在发短信超限黑名单中

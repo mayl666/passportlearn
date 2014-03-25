@@ -66,4 +66,12 @@ public interface OAuth2ResourceManager {
      */
     public Result getUserInfo(String passportId,int clientId);
 
+    /**
+     * 通过token获取passportId
+     * @param accessToken
+     * @param clientId
+     * @return
+     */
+    public Result getPassportIdByToken(String accessToken, int clientId);
+
 }
