@@ -14,6 +14,7 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.common.validation.constraints.RuValidator;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
@@ -59,6 +60,8 @@ public class PCAccountController extends BaseController {
     private LoginManager loginManager;
     @Autowired
     private CookieManager cookieManager;
+    @Autowired
+    private OAuth2ResourceManager oAuth2ResourceManager;
 
     private static final String DEFAULT_URL = "https://account.sogou.com";
 
@@ -245,7 +248,22 @@ public class PCAccountController extends BaseController {
             response.getWriter().print("Error: parameter error!");
             return;
         }
+
         String userId = authPcTokenParams.getUserid();
+        if("null".equals(userId)  || StringUtil.isBlank(userId)){
+            Result getUserIdResult = oAuth2ResourceManager.getPassportIdByToken(authPcTokenParams.getToken(),Integer.parseInt(authPcTokenParams.getAppid()));
+            if(getUserIdResult.isSuccess()){
+                userId = (String)getUserIdResult.getDefaultModel();
+            }else {
+                if (!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
+                    response.sendRedirect(authPcTokenParams.getRu() + "?status=1"); //status=1表示参数错误
+                    return;
+                }
+                response.getWriter().print("Error: parameter error!");
+                return;
+            }
+        }
+
         userId = AccountDomainEnum.getAuthtokenCase(userId);
         authPcTokenParams.setUserid(userId);
         Result authTokenResult = pcAccountManager.authToken(authPcTokenParams);
@@ -296,6 +314,7 @@ public class PCAccountController extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             returnErrMsg(response, ppCookieParams.getRu(),result.getCode(), result.getMessage());
+            return;
         }
 
         result = cookieManager.setPPCookie(response,ppCookieParams);
@@ -304,6 +323,7 @@ public class PCAccountController extends BaseController {
         if(!result.isSuccess()){
             log(request,"pp_setcookie",ru,result.getCode());
             returnErrMsg(response,ru,result.getCode(),result.getMessage());
+            return;
         }
         if (!StringUtils.isBlank(ru)) {
             response.sendRedirect(ru);

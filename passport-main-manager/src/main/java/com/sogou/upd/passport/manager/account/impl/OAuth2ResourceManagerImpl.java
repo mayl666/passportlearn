@@ -204,6 +204,30 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         }
     }
 
+    @Override
+    public Result getPassportIdByToken(String accessToken, int clientId) {
+        Result finalResult = new APIResultSupport(false);
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
+                return finalResult;
+            }
+            String passportId =  pcAccountTokenService.getPassportIdByToken(accessToken, appConfig.getClientSecret());;
+            if (Strings.isNullOrEmpty(passportId)) {
+                finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
+                return finalResult;
+            }
+            finalResult.setSuccess(true);
+            finalResult.setDefaultModel(passportId);
+            return finalResult;
+        } catch (Exception e) {
+            log.error("createToken fail", e);
+            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return finalResult;
+        }
+    }
+
     private String getPassportIdByToken(String accessToken, int clientId, String clientSecret, String instanceId, String username) {
         String passportId = null;
         if (accessToken.startsWith(CommonConstant.SG_TOKEN_OLD_START)) {

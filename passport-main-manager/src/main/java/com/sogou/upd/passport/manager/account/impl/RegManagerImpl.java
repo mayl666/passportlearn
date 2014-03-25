@@ -278,10 +278,10 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
-    public Result checkRegInBlackListByIpForInternal(String ip) throws Exception {
+    public Result checkRegInBlackListByIpForInternal(String ip,int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         //如果在黑名单，也在白名单，允许注册；如果在黑名单不在白名单，不允许注册
-        if (operateTimesService.checkRegInBlackListForInternal(ip)) {
+        if (operateTimesService.checkRegInBlackListForInternal(ip,clientId)) {
             if (!operateTimesService.checkRegInWhiteList(ip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
