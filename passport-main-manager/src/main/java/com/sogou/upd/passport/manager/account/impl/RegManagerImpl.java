@@ -232,7 +232,7 @@ public class RegManagerImpl implements RegManager {
         if (result.isSuccess()) {
             //用户存在，则账号被占用，返回false
             result.setSuccess(false);
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
         } else {
             //用户不存在，则可以注册
             result.setSuccess(true);

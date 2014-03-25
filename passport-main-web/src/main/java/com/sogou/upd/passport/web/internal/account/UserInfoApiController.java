@@ -6,10 +6,13 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
+import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -43,6 +46,10 @@ public class UserInfoApiController extends BaseController {
 
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
+    @Autowired
+    private RegManager regManager;
+    @Autowired
+    private ConfigureManager configureManager;
 
     /**
      * 获取用户基本信息
@@ -119,6 +126,42 @@ public class UserInfoApiController extends BaseController {
         result = sgUserInfoApiManager.checkUniqName(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUniqname(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
+        return result.toString();
+    }
+
+    /**
+     * 检查账号是否存在
+     * 账号类型为：xxx@sogou.com、搜狐域账号、外域邮箱账号、xxx@{provider}.sohu.com
+     * 手机号会返回"userid错误"
+     *
+     * @param request
+     * @param params
+     * @return
+     */
+//    @InterfaceSecurity
+    @RequestMapping(value = "/checkuser", method = RequestMethod.POST)
+    @ResponseBody
+    public Object checkUser(HttpServletRequest request, CheckUserApiParams params) {
+        Result result = new APIResultSupport(false);
+        try {
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            //验证client_id是否存在
+            int clientId = params.getClient_id();
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result.toString();
+            }
+            // 调用内部接口
+            result = regManager.isAccountNotExists(params.getUserid(), params.getClient_id());
+        } catch (Exception e) {
+            logger.error("checkuser:Check User Is Failed,Userid Is " + params.getUserid(), e);
+        }
         return result.toString();
     }
 
