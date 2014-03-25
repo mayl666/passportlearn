@@ -88,6 +88,9 @@ public class LoginAction extends BaseController {
             boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
             result.setSuccess(true);
             result.setDefaultModel("needCaptcha", needCaptcha);
+            //todo 检查用户是否存在没有返回userid
+//            result.setDefaultModel("userid",username);
+            result.setDefaultModel("flag","1");
             result.setMessage("用户名已经存在");
         } else {
             result = new APIResultSupport(false);
