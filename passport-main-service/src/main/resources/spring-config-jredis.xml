@@ -108,6 +108,7 @@
         <property name="port" value="${passport.kv.port}"/>
         <constructor-arg index="0" ref="coreKvPoolConfig"/>
     </bean>
+
     <bean id="coreKvTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
           p:connectionFactory="coreKvConnectionFactory"/>
     <bean id="coreKvUtils" class="com.sogou.upd.passport.common.utils.CoreKvUtils">
