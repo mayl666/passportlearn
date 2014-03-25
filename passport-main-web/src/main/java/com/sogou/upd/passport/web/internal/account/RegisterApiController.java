@@ -8,7 +8,10 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.BaseMobileApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -70,7 +73,7 @@ public class RegisterApiController extends BaseController {
             //已注册或绑定的手机号不允许再注册，因此不允许发送手机验证码
             result = regManager.isAccountNotExists(mobile, clientId);
             if (!result.isSuccess()) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                 return result.toString();
             }
             // 调用内部接口
@@ -152,7 +155,7 @@ public class RegisterApiController extends BaseController {
             }
             ip = params.getCreateip();
             //校验用户ip是否允许注册
-            result = regManager.checkRegInBlackListByIpForInternal(ip,client_id);
+            result = regManager.checkRegInBlackListByIpForInternal(ip, client_id);
             if (!result.isSuccess()) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result.toString();
@@ -170,7 +173,7 @@ public class RegisterApiController extends BaseController {
             logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + params.getUserid(), e);
         } finally {
             //记录log
-            commonManager.incRegTimesForInternal(ip,client_id);
+            commonManager.incRegTimesForInternal(ip, client_id);
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), ip);
             UserOperationLogUtil.log(userOperationLog);
         }
@@ -243,46 +246,6 @@ public class RegisterApiController extends BaseController {
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
-
-
         return result.toString();
     }
-
-    /**
-     * 检查账号是否存在
-     * 账号类型为：xxx@sogou.com、搜狐域账号、外域邮箱账号、xxx@{provider}.sohu.com
-     * 手机号会返回"userid错误"
-     *
-     * @param request
-     * @param params
-     * @return
-     */
-//    @InterfaceSecurity
-    @RequestMapping(value = "/checkuser", method = RequestMethod.POST)
-    @ResponseBody
-    public Object checkUser(HttpServletRequest request, CheckUserApiParams params) {
-        Result result = new APIResultSupport(false);
-        try {
-            // 参数校验
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
-            }
-            //验证client_id是否存在
-            int clientId = params.getClient_id();
-            if (!configureManager.checkAppIsExist(clientId)) {
-                result.setCode(ErrorUtil.INVALID_CLIENTID);
-                return result.toString();
-            }
-            // 调用内部接口
-            result = regManager.isAccountNotExists(params.getUserid(), params.getClient_id());
-        } catch (Exception e) {
-            logger.error("checkuser:Check User Is Failed,Userid Is " + params.getUserid(), e);
-        }
-        return result.toString();
-    }
-
-
 }

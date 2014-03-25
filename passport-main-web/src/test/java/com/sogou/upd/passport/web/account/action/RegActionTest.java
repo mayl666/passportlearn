@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.sogou.upd.passport.web.BaseActionTest;
-
 import org.junit.Test;
 
 import java.io.IOException;
@@ -14,6 +13,11 @@ import java.util.Map;
  */
 //@ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class RegActionTest extends BaseActionTest {
+
+    @Test
+    public void testSendRegCaptcha() throws Exception {
+
+    }
 
     @Test
     public void testReg() throws IOException {
@@ -33,9 +37,10 @@ public class RegActionTest extends BaseActionTest {
 //        params.put("password", "dasdasdasdasda@sogou.com");
 //        params.put("client_id", "1100");
 
-        String result  = sendPost("http://account.sogou.com/web/reguser", params);
+        String result = sendPost("http://account.sogou.com/web/reguser", params);
         System.out.println(result);
     }
+
     @Test
     public void testUpdatePWD() throws IOException {
         String localUrl = "/web/reguser/";
@@ -44,7 +49,7 @@ public class RegActionTest extends BaseActionTest {
         params.put("password", "dasdasdasdasda@sogou.com");
         params.put("client_id", "1100");
 //        params.put("captcha", "GVD2X");
-        String result  = sendPost("http://account.sogou.com/web/sendemail", params);
+        String result = sendPost("http://account.sogou.com/web/sendemail", params);
         System.out.println(result);
     }
 
@@ -54,7 +59,7 @@ public class RegActionTest extends BaseActionTest {
         Map<String, String> params = new HashMap<>();
         params.put("username", "fsdf3ffds");
 //    params.put("client_id", "1100");
-        String result  = sendGet("http://account.sogou.com/web/account/checkusername", params);
+        String result = sendGet("http://account.sogou.com/web/account/checkusername", params);
         System.out.println(result);
     }
 }

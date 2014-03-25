@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -140,6 +141,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                     return result;
                 } else {
                     //存在返回true
+                    result.getModels().put("flag", AccountStatusEnum.REGULAR);
                     result.setSuccess(true);
                     return result;
                 }
@@ -148,7 +150,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                 username = username.toLowerCase() + "@sogou.com";
             }
             //外域邮箱只处理@后面那一串为小写
-            if(username.indexOf("@") != -1){
+            if (username.indexOf("@") != -1) {
                 int index = username.indexOf("@");
                 username = username.substring(0, index) + username.substring(index, username.length()).toLowerCase();
             }
