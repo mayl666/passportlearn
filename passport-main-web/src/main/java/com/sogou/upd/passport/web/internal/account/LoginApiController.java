@@ -126,6 +126,71 @@ public class LoginApiController extends BaseController {
         }
     }
 
+
+    /**
+     * pop3校验用户名和密码是否正确
+     *
+     * @param request
+     * @param params
+     * @return
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/account/authemailuser", method = RequestMethod.POST)
+    @ResponseBody
+    public Object authEmailUser(HttpServletRequest request, AuthUserApiParams params) {
+        Result result = new APIResultSupport(false);
+        // 参数校验
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        String createip = params.getCreateip();
+
+        try {
+            if(StringUtils.isEmpty(createip)){
+                createip =null;
+            }
+            // 调用内部接口
+            // 账号有可能是密保手机的情况
+            String username = params.getUserid();
+            String passportId = null;//commonManager.queryPassportIdByMobile(username);
+            if (!Strings.isNullOrEmpty(passportId)) {
+                params.setUserid(passportId);
+                result = sgLoginApiManager.webAuthUser(params);
+            } else {
+                // 调用内部接口
+                if (ManagerHelper.isInvokeProxyApi(params.getUserid())) {
+                    result = proxyLoginApiManager.webAuthUser(params);
+                } else {
+                    result = sgLoginApiManager.webAuthUser(params);
+                }
+            }
+
+            if (result.isSuccess()) {
+                String userId = result.getModels().get("userid").toString();
+                loginManager.doAfterLoginSuccess(params.getUserid(), createip, userId, params.getClient_id());
+            } else {
+//                loginManager.doAfterLoginFailed(params.getUserid(), createip);
+                result.setMessage("用户名或密码错误");
+            }
+        } catch (Exception e) {
+            logger.error("authuser fail,userid:" + params.getUserid(), e);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
+            return result.toString();
+
+        } finally {
+            // 获取记录UserOperationLog的数据
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            userOperationLog.putOtherMessage("createip", createip);
+            UserOperationLogUtil.log(userOperationLog);
+            return result.toString();
+        }
+    }
+
+
+
     /**
      * web端校验用户名和密码是否正确
      *
