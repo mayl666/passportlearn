@@ -85,7 +85,7 @@ public class APIResultSupport extends ResultSupport {
         return form.toString();
     }
 
-    class APIResultForm {
+    /*class APIResultForm {
 
         private Map<String, Object> data = Maps.newHashMap();
         private String status;
@@ -131,5 +131,5 @@ public class APIResultSupport extends ResultSupport {
             }
             return str;
         }
-    }
+    } */
 }
