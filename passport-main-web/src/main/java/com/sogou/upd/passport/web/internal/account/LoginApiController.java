@@ -88,8 +88,8 @@ public class LoginApiController extends BaseController {
                 return result.toString();
             }
             //检查用户名是否存在
-            result = regManager.isSohuOrSogouAccountExists(params.getUserid(),clientId);
-            if(!result.isSuccess()){
+            result = regManager.isSohuOrSogouAccountExists(params.getUserid(), clientId);
+            if (!result.isSuccess()) {
                 return result;
             }
 
@@ -113,7 +113,7 @@ public class LoginApiController extends BaseController {
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
             }
-        }  catch (Exception e) {
+        } catch (Exception e) {
             logger.error("authuser fail,userid:" + params.getUserid(), e);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             return result.toString();
@@ -146,49 +146,23 @@ public class LoginApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String createip = params.getCreateip();
-
         try {
-            if(StringUtils.isEmpty(createip)){
-                createip =null;
-            }
-            // 调用内部接口
-            // 账号有可能是密保手机的情况
-            String username = params.getUserid();
-            String passportId = null;//commonManager.queryPassportIdByMobile(username);
-            if (!Strings.isNullOrEmpty(passportId)) {
-                params.setUserid(passportId);
+            if (ManagerHelper.isInvokeProxyApi(params.getUserid())) {
+                result = proxyLoginApiManager.webAuthUser(params);
+            } else {
                 result = sgLoginApiManager.webAuthUser(params);
-            } else {
-                // 调用内部接口
-                if (ManagerHelper.isInvokeProxyApi(params.getUserid())) {
-                    result = proxyLoginApiManager.webAuthUser(params);
-                } else {
-                    result = sgLoginApiManager.webAuthUser(params);
-                }
-            }
-
-            if (result.isSuccess()) {
-                String userId = result.getModels().get("userid").toString();
-                loginManager.doAfterLoginSuccess(params.getUserid(), createip, userId, params.getClient_id());
-            } else {
-//                loginManager.doAfterLoginFailed(params.getUserid(), createip);
-                result.setMessage("用户名或密码错误");
             }
         } catch (Exception e) {
-            logger.error("authuser fail,userid:" + params.getUserid(), e);
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
+            logger.error("/internal/account/authemailuser failed,passportId:" + params.getUserid(), e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result.toString();
-
         } finally {
             // 获取记录UserOperationLog的数据
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-            userOperationLog.putOtherMessage("createip", createip);
             UserOperationLogUtil.log(userOperationLog);
             return result.toString();
         }
     }
-
 
 
     /**
@@ -222,9 +196,9 @@ public class LoginApiController extends BaseController {
 
             if (ManagerHelper.isInvokeProxyApi(params.getUserid())) {
                 //如果是sohu调用，直接返回错误;
-                if(params.getClient_id() == SHPPUrlConstant.SH_APP_ID){
+                if (params.getClient_id() == SHPPUrlConstant.SH_APP_ID) {
                     result.setCode(ErrorUtil.ERR_CODE_LOOP_CALL);
-                }else {
+                } else {
                     result = proxyLoginApiManager.webAuthUser(params);
                 }
             } else {
