@@ -73,7 +73,12 @@ public class LoginConstant {
     /**
      * 内部接口安全限制50天一次
      */
-    public static final int REGISTER_IP_COOKIE_LIMITED_FOR_INTERNAL = 50;//内部接口ip限制为50次一天
+    public static final int REGISTER_IP_COOKIE_LIMITED_FOR_INTERNAL = 20;//内部接口ip限制为50次一天
+
+    /**
+     * 内部接口安全限制50天一次
+     */
+    public static final int REGISTER_CLIENTID_YUEDU_LIMITED_FOR_INTERNAL = 20;//内部接口ip限制为50次一天
 
     /**
      * 一天内某一个ip注册次数限制

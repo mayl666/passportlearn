@@ -49,6 +49,7 @@ public class CostTimeInteceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
         try {
+            Map map= request.getParameterMap();
             StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
             request.setAttribute(STOPWATCH, stopWatch);
         }catch (Exception e){

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -73,7 +74,7 @@ public class CookieManagerImpl implements CookieManager {
     }
 
     @Override
-    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip,String ru,int maxAge) {
+    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge) {
         CookieApiParams cookieApiParams = new CookieApiParams();
         cookieApiParams.setUserid(passportId);
         cookieApiParams.setClient_id(client_id);
@@ -81,7 +82,7 @@ public class CookieManagerImpl implements CookieManager {
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         cookieApiParams.setIp(ip);
-        Result result = setCookie(response,cookieApiParams,maxAge);
+        Result result = setCookie(response, cookieApiParams, maxAge);
         return result;
     }
 
@@ -125,14 +126,13 @@ public class CookieManagerImpl implements CookieManager {
 //    }
 
 
-
     @Override
-    public String buildCreateSSOCookieUrl(String domain,int client_id, String passportId,String uniqname,String refnick, String ru, String ip) {
+    public String buildCreateSSOCookieUrl(String domain, int client_id, String passportId, String uniqname, String refnick, String ru, String ip) {
         StringBuilder urlBuilder = new StringBuilder();
         String daohangDomain = ConnectDomainEnum.DAOHANG.toString();
         String haoDomain = ConnectDomainEnum.HAO.toString();
 
-        String shurufaDomain=ConnectDomainEnum.SHURUFA.toString();
+        String shurufaDomain = ConnectDomainEnum.SHURUFA.toString();
 
         if (domain.equals(daohangDomain)) {
             urlBuilder.append(CommonConstant.DAOHANG_CREATE_COOKIE_URL).append("?domain=").append(daohangDomain);
@@ -149,7 +149,7 @@ public class CookieManagerImpl implements CookieManager {
             return null;
         }
 
-        CookieApiParams cookieApiParams = new CookieApiParams(passportId, client_id, ru,ip, uniqname, refnick);
+        CookieApiParams cookieApiParams = new CookieApiParams(passportId, client_id, ru, ip, uniqname, refnick);
         Result getCookieValueResult = sgLoginApiManager.getCookieInfo(cookieApiParams);
         if (!getCookieValueResult.isSuccess()) {
             return null;
@@ -171,13 +171,13 @@ public class CookieManagerImpl implements CookieManager {
     }
 
     @Override
-    public Result setSSOCookie(HttpServletResponse response, SSOCookieParams ssoCookieParams){
+    public Result setSSOCookie(HttpServletResponse response, SSOCookieParams ssoCookieParams) {
         Result result = new APIResultSupport(false);
         //验证code
         String sginf = ssoCookieParams.getSginf();
         String sgrdig = ssoCookieParams.getSgrdig();
         String cookieData[] = sginf.split("\\" + CommonConstant.SEPARATOR_1);
-        if(cookieData.length < SG_COOKIE_MIN_LEN){
+        if (cookieData.length < SG_COOKIE_MIN_LEN) {
             result.setCode(ErrorUtil.ERR_CODE_ERROR_COOKIE);
             result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ERROR_COOKIE));
             return result;
@@ -215,14 +215,21 @@ public class CookieManagerImpl implements CookieManager {
     }
 
     @Override
-    public Result setPPCookie(HttpServletResponse response, PPCookieParams ppCookieParams){
+    public Result setPPCookie(HttpServletResponse response, PPCookieParams ppCookieParams) {
         Result result = new APIResultSupport(false);
         //验证code
         String ppinf = ppCookieParams.getPpinf();
         String pprdig = ppCookieParams.getPprdig();
         String passport = ppCookieParams.getPassport();
-        long ct = ppCookieParams.getS();
-
+        long ct = 0;
+        String s = ppCookieParams.getS().trim();
+        if (s.contains(",")) {
+            String sArr[] = s.split(",");
+            String s1 = sArr[0];
+            ct = new Long(Long.parseLong(s1));
+        } else {
+            ct = new Long(Long.parseLong(s));
+        }
         boolean code1Res = commonManager.isCodeRight(ppinf, CommonConstant.PC_CLIENTID, ct, ppCookieParams.getCode1());
         if (!code1Res) {
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
@@ -248,10 +255,20 @@ public class CookieManagerImpl implements CookieManager {
             return result;
         }
 
-        int maxAge = -1;
-        ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-        ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
-        ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN);
+        if (!"0".equals(ppCookieParams.getLivetime())) {
+            int maxAge = (int) DateAndNumTimesConstant.TWO_WEEKS;
+            long expire = DateUtil.generatorVaildTime(maxAge) / 1000;
+//            ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setExpireCookie(response, LoginConstant.COOKIE_PPINF, ppinf, CommonConstant.SOGOU_ROOT_DOMAIN, expire);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN, expire);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN, expire);
+        } else {
+            int maxAge = -1;
+            ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN);
+        }
+
         result.setSuccess(true);
         return result;
     }
