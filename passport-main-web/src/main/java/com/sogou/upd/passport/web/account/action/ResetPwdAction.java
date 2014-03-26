@@ -41,8 +41,6 @@ public class ResetPwdAction extends BaseController {
     @Autowired
     private RegManager regManager;
     @Autowired
-    private CommonManager commonManager;
-    @Autowired
     private SecureManager secureManager;
     @Autowired
     private CheckManager checkManager;
