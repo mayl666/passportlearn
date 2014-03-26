@@ -152,7 +152,7 @@ public class AccountInfoAction extends BaseController {
             }
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (result.isSuccess()) {
-                if (domain == AccountDomainEnum.THIRD) {
+                if (domain == AccountDomainEnum.THIRD || domain == AccountDomainEnum.SOHU) {
                     result.setDefaultModel("disable", true);
                 }
                 model.addAttribute("data", result.toString());
@@ -284,7 +284,7 @@ public class AccountInfoAction extends BaseController {
             result = secureManager.queryAccountSecureInfo(userId, 1120, false);
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
-            if (domain == AccountDomainEnum.THIRD) {
+            if (domain == AccountDomainEnum.THIRD || domain == AccountDomainEnum.SOHU) {
                 if (result.isSuccess()) {
                     result.getModels().put("uniqname", Coder.encode((String) result.getModels().get("uniqname"), "UTF-8"));
                 }
