@@ -141,7 +141,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                     return result;
                 } else {
                     //存在返回true
-                    result.getModels().put("flag", AccountStatusEnum.REGULAR);
+                    result.getModels().put("flag", AccountStatusEnum.REGULAR.getValue());
                     result.setSuccess(true);
                     return result;
                 }
