@@ -50,8 +50,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     @Autowired
     private AppConfigService appConfigService;
     @Autowired
-    private MobilePassportMappingService mobilePassportMappingService;
-    @Autowired
     private EmailSenderService emailSenderService;
     @Autowired
     private AccountSecureService accountSecureService;
@@ -86,88 +84,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
         }
     }
 
-    @Override
-    public Result resetPasswordByQues(String passportId, int clientId, String password,
-                                      String answer) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            Account account = accountService.queryNormalAccount(passportId);
-            if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                return result;
-            }
-            AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
-            if (accountInfo == null || Strings.isNullOrEmpty(accountInfo.getAnswer())) {
-                result.setCode(ErrorUtil.NOTHAS_BINDINGQUESTION);
-                return result;
-            }
-            String answerBind = accountInfo.getAnswer();
-            if (!answer.equals(answerBind)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED);
-                return result;
-            }
-            if (!accountService.resetPassword(account, password, false)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
-                return result;
-            }
-            operateTimesService.incLimitResetPwd(passportId, clientId);
-            result.setSuccess(true);
-            result.setMessage("重置密码成功！");
-            return result;
-        } catch (ServiceException e) {
-            logger.error("reset password by ques fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
-    }
 
-    @Override
-    public Result resetPasswordByMobile(String passportId, int clientId, String password,
-                                        String smsCode) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            Account account = accountService.queryAccountByPassportId(passportId);
-            if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                return result;
-            }
-            String mobile = account.getMobile();
-            if (Strings.isNullOrEmpty(mobile)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS);
-                return result;
-            }
-
-            // 验证错误次数是否小于限制次数
-            boolean checkFailLimited =
-                    mobileCodeSenderService.checkLimitForSmsFail(mobile, clientId,
-                                                                 AccountModuleEnum.RESETPWD);
-            if (!checkFailLimited) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
-                return result;
-            }
-
-            // 验证手机号码与验证码是否匹配
-            if (!mobileCodeSenderService.checkSmsInfoFromCache(mobile, clientId, AccountModuleEnum.RESETPWD, smsCode)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-                return result;
-            }
-
-            if (!accountService.resetPassword(account, password, false)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
-                return result;
-            }
-            //清除验证码的缓存
-            mobileCodeSenderService.deleteSmsCache(mobile, clientId);
-            operateTimesService.incLimitResetPwd(passportId, clientId);
-            result.setSuccess(true);
-            result.setMessage("重置密码成功！");
-            return result;
-        } catch (ServiceException e) {
-            logger.error("reset password Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
-    }
 
 
     /* ------------------------------------重置密码Begin------------------------------------ */
@@ -192,7 +109,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 boolean isOtherDomain = (AccountDomainEnum.getAccountDomain(passportId) ==
                         AccountDomainEnum.OTHER);
                 if (isOtherDomain) {
-                    // 外域用户无绑定邮箱
                     return sendEmailResetPwd(passportId, clientId, module, passportId);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_EMAIL_FAILED);
@@ -244,43 +160,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             return result;
         } catch (ServiceException e) {
             logger.error("check email fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
-    }
-
-    /*
-     * 重置密码（邮件方式）——3.再一次验证token，并修改密码。目前passportId与邮件申请链接中的uid一样
-     */
-    @Override
-    public Result resetPasswordByEmail(String passportId, int clientId, String password,
-                                       String scode) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            boolean saveEmail = false;
-            AccountModuleEnum module = AccountModuleEnum.RESETPWD;
-            Account account = accountService.queryNormalAccount(passportId);
-            if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                return result;
-            }
-            String resultStr = emailSenderService.checkScodeForEmail(passportId, clientId, module, scode, saveEmail);
-            if (Strings.isNullOrEmpty(resultStr)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED);
-                return result;
-            }
-            if (!accountService.resetPassword(account, password, false)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
-                return result;
-            }
-            // 删除邮件链接token缓存
-            emailSenderService.deleteScodeCacheForEmail(passportId, clientId, module);
-            operateTimesService.incLimitResetPwd(passportId, clientId);
-            result.setSuccess(true);
-            result.setMessage("重置密码成功！");
-            return result;
-        } catch (ServiceException e) {
-            logger.error("reset password Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
@@ -415,36 +294,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 return result;
             }
             operateTimesService.incLimitFindPwdResetPwd(passportId, clientId,ip);
-            result.setSuccess(true);
-            result.setMessage("重置密码成功！");
-            return result;
-            // TODO:检验checkCode，是否区分密保还是手机验证码——未区分
-            // TODO:在修改绑定手机时，能否重用checkCode代码——未重用
-            // TODO:能否将邮件产生token的代码提取出来统一产生checkCode?——暂时未用，可考虑
-        } catch (ServiceException e) {
-            logger.error("reset password Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
-    }
-
-    /*
-     * 只修改密码加检测限制
-     */
-    @Override
-    public Result resetPassword(String passportId, int clientId, String password) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            Account account = accountService.queryNormalAccount(passportId);
-            if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                return result;
-            }
-            if (!accountService.resetPassword(account, password, false)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
-                return result;
-            }
-            operateTimesService.incLimitResetPwd(passportId, clientId);
             result.setSuccess(true);
             result.setMessage("重置密码成功！");
             return result;
