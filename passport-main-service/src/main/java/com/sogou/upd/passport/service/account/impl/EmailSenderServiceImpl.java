@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.exception.MailException;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.DateUtil;
@@ -61,8 +62,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             activeEmail.setActiveUrl(activeUrl);
 
             //模版中参数替换
-            Map<String,Object> map= Maps.newHashMap();
-            map.put("activeUrl",activeUrl);
+            Map<String, Object> map = Maps.newHashMap();
+            map.put("activeUrl", activeUrl);
             activeEmail.setMap(map);
 
             activeEmail.setTemplateFile(module.getDirect() + ".vm");
@@ -86,7 +87,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             // 设置邮件发送次数限制---放在Manager里做检测
 
             return true;
-        } catch(MailException me) {
+        } catch (MailException me) {
             return false;
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -100,7 +101,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         try {
             String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
             String activeUrl = PASSPORT_EMAIL_URL_PREFIX + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
-            activeUrl += "userid=" + passportId + "&client_id=" + clientId + "&scode=" + scode + "&ru=" + ru;
+            activeUrl += Coder.encodeUTF8("userid=" + passportId + "&client_id=" + clientId + "&scode=" + scode + "&ru=" + ru);
 
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();
@@ -138,20 +139,20 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             String cacheKey = buildCacheKeyForScode(passportId, clientId, module);
             if (saveEmail) {
                 Map<String, String> mapScode = redisUtils.getObject(cacheKey, Map.class);
-                if (!mapScode.isEmpty()){
+                if (!mapScode.isEmpty()) {
                     String scodeCache = mapScode.get("scode");
-                    if (!Strings.isNullOrEmpty(scodeCache) && scodeCache.equals(scode)){
+                    if (!Strings.isNullOrEmpty(scodeCache) && scodeCache.equals(scode)) {
                         return mapScode.get("email");
                     }
                 }
             } else {
                 String scodeCache = redisUtils.get(cacheKey);
-                if(!Strings.isNullOrEmpty(scodeCache) && scodeCache.equals(scode)){
+                if (!Strings.isNullOrEmpty(scodeCache) && scodeCache.equals(scode)) {
                     return passportId;
                 }
             }
             return null;
-        } catch (Exception e){
+        } catch (Exception e) {
             // throw new ServiceException(e);
             logger.error("[Email] service method checkScodeForEmail error.", e);
             return null;
@@ -215,7 +216,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
     private String buildCacheKeyForEmailLimited(String passportId, int clientId, AccountModuleEnum module, String email) {
         return CACHE_PREFIX_PASSPORTID_SENDEMAILNUM + module + "_" + email + "_"
-               + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+                + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
     }
 
     private String encodeParam(String param) {
