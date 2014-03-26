@@ -213,7 +213,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
                 return finalResult;
             }
-            String passportId =  pcAccountTokenService.getPassportIdByToken(accessToken, appConfig.getClientSecret());;
+            String passportId = pcAccountTokenService.getPassportIdByToken(accessToken, appConfig.getClientSecret());
+            ;
             if (Strings.isNullOrEmpty(passportId)) {
                 finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return finalResult;
@@ -366,7 +367,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     public Result getUniqNameAndAvatar(String passportId, int clientId) {
         Result result = new APIResultSupport(false);
         String avatarurl;
-        String uniqname = defaultUniqname(passportId), large_avatar = "", mid_avatar = "", tiny_avatar = "";
+        String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
         boolean isHandleAvatar = false; //是否获取不同尺寸的头像
         try {
             Account account = accountService.queryAccountByPassportId(passportId);
@@ -411,7 +412,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
             result.setSuccess(true);
-            result.setDefaultModel("uniqname", uniqname);
+            result.setDefaultModel("uniqname", !Strings.isNullOrEmpty(uniqname) ? uniqname : defaultUniqname(passportId));
             result.setDefaultModel("img_30", tiny_avatar);
             result.setDefaultModel("img_50", mid_avatar);
             result.setDefaultModel("img_180", large_avatar);
@@ -464,7 +465,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             //去浏览器论坛取昵称
             if (Strings.isNullOrEmpty(uniqname)) {
                 uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
-                if (!Strings.isNullOrEmpty(uniqname)) {
+                //如果浏览器论坛返回的是默认昵称，即@前面那一串，则表示用户在浏览器论坛无昵称
+                if (!Strings.isNullOrEmpty(uniqname) && !passportId.substring(0, passportId.indexOf("@")).equals(uniqname)) {
                     result.setDefaultModel("uniqname", uniqname);
                     result.setSuccess(true);
                 }
