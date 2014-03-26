@@ -7,18 +7,6 @@ import com.sogou.upd.passport.common.result.Result;
  * File | Settings | File Templates.
  */
 public interface ResetPwdManager {
-    /**
-     * 修改密码，包括检查修改次数
-     *
-     * @param passportId
-     * @param clientId
-     * @param password
-     * @return
-     * @throws Exception
-     */
-    public Result resetPassword(String passportId, int clientId, String password) throws Exception;
-
-    /* ------------------------------------重置密码Begin------------------------------------ */
 
     /**
      * 重置密码（邮件方式）——1.发送重置密码申请验证邮件
@@ -38,13 +26,6 @@ public interface ResetPwdManager {
      * @param token
      */
     public Result checkEmailResetPwd(String uid, int clientId, String token) throws Exception;
-
-    /**
-     * 重置密码（邮件方式）——3.再一次验证token，并修改密码。目前passportId与邮件申请链接中的uid一样
-     */
-    public Result resetPasswordByEmail(String passportId, int clientId, String password, String token)
-            throws Exception;
-
 
     /**
      * 重置密码（手机方式）——2.检查手机短信码，成功则返回secureCode记录成功标志
@@ -82,24 +63,6 @@ public interface ResetPwdManager {
      */
     public Result resetPasswordByScode(String passportId, int clientId, String password,
                                        String secureCode,String ip) throws Exception;
-
-    /**
-     * 重置用户密码（检查密保答案）——暂不用！！！
-     *
-     * @param passportId
-     * @param clientId
-     * @param password
-     * @param answer
-     */
-    public Result resetPasswordByQues(String passportId, int clientId, String password, String answer)
-            throws Exception;
-
-    /**
-     * 重置用户密码（手机验证码方式）——暂不用！！！
-     */
-    public Result resetPasswordByMobile(String passportId, int clientId, String password, String smsCode)
-            throws Exception;
-
     /**
      *找回密码，发送手机验证码
      * @param userId
