@@ -2,14 +2,17 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +119,13 @@ public class ResetPwdAction extends BaseController {
         model.addAttribute("data", result.toString());
         return "/recover/index";
     }
-
+//    private void log(String passportId,){
+//        //用户登录log
+//        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+//        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+//        userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(request, "YYID"));
+//        UserOperationLogUtil.log(userOperationLog);
+//    }
     /**
      * 验证注册或密保邮箱页面跳转
      *
