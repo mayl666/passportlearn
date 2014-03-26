@@ -1,11 +1,12 @@
 package com.sogou.upd.passport.web.account.controller;
 
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.model.ActiveEmail;
-import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.web.BaseActionTest;
+import com.sogou.upd.passport.web.account.form.APIResultForm;
+import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -49,8 +50,17 @@ public class RegisterApiControllerTest extends BaseActionTest {
         params.put("ct", String.valueOf(ct));
         params.put("code", code);
         String result = sendPost(PROXY_BASE_PATH_URL + apiUrl, params);
-        System.out.println(result);
+        APIResultForm form = JacksonJsonMapperUtil.getMapper().readValue(result, APIResultForm.class);
+        Assert.assertEquals(ErrorUtil.ERR_CODE_ACCOUNT_REGED, form.getStatus());
+        Assert.assertEquals("账号已注册", form.getStatusText());
 
+        String apiUrl1 = "/internal/account/sendregcaptcha";
+        String result1 = sendPost(SG_BASE_PATH_URL + apiUrl1, params);
+        System.out.println("-------------------------------");
+        System.out.println(result);
+        System.out.println(result1);
+        APIResultForm form1 = JacksonJsonMapperUtil.getMapper().readValue(result1, APIResultForm.class);
+        Assert.assertTrue(form1.equals(form));
         //{"data":{},"status":"20201","statusText":"账号已注册"}
     }
 
@@ -71,7 +81,8 @@ public class RegisterApiControllerTest extends BaseActionTest {
         params.put("ct", String.valueOf(ct));
         params.put("code", code);
         String result = sendPost(SG_BASE_PATH_URL + apiUrl, params);
-        System.out.println(result);
+        APIResultForm form = JacksonJsonMapperUtil.getMapper().readValue(result, APIResultForm.class);
+//        Assert.assertTrue();
         //状态码已经修改为20201
         //{"status":"20225","statusText":"手机号已注册或已经绑定其他账号","data":{}}
     }
@@ -182,6 +193,14 @@ public class RegisterApiControllerTest extends BaseActionTest {
         String result = sendPost(PROXY_BASE_PATH_URL + apiUrl, params);
         System.out.println(result);
         //{"data":{"flag":"1","userid":"13581695053@sohu.com"},"status":"20225","statusText":"手机号已绑定其他账号"}
+
+//        String resultStr = "{"data":{"flag":"1","userid":"13581695053@sohu.com"},"status":"20225","statusText":"手机号已绑定其他账号"}";
+//        actualForm = JacksonJsonMapperUtil.getMapper()
+//
+//        String result ="" ;
+//        sogouForm =
+//
+//        Assert.assertEquals(actualForm,sogouForm );
     }
 
     /**
