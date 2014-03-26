@@ -32,6 +32,8 @@ public class PassportIDGenerator {
         String passportID;
         if (AccountTypeEnum.isPhone(username, provider)) {
             passportID = username + SEPARATOR_1 + "sohu.com";
+        } else if (AccountTypeEnum.isSOHU(provider)) {
+            passportID = username;
         } else if (AccountTypeEnum.isConnect(provider)) {
             passportID = username + SEPARATOR_1 + AccountTypeEnum.getProviderStr(provider) + ".sohu.com";
         } else {
