@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
+import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
@@ -19,6 +20,7 @@ public class JacksonJsonMapperUtil {
             synchronized (ObjectMapper.class) {
                 if (objectMapper == null) {
                     objectMapper = new ObjectMapper();
+                    objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
                 }
             }
         }

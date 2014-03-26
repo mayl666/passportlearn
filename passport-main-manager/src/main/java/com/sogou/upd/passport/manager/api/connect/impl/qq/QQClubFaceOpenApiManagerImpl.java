@@ -12,6 +12,7 @@ import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpenApiV3;
 import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
+import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,5 +104,17 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
         OpenApiV3 sdk = new OpenApiV3(appKey, appSecret);
         sdk.setServerName(serverName);
         return sdk;
+    }
+
+
+    public static void main(String args[]){
+        ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
+        try {
+            String aa="{\"pf\":'qzone','format':'json','userip':'10.129.156.72'}";
+
+            objectMapper.readValue(aa, HashMap.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
