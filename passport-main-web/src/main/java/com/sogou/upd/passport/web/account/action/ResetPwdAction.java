@@ -195,12 +195,13 @@ public class ResetPwdAction extends BaseController {
             model.addAttribute("data", result.toString());
             return "/recover/index";
         }
-        //次数限制，一天内只能提出5次申请
-//        if(operateTimesService.checkFindPwdTimes(passportId)){
-//            result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
-//            model.addAttribute("data", result.toString());
-//            return "/recover/index";
-//        }
+
+        boolean checkTimes = resetPwdManager.checkFindPwdTimes(passportId).isSuccess();
+        if(!checkTimes){
+            result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
+            model.addAttribute("data", result.toString());
+            return "/recover/index";
+        }
 
         result = regManager.isAccountExists(passportId,CommonConstant.SGPP_DEFAULT_CLIENTID);
         if (!result.isSuccess()) {
@@ -215,7 +216,8 @@ public class ResetPwdAction extends BaseController {
             return "/recover/index";
         }
         //记录找回密码次数
-//        operateTimesService.incFindPwdTimes(passportId);
+        resetPwdManager.incFindPwdTimes(passportId);
+
         if (domain.equals(AccountDomainEnum.PHONE)) {
             result.setDefaultModel("reg_mobile", getMobile(passportId));
         }
@@ -309,7 +311,7 @@ public class ResetPwdAction extends BaseController {
             model.addAttribute("data", result.toString());
             return "/recover/reset";
         }
-//        result.setCode(ErrorUtil.ERR_CODE_FINDPWD_EMAIL_FAILED);
+        result.setCode(ErrorUtil.ERR_CODE_FINDPWD_EMAIL_FAILED);
         model.addAttribute("data", result.toString());
         return "/recover/index";
     }

@@ -70,10 +70,10 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
                 return result;
             }
-           /* if (!emailSenderService.sendEmail(passportId, clientId, module, email, "", false)) {
+            if (!emailSenderService.sendEmail(passportId, clientId, module, email, "", false)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
                 return result;
-            } */
+            }
             result.setSuccess(true);
             result.setMessage("重置密码申请邮件发送成功");
             //记录发送邮件次数
@@ -396,7 +396,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 return result;
             }
             //检验次数是否超限
-           /* if (operateTimesService.isOverLimitFindPwdResetPwd(passportId, clientId,ip)) {
+            if (operateTimesService.isOverLimitFindPwdResetPwd(passportId, clientId,ip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
                 return result;
             }
@@ -404,7 +404,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             if (!accountSecureService.checkSecureCodeResetPwd(passportId, clientId, scode)) {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
                 return result;
-            }*/
+            }
             Account account = accountService.queryAccountByPassportId(passportId);
             if (account == null) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
@@ -414,7 +414,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
                 return result;
             }
-//            operateTimesService.incLimitFindPwdResetPwd(passportId, clientId,ip);
+            operateTimesService.incLimitFindPwdResetPwd(passportId, clientId,ip);
             result.setSuccess(true);
             result.setMessage("重置密码成功！");
             return result;
@@ -455,6 +455,24 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
         }
     }
 
-    /* ------------------------------------重置密码End------------------------------------ */
+    @Override
+    public Result checkFindPwdTimes(String passportId) throws Exception {
+        Result result = new APIResultSupport(false);
+        if (operateTimesService.checkFindPwdTimes(passportId)) {
+            result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
+            return result;
+        } else {
+            result.setSuccess(true);
+            return result;
+        }
+    }
+
+    @Override
+    public void incFindPwdTimes(String passportId) throws Exception {
+        operateTimesService.incFindPwdTimes(passportId);
+    }
+
+
+
 
 }

@@ -15,12 +15,11 @@ public interface EmailSenderService {
      * @param passportId
      * @param clientId
      * @param module
-     * @param email
      * @param saveEmail 是否在缓存中存储email，如绑定新邮箱需要存储新邮箱地址
      * @return
      * @throws ServiceException
      */
-    public boolean sendEmail(String passportId, int clientId, AccountModuleEnum module, String email, boolean saveEmail)
+    public boolean sendEmail(String passportId, int clientId, AccountModuleEnum module, String address, String ru,boolean saveEmail)
             throws ServiceException;
 
     /**

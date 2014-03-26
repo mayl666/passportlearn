@@ -27,7 +27,8 @@ public class DateAndNumTimesConstant {
 
     public static final long TIME_FIVEMINUTES = 5 * 60; // 时间 5分钟,单位s
 
-
+    public static final int FINDPWD_LIMIT = 5;   // 1天内找回密码的次数
+    public static final int IP_RESETPWD_NUM = 100; // 密码修改一天限制次数
 
 
 }

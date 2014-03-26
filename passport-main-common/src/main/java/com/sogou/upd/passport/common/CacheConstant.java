@@ -129,4 +129,7 @@ public class CacheConstant {
     /*==================接口列表=====================================*/
     public static final String CACHE_PREFIX_INTERFACE = "SP.INTERFACE_SET";  //接口列表
 
+    /*==================找回密码相关缓存常量========================*/
+    public static final String CACHE_PREFIX_PASSPORTID_FINDPWDTIMES = "SP.PASSPORTID:FINDPWDTIMES_"; // passportId与找回密码次数之间的映射
+
 }
