@@ -74,6 +74,7 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
             params.put("openkey", openkey);
             params.put("plat",qqOpenApiParams.getPlat());
             ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
+            objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
             HashMap<String, String> maps;
             Object paramsObj = qqOpenApiParams.getParams();
             if (paramsObj != null) {
