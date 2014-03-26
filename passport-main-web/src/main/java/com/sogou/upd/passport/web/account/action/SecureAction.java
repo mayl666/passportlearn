@@ -306,6 +306,14 @@ public class SecureAction extends BaseController {
         return "safe/history";
     }
 
+    private void log(HttpServletRequest request, String passportId, String resultCode) {
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID), resultCode, getIp(request));
+        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+        UserOperationLogUtil.log(userOperationLog);
+    }
+
+
     /**
      * 修改密码
      *
@@ -335,18 +343,11 @@ public class SecureAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result.toString();
         }
-
         updateParams.setPassport_id(userId);
         String modifyIp = getIp(request);
         updateParams.setIp(modifyIp);
-
         result = secureManager.resetWebPassword(updateParams, modifyIp);
-
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), updateParams.getClient_id(), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
-
+        log(request, userId, result.getCode());
         return result.toString();
     }
 
@@ -385,6 +386,7 @@ public class SecureAction extends BaseController {
         }
 
         result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail, modifyIp, ru);
+        log(request, userId, result.getCode());
         return result.toString();
     }
 
@@ -426,7 +428,6 @@ public class SecureAction extends BaseController {
     public Object sendSmsSecMobile(BaseWebParams params, HttpServletRequest request) throws Exception {
         Result result = new APIResultSupport(false);
         String finalCode = null;
-        String ip = getIp(request);
         String userIdInLog = null;
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -463,11 +464,7 @@ public class SecureAction extends BaseController {
             } else {
                 logCode = result.getCode();
             }
-            //web页面手机注册时，发送手机验证码
-            UserOperationLog userOperationLog = new UserOperationLog(userIdInLog, request.getRequestURI(), params.getClient_id(), logCode, ip);
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("ref", referer);
-            UserOperationLogUtil.log(userOperationLog);
+            log(request, userIdInLog, logCode);
         }
         return result.toString();
     }
@@ -518,11 +515,7 @@ public class SecureAction extends BaseController {
             } else {
                 logCode = result.getCode();
             }
-            //web页面手机注册时，发送手机验证码
-            UserOperationLog userOperationLog = new UserOperationLog(params.getNew_mobile(), request.getRequestURI(), params.getClient_id(), logCode, ip);
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("ref", referer);
-            UserOperationLogUtil.log(userOperationLog);
+            log(request, hostHolder.getPassportId(), logCode);
         }
         return result.toString();
     }
@@ -561,14 +554,8 @@ public class SecureAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result.toString();
         }
-
         result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password, modifyIp);
-
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
-
+        log(request,userId,result.getCode());
         return result.toString();
     }
 
@@ -639,14 +626,8 @@ public class SecureAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result.toString();
         }
-
         result = secureManager.modifyMobileByPassportId(userId, clientId, newMobile, smsCode, scode, modifyIp);
-
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
-
+        log(request,userId,result.getCode());
         return result.toString();
     }
 
@@ -681,14 +662,8 @@ public class SecureAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result.toString();
         }
-
         result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
-
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
-
+        log(request,userId,result.getCode());
         return result.toString();
     }
 
