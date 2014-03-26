@@ -83,7 +83,6 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     @Override
     public AccountInfo modifyQuesByPassportId(String passportId, String question, String answer)
             throws ServiceException {
-        Result result = new APIResultSupport(false);
         AccountInfo accountInfo;
         try {
             accountInfo = new AccountInfo(passportId);
