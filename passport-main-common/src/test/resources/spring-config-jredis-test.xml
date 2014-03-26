@@ -32,7 +32,7 @@
     </bean>
 
     <!-- kv redis util definition -->
-    <!-- <bean id="kvPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+    <bean id="kvPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
          <property name="maxActive" value="200"/>
          <property name="maxIdle" value="100"/>
          <property name="minIdle" value="50"/>
@@ -43,9 +43,9 @@
            p:usePool="true">
          <property name="hostName" value="tair.store.z.sogou-op.org"/>
          <property name="port" value="6379"/>
-         &lt;!&ndash;<property name="password" value="${redis.pass}"/>&ndash;&gt;
-         &lt;!&ndash;<property name="timeout" value="${redis.timeout}"/>&ndash;&gt;
-         &lt;!&ndash;<property name="database" value="${redis.default.db}"></property>&ndash;&gt;
+         <!--&lt;!&ndash;<property name="password" value="${redis.pass}"/>&ndash;&gt;-->
+         <!--&lt;!&ndash;<property name="timeout" value="${redis.timeout}"/>&ndash;&gt;-->
+         <!--&lt;!&ndash;<property name="database" value="${redis.default.db}"></property>&ndash;&gt;-->
          <constructor-arg index="0" ref="kvPoolConfig"/>
      </bean>
      <bean id="kvTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
@@ -57,6 +57,6 @@
            p:connectionFactory-ref="kvConnectionFactory"/>
      <bean id="coreKvUtils" class="com.sogou.upd.passport.common.utils.CoreKvUtils">
          <property name="coreKvTemplate" ref="coreKvTemplate"/>
-     </bean>-->
+     </bean>
 
 </beans>

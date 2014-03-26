@@ -12,11 +12,13 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
@@ -45,15 +47,11 @@ import java.net.URLDecoder;
 @Controller
 @RequestMapping("/web")
 public class RegAction extends BaseController {
-
-    //  private static final Logger logger = LoggerFactory.getLogger(RegAction.class);
     private static final Logger logger = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
     @Autowired
     private RegManager regManager;
-    @Autowired
-    private CommonManager commonManager;
     @Autowired
     private ConfigureManager configureManager;
     @Autowired
@@ -63,7 +61,7 @@ public class RegAction extends BaseController {
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
-    private LoginApiManager proxyLoginApiManager;
+    private CookieManager cookieManager;
 
     /**
      * 用户注册检查用户名是否存在
@@ -127,7 +125,6 @@ public class RegAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
                     result.setMessage("注册失败");
                 }
-
                 return result.toString();
             }
 
@@ -146,25 +143,9 @@ public class RegAction extends BaseController {
                 if (Strings.isNullOrEmpty(ru)) {
                     ru = LOGIN_INDEX_URL;
                 }
-
-                CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-
-                Object obj = result.getModels().get("username");
-
-                createCookieUrlApiParams.setUserid((String) obj);
-                createCookieUrlApiParams.setRu(ru);
-                createCookieUrlApiParams.setDomain("sogou.com");
-
-                //TODO sogou域账号迁移后cookie生成问题
-                Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
-                if (getCookieValueResult.isSuccess()) {
-                    String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-                    String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-                    ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-                    ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-
-                    result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
-                }
+                String passportId = (String) result.getModels().get("username");
+                result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
+                result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
             }
         } catch (Exception e) {
             logger.error("reguser:User Register Is Failed,Username is " + regParams.getUsername(), e);
@@ -175,24 +156,21 @@ public class RegAction extends BaseController {
             } else {
                 logCode = result.getCode();
             }
+            regManager.incRegTimes(ip, uuidName);
+            String userId = (String) result.getModels().get("userid");
+            if (!Strings.isNullOrEmpty(userId) && AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {
+                if (result.isSuccess()) {
+                    // 非外域邮箱用户不用验证，直接注册成功后记录登录记录
+                    int clientId = Integer.parseInt(regParams.getClient_id());
+                    secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
+                }
+            }
             //用户注册log
             UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id(), logCode, getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
-
-
-        regManager.incRegTimes(ip, uuidName);
-        String userId = (String) result.getModels().get("userid");
-        if (!Strings.isNullOrEmpty(userId) && AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {
-            if (result.isSuccess()) {
-                // 非外域邮箱用户不用验证，直接注册成功后记录登录记录
-                int clientId = Integer.parseInt(regParams.getClient_id());
-                secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
-            }
-        }
-
         return result.toString();
     }
 
@@ -226,23 +204,8 @@ public class RegAction extends BaseController {
         result = regManager.activeEmail(activeParams, ip);
         if (result.isSuccess()) {
             // 种sohu域cookie
-            result = commonManager.createCookieUrl(result, activeParams.getPassport_id(), "", 1);
-
-            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-            createCookieUrlApiParams.setUserid(activeParams.getPassport_id());
-            createCookieUrlApiParams.setRu(activeParams.getRu());
-            createCookieUrlApiParams.setDomain("sogou.com");
-
-            //TODO sogou域账号迁移后cookie生成问题
-            Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
-            if (getCookieValueResult.isSuccess()) {
-                String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-                String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-                ServletUtil.setCookie(response, "ppinf", ppinf, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-                ServletUtil.setCookie(response, "pprdig", pprdig, -1, CommonConstant.SOGOU_ROOT_DOMAIN);
-
-                result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
-            }
+            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
+            result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
         }
         return result;
     }

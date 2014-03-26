@@ -71,6 +71,17 @@ public class ServletUtil {
         response.addHeader("Set-Cookie", cookieValue);
     }
 
+    public static void setExpireCookie(HttpServletResponse response, String key, String value, String domain,long expires) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(key).append("=").append(value).append("; ");
+        sb.append("domain=").append(domain).append("; ");
+        sb.append("path=/").append("; ");
+        sb.append("expires=").append(DateUtil.getDateByTimeStamp(expires)).append(" GMT").append("; ");
+        String cookieValue = sb.toString();
+        response.addHeader("Set-Cookie", cookieValue);
+    }
+
+
     public static void setCookie(HttpServletResponse response, String key, String value, int second, String domain) {
         saveCookie(response, key, value, second, "/", domain);
     }

@@ -99,7 +99,7 @@ body{ background:#f9f9f9; }
 .login .vcode-error{width:133px;background-position:0 -33px;top:69px;*top:36px;}
 .login .error a{ position:absolute;background:url(/./static/img/index/error.png?t=091387) no-repeat -241px -45px;width:12px;height:12px;top:8px;right:30px; }
 .login .error a:hover{ background-position:-261px -45px; }
-.login .third-login{position:absolute;bottom:-33px;padding-left:15px;font-size:12px;color:#649608;background:url(/./static/img/index/third.png?t=088104) no-repeat right center;height:28px;line-height:28px;width:270px;}
+.login .third-login{position:absolute;bottom:-33px;padding-left:15px;font-size:12px;color:#649608;background:url(/./static/img/index/third.png?t=992319) no-repeat right center;height:28px;line-height:28px;width:270px;}
 .login .third-login span{ display:inline-block;*display:inline; *zoom:1;height:24px;position:absolute;top:0;left:30px; }
 .login .third-login a{ display:inline-block;*display:inline; *zoom:1; width:29px;height:0;padding-top:28px;overflow:hidden;margin-right:7px;position:relative;left:133px; }
 

@@ -42,6 +42,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
         try {
             CookieApiParams cookieApiParams = new CookieApiParams();
             cookieApiParams.setUserid(userId);
+            cookieApiParams.setTrust(1);
             cookieApiParams.setIp("200.0.98.23");
             Result result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
 //            Map<String, Object> map = result.getModels();
@@ -52,7 +53,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
 //                String value = listString.get(i).get("value").toString();
 //                mapString.put(key,value);
 //            }
-            System.out.println(result.toString());
+            System.out.println("result:"+result.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,7 +98,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
         createCookieUrlApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
         createCookieUrlApiParams.setPersistentcookie(1);
         createCookieUrlApiParams.setDomain("sogou.com");
-        Result result = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+        Result result = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
         System.out.println(result);
     }
 

@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/index.css?t=425860" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/index.css?t=197534" type="text/css" />
     </head>
     <body >
         <div class="header">
@@ -59,7 +59,7 @@
                         </form>
                         <div class="third-login">
                             <span >使用其他帐号登录</span>
-                            <a href="#">sina</a><a href="#">qq</a><a href="#">taobao</a><a href="#">renren</a>
+                            <a href="#">sina</a><a href="#">qq</a><a href="#">baidu</a><a href="#">renren</a>
                         </div>
                     </div>
                 </div>
