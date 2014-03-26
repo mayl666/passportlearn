@@ -262,7 +262,7 @@
     </logger>
     <!--end:web服务器性能log-->
 
-    <root level="warn">
+    <root level="debug">
         <appender-ref ref="Console" />
     </root>
 </configuration>
