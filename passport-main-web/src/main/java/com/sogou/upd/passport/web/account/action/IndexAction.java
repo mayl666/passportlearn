@@ -48,7 +48,7 @@ public class IndexAction extends BaseController {
             // 第三方账号不显示安全信息
             Result result = new APIResultSupport(false);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
-            if (domain == AccountDomainEnum.THIRD) {
+            if (domain == AccountDomainEnum.THIRD || domain == AccountDomainEnum.SOHU) {
                 Result resultOrg = oAuth2ResourceManager.getUniqNameAndAvatar(userId, clientId);
                 if (resultOrg.isSuccess()) {
                     result.setDefaultModel("uniqname", resultOrg.getModels().get("uniqname"));
