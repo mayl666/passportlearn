@@ -180,8 +180,8 @@ public class SecureManagerImpl implements SecureManager {
 //                sendCaptchaApiParams.setType(4); //todo sohu字段，表示解绑手机号
 //                result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
 //            } else {
-                result = sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.SECURE);
-                // result = sgBindApiManager.sendCaptcha(sendCaptchaApiParams);
+            result = sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.SECURE);
+            // result = sgBindApiManager.sendCaptcha(sendCaptchaApiParams);
 //            }
 
             if (!result.isSuccess()) {
@@ -533,7 +533,7 @@ public class SecureManagerImpl implements SecureManager {
 //                    result.setSuccess(true);
 //                }
 //            } else {
-                result = checkMobileCodeByPassportId(userId, clientId, smsCode);
+            result = checkMobileCodeByPassportId(userId, clientId, smsCode);
 //            }
 
             if (result.isSuccess()) {
@@ -684,37 +684,36 @@ public class SecureManagerImpl implements SecureManager {
 //
 //                result = proxyBindApiManager.bindMobile(bindMobileApiParams);
 //            } else {
-                Account account;
+            Account account;
 
-                result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
-                if (!result.isSuccess()) {
-                    return result;
-                }
+            result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
+            if (!result.isSuccess()) {
+                return result;
+            }
 
-                // 修改绑定手机，checkCode为secureCode
-                if (!accountSecureService.checkSecureCodeModSecInfo(userId, clientId, scode)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BIND_FAILED);
-                    return result;
-                }
+            // 修改绑定手机，checkCode为secureCode
+            if (!accountSecureService.checkSecureCodeModSecInfo(userId, clientId, scode)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BIND_FAILED);
+                return result;
+            }
 
-                account = accountService.queryNormalAccount(userId);
-                if (account == null) {
-                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
-                    return result;
-                }
-
-                if (!accountService.modifyMobile(account, newMobile)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
-                    return result;
-                }
-                String oldMobile = account.getMobile();
-                mobilePassportMappingService.deleteMobilePassportMapping(oldMobile);
-                if (!mobilePassportMappingService.initialMobilePassportMapping(newMobile, userId)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
-                    return result;
-                }
-                result.setSuccess(true);
-                // TODO:事务安全问题，暂不解决
+            account = accountService.queryNormalAccount(userId);
+            if (account == null) {
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                return result;
+            }
+            String oldMobile = account.getMobile();
+            if (!accountService.modifyMobile(account, newMobile)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
+                return result;
+            }
+            mobilePassportMappingService.deleteMobilePassportMapping(oldMobile);
+            if (!mobilePassportMappingService.initialMobilePassportMapping(newMobile, userId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
+                return result;
+            }
+            result.setSuccess(true);
+            // TODO:事务安全问题，暂不解决
 //            }
 
             if (!result.isSuccess()) {
