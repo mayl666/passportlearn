@@ -62,9 +62,7 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
                     String secret = appConfig.getServerSecret();
                     String code = ManagerHelper.generatorCode(firstStr.toString(), clientId, secret, ct);
                     long currentTime = System.currentTimeMillis();
-                    //配合王卿测试第三方账号服务，因此注释，并去掉 edit by chengang 20140325    ct > currentTime - API_REQUEST_VAILD_TERM
-//                    if (code.equalsIgnoreCase(originalCode) && ct > currentTime - API_REQUEST_VAILD_TERM) {
-                    if (code.equalsIgnoreCase(originalCode)) {
+                    if (code.equalsIgnoreCase(originalCode) && ct > currentTime - API_REQUEST_VAILD_TERM) {
                         return true;
                     } else {
                         result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
