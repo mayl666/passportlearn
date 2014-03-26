@@ -142,6 +142,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                 } else {
                     //存在返回true
                     result.getModels().put("flag", AccountStatusEnum.REGULAR.getValue());
+                    result.getModels().put("userid", passportId);
                     result.setSuccess(true);
                     return result;
                 }
@@ -163,6 +164,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             logger.error("Check account is exists Exception, username:" + username, e);
             throw new ServiceException(e);
         }
+        result.getModels().put("userid", username);
         result.setSuccess(true);
         return result;
     }

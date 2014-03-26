@@ -250,9 +250,9 @@ public class RegManagerImpl implements RegManager {
             BaseMobileApiParams params = new BaseMobileApiParams();
             params.setMobile(username);
             Result sohuNotExistResult = proxyRegisterApiManager.checkUser(checkUserApiParams);
-            if(!sohuNotExistResult.isSuccess()){
+            if (!sohuNotExistResult.isSuccess()) {
                 result.setSuccess(true);
-                result.setDefaultModel("userid",sohuNotExistResult.getModels().get("userid"));
+                result.setDefaultModel("userid", sohuNotExistResult.getModels().get("userid"));
             }
         } catch (ServiceException e) {
             logger.error("Check account is exists Exception, username:" + username, e);
@@ -278,10 +278,10 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
-    public Result checkRegInBlackListByIpForInternal(String ip,int clientId) throws Exception {
+    public Result checkRegInBlackListByIpForInternal(String ip, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         //如果在黑名单，也在白名单，允许注册；如果在黑名单不在白名单，不允许注册
-        if (operateTimesService.checkRegInBlackListForInternal(ip,clientId)) {
+        if (operateTimesService.checkRegInBlackListForInternal(ip, clientId)) {
             if (!operateTimesService.checkRegInWhiteList(ip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
@@ -367,6 +367,7 @@ public class RegManagerImpl implements RegManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             return result;
         } else {
+            result.getModels().put("userid", sohuplus_passportId);
             result.setSuccess(true);
         }
         return result;
