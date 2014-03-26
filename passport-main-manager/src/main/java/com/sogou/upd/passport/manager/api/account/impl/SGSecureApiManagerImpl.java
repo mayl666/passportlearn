@@ -47,7 +47,6 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         String userId = updatePwdApiParams.getUserid();
         String password = updatePwdApiParams.getPassword();
         String newPassword = updatePwdApiParams.getNewpassword();
-        String modifyIp = updatePwdApiParams.getModifyip();
         int clientId = updatePwdApiParams.getClient_id();
         result = accountService.verifyUserPwdValid(userId, password, true);
         if (!result.isSuccess()) {

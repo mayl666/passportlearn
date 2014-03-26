@@ -77,7 +77,7 @@ public interface OAuth2ResourceManager {
      * @param clientId
      * @return
      */
-    public String getEncodedUniqNameAndAvatar(String passportId, int clientId);
+    public String getEncodedUniqName(String passportId, int clientId);
 
     /**
      * 浏览器PC/移动客户端登录

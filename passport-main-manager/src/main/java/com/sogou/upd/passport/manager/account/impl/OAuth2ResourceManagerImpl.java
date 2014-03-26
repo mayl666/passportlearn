@@ -422,7 +422,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     @Override
-    public String getEncodedUniqNameAndAvatar(String passportId, int clientId) {
+    public String getEncodedUniqName(String passportId, int clientId) {
         Result result = getUniqNameAndAvatar(passportId, clientId);
         String uniqname = (String) result.getModels().get("uniqname");
         if (result.isSuccess()) {
