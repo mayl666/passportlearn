@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
@@ -206,7 +207,7 @@ public class ResetPwdAction extends BaseController {
             return "/recover/index";
         }
 
-        boolean checkTimes = resetPwdManager.checkFindPwdTimes(passportId).isSuccess();
+        boolean checkTimes = resetPwdManager.checkFindPwdTimes(username).isSuccess();
         if(!checkTimes){
             result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
             model.addAttribute("data", result.toString());
@@ -218,7 +219,10 @@ public class ResetPwdAction extends BaseController {
             model.addAttribute("data", result.toString());
             return "/recover/index";
         }
-
+        if(PhoneUtil.verifyPhoneNumberFormat(passportId)){
+            //如果是手机号，取主账号
+            passportId = (String)result.getModels().get("userid");
+        }
         int clientId = Integer.parseInt(params.getClient_id());
         result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
         if (!result.isSuccess()) {
@@ -226,7 +230,7 @@ public class ResetPwdAction extends BaseController {
             return "/recover/index";
         }
         //记录找回密码次数
-        resetPwdManager.incFindPwdTimes(passportId);
+        resetPwdManager.incFindPwdTimes(username);
 
         if (domain.equals(AccountDomainEnum.PHONE)) {
             result.setDefaultModel("reg_mobile", getMobile(passportId));
