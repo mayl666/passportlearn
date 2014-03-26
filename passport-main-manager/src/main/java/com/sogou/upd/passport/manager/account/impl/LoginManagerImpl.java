@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -15,6 +16,7 @@ import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -51,7 +53,7 @@ public class LoginManagerImpl implements LoginManager {
         String username = loginParameters.getUsername();
         String password = loginParameters.getPassword();
         String pwdMD5 = password;
-        if(loginParameters.getPwdtype() == CommonConstant.PWD_TYPE_EXPRESS){
+        if (loginParameters.getPwdtype() == CommonConstant.PWD_TYPE_EXPRESS) {
             pwdMD5 = DigestUtils.md5Hex(password.getBytes());
         }
         String passportId = username;
@@ -67,7 +69,7 @@ public class LoginManagerImpl implements LoginManager {
                 }
             }
 
-            result = authUser(username,ip,pwdMD5);
+            result = authUser(username, ip, pwdMD5);
 
         } catch (Exception e) {
             logger.error("accountLogin fail,passportId:" + passportId, e);
@@ -78,7 +80,7 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Override
-    public Result checkCaptchaVaild(String username, String ip, String clientId,String captchaCode,String token ) {
+    public Result checkCaptchaVaild(String username, String ip, String clientId, String captchaCode, String token) {
         Result result = new APIResultSupport(true);
         //校验验证码
         if (needCaptchaCheck(clientId, username, ip)) {
@@ -108,6 +110,12 @@ public class LoginManagerImpl implements LoginManager {
         authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
         if (ManagerHelper.isInvokeProxyApi(passportId)) {
             result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+            if (result.isSuccess()) {
+                if (null == accountService.queryAccountByPassportId(passportId)) {
+                    //创建sohu域账号
+                    accountService.initialAccount(passportId, null, false, ip, AccountTypeEnum.SOHU.getValue());
+                }
+            }
         } else {
             result = sgLoginApiManager.webAuthUser(authUserApiParams);
         }
@@ -118,7 +126,7 @@ public class LoginManagerImpl implements LoginManager {
     public boolean needCaptchaCheck(String client_id, String username, String ip) {
         int clientId = Integer.parseInt(client_id);
         //目前使用sogou验证码的应用有passport 浏览器4.2及以上版本
-        if (clientId== SHPPUrlConstant.APP_ID || clientId== CommonConstant.PC_CLIENTID) {
+        if (clientId == SHPPUrlConstant.APP_ID || clientId == CommonConstant.PC_CLIENTID) {
             if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)) {
                 return true;
             }
@@ -129,7 +137,7 @@ public class LoginManagerImpl implements LoginManager {
     @Override
     public boolean isLoginUserInBlackList(final String username, final String ip) {
         //校验username是否在账户黑名单中
-        if (operateTimesService.isUserInBlackList(username,ip) || operateTimesService.isLoginTimesForBlackList(username,ip)) {
+        if (operateTimesService.isUserInBlackList(username, ip) || operateTimesService.isLoginTimesForBlackList(username, ip)) {
             //是否在白名单中
             if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
                 return true;
@@ -141,15 +149,15 @@ public class LoginManagerImpl implements LoginManager {
     @Override
     public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId) {
         //记录登陆次数
-        operateTimesService.incLoginTimes(username, ip,true);
+        operateTimesService.incLoginTimes(username, ip, true);
         //用户登陆记录
         secureManager.logActionRecord(passportId, clientId, AccountModuleEnum.LOGIN, ip, null);
     }
 
     @Override
-    public void doAfterLoginFailed(final String username, final String ip,String errCode) {
-        if(USERNAME_PWD_ERROR.equals(errCode)){
-            operateTimesService.incLoginTimes(username, ip,false);
+    public void doAfterLoginFailed(final String username, final String ip, String errCode) {
+        if (USERNAME_PWD_ERROR.equals(errCode)) {
+            operateTimesService.incLoginTimes(username, ip, false);
         }
     }
 
