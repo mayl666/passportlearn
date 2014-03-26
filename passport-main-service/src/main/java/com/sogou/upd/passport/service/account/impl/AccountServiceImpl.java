@@ -181,6 +181,9 @@ public class AccountServiceImpl implements AccountService {
                 return result;
             }
             result = verifyUserPwdValidByPasswordType(userAccount, password, needMD5);
+            if (result.isSuccess()) {
+                result.setDefaultModel(userAccount);
+            }
             return result;
         } catch (Exception e) {
             throw new ServiceException(e);

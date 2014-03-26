@@ -23,7 +23,6 @@ import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.*;
@@ -135,17 +134,17 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         try {
 
-            SendCaptchaApiParams sendCaptchaApiParams = new SendCaptchaApiParams();
-            sendCaptchaApiParams.setMobile(mobile);
-            sendCaptchaApiParams.setClient_id(clientId);
-            sendCaptchaApiParams.setType(3);
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
-                // SOHU接口
-                result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
-            } else {
-                result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
-                // result = sgBindApiManager.sendCaptcha(sendCaptchaApiParams);
-            }
+//            SendCaptchaApiParams sendCaptchaApiParams = new SendCaptchaApiParams();
+//            sendCaptchaApiParams.setMobile(mobile);
+//            sendCaptchaApiParams.setClient_id(clientId);
+//            sendCaptchaApiParams.setType(3); //todo 是否是搜狐接口预留字段，需要自测时验证
+//            if (ManagerHelper.isInvokeProxyApi(userId)) {
+            // SOHU接口
+//                result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
+//            } else {
+            result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
+            // result = sgBindApiManager.sendCaptcha(sendCaptchaApiParams);
+//            }
 
             if (!result.isSuccess()) {
                 return result;
@@ -165,25 +164,25 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         try {
 
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
-                // SOHU接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-                getUserInfoApiparams.setUserid(userId);
-                getUserInfoApiparams.setClient_id(clientId);
-                getUserInfoApiparams.setFields(SECURE_FIELDS);
-                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                Map<String, String> mapResult = result.getModels();
-                String mobile = mapResult.get("sec_mobile");
-
-                SendCaptchaApiParams sendCaptchaApiParams = new SendCaptchaApiParams();
-                sendCaptchaApiParams.setMobile(mobile);
-                sendCaptchaApiParams.setClient_id(clientId);
-                sendCaptchaApiParams.setType(4);
-                result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
-            } else {
+//            if (ManagerHelper.isInvokeProxyApi(userId)) {
+//                // SOHU接口
+//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+//                getUserInfoApiparams.setUserid(userId);
+//                getUserInfoApiparams.setClient_id(clientId);
+//                getUserInfoApiparams.setFields(SECURE_FIELDS);
+//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+//                Map<String, String> mapResult = result.getModels();
+//                String mobile = mapResult.get("sec_mobile");
+//
+//                SendCaptchaApiParams sendCaptchaApiParams = new SendCaptchaApiParams();
+//                sendCaptchaApiParams.setMobile(mobile);
+//                sendCaptchaApiParams.setClient_id(clientId);
+//                sendCaptchaApiParams.setType(4); //todo sohu字段，表示解绑手机号
+//                result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
+//            } else {
                 result = sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.SECURE);
                 // result = sgBindApiManager.sendCaptcha(sendCaptchaApiParams);
-            }
+//            }
 
             if (!result.isSuccess()) {
                 return result;
@@ -356,7 +355,7 @@ public class SecureManagerImpl implements SecureManager {
 //            if (ManagerHelper.isInvokeProxyApi(username)) {
 //                result = proxySecureApiManager.updatePwd(updatePwdApiParams);
 //            } else {
-                result = sgSecureApiManager.updatePwd(updatePwdApiParams);
+            result = sgSecureApiManager.updatePwd(updatePwdApiParams);
 //            }
 
             if (result.isSuccess()) {
@@ -520,22 +519,22 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
-                // 代理接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-                getUserInfoApiparams.setUserid(userId);
-                getUserInfoApiparams.setClient_id(clientId);
-                getUserInfoApiparams.setFields(SECURE_FIELDS);
-                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                Map<String, String> mapResult = result.getModels();
-                String mobile = mapResult.get("sec_mobile");
-
-                if (proxyBindApiManager.cacheOldCaptcha(mobile, clientId, smsCode)) {
-                    result.setSuccess(true);
-                }
-            } else {
+//            if (ManagerHelper.isInvokeProxyApi(userId)) {
+//                // 代理接口
+//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+//                getUserInfoApiparams.setUserid(userId);
+//                getUserInfoApiparams.setClient_id(clientId);
+//                getUserInfoApiparams.setFields(SECURE_FIELDS);
+//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+//                Map<String, String> mapResult = result.getModels();
+//                String mobile = mapResult.get("sec_mobile");
+//
+//                if (proxyBindApiManager.cacheOldCaptcha(mobile, clientId, smsCode)) {
+//                    result.setSuccess(true);
+//                }
+//            } else {
                 result = checkMobileCodeByPassportId(userId, clientId, smsCode);
-            }
+//            }
 
             if (result.isSuccess()) {
                 result.setDefaultModel("scode", accountSecureService.getSecureCodeModSecInfo(
@@ -600,7 +599,6 @@ public class SecureManagerImpl implements SecureManager {
                 }
                 account = (Account) result.getDefaultModel();
                 // result.setDefaultModel(null);
-
                 result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
                 if (!result.isSuccess()) {
                     return result;
@@ -659,33 +657,33 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
-                // 代理接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-                getUserInfoApiparams.setUserid(userId);
-                getUserInfoApiparams.setClient_id(clientId);
-                getUserInfoApiparams.setFields(SECURE_FIELDS);
-                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                Map<String, String> mapResult = result.getModels();
-                String mobile = mapResult.get("sec_mobile");
-
-                String captcha = proxyBindApiManager.getOldCaptcha(mobile, clientId);
-                if (Strings.isNullOrEmpty(captcha)) {
-                    result = new APIResultSupport(false); // 修改getUserInfo成功造成此处成功的Bug
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-                    return result;
-                }
-
-                BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
-                bindMobileApiParams.setUserid(userId);
-                bindMobileApiParams.setClient_id(clientId);
-                bindMobileApiParams.setNewMobile(newMobile);
-                bindMobileApiParams.setNewCaptcha(smsCode);
-                bindMobileApiParams.setOldMobile(mobile);
-                bindMobileApiParams.setOldCaptcha(captcha);
-
-                result = proxyBindApiManager.bindMobile(bindMobileApiParams);
-            } else {
+//            if (ManagerHelper.isInvokeProxyApi(userId)) {
+//                // 代理接口
+//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+//                getUserInfoApiparams.setUserid(userId);
+//                getUserInfoApiparams.setClient_id(clientId);
+//                getUserInfoApiparams.setFields(SECURE_FIELDS);
+//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+//                Map<String, String> mapResult = result.getModels();
+//                String mobile = mapResult.get("sec_mobile");
+//
+//                String captcha = proxyBindApiManager.getOldCaptcha(mobile, clientId);
+//                if (Strings.isNullOrEmpty(captcha)) {
+//                    result = new APIResultSupport(false); // 修改getUserInfo成功造成此处成功的Bug
+//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+//                    return result;
+//                }
+//
+//                BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
+//                bindMobileApiParams.setUserid(userId);
+//                bindMobileApiParams.setClient_id(clientId);
+//                bindMobileApiParams.setNewMobile(newMobile);
+//                bindMobileApiParams.setNewCaptcha(smsCode);
+//                bindMobileApiParams.setOldMobile(mobile);
+//                bindMobileApiParams.setOldCaptcha(captcha);
+//
+//                result = proxyBindApiManager.bindMobile(bindMobileApiParams);
+//            } else {
                 Account account;
 
                 result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
@@ -717,7 +715,7 @@ public class SecureManagerImpl implements SecureManager {
                 }
                 result.setSuccess(true);
                 // TODO:事务安全问题，暂不解决
-            }
+//            }
 
             if (!result.isSuccess()) {
                 return result;
@@ -768,8 +766,8 @@ public class SecureManagerImpl implements SecureManager {
 //                // 代理接口
 //                result = proxySecureApiManager.updateQues(updateQuesApiParams);
 //            } else {
-                // SOGOU接口
-                result = sgSecureApiManager.updateQues(updateQuesApiParams);
+            // SOGOU接口
+            result = sgSecureApiManager.updateQues(updateQuesApiParams);
 //            }
 
             if (!result.isSuccess()) {
