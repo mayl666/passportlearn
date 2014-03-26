@@ -88,13 +88,13 @@
                         <div class="form-item">
     <label for="PasswordIpt">登录密码：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="请输入您的登录密码" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="请输入您的登录密码" class="" placeholder=""/>
     </span>
 </div>
                         <div class="form-item">
     <label for="New_emailIpt">密保邮箱：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require email" type="text" name="new_email" id="New_emailIpt" value="" data-desc="请输入您的密保邮箱" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require email" type="text" name="new_email" id="New_emailIpt" value="" data-desc="请输入您的密保邮箱" class="" placeholder=""/>
     </span>
 </div>
                         <div class="form-btn">
@@ -125,19 +125,19 @@
         <div class="form-item">
     <label for="PasswordIpt">登录密码：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="请输入您的登录密码" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="请输入您的登录密码" class="" placeholder=""/>
     </span>
 </div>
         <div class="form-item">
     <label for="Old_emailIpt">当前密保邮箱：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require email" type="text" name="old_email" id="Old_emailIpt" value="" data-desc="请输入您当前密保邮箱" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require email" type="text" name="old_email" id="Old_emailIpt" value="" data-desc="请输入您当前密保邮箱" class="" placeholder=""/>
     </span>
 </div>
         <div class="form-item">
     <label for="New_emailIpt">新密保邮箱：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require email" type="text" name="new_email" id="New_emailIpt" value="" data-desc="请输入新密保邮箱" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require email" type="text" name="new_email" id="New_emailIpt" value="" data-desc="请输入新密保邮箱" class="" placeholder=""/>
     </span>
 </div>
         <div class="form-btn">
@@ -157,7 +157,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/safe.js?t=2014022527"></script>
+    <script type="text/javascript" src="/./static/js/safe.js?t=2014032547"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

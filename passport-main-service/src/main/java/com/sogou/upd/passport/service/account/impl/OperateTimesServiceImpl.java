@@ -203,6 +203,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     num = Integer.parseInt(username_failedNum);
                     if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
                         blackItemService.addIPOrUsernameToLoginBlackList(username,BlackItem.FAILED_LIMIT,false);
+                        redisUtils.delete(userName_hKey);
                         return true;
                     }
                 }
@@ -211,6 +212,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     num = Integer.parseInt(username_successNum);
                     if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
                         blackItemService.addIPOrUsernameToLoginBlackList(username,BlackItem.SUCCESS_LIMIT,false);
+                        redisUtils.delete(userName_hKey);
                         return true;
 
                     }
@@ -228,12 +230,14 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                         if (checkInSubIpList(ip)) {
                             if (num >= LoginConstant.LOGIN_FAILED_SUB_IP_LIMIT_COUNT) {
                                 blackItemService.addIPOrUsernameToLoginBlackList(ip,BlackItem.FAILED_LIMIT,true);
+                                redisUtils.delete(ip_hKey);
                                 return true;
 
                             }
                         } else {
                             if (num >= LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_IP_LIMIT_COUNT) {
                                 blackItemService.addIPOrUsernameToLoginBlackList(ip,BlackItem.FAILED_LIMIT,true);
+                                redisUtils.delete(ip_hKey);
                                 return true;
 
                             }
@@ -244,6 +248,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                         num = Integer.parseInt(ip_successNum);
                         if (num >= LoginConstant.LOGIN_IP_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
                             blackItemService.addIPOrUsernameToLoginBlackList(ip,BlackItem.SUCCESS_LIMIT,true);
+                            redisUtils.delete(ip_hKey);
                             return true;
 
                         }
@@ -301,7 +306,11 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public void incRegTimesForInternal(final String ip) throws ServiceException {
+    public void incRegTimesForInternal(final String ip,int clientId) throws ServiceException {
+        if(clientId == 1115 ){
+            String clientIdKey = CacheConstant.CACHE_PREFIX_REGISTER_CLIENTIDBLACKLIST + clientId;
+            recordTimes(clientIdKey, DateAndNumTimesConstant.TIME_ONEHOUR);
+        }
         //ip与cookie映射
         String ipCookieKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_null";
         recordTimes(ipCookieKey, DateAndNumTimesConstant.TIME_ONEDAY);
@@ -347,7 +356,17 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public boolean checkRegInBlackListForInternal(String ip) throws ServiceException {
+    public boolean checkRegInBlackListForInternal(String ip,int clientId) throws ServiceException {
+        if(clientId == 1115 ){
+            String clientIdKey = CacheConstant.CACHE_PREFIX_REGISTER_CLIENTIDBLACKLIST + clientId;
+            String clientIdValue = redisUtils.get(clientIdKey);
+            if (!Strings.isNullOrEmpty(clientIdValue)) {
+                int num = Integer.valueOf(clientIdValue);
+                if (num >= LoginConstant.REGISTER_IP_COOKIE_LIMITED_FOR_INTERNAL) {
+                    return true;
+                }
+            }
+        }
         //通过ip+cookie限制注册次数
         String ipCookieKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_null";
         String value = redisUtils.get(ipCookieKey);

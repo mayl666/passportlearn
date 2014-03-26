@@ -76,7 +76,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             }
 
             String redirectURI = ConnectManagerHelper.constructRedirectURI(clientId, connectLoginParams.getRu(), connectLoginParams.getType(),
-                    connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(), connectLoginParams.getDomain());
+                    connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(), connectLoginParams.getDomain(),connectLoginParams.getThirdInfo());
             String scope = connectConfig.getScope();
             String appKey = connectConfig.getAppKey();
             String connectType = connectLoginParams.getType();
@@ -148,8 +148,14 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                 return result;
             }
+            // type=pc时需要昵称字段
+            String uniqName = account.getUniqname();
+            if(Strings.isNullOrEmpty(uniqName)){
+                uniqName = connectToken.getConnectUniqname();
+            }
             result.setSuccess(true);
             result.setDefaultModel("connectToken", connectToken);
+            result.setDefaultModel("uniqName", uniqName);
         } catch (ServiceException se) {
             logger.error("[connect]method buildConnectAccount ServiceException: database operation error.{}", se);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);

@@ -76,13 +76,13 @@
                     <div class="form-item">
     <label for="PasswordIpt">密码：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" class="" placeholder=""/>
     </span>
 </div>
                     <div class="form-item">
     <label for="Password2Ipt">确认密码：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" data-desc="" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require vpasswd(password)" type="password" name="password2" id="Password2Ipt" value="" data-desc="" class="" placeholder=""/>
     </span>
 </div>
                     <div class="form-item form-item-vcode">
@@ -118,7 +118,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2014022527"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2014032547"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

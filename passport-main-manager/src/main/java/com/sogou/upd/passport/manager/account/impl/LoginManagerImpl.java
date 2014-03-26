@@ -31,6 +31,7 @@ public class LoginManagerImpl implements LoginManager {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginManagerImpl.class);
     private static final String LOGIN_INDEX_URLSTR = "://account.sogou.com";
+    private static final String USERNAME_PWD_ERROR = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR;
 
     @Autowired
     private AccountService accountService;
@@ -150,8 +151,10 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Override
-    public void doAfterLoginFailed(final String username, final String ip) {
-        operateTimesService.incLoginTimes(username, ip,false);
+    public void doAfterLoginFailed(final String username, final String ip,String errCode) {
+        if(USERNAME_PWD_ERROR.equals(errCode)){
+            operateTimesService.incLoginTimes(username, ip,false);
+        }
     }
 
     @Override

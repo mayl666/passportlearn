@@ -23,12 +23,12 @@ public class AccountInfoParams {
     private String birthday;  //用户生日
     @Gender
     private String gender;  //用户性别
-    private Integer province;  //省份
-    private Integer city;    //城市
+    private String province;  //省份
+    private String city;    //城市
     private String fullname;  //姓名
     @IdCard
     private String personalid;     //身份证号
-    private String nickname;
+    private String uniqname;
 
     @AssertTrue(message = "省市参数错误！")
     public boolean isCheckProvinceAndCity() {
@@ -69,12 +69,12 @@ public class AccountInfoParams {
         this.username = username;
     }
 
-    public String getNickname() {
-        return nickname;
+    public String getUniqname() {
+        return uniqname;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setUniqname(String uniqname) {
+        this.uniqname = uniqname;
     }
 
     public String getBirthday() {
@@ -93,19 +93,19 @@ public class AccountInfoParams {
         this.gender = gender;
     }
 
-    public Integer getProvince() {
+    public String getProvince() {
         return province;
     }
 
-    public void setProvince(Integer province) {
+    public void setProvince(String province) {
         this.province = province;
     }
 
-    public Integer getCity() {
+    public String getCity() {
         return city;
     }
 
-    public void setCity(Integer city) {
+    public void setCity(String city) {
         this.city = city;
     }
 

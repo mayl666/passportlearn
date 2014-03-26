@@ -6,13 +6,13 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
@@ -55,13 +55,10 @@ public class LoginAction extends BaseController {
     @Autowired
     private RegManager regManager;
     @Autowired
-    private CommonManager commonManager;
+    private CookieManager cookieManager;
 
     @Autowired
     private HostHolder hostHolder;
-
-    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
-    private static final String COOKIE_URL_SOHURU = "https://account.sogou.com/static/api/ru.htm";   //种完sohu域要跳转的URL
 
 
     /**
@@ -73,7 +70,6 @@ public class LoginAction extends BaseController {
     @ResponseBody
     public String checkNeedCaptcha(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
-
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(checkParam);
@@ -147,9 +143,9 @@ public class LoginAction extends BaseController {
             int sogouMaxAge = autoLogin == 0 ? -1 : (int) DateAndNumTimesConstant.TWO_WEEKS;
             String sogouRu = loginParams.getRu();
             if (Strings.isNullOrEmpty(sogouRu)) {
-                sogouRu = LOGIN_INDEX_URL;
+                sogouRu = CommonConstant.DEFAULT_INDEX_URL;
             }
-            result = commonManager.setCookie(response, userId, clientId, ip, sogouMaxAge, sogouRu, autoLogin, COOKIE_URL_SOHURU);
+            result = cookieManager.setCookie(response, userId, clientId, ip,sogouRu,sogouMaxAge);
             if (result.isSuccess()) {
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
                 result.setDefaultModel("userid", userId);
@@ -157,7 +153,7 @@ public class LoginAction extends BaseController {
             }
 
         } else {
-            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip);
+            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip,result.getCode());
             //校验是否需要验证码
             boolean needCaptcha = loginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
             if (needCaptcha) {
@@ -179,7 +175,7 @@ public class LoginAction extends BaseController {
      * 通过js调用，返回结果
      */
     @RequestMapping(value = "/logout_js", method = RequestMethod.GET)
-    public ModelAndView logoutInjs(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "client_id", required = false) String client_id)
+    public void logoutInjs(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "client_id", required = false) String client_id)
             throws Exception {
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
@@ -193,8 +189,6 @@ public class LoginAction extends BaseController {
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
-
-        return new ModelAndView(new RedirectView(SHPPUrlConstant.CLEAN_COOKIE));
     }
 
     /**
@@ -222,11 +216,8 @@ public class LoginAction extends BaseController {
             if (StringUtil.isBlank(referer)) {
                 referer = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
-            ru = URLEncoder.encode(referer, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = referer;
         }
-        StringBuilder url = new StringBuilder(SHPPUrlConstant.CLEAN_COOKIE_REDIRECT);
-        url.append(ru);
-
-        return new ModelAndView(new RedirectView(url.toString()));
+        return new ModelAndView(new RedirectView(ru));
     }
 }

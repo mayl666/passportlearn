@@ -1,11 +1,11 @@
-package com.sogou.upd.passport.dao.shplustransfer;
+package com.sogou.upd.passport.dao.datatransfertest.shplustransfer;
 
 
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.dao.BaseDAOTest;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.dao.account.SnamePassportMappingDAO;
-import com.sogou.upd.passport.dao.shplustransfer.DO.SohuPassportSidMapping;
+import com.sogou.upd.passport.dao.datatransfertest.shplustransfer.DO.SohuPassportSidMapping;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.SnamePassportMapping;
 import org.codehaus.jackson.map.ObjectMapper;

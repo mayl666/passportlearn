@@ -194,9 +194,8 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         kvUtils.pushObjectWithMaxLen(key, record, maxLen);
     }
 
-
     /**
-     * 保存用户行为记录至核心kv
+     * 保存用户操作行为到核心kv集群
      *
      * @param key
      * @param record

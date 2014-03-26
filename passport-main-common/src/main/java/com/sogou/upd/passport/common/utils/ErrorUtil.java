@@ -154,6 +154,9 @@ public class ErrorUtil {
     public static final String ERR_CODE_UNIQNAME_FORBID = "20249";
     // 删除cookie失败
     public static final String ERR_CODE_REMOVE_COOKIE_FAILED = "20255";
+    //SSOAfterauth失败
+    public static final String ERR_CODE_SSO_After_Auth_FAILED = "20256";
+
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -267,6 +270,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST = "30029";
     //没有找到此应用对应的第三方平台信息
     public static final String ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND = "30031";
+    //只支持第三方平台账号登录
+    public static final String ERR_CODE_CONNECT_LOGIN = "30032";
 
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
@@ -322,7 +327,13 @@ public class ErrorUtil {
     /* ============================================================================ */
     public static final String ERR_CODE_ERROR_ACCOUNT = "30701";
 
-    public static final String ERR_CODE_ERROR_SERVERNAME = "30710";
+    //cookie值无效
+    public static final String ERR_CODE_ERROR_COOKIE = "30710";
+
+    //个人信息修改失败
+    public static final String ERR_CODE_UPDATE_USERINFO = "30801";
+    //获取个人资料失败
+    public static final String ERR_OBTAIN_ACCOUNT_INFO = "30802";
 
     public ErrorUtil() {
         super();
@@ -393,6 +404,9 @@ public class ErrorUtil {
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_CREATE_COOKIE_FAILED, "生成cookie失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_REMOVE_COOKIE_FAILED, "删除cookie失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_After_Auth_FAILED, "SSOAfterauth失败");
+
+
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED, "该邮箱当日邮件发送次数已达上限");
@@ -440,6 +454,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_UPLOAD_PHOTO, "上传图片失败");
         ERR_CODE_MSG_MAP.put(ERR_OBTAIN_PHOTO, "获取图像失败");
 
+        ERR_CODE_MSG_MAP.put(ERR_CODE_UPDATE_USERINFO, "个人信息修改失败");
+        ERR_CODE_MSG_MAP.put(ERR_OBTAIN_ACCOUNT_INFO, "获取个人信息失败");
+
         // connect
         ERR_CODE_MSG_MAP.put(CONNECT_REQUEST_FREQUENCY_LIMIT, "超过第三方接口的访问限制");
         ERR_CODE_MSG_MAP.put(CONNECT_USER_DENIED_LOGIN, "用户拒绝登录授权");
@@ -460,6 +477,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_TOKEN_ERROR, "token无效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST, "refreshToken没有找到");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND, "没有找到此应用对应的第三方平台信息");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_LOGIN, "只支持第三方平台账号登录");
 
         // info
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERID_TYPE_ERROR, "账号非所支持的第三方账号类型");
@@ -487,7 +505,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_ACCOUNT, "账号冲突或者异常，请到论坛问题反馈区找回账号");
 
         //SSO setcookie接口
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_SERVERNAME, "非法的服务器名");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_COOKIE, "cookie值无效");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

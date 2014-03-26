@@ -14,13 +14,14 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 public enum AccountTypeEnum {
 
     UNKNOWN(0), //未知
-    EMAIL(1), // 邮箱
+    EMAIL(1), // 外域邮箱账号
     PHONE(2), // 手机号码
     QQ(3), // QQ
     SINA(4), // Sina微博
     RENREN(5), // 人人
     TAOBAO(6), // 淘宝
-    BAIDU(7);  // 百度
+    BAIDU(7),  // 百度
+    SOGOU(8);  // @sogou.com账号
 
     // provider数字与字符串映射字典表
     private static BiMap<String, Integer> PROVIDER_MAPPING_DICT = HashBiMap.create();
@@ -115,12 +116,23 @@ public enum AccountTypeEnum {
 
     /**
      * 生成第三方账号的passportId
+     *
      * @param openid
      * @param provider
      * @return
      */
-    public static String generateThirdPassportId(String openid, String provider){
-        return openid+"@" + provider + ".sohu.com";
+    public static String generateThirdPassportId(String openid, String provider) {
+        return openid + "@" + provider + ".sohu.com";
+    }
+
+    /**
+     * 根据passportId,截取openid
+     *
+     * @param passportId
+     * @return
+     */
+    public static String getOpenIdByPassportId(String passportId) {
+        return passportId.split("@")[0];
     }
 
     @Override

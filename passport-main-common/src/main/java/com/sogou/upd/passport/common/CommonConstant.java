@@ -14,6 +14,7 @@ import java.util.Set;
 public class CommonConstant {
 
     public static final int SGPP_DEFAULT_CLIENTID = 1120;
+    public static final String SGPP_DEFAULT_SERVER_SECRET = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
     public static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
     public static final int WAN_CLIENTID = 1100; //游戏client_id
     public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
@@ -40,6 +41,8 @@ public class CommonConstant {
     public static final String QQ_SERVER_NAME = "openapi.tencentyun.com";   //QQ正式环境可以使用域名，http的，需要sig签名
     public static final String QQ_SERVER_NAME_GRAPH = "graph.qq.com";   //QQ https请求域名，不需要sig签名
     public static final String QQ_SERVER_NAME_OPENMOBILE = "openmobile.qq.com"; //QQ https请求域名，不需要sig签名
+    public static final int WITH_CONNECT_ORIGINAL = 1;      //1表示需要从第三方获取原始信息,默认为0，不返回第三方原始信息
+    public static final int NOT_WITH_CONNECT_ORIGINAL = 0;      //1表示需要从第三方获取原始信息,默认为0，不返回第三方原始信息
 
     public static final String CLIENT_ID = "client_id";
     public static final String APP_ID = "appid";
@@ -60,6 +63,7 @@ public class CommonConstant {
     public static final String OPENID = "openid";
 
     public static final String DEFAULT_CONNECT_REDIRECT_URL = "https://account.sogou.com";
+    public static final String DEFAULT_INDEX_URL = "https://account.sogou.com";
     public static final String DEFAULT_WAP_URL="http://wap.sogou.com";
     public static final String DEFAULT_WAP_CONNECT_REDIRECT_URL = "http://wap.sogou.com";
     public static final String SOGOU_ROOT_DOMAIN = ".sogou.com";
@@ -75,6 +79,8 @@ public class CommonConstant {
     public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 1; // 默认种cookie的有效期，1小时
     public static final long API_REQUEST_VAILD_TERM = 500000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒
     public static final long COOKIE_REQUEST_VAILD_TERM = 5 * 60; //接口请求的有效期为5分钟，单位为秒
+    public static final long COOKIE_REQUEST_VAILD_TERM_IN_MILLI = 5 * 60*1000; //接口请求的有效期为5分钟，单位为秒
+
 
     public static final String LOGIN_IN_BLACKLIST = "1"; //用户名或者ip在黑名单的标识
 

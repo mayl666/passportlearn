@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.internal.connect;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;

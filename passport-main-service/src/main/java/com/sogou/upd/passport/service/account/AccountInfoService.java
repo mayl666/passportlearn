@@ -23,5 +23,9 @@ public interface AccountInfoService {
      * 修改密保问题和答案
      */
     public AccountInfo modifyQuesByPassportId(String passportId, String question, String answer) throws ServiceException;
+    /**
+     * 修改个人信息
+     */
+    public boolean updateAccountInfo(AccountInfo accountInfo);
 
 }

@@ -198,10 +198,11 @@ public class StringUtil {
     /**
      * 过滤第三方用户昵称，包含：
      * strToUTF8 & filterEmoji
+     *
      * @param str
      * @return
      */
-    public static String filterConnectUniqname(String str){
+    public static String filterConnectUniqname(String str) {
         try {
             str = filterEmoji(strToUTF8(str));
         } catch (UnsupportedEncodingException e) {
@@ -289,6 +290,21 @@ public class StringUtil {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * 所有参数都不为空返回true，否则返回false
+     *
+     * @param args
+     * @return
+     */
+    public static boolean isNotEmpty(String... args) {
+        for (int i = 0; i < args.length; i++) {
+            if (Strings.isNullOrEmpty(args[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

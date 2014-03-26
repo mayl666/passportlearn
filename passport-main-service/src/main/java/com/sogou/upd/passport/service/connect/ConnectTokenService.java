@@ -49,4 +49,25 @@ public interface ConnectTokenService {
     public boolean insertOrUpdateConnectToken(ConnectToken connectToken) throws ServiceException;
 
 
+    /**
+     * 新增或修改connect_token缓存
+     *
+     * @param passportId
+     * @param connectToken
+     * @return
+     * @throws ServiceException
+     */
+    public boolean initialOrUpdateConnectTokenCache(String passportId, ConnectToken connectToken) throws ServiceException;
+
+
+    /**
+     * 获取connect_token表缓存
+     *
+     * @param passportId
+     * @param provider
+     * @param appKey
+     * @return
+     */
+    public ConnectToken obtainCachedConnectToken(String passportId, int provider, String appKey);
+
 }

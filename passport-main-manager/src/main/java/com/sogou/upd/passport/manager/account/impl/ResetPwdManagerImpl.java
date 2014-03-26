@@ -56,8 +56,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     @Autowired
     private SecureApiManager sgSecureApiManager;
     @Autowired
-    private SecureApiManager proxySecureApiManager;
-    @Autowired
     private UserInfoApiManager proxyUserInfoApiManager;
 
     @Override

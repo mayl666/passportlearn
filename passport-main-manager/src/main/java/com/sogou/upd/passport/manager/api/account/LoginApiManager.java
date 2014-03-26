@@ -45,7 +45,7 @@ public interface LoginApiManager {
      * @param createCookieUrlApiParams
      * @return
      */
-    public Result getCookieValue(CreateCookieUrlApiParams createCookieUrlApiParams);
+    public Result getCookieInfoWithRedirectUrl(CreateCookieUrlApiParams createCookieUrlApiParams);
 
     /**
      * 生成的cookie值

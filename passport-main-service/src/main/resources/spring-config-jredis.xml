@@ -83,9 +83,9 @@
           p:usePool="true">
         <property name="hostName" value="${passport.kv.url}"/>
         <property name="port" value="${passport.kv.port}"/>
-        <!--<property name="password" value="${redis.pass}"/>-->
-        <!--<property name="timeout" value="${redis.timeout}"/>-->
-        <!--<property name="database" value="${redis.default.db}"></property>-->
+        <!--&lt;!&ndash;<property name="password" value="${redis.pass}"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="timeout" value="${redis.timeout}"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;<property name="database" value="${redis.default.db}"></property>&ndash;&gt;-->
         <constructor-arg index="0" ref="kvPoolConfig"/>
     </bean>
     <bean id="kvTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
@@ -93,13 +93,13 @@
     <bean id="kvUtils" class="com.sogou.upd.passport.common.utils.KvUtils">
         <property name="kvTemplate" ref="kvTemplate"/>
     </bean>
-    <!-- core kv 集群  -->
+
     <bean id="coreKvTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
           p:connectionFactory-ref="kvConnectionFactory"/>
     <bean id="coreKvUtils" class="com.sogou.upd.passport.common.utils.CoreKvUtils">
         <property name="coreKvTemplate" ref="coreKvTemplate"/>
     </bean>
-                           l
+
     <!-- token redis utils-->
     <bean id="tokenPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <property name="maxActive" value="200"/>

@@ -44,7 +44,7 @@ public interface OAuth2ResourceManager {
      * @param passportId
      * @return
      */
-    public String getUniqname(String passportId);
+    public String getUniqname(String passportId,int clientId);
 
     /**
      * 获取账号默认昵称
@@ -58,6 +58,20 @@ public interface OAuth2ResourceManager {
      * @param passportId
      * @return
      */
-    public String getEncodedUniqname(String passportId);
+    public String getEncodedUniqname(String passportId,int clientId);
+    /**
+     * 获取用户个人信息
+     * @param passportId
+     * @return
+     */
+    public Result getUserInfo(String passportId,int clientId);
+
+    /**
+     * 通过token获取passportId
+     * @param accessToken
+     * @param clientId
+     * @return
+     */
+    public Result getPassportIdByToken(String accessToken, int clientId);
 
 }

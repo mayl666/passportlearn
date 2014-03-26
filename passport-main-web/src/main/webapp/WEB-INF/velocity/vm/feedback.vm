@@ -49,7 +49,7 @@
                 <div class="form-item">
     <label for="EmailIpt">邮箱：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require email" type="text" name="email" id="EmailIpt" value="" data-desc="请输入您的邮箱地址" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require email" type="text" name="email" id="EmailIpt" value="" data-desc="请输入您的邮箱地址" class="" placeholder=""/>
     </span>
 </div>
                 <div class="form-item">
@@ -63,7 +63,7 @@
                 <div class="form-item">
     <label for="TitleIpt">标题：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require max(20)" type="text" name="title" id="TitleIpt" value="" data-desc="" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require max(20)" type="text" name="title" id="TitleIpt" value="" data-desc="" class="" placeholder=""/>
     </span>
 </div>
                 <div class="form-item form-tall">
@@ -106,7 +106,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/feedback.js?t=2014022526"></script>
+    <script type="text/javascript" src="/./static/js/feedback.js?t=2014032547"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

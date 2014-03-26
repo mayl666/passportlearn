@@ -25,11 +25,14 @@
         <property name="acquireIncrement">
             <value>5</value>
         </property>
+        <property name="acquireRetryAttempts">
+            <value>5</value>
+        </property>
         <property name="idleConnectionTestPeriod">
-            <value>3000</value>
+            <value>30000</value>
         </property>
         <property name="checkoutTimeout">
-            <value>30000</value>
+            <value>3000</value>
         </property>
         <property name="maxPoolSize">
             <value>80</value>
@@ -43,13 +46,19 @@
         <property name="initialPoolSize">
             <value>5</value>
         </property>
+        <property name="maxIdleTime">
+            <value>300</value>
+        </property>
+        <property name="numHelperThreads">
+            <value>10</value>
+        </property>
     </bean>
 
     <!-- 配置slave数据库 -->
     <bean id="slaveDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
-            <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
+            <value>jdbc:mysql://10.11.211.18:3306/test?characterEncoding=utf-8</value>
         </property>
         <property name="user">
             <value>sogou_passport</value>
@@ -63,11 +72,14 @@
         <property name="acquireIncrement">
             <value>5</value>
         </property>
+        <property name="acquireRetryAttempts">
+            <value>5</value>
+        </property>
         <property name="idleConnectionTestPeriod">
-            <value>3000</value>
+            <value>30000</value>
         </property>
         <property name="checkoutTimeout">
-            <value>30000</value>
+            <value>3000</value>
         </property>
         <property name="maxPoolSize">
             <value>80</value>
@@ -80,6 +92,12 @@
         </property>
         <property name="initialPoolSize">
             <value>5</value>
+        </property>
+        <property name="maxIdleTime">
+            <value>300</value>
+        </property>
+        <property name="numHelperThreads">
+            <value>10</value>
         </property>
     </bean>
 
@@ -96,18 +114,17 @@
 
     <!-- 分表设置 -->
     <bean id="jade.routerInterpreter" class="com.xiaomi.common.service.dal.routing.RewriteSQLInterpreter">
-        <property name="routingConfigurator" ref="jade.routingConfigurator"/>
+        <property name="routingConfigurator" ref="jade.routingConfigurator" />
     </bean>
     <bean id="jade.routingConfigurator" class="com.sogou.upd.passport.dao.dal.routing.SGRoutingConfigurator">
         <property name="partitions">
             <list>
-                <value>sg-str-hash:account:passport_id:account_{0}:3</value>
-                <value>sg-str-hash:connect_token:passport_id:connect_token_{0}:3</value>
-                <value>sg-str-hash:connect_relation:passport_id:connect_relation_{0}:3</value>
+                <value>sg-str-hash:account:passport_id:account_{0}:32</value>
+                <value>sg-str-hash:connect_token:passport_id:connect_token_{0}:32</value>
+                <value>sg-str-hash:connect_relation:passport_id:connect_relation_{0}:32</value>
             </list>
         </property>
     </bean>
-
 
     <bean class="net.paoding.rose.jade.context.spring.JadeBeanFactoryPostProcessor"/>
 

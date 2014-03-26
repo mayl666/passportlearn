@@ -39,13 +39,15 @@ public interface AccountBaseInfoDAO {
     public AccountBaseInfo getAccountBaseInfoByPassportId(@SQLParam("passport_id") String passport_id) throws DataAccessException;
 
     /**
-     * 根据passportId获取Account
+     * 每次取固定条数的第三方账号的记录
      */
     @SQL("select" +
             ALL_FIELD +
             "from" +
-            TABLE_NAME )
-    public List<AccountBaseInfo> listAccountBaseInfo() throws DataAccessException;
+            TABLE_NAME +
+            " where passport_id LIKE \'%@%.sohu.com\' LIMIT :pageIndex,:pageSize")
+    public List<AccountBaseInfo> listConnectBaseInfoByPage(@SQLParam("pageIndex") int pageIndex,
+                                                           @SQLParam("pageSize") int pageSize) throws DataAccessException;
 
     /**
      * 修改头像信息
@@ -89,5 +91,16 @@ public interface AccountBaseInfoDAO {
             + "passport_id=:passport_id,uniqname=:baseInfo.uniqname,avatar=:baseInfo.avatar")
     public int saveAccountBaseInfo(@SQLParam("passport_id") String passport_id, @SQLParam("baseInfo") AccountBaseInfo baseInfo) throws
             DataAccessException;
+
+    /**
+     * 计算第三方账号总数
+     *
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("select count(*) from" +
+            TABLE_NAME + "where passport_id LIKE \'%@%.sohu.com\'")
+    public int getConnectTotalCount() throws DataAccessException;
+
 
 }

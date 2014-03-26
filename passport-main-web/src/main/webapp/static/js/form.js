@@ -45,6 +45,10 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
 
     $.uuiForm.addType('nickname' , function(value){
         return  nicknameReg.test(value)&&(invalidNicknameKey.indexOf(value)<0);
+    });
+
+    $.uuiForm.addType('uniqname' , function(value){
+        return  nicknameReg.test(value)&&(invalidNicknameKey.indexOf(value)<0);
     });    
 
     $.uuiForm.addType('fullname' , function(value){
@@ -133,6 +137,15 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
             return '输入字符请少于' + max + '个字';
         },
         nickname: function($el){
+            if($el.val().length <2 || $el.val().length>12 ){
+                return '昵称长度为2-12位';
+            }else if(/[^\u4e00-\u9fa5a-zA-Z0-9]/.test($el.val())){
+                return "只能使用中文、字母、数字";
+            }else if(invalidNicknameKey.indexOf($el.val())>-1){
+                return "含有非法关键字"
+            }
+            return '昵称不合法';
+        }, uniqname: function($el){
             if($el.val().length <2 || $el.val().length>12 ){
                 return '昵称长度为2-12位';
             }else if(/[^\u4e00-\u9fa5a-zA-Z0-9]/.test($el.val())){

@@ -43,6 +43,8 @@ public class UserInfoApiController extends BaseController {
 
     @Autowired
     private UserInfoApiManager proxyUserInfoApiManager;
+    @Autowired
+    private UserInfoApiManager sgUserInfoApiManager;
 
     /**
      * 获取用户基本信息
@@ -62,8 +64,14 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
+        //第三方获取个人资料
+        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(params.getUserid());
         // 调用内部接口
-        result = proxyUserInfoApiManager.getUserInfo(params);
+        if (domain == AccountDomainEnum.THIRD) {
+            result = sgUserInfoApiManager.getUserInfo(params);
+        }else {
+            result = proxyUserInfoApiManager.getUserInfo(params);
+        }
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("fields",params.getFields());
         UserOperationLogUtil.log(userOperationLog);
@@ -80,7 +88,7 @@ public class UserInfoApiController extends BaseController {
     @InterfaceSecurity
     @RequestMapping(value = "/updateuserinfo", method = RequestMethod.POST)
     @ResponseBody
-    public Object updateUserInfo(UpdateUserInfoApiParams params, HttpServletRequest request) {
+    public Object updateUserInfo(UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -89,8 +97,13 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
+        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(params.getUserid());
         // 调用内部接口
-        result = proxyUserInfoApiManager.updateUserInfo(params);
+        if (domain == AccountDomainEnum.THIRD) {
+            result = sgUserInfoApiManager.updateUserInfo(params);
+        }else {
+            result = proxyUserInfoApiManager.updateUserInfo(params);
+        }
 
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), params.getModifyip());
         UserOperationLogUtil.log(userOperationLog);

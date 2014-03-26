@@ -65,6 +65,26 @@ public interface AccountDAO {
     public int updateMobile(@SQLParam("mobile") String mobile,
                             @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
+
+    /**
+     * 修改昵称
+     */
+    @SQL("update " +
+            TABLE_NAME +
+            " set uniqname=:uniqname where passport_id=:passport_id")
+    public int updateUniqName(@SQLParam("uniqname") String uniqname,
+                               @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
+
+    /**
+     * 修改头像
+     */
+    @SQL("update " +
+            TABLE_NAME +
+            " set avatar=:avatar where passport_id=:passport_id")
+    public int updateAvatar(@SQLParam("avatar") String avatar,
+                            @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
+
+
     /**
      * 封禁或解禁用户
      */

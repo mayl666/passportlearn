@@ -130,7 +130,24 @@ public interface AccountService {
   public boolean checkCaptchaCode(String token, String captchaCode) throws Exception;
 
 
+    /*
+       *更新昵称
+       */
+    public boolean updateUniqName(Account account, String nickname);
+    /*
+       *更新头像
+       */
+    public boolean updateAvatar(Account account, String avatar);
 
 
+    /*
+     *删除昵称
+     */
+    public boolean removeUniqName(String nickname) throws ServiceException;
+
+    /*
+     *检查昵称是否存在
+     */
+    public String checkUniqName(String nickname) throws Exception;
 
 }

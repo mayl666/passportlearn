@@ -57,7 +57,7 @@ public class BaseProxyManager {
                 result.setModels(map);
             }
         } catch (Exception e) {
-            log.error(requestModel.getUrl() + " execute error ", e);
+            log.warn(requestModel.getUrl() + " execute error ", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION));
         }
@@ -78,10 +78,10 @@ public class BaseProxyManager {
 
         //设置默认参数同时计算参数的签名
         this.setDefaultParam(requestModel, signVariableStr);
-        if (requestModel instanceof RequestModelXml ||requestModel instanceof RequestModelXmlGBK) {
+        if (requestModel instanceof RequestModelXml || requestModel instanceof RequestModelXmlGBK) {
 
-            Object result_type=  requestModel.getParams().get("result_type");
-            if(result_type==null){
+            Object result_type = requestModel.getParams().get("result_type");
+            if (result_type == null) {
                 return SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Map.class);
             } else {
                 return SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);

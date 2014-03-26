@@ -13,8 +13,6 @@ public class SHPlusConstant {
     public static final String BROWSER_SHPLUS_CLIENTSECRET = "59be99d1f5e957ba5a20e8d9b4d76df6";
 
     public static final String OAUTH2_TOKEN = "http://open.account.sohu.com/oauth2/token/";
-    public static final String OAUTH2_RESOURCE = "http://open.account.sohu.com/oauth2/resource/";
 
     public static final int SHPl_TOKEN_LEN = 64;
-    public static final String AUTH_TOKEN_SUCCESS = "confirm";
 }

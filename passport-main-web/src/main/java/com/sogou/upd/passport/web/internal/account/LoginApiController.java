@@ -57,6 +57,7 @@ public class LoginApiController extends BaseController {
 
     /**
      * 续种cookie
+     *
      * @param request
      * @param params
      * @return
@@ -73,13 +74,13 @@ public class LoginApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-
         //验证client_id是否存在
         int clientId = params.getClient_id();
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
             return result.toString();
         }
+        //todo 检查用户名是否存在
 
         //设置来源
         String ru = params.getRu();
@@ -87,28 +88,25 @@ public class LoginApiController extends BaseController {
             ru = LOGIN_INDEX_URL;
         }
 
-        String userid = params.getUserid();
-        CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-        createCookieUrlApiParams.setUserid(userid);
-        createCookieUrlApiParams.setRu(ru);
-        createCookieUrlApiParams.setDomain("sogou.com");
-
-        //TODO sogou域账号迁移后cookie生成问题
-        Result getCookieValueResult = proxyLoginApiManager.getCookieValue(createCookieUrlApiParams);
+        String passportId = params.getUserid();
+        String ip = getIp(request);
+        CookieApiParams cookieApiParams = new CookieApiParams(passportId, clientId, ru, ip);
+        Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
         if (getCookieValueResult.isSuccess()) {
             String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
             String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-
             result.setSuccess(true);
             Map<String, String> map = Maps.newHashMap();
-            map.put("userid", userid);
+            map.put("userid", passportId);
             map.put("ppinf", ppinf);
             map.put("pprdig", pprdig);
-
             result.setModels(map);
         } else {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
+        // 获取记录UserOperationLog的数据
+        UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -133,8 +131,8 @@ public class LoginApiController extends BaseController {
         }
         String createip = params.getCreateip();
         try {
-            if(StringUtils.isEmpty(createip)){
-                createip =null;
+            if (StringUtils.isEmpty(createip)) {
+                createip = null;
             }
             if (loginManager.isLoginUserInBlackList(params.getUserid(), createip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
@@ -146,7 +144,7 @@ public class LoginApiController extends BaseController {
                 String userId = result.getModels().get("userid").toString();
                 loginManager.doAfterLoginSuccess(params.getUserid(), createip, userId, params.getClient_id());
             } else {
-                loginManager.doAfterLoginFailed(params.getUserid(), createip);
+                loginManager.doAfterLoginFailed(params.getUserid(), createip, result.getCode());
                 result.setMessage("用户名或密码错误");
             }
         } catch (Exception e) {
@@ -186,14 +184,14 @@ public class LoginApiController extends BaseController {
         }
         // 调用内部接口
         result = sgLoginApiManager.appAuthToken(params);
-        if(!result.isSuccess()){
+        if (!result.isSuccess()) {
             result = proxyLoginApiManager.appAuthToken(params);
         }
 
         String userId = (String) result.getModels().get("userid");
         //记录log
-        UserOperationLog userOperationLog=new UserOperationLog(StringUtil.defaultIfEmpty(userId, "third"),String.valueOf(params.getClient_id()),result.getCode(),getIp(request));
-        userOperationLog.putOtherMessage("token",params.getToken());
+        UserOperationLog userOperationLog = new UserOperationLog(StringUtil.defaultIfEmpty(userId, "third"), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        userOperationLog.putOtherMessage("token", params.getToken());
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();

@@ -111,9 +111,7 @@ public class AccountInfoAction extends BaseController {
     //获取用户信息
     @RequestMapping(value = "/userinfo/getuserinfo", method = RequestMethod.GET)
     @LoginRequired(resultType = ResponseResultType.redirect)
-    public String obtainUserinfo(HttpServletRequest request,
-                                 ObtainAccountInfoParams params,
-                                 Model model) {
+    public String obtainUserinfo(HttpServletRequest request, ObtainAccountInfoParams params, Model model) {
         Result result = new APIResultSupport(false);
         if (hostHolder.isLogin()) {
             //参数验证
@@ -139,7 +137,9 @@ public class AccountInfoAction extends BaseController {
 
             params.setUsername(userId);
             result = accountInfoManager.getUserInfo(params);
-            result.getModels().put("uniqname",oAuth2ResourceManager.getEncodedUniqname(params.getUsername()));
+//            result.getModels().put("uniqname",(String)result.getModels().get("uniqname"));
+            result.getModels().put("uniqname",oAuth2ResourceManager.getEncodedUniqname(params.getUsername(),clientId));
+
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (result.isSuccess()) {
@@ -153,12 +153,12 @@ public class AccountInfoAction extends BaseController {
         }
         return "redirect:/web/webLogin";
     }
+
     //设置或修改个人信息
     @RequestMapping(value = "/userinfo/update", method = RequestMethod.POST)
     @LoginRequired(resultType = ResponseResultType.redirect)
     @ResponseBody
-    public String updateUserInfo(HttpServletRequest request, AccountInfoParams infoParams)
-    {
+    public String updateUserInfo(HttpServletRequest request, AccountInfoParams infoParams) {
         Result result = new APIResultSupport(false);
         if (hostHolder.isLogin()) {
 
@@ -192,8 +192,7 @@ public class AccountInfoAction extends BaseController {
     @RequestMapping(value = "/userinfo/uploadavatar")
     @LoginRequired(resultType = ResponseResultType.redirect)
     @ResponseBody
-    public Object uploadAvatar(HttpServletRequest request, UploadAvatarParams params)
-    {
+    public Object uploadAvatar(HttpServletRequest request, UploadAvatarParams params) {
         Result result = new APIResultSupport(false);
 
         if (hostHolder.isLogin()) {
@@ -218,9 +217,9 @@ public class AccountInfoAction extends BaseController {
             CommonsMultipartFile multipartFile = (CommonsMultipartFile) multipartRequest.getFile("Filedata");
 
             byte[] byteArr = multipartFile.getBytes();
-            result = accountInfoManager.uploadImg(byteArr, userId,"0");
+            result = accountInfoManager.uploadImg(byteArr, userId, "0");
 
-        }else {
+        } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
         return result.toString();
@@ -230,8 +229,7 @@ public class AccountInfoAction extends BaseController {
     //默认头像上传
     @RequestMapping(value = "/userinfo/uploadefaultavatar")
     @ResponseBody
-    public Object uploadDefaultAvatar(HttpServletRequest request, UploadAvatarParams params)
-    {
+    public Object uploadDefaultAvatar(HttpServletRequest request, UploadAvatarParams params) {
         Result result = new APIResultSupport(false);
 
         //参数验证
@@ -250,9 +248,9 @@ public class AccountInfoAction extends BaseController {
 
         String size = params.getImgsize();
 
-        result=accountInfoManager.uploadDefaultImg(params.getImgurl(),String.valueOf(clientId));
-        if(result.isSuccess()) {
-            result=accountInfoManager.obtainPhoto(String.valueOf(clientId),size);
+        result = accountInfoManager.uploadDefaultImg(params.getImgurl(), String.valueOf(clientId));
+        if (result.isSuccess()) {
+            result = accountInfoManager.obtainPhoto(String.valueOf(clientId), size);
         }
         return result.toString();
     }
@@ -279,10 +277,12 @@ public class AccountInfoAction extends BaseController {
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
+                result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(userId, 1120));
+
                 result.setDefaultModel("disable", true);
             }
             model.addAttribute("data", result.toString());
-        }else {
+        } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
         return "/person/avatar";
@@ -290,7 +290,7 @@ public class AccountInfoAction extends BaseController {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     @ResponseBody
-    public String maxUploadSizeExceeded(){
+    public String maxUploadSizeExceeded() {
         Result result = new APIResultSupport(false);
         result.setCode(ErrorUtil.ERR_PHOTO_TO_LARGE);
         return result.toString();

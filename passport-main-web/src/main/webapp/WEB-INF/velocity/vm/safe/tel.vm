@@ -90,13 +90,13 @@
                             <div class="form-item">
     <label for="PasswordIpt">登录密码：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" class="" placeholder=""/>
     </span>
 </div>
                             <div class="form-item">
     <label for="New_mobileIpt">手机号：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require new_mobile" type="text" name="new_mobile" id="New_mobileIpt" value="" data-desc="请输入您要绑定的手机号码" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require new_mobile" type="text" name="new_mobile" id="New_mobileIpt" value="" data-desc="请输入您要绑定的手机号码" class="" placeholder=""/>
     </span>
 </div>
                             <div class="form-item">
@@ -154,7 +154,7 @@
         <div class="form-item">
     <label for="New_mobileIpt">新手机号：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require new_mobile" type="text" name="new_mobile" id="New_mobileIpt" value="" data-desc="请输入您要绑定的新手机号码" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require new_mobile" type="text" name="new_mobile" id="New_mobileIpt" value="" data-desc="请输入您要绑定的新手机号码" class="" placeholder=""/>
     </span>
 </div>
         <div class="form-item">
@@ -188,7 +188,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/safe.js?t=2014022527"></script>
+    <script type="text/javascript" src="/./static/js/safe.js?t=2014032547"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

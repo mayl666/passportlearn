@@ -91,7 +91,7 @@ public class HttpClient4 extends ConnectHttpClient {
             stopWatch(stopWatch, url, "failed");
             throw e;
         } catch (Exception e) {
-            log.error("[HttpClient4] Execute Http Request Exception!", e);
+            log.warn("[HttpClient4] Execute Http Request Exception!", e);
             stopWatch(stopWatch, url, "failed");
             throw new OAuthProblemException(ErrorUtil.HTTP_CLIENT_REQEUST_FAIL);
         } finally {

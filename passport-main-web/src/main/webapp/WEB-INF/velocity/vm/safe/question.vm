@@ -83,7 +83,7 @@
                         <div class="form-item">
     <label for="PasswordIpt">登录密码：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require password" type="password" name="password" id="PasswordIpt" value="" data-desc="" class="" placeholder=""/>
     </span>
 </div>
                         <div class="form-item">
@@ -115,13 +115,13 @@
                         <div class="form-item">
     <label for="Question2Ipt">问题：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require question2" type="text" name="question2" id="Question2Ipt" value="" data-desc="" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require question2" type="text" name="question2" id="Question2Ipt" value="" data-desc="" class="" placeholder=""/>
     </span>
 </div>
                         <div class="form-item">
     <label for="New_answerIpt">新答案：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require new_answer" type="text" name="new_answer" id="New_answerIpt" value="" data-desc="" value="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require new_answer" type="text" name="new_answer" id="New_answerIpt" value="" data-desc="" class="" placeholder=""/>
     </span>
 </div>
                         <div class="form-btn">
@@ -146,7 +146,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/safe.js?t=2014022527"></script>
+    <script type="text/javascript" src="/./static/js/safe.js?t=2014032547"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

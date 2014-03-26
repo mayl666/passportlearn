@@ -65,7 +65,7 @@ public class AccountInfoActionTest extends BaseActionTest {
         Map<String, String> params = new HashMap<String, String>();
         int clientId = 1110;
 
-        String userId="pqmagic20061@sohu.com";
+        String userId="57A738AE5409E7C72EB3245D88B526B2@qq.sohu.com";
 
         String serverSecret = "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr";
         long ct = System.currentTimeMillis();

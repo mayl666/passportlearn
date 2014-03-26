@@ -73,8 +73,8 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 1988);
         updateUserInfoApiParams.setBirthday("2012-01-01");
-        updateUserInfoApiParams.setProvince(530000);
-        updateUserInfoApiParams.setCity(532401);
+//        updateUserInfoApiParams.setProvince(530000);
+//        updateUserInfoApiParams.setCity(532401);
         updateUserInfoApiParams.setUniqname("111");
         updateUserInfoApiParams.setModifyip(modifyIp);
         Result result = proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);

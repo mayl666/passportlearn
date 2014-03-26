@@ -90,7 +90,7 @@ public interface OperateTimesService {
      * @param ip
      * @throws ServiceException
      */
-    public void incRegTimesForInternal(final String ip) throws ServiceException;
+    public void incRegTimesForInternal(final String ip,int clientId) throws ServiceException;
 
     /**
      * 记录一天内某ip注册次数
@@ -108,7 +108,7 @@ public interface OperateTimesService {
      * @return
      * @throws ServiceException
      */
-    public boolean checkRegInBlackListForInternal(String ip) throws ServiceException;
+    public boolean checkRegInBlackListForInternal(String ip,int clientId) throws ServiceException;
 
     /**
      * 检查用户ip是否在白名单中

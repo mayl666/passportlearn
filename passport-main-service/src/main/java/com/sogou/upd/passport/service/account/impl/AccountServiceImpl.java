@@ -12,6 +12,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
 import com.sogou.upd.passport.dao.account.AccountDAO;
+import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountHelper;
@@ -39,6 +40,8 @@ public class AccountServiceImpl implements AccountService {
     private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN;
     private static final String CACHE_PREFIX_UUID_CAPTCHA = CacheConstant.CACHE_PREFIX_UUID_CAPTCHA;
     private static final String CACHE_PREFIX_PASSPORTID_RESETPWDNUM = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM;
+    private static final String CACHE_PREFIX_NICKNAME_PASSPORTID = CacheConstant.CACHE_PREFIX_NICKNAME_PASSPORTID;
+
 
     private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
 
@@ -53,6 +56,8 @@ public class AccountServiceImpl implements AccountService {
     private MailUtils mailUtils;
     @Autowired
     private CaptchaUtils captchaUtils;
+    @Autowired
+    private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
 
     @Override
     public Account initialWebAccount(String username, String ip) throws ServiceException {
@@ -467,6 +472,98 @@ public class AccountServiceImpl implements AccountService {
             return false;
         }
         return true;
+    }
+    @Override
+    public String checkUniqName(String uniqname) throws ServiceException {
+        String passportId = null;
+        try {
+            String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+            passportId = redisUtils.get(cacheKey);
+            if (Strings.isNullOrEmpty(passportId)) {
+                passportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
+                if (!Strings.isNullOrEmpty(passportId)) {
+                    redisUtils.set(cacheKey, passportId);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("checkUniqName fail", e);
+        }
+        return passportId;
+    }
+
+    @Override
+    public boolean updateUniqName(Account account, String uniqname) throws ServiceException {
+        try {
+
+            String oldUniqName = account.getUniqname();
+            String passportId = account.getPassportId();
+
+            if (!Strings.isNullOrEmpty(uniqname) && !uniqname.equals(oldUniqName)) {
+                //更新数据库
+                int row = accountDAO.updateUniqName(uniqname, passportId);
+                if (row > 0) {
+                    String cacheKey = buildAccountKey(passportId);
+                    account.setUniqname(uniqname);
+                    dbShardRedisUtils.set(cacheKey, account);
+
+                    //移除原来映射表
+                    if (removeUniqName(oldUniqName)) {
+                        //更新新的映射表
+                        row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
+                        if (row > 0) {
+                            cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                            redisUtils.set(cacheKey, passportId);
+                        }
+                    }
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateAvatar(Account account, String avatar) {
+        try {
+            String oldUniqName = account.getUniqname();
+            String passportId = account.getPassportId();
+            //更新数据库
+            int row = accountDAO.updateAvatar(avatar, passportId);
+            if (row > 0) {
+                String cacheKey = buildAccountKey(passportId);
+                account.setAvatar(avatar);
+                dbShardRedisUtils.set(cacheKey, account);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+         return false;
+    }
+
+
+    //缓存中移除原来昵称
+    @Override
+    public boolean removeUniqName(String uniqname) throws ServiceException {
+        try {
+            if (!Strings.isNullOrEmpty(uniqname)) {
+                //更新映射
+                int row = uniqNamePassportMappingDAO.deleteUniqNamePassportMapping(uniqname);
+                if (row > 0) {
+                    String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                    redisUtils.delete(cacheKey);
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("removeUniqName fail", e);
+            return false;
+        }
+        return false;
     }
 
 }

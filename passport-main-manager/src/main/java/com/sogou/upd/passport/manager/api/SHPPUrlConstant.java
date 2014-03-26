@@ -98,4 +98,7 @@ public class SHPPUrlConstant {
     //第三方获取用户好友/互粉
     public static final String GET_CONNECT_FRIENDS_INFO = BASE_OPEN_API_URL + "api/friendship/friends";
 
+    // 同步创建第三方账号的接口
+    public static final String CREATE_CONNECT_USER = "http://passport.sohu.com/openlogin/non/callback/";
+
 }
