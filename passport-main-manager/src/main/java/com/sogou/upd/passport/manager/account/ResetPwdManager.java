@@ -109,5 +109,18 @@ public interface ResetPwdManager {
      */
     public Result sendFindPwdMobileCode(String userId, int clientId) throws Exception;
 
-    /* ------------------------------------重置密码End------------------------------------ */
+    /**
+     * 检查找回密码次数
+     * @param passportId
+     * @return
+     * @throws Exception
+     */
+    public Result checkFindPwdTimes(String passportId) throws Exception;
+
+    /**
+     * 统计找回密码次数
+     * @param passportId
+     * @throws Exception
+     */
+    public void incFindPwdTimes(String passportId) throws Exception;
 }

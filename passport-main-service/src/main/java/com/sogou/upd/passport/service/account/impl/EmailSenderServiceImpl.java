@@ -50,12 +50,12 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     private MailUtils mailUtils;
 
     @Override
-    public boolean sendEmail(String passportId, int clientId, AccountModuleEnum module, String address, boolean saveEmail)
+    public boolean sendEmail(String passportId, int clientId, AccountModuleEnum module, String address, String ru,boolean saveEmail)
             throws ServiceException {
         try {
             String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
             String activeUrl = PASSPORT_EMAIL_URL_PREFIX + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
-            activeUrl += "passport_id=" + passportId + "&client_id=" + clientId + "&scode=" + scode;
+            activeUrl += "userid=" + passportId + "&client_id=" + clientId + "&scode=" + scode + "&ru=" + ru;
 
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();
@@ -70,7 +70,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             activeEmail.setSubject(subjects.get(module));
             activeEmail.setCategory(module.getDirect());
             activeEmail.setToEmail(address);
-
             mailUtils.sendEmail(activeEmail);
 
             //连接失效时间
@@ -85,7 +84,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             }
 
             // 设置邮件发送次数限制---放在Manager里做检测
-
             return true;
         } catch (MailException me) {
             return false;

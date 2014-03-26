@@ -2,14 +2,17 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +70,7 @@ public class ResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = {"/recover/email", "/recover/mobile", "/recover/question"}, method = RequestMethod.GET)
-    public String email(FindPwdParams params, Model model) throws Exception {
+    public String email(HttpServletRequest request,FindPwdParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -85,6 +88,7 @@ public class ResetPwdAction extends BaseController {
                 result.setDefaultModel("bind_email", email);
                 result.setDefaultModel("userid", params.getUserid());
                 model.addAttribute("data", result.toString());
+                log(request,params.getUserid(),result.getCode());
                 return "/recover/email";
             case "reg_email":
                 result.setDefaultModel("reg_email", params.getUserid());
@@ -98,16 +102,19 @@ public class ResetPwdAction extends BaseController {
                 result.setDefaultModel("bind_mobile", mobile);
                 result.setDefaultModel("userid", params.getUserid());
                 model.addAttribute("data", result.toString());
+                log(request,params.getUserid(),result.getCode());
                 return "/recover/mobile";
             case "reg_mobile":
                 result.setDefaultModel("reg_mobile", getMobile(params.getUserid()));
                 result.setDefaultModel("userid", params.getUserid());
                 model.addAttribute("data", result.toString());
+                log(request,params.getUserid(),result.getCode());
                 return "/recover/mobile";
             case "question":
                 result = secureManager.queryAccountSecureInfo(params.getUserid(), Integer.parseInt(params.getClient_id()), true);
                 result.setDefaultModel("userid", params.getUserid());
                 model.addAttribute("data", result.toString());
+                log(request,params.getUserid(),result.getCode());
                 return "/recover/question";
         }
 
@@ -116,7 +123,12 @@ public class ResetPwdAction extends BaseController {
         model.addAttribute("data", result.toString());
         return "/recover/index";
     }
-
+    private void log(HttpServletRequest request,String passportId,String resultCode){
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(),String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID), resultCode, getIp(request));
+        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+        UserOperationLogUtil.log(userOperationLog);
+    }
     /**
      * 验证注册或密保邮箱页面跳转
      *
@@ -161,7 +173,7 @@ public class ResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/getsecinfo", method = RequestMethod.POST)
-    public String querySecureInfo(UserCaptchaParams params, Model model) throws Exception {
+    public String querySecureInfo(HttpServletRequest request,UserCaptchaParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -195,12 +207,13 @@ public class ResetPwdAction extends BaseController {
             model.addAttribute("data", result.toString());
             return "/recover/index";
         }
-        //次数限制，一天内只能提出5次申请
-//        if(operateTimesService.checkFindPwdTimes(passportId)){
-//            result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
-//            model.addAttribute("data", result.toString());
-//            return "/recover/index";
-//        }
+
+        boolean checkTimes = resetPwdManager.checkFindPwdTimes(passportId).isSuccess();
+        if(!checkTimes){
+            result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
+            model.addAttribute("data", result.toString());
+            return "/recover/index";
+        }
 
         result = regManager.isAccountExists(passportId,CommonConstant.SGPP_DEFAULT_CLIENTID);
         if (!result.isSuccess()) {
@@ -215,7 +228,8 @@ public class ResetPwdAction extends BaseController {
             return "/recover/index";
         }
         //记录找回密码次数
-//        operateTimesService.incFindPwdTimes(passportId);
+        resetPwdManager.incFindPwdTimes(passportId);
+
         if (domain.equals(AccountDomainEnum.PHONE)) {
             result.setDefaultModel("reg_mobile", getMobile(passportId));
         }
@@ -224,6 +238,7 @@ public class ResetPwdAction extends BaseController {
         }
         result.setDefaultModel("userid", passportId);
         model.addAttribute("data", result.toString());
+        log(request,passportId,result.getCode());
         return "/recover/type";
     }
 
@@ -243,7 +258,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/sendremail", method = RequestMethod.POST)
     @ResponseBody
-    public String sendEmailRegResetPwd(BaseAccountParams params) throws Exception {
+    public String sendEmailRegResetPwd(HttpServletRequest request,BaseAccountParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -255,6 +270,7 @@ public class ResetPwdAction extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
         result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true);
         result.setDefaultModel("userid", passportId);
+        log(request,passportId,result.getCode());
         return result.toString();
     }
 
@@ -268,7 +284,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/sendbemail", method = RequestMethod.POST)
     @ResponseBody
-    public String sendEmailBindResetPwd(BaseAccountParams params, Model model) throws Exception {
+    public String sendEmailBindResetPwd(HttpServletRequest request,BaseAccountParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -280,6 +296,7 @@ public class ResetPwdAction extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
         result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
         result.setDefaultModel("userid", passportId);
+        log(request,passportId,result.getCode());
         return result.toString();
     }
 
@@ -292,7 +309,7 @@ public class ResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.GET)
-    public String checkEmailResetPwd(FindPwdCheckMailParams params, Model model) throws Exception {
+    public String checkEmailResetPwd(HttpServletRequest request,FindPwdCheckMailParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -309,8 +326,9 @@ public class ResetPwdAction extends BaseController {
             model.addAttribute("data", result.toString());
             return "/recover/reset";
         }
-//        result.setCode(ErrorUtil.ERR_CODE_FINDPWD_EMAIL_FAILED);
+        result.setCode(ErrorUtil.ERR_CODE_FINDPWD_EMAIL_FAILED);
         model.addAttribute("data", result.toString());
+        log(request,passportId,result.getCode());
         return "/recover/index";
     }
 
@@ -336,6 +354,7 @@ public class ResetPwdAction extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
         result = resetPwdManager.resetPasswordByScode(passportId, clientId, password, params.getScode(), getIp(request));
+        log(request,passportId,result.getCode());
         return result.toString();
     }
 
@@ -348,7 +367,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/sendsms", method = RequestMethod.GET)
     @ResponseBody
-    public Object sendSmsSecMobile(BaseAccountParams params) throws Exception {
+    public Object sendSmsSecMobile(HttpServletRequest request,BaseAccountParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -358,6 +377,7 @@ public class ResetPwdAction extends BaseController {
         }
         int clientId = Integer.parseInt(params.getClient_id());
         result = resetPwdManager.sendFindPwdMobileCode(params.getUserid(), clientId);
+        log(request,params.getUserid(),result.getCode());
         return result.toString();
     }
 
@@ -371,7 +391,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
     @ResponseBody
-    public Object checkSmsSecMobile(FindPwdCheckSmscodeParams params, Model model) throws Exception {
+    public Object checkSmsSecMobile(HttpServletRequest request,FindPwdCheckSmscodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -382,6 +402,7 @@ public class ResetPwdAction extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
         result = resetPwdManager.checkMobileCodeResetPwd(params.getUserid(), clientId, params.getSmscode());
         result.setDefaultModel("userid", params.getUserid());
+        log(request,params.getUserid(),result.getCode());
         return result.toString();
     }
 
@@ -395,7 +416,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/checkanswer", method = RequestMethod.POST)
     @ResponseBody
-    public Object checkanswer(FindPwdCheckAnswerParams params, Model model) throws Exception {
+    public Object checkanswer(HttpServletRequest request,FindPwdCheckAnswerParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -410,6 +431,7 @@ public class ResetPwdAction extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
         result = resetPwdManager.checkAnswerByPassportId(params.getUserid(), clientId, params.getAnswer());
         result.setDefaultModel("userid", params.getUserid());
+        log(request,params.getUserid(),result.getCode());
         return result.toString();
     }
 
