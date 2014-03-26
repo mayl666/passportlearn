@@ -111,7 +111,7 @@ public class ResetPwdAction extends BaseController {
                 return "/recover/question";
         }
 
-//        result.setCode(ErrorUtil.ERR_CODE_FINDPWD_TYPE_FAILED);
+        result.setCode(ErrorUtil.ERR_CODE_FINDPWD_TYPE_FAILED);
         result.setMessage(validateResult);
         model.addAttribute("data", result.toString());
         return "/recover/index";
@@ -184,12 +184,6 @@ public class ResetPwdAction extends BaseController {
                 return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             case THIRD:
                 return "redirect:/web/findpwd";
-            case OTHER:
-                //TODO 第二阶段要将该段代码删除
-                return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-            case PHONE:
-                //TODO 第二阶段要将该段代码删除
-                return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
         result.setDefaultModel("username", username);
 
