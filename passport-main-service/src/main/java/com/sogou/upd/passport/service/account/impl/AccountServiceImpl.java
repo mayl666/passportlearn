@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
@@ -94,16 +95,16 @@ public class AccountServiceImpl implements AccountService {
         account.setPassportId(passportId);
         String passwordSign;
         try {
-            if (!Strings.isNullOrEmpty(password) && !AccountTypeEnum.isConnect(provider)) {
+            if (!Strings.isNullOrEmpty(password) && (!AccountTypeEnum.isConnect(provider) || !AccountTypeEnum.isSOHU(provider))) {
                 passwordSign = PwdGenerator.generatorStoredPwd(password, needMD5);
                 account.setPassword(passwordSign);
             }
             account.setRegTime(new Date());
             account.setRegIp(ip);
-            account.setAccountType(provider);
+            account.setAccountType(provider); //账号类型
             account.setFlag(String.valueOf(AccountStatusEnum.REGULAR.getValue()));
-            if (AccountTypeEnum.isConnect(provider)) {
-                //对于第三方来讲，无密码  todo 搜狗账号迁移完成后，需要增加一个值表示无密码
+            if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider)) {
+                //对于第三方账号和sohu域账号来讲，无密码  todo 搜狗账号迁移完成后，需要增加一个值表示无密码
                 account.setPasswordType(String.valueOf(PasswordTypeEnum.NOPASSWORD.getValue()));
             } else {
                 //其它新注册的搜狗账号密码类型都为2，即需要加盐
