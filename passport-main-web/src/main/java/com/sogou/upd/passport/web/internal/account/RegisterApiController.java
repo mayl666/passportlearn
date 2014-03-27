@@ -16,6 +16,7 @@ import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,7 +51,7 @@ public class RegisterApiController extends BaseController {
      * @param params
      * @return
      */
-//    @InterfaceSecurity
+    @InterfaceSecurity
     @RequestMapping(value = "/sendregcaptcha", method = RequestMethod.POST)
     @ResponseBody
     public Object sendRegCaptcha(HttpServletRequest request, BaseMobileApiParams params) {
@@ -92,7 +93,7 @@ public class RegisterApiController extends BaseController {
      * @param params
      * @return
      */
-//    @InterfaceSecurity
+    @InterfaceSecurity
     @RequestMapping(value = "/regmobileuser", method = RequestMethod.POST)
     @ResponseBody
     public Object regMobileCaptchaUser(HttpServletRequest request, RegMobileCaptchaApiParams params) {
@@ -138,7 +139,7 @@ public class RegisterApiController extends BaseController {
      * @param params
      * @return
      */
-//    @InterfaceSecurity
+    @InterfaceSecurity
     @RequestMapping(value = "/reguser", method = RequestMethod.POST)
     @ResponseBody
     public Object regMailUser(HttpServletRequest request, RegEmailApiParams params) throws Exception {
@@ -208,7 +209,7 @@ public class RegisterApiController extends BaseController {
      * @param params
      * @return
      */
-//    @InterfaceSecurity
+    @InterfaceSecurity
     @RequestMapping(value = "/regmobile", method = RequestMethod.POST)
     @ResponseBody
     public Object regMobileUser(HttpServletRequest request, RegMobileApiParams params) {
