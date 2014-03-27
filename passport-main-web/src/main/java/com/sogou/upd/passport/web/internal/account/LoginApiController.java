@@ -2,6 +2,8 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -9,6 +11,7 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.RegManager;
@@ -28,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,6 +50,7 @@ import java.util.Map;
 @RequestMapping("/internal")
 public class LoginApiController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(LoginApiController.class);
+    private static final Logger authEmailUserLogger = LoggerFactory.getLogger("authEmailUserLogger");
 
     @Autowired
     private LoginApiManager proxyLoginApiManager;
@@ -57,6 +62,8 @@ public class LoginApiController extends BaseController {
     private ConfigureManager configureManager;
     @Autowired
     private RegManager regManager;
+    @Autowired
+    private ThreadPoolTaskExecutor discardTaskExecutor;
 
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
@@ -121,7 +128,7 @@ public class LoginApiController extends BaseController {
         } finally {
             // 获取记录UserOperationLog的数据
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-            UserOperationLogUtil.log(userOperationLog);
+            UserOperationLogUtil.log(userOperationLog,authEmailUserLogger);
             return result.toString();
         }
     }
@@ -137,7 +144,7 @@ public class LoginApiController extends BaseController {
     @InterfaceSecurity
     @RequestMapping(value = "/account/authemailuser", method = RequestMethod.POST)
     @ResponseBody
-    public Object authEmailUser(HttpServletRequest request, AuthUserApiParams params) {
+    public Object authEmailUser(HttpServletRequest request,  final AuthUserApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -147,6 +154,11 @@ public class LoginApiController extends BaseController {
             return result.toString();
         }
         try {
+            ;
+            if (loginManager.isLoginUserInBlackList(params.getUserid(), params.getCreateip())) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result.toString();
+            }
             if (ManagerHelper.isInvokeProxyApi(params.getUserid())) {
                 result = proxyLoginApiManager.webAuthUser(params);
             } else {
@@ -157,10 +169,25 @@ public class LoginApiController extends BaseController {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result.toString();
         } finally {
-            // 获取记录UserOperationLog的数据
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-            UserOperationLogUtil.log(userOperationLog);
+            incLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             return result.toString();
+
+        }
+    }
+
+    private void incLog(final String userid,final String client_id, final String code, final String ip) throws ServiceException {
+        try {
+             discardTaskExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    // 获取记录UserOperationLog的数据
+                    UserOperationLog userOperationLog = new UserOperationLog(userid, client_id, code, ip);
+                    UserOperationLogUtil.log(userOperationLog);
+                }
+            });
+        } catch (Exception e) {
+            logger.error("incLoginSuccessTimes:username" + userid + ",ip:" + ip, e);
+            throw new ServiceException(e);
         }
     }
 
