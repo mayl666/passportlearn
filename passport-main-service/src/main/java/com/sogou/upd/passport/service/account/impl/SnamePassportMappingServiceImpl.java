@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class SnamePassportMappingServiceImpl implements SnamePassportMappingService {
 
     private static final String CACHE_PREFIX_SNAME_PASSPORTID = CacheConstant.CACHE_PREFIX_SNAME_PASSPORTID;
-    private static final int expire =  30 * DateAndNumTimesConstant.ONE_DAY_INSECONDS;
+    private static final int expire = 30 * DateAndNumTimesConstant.ONE_DAY_INSECONDS;
 
     @Autowired
     private SnamePassportMappingDAO snamePassportMappingDAO;
@@ -34,10 +34,10 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
 
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryPassportIdBySnameOrPhone", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
-    public String queryPassportIdBySnameOrPhone(String snameOrPhone) throws ServiceException{
-        if(AccountDomainEnum.isIndivid(snameOrPhone)){
+    public String queryPassportIdBySnameOrPhone(String snameOrPhone) throws ServiceException {
+        if (AccountDomainEnum.isIndivid(snameOrPhone)) {
             return queryPassportIdBySname(snameOrPhone);
-        }else if(AccountDomainEnum.isPhone(snameOrPhone)){
+        } else if (AccountDomainEnum.isPhone(snameOrPhone)) {
             return queryPassportIdByMobile(snameOrPhone);
         }
         return null;
@@ -53,7 +53,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = snamePassportMappingDAO.getPassportIdBySname(sname);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.set(cacheKey, passportId,expire);
+                    dbShardRedisUtils.set(cacheKey, passportId, expire);
                 }
             }
         } catch (Exception e) {
@@ -72,7 +72,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = snamePassportMappingDAO.getPassportIdBySid(sid);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.set(cacheKey, passportId,expire);
+                    dbShardRedisUtils.set(cacheKey, passportId, expire);
                 }
             }
         } catch (Exception e) {
@@ -91,7 +91,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = snamePassportMappingDAO.getPassportIdByMobile(mobile);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.set(cacheKey, passportId,expire);
+                    dbShardRedisUtils.set(cacheKey, passportId, expire);
                 }
             }
         } catch (Exception e) {
@@ -107,7 +107,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
             int accountRow = snamePassportMappingDAO.updateSnamePassportMapping(sname, passportId);
             if (accountRow != 0) {
                 String cacheKey = buildSnamePassportMappingKey(sname);
-                dbShardRedisUtils.set(cacheKey, passportId,expire);
+                dbShardRedisUtils.set(cacheKey, passportId, expire);
                 return true;
             }
         } catch (Exception e) {
@@ -118,9 +118,9 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
 
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_insertSnamePassportMapping", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
-    public boolean insertSnamePassportMapping(String sid,String sname, String passportId,String mobile) throws ServiceException {
+    public boolean insertSnamePassportMapping(String sid, String sname, String passportId, String mobile) throws ServiceException {
         try {
-            int accountRow = snamePassportMappingDAO.insertSnamePassportMapping(sid,sname, passportId,mobile);
+            int accountRow = snamePassportMappingDAO.insertSnamePassportMapping(sid, sname, passportId, mobile);
             if (accountRow != 0) {
                 String cacheKey = buildSnamePassportMappingKey(sname);
                 dbShardRedisUtils.set(cacheKey, passportId, expire);

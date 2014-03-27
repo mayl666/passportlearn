@@ -43,6 +43,8 @@ import java.util.UUID;
 public class AccountServiceImpl implements AccountService {
 
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
+    private static final int expire = 30 * DateAndNumTimesConstant.ONE_DAY_INSECONDS;
+
     @Autowired
     private AccountDAO accountDAO;
     @Autowired
@@ -577,7 +579,7 @@ public class AccountServiceImpl implements AccountService {
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
+                    dbShardRedisUtils.set(cacheKey, passportId, expire);
                 }
             }
         } catch (Exception e) {
@@ -611,7 +613,7 @@ public class AccountServiceImpl implements AccountService {
                         row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
                         if (row > 0) {
                             cacheKey = buildUniqnameCacheKey(uniqname);
-                            dbShardRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
+                            dbShardRedisUtils.set(cacheKey, passportId, expire);
                         }
                     }
                     return true;

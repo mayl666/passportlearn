@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class MobilePassportMappingServiceImpl implements MobilePassportMappingService {
 
     private static final String CACHE_PREFIX_MOBILE_PASSPORT = CacheConstant.CACHE_PREFIX_MOBILE_PASSPORTID;
+    private static final int expire = 30 * DateAndNumTimesConstant.ONE_DAY_INSECONDS;
 
     @Autowired
     private MobilePassportMappingDAO mobilePassportMappingDAO;
@@ -37,7 +38,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.set(cacheKey, passportId,(int)DateAndNumTimesConstant.THREE_MONTH );
+                    dbShardRedisUtils.set(cacheKey, passportId, expire);
                 }
             }
         } catch (Exception e) {
@@ -63,7 +64,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
             long id = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
             if (id != 0) {
                 String cacheKey = buildMobilePassportMappingKey(mobile);
-                dbShardRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
+                dbShardRedisUtils.set(cacheKey, passportId, expire) ;
                 return true;
             }
         } catch (Exception e) {
@@ -79,7 +80,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
             int accountRow = mobilePassportMappingDAO.updateMobilePassportMapping(mobile, passportId);
             if (accountRow != 0) {
                 String cacheKey = buildMobilePassportMappingKey(mobile);
-                dbShardRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
+                dbShardRedisUtils.set(cacheKey, passportId, expire);
                 return true;
             }
         } catch (Exception e) {
