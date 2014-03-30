@@ -111,36 +111,27 @@ public class LoginApiControllerTest extends BaseActionTest {
     public void testCheckNeedCaptcha() throws Exception {
         Map<String, String> params = getCheckNeedCaptchaParam("tinkame_0414@sogou.com");
         String result = sendGet(httpUrl+"/web/login/checkNeedCaptcha", params);
-        //{"data":{"flag":"1","userid":"tinkame_0414@sogou.com","needCaptcha":false},"status":"0","statusText":"用户名已经存在"}
+
+        String expiredata = "{\"data\":{\"flag\":\"1\",\"userid\":\"tinkame_0414@sogou.com\",\"needCaptcha\":false},\"status\":\"0\",\"statusText\":\"用户名已经存在\"}";
         APIResultForm form = JacksonJsonMapperUtil.getMapper().readValue(result, APIResultForm.class);
-        Assert.assertEquals("0",form.getStatus());
-        Assert.assertEquals("用户名已经存在",form.getStatusText());
-        Assert.assertEquals("tinkame_0414@sogou.com",form.getData().get("userid"));
-        Assert.assertEquals("1",form.getData().get("flag"));
-        Assert.assertEquals(false,form.getData().get("needCaptcha"));
+        APIResultForm expireForm = JacksonJsonMapperUtil.getMapper().readValue(expiredata, APIResultForm.class);
+        Assert.assertTrue(expireForm.equals(form));
+
 
         Map<String, String> params_soji = getCheckNeedCaptchaParam("13545210241@sohu.com");
         String result_soji = sendGet(httpUrl+"/web/login/checkNeedCaptcha", params_soji);
-        //{"data":{"flag":"1","userid":"tinkame_0414@sogou.com","needCaptcha":false},"status":"0","statusText":"用户名已经存在"}
         APIResultForm form_soji = JacksonJsonMapperUtil.getMapper().readValue(result_soji, APIResultForm.class);
-        Assert.assertEquals("0",form_soji.getStatus());
-        Assert.assertEquals("用户名已经存在",form_soji.getStatusText());
-        Assert.assertEquals("13545210241@sohu.com",form_soji.getData().get("userid"));
-        Assert.assertEquals("1",form_soji.getData().get("flag"));
-        Assert.assertEquals(false,form_soji.getData().get("needCaptcha"));
+        String expire_soji_data = "{\"data\":{\"flag\":\"1\",\"userid\":\"13545210241@sohu.com\",\"needCaptcha\":false},\"status\":\"0\",\"statusText\":\"用户名已经存在\"}";
+        APIResultForm expireForm_soji = JacksonJsonMapperUtil.getMapper().readValue(expire_soji_data, APIResultForm.class);
+        Assert.assertTrue(expireForm_soji.equals(form_soji));
 
         Map<String, String> params_waiju = getCheckNeedCaptchaParam("tinkame@126.com");
         String result_waiyu = sendGet(httpUrl+"/web/login/checkNeedCaptcha", params_waiju);
-        //{"data":{"flag":"1","userid":"tinkame_0414@sogou.com","needCaptcha":false},"status":"0","statusText":"用户名已经存在"}
         APIResultForm form_waiyu = JacksonJsonMapperUtil.getMapper().readValue(result_waiyu, APIResultForm.class);
-        Assert.assertEquals("0",form_waiyu.getStatus());
-        Assert.assertEquals("用户名已经存在",form_waiyu.getStatusText());
-        Assert.assertEquals("tinkame@126.com",form_waiyu.getData().get("userid"));
-        Assert.assertEquals("1",form_waiyu.getData().get("flag"));
-        Assert.assertEquals(false,form_waiyu.getData().get("needCaptcha"));
 
-
-
+        String expire_waiyu_data = "{\"data\":{\"flag\":\"1\",\"userid\":\"tinkame@126.com\",\"needCaptcha\":false},\"status\":\"0\",\"statusText\":\"用户名已经存在\"}";
+        APIResultForm expireForm_waiyu = JacksonJsonMapperUtil.getMapper().readValue(expire_waiyu_data, APIResultForm.class);
+        Assert.assertTrue(expireForm_waiyu.equals(form_waiyu));
     }
 
 
