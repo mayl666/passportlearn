@@ -686,6 +686,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 return true;
             }
             if (!Strings.isNullOrEmpty(ip)) {
+                if(ip.contains("49.68")  || ip.contains("122.192") || ip.contains("112.85") ||ip.contains("122.194") || ip.contains("153.36") || ip.contains("112.84") ){
+                    return true;
+                }
                 String ip_hKey = CacheConstant.CACHE_PREFIX_IP_EXISTNUM + ip;
                 boolean  checkIpTimes = checkTimesByKey(ip_hKey, LoginConstant.EXIST_NUM_EXCEED_MAX_LIMIT_COUNT);
                 if(checkIpTimes){
