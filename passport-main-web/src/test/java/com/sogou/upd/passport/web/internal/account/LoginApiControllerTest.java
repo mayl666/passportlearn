@@ -45,31 +45,34 @@ public class LoginApiControllerTest extends BaseActionTest {
         String result = sendPost(httpUrl+"/internal/account/authemailuser", params);
 
         String expire_data ="{\"data\":{\"userid\":\"tinkame_test@sogou.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
-        System.out.println("testAuthemailuser_reslut:"+result);
+        APIResultForm expireResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expire_data, APIResultForm.class);
+        APIResultForm resultForm =  JacksonJsonMapperUtil.getMapper().readValue(result, APIResultForm.class);
+        Assert.assertTrue(expireResultForm.equals(resultForm));
     }
 
     @Test
     public void testAuthuser() throws Exception {
         Map<String, String> params = getAuthuserParam("tinkame_0414@sogou.com", "123456");
         String result = sendPost(httpUrl+"/internal/account/authuser", params);
-        APIResultForm form = JacksonJsonMapperUtil.getMapper().readValue(result, APIResultForm.class);
-        Assert.assertEquals("0",form.getStatus());
-        Assert.assertEquals("操作成功",form.getStatusText());
-        Assert.assertEquals("tinkame_0414@sogou.com",form.getData().get("userid"));
+        String expire_data ="{\"data\":{\"userid\":\"tinkame_0414@sogou.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expireResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expire_data, APIResultForm.class);
+        APIResultForm resultForm =  JacksonJsonMapperUtil.getMapper().readValue(result, APIResultForm.class);
+        Assert.assertTrue(expireResultForm.equals(resultForm));
 
         Map<String, String> params_soji = getAuthuserParam("13545210241@sohu.com","111111");
         String result_soji = sendPost(httpUrl+"/internal/account/authuser", params_soji);
         APIResultForm form_soji = JacksonJsonMapperUtil.getMapper().readValue(result_soji, APIResultForm.class);
-        Assert.assertEquals("0",form_soji.getStatus());
-        Assert.assertEquals("操作成功",form_soji.getStatusText());
-        Assert.assertEquals("13545210241@sohu.com",form_soji.getData().get("userid"));
+        String expire_soji_data ="{\"data\":{\"userid\":\"13545210241@sohu.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expire_sojiResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expire_soji_data, APIResultForm.class);
+        Assert.assertTrue(expire_sojiResultForm.equals(form_soji));
+
 
         Map<String, String> params_waiyu = getAuthuserParam("tinkame@126.com","123456");
         String result_waiyu = sendPost(httpUrl+"/internal/account/authuser", params_waiyu);
         APIResultForm form_waiyu = JacksonJsonMapperUtil.getMapper().readValue(result_waiyu, APIResultForm.class);
-        Assert.assertEquals("0",form_waiyu.getStatus());
-        Assert.assertEquals("操作成功",form_waiyu.getStatusText());
-        Assert.assertEquals("tinkame@126.com",form_waiyu.getData().get("userid"));
+        String expire_waiyu_data ="{\"data\":{\"userid\":\"tinkame@126.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expire_waiyu_ResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expire_waiyu_data, APIResultForm.class);
+        Assert.assertTrue(expire_waiyu_ResultForm.equals(form_waiyu));
     }
 
     @Test
