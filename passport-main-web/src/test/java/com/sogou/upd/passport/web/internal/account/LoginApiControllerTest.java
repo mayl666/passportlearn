@@ -43,6 +43,8 @@ public class LoginApiControllerTest extends BaseActionTest {
         params.put("code", code);
         params.put("ct", String.valueOf(ct));
         String result = sendPost(httpUrl+"/internal/account/authemailuser", params);
+
+        String expire_data ="{\"data\":{\"userid\":\"tinkame_test@sogou.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
         System.out.println("testAuthemailuser_reslut:"+result);
     }
 

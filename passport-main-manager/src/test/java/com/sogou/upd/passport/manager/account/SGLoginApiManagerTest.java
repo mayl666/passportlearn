@@ -2,7 +2,9 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
+import com.sogou.upd.passport.common.result.APIResultForm;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
@@ -42,32 +44,35 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void testAuthUser() throws Exception {
-
+        String expire_data = "{\"data\":{\"userid\":\"tinkame@126.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
         AuthUserApiParams authUserParameters_email = new AuthUserApiParams();
         authUserParameters_email.setUserid("tinkame@126.com");
         authUserParameters_email.setClient_id(clientId);
         authUserParameters_email.setPassword(Coder.encryptMD5("123456"));
         Result result_email = sgLoginApiManager.webAuthUser(authUserParameters_email);
-        Assert.assertEquals("0", result_email.getCode());
-        Assert.assertEquals("tinkame@126.com", (String) result_email.getModels().get("userid"));
-
+        APIResultForm email_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_email.toString(),APIResultForm.class);
+        APIResultForm expireResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expire_data, APIResultForm.class);
+        Assert.assertTrue(expireResultForm.equals(email_APIResultForm));
 
         AuthUserApiParams authUserParameters = new AuthUserApiParams();
         authUserParameters.setUserid("13545210241@sohu.com");
         authUserParameters.setClient_id(clientId);
         authUserParameters.setPassword(Coder.encryptMD5("111111"));
-        Result result = sgLoginApiManager.webAuthUser(authUserParameters);
-        Assert.assertEquals("0", result.getCode());
-        Assert.assertEquals("13545210241@sohu.com", (String) result.getModels().get("userid"));
-
+        Result result_phone = sgLoginApiManager.webAuthUser(authUserParameters);
+        String expire_phone_data = "{\"data\":{\"userid\":\"13545210241@sohu.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm phone_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_phone.toString(),APIResultForm.class);
+        APIResultForm expire_phone_ResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expire_phone_data, APIResultForm.class);
+        Assert.assertTrue(expire_phone_ResultForm.equals(phone_APIResultForm));
 
         AuthUserApiParams authUserParameters_sogou = new AuthUserApiParams();
         authUserParameters_sogou.setUserid("tinkame_test@sogou.com");
         authUserParameters_sogou.setClient_id(clientId);
         authUserParameters_sogou.setPassword(Coder.encryptMD5("123456"));
         Result result_sogou = sgLoginApiManager.webAuthUser(authUserParameters_sogou);
-        Assert.assertEquals("0", result_sogou.getCode());
-        Assert.assertEquals("tinkame_test@sogou.com", (String) result_sogou.getModels().get("userid"));
+        String expire_sogou_data = "{\"data\":{\"userid\":\"tinkame_test@sogou.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm sogou_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_sogou.toString(),APIResultForm.class);
+        APIResultForm expire_sogou_ResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expire_sogou_data, APIResultForm.class);
+        Assert.assertTrue(expire_sogou_ResultForm.equals(sogou_APIResultForm));
 
     }
 

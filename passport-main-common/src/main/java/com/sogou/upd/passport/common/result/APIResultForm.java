@@ -57,6 +57,28 @@ public class APIResultForm {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        APIResultForm that = (APIResultForm) o;
+
+        if (!data.equals(that.data)) return false;
+        if (!status.equals(that.status)) return false;
+        if (!statusText.equals(that.statusText)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = data.hashCode();
+        result = 31 * result + status.hashCode();
+        result = 31 * result + statusText.hashCode();
+        return result;
+    }
+
+    @Override
     public String toString() {
         String str = "";
         try {
