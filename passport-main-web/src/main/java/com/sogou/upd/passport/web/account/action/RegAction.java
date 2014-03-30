@@ -107,7 +107,7 @@ public class RegAction extends BaseController {
 
     public boolean isUserInExistBlackList(final String username, final String ip) {
         //校验username是否在账户黑名单中
-        if (operateTimesService.isUserInBlackList(username,ip) || operateTimesService.isLoginTimesForBlackList(username,ip)) {
+        if (operateTimesService.isUserInExistBlackList(username,ip)) {
             //是否在白名单中
             if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
                 return true;
