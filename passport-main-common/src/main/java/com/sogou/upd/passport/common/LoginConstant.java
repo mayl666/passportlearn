@@ -110,4 +110,12 @@ public class LoginConstant {
      */
     public static final int IS_IN_WHITE_LIST = 1;
 
+
+
+
+    /**
+     * 一小时内用户登陆失败多少次之后，用户不能再登陆
+     */
+    public static final int EXIST_NUM_EXCEED_MAX_LIMIT_COUNT = 10;
+
 }

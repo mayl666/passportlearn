@@ -23,6 +23,7 @@ import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
+import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -62,13 +63,16 @@ public class RegAction extends BaseController {
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private CookieManager cookieManager;
+    @Autowired
+    private OperateTimesService operateTimesService;
+
 
     /**
      * 用户注册检查用户名是否存在
      */
     @RequestMapping(value = "/account/checkusername", method = RequestMethod.GET)
     @ResponseBody
-    public String checkusername(CheckUserNameExistParameters checkParam)
+    public String checkusername(HttpServletRequest request,CheckUserNameExistParameters checkParam)
             throws Exception {
 
         Result result = new APIResultSupport(false);
@@ -86,11 +90,30 @@ public class RegAction extends BaseController {
         if (!Strings.isNullOrEmpty(clientIdStr)) {
             clientId = Integer.valueOf(clientIdStr);
         }
+        if(isUserInExistBlackList(checkParam.getUsername(),getIp(request))){
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+            return result.toString();
+        }
         result = checkAccountNotExists(username, clientId);
         if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
             result.setMessage("此手机号已注册或已绑定，请直接登录");
         }
+
+        operateTimesService.incExistTimes(username, getIp(request));
+
         return result.toString();
+    }
+
+
+    public boolean isUserInExistBlackList(final String username, final String ip) {
+        //校验username是否在账户黑名单中
+        if (operateTimesService.isUserInBlackList(username,ip) || operateTimesService.isLoginTimesForBlackList(username,ip)) {
+            //是否在白名单中
+            if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
