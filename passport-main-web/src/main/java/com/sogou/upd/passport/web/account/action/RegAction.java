@@ -101,6 +101,8 @@ public class RegAction extends BaseController {
 
         operateTimesService.incExistTimes(username, getIp(request));
 
+        UserOperationLog userOperationLog = new UserOperationLog(checkParam.getUsername(), request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));;
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
