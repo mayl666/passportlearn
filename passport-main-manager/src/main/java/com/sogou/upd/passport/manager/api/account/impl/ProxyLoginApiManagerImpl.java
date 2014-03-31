@@ -148,6 +148,8 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             result.setSuccess(true);
             result.setMessage("获取cookie成功");
             result.setDefaultModel("userid", cookieApiParams.getUserid());
+        }else {
+            result = getCookieInfoResult;
         }
         return result;
     }
