@@ -363,4 +363,18 @@ public class RegManagerImpl implements RegManager {
         checkUserApiParams.setUserid(username);
         return checkUserApiParams;
     }
+
+    @Override
+    public boolean isUserInExistBlackList(final String username, final String ip) {
+        //校验username是否在账户黑名单中
+        if (operateTimesService.isUserInExistBlackList(username,ip)) {
+            //是否在白名单中
+            if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
+                return true;
+            }
+        }
+        //次数累加
+        operateTimesService.incExistTimes(username, ip);
+        return false;
+    }
 }
