@@ -118,4 +118,11 @@ public class LoginConstant {
      */
     public static final int EXIST_NUM_EXCEED_MAX_LIMIT_COUNT = 10;
 
+    /**
+     * 1小时内用户
+     */
+    public static final int GETPAIRTOKEN_USERNAME_EXCEED_MAX_LIMIT_COUNT = 50;
+    public static final int GETPAIRTOKEN_IP_EXCEED_MAX_LIMIT_COUNT = 200;
+
+
 }
