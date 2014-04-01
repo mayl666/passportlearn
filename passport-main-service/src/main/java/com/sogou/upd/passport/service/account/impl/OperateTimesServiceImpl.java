@@ -662,6 +662,74 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
     }
 
+    @Override
+    public boolean isUserInExistBlackList(String username, String ip) throws ServiceException {
+        try {
+            String username_black_key = buildExistBlackKeyStr(username);
+            String ip_black_key = buildExistIPBlackKeyStr(ip);
+            if (!Strings.isNullOrEmpty(ip)) {
+                if(ip.contains("49.68")  || ip.contains("122.192") || ip.contains("112.85") ||ip.contains("122.194") || ip.contains("153.36") || ip.contains("112.84") ){
+                    return true;
+                }
+                String ip_hKey = CacheConstant.CACHE_PREFIX_IP_EXISTNUM + ip;
+                boolean  checkIpTimes = checkTimesByKey(ip_hKey, LoginConstant.EXIST_NUM_EXCEED_MAX_LIMIT_COUNT);
+                if(checkIpTimes){
+                    redisUtils.setWithinSeconds(ip_black_key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
+                    return true;
+                }
+            }
+
+            String value = redisUtils.get(username_black_key);
+            if (CommonConstant.LOGIN_IN_BLACKLIST.equals(value)) {
+                return true;
+            }
+            if (!StringUtils.isBlank(ip)) {
+                value = redisUtils.get(ip_black_key);
+                if (CommonConstant.LOGIN_IN_BLACKLIST.equals(value)) {
+                    return true;
+                }
+            }
+            //
+            String username_hKey = CacheConstant.CACHE_PREFIX_USERNAME_EXISTNUM + username;
+            boolean  checkTimes = checkTimesByKey(username_hKey, LoginConstant.EXIST_NUM_EXCEED_MAX_LIMIT_COUNT);
+            if(checkTimes){
+                redisUtils.setWithinSeconds(username_black_key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("checkLoginUserWhiteList:username=" + username + ",ip=" + ip, e);
+            return false;
+        }
+    }
+
+    @Override
+    public void incExistTimes(final String username, final String ip) throws ServiceException {
+        try {
+            String username_hKey = CacheConstant.CACHE_PREFIX_USERNAME_EXISTNUM + username;
+            recordTimes(username_hKey,DateAndNumTimesConstant.TIME_ONEHOUR);
+            if (!Strings.isNullOrEmpty(ip)) {
+                String ip_hKey = CacheConstant.CACHE_PREFIX_IP_EXISTNUM + ip;
+                recordTimes(ip_hKey,DateAndNumTimesConstant.TIME_ONEHOUR);
+            }
+
+        } catch (Exception e) {
+            logger.error("incLoginSuccessTimes:username" + username + ",ip:" + ip, e);
+            throw new ServiceException(e);
+        }
+    }
+
+
+    private static String buildExistBlackKeyStr(String username) {
+        return CacheConstant.CACHE_PREFIX_EXIST_USERNAME_BLACK_ + username;
+    }
+
+
+    private static String buildExistIPBlackKeyStr(String ip) {
+        return CacheConstant.CACHE_PREFIX_EXIST_IP_BLACK_ + ip;
+    }
+
+
     private static String buildLoginUserNameBlackKeyStr(String username) {
         return CacheConstant.CACHE_PREFIX_LOGIN_USERNAME_BLACK_ + username;
     }

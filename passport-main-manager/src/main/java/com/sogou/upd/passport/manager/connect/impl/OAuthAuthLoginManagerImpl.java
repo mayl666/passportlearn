@@ -136,7 +136,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             }
 
             // 创建第三方账号
-            Result tmpconnectAccountResult = proxyConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
+//            Result tmpconnectAccountResult = proxyConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
 
 
             Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
