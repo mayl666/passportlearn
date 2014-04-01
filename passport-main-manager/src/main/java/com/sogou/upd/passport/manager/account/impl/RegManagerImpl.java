@@ -70,8 +70,7 @@ public class RegManagerImpl implements RegManager {
                     isSogou = true;
                 }
             } else {
-                int index = username.indexOf("@");
-                username = username.substring(0, index) + username.substring(index, username.length()).toLowerCase(); //外域邮箱只处理@后面那一串为小写
+                username = username.toLowerCase(); //外域邮箱只处理@后面那一串为小写
             }
             //判断注册账号类型，sogou用户还是手机用户
             AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
