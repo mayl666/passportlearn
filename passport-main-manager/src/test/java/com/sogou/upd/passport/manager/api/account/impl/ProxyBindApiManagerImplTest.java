@@ -7,6 +7,8 @@ import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
+import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,28 +25,26 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
     @Autowired
     private BaseProxyManager baseProxyManager;
 
-//    @Test
-//    public void testBindMobile(){
-//        BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
-//        bindMobileApiParams.setUserid(userid);
+    @Test
+    public void testBindMobile(){
+        BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
+        bindMobileApiParams.setUserid(userid);
 //        bindMobileApiParams.setMobile("13940075348");
-//        bindMobileApiParams.setClient_id(clientId);
-//        Result result = proxyBindApiManager.bindMobile(bindMobileApiParams);
-//        System.out.println(result.toString());
-//        Assert.assertTrue(result.isSuccess());
+        bindMobileApiParams.setClient_id(clientId);
+        Result result = proxyBindApiManager.bindMobile("tinkame710@sogou.com","15210832767");
+        System.out.println(result.toString());
+        Assert.assertTrue(result.isSuccess());
+
+//        this.testUnbindMobile();
+    }
 //
-////        this.testUnbindMobile();
-//    }
 //
-//
-//    public void testUnbindMobile(){
-//        BaseMoblieApiParams unBindMobileApiParams =new BaseMoblieApiParams();
-//        unBindMobileApiParams.setMobile("18210193340");
-//        unBindMobileApiParams.setClient_id(clientId);
-//        Result result = proxyBindApiManager.updateBindMobile(unBindMobileApiParams);
-//        System.out.println(result.toString());
-//        Assert.assertTrue(result.isSuccess());
-//    }
+    @Test
+    public void testUnbindMobile(){
+        Result result = proxyBindApiManager.unBindMobile("15210832767");
+        System.out.println(result.toString());
+        Assert.assertTrue(result.isSuccess());
+    }
 //
 //    @Test
 //    public void testUpdataBindMobile(){

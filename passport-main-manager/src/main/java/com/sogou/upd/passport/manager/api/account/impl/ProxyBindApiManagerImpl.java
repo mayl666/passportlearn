@@ -38,13 +38,6 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
     private static String CACHE_PREFIX_MOBILE_SMSCODE_PROXY = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE_PROXY;
 
 //    @Override
-//    public Result bindMobile(BindMobileApiParams bindMobileApiParams) {
-//        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-//        requestModelXml.addParams(bindMobileApiParams);
-//        return this.executeResult(requestModelXml);
-//    }
-//
-//    @Override
 //    public Result updateBindMobile(UpdateBindMobileApiParams updateBindMobileApiParams) {
 //        Result result = new APIResultSupport(false);
 //
@@ -103,26 +96,26 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
 //        }
 //        return result;
 //    }
-//
-//    /**
-//     * 检查用户是否绑定了mobile
-//     * @param userid
-//     * @param mobile
-//     * @return
-//     */
-//    private boolean checkBind(String userid, String mobile) {
-//        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-//        baseMoblieApiParams.setMobile(mobile);
-//        Result result = this.getPassportIdByMobile(baseMoblieApiParams);
-//        if (result.isSuccess() && result.getModels().containsKey("userid")) {
-//            String bindUserId = result.getModels().get("userid").toString();
-//            if (bindUserId.trim().equals(userid.trim())) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-//
+
+    /**
+     * 检查用户是否绑定了mobile
+     * @param userid
+     * @param mobile
+     * @return
+     */
+    private boolean checkBind(String userid, String mobile) {
+        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+        baseMoblieApiParams.setMobile(mobile);
+        Result result = this.getPassportIdByMobile(baseMoblieApiParams);
+        if (result.isSuccess() && result.getModels().containsKey("userid")) {
+            String bindUserId = result.getModels().get("userid").toString();
+            if (bindUserId.trim().equals(userid.trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 //    /**
 //     * 解除绑定
 //     *
@@ -135,7 +128,7 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
 //        baseMoblieApiParams.setMobile(mobile);
 //        requestModelXml.addParams(baseMoblieApiParams);
 //        return this.executeResult(requestModelXml, baseMoblieApiParams.getMobile());
-//    }
+////    }
 
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
@@ -247,5 +240,32 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
         requestModelXml.addParam("userid",userid);
         return executeResult(requestModelXml);
     }
+
+    /**
+     * 直接绑定手机号
+     * @param userid
+     * @param mobile
+     * @return
+     */
+    @Override
+    public Result bindMobile(String userid,String mobile){
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParam("mobile",mobile);
+        requestModelXml.addParam("userid",userid);
+        return executeResult(requestModelXml);
+    }
+
+    /**
+     * 解除手机号绑定
+     * @param mobile
+     * @return
+     */
+    @Override
+    public Result unBindMobile(String mobile){
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UNBING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParam("mobile",mobile);
+        return executeResult(requestModelXml,mobile);
+    }
+
 
 }
