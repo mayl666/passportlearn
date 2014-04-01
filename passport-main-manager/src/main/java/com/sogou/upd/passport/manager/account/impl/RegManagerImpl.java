@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -19,6 +20,7 @@ import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
 import org.slf4j.Logger;
@@ -47,7 +49,7 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private BindApiManager sgBindApiManager;
     @Autowired
-    private CommonManager commonManager;
+    private MobileCodeSenderService mobileCodeSenderService;
     @Autowired
     private OperateTimesService operateTimesService;
     @Autowired
@@ -116,6 +118,12 @@ public class RegManagerImpl implements RegManager {
                 case PHONE://手机号
                     RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);
                     if (ManagerHelper.isInvokeProxyApi(username)) {
+                        result = mobileCodeSenderService.checkSmsCode(username, clientId, AccountModuleEnum.REGISTER, captcha);
+                        if (!result.isSuccess()) {
+                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+                            return result;
+                        }
+
                         RegMobileApiParams regApiParams = new RegMobileApiParams(username,password,clientId);
                         result = proxyRegisterApiManager.regMobileUser(regApiParams);
                         username = (String)result.getModels().get("userid");
