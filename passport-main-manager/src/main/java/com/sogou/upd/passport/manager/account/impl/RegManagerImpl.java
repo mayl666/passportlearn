@@ -118,6 +118,7 @@ public class RegManagerImpl implements RegManager {
                     if (ManagerHelper.isInvokeProxyApi(username)) {
                         RegMobileApiParams regApiParams = new RegMobileApiParams(username,password,clientId);
                         result = proxyRegisterApiManager.regMobileUser(regApiParams);
+                        username = (String)result.getModels().get("userid");
                     } else {
                         result = sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
                     }
