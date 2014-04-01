@@ -91,15 +91,21 @@ public class SecureManagerImpl implements SecureManager {
     public Result sendMobileCode(String mobile, int clientId, AccountModuleEnum module) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
-            if (Strings.isNullOrEmpty(passportId)) {
-                return sendSmsCodeToMobile(mobile, clientId, module);
-            } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+            //校验手机号格式
+            if (Strings.isNullOrEmpty(mobile) || !PhoneUtil.verifyPhoneNumberFormat(mobile)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
                 return result;
             }
+            // 验证码验证错误次数是否小于限制次数,一天不超过10次
+            boolean checkFailLimited = mobileCodeSenderService.checkLimitForSmsFail(mobile, clientId, module);
+            if (!checkFailLimited) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
+                return result;
+            }
+            result = mobileCodeSenderService.sendSmsCode(mobile, clientId, module);
+            return result;
         } catch (ServiceException e) {
-            logger.error("send mobile code Fail:", e);
+            logger.error("send sms code to mobile Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
@@ -121,7 +127,7 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS);
                 return result;
             }
-            return sendSmsCodeToMobile(mobile, clientId, module);
+            return sendMobileCode(mobile, clientId, module);
         } catch (ServiceException e) {
             logger.error("send mobile code Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -944,33 +950,6 @@ public class SecureManagerImpl implements SecureManager {
         result.setSuccess(true);
         result.setMessage("获取所有记录成功！");
         return result;
-    }
-
-    /*
-     * 供sendMobileCode*调用
-     */
-    private Result sendSmsCodeToMobile(String mobile, int clientId, AccountModuleEnum module) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            //校验手机号格式
-            if (Strings.isNullOrEmpty(mobile) || !PhoneUtil.verifyPhoneNumberFormat(mobile)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
-                return result;
-            }
-            // 验证码验证错误次数是否小于限制次数,一天不超过10次
-            boolean checkFailLimited = mobileCodeSenderService.checkLimitForSmsFail(mobile, clientId, module);
-            if (!checkFailLimited) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
-                return result;
-            }
-            result = mobileCodeSenderService.sendSmsCode(mobile, clientId, module);
-            return result;
-        } catch (ServiceException e) {
-            logger.error("send sms code to mobile Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
-
     }
 
     /*
