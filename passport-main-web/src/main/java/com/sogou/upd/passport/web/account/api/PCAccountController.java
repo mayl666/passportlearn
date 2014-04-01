@@ -381,6 +381,9 @@ public class PCAccountController extends BaseController {
             case ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND:
                 errStr = "2";  //用户名不存在
                 break;
+            case ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST:
+                errStr = "3";  // 账号被封禁
+                break;
             case ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR:
                 errStr = "3";  //用户名密码错误
                 break;
