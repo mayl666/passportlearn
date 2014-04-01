@@ -230,7 +230,7 @@ public class RegManagerImpl implements RegManager {
         Result result = isAccountExists(username, clientId);
         if (result.isSuccess()) {
             //用户存在，则账号被占用，返回false
-            result.setSuccess(false);
+            result = new APIResultSupport(false);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
         } else {
             //用户不存在，则可以注册
