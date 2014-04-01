@@ -952,19 +952,18 @@ public class SecureManagerImpl implements SecureManager {
     private Result sendSmsCodeToMobile(String mobile, int clientId, AccountModuleEnum module) throws Exception {
         Result result = new APIResultSupport(false);
         try {
+            //校验手机号格式
             if (Strings.isNullOrEmpty(mobile) || !PhoneUtil.verifyPhoneNumberFormat(mobile)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
                 return result;
             }
-            // 验证错误次数是否小于限制次数
+            // 验证码验证错误次数是否小于限制次数,一天不超过10次
             boolean checkFailLimited = mobileCodeSenderService.checkLimitForSmsFail(mobile, clientId, module);
             if (!checkFailLimited) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
                 return result;
             }
-
             result = mobileCodeSenderService.sendSmsCode(mobile, clientId, module);
-
             return result;
         } catch (ServiceException e) {
             logger.error("send sms code to mobile Fail:", e);

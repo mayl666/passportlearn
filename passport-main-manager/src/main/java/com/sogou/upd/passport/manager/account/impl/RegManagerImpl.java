@@ -14,10 +14,7 @@ import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.Account;
@@ -119,7 +116,8 @@ public class RegManagerImpl implements RegManager {
                 case PHONE://手机号
                     RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);
                     if (ManagerHelper.isInvokeProxyApi(username)) {
-                        result = proxyRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+                        RegMobileApiParams regApiParams = new RegMobileApiParams(username,password,clientId);
+                        result = proxyRegisterApiManager.regMobileUser(regApiParams);
                     } else {
                         result = sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
                     }

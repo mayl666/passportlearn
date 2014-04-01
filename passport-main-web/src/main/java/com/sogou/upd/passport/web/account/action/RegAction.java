@@ -276,12 +276,8 @@ public class RegAction extends BaseController {
 
             String mobile = reqParams.getMobile();
             //为了数据迁移三个阶段，这里需要转换下参数类
-            BaseMoblieApiParams baseMoblieApiParams = buildProxyApiParams(clientId, mobile);
-            if (ManagerHelper.isInvokeProxyApi(mobile)) {
-                result = proxyRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
-            } else {
-                result = sgRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
-            }
+            BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
+            result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
         } catch (Exception e) {
             logger.error("method[sendMobileCode] send mobile sms error.{}", e);
         } finally {
