@@ -97,6 +97,9 @@ public class RegManagerImpl implements RegManager {
                 case PHONE://手机号
                     RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);
                     result = sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+                    if (result.isSuccess()) {
+                        username = (String) result.getModels().get("userid");
+                    }
                     break;
             }
         } catch (ServiceException e) {
