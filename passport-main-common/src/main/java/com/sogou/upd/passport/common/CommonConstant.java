@@ -19,6 +19,8 @@ public class CommonConstant {
     public static final int WAN_CLIENTID = 1100; //游戏client_id
     public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
     public static final int XIAOSHUO_CLIENTID = 1115; //小说client_id
+    public static final int CAIPIAO_CLIENTID = 2012; //彩票client_id
+
     public static final int SOHU_PCTOKEN_LEN = 30; //SOHU token长度为30
     public static final int PWD_TYPE_EXPRESS = 0; //密码类型为明文
     public static final int PWD_TYPE_CIPHER = 1; //密码类型为密文
