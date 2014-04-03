@@ -681,17 +681,14 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
             //
             String username_hKey = CacheConstant.CACHE_PREFIX_USERNAME_EXISTNUM + username;
-            boolean  checkTimes = checkTimesByKey(username_hKey, LoginConstant.EXIST_NUM_EXCEED_MAX_LIMIT_COUNT);
+            boolean  checkTimes = checkTimesByKey(username_hKey, LoginConstant.EXIST_USERNUM_EXCEED_MAX_LIMIT_COUNT);
             if(checkTimes){
                 redisUtils.setWithinSeconds(username_black_key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                 return true;
             }
             if (!Strings.isNullOrEmpty(ip)) {
-                if(ip.contains("49.68")  || ip.contains("122.192") || ip.contains("112.85") ||ip.contains("122.194") || ip.contains("153.36") || ip.contains("112.84") ){
-                    return true;
-                }
                 String ip_hKey = CacheConstant.CACHE_PREFIX_IP_EXISTNUM + ip;
-                boolean  checkIpTimes = checkTimesByKey(ip_hKey, LoginConstant.EXIST_NUM_EXCEED_MAX_LIMIT_COUNT);
+                boolean  checkIpTimes = checkTimesByKey(ip_hKey, LoginConstant.EXIST_IPNUM_EXCEED_MAX_LIMIT_COUNT);
                 if(checkIpTimes){
                     redisUtils.setWithinSeconds(ip_black_key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                     return true;

@@ -70,7 +70,7 @@ public class RegAction extends BaseController {
      */
     @RequestMapping(value = "/account/checkusername", method = RequestMethod.GET)
     @ResponseBody
-    public String checkusername(HttpServletRequest request,CheckUserNameExistParameters checkParam)
+    public String checkusername(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
 
         Result result = new APIResultSupport(false);
@@ -88,16 +88,15 @@ public class RegAction extends BaseController {
         if (!Strings.isNullOrEmpty(clientIdStr)) {
             clientId = Integer.valueOf(clientIdStr);
         }
-        if(regManager.isUserInExistBlackList(checkParam.getUsername(),getIp(request))){
+        if (regManager.isUserInExistBlackList(checkParam.getUsername(), getIp(request))) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-            return result.toString();
+        } else {
+            result = checkAccountNotExists(username, clientId);
+            if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
+                result.setMessage("此手机号已注册或已绑定，请直接登录");
+            }
         }
-        result = checkAccountNotExists(username, clientId);
-        if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
-            result.setMessage("此手机号已注册或已绑定，请直接登录");
-        }
-
-        UserOperationLog userOperationLog = new UserOperationLog(checkParam.getUsername(), request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));;
+        UserOperationLog userOperationLog = new UserOperationLog(checkParam.getUsername(), request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }

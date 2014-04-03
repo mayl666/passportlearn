@@ -114,9 +114,13 @@ public class LoginConstant {
 
 
     /**
-     * 一小时内用户登陆失败多少次之后，用户不能再登陆
+     * 一小时内检查用户是否存在多少次之后，不能再检查
      */
-    public static final int EXIST_NUM_EXCEED_MAX_LIMIT_COUNT = 10;
+    public static final int EXIST_USERNUM_EXCEED_MAX_LIMIT_COUNT = 30;
+    /**
+     * 一小时内同一个IP，检查用户是否存在多少次之后，不能再检查
+     */
+    public static final int EXIST_IPNUM_EXCEED_MAX_LIMIT_COUNT = 50;
 
     /**
      * 1小时内用户
