@@ -255,4 +255,8 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public void incSendTimesForMobile(final String ip) throws ServiceException;
+
+    public boolean isUserInExistBlackList(String username, String ip) throws ServiceException;
+
+    public void incExistTimes(final String username, final String ip) throws ServiceException;
 }
