@@ -118,15 +118,10 @@ public class RegManagerImpl implements RegManager {
                 case PHONE://手机号
                     RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);
                     if (ManagerHelper.isInvokeProxyApi(username)) {
-                        result = mobileCodeSenderService.checkSmsCode(username, clientId, AccountModuleEnum.REGISTER, captcha);
-                        if (!result.isSuccess()) {
-                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-                            return result;
+                        result = registerMobile(username,password,clientId,captcha);
+                        if (result.isSuccess()) {
+                            username = (String) result.getModels().get("userid");
                         }
-
-                        RegMobileApiParams regApiParams = new RegMobileApiParams(username,password,clientId);
-                        result = proxyRegisterApiManager.regMobileUser(regApiParams);
-                        username = (String)result.getModels().get("userid");
                     } else {
                         result = sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
                     }
@@ -142,6 +137,19 @@ public class RegManagerImpl implements RegManager {
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
         }
+        return result;
+    }
+
+    @Override
+    public Result registerMobile(String username,String password,int clientId,String captcha) throws Exception {
+        Result result = new APIResultSupport(false);
+        result = mobileCodeSenderService.checkSmsCode(username, clientId, AccountModuleEnum.REGISTER, captcha);
+        if (!result.isSuccess()) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+            return result;
+        }
+        RegMobileApiParams regApiParams = new RegMobileApiParams(username,password,clientId);
+        result = proxyRegisterApiManager.regMobileUser(regApiParams);
         return result;
     }
 
