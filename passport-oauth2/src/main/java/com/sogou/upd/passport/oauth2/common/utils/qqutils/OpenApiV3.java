@@ -110,7 +110,6 @@ public class OpenApiV3 {
             params.remove("sig");
             // 添加固定参数
             params.put("appid", this.appid);
-            // 计算签名
             StringBuilder sb = new StringBuilder(64);
             sb.append(protocol).append("://").append(this.serverName).append(scriptName);
             String url = sb.toString();
