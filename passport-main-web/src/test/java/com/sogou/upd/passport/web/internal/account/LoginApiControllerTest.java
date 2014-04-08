@@ -21,8 +21,8 @@ import java.util.Map;
  */
 public class LoginApiControllerTest extends BaseActionTest {
 
-//    public static String httpUrl= "http://10.11.196.186:8090";
-    public static String httpUrl= "http://10.11.211.152:8090";
+    public static String httpUrl= "http://10.11.196.186:8090";
+//    public static String httpUrl= "http://10.11.211.152:8090";
 
     public static  int clientId = 1100;
     public static  String serverSecret = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
@@ -38,8 +38,9 @@ public class LoginApiControllerTest extends BaseActionTest {
         String code = ManagerHelper.generatorCode("tinkame_test@sogou.com", clientId, serverSecret, ct) ;
         System.out.println("code:" + code);
         params.put("client_id", String.valueOf(clientId));
-        params.put("password", Coder.encryptMD5("123456"));
+        params.put("password", Coder.encryptMD5("1223456"));
         params.put("userid","tinkame_test@sogou.com");
+        params.put("createip","127.0.0.1");
         params.put("code", code);
         params.put("ct", String.valueOf(ct));
         String result = sendPost(httpUrl+"/internal/account/authemailuser", params);
