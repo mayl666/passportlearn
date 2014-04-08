@@ -63,7 +63,6 @@ var splus = {
                             <span></span>
                             自动登录
                         </label>
-                        <a href="https://account.sogou.com/web/findpwd?client_id=1065&ru=http%3A%2F%2Fie.sogou.com" target="_blank" style="float:right">找回密码</a>
                     </div>
                 </div>
                 <div class="control-group login-btn clearfix">

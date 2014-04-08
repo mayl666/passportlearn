@@ -377,7 +377,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESET_SOURCEPWD_FAILD, "用户当日原密码校验错误次数已达上限!");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED, "重新发送激活邮件失败!");
         ERR_CODE_MSG_MAP.put(ERR_CODE_REGISTER_UNUSUAL, "注册失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "账号已注册，请直接登录");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGED, "账号已注册");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USERID_ILLEGAL, "非法userid");
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_ID_EXIST, "用户名已经存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "该手机号当日短信发送次数超过上限");

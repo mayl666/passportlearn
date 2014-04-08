@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class RegisterApiControllerTest extends BaseActionTest {
 
-    private static final String PROXY_BASE_PATH_URL = "http://10.11.196.186:8090";
+    private static final String PROXY_BASE_PATH_URL = "http://10.11.196.173:8090";
     private static final String SG_BASE_PATH_URL = "http://10.11.211.152:8090";
 
     private static final String mobile = "13581695053";
@@ -49,17 +49,16 @@ public class RegisterApiControllerTest extends BaseActionTest {
         params.put("client_id", String.valueOf(clientId));
         params.put("ct", String.valueOf(ct));
         params.put("code", code);
-        String result = sendPost(PROXY_BASE_PATH_URL + apiUrl, params);
-        APIResultForm form = JacksonJsonMapperUtil.getMapper().readValue(result, APIResultForm.class);
+        String resultSH = sendPost(PROXY_BASE_PATH_URL + apiUrl, params);
+        APIResultForm form = JacksonJsonMapperUtil.getMapper().readValue(resultSH, APIResultForm.class);
         Assert.assertEquals(ErrorUtil.ERR_CODE_ACCOUNT_REGED, form.getStatus());
         Assert.assertEquals("账号已注册", form.getStatusText());
 
-        String apiUrl1 = "/internal/account/sendregcaptcha";
-        String result1 = sendPost(SG_BASE_PATH_URL + apiUrl1, params);
+        String resultSG = sendPost(SG_BASE_PATH_URL + apiUrl, params);
         System.out.println("-------------------------------");
-        System.out.println(result);
-        System.out.println(result1);
-        APIResultForm form1 = JacksonJsonMapperUtil.getMapper().readValue(result1, APIResultForm.class);
+        System.out.println("线上结果：" + resultSH);
+        System.out.println("搜狗结果：" + resultSG);
+        APIResultForm form1 = JacksonJsonMapperUtil.getMapper().readValue(resultSG, APIResultForm.class);
         Assert.assertTrue(form1.equals(form));
         //{"data":{},"status":"20201","statusText":"账号已注册"}
     }

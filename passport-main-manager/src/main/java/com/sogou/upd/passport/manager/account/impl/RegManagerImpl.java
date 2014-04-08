@@ -70,8 +70,7 @@ public class RegManagerImpl implements RegManager {
                     isSogou = true;
                 }
             } else {
-                int index = username.indexOf("@");
-                username = username.substring(0, index) + username.substring(index, username.length()).toLowerCase(); //外域邮箱只处理@后面那一串为小写
+                username = username.toLowerCase(); //外域邮箱只处理@后面那一串为小写
             }
             //判断注册账号类型，sogou用户还是手机用户
             AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
@@ -98,6 +97,9 @@ public class RegManagerImpl implements RegManager {
                 case PHONE://手机号
                     RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);
                     result = sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+                    if (result.isSuccess()) {
+                        username = (String) result.getModels().get("userid");
+                    }
                     break;
             }
         } catch (ServiceException e) {
@@ -231,7 +233,7 @@ public class RegManagerImpl implements RegManager {
         Result result = isAccountExists(username, clientId);
         if (result.isSuccess()) {
             //用户存在，则账号被占用，返回false
-            result.setSuccess(false);
+            result = new APIResultSupport(false);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
         } else {
             //用户不存在，则可以注册
