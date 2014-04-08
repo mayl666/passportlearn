@@ -16,9 +16,8 @@ import java.util.Map;
  * File | Settings | File Templates.
  */
 public class IpLocationUtil {
-
+    public static String COF_ITN_IPLST = "192.168.|10.";
     private static final Ip2location instance;
-
     private static final Map<String, String> city;
 
     static {
@@ -78,5 +77,19 @@ public class IpLocationUtil {
         String[] ips = sff.split(",");
         String realip = ips[0];
         return realip;
+    }
+
+
+
+    public static boolean isInternalIp(String ip) {
+        if (org.apache.commons.lang.StringUtils.isEmpty(ip)) {
+            return false;
+        }
+        for(String i : COF_ITN_IPLST.split("[|]")){
+            if(ip.startsWith(i)){
+                return true;
+            }
+        }
+        return false;
     }
 }

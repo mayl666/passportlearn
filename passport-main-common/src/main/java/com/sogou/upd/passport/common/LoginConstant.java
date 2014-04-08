@@ -110,4 +110,9 @@ public class LoginConstant {
      */
     public static final int IS_IN_WHITE_LIST = 1;
 
+    /**
+     * 1天内pop3接口验证失败的次数不超过20次
+     */
+    public static final int AUTHEMAIL_FAILED_MAXNUM = 20;
+
 }

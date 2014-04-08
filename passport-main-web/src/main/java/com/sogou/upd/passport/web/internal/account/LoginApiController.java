@@ -153,9 +153,10 @@ public class LoginApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
+        String createip = params.getCreateip();
+        String userid = params.getUserid();
         try {
-            ;
-            if (loginManager.isLoginUserInBlackList(params.getUserid(), params.getCreateip())) {
+            if (loginManager.isInAuthEmailBlackList(userid,createip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result.toString();
             }
@@ -164,32 +165,22 @@ public class LoginApiController extends BaseController {
             } else {
                 result = sgLoginApiManager.webAuthUser(params);
             }
+            if(!result.isSuccess()){
+                loginManager.doAfterAuthEmailFailed(userid,createip,result.getCode());
+            }
         } catch (Exception e) {
-            logger.error("/internal/account/authemailuser failed,passportId:" + params.getUserid(), e);
+            logger.error("/internal/account/authemailuser failed,passportId:" + userid, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result.toString();
         } finally {
-            incLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(userid, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            userOperationLog.putOtherMessage("createip", createip);
+            UserOperationLogUtil.log(userOperationLog,authEmailUserLogger);
             return result.toString();
 
         }
     }
 
-    private void incLog(final String userid,final String client_id, final String code, final String ip) throws ServiceException {
-        try {
-             discardTaskExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    // 获取记录UserOperationLog的数据
-                    UserOperationLog userOperationLog = new UserOperationLog(userid, client_id, code, ip);
-                    UserOperationLogUtil.log(userOperationLog);
-                }
-            });
-        } catch (Exception e) {
-            logger.error("incLoginSuccessTimes:username" + userid + ",ip:" + ip, e);
-            throw new ServiceException(e);
-        }
-    }
 
 
     /**

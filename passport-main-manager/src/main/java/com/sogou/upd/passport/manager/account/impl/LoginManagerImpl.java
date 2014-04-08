@@ -147,6 +147,27 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Override
+    public boolean isInAuthEmailBlackList(final String username, final String ip) {
+        //是否在白名单中
+        if (operateTimesService.checkLoginUserInWhiteList(username, ip)) {
+            return false;
+        }
+        //校验username是否在账户黑名单中
+        if (operateTimesService.isInAuthEmailBlackList(username, ip)) {
+            return true;
+        }
+        return false;
+
+    }
+
+    @Override
+    public void doAfterAuthEmailFailed(final String username, final String ip, String errCode) {
+        if (USERNAME_PWD_ERROR.equals(errCode)) {
+            operateTimesService.incAuthEmailFailedTimes(username, ip);
+        }
+    }
+
+    @Override
     public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId) {
         //记录登陆次数
         operateTimesService.incLoginTimes(username, ip, true);

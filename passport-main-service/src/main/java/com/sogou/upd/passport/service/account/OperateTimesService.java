@@ -291,4 +291,21 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public boolean isOverLimitFindPwdResetPwd(String userId, int clientId,String ip) throws ServiceException;
+
+    /**
+     * 累计pop3校验失败的次数
+     * @param username
+     * @param ip
+     * @throws ServiceException
+     */
+    public void incAuthEmailFailedTimes(final String username, final String ip) throws ServiceException;
+
+    /**
+     * 检查 ip是否在pop3校验失败的黑名单当中
+     * @param username
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean isInAuthEmailBlackList(final String username, final String ip) throws ServiceException;
 }

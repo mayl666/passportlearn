@@ -67,4 +67,20 @@ public interface LoginManager {
      * @return
      */
     public Result checkCaptchaVaild(String username, String ip, String clientId,String captcha,String token );
+
+    /**
+     * 检查pop3接口的IP是否在黑名单中
+     * @param username
+     * @param ip
+     * @return
+     */
+    public boolean isInAuthEmailBlackList(final String username, final String ip);
+
+    /**
+     * pop3校验失败后，统计次数
+     * @param username
+     * @param ip
+     * @param errCode
+     */
+    public void doAfterAuthEmailFailed(final String username, final String ip, String errCode);
 }

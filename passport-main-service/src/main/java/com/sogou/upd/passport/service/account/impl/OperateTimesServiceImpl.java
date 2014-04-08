@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.DateUtil;
+import com.sogou.upd.passport.common.utils.IpLocationUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.black.BlackItem;
@@ -596,6 +597,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     @Override
     public boolean checkLoginUserInWhiteList(String username, String ip) throws ServiceException {
         try {
+            if(StringUtils.isNotBlank(ip) && IpLocationUtil.isInternalIp(ip)){
+                return true;
+            }
             String whiteListKey = CacheConstant.CACHE_PREFIX_LOGIN_WHITELIST;
             Set<String> whiteList = redisUtils.smember(whiteListKey);
             if (CollectionUtils.isNotEmpty(whiteList)) {
@@ -718,6 +722,45 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
     }
 
+    @Override
+    public void incAuthEmailFailedTimes(final String username, final String ip) throws ServiceException {
+        try {
+            if (!Strings.isNullOrEmpty(ip)) {
+                String ip_hKey = CacheConstant.CACHE_PREFIX_IP_AUTHEMAILFAILED_NUM + ip;
+                recordTimes(ip_hKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            }
+        } catch (Exception e) {
+            logger.error("incLoginSuccessTimes:username" + username + ",ip:" + ip, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean isInAuthEmailBlackList(final String username, final String ip) throws ServiceException {
+        try {
+            if (!StringUtils.isBlank(ip)) {
+                String ip_black_key = buildAuthEmailBlackKeyStr(ip);
+                String value = redisUtils.get(ip_black_key);
+                if (CommonConstant.LOGIN_IN_BLACKLIST.equals(value)) {
+                    return true;
+                }
+
+                String ip_hKey = CacheConstant.CACHE_PREFIX_IP_AUTHEMAILFAILED_NUM + ip;
+                boolean  checkIpTimes = checkTimesByKey(ip_hKey, LoginConstant.AUTHEMAIL_FAILED_MAXNUM);
+                if(checkIpTimes){
+                    redisUtils.setWithinSeconds(ip_black_key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.TIME_ONEDAY);
+                    return true;
+                }
+            }
+
+            return false;
+        } catch (Exception e) {
+            logger.error("isInAuthEmailBlackList error!ip=" + ip, e);
+            return false;
+        }
+    }
+
+
     private String buildFindPwdResetPwdKey(String userIdOrIp, int clientId){
         String cacheKey = null;
         if (clientId == 0) {
@@ -744,5 +787,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
     private static String buildIPLoginTimesKeyStr(String ip) {
         return CacheConstant.CACHE_PREFIX_IP_LOGINNUM + ip;
+    }
+
+    private static String buildAuthEmailBlackKeyStr(String ip) {
+        return CacheConstant.CACHE_PREFIX_AUTHEMAIL_IP_BLACK_ + ip;
     }
 }
