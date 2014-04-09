@@ -502,7 +502,7 @@ public class SecureAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
                     return result.toString();
             }
-            result = secureManager.sendMobileCodeNew(userId, clientId, newMobile);
+            result = secureManager.sendMobileCode(newMobile,clientId,AccountModuleEnum.SECURE);
         } catch (Exception e) {
             logger.error("method[sendSmsNewMobile] send mobile sms to new mobile error.{}", e);
         } finally {
