@@ -81,7 +81,7 @@ public class QQClubFaceApiController extends BaseConnectController {
                 String resp;
                 if (!Strings.isNullOrEmpty(openId) && !Strings.isNullOrEmpty(accessToken)) {
                     resp = qqClubFaceApiManager.executeQQOpenApi(openId, accessToken, params);
-                    logger.debug("qq response:"+resp.toString());
+                    logger.debug("qq response:" + resp.toString());
                     if (!Strings.isNullOrEmpty(resp)) {
                         resultString = resp;
                         result.setSuccess(true);
