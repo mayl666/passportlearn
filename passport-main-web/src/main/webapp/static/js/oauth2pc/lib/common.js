@@ -136,7 +136,8 @@ define([], function() {
             vcode: {
                 errMsg: '验证码错误，请重新输入',
                 emptyMsg: '请输入验证码',
-                nullable: false
+                nullable: false,
+                regStr:/^\w+$/
             }
         },
         //初始化搜狗浏览器接口

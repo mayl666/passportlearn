@@ -5,5 +5,5 @@
     }else{
         passhref = 'http://s.account.sogoucdn.com/u';
     }
-    document.write('<script type="text/javascript" src="'+ passhref +'/api/sogou.js?t=2014040317"></script>');
+    document.write('<script type="text/javascript" src="'+ passhref +'/api/sogou.js?t=2014040356"></script>');
 })();
