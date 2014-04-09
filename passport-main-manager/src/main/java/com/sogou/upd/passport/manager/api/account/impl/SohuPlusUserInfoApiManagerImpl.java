@@ -106,8 +106,7 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                     return result;
                 } else {
                     result = new APIResultSupport(false);
-                    result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-                    result.setMessage("昵称修改失败");
+                    result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
                     return result;
                 }
             } else {
