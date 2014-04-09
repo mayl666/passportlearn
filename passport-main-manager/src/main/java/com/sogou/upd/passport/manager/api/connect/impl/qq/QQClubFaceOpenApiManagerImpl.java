@@ -2,12 +2,11 @@ package com.sogou.upd.passport.manager.api.connect.impl.qq;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.connect.QQClubFaceApiManager;
-import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQClubFaceOpenApiParams;
-import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpenApiV3;
 import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
@@ -21,8 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * User: Mayan
@@ -72,7 +69,7 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("openid", openid);
             params.put("openkey", openkey);
-            params.put("plat",qqOpenApiParams.getPlat());
+            params.put("plat", qqOpenApiParams.getPlat());
             ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
             objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
             HashMap<String, String> maps;
@@ -80,6 +77,9 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
             if (paramsObj != null) {
                 maps = objectMapper.readValue(paramsObj.toString(), HashMap.class);
                 params.putAll(maps);
+            }
+            if (!params.containsKey("format")) {
+                params.put("format", HttpTransformat.json.toString()); //如果没有传format，则默认为json串返回格式
             }
             //目前QQ SDK只提供了post请求，且已经与QQ确认过，他们目前所有的开放接口post请求都可以正确访问
             String method = CommonConstant.CONNECT_METHOD_POST;
@@ -101,10 +101,10 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
     }
 
 
-    public static void main(String args[]){
+    public static void main(String args[]) {
         ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
         try {
-            String aa="{\"pf\":'qzone','format':'json','userip':'10.129.156.72'}";
+            String aa = "{\"pf\":'qzone','format':'json','userip':'10.129.156.72'}";
 
             objectMapper.readValue(aa, HashMap.class);
         } catch (IOException e) {
