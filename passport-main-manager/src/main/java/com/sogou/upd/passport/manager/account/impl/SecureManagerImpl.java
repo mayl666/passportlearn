@@ -112,8 +112,7 @@ public class SecureManagerImpl implements SecureManager {
     }
 
 
-    @Override
-    public Result sendMobileCodeByPassportId(String passportId, int clientId, AccountModuleEnum module)
+    private Result sendMobileCodeByPassportId(String passportId, int clientId, AccountModuleEnum module)
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
@@ -130,25 +129,6 @@ public class SecureManagerImpl implements SecureManager {
             return sendMobileCode(mobile, clientId, module);
         } catch (ServiceException e) {
             logger.error("send mobile code Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
-    }
-
-    // 为SOHU接口修改
-    @Override
-    public Result sendMobileCodeNew(String userId, int clientId, String mobile) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
-            if (!result.isSuccess()) {
-                return result;
-            }
-
-            result.setMessage("绑定手机验证码发送成功！");
-            return result;
-        } catch (ServiceException e) {
-            logger.error("send mobile code new Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
@@ -294,47 +274,6 @@ public class SecureManagerImpl implements SecureManager {
                 }
             }
             accountSecureInfoVO.setSec_score(score);
-
-            /*Account account = accountService.queryNormalAccount(userId);
-            if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                return result;
-            }
-            AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
-            String mobile = account.getMobile();
-            if (!Strings.isNullOrEmpty(mobile)) {
-                if (doProcess) {
-                    String mobileProcessed = StringUtil.processMobile(mobile);
-                    accountSecureInfoVO.setSec_mobile(mobileProcessed);
-                } else {
-                    accountSecureInfoVO.setSec_mobile(mobile);
-                }
-            }
-            AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(userId);
-            if (accountInfo != null) {
-                String emailBind = accountInfo.getEmail();
-                String question = accountInfo.getQuestion();
-                if (!Strings.isNullOrEmpty(emailBind)) {
-                    if (doProcess) {
-                        String emailBindProcessed = StringUtil.processEmail(emailBind);
-                        accountSecureInfoVO.setSec_email(emailBindProcessed);
-                    } else {
-                        accountSecureInfoVO.setSec_email(emailBind);
-                    }
-                }
-                if (!Strings.isNullOrEmpty(question)) {
-                    accountSecureInfoVO.setSec_ques(question);
-                }
-            }
-            if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.OTHER) {
-                if (doProcess) {
-                    String emailRegProcessed = StringUtil.processEmail(userId);
-                    accountSecureInfoVO.setReg_email(emailRegProcessed);
-                } else {
-                    accountSecureInfoVO.setReg_email(userId);
-                }
-            }*/
-
             ActionRecordVO record = queryLastActionRecordPrivate(userId, clientId, AccountModuleEnum.LOGIN);
             if (record != null) {
                 accountSecureInfoVO.setLast_login_time(record.getTime());
@@ -457,34 +396,6 @@ public class SecureManagerImpl implements SecureManager {
                 operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
             }
             return result;
-
-/*            boolean saveEmail = true;
-            AccountModuleEnum module = AccountModuleEnum.SECURE;
-            result = accountService.verifyUserPwdVaild(passportId, password, false);
-            if (!result.isSuccess()) {
-                return result;
-            }
-            AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
-            // 有绑定邮箱，检测是否与oldEmail相同；无原邮箱，则不检测
-            if (accountInfo != null) {
-                String emailBind = accountInfo.getEmail();
-                if (!Strings.isNullOrEmpty(emailBind) && !emailBind.equals(oldEmail)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
-                    return result;
-                }
-            }
-
-            if (!emailSenderService.checkLimitForSendEmail(passportId, clientId, module, newEmail)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
-                return result;
-            }
-            if (!emailSenderService.sendEmail(passportId, clientId, module, newEmail, saveEmail)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
-                return result;
-            }
-            result.setSuccess(true);
-            result.setMessage("绑定邮箱验证邮件发送成功！");
-            return result;*/
         } catch (ServiceException e) {
             logger.error("send email for binding Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -792,6 +703,14 @@ public class SecureManagerImpl implements SecureManager {
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
+            //检查手机账号能否被绑定
+            BaseMoblieApiParams baseMoblieApiParams=new BaseMoblieApiParams();
+            baseMoblieApiParams.setMobile(mobile);
+            Result bindResult = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            if(bindResult.isSuccess()){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                return result;
+            }
             return mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
         } catch (ServiceException e) {
             logger.error("check new mobile code Fail:", e);
