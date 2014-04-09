@@ -2,12 +2,15 @@ package com.sogou.upd.passport.common;
 
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.utils.DateUtil;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -68,15 +71,19 @@ public class Test {
 //            } catch (UnsupportedEncodingException e) {
 //            }
 //        }
-        System.out.println("passportId3:"+p6);
+//        System.out.println("passportId3:"+p6);
 
 
 
-
-
-        String p9 = "\\xB4\\xF3\\xB4\\xF3\\xB4\\xF331231@focus.cn\n";
-        System.out.println("p7:"+p7);
-        System.out.println("p8:"+p8);
+         String str= "{\"ret\":0,\"msg\":\"\",\"access_token\":\"1AE6919DB680B5A321912C4E756F1408\",\"expires_in\":7776000,\"refresh_token\":\"0530E030BBA11F9607944751AEBF044C\",\"openid\":\"31680D6A6A65D32BF1E929677E78DE29\",\"userinfo\":{\"nickname\":\"加\\\"盟\\\"\",\"gender\":\"male\",\"faceurl40\":\"http://q.qlogo.cn/qqapp/100294784/31680D6A6A65D32BF1E929677E78DE29/40\",\"faceurl100\":\"http://q.qlogo.cn/qqapp/100294784/31680D6A6A65D32BF1E929677E78DE29/100\"}}";
+       Map map=JacksonJsonMapperUtil.getMapper().readValue(str, Map.class);
+          Set set = map.keySet();
+//          for(String){
+//
+//          }
+//        String p9 = "\\xB4\\xF3\\xB4\\xF3\\xB4\\xF331231@focus.cn\n";
+//        System.out.println("p7:"+p7);
+//        System.out.println("p8:"+p8);
 
 //        String p4="���31231@focus.cn";
 //        String p5= Coder.encodeUTF8(p4);

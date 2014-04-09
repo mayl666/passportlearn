@@ -60,17 +60,6 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     }
 
     @Test
-    public void testAppAuth() throws Exception {
-        AppAuthTokenApiParams params = new AppAuthTokenApiParams();
-        params.setClient_id(1120);
-        params.setToken("54b4c49bfdb3321a5ffea8358c7ec08b");
-        params.setCode("23b442b3c93c059b5510b6230d85f070");
-        params.setType(2);
-        params.setCt(1160703204);
-        Result result = proxyLoginApiManager.appAuthToken(params);
-        System.out.println("result:"+result);
-    }
-    @Test
     public void testgetSHCookieValue() {
        try {
            String userid =  "大大大31231@focus.cn";

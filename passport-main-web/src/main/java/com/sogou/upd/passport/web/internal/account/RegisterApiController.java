@@ -35,14 +35,13 @@ import javax.servlet.http.HttpServletRequest;
 public class RegisterApiController extends BaseController {
 
     @Autowired
+    private RegisterApiManager sgRegisterApiManager;
+    @Autowired
     private RegisterApiManager proxyRegisterApiManager;
-
     @Autowired
     private BindApiManager proxyBindApiManager;
-
     @Autowired
     private RegManager regManager;
-
     @Autowired
     private CommonManager commonManager;
 
@@ -66,8 +65,10 @@ public class RegisterApiController extends BaseController {
             return result.toString();
         }
         // 调用内部接口
-        result = proxyRegisterApiManager.sendMobileRegCaptcha(params);
-
+        result = sgRegisterApiManager.sendMobileRegCaptcha(params);
+        //记录log
+        UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -93,7 +94,7 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = proxyRegisterApiManager.regMobileCaptchaUser(params);
+            result = regManager.registerMobile(params.getMobile(),params.getPassword(),params.getClient_id(),params.getCaptcha());
         } catch (Exception e) {
             logger.error("regMobileCaptchaUser:Mobile User With Captcha For Internal Is Failed,Mobile is " + params.getMobile(), e);
         } finally {

@@ -23,7 +23,7 @@ public interface PCAccountManager {
      * @param pcTokenParams
      * @return
      */
-    public Result createPairToken(PcPairTokenParams pcTokenParams);
+    public Result createPairToken(PcPairTokenParams pcTokenParams,String ip);
 
     /**
      * 根据refreshtoken换一个token用来延长登陆

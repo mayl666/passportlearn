@@ -91,15 +91,21 @@ public class SecureManagerImpl implements SecureManager {
     public Result sendMobileCode(String mobile, int clientId, AccountModuleEnum module) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
-            if (Strings.isNullOrEmpty(passportId)) {
-                return sendSmsCodeToMobile(mobile, clientId, module);
-            } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+            //校验手机号格式
+            if (Strings.isNullOrEmpty(mobile) || !PhoneUtil.verifyPhoneNumberFormat(mobile)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
                 return result;
             }
+            // 验证码验证错误次数是否小于限制次数,一天不超过10次
+            boolean checkFailLimited = mobileCodeSenderService.checkLimitForSmsFail(mobile, clientId, module);
+            if (!checkFailLimited) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
+                return result;
+            }
+            result = mobileCodeSenderService.sendSmsCode(mobile, clientId, module);
+            return result;
         } catch (ServiceException e) {
-            logger.error("send mobile code Fail:", e);
+            logger.error("send sms code to mobile Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
@@ -121,7 +127,7 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS);
                 return result;
             }
-            return sendSmsCodeToMobile(mobile, clientId, module);
+            return sendMobileCode(mobile, clientId, module);
         } catch (ServiceException e) {
             logger.error("send mobile code Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -134,19 +140,7 @@ public class SecureManagerImpl implements SecureManager {
     public Result sendMobileCodeNew(String userId, int clientId, String mobile) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-
-            SendCaptchaApiParams sendCaptchaApiParams = new SendCaptchaApiParams();
-            sendCaptchaApiParams.setMobile(mobile);
-            sendCaptchaApiParams.setClient_id(clientId);
-            sendCaptchaApiParams.setType(3);
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
-                // SOHU接口
-                result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
-            } else {
-                result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
-                // result = sgBindApiManager.sendCaptcha(sendCaptchaApiParams);
-            }
-
+            result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
             if (!result.isSuccess()) {
                 return result;
             }
@@ -174,15 +168,10 @@ public class SecureManagerImpl implements SecureManager {
                 result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                 Map<String, String> mapResult = result.getModels();
                 String mobile = mapResult.get("sec_mobile");
+                result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
 
-                SendCaptchaApiParams sendCaptchaApiParams = new SendCaptchaApiParams();
-                sendCaptchaApiParams.setMobile(mobile);
-                sendCaptchaApiParams.setClient_id(clientId);
-                sendCaptchaApiParams.setType(4);
-                result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
             } else {
                 result = sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.SECURE);
-                // result = sgBindApiManager.sendCaptcha(sendCaptchaApiParams);
             }
 
             if (!result.isSuccess()) {
@@ -562,10 +551,7 @@ public class SecureManagerImpl implements SecureManager {
                 result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                 Map<String, String> mapResult = result.getModels();
                 String mobile = mapResult.get("sec_mobile");
-
-                if (proxyBindApiManager.cacheOldCaptcha(mobile, clientId, smsCode)) {
-                    result.setSuccess(true);
-                }
+                result = checkMobileCodeByNewMobile(mobile, clientId, smsCode);
             } else {
                 result = checkMobileCodeByPassportId(userId, clientId, smsCode);
             }
@@ -603,28 +589,23 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT);
                 return result;
             }
+            result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
+            if (!result.isSuccess()) {
+                return result;
+            }
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // 代理接口
                 AuthUserApiParams authParams = new AuthUserApiParams();
                 authParams.setUserid(userId);
                 authParams.setClient_id(clientId);
                 authParams.setPassword(Coder.encryptMD5(password));
-
-                BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
-                bindMobileApiParams.setUserid(userId);
-                bindMobileApiParams.setClient_id(clientId);
-                bindMobileApiParams.setNewMobile(newMobile);
-                bindMobileApiParams.setNewCaptcha(smsCode);
-                // TODO:IP和其他成员
-
                 result = proxyLoginApiManager.webAuthUser(authParams);
                 if (!result.isSuccess()) {
                     operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
                     return result;
                 }
-                result = proxyBindApiManager.bindMobile(bindMobileApiParams);
+                result = proxyBindApiManager.bindMobile(userId,newMobile);
             } else {
-
                 // 直接写实现方法，不调用sgBindApiManager，因不能分拆为两个对应方法同时避免读两次Account
                 result = accountService.verifyUserPwdVaild(userId, password, true);
                 if (!result.isSuccess()) {
@@ -633,11 +614,6 @@ public class SecureManagerImpl implements SecureManager {
                 }
                 account = (Account) result.getDefaultModel();
                 // result.setDefaultModel(null);
-
-                result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
-                if (!result.isSuccess()) {
-                    return result;
-                }
 
                 String oldMobile = account.getMobile();
                 if (!Strings.isNullOrEmpty(oldMobile)) {
@@ -687,9 +663,12 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
-
             if (!operateTimesService.checkLimitBind(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
+                return result;
+            }
+            result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
+            if (!result.isSuccess()) {
                 return result;
             }
             if (ManagerHelper.isInvokeProxyApi(userId)) {
@@ -702,30 +681,15 @@ public class SecureManagerImpl implements SecureManager {
                 Map<String, String> mapResult = result.getModels();
                 String mobile = mapResult.get("sec_mobile");
 
-                String captcha = proxyBindApiManager.getOldCaptcha(mobile, clientId);
-                if (Strings.isNullOrEmpty(captcha)) {
-                    result = new APIResultSupport(false); // 修改getUserInfo成功造成此处成功的Bug
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-                    return result;
+                //解除原绑定手机
+                result = proxyBindApiManager.unBindMobile(mobile);
+                if(!result.isSuccess()){
+                     return result;
                 }
-
-                BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
-                bindMobileApiParams.setUserid(userId);
-                bindMobileApiParams.setClient_id(clientId);
-                bindMobileApiParams.setNewMobile(newMobile);
-                bindMobileApiParams.setNewCaptcha(smsCode);
-                bindMobileApiParams.setOldMobile(mobile);
-                bindMobileApiParams.setOldCaptcha(captcha);
-
-                result = proxyBindApiManager.bindMobile(bindMobileApiParams);
+                //绑定新手机
+                result = proxyBindApiManager.bindMobile(userId,newMobile);
             } else {
                 Account account;
-
-                result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
-                if (!result.isSuccess()) {
-                    return result;
-                }
-
                 // 修改绑定手机，checkCode为secureCode
                 if (!accountSecureService.checkSecureCodeModSecInfo(userId, clientId, scode)) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BIND_FAILED);
@@ -755,10 +719,8 @@ public class SecureManagerImpl implements SecureManager {
             if (!result.isSuccess()) {
                 return result;
             }
-
             operateTimesService.incLimitBind(userId, clientId);
             operateTimesService.incIPBindTimes(modifyIp);
-
             result.setMessage("修改绑定手机成功！");
             return result;
         } catch (ServiceException e) {
@@ -830,11 +792,6 @@ public class SecureManagerImpl implements SecureManager {
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (mobilePassportMappingService.queryPassportIdByMobile(mobile) != null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                return result;
-            }
-
             return mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
         } catch (ServiceException e) {
             logger.error("check new mobile code Fail:", e);
@@ -944,34 +901,6 @@ public class SecureManagerImpl implements SecureManager {
         result.setSuccess(true);
         result.setMessage("获取所有记录成功！");
         return result;
-    }
-
-    /*
-     * 供sendMobileCode*调用
-     */
-    private Result sendSmsCodeToMobile(String mobile, int clientId, AccountModuleEnum module) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            if (Strings.isNullOrEmpty(mobile) || !PhoneUtil.verifyPhoneNumberFormat(mobile)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
-                return result;
-            }
-            // 验证错误次数是否小于限制次数
-            boolean checkFailLimited = mobileCodeSenderService.checkLimitForSmsFail(mobile, clientId, module);
-            if (!checkFailLimited) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
-                return result;
-            }
-
-            result = mobileCodeSenderService.sendSmsCode(mobile, clientId, module);
-
-            return result;
-        } catch (ServiceException e) {
-            logger.error("send sms code to mobile Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
-
     }
 
     /*

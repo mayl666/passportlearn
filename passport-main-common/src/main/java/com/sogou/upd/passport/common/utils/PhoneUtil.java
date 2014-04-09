@@ -16,7 +16,7 @@ public class PhoneUtil {
 	 */
 	public static boolean verifyPhoneNumberFormat(String photo) {
         return !Strings.isNullOrEmpty(photo) && photo.matches(PHONE_FORMAT);
-	}
+    }
 
 	public static void main(String[] args) {
 		String[] phones = new String[] { "1523620111", "11011363254", "15811363254", "15811364216", "15811364216",

@@ -435,11 +435,9 @@ public class SecureAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-
             String userId = hostHolder.getPassportId();
             userIdInLog = userId;
             int clientId = Integer.parseInt(params.getClient_id());
-
             switch (AccountDomainEnum.getAccountDomain(userId)) {
                 case SOHU:
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
@@ -451,8 +449,6 @@ public class SecureAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
                     return result.toString();
             }
-
-            // result = secureManager.sendMobileCodeByPassportId(userId, clientId);
             result = secureManager.sendMobileCodeOld(userId, clientId);
         } catch (Exception e) {
             logger.error("method[sendSmsSecMobile] send mobile sms to old mobile error.{}", e);
@@ -506,8 +502,6 @@ public class SecureAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
                     return result.toString();
             }
-
-            // result = secureManager.sendMobileCode(newMobile, clientId);
             result = secureManager.sendMobileCodeNew(userId, clientId, newMobile);
         } catch (Exception e) {
             logger.error("method[sendSmsNewMobile] send mobile sms to new mobile error.{}", e);
