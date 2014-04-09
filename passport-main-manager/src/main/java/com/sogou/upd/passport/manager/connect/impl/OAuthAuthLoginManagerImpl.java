@@ -70,8 +70,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private ConnectAuthService connectAuthService;
     @Autowired
-    private ConnectTokenService connectTokenService;
-    @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
     private MappTokenService mappTokenService;
@@ -81,9 +79,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private AccountInfoManager accountInfoManager;
     @Autowired
     private ConnectApiManager sgConnectApiManager;
-
-    @Autowired
-    private ConnectApiManager proxyConnectApiManager;
 
     @Override
     public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type, String httpOrHttps) {
