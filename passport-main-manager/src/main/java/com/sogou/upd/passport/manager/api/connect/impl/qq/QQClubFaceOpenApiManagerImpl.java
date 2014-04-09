@@ -40,7 +40,7 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
         String resp;
         try {
             //QQ提供的openapi服务器
-            String serverName = CommonConstant.QQ_SERVER_IP;
+            String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
             //应用的基本信息，搜狗在QQ的第三方appid与appkey
             String userId = qqParams.getUserid();
             int provider = AccountTypeEnum.getAccountType(userId).getValue();
@@ -64,7 +64,7 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
             // 指定OpenApi Cgi名字
             String scriptName = qqOpenApiParams.getOpenApiName();
             // 指定HTTP请求协议类型,目前代理接口走的都是HTTP请求，所以需要sig签名，如果为HTTPS请求，则不需要sig签名
-            String protocol = CommonConstant.HTTP;
+            String protocol = CommonConstant.HTTPS;
             // 填充URL请求参数,用来生成sig签名
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("openid", openid);

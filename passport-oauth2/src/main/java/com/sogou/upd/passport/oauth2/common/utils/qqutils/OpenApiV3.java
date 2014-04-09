@@ -110,12 +110,6 @@ public class OpenApiV3 {
             params.remove("sig");
             // 添加固定参数
             params.put("appid", this.appid);
-            // 签名密钥
-            String secret = this.appkey + "&";
-            // 计算签名
-            String sig = SnsSigCheck.makeSig(method, scriptName, params, secret);
-            params.put("sig", sig);
-//        System.out.println("sig:-------------" + sig);
             StringBuilder sb = new StringBuilder(64);
             sb.append(protocol).append("://").append(this.serverName).append(scriptName);
             String url = sb.toString();
