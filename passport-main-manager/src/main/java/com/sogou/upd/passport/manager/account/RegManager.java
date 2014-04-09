@@ -85,6 +85,14 @@ public interface RegManager {
     public void incSendTimesForMobile(String ip) throws Exception;
 
     /**
+     * 检查用户名是否存在调用是否超过频率限制
+     * @param username
+     * @param ip
+     * @return
+     */
+    public boolean isUserInExistBlackList(final String username, final String ip);
+
+    /**
      * 校验sogou验证码，并注册手机号账号
      * @param username
      * @param password

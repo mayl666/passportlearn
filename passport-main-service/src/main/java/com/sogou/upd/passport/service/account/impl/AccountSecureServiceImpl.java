@@ -104,8 +104,9 @@ public class AccountSecureServiceImpl implements AccountSecureService {
                 // 获取实际需要存储的参数类，节省存储空间
                 ActionStoreRecordDO storeRecordDO = new ActionStoreRecordDO(clientId, System.currentTimeMillis(), ip);
 
-                String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
-                storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
+                //去掉老集群kv"写"操作 edit by chengang 2014-04-01
+//                String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
+//                storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
 
                 //保存用户行为记录到核心kv
                 String coreKvKey = buildCoreKvKeyForActionRecord(userId, action);
@@ -130,8 +131,9 @@ public class AccountSecureServiceImpl implements AccountSecureService {
                 // 获取实际需要存储的参数类，节省存储空间
                 ActionStoreRecordDO storeRecordDO = actionRecord.obtainStoreRecord();
 
-                String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
-                storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
+                //去掉老集群kv"写"操作 edit by chengang 2014-04-01
+//                String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
+//                storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
 
                 //保存用户行为记录到核心kv
                 String coreKvKey = buildCoreKvKeyForActionRecord(userId, action);
@@ -142,7 +144,10 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
     @Override
     public ActionStoreRecordDO getLastActionStoreRecord(String userid, int clientId, AccountModuleEnum action) {
-        String cacheKey = buildCacheKeyForActionRecord(userid, clientId, action);
+//        String cacheKey = buildCacheKeyForActionRecord(userid, clientId, action);
+
+        //kv迁移，获取用户登录行为数据切换到核心新kv edit by chengang 2014-04-01
+        String cacheKey = buildCoreKvKeyForActionRecord(userid, action);
         ActionStoreRecordDO record = queryLastRecord(cacheKey, ActionStoreRecordDO.class);
 
         return record;
@@ -150,7 +155,10 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
     @Override
     public List<ActionStoreRecordDO> getActionStoreRecords(String userId, int clientId, AccountModuleEnum action) {
-        String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
+//        String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
+
+        //kv迁移，获取用户登录行为数据切换到核心新kv edit by chengang 2014-04-01
+        String cacheKey = buildCoreKvKeyForActionRecord(userId, action);
         List<ActionStoreRecordDO> records = queryRecords(cacheKey, ActionStoreRecordDO.class);
 
         return records;
@@ -209,12 +217,20 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     // 方便以后修改存储方式
     private <T> List<T> queryRecords(String key, Class<T> clazz) {
         // return redisUtils.getList(key, clazz);
-        return kvUtils.getList(key, clazz);
+
+        //kv迁移，读操作切换到核新kv edit by chengang 2014-04-01
+//        return kvUtils.getList(key, clazz);
+
+        return coreKvUtils.getList(key, clazz);
     }
 
     private <T> T queryLastRecord(String key, Class<T> clazz) {
         // return redisUtils.lTop(key, clazz);
-        return kvUtils.top(key, clazz);
+
+        //kv迁移，读操作切换到核新kv edit by chengang 2014-04-01
+//        return kvUtils.top(key, clazz);
+
+        return coreKvUtils.top(key, clazz);
     }
 
     private String buildCacheKeyForActionRecord(String userId, int clientId, AccountModuleEnum action) {

@@ -62,6 +62,16 @@
         <appender-ref ref="interfaceLimitedAppender" />
     </logger>
 
+    <appender name="kafkaAsyncAppender" class="com.sogou.upd.passport.logback.api.kafka.MultiKafkaAppender" additivity="false">
+        <zkList>10.136.24.124:2181,10.136.24.125:2181,10.136.24.126:2181,10.11.211.4:2181,10.11.211.8:2181</zkList>
+        <brokerList>10.136.24.124:9092,10.136.24.125:9092,10.136.24.126:9092</brokerList>
+        <topic>useroperation</topic>
+        <poolSize>10</poolSize>
+        <async>true</async>
+        <encoder>
+            <pattern>%msg</pattern>
+        </encoder>
+    </appender>
 
     <appender name="rabbitMQAppender" class="com.sogou.upd.passport.mq.RabbitMQAppender">
         <host>10.146.32.57</host>
@@ -90,9 +100,10 @@
     </appender>
 
     <logger name="userLoggerAsync" level="info" additivity="false">
-        <!--<appender-ref ref="userOperationAppender" />-->
+        <appender-ref ref="kafkaAsyncAppender" />
         <appender-ref ref="rabbitMQAsyncAppender" />
         <appender-ref ref="localAsyncAppender" />
+
     </logger>
 
     <logger name="userLoggerLocal" level="info" additivity="false">

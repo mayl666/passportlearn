@@ -63,8 +63,6 @@ public class RegAction extends BaseController {
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private CookieManager cookieManager;
-    @Autowired
-    private OperateTimesService operateTimesService;
 
 
     /**
@@ -72,7 +70,7 @@ public class RegAction extends BaseController {
      */
     @RequestMapping(value = "/account/checkusername", method = RequestMethod.GET)
     @ResponseBody
-    public String checkusername(HttpServletRequest request,CheckUserNameExistParameters checkParam)
+    public String checkusername(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
 
         Result result = new APIResultSupport(false);
@@ -90,32 +88,17 @@ public class RegAction extends BaseController {
         if (!Strings.isNullOrEmpty(clientIdStr)) {
             clientId = Integer.valueOf(clientIdStr);
         }
-        if(isUserInExistBlackList(checkParam.getUsername(),getIp(request))){
+        if (regManager.isUserInExistBlackList(checkParam.getUsername(), getIp(request))) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-            return result.toString();
-        }
-        result = checkAccountNotExists(username, clientId);
-        if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
-            result.setMessage("此手机号已注册或已绑定，请直接登录");
-        }
-
-        operateTimesService.incExistTimes(username, getIp(request));
-
-        UserOperationLog userOperationLog = new UserOperationLog(checkParam.getUsername(), request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));;
-        UserOperationLogUtil.log(userOperationLog);
-        return result.toString();
-    }
-
-
-    public boolean isUserInExistBlackList(final String username, final String ip) {
-        //校验username是否在账户黑名单中
-        if (operateTimesService.isUserInExistBlackList(username,ip)) {
-            //是否在白名单中
-            if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
-                return true;
+        } else {
+            result = checkAccountNotExists(username, clientId);
+            if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
+                result.setMessage("此手机号已注册或已绑定，请直接登录");
             }
         }
-        return false;
+        UserOperationLog userOperationLog = new UserOperationLog(checkParam.getUsername(), request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
+        return result.toString();
     }
 
     /**

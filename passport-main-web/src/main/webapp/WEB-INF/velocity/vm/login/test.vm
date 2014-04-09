@@ -8,7 +8,7 @@
     <div id="passport"></div>
     <div id="Target"></div>
 </body>
-<script src="/static/api/sogou.js?t=123183"></script>
+<script src="/static/api/sogou.js?t=799787"></script>
 <script>
 PassportSC.appid = 1044;
 PassportSC.redirectUrl = 'http://ufo:6789/static/api/jump.htm';

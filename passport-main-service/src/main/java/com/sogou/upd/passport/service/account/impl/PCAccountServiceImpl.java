@@ -98,8 +98,9 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     public void saveAccountToken(final String passportId, final String instanceId, AppConfig appConfig, AccountToken accountToken) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
-            String kvKey = buildKeyStr(passportId, clientId, instanceId);
-            kvUtils.set(kvKey, accountToken);
+            //去掉老kv集群"写"操作 2014-04-01 edit by chengang
+//            String kvKey = buildKeyStr(passportId, clientId, instanceId);
+//            kvUtils.set(kvKey, accountToken);
 
             //kv 写操作同步至核心kv集群  2014-03-13 add by chengang
             String coreKvKey = buildCoreKvKey(CacheConstant.CORE_KV_PREFIX_PASSPROTID_TOKEN, passportId, clientId, instanceId);
@@ -126,7 +127,10 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 //            CommonHelper.recordTimestamp(start, "queryAccountToken-tokenRedies");
 
             if (accountToken == null) {
-                accountToken = kvUtils.getObject(buildKeyStr(passportId, clientId, instanceId), AccountToken.class);
+                //切换"读"操作到核心kv集群 edit by chengang 2014-04-01
+//                accountToken = kvUtils.getObject(buildKeyStr(passportId, clientId, instanceId), AccountToken.class);
+
+                accountToken = coreKvUtils.getObject(buildCoreKvKey(CacheConstant.CORE_KV_PREFIX_PASSPROTID_TOKEN, passportId, clientId, instanceId), AccountToken.class);
                 if (accountToken != null) {
                     tokenRedisUtils.set(tokenRedisKey, accountToken);
                 }

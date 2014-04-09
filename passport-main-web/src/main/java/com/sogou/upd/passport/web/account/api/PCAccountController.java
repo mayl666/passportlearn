@@ -126,6 +126,7 @@ public class PCAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return "1";
         }
+        String ip = getIp(request);
         String userId = pcGetTokenParams.getUserid();
 
         String appId = pcGetTokenParams.getAppid();
@@ -137,7 +138,7 @@ public class PCAccountController extends BaseController {
         pcPairTokenParams.setTs(ts);
         pcPairTokenParams.setPassword(pcGetTokenParams.getPassword());
 
-        Result result = pcAccountManager.createPairToken(pcPairTokenParams);
+        Result result = pcAccountManager.createPairToken(pcPairTokenParams,ip);
         String resStr = "";
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
@@ -148,7 +149,7 @@ public class PCAccountController extends BaseController {
 
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), appId, resultCode, getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), appId, resultCode,ip);
         UserOperationLogUtil.log(userOperationLog);
 
         return resStr;
@@ -178,7 +179,7 @@ public class PCAccountController extends BaseController {
         if (!CommonHelper.isIePinyinToken(appid) && loginManager.isLoginUserInBlackList(userId, ip)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
         } else {
-            result = pcAccountManager.createPairToken(reqParams);
+            result = pcAccountManager.createPairToken(reqParams,ip);
         }
         String resStr;
         if (result.isSuccess()) {
@@ -379,6 +380,9 @@ public class PCAccountController extends BaseController {
                 break;
             case ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND:
                 errStr = "2";  //用户名不存在
+                break;
+            case ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST:
+                errStr = "3";  // 账号被封禁
                 break;
             case ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR:
                 errStr = "3";  //用户名密码错误

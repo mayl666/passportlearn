@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -23,6 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * User: mayan Date: 13-4-15 Time: 下午4:34 To change this template use File | Settings | File Templates.
  */
@@ -30,8 +35,14 @@ import org.springframework.stereotype.Component;
 public class LoginManagerImpl implements LoginManager {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginManagerImpl.class);
-    private static final String LOGIN_INDEX_URLSTR = "://account.sogou.com";
     private static final String USERNAME_PWD_ERROR = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR;
+    public static Set<String> needCaptchaSet = new HashSet<String>();
+    static {
+        //目前使用sogou验证码的应用有passport、浏览器4.2及以上版本、彩票
+        needCaptchaSet.add(String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID));
+        needCaptchaSet.add(String.valueOf(CommonConstant.PC_CLIENTID));
+        needCaptchaSet.add(String.valueOf(CommonConstant.CAIPIAO_CLIENTID));
+    }
 
     @Autowired
     private AccountService accountService;
@@ -42,8 +53,6 @@ public class LoginManagerImpl implements LoginManager {
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginApiManager sgLoginApiManager;
-    @Autowired
-    private CommonManager commonManager;
     @Autowired
     private SecureManager secureManager;
 
@@ -120,14 +129,7 @@ public class LoginManagerImpl implements LoginManager {
 
     @Override
     public boolean needCaptchaCheck(String client_id, String username, String ip) {
-        int clientId = Integer.parseInt(client_id);
-        //目前使用sogou验证码的应用有passport 浏览器4.2及以上版本
-        if (clientId== SHPPUrlConstant.APP_ID || clientId== CommonConstant.PC_CLIENTID) {
-            if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)) {
-                return true;
-            }
-        }
-        return false;
+        return (needCaptchaSet.contains(client_id) && operateTimesService.loginFailedTimesNeedCaptcha(username, ip));
     }
 
     @Override

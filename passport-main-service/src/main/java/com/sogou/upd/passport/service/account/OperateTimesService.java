@@ -259,4 +259,17 @@ public interface OperateTimesService {
     public boolean isUserInExistBlackList(String username, String ip) throws ServiceException;
 
     public void incExistTimes(final String username, final String ip) throws ServiceException;
+
+    /**
+     * 检查用户是否在GetPairtoken黑名单中
+     */
+    public boolean isUserInGetPairtokenBlackList(String username, String ip) throws ServiceException;
+
+    /**
+     * 记录GetPairtoken的次数
+     * @param username
+     * @param ip
+     * @throws ServiceException
+     */
+    public void incGetPairTokenTimes(final String username, final String ip) throws ServiceException;
 }
