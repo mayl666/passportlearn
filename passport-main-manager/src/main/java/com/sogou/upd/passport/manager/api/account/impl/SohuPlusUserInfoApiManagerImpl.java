@@ -104,7 +104,7 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                     result.setMessage("修改成功");
                     return result;
                 } else {
-                    result.setSuccess(false);
+                    result = new APIResultSupport(false);
                     result.setMessage("昵称修改失败");
                     return result;
                 }
