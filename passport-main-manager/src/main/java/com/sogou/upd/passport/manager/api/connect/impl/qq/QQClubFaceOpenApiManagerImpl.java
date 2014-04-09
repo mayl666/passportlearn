@@ -78,9 +78,6 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
                 maps = objectMapper.readValue(paramsObj.toString(), HashMap.class);
                 params.putAll(maps);
             }
-            if (!params.containsKey("format")) {
-                params.put("format", HttpTransformat.json.toString()); //如果没有传format，则默认为json串返回格式
-            }
             //目前QQ SDK只提供了post请求，且已经与QQ确认过，他们目前所有的开放接口post请求都可以正确访问
             String method = CommonConstant.CONNECT_METHOD_POST;
             resp = sdk.apiHttp(scriptName, params, protocol, method);

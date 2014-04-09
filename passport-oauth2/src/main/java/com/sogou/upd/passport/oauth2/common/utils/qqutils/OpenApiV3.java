@@ -124,13 +124,7 @@ public class OpenApiV3 {
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
             Map<String, Object> paramsMap = convertToMap(params);
             requestModel.setParams(paramsMap);
-            HttpTransformat format = null;
-            if (HttpTransformat.json.toString().equals(paramsMap.get("format"))) {
-                format = HttpTransformat.json;
-            } else if (HttpTransformat.xml.toString().equals(paramsMap.get("format"))) {
-                format = HttpTransformat.xml;
-            }
-            Map map = ConnectHttpClient.executeBean(requestModel, format, Map.class);
+            Map map = ConnectHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
             resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
         } catch (IOException ioe) {
             logger.error("api:Transfer Map To Json Is Failed :", ioe);
