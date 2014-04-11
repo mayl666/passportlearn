@@ -102,16 +102,6 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
                 return result;
             }
-            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-            baseMoblieApiParams.setMobile(mobile);
-            //检测手机号是否已经注册或绑定
-            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-            if (result.isSuccess()) {
-                result.setSuccess(false);
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                result.setMessage("手机号已绑定其他账号");
-                return result;
-            }
             result = mobileCodeSenderService.sendSmsCode(mobile, clientId, module);
             return result;
         } catch (ServiceException e) {

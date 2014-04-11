@@ -58,8 +58,6 @@ public class RegAction extends BaseController {
     @Autowired
     private SecureManager secureManager;
     @Autowired
-    private RegisterApiManager proxyRegisterApiManager;
-    @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private CookieManager cookieManager;
