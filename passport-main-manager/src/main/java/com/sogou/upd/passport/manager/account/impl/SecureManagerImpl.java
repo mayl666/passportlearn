@@ -109,6 +109,7 @@ public class SecureManagerImpl implements SecureManager {
             if (result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                result.setMessage("手机号已绑定其他账号");
                 return result;
             }
             result = mobileCodeSenderService.sendSmsCode(mobile, clientId, module);
