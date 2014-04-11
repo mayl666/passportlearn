@@ -116,8 +116,8 @@ public class LoginManagerImpl implements LoginManager {
         //封装参数
         AuthUserApiParams authUserApiParams = new AuthUserApiParams();
         authUserApiParams.setUserid(passportId);
+        authUserApiParams.setIp(ip);
         authUserApiParams.setPassword(pwdMD5);
-        authUserApiParams.setCreateip(ip);
         authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
         //根据域名判断是否代理，一期全部走代理
         if (ManagerHelper.isInvokeProxyApi(passportId)) {

@@ -25,12 +25,22 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     @Test
     public void testAuthUser() {
         try {
+//            AuthUserApiParams authUserParameters = new AuthUserApiParams();
+//            authUserParameters.setUserid("tinkame731@17173.com");
+//            authUserParameters.setClient_id(1120);
+//            authUserParameters.setIp("10.129.192.193");
+//            authUserParameters.setPassword(Coder.encryptMD5("cjm136210"));
+//            Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
+
+//
             AuthUserApiParams authUserParameters = new AuthUserApiParams();
-            authUserParameters.setUserid("lin_zhonghui@chinaren.com");
-            authUserParameters.setClient_id(clientId);
-            authUserParameters.setPassword(Coder.encryptMD5("Cooperlin#sh7166"));
+            authUserParameters.setUserid("techchina@17173.com");
+            authUserParameters.setClient_id(1120);
+            authUserParameters.setIp("10.129.192.193");
+//            authUserParameters.setPassword("e355b0428c262b7c883a724a002bf8b8");
+            authUserParameters.setPassword(Coder.encryptMD5("cd98203213"));
             Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
-            System.out.println(result);
+            System.out.println("resultStr:"+result);
         } catch (Exception e) {
             e.printStackTrace();
         }
