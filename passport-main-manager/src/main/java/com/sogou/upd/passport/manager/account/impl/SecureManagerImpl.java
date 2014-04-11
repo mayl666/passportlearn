@@ -102,6 +102,15 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT);
                 return result;
             }
+            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+            baseMoblieApiParams.setMobile(mobile);
+            //检测手机号是否已经注册或绑定
+            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            if (result.isSuccess()) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                return result;
+            }
             result = mobileCodeSenderService.sendSmsCode(mobile, clientId, module);
             return result;
         } catch (ServiceException e) {
@@ -204,19 +213,19 @@ public class SecureManagerImpl implements SecureManager {
                 getUserInfoApiparams.setFields(SECURE_FIELDS /*+",uniqname,avatarurl"*/);
                 result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
 
-                Result shPlusResult=shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                if(shPlusResult.isSuccess()){
-                    Object obj= shPlusResult.getModels().get("baseInfo");
-                    if(obj!=null){
-                        AccountBaseInfo baseInfo= (AccountBaseInfo) obj;
-                        String uniqname=baseInfo.getUniqname();
-                        result.getModels().put("uniqname",Coder.encode(Strings.isNullOrEmpty(uniqname)?userId:uniqname,"UTF-8"));
-                        Result photoResult= photoUtils.obtainPhoto(baseInfo.getAvatar(),"50");
-                        if(photoResult.isSuccess()){
-                            result.getModels().put("avatarurl",photoResult.getModels());
+                Result shPlusResult = shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                if (shPlusResult.isSuccess()) {
+                    Object obj = shPlusResult.getModels().get("baseInfo");
+                    if (obj != null) {
+                        AccountBaseInfo baseInfo = (AccountBaseInfo) obj;
+                        String uniqname = baseInfo.getUniqname();
+                        result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
+                        Result photoResult = photoUtils.obtainPhoto(baseInfo.getAvatar(), "50");
+                        if (photoResult.isSuccess()) {
+                            result.getModels().put("avatarurl", photoResult.getModels());
                         }
                     } else {
-                        result.getModels().put("uniqname",userId);
+                        result.getModels().put("uniqname", userId);
                     }
                 }
             } else {
@@ -304,7 +313,7 @@ public class SecureManagerImpl implements SecureManager {
             int clientId = updatePwdApiParams.getClient_id();
 
             //检查是否在ip黑名单里
-            if (operateTimesService.checkIPLimitResetPwd(ip)){
+            if (operateTimesService.checkIPLimitResetPwd(ip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
@@ -352,7 +361,7 @@ public class SecureManagerImpl implements SecureManager {
                                       String newEmail, String oldEmail, String modifyIp, String ru) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (operateTimesService.checkIPBindLimit(modifyIp)){
+            if (operateTimesService.checkIPBindLimit(modifyIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
@@ -419,7 +428,7 @@ public class SecureManagerImpl implements SecureManager {
             boolean saveEmail = true;
             AccountModuleEnum module = AccountModuleEnum.SECURE;
             String newEmail = emailSenderService.checkScodeForEmail(userId, clientId, module, scode, saveEmail);
-            if(StringUtil.isEmpty(newEmail)){
+            if (StringUtil.isEmpty(newEmail)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);
                 return result;
             }
@@ -487,7 +496,7 @@ public class SecureManagerImpl implements SecureManager {
             Account account;
 
             //检查是否在ip黑名单里
-            if (operateTimesService.checkIPBindLimit(modifyIp)){
+            if (operateTimesService.checkIPBindLimit(modifyIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
@@ -515,7 +524,7 @@ public class SecureManagerImpl implements SecureManager {
                     operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
                     return result;
                 }
-                result = proxyBindApiManager.bindMobile(userId,newMobile);
+                result = proxyBindApiManager.bindMobile(userId, newMobile);
             } else {
                 // 直接写实现方法，不调用sgBindApiManager，因不能分拆为两个对应方法同时避免读两次Account
                 result = accountService.verifyUserPwdVaild(userId, password, true);
@@ -570,7 +579,7 @@ public class SecureManagerImpl implements SecureManager {
                                            String smsCode, String scode, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (operateTimesService.checkIPBindLimit(modifyIp)){
+            if (operateTimesService.checkIPBindLimit(modifyIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
@@ -594,11 +603,11 @@ public class SecureManagerImpl implements SecureManager {
 
                 //解除原绑定手机
                 result = proxyBindApiManager.unBindMobile(mobile);
-                if(!result.isSuccess()){
-                     return result;
+                if (!result.isSuccess()) {
+                    return result;
                 }
                 //绑定新手机
-                result = proxyBindApiManager.bindMobile(userId,newMobile);
+                result = proxyBindApiManager.bindMobile(userId, newMobile);
             } else {
                 Account account;
                 // 修改绑定手机，checkCode为secureCode
@@ -649,7 +658,7 @@ public class SecureManagerImpl implements SecureManager {
                                          String newQues, String newAnswer, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (operateTimesService.checkIPBindLimit(modifyIp)){
+            if (operateTimesService.checkIPBindLimit(modifyIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
@@ -704,10 +713,10 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         try {
             //检查手机账号能否被绑定
-            BaseMoblieApiParams baseMoblieApiParams=new BaseMoblieApiParams();
+            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
             baseMoblieApiParams.setMobile(mobile);
             Result bindResult = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-            if(bindResult.isSuccess()){
+            if (bindResult.isSuccess()) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                 return result;
             }
