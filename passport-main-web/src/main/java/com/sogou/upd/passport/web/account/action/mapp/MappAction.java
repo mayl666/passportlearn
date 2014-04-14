@@ -1,16 +1,11 @@
 package com.sogou.upd.passport.web.account.action.mapp;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.LoginConstant;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.common.utils.SignatureUtils;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.model.app.AppConfig;
@@ -26,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.TreeMap;
 
 /**
@@ -49,9 +42,7 @@ public class MappAction extends BaseController {
 
     @RequestMapping(value = {"/mapp/logout"})
     @ResponseBody
-    public String logout(HttpServletRequest request,
-                         MappLogoutParams params)
-            throws Exception {
+    public String logout(HttpServletRequest request, MappLogoutParams params) throws Exception {
         // 校验参数
         Result result = new APIResultSupport(false);
         String sgid = null;
@@ -98,18 +89,19 @@ public class MappAction extends BaseController {
         }
         return result.toString();
     }
+
     //sgid+client_id+instance_id+ client _secret
-    private Result checkCodeIsCorrect(String sgid, String client_id, String instance_id,String originalCode) {
+    private Result checkCodeIsCorrect(String sgid, String client_id, String instance_id, String originalCode) {
         Result result = new APIResultSupport(false);
         int clientId = Integer.parseInt(client_id);
         AppConfig appConfig = cookieManager.queryAppConfigByClientId(clientId);
         if (appConfig != null) {
             String secret = appConfig.getClientSecret();
 
-            TreeMap map=new TreeMap();
-            map.put("sgid",sgid);
-            map.put("client_id",client_id);
-            map.put("instance_id",instance_id);
+            TreeMap map = new TreeMap();
+            map.put("sgid", sgid);
+            map.put("client_id", client_id);
+            map.put("instance_id", instance_id);
 
             //计算默认的code
             String code = "";
