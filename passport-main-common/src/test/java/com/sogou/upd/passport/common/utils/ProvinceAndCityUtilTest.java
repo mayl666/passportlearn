@@ -562,21 +562,4 @@ public class ProvinceAndCityUtilTest {
         Assert.assertEquals("忻州", ProvinceAndCityUtil.getCityByCityCode(cityCode));
     }
 
-
-    @Test
-    public void testGetProvinceByBuilderPCode() {
-        String provinceCode = "220000";
-        Assert.assertNotNull(ProvinceAndCityUtil.getProvinceByBuilderPCode(provinceCode));
-        Assert.assertNotNull(ProvinceAndCityUtil.builderProvinceMap.get(provinceCode));
-        Assert.assertEquals("吉林", ProvinceAndCityUtil.builderProvinceMap.get(provinceCode));
-    }
-
-    @Test
-    public void testGetCityByBuilderCCode() {
-        String cityCode = "142201";
-        Assert.assertNotNull(ProvinceAndCityUtil.getCityByBuilderCityCode(cityCode));
-        Assert.assertNotNull(ProvinceAndCityUtil.builderCityMap.get(cityCode));
-        Assert.assertEquals("忻州", ProvinceAndCityUtil.getCityByBuilderCityCode(cityCode));
-    }
-
 }
