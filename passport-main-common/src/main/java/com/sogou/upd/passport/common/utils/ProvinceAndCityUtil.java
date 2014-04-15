@@ -14,10 +14,6 @@ import java.util.Map;
  */
 public class ProvinceAndCityUtil {
 
-    public static Map<String, String> provinceMap = Maps.newHashMap();
-
-    public static Map<String, String> cityMap = Maps.newHashMap();
-
     //省份映射信息
     public static final Map<String, String> immutableProvinceMap = ImmutableMap.copyOf(initProvinceMap());
 
