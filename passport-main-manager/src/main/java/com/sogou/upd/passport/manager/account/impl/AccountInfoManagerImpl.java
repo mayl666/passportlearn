@@ -260,10 +260,11 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             if (domain == AccountDomainEnum.THIRD) {
                 result = sgUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
             } else {
-                //非第三方账号，用户操作更新其他信息，更新至sohu
-                result = proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
+                //非第三方账号，用户更新其他信息(非头像、昵称信息)，更新至sohu
+                updateUserInfoApiParams.setUniqname(null);
+                proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
 
-                //非第三方账号，用户操作更新昵称信息，更新至sogou
+                //非第三方账号，用户更新昵称信息，更新至sogou
                 updateUserInfoApiParams.setUniqname(infoParams.getUniqname());
                 result = shPlusUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
             }
@@ -274,6 +275,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
 
         return result;
     }
+
 
     @Override
     public Result getUserInfo(ObtainAccountInfoParams params) {
