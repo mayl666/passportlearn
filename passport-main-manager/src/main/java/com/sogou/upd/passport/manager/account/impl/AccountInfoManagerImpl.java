@@ -259,8 +259,10 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             if (domain == AccountDomainEnum.THIRD) {
                 result = sgUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
             } else {
-//                result = proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
-                //更新昵称
+                //非第三方账号用户其他信息，更新至sohu
+                result = proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
+
+                //非第三方账号用户更新昵称信息
                 updateUserInfoApiParams.setUniqname(infoParams.getUniqname());
                 result=shPlusUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
             }
