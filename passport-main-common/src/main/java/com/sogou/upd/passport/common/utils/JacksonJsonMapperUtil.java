@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.common.utils;
 
-import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**

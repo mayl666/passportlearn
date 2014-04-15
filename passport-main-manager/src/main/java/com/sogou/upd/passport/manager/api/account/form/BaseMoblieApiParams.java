@@ -16,7 +16,7 @@ public class BaseMoblieApiParams extends BaseApiParams {
 
     @Phone
     @NotBlank(message = "手机号不允许为空")
-    private String mobile;
+    protected String mobile;
 
     public String getMobile() {
         return mobile;

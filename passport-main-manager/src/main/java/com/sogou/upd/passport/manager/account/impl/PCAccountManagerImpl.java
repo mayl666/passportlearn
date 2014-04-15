@@ -19,6 +19,7 @@ import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
@@ -48,9 +49,11 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private PCAccountTokenService pcAccountService;
     @Autowired
     private AppConfigService appConfigService;
+    @Autowired
+    private OperateTimesService operateTimesService;
 
     @Override
-    public Result createPairToken(PcPairTokenParams pcTokenParams) {
+    public Result createPairToken(PcPairTokenParams pcTokenParams,String ip) {
         Result finalResult = new APIResultSupport(false);
         try {
             int clientId = Integer.parseInt(pcTokenParams.getAppid());
@@ -65,13 +68,19 @@ public class PCAccountManagerImpl implements PCAccountManager {
             if (!Strings.isNullOrEmpty(password)) {   //校验用户名和密码
                 AuthUserApiParams authUserApiParams = new AuthUserApiParams(clientId, passportId, password);
                 //根据域名判断是否代理，一期全部走代理
-                Result result;
+                Result result = new APIResultSupport(false);
+                if (isLoginUserInBlackList(clientId,passportId, ip)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                    return result;
+                }
+
                 if (ManagerHelper.isInvokeProxyApi(passportId)) {
                     result = proxyLoginApiManager.webAuthUser(authUserApiParams);
                 } else {
                     result = sgLoginApiManager.webAuthUser(authUserApiParams);
                 }
                 if (!result.isSuccess()) {
+                    doAuthUserFailed(clientId,passportId,ip,result.getCode());
                     return result;
                 }
                 passportId = (String) result.getModels().get("userid");
@@ -89,6 +98,25 @@ public class PCAccountManagerImpl implements PCAccountManager {
             logger.error("createPairToken fail", e);
             finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return finalResult;
+        }
+    }
+
+    public boolean isLoginUserInBlackList(final int clientId,final String username, final String ip) {
+        if (CommonHelper.isIePinyinToken(clientId)){
+            //校验username是否在账户黑名单中
+            if (operateTimesService.isUserInGetPairtokenBlackList(username,ip)) {
+                //是否在白名单中
+                if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void doAuthUserFailed(final int clientId, final String username, final String ip, String errCode) {
+        if (CommonHelper.isIePinyinToken(clientId) && ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(errCode)) {
+            operateTimesService.incGetPairTokenTimes(username, ip);
         }
     }
 

@@ -26,6 +26,7 @@ public class RuValidator implements ConstraintValidator<Ru, String> {
         SUPPORT_DOMAIN.add("go2map.com");
         SUPPORT_DOMAIN.add("qq.com");
         SUPPORT_DOMAIN.add("soso.com");
+        SUPPORT_DOMAIN.add("pinyin.cn");
     }
 
     @Override
@@ -42,9 +43,9 @@ public class RuValidator implements ConstraintValidator<Ru, String> {
         try {
             Pattern p = Pattern.compile("^(https?:\\/\\/)?[\\w\\-.]+\\.(sogou|sohu|qq|soso|go2map)\\.com($|\\?|\\/|\\\\|:[\\d])", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(value);
-            if(matcher.find()){
+            if (matcher.find()) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
 
@@ -60,8 +61,8 @@ public class RuValidator implements ConstraintValidator<Ru, String> {
 //        return true;
     }
 
-    public static void main(String args[]){
-        String value="http://www.qq.com";
+    public static void main(String args[]) {
+        String value = "http://www.qq.com";
         String rootPath;
         try {
             Pattern p = Pattern.compile("(http|ftp|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?", Pattern.CASE_INSENSITIVE);

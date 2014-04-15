@@ -5,7 +5,7 @@
     <title>用户信息</title>
     <meta name="description" content="搜狗浏览器个人中心页"/>
     <meta name="author" content="yinyong#sogou-inc.com"/>
-    <link href="/./static/css/oauth2pc/login.css?t=755663" rel="stylesheet" />
+    <link href="/./static/css/oauth2pc/login.css?t=660637" rel="stylesheet" />
     <!--[if IE 6]>
     <link href="/./static/css/oauth2pc/ie6.css?t=301171" rel="stylesheet" />
     <![endif]-->

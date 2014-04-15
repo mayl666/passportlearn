@@ -95,47 +95,6 @@ public class OpenApiV3 {
         return resp;
     }
 
-    /**
-     * 执行API调用
-     *
-     * @param scriptName OpenApi CGI名字 ,如/v3/user/get_info
-     * @param params     OpenApi的参数列表
-     * @param protocol   HTTP请求协议 "http" / "https"
-     * @return 返回服务器响应内容
-     */
-    public String apiHttp(String scriptName, HashMap<String, String> params, String protocol, String method) throws Exception {
-        String resp;
-        try {
-            // 无需传sig,会自动生成
-            params.remove("sig");
-            // 添加固定参数
-            params.put("appid", this.appid);
-            // 签名密钥
-            String secret = this.appkey + "&";
-            // 计算签名
-            String sig = SnsSigCheck.makeSig(method, scriptName, params, secret);
-            params.put("sig", sig);
-//        System.out.println("sig:-------------" + sig);
-            StringBuilder sb = new StringBuilder(64);
-            sb.append(protocol).append("://").append(this.serverName).append(scriptName);
-            String url = sb.toString();
-            //SGHttpClient,POST请求
-            RequestModel requestModel = new RequestModel(url);
-            requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            Map<String, Object> paramsMap = convertToMap(params);
-            requestModel.setParams(paramsMap);
-            Map map = ConnectHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
-            resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
-        } catch (IOException ioe) {
-            logger.error("api:Transfer Map To Json Is Failed :", ioe);
-            throw new IOException("Transfer Map To Json Is Failed:", ioe);
-        } catch (Exception e) {
-            logger.error("api:Execute Api Is Failed :", e);
-            throw new Exception("Execute Api Is Failed:", e);
-        }
-        return resp;
-    }
-
     private Map<String, Object> convertToMap(HashMap<String, String> paramsMap) {
         Map<String, Object> maps = new HashMap<>();
         if (!CollectionUtils.isEmpty(paramsMap)) {

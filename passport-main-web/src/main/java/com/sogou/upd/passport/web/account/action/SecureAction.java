@@ -13,6 +13,8 @@ import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
+import com.sogou.upd.passport.manager.api.account.BindApiManager;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
@@ -56,6 +58,8 @@ public class SecureAction extends BaseController {
     private CheckManager checkManager;
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
+    @Autowired
+    private BindApiManager proxyBindApiManager;
 
 
     /*
@@ -435,11 +439,9 @@ public class SecureAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-
             String userId = hostHolder.getPassportId();
             userIdInLog = userId;
             int clientId = Integer.parseInt(params.getClient_id());
-
             switch (AccountDomainEnum.getAccountDomain(userId)) {
                 case SOHU:
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
@@ -451,8 +453,6 @@ public class SecureAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
                     return result.toString();
             }
-
-            // result = secureManager.sendMobileCodeByPassportId(userId, clientId);
             result = secureManager.sendMobileCodeOld(userId, clientId);
         } catch (Exception e) {
             logger.error("method[sendSmsSecMobile] send mobile sms to old mobile error.{}", e);
@@ -506,9 +506,17 @@ public class SecureAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
                     return result.toString();
             }
-
-            // result = secureManager.sendMobileCode(newMobile, clientId);
-            result = secureManager.sendMobileCodeNew(userId, clientId, newMobile);
+            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+            baseMoblieApiParams.setMobile(newMobile);
+            //检测手机号是否已经注册或绑定
+            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            if (result.isSuccess()) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                result.setMessage("手机号已绑定其他账号");
+                return result;
+            }
+            result = secureManager.sendMobileCode(newMobile,clientId,AccountModuleEnum.SECURE);
         } catch (Exception e) {
             logger.error("method[sendSmsNewMobile] send mobile sms to new mobile error.{}", e);
         } finally {

@@ -118,11 +118,11 @@ input[type="text"].error,input[type="password"].error{
 	border-radius: 3px;
 	cursor: pointer;
 }
-.btn:hover,.btn:focus{
+/*.btn:hover,.btn:focus{
 	border:#4aa2e2 1px solid;
 	background:#54b7fc;
 	background: -webkit-linear-gradient( top,#5cbcff,#4bb1fa);
-}
+}*/
 .btn:active{
 	border:#1d80d8 1px solid;
 	background:#147cc1;

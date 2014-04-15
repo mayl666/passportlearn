@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.model.account.Account;
@@ -29,9 +30,9 @@ import org.springframework.stereotype.Component;
  */
 @Component("sgRegisterApiManager")
 public class SGRegisterApiManagerImpl implements RegisterApiManager {
-
     private static Logger logger = LoggerFactory.getLogger(SGRegisterApiManagerImpl.class);
-
+    @Autowired
+    private BindApiManager proxyBindApiManager;
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -157,6 +158,16 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
         Result result = new APIResultSupport(false);
         String mobile = params.getMobile();
         try {
+            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+            baseMoblieApiParams.setMobile(mobile);
+            //检测手机号是否已经注册或绑定
+            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            if (result.isSuccess()) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                result.setMessage("手机号已绑定其他账号");
+                return result;
+            }
             result = secureManager.sendMobileCode(params.getMobile(), params.getClient_id(), AccountModuleEnum.REGISTER);
         } catch (Exception e) {
             logger.error("send mobile code Fail, mobile:" + mobile, e);

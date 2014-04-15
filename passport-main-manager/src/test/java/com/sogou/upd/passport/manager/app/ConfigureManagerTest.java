@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.app;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.math.Coder;
+import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ import org.junit.Test;
  * Time: 下午2:35
  * To change this template use File | Settings | File Templates.
  */
-public class ConfigureManagerTest extends BaseTest {
+public class ConfigureManagerTest extends TestCase {
 
     @Test
     public void testGeneratorSecret() {
@@ -23,7 +24,7 @@ public class ConfigureManagerTest extends BaseTest {
     @Test
     public void testGeneratorClientSecret() throws Exception {
         // 客户端密钥
-        int appid = 2009;
+        int appid = 2013;
         String randomClient = RandomStringUtils.randomAlphanumeric(10);
         long timestamp = System.currentTimeMillis();
         String baseStrClient = appid + "|" + timestamp + "|" + randomClient;
