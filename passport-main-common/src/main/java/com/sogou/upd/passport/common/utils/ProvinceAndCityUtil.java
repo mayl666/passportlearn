@@ -399,7 +399,7 @@ public class ProvinceAndCityUtil {
         initCityMap.put("451401", "崇左");
         initCityMap.put("450801", "贵港");
 
-        //海南 海口、三亚、三沙
+        //海南 3个地级市 海口、三亚、三沙
         initCityMap.put("460100", "海口");
         initCityMap.put("460200", "三亚");
         initCityMap.put("460300", "三沙");
