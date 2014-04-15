@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.utils.ProvinceAndCityUtil;
 import com.sogou.upd.passport.common.validation.constraints.Birthday;
 import com.sogou.upd.passport.common.validation.constraints.Gender;
 import com.sogou.upd.passport.common.validation.constraints.IdCard;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
@@ -32,7 +33,7 @@ public class AccountInfoParams {
 
     @AssertTrue(message = "省市参数错误！")
     public boolean isCheckProvinceAndCity() {
-        if(province !=null ){
+        /*if(province !=null ){
             if (Strings.isNullOrEmpty(ProvinceAndCityUtil.provinceMap.get(String.valueOf(province)))) {
                 return false;
             }
@@ -42,13 +43,22 @@ public class AccountInfoParams {
                 return false;
             }
         }
-
         if (province !=null && city!=null) {
             String subProvince = province.toString().substring(0, 2);
             String subCity = city.toString().substring(0, 2);
             if (!subProvince.equals(subCity)) {
                 return false;
             }
+        }
+        return true;*/
+        if (StringUtils.isNotEmpty(province) && Strings.isNullOrEmpty(ProvinceAndCityUtil.immutableProvinceMap.get(province))) {
+            return false;
+        }
+        if (StringUtils.isNotEmpty(city) && Strings.isNullOrEmpty(ProvinceAndCityUtil.immutableCityMap.get(city))) {
+            return false;
+        }
+        if (!StringUtils.substring(province, 0, 2).equalsIgnoreCase(StringUtils.substring(city, 0, 2))) {
+            return false;
         }
         return true;
     }
