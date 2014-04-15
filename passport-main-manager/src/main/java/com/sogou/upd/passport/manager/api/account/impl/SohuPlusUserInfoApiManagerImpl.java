@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DBRedisUtils;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
@@ -102,6 +103,10 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                 if (flag) {
                     result.setSuccess(true);
                     result.setMessage("修改成功");
+                    return result;
+                } else {
+                    result = new APIResultSupport(false);
+                    result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
                     return result;
                 }
             } else {

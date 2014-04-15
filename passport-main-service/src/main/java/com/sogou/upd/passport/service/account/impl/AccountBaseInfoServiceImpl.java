@@ -130,7 +130,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             return true;
         } catch (Exception e) {
             logger.error("insertOrUpdateAccountBaseInfo fail", e);
-            return false;
+            throw new ServiceException();
         }
     }
 

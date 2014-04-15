@@ -6,6 +6,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -16,6 +18,7 @@ import java.util.Map;
  * Time: 下午9:08
  */
 public class XMLUtil {
+    private static final Logger logger = LoggerFactory.getLogger(XMLUtil.class);
 
 
     //初始化xstream
@@ -87,6 +90,7 @@ public class XMLUtil {
             //转换
             return  (T) xstream.fromXML(newXml);
         } catch (DocumentException e) {
+            logger.error("xmlToBean fail,xml:"+ xml +"; type="+type, e);
             throw new RuntimeException("xml to bean error", e);
         }
     }

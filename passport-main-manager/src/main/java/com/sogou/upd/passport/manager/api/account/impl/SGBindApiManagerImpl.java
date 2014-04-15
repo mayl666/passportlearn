@@ -168,4 +168,14 @@ public class SGBindApiManagerImpl implements BindApiManager {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public Result bindMobile(String userid,String mobile){
+        return null;
+    }
+
+    @Override
+    public Result unBindMobile(String mobile){
+        return null;
+    }
+
 }

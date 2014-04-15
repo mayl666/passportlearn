@@ -70,8 +70,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private ConnectAuthService connectAuthService;
     @Autowired
-    private ConnectTokenService connectTokenService;
-    @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
     private MappTokenService mappTokenService;
@@ -81,9 +79,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private AccountInfoManager accountInfoManager;
     @Autowired
     private ConnectApiManager sgConnectApiManager;
-
-    @Autowired
-    private ConnectApiManager proxyConnectApiManager;
 
     @Override
     public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type, String httpOrHttps) {
@@ -134,11 +129,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 oAuthTokenVO.setNickName(uniqname);
                 oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
             }
-
-            // 创建第三方账号
-//            Result tmpconnectAccountResult = proxyConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
-
-
             Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
 
             if (connectAccountResult.isSuccess()) {

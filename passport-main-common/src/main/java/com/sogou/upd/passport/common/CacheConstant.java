@@ -51,16 +51,17 @@ public class CacheConstant {
     // username或者ip在黑名单中的set KEY
     public static final String CACHE_PREFIX_LOGIN_BLACKLIST = "SP.USERNAME.IP:BLACKLIST_KEY";
 
-    // username在黑名单的前缀
+    // 登陆在黑名单的前缀
     public static final String CACHE_PREFIX_LOGIN_USERNAME_BLACK_ = "SP.USERNAME:BLACK_";
-    // username在黑名单的前缀
     public static final String CACHE_PREFIX_LOGIN_IP_BLACK_ = "SP.IP:BLACK_";
 
-    // username在黑名单的前缀
+    // 检查账号是否存在在黑名单的前缀
     public static final String CACHE_PREFIX_EXIST_USERNAME_BLACK_ = "SP.EXIST.USERNAME:BLACK_";
-    // username在黑名单的前缀
     public static final String CACHE_PREFIX_EXIST_IP_BLACK_ = "SP.EXIST.IP:BLACK_";
 
+    // 检查账号是否存在在黑名单的前缀
+    public static final String CACHE_PREFIX_GETPAIRTOKEN_USERNAME_BLACK_ = "SP.GETPAIRTOKEN.USERNAME:BLACK_";
+    public static final String CACHE_PREFIX_GETPAIRTOKEN__IP_BLACK_ = "SP.GETPAIRTOKEN.IP:BLACK_";
 
     //IP网段黑名单
     public static final String CACHE_PREFIX_IP_SUBIPBLACKLIST = "SP.IP:SUBIPBLACKLIST_KEY";
@@ -119,6 +120,8 @@ public class CacheConstant {
     public static final String CACHE_FAILED_KEY = "FAILED"; //失败key
     public static final String CACHE_PREFIX_USERNAME_EXISTNUM = "SP.USERNAME:EXISTNUM_"; //username连续登陆的次数
     public static final String CACHE_PREFIX_IP_EXISTNUM = "SP.IP:EXISTNUM_"; //IP连续登陆的次数
+    public static final String CACHE_PREFIX_USERNAME_GETPAIRTOKENNUM = "SP.USERNAME:GETPAIRTOKENNUM_"; //username连续登陆的次数
+    public static final String CACHE_PREFIX_IP_GETPAIRTOKENNUM = "SP.IP:GETPAIRTOKENNUM_"; //IP连续登陆的次数
 
     /*==================内部接口登陆相关缓存常量========================*/
     public static final String CACHE_PREFIX_USERNAME_AUTHUSER_NUM = "SP.USERNAME:AUTHUSERNNUM_HASH_"; //username连续登陆的次数

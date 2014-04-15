@@ -10,6 +10,15 @@ public class RegMobileApiParams extends BaseMoblieApiParams {
     @NotBlank(message = "密码不允许为空")
     private String password;  //必须为md5
 
+    public RegMobileApiParams(){
+
+    }
+    public RegMobileApiParams(String mobile,String password,int client_id){
+        this.mobile = mobile;
+        this.password = password;
+        this.client_id = client_id;
+    }
+
     public String getPassword() {
         return password;
     }

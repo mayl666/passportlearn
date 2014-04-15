@@ -111,7 +111,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
             //生成随机数
             String randomCode = RandomStringUtils.randomNumeric(5);
             //写入缓存
-            String cacheKey = buildCacheKeyForSmsCode(mobile, clientId, module);
+            String cacheKey = buildCacheKeyForSmsCode(mobile, module);
             //初始化缓存映射
             Map<String, String> cacheMap = redisUtils.hGetAll(cacheKey);
             if (MapUtils.isEmpty(cacheMap) || !StringUtil.checkIsDigit(cacheMap.get("sendTime"))) {
@@ -184,7 +184,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     public boolean checkSmsInfoFromCache(String mobile, int clientId, AccountModuleEnum module, String smsCode)
             throws ServiceException {
         try {
-            String cacheKey = buildCacheKeyForSmsCode(mobile, clientId, module);
+            String cacheKey = buildCacheKeyForSmsCode(mobile, module);
             Map<String, String> mapResult = redisUtils.hGetAll(cacheKey);
             if (MapUtils.isNotEmpty(mapResult)) {
                 String strValue = mapResult.get("smsCode");
@@ -284,8 +284,9 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
         return false;
     }
 
-    private String buildCacheKeyForSmsCode(String mobile, int clientId, AccountModuleEnum module) {
-        return CACHE_PREFIX_ACCOUNT_SMSCODE + module + "_" + clientId + "_" + mobile;
+    private String buildCacheKeyForSmsCode(String mobile, AccountModuleEnum module) {
+        //key中不能包含clientId，解决别的应用跳转过来产生的问题
+        return CACHE_PREFIX_ACCOUNT_SMSCODE + module + "_" + mobile;
     }
 
     private String buildCacheKeyForSmsFailLimit(String mobile, int clientId, AccountModuleEnum module) {

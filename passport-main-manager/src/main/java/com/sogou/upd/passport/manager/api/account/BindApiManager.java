@@ -59,4 +59,19 @@ public interface BindApiManager {
      * @return
      */
     public String getOldCaptcha(String mobile, int clientId);
+
+    /**
+     * 直接绑定手机号
+     * @param userid
+     * @param mobile
+     * @return
+     */
+    public Result bindMobile(String userid,String mobile);
+
+    /**
+     * 直接解除手机绑定
+     * @param mobile
+     * @return
+     */
+    public Result unBindMobile(String mobile);
 }

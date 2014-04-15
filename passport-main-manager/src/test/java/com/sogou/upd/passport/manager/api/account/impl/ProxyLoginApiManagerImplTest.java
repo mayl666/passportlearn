@@ -26,11 +26,21 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     public void testAuthUser() {
         try {
             AuthUserApiParams authUserParameters = new AuthUserApiParams();
-            authUserParameters.setUserid("lin_zhonghui@chinaren.com");
-            authUserParameters.setClient_id(clientId);
-            authUserParameters.setPassword(Coder.encryptMD5("Cooperlin#sh7166"));
+            authUserParameters.setUserid("tinkame731@17173.com");
+            authUserParameters.setClient_id(1120);
+//            authUserParameters.setIp("10.129.192.193");
+            authUserParameters.setPassword(Coder.encryptMD5("cjm136210"));
+//            Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
+
+//
+//            AuthUserApiParams authUserParameters = new AuthUserApiParams();
+//            authUserParameters.setUserid("techchina@17173.com");
+//            authUserParameters.setClient_id(1120);
+//            authUserParameters.setIp("10.129.192.193");
+////            authUserParameters.setPassword("e355b0428c262b7c883a724a002bf8b8");
+//            authUserParameters.setPassword(Coder.encryptMD5("cd98203213"));
             Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
-            System.out.println(result);
+            System.out.println("resultStr:"+result);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -59,17 +69,6 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
         }
     }
 
-    @Test
-    public void testAppAuth() throws Exception {
-        AppAuthTokenApiParams params = new AppAuthTokenApiParams();
-        params.setClient_id(1120);
-        params.setToken("54b4c49bfdb3321a5ffea8358c7ec08b");
-        params.setCode("23b442b3c93c059b5510b6230d85f070");
-        params.setType(2);
-        params.setCt(1160703204);
-        Result result = proxyLoginApiManager.appAuthToken(params);
-        System.out.println("result:"+result);
-    }
     @Test
     public void testgetSHCookieValue() {
        try {
