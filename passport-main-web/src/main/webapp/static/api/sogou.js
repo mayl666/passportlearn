@@ -557,7 +557,7 @@ var PassportSC = {
             qq:[500,300]
         }
     },
-    token : utils.uuid(),
+    _token : utils.uuid(),
     _passhtml : '<form method="post" action="https://account.sogou.com/web/login" target="_PassportIframe">'
         +'<input type="hidden" name="username" value="<%=username%>">'
         +'<input type="hidden" name="password" value="<%=password%>">'
@@ -697,6 +697,11 @@ var PassportSC = {
             location.href = 'https://account.sogou.com/web/remindActivate?email=' + encodeURIComponent(PassportSC._currentUname)
                 + '&client_id=' + PassportSC.appid
                 + '&ru=' + encodeURIComponent(location.href);
+        }else if(+data.needcaptcha){
+            data.captchaimg = 'https://account.sogou.com/captcha?token=' 
+                + PassportSC.getToken() 
+                + '&t=' + (+new Date());
+            PassportSC.onfailure && PassportSC.onfailure(data);
         }else{
             PassportSC.onfailure && PassportSC.onfailure(data);
         }

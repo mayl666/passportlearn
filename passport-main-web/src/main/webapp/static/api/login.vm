@@ -24,6 +24,10 @@
             </label>
         </p>
         <p>
+            <input type="" name="" value="" id="Captcha"/>
+            <img src="" class="" alt="" id="CaptchaImg"/>
+</p>
+        <p>
             <button id="Submit">提交</button>
         </p>
         <p><a href="#" id="Logout">退出</a></p>
@@ -41,13 +45,22 @@ PassportSC.appid = 1120;
 document.getElementById('Submit').onclick = function(){
     var username = document.getElementById('Username');
     var password = document.getElementById('Password');
+         var captcha = document.getElementById('Captcha');
     var autologin = document.getElementById('Autologin').checked ? 1 :0;
     if( !username.value.length || !password.value.length ){
         alert('输入内容');
         return;
     }
         
-    PassportSC.loginHandle(username.value , password.value  , autologin , document.getElementById('Target') , function(){alert('fail')} , function(){alert('success')});
+    PassportSC.loginHandle(username.value , password.value , captcha.value  , autologin , document.getElementById('Target') , 
+                           function(data){
+                 console.log(data)
+                 if( +data.needcaptcha ){
+                     document.getElementById('CaptchaImg').src = data.captchaimg;
+                 }
+                                                                                                                         
+                                                                                                                         
+} , function(){alert('success')});
 };
 
 document.getElementById('Logout').onclick = function(){

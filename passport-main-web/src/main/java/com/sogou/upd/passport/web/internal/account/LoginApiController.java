@@ -184,9 +184,9 @@ public class LoginApiController extends BaseController {
         }
         // 调用内部接口
         result = sgLoginApiManager.appAuthToken(params);
-        if (!result.isSuccess()) {
-            result = proxyLoginApiManager.appAuthToken(params);
-        }
+//        if (!result.isSuccess()) {
+//            result = proxyLoginApiManager.appAuthToken(params);
+//        }
 
         String userId = (String) result.getModels().get("userid");
         //记录log
