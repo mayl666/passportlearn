@@ -103,11 +103,15 @@ public class UpdateUserInfoApiParams extends BaseUserApiParams {
 
     @AssertTrue(message = "省市参数错误！")
     private boolean isCheckProvinceAndCity() {
-        if (StringUtils.isNotEmpty(province) && Strings.isNullOrEmpty(ProvinceAndCityUtil.immutableProvinceMap.get(province))) {
-            return false;
+        if (StringUtils.isNotEmpty(province)) {
+            if (Strings.isNullOrEmpty(ProvinceAndCityUtil.immutableProvinceMap.get(province))) {
+                return false;
+            }
         }
-        if (StringUtils.isNotEmpty(city) && Strings.isNullOrEmpty(ProvinceAndCityUtil.immutableCityMap.get(city))) {
-            return false;
+        if (StringUtils.isNotEmpty(city)) {
+            if (Strings.isNullOrEmpty(ProvinceAndCityUtil.immutableCityMap.get(city))) {
+                return false;
+            }
         }
         if (StringUtils.isNotEmpty(province) && StringUtils.isNotEmpty(city)) {
             if (!StringUtils.substring(province, 0, 2).equals(StringUtils.substring(city, 0, 2))) {
