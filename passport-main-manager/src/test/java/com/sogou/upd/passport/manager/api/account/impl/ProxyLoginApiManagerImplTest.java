@@ -26,10 +26,10 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     public void testAuthUser() {
         try {
             AuthUserApiParams authUserParameters = new AuthUserApiParams();
-            authUserParameters.setUserid("tinkame731@17173.com");
-            authUserParameters.setClient_id(1120);
+            authUserParameters.setUserid("li666qing@sogou.com");
+            authUserParameters.setClient_id(1100);
 //            authUserParameters.setIp("10.129.192.193");
-            authUserParameters.setPassword(Coder.encryptMD5("cjm136210"));
+            authUserParameters.setPassword(Coder.encryptMD5("sogou0416"));
 //            Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
 
 //
