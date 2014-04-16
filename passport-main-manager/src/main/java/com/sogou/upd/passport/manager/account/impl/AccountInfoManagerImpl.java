@@ -248,9 +248,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             updateUserInfoApiParams.setBirthday(birthday);
             updateUserInfoApiParams.setUsername(infoParams.getFullname());
             updateUserInfoApiParams.setUniqname(infoParams.getUniqname());
-
             updateUserInfoApiParams.setProvince(infoParams.getProvince());
-
             updateUserInfoApiParams.setCity(infoParams.getCity());
             updateUserInfoApiParams.setPersonalId(infoParams.getPersonalid());
             updateUserInfoApiParams.setModifyip(ip);
@@ -260,22 +258,19 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             if (domain == AccountDomainEnum.THIRD) {
                 result = sgUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
             } else {
+                //非第三方账号，用户更新昵称信息，更新至sogou
+                result = shPlusUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
+
                 //非第三方账号，用户更新其他信息(非头像、昵称信息)，更新至sohu
                 updateUserInfoApiParams.setUniqname(null);
                 proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
-
-                //非第三方账号，用户更新昵称信息，更新至sogou
-                updateUserInfoApiParams.setUniqname(infoParams.getUniqname());
-                result = shPlusUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
             }
         } else {
             updateUserInfoApiParams = buildUpdateUserInfoApiParams(infoParams, ip);
             result = sgUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
         }
-
         return result;
     }
-
 
     @Override
     public Result getUserInfo(ObtainAccountInfoParams params) {

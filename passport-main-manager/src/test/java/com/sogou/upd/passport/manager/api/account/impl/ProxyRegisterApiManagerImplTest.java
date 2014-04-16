@@ -41,16 +41,6 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
     }
 
     @Test
-    public void testRegMobileCaptchaUser() throws Exception {
-        RegMobileCaptchaApiParams regMobileCaptchaApiParams = new RegMobileCaptchaApiParams();
-        regMobileCaptchaApiParams.setMobile("13521134303");
-        regMobileCaptchaApiParams.setPassword(Coder.encryptMD5("111111"));
-        regMobileCaptchaApiParams.setCaptcha("7808");
-        Result result = proxyRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
-        System.out.println(result);
-    }
-
-    @Test
     public void testCheckUser() {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
         checkUserApiParams.setUserid("scanrecord@sogou.com");

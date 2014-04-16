@@ -31,32 +31,23 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
             result.setMessage("注册成功");
             result.setDefaultModel("userid", regEmailApiParams.getUserid());
 
-          //判断注册账号类型
-          AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(regEmailApiParams.getUserid());
-          switch (emailType){
-            case OTHER:
-              result.setDefaultModel("isSetCookie",false);
-              break;
-            default:
-              result.setDefaultModel("isSetCookie",true);
-              break;
-          }
+            //判断注册账号类型
+            AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(regEmailApiParams.getUserid());
+            switch (emailType) {
+                case OTHER:
+                    result.setDefaultModel("isSetCookie", false);
+                    break;
+                default:
+                    result.setDefaultModel("isSetCookie", true);
+                    break;
+            }
         }
         return result;
     }
 
     @Override
     public Result regMobileCaptchaUser(RegMobileCaptchaApiParams regMobileCaptchaApiParams) {
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.REG_MOBILE_CAPTCHA, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParams(regMobileCaptchaApiParams);
-        Result result = executeResult(requestModelXml, regMobileCaptchaApiParams.getMobile());
-        if (result.isSuccess()) {
-            result.setMessage("注册成功");
-            String passportId = PassportIDGenerator.generator(regMobileCaptchaApiParams.getMobile(), AccountTypeEnum.PHONE.getValue());
-            result.setDefaultModel("userid", passportId);
-            result.setDefaultModel("isSetCookie",true);
-        }
-        return result;
+        return null;
     }
 
     @Override
@@ -91,7 +82,7 @@ public class ProxyRegisterApiManagerImpl extends BaseProxyManager implements Reg
             result.setMessage("注册成功");
             String passportId = PassportIDGenerator.generator(regMobileApiParams.getMobile(), AccountTypeEnum.PHONE.getValue());
             result.setDefaultModel("userid", passportId);
-            result.setDefaultModel("isSetCookie",false);
+            result.setDefaultModel("isSetCookie", false);
         }
         return result;
     }
