@@ -1,92 +1,30 @@
+package com.sogou.upd.passport.common.utils;
+
+import com.google.common.base.Stopwatch;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import junit.framework.Assert;
+import org.junit.Test;
+
+import java.util.Map;
+
 /**
- * person.js
- *
- * This javascript file is for userinfo page and avatar-uploading page.
- * @author yinyong#sogou-inc.com
- * @version 0.0.1
+ * 省份城市对应码测试类
+ * Created with IntelliJ IDEA.
+ * User: chengang
+ * Date: 14-4-14
+ * Time: 下午4:06
  */
+public class ProvinceAndCityUtilTest {
 
-define("person", ['./common', './tpl', './form', './utils'], function(common, ursa, form, utils) {
 
-    /**
-     * Copied from zhengxin#sogou-inc.com.Not validated.For sync validating nickname.
-     */
-    var errorUnames = {};
-    var createSpan = function($el, className) {
-        if (!$el.parent().parent().find('.' + className).length) {
-            $el.parent().parent().append('<span class="' + className + '"></span>');
-        }
-    };
-    var getSpan = function($el, className) {
-        return $el.parent().parent().find('.' + className);
-    };
-    var checkNickname = function($el, cb) {
-        var ipt = $el.find('input[name="nickname"]');
-        if (!ipt || !ipt.length) {
-            cb && cb(0);
-            return;
-        }
-        if (!ipt.val().length) {
-            cb && cb(-1);
-            return;
-        }
-        var errSpan = getSpan(ipt, 'error');
+    public static Map<String, String> provinceMap = Maps.newHashMap();
 
-        if (errSpan && errSpan.length && errSpan.css('display') != 'none') {
-            cb && cb(-1);
-            return;
-        }
+    public static Map<String, String> cityMap = Maps.newHashMap();
 
-        function showError(text) {
-            createSpan(ipt, 'error');
-            getSpan(ipt, 'error').show().html(text);
-            getSpan(ipt, 'desc').hide();
-        }
 
-        if (errorUnames[ipt.val()]) {
-            showError(errorUnames[ipt.val()]); //FIXME
-            cb && cb(1);
-            return;
-        }
-        $.get('/web/userinfo/checknickname', {
-            nickname: ipt.val(),
-            client_id: $("[name='client_id']").val(),
-            t: +new Date()
-        }, function(data) {
-            data = utils.parseResponse(data);
-            if (!+data.status) { //success
-                cb && cb(0);
-            } else {
-                showError(data.statusText);
-                errorUnames[ipt.val()] = data.statusText; //FIXME
-                cb && cb(1);
-            }
-        });
-
-    };
-
-    /**
-     * Provinces and cities construction
-     * A hash to pre-two letters should be defined for cities.
-     */
-    var _loc = function() {
-        var obj = {};
-        this.put = function(code, name) {
-            if (code)
-                obj[code] = name;
-        };
-        this.list = function(iterate) {
-            for (var e in obj) {
-                if (!obj.hasOwnProperty(e)) continue;
-                iterate(e, obj[e]);
-            }
-        };
-    };
-
-    var cityMap = new _loc();
-    var provinceMap = new _loc();
-    //Really long code,copied from mayan#sogou-inc.com totally.
-    (function() {
+    static {
+        //省编码对照表
         provinceMap.put("110000", "北京");
         provinceMap.put("120000", "天津");
         provinceMap.put("130000", "河北");
@@ -121,13 +59,13 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         provinceMap.put("710000", "台湾");
         provinceMap.put("810000", "香港");
         provinceMap.put("820000", "澳门");
-        provinceMap.put("990000", "国外");
-        //city
-        cityMap.put("110100", "北京");
+        provinceMap.put("990000", "其他国家");
 
+        //市编码对照表
+        cityMap.put("110100", "北京");
         cityMap.put("120100", "天津");
 
-       //河北省
+        //河北省
         cityMap.put("130101", "石家庄");
         cityMap.put("130201", "唐山");
         cityMap.put("130301", "秦皇岛");
@@ -152,9 +90,9 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("142601", "临汾");
         cityMap.put("142701", "运城");
         cityMap.put("140401", "长治");
+
         //add by chengang 2014-04-14
         cityMap.put("140701", "晋中");
-        cityMap.put("141101", "吕梁");
 
 
         //内蒙古
@@ -170,11 +108,12 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("152502", "锡林浩特");
         cityMap.put("152101", "海拉尔");
         cityMap.put("152201", "乌兰浩特");
-        //add by chengang 2014-04-14 补充
+
+
+        //add by chengang 2014-04-14
         cityMap.put("150701", "呼伦贝尔");
         cityMap.put("150600", "鄂尔多斯");
-        cityMap.put("150801", "巴彦淖尔");
-        cityMap.put("150901", "乌兰察布");
+
 
         //辽宁省
         cityMap.put("210101", "沈阳");
@@ -189,10 +128,11 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("211101", "盘锦");
         cityMap.put("211201", "铁岭");
         cityMap.put("211301", "朝阳");
-        cityMap.put("211401", "锦西");//不属于地市级、属于“葫芦岛”的一个区
+        cityMap.put("211401", "锦西");
         cityMap.put("210601", "丹东");
+
         //add by chengang 2014-04-14
-        cityMap.put("211400", "葫芦岛");
+//        cityMap.put("211401", "葫芦岛");//城市码被 “锦西”占用
 
 
         //吉林省
@@ -200,8 +140,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("220201", "吉林");
         cityMap.put("220301", "四平");
         cityMap.put("220401", "辽源");
-        cityMap.put("220601", "白山");
-        cityMap.put("220701", "松原");
+        cityMap.put("220601", "浑江");
         cityMap.put("222301", "白城");
         cityMap.put("222401", "延吉");
         cityMap.put("220501", "通化");
@@ -224,7 +163,6 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
 
         cityMap.put("310100", "上海");
 
-
         //江苏省
         cityMap.put("320101", "南京");
         cityMap.put("320201", "无锡");
@@ -237,10 +175,12 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("320901", "盐城");
         cityMap.put("321001", "扬州");
         cityMap.put("321101", "镇江");
+
         //add by chengang 2014-04-14
         cityMap.put("321301", "宿迁");
-        cityMap.put("320800", "淮安");
+//        cityMap.put("320801", "淮安"); //暂注释，城市码被 "淮阴" 占用
         cityMap.put("321201", "泰州");
+
 
         //浙江省
         cityMap.put("330101", "杭州");
@@ -254,8 +194,10 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("330901", "舟山");
         cityMap.put("332501", "丽水");
         cityMap.put("332602", "临海");
+
         //add by chengang 2014-04-14
         cityMap.put("331001", "台州");
+
 
         //安徽省
         cityMap.put("340101", "合肥");
@@ -274,6 +216,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("342501", "宣州");
         cityMap.put("342601", "巢湖");
         cityMap.put("342901", "贵池");
+
         //add by chengang 2014-04-14
         cityMap.put("341601", "亳州");
         cityMap.put("341701", "池州");
@@ -290,7 +233,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("352201", "宁德");
         cityMap.put("352601", "龙岩");
 
-        //江西省
+        //江西
         cityMap.put("360101", "南昌");
         cityMap.put("360201", "景德镇");
         cityMap.put("362101", "赣州");
@@ -302,11 +245,12 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("362301", "上饶");
         cityMap.put("362401", "吉安");
         cityMap.put("362502", "临川");
+
         //add by chengang 2014-04-14
         cityMap.put("361001", "抚州");
 
 
-        //山东省
+        //山东
         cityMap.put("370101", "济南");
         cityMap.put("370201", "青岛");
         cityMap.put("370301", "淄博");
@@ -323,9 +267,9 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("372501", "聊城");
         cityMap.put("372801", "临沂");
         cityMap.put("372901", "菏泽");
+
         //add by chengang 2014-04-14
         cityMap.put("371201", "莱芜");
-
 
         //河南省
         cityMap.put("410101", "郑州");
@@ -346,8 +290,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("412901", "南阳");
         cityMap.put("413001", "信阳");
 
-
-        //湖北省
+        //湖北
         cityMap.put("420101", "武汉");
         cityMap.put("420201", "黄石");
         cityMap.put("420301", "十堰");
@@ -361,6 +304,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("422301", "咸宁");
         cityMap.put("422421", "江陵");
         cityMap.put("422801", "恩施");
+
         //add by chengang 2014-04-14
         cityMap.put("421001", "荆州");
         cityMap.put("421101", "黄冈");
@@ -373,7 +317,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("430501", "邵阳");
         cityMap.put("432801", "郴州");
         cityMap.put("432901", "永州");
-//        cityMap.put("430801", "大庸");
+        cityMap.put("430801", "大庸");
         cityMap.put("433001", "怀化");
         cityMap.put("433101", "吉首");
         cityMap.put("430201", "株洲");
@@ -382,8 +326,6 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("430701", "常德");
         cityMap.put("432301", "益阳");
         cityMap.put("432501", "娄底");
-        //add by chengang 2014-04-14
-        cityMap.put("430801", "张家界");
 
 
         //广东省
@@ -405,6 +347,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("440501", "汕头");
         cityMap.put("441401", "梅州");
         cityMap.put("441701", "阳江");
+
         // add by chengang 2014-04-14
         cityMap.put("445101", "潮州");
         cityMap.put("445201", "揭阳");
@@ -421,16 +364,13 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("452802", "钦州");
         cityMap.put("450201", "柳州");
         cityMap.put("450501", "北海");
+
         //add by chengang 2014-04-14
         cityMap.put("450601", "防城港");
-        cityMap.put("451101", "贺州");
-        cityMap.put("451301", "来宾");
-        cityMap.put("451401", "崇左");
-        cityMap.put("450801", "贵港");
 
+        //海南
         cityMap.put("460100", "海口");
         cityMap.put("460200", "三亚");
-        //yinyong#sogou-inc.com:A new city since 2012.
         cityMap.put("460300", "三沙");
 
         //四川
@@ -439,7 +379,6 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("513101", "雅安");
         cityMap.put("513229", "马尔康");
         cityMap.put("510301", "自贡");
-        cityMap.put("500100", "重庆");
         cityMap.put("512901", "南充");
         cityMap.put("510501", "泸州");
         cityMap.put("510601", "德阳");
@@ -452,13 +391,16 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("513021", "达县");
         cityMap.put("513401", "西昌");
         cityMap.put("510401", "攀枝花");
+
         //add by chengang 2014-04-14
         cityMap.put("511601", "广安");
         cityMap.put("511901", "巴中");
         cityMap.put("511401", "眉山");
-        cityMap.put("512001", "资阳");
 
-        cityMap.put("500239", "黔江土家族苗族自治县"); //K,too long
+
+        cityMap.put("500100", "重庆");
+        cityMap.put("500239", "黔江土家族苗族自治县");
+        cityMap.put("513200", "阿坝藏族羌族自治州");
 
         //贵州省
         cityMap.put("520101", "贵阳");
@@ -489,6 +431,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("533321", "泸水");
         cityMap.put("533421", "中甸");
         cityMap.put("533521", "临沧");
+
         //add by chengang 2014-04-14
         cityMap.put("532500", "红河");
         cityMap.put("532800", "西双版纳傣族自治州");
@@ -515,8 +458,6 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("612501", "商州");
         cityMap.put("612601", "延安");
         cityMap.put("612701", "榆林");
-        //add by chengang 2014-04-14
-        cityMap.put("611001", "商洛");
 
         //甘肃
         cityMap.put("620101", "兰州");
@@ -533,9 +474,9 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("623027", "夏河");
         cityMap.put("620201", "嘉峪关");
         cityMap.put("622102", "酒泉");
+
         //add by chengang 2014-04-14
         cityMap.put("621001", "庆阳");
-        cityMap.put("621201", "陇南");
 
         //青海省
         cityMap.put("630100", "西宁");
@@ -546,7 +487,9 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("632621", "玛沁");
         cityMap.put("632721", "玉树");
         cityMap.put("632802", "德令哈");
+
         //add by chengang 2014-04-14
+        cityMap.put("632600", "果洛藏族自治州");
         cityMap.put("632100", "海东");
 
         //宁夏
@@ -554,8 +497,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("640201", "石嘴山");
         cityMap.put("642101", "吴忠");
         cityMap.put("642221", "固原");
-        //add by chengang 2014-04-14
-        cityMap.put("640501", "中卫");
+
 
         //新疆
         cityMap.put("650101", "乌鲁木齐");
@@ -570,313 +512,54 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         cityMap.put("653101", "喀什");
         cityMap.put("653201", "和田");
         cityMap.put("654101", "伊宁");
+
         //add by chengang 2014-04-14
         cityMap.put("654301", "阿勒泰");
-        cityMap.put("654202", "乌苏");
-        cityMap.put("652302", "阜康");
-        cityMap.put("654003", "奎屯");
-        cityMap.put("654201", "塔城");
-        cityMap.put("659004", "五家渠");
-        cityMap.put("659003", "图木舒克");
-        cityMap.put("659002", "阿拉尔市");
-        cityMap.put("659001", "石河子");
 
+
+        //台湾
         cityMap.put("710001", "台北");
         cityMap.put("710002", "基隆");
         cityMap.put("710020", "台南");
         cityMap.put("710019", "高雄");
         cityMap.put("710008", "台中");
 
+
         cityMap.put("820000", "澳门");
-
         cityMap.put("810000", "香港");
-        //This is added by yinyong#sogou-inc.com:Every province item has to own one city item at least.
+
         cityMap.put("990000", "国外");
-    })();
+
+    }
 
 
-    var pagefunc = {
-        common: function(data) {
-            common.parseHeader(data);
-            if (data.actype == 'phone') {
-                $('.nav li.tel').hide();
-            }
-        },
-        disable: function(data) {
-            //Stupid way to hide
-            //fixme
-            $($('.banner li')[2]).hide();
-            //$('.sidebar .ucenter-sidebar span.dynamic').hide();
-            //$('.sidebar .ucenter-sidebar .hr').hide();
-        },
-        index: function(data) {
-            var tpl = $('#Target');
-            if (tpl.size()) {
-                //This means the userinfo page.
+    public static Map<String, String> getProvinceMap() {
+        return provinceMap;
+    }
 
-                var wrapper = tpl.parent();
-                wrapper.html(ursa.render(tpl.html(), data));
-                var $el = $('.main-content .form form');
 
-                /**
-                 * I am against about validating on submit function,cause if the 
-                 * validating code crashed,the form may still submit,and the whole page jumps.
-                 */
-                form.render($el, {
-                    onbeforesubmit: function() {
+    public static Map<String, String> getCityMap() {
+        return cityMap;
+    }
 
-                        //As we have a sync validating,post here.
 
-                        var year = $("#s-year").val();
-                        var month = $("#s-month").val();
-                        var day = $("#s-day").val();
-                        var date = new Date(year, month-1, day);//may be a invalid date
-                        //Check whether the date is illegal
-                        if (!(date.getFullYear() == year && date.getMonth() == month-1 && date.getDate() == day)) {
-                            return alert("日期不合法");
-                        } else {
-                            if(month<10)month="0"+String(month);
-                            if(day<10)day="0"+String(day);
-                            $("#birthday").val(year + "-" + month + "-" + day);//like 1987-01-01
-                        }
+    @Test
+    public void testGetProvinceImmutableMap() {
+        String provinceCode = "220000";
+        Stopwatch time = new Stopwatch();
+        time.start();
+        Assert.assertNotNull(ProvinceAndCityUtil.getProvinceByPCode(provinceCode));
+        System.out.println("use time :" + time.elapsedMillis());
 
-                        $("#flag").val($("#NicknameIpt").val()==decodeURIComponent(data.uniqname)?0:1);
+        Assert.assertNotNull(ProvinceAndCityUtil.immutableProvinceMap.get(provinceCode));
+        Assert.assertEquals("吉林", ProvinceAndCityUtil.immutableProvinceMap.get(provinceCode));
+    }
 
-                        //Maybe city&province,gender,personalid should be validated again,
-                        //as DOM could be modified.
+    @Test
+    public void testGetCityImmutableMap() {
+        String cityCode = "142201";
+        Assert.assertNotNull(ProvinceAndCityUtil.getCityByCityCode(cityCode));
+        Assert.assertEquals("忻州", ProvinceAndCityUtil.getCityByCityCode(cityCode));
+    }
 
-                        //if nickname has never changed,do not check
-                        if ($("#NicknameIpt").val() != decodeURIComponent(data.uniqname)) {
-                            checkNickname($el, function(status) {
-                                if (!+status) {
-                                    $.post($el.attr('action'), $el.serialize(), function(data) {
-                                        data = utils.parseResponse(data);
-                                        if (!+data.status) {
-                                            //Go to main page if saved successfully.
-                                            window.location = "/";
-                                            try{window.external.passport("onProfileChange");}catch(e){}
-                                        } else {
-                                            form.showFormError(data.statusText);
-                                        }
-                                    });
-                                }
-                                return false;
-                            });
-                        } else {
-                            //@todo
-                            $.post($el.attr('action'), $el.serialize(), function(data) {
-                                data = utils.parseResponse(data);
-                                if (!+data.status) {
-                                    //Go to main page if saved successfully.
-                                    window.location = "/";
-                                    try{window.external.passport("onProfileChange");}catch(e){}
-                                } else {
-                                    form.showFormError(data.statusText);
-                                }
-                            });
-                        }
-
-                        return false; //No more submit
-                    }
-                    /*,
-                    onsuccess: function(el) {
-                        formsuccess[type] ? formsuccess[type](el) : formsuccess.common(el);
-                        window.location="/";
-                    }*/
-                });
-
-                //返回按钮
-                $("button.back").click(function() {
-                    history.back();
-                });
-
-                $el.find('input[name=nickname]').blur(function() {
-                    if(data.uniqname==$(this).val())return;
-                    var errorspan = $(this).parent().parent().find('.error');
-                    if (!errorspan || !errorspan.length || errorspan.css('display') == 'none') {
-                        setTimeout(function() {
-                            checkNickname($el);
-                        }, 100);
-                    }
-                });
-
-                var birthday = (/\d{4}\-\d{1,2}\-\d{1,2}/.test(data.birthday)) ? data.birthday.split('-') : [1987, 0, 1];
-                if (birthday.length != 3) birthday = [1987, 0, 1]; //Default:Thu Jan 01 1987 00:00:00 GMT+0900 (CST)
-
-                var yearS = $("#s-year");
-                var monthS = $("#s-month");
-                var dayS = $("#s-day");
-
-                var thisYear=new Date().getFullYear();
-                //From 1900 AD. to this year
-                for (var i = 1900; i <=thisYear;  ++i) {
-                    yearS.append("<option value=" + i + ">" + i + "</option>");
-                }
-                //Set input
-                yearS.val(+birthday[0]);
-
-                for (var i = 0; i <=11; ++i) {
-                    monthS.append("<option value=" +(1+ i )+ ">" +(i+1)+ "</option>");
-                }
-                //Sever offers the month at 1.Damn.
-                monthS.val(+birthday[1] );
-
-                //Note that Jan has 31 days,even not 1st or 1987.
-                //If u wanna change the default month,u may need to change here.
-                for (var i = 1; i <= 31; ++i) {
-                    dayS.append("<option value=" + i + ">" + i + "</option>");
-                }
-                dayS.val(+birthday[2]);
-
-                /**
-                 * Reset the day selector.
-                 * @param  {[interger]} countOfDays  u know
-                 * @return {[undefined]} 
-                 * @todo Could be more efficient.
-                 */
-                var resetDay = function(countOfDays) {
-                    var oldDay = dayS.val();//save the value
-                    dayS.empty();
-                    for (var i = 1; i < 1 + countOfDays; ++i)
-                        dayS.append("<option value=" + i + ">" + i + "</option>");
-                    dayS.val(oldDay);
-                };
-
-                //Because the count of days depends on the year and the month,
-                //we have to calculate it when year and month change.   
-                var calendarChange = function(e) {
-                    var year = +yearS.val();
-                    var month = +monthS.val();
-                    if (isNaN(year) || !isFinite(year) || year < 1900) {
-                        return (window['console'] && console.log("Illegal year"));
-                    }
-                    if (isNaN(month) || !isFinite(month) || month < 0 || month > 11) {
-                        return (window['console'] && console.log("Illegal month"));
-                    }
-
-                    //Really need to calculate?
-                    if (/1|3|5|7|8|10|12/.test(1 + month)) {
-                        resetDay(31)
-                    } else if (/4|6|9|11/.test(1 + month)) {
-                        resetDay(30)
-                    } else {
-                        //Feb
-                        if (year % 4 == 0 && year % 400 != 0) {
-                            resetDay(29)
-                        } else {
-                            resetDay(28)
-                        }
-                    }
-
-                };
-
-                //Register change event
-                yearS.change(calendarChange);
-                monthS.change(calendarChange);
-
-                //Show provinces
-                provinceMap.list(function(code, name) {
-                    $('#s-province').append("<option value='" + code + "'>" + name + "</option>");
-                });
-                /**
-                 * Cause the list of cities depends on the current province,
-                 * we have to refresh the list of cities when province changes.
-                 *
-                 * @todo Could be more efficient.
-                 */
-                var changeCities = function() {
-                    $('#s-city').empty();
-                    var provCode = $(this).val();
-                    cityMap.list(function(code, name) {
-                        //Note that the code of a city equals its province's code at first 2 letters!
-                        //Not my invention.
-                        if (provCode.slice(0, 2) == code.slice(0, 2))
-                            $('#s-city').append("<option value='" + code + "'>" + name + "</option>");
-                    });
-                };
-
-                //Set values to the inputs or selects.
-                //I really doubt that whether the values should be validated.
-                $("#s-province").val(data.province || "");
-                $("#s-province").change(changeCities).trigger('change'); //show the list before set city value.
-                $("#s-city").val(data.city || "");
-                $("#FullnameIpt").val(data.fullname || "");
-                $("#UniqnameIpt").val(decodeURIComponent(data.uniqname) || ""); //Uniqname or nickname?I cannot tell.
-                $("#PersonalidIpt").val(data.personalid || ""); //Note:if the personalid is not empty,we think it not editable!
-                if(data.personalid){
-                    $('#PersonalidIpt').parent('span').attr('class','form-text').empty().append("****************** 已验证");
-                }
-                $(".snick").text(decodeURIComponent(data.uniqname)||"");
-                if(+data.gender===1)
-                $(":radio[name='gender']").eq(1).prop('checked', true);
-               else
-                $(":radio[name='gender']").eq(0).prop('checked', true);
-
-            } else {
-                window.as2js=function(msg){
-                    if('goodluck'==msg){
-                        try{window.external.passport("onProfileChange");}catch(e){}
-                        location.assign('/');
-                    }
-                };
-                //avatar page,just show the flash
-                $('#UploadPhoto').size()&&require(["/./static/js/lib/jquery.flash.js"], function() {
-                    $('#UploadPhoto').flash({
-                        src: '/./static/swf/upjsp.swf',
-                        width: 504,
-                        height: 416,
-                        flashvars: {
-                            jurl: "/web/userinfo/uploadavatar?client_id=1120",
-                            furl: "/index",
-                            durl:"/"
-                        }
-                    });
-                });
-            }
-        }
-    };
-
-    return {
-        init: function() {
-
-            //I'm confused about here,maybe zhengxin#sogou-inc.com knows more.
-
-            common.showBannerUnderLine();
-            $('.nav').show();
-
-            var data = {};
-            try {
-                var _server_data=$.evalJSON(server_data);
-                if(!_server_data){throw "server_data not found";}
-                else if(+_server_data.status){
-                    window['console']&&console.log('operation failed');
-                    //If status neq 0,uploading photo will be not accepted.
-                    $('#UploadPhoto').replaceWith('<div class="avatar-not-support-sohu">暂时不支持sohu域内邮箱用户修改头像</div>');
-                }
-
-                data = _server_data.data||data;
-
-                //trim
-                for (var e in data) {
-                    var it=data[e];
-                    if(!data.hasOwnProperty(e))continue;
-                    if(typeof it==='string'||(it&&it.constructor==String))
-                    {
-                        data[e]=it.replace(/^\s+|\s+$/g,'');
-                    }
-                };
-            } catch (e) {
-                window['console'] && console.log(e);
-            }
-
-            pagefunc.index(data);
-            pagefunc.common(data);
-
-            if(data&&data.disable)
-            {
-                pagefunc.disable();
-            }
-
-        }
-    };
-});
+}

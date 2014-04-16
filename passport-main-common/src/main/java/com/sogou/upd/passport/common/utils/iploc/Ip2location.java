@@ -15,9 +15,9 @@ public class Ip2location {
 	public static void main(String[] args){
 		try {
 			Ip2location iptools = new Ip2location("./data/location.dat"); 
-			System.out.println(iptools.getLocation("117.136.9.128"));
-			System.out.println(iptools.getCode("114.112.45.128"));
-				
+//			System.out.println(iptools.getLocation("117.136.9.128"));
+//			System.out.println(iptools.getCode("114.112.45.128"));
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
