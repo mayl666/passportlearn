@@ -39,7 +39,6 @@ public class SHPPUrlConstant {
 
     /*================================注册相关=======================================*/
     public static final String SEND_MOBILE_REG_CAPTCHA = BASE_INTERNAL_URL + "sendmobileregcaptcha"; //获取注册的手机验证码
-    public static final String REG_MOBILE_CAPTCHA = BASE_INTERNAL_URL + "register/mobilecaptcha";  //手机号验证码注册
     public static final String WEB_EMAIL_REG = BASE_INTERNAL_URL + "reguser";  //web端邮箱注册
     public static final String REG_MOBILE_NOCAPTCHA = BASE_INTERNAL_URL + "regmobiled";
 
@@ -95,8 +94,4 @@ public class SHPPUrlConstant {
     public static final String CONNECT_SHARE_PIC = BASE_OPEN_API_URL + "api/share/add_pic";
     //第三方获取用户好友/互粉
     public static final String GET_CONNECT_FRIENDS_INFO = BASE_OPEN_API_URL + "api/friendship/friends";
-
-    // 同步创建第三方账号的接口
-    public static final String CREATE_CONNECT_USER = "http://passport.sohu.com/openlogin/non/callback/";
-
 }
