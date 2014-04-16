@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.utils.DBRedisUtils;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.SnamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
@@ -148,8 +147,8 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
         return false;
     }
 
-    private String buildSnamePassportMappingKey(String sname) {
-        return CACHE_PREFIX_SNAME_PASSPORTID + sname;
+    private String buildSnamePassportMappingKey(String keyStr) {
+        return CACHE_PREFIX_SNAME_PASSPORTID + keyStr;
     }
 
 }
