@@ -1,10 +1,14 @@
 package com.sogou.upd.passport.web.account.action;
 
+import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.BeanUtil;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.web.BaseController;
+import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.SlowInfoParams;
 
@@ -30,6 +34,14 @@ public class InfoAction extends BaseController {
     @RequestMapping(value = "/slowinfo", method = RequestMethod.GET)
     public void slowInfo(HttpServletRequest request, SlowInfoParams params) throws Exception {
         Result result = new APIResultSupport(true);
+
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            return;
+            /*result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();*/
+        }
 
         UserOperationLog log = new UserOperationLog("-", request.getRequestURI(), "-", result.getCode(), getIp(request));
         Map map = BeanUtil.objectToMap(params);

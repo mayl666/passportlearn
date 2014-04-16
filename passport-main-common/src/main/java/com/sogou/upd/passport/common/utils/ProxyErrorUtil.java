@@ -34,6 +34,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.7", ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);//手机注册的sohu域账号未激活
         SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.8", ERR_CODE_ACCOUNT_KILLED);// 账号已被锁定
         SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.9", ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);//登陆保护用户的stoken错误
+        SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.10", ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);//登陆保护用户的stoken错误
 
         //手机app校验第三方登录的token
         SHPPERRCODE_SGPPERRCODE_MAP.put("auth.-1", ERR_CODE_APPCONNECT_TOKEN_ERROR);//token校验失败

@@ -6,21 +6,21 @@
  * @version 0.0.1
  */
 
-define("person", ['./common', './tpl', './form', './utils'], function (common, ursa, form, utils) {
+define("person", ['./common', './tpl', './form', './utils'], function(common, ursa, form, utils) {
 
     /**
      * Copied from zhengxin#sogou-inc.com.Not validated.For sync validating nickname.
      */
     var errorUnames = {};
-    var createSpan = function ($el, className) {
+    var createSpan = function($el, className) {
         if (!$el.parent().parent().find('.' + className).length) {
             $el.parent().parent().append('<span class="' + className + '"></span>');
         }
     };
-    var getSpan = function ($el, className) {
+    var getSpan = function($el, className) {
         return $el.parent().parent().find('.' + className);
     };
-    var checkNickname = function ($el, cb) {
+    var checkNickname = function($el, cb) {
         var ipt = $el.find('input[name="nickname"]');
         if (!ipt || !ipt.length) {
             cb && cb(0);
@@ -52,7 +52,7 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
             nickname: ipt.val(),
             client_id: $("[name='client_id']").val(),
             t: +new Date()
-        }, function (data) {
+        }, function(data) {
             data = utils.parseResponse(data);
             if (!+data.status) { //success
                 cb && cb(0);
@@ -69,13 +69,13 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
      * Provinces and cities construction
      * A hash to pre-two letters should be defined for cities.
      */
-    var _loc = function () {
+    var _loc = function() {
         var obj = {};
-        this.put = function (code, name) {
+        this.put = function(code, name) {
             if (code)
                 obj[code] = name;
         };
-        this.list = function (iterate) {
+        this.list = function(iterate) {
             for (var e in obj) {
                 if (!obj.hasOwnProperty(e)) continue;
                 iterate(e, obj[e]);
@@ -86,7 +86,7 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
     var cityMap = new _loc();
     var provinceMap = new _loc();
     //Really long code,copied from mayan#sogou-inc.com totally.
-    (function () {
+    (function() {
         provinceMap.put("110000", "北京");
         provinceMap.put("120000", "天津");
         provinceMap.put("130000", "河北");
@@ -127,7 +127,7 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
 
         cityMap.put("120100", "天津");
 
-        //河北省
+       //河北省
         cityMap.put("130101", "石家庄");
         cityMap.put("130201", "唐山");
         cityMap.put("130301", "秦皇岛");
@@ -596,20 +596,20 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
 
 
     var pagefunc = {
-        common: function (data) {
+        common: function(data) {
             common.parseHeader(data);
             if (data.actype == 'phone') {
                 $('.nav li.tel').hide();
             }
         },
-        disable: function (data) {
+        disable: function(data) {
             //Stupid way to hide
             //fixme
             $($('.banner li')[2]).hide();
             //$('.sidebar .ucenter-sidebar span.dynamic').hide();
             //$('.sidebar .ucenter-sidebar .hr').hide();
         },
-        index: function (data) {
+        index: function(data) {
             var tpl = $('#Target');
             if (tpl.size()) {
                 //This means the userinfo page.
@@ -619,45 +619,42 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
                 var $el = $('.main-content .form form');
 
                 /**
-                 * I am against about validating on submit function,cause if the
+                 * I am against about validating on submit function,cause if the 
                  * validating code crashed,the form may still submit,and the whole page jumps.
                  */
                 form.render($el, {
-                    onbeforesubmit: function () {
+                    onbeforesubmit: function() {
 
                         //As we have a sync validating,post here.
 
                         var year = $("#s-year").val();
                         var month = $("#s-month").val();
                         var day = $("#s-day").val();
-                        var date = new Date(year, month - 1, day);//may be a invalid date
+                        var date = new Date(year, month-1, day);//may be a invalid date
                         //Check whether the date is illegal
-                        if (!(date.getFullYear() == year && date.getMonth() == month - 1 && date.getDate() == day)) {
+                        if (!(date.getFullYear() == year && date.getMonth() == month-1 && date.getDate() == day)) {
                             return alert("日期不合法");
                         } else {
-                            if (month < 10)month = "0" + String(month);
-                            if (day < 10)day = "0" + String(day);
+                            if(month<10)month="0"+String(month);
+                            if(day<10)day="0"+String(day);
                             $("#birthday").val(year + "-" + month + "-" + day);//like 1987-01-01
                         }
 
-                        $("#flag").val($("#NicknameIpt").val() == decodeURIComponent(data.uniqname) ? 0 : 1);
+                        $("#flag").val($("#NicknameIpt").val()==decodeURIComponent(data.uniqname)?0:1);
 
                         //Maybe city&province,gender,personalid should be validated again,
                         //as DOM could be modified.
 
                         //if nickname has never changed,do not check
                         if ($("#NicknameIpt").val() != decodeURIComponent(data.uniqname)) {
-                            checkNickname($el, function (status) {
+                            checkNickname($el, function(status) {
                                 if (!+status) {
-                                    $.post($el.attr('action'), $el.serialize(), function (data) {
+                                    $.post($el.attr('action'), $el.serialize(), function(data) {
                                         data = utils.parseResponse(data);
                                         if (!+data.status) {
                                             //Go to main page if saved successfully.
                                             window.location = "/";
-                                            try {
-                                                window.external.passport("onProfileChange");
-                                            } catch (e) {
-                                            }
+                                            try{window.external.passport("onProfileChange");}catch(e){}
                                         } else {
                                             form.showFormError(data.statusText);
                                         }
@@ -667,15 +664,12 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
                             });
                         } else {
                             //@todo
-                            $.post($el.attr('action'), $el.serialize(), function (data) {
+                            $.post($el.attr('action'), $el.serialize(), function(data) {
                                 data = utils.parseResponse(data);
                                 if (!+data.status) {
                                     //Go to main page if saved successfully.
                                     window.location = "/";
-                                    try {
-                                        window.external.passport("onProfileChange");
-                                    } catch (e) {
-                                    }
+                                    try{window.external.passport("onProfileChange");}catch(e){}
                                 } else {
                                     form.showFormError(data.statusText);
                                 }
@@ -685,22 +679,22 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
                         return false; //No more submit
                     }
                     /*,
-                     onsuccess: function(el) {
-                     formsuccess[type] ? formsuccess[type](el) : formsuccess.common(el);
-                     window.location="/";
-                     }*/
+                    onsuccess: function(el) {
+                        formsuccess[type] ? formsuccess[type](el) : formsuccess.common(el);
+                        window.location="/";
+                    }*/
                 });
 
                 //返回按钮
-                $("button.back").click(function () {
+                $("button.back").click(function() {
                     history.back();
                 });
 
-                $el.find('input[name=nickname]').blur(function () {
-                    if (data.uniqname == $(this).val())return;
+                $el.find('input[name=nickname]').blur(function() {
+                    if(data.uniqname==$(this).val())return;
                     var errorspan = $(this).parent().parent().find('.error');
                     if (!errorspan || !errorspan.length || errorspan.css('display') == 'none') {
-                        setTimeout(function () {
+                        setTimeout(function() {
                             checkNickname($el);
                         }, 100);
                     }
@@ -713,19 +707,19 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
                 var monthS = $("#s-month");
                 var dayS = $("#s-day");
 
-                var thisYear = new Date().getFullYear();
+                var thisYear=new Date().getFullYear();
                 //From 1900 AD. to this year
-                for (var i = 1900; i <= thisYear; ++i) {
+                for (var i = 1900; i <=thisYear;  ++i) {
                     yearS.append("<option value=" + i + ">" + i + "</option>");
                 }
                 //Set input
                 yearS.val(+birthday[0]);
 
-                for (var i = 0; i <= 11; ++i) {
-                    monthS.append("<option value=" + (1 + i ) + ">" + (i + 1) + "</option>");
+                for (var i = 0; i <=11; ++i) {
+                    monthS.append("<option value=" +(1+ i )+ ">" +(i+1)+ "</option>");
                 }
                 //Sever offers the month at 1.Damn.
-                monthS.val(+birthday[1]);
+                monthS.val(+birthday[1] );
 
                 //Note that Jan has 31 days,even not 1st or 1987.
                 //If u wanna change the default month,u may need to change here.
@@ -737,10 +731,10 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
                 /**
                  * Reset the day selector.
                  * @param  {[interger]} countOfDays  u know
-                 * @return {[undefined]}
+                 * @return {[undefined]} 
                  * @todo Could be more efficient.
                  */
-                var resetDay = function (countOfDays) {
+                var resetDay = function(countOfDays) {
                     var oldDay = dayS.val();//save the value
                     dayS.empty();
                     for (var i = 1; i < 1 + countOfDays; ++i)
@@ -750,7 +744,7 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
 
                 //Because the count of days depends on the year and the month,
                 //we have to calculate it when year and month change.   
-                var calendarChange = function (e) {
+                var calendarChange = function(e) {
                     var year = +yearS.val();
                     var month = +monthS.val();
                     if (isNaN(year) || !isFinite(year) || year < 1900) {
@@ -781,7 +775,7 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
                 monthS.change(calendarChange);
 
                 //Show provinces
-                provinceMap.list(function (code, name) {
+                provinceMap.list(function(code, name) {
                     $('#s-province').append("<option value='" + code + "'>" + name + "</option>");
                 });
                 /**
@@ -790,10 +784,10 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
                  *
                  * @todo Could be more efficient.
                  */
-                var changeCities = function () {
+                var changeCities = function() {
                     $('#s-city').empty();
                     var provCode = $(this).val();
-                    cityMap.list(function (code, name) {
+                    cityMap.list(function(code, name) {
                         //Note that the code of a city equals its province's code at first 2 letters!
                         //Not my invention.
                         if (provCode.slice(0, 2) == code.slice(0, 2))
@@ -809,27 +803,24 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
                 $("#FullnameIpt").val(data.fullname || "");
                 $("#UniqnameIpt").val(decodeURIComponent(data.uniqname) || ""); //Uniqname or nickname?I cannot tell.
                 $("#PersonalidIpt").val(data.personalid || ""); //Note:if the personalid is not empty,we think it not editable!
-                if (data.personalid) {
-                    $('#PersonalidIpt').parent('span').attr('class', 'form-text').empty().append("****************** 已验证");
+                if(data.personalid){
+                    $('#PersonalidIpt').parent('span').attr('class','form-text').empty().append("****************** 已验证");
                 }
-                $(".snick").text(decodeURIComponent(data.uniqname) || "");
-                if (+data.gender === 1)
-                    $(":radio[name='gender']").eq(1).prop('checked', true);
-                else
-                    $(":radio[name='gender']").eq(0).prop('checked', true);
+                $(".snick").text(decodeURIComponent(data.uniqname)||"");
+                if(+data.gender===1)
+                $(":radio[name='gender']").eq(1).prop('checked', true);
+               else
+                $(":radio[name='gender']").eq(0).prop('checked', true);
 
             } else {
-                window.as2js = function (msg) {
-                    if ('goodluck' == msg) {
-                        try {
-                            window.external.passport("onProfileChange");
-                        } catch (e) {
-                        }
+                window.as2js=function(msg){
+                    if('goodluck'==msg){
+                        try{window.external.passport("onProfileChange");}catch(e){}
                         location.assign('/');
                     }
                 };
                 //avatar page,just show the flash
-                $('#UploadPhoto').size() && require(["/./static/js/lib/jquery.flash.js"], function () {
+                $('#UploadPhoto').size()&&require(["/./static/js/lib/jquery.flash.js"], function() {
                     $('#UploadPhoto').flash({
                         src: '/./static/swf/upjsp.swf',
                         width: 504,
@@ -837,7 +828,7 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
                         flashvars: {
                             jurl: "/web/userinfo/uploadavatar?client_id=1120",
                             furl: "/index",
-                            durl: "/"
+                            durl:"/"
                         }
                     });
                 });
@@ -846,7 +837,7 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
     };
 
     return {
-        init: function () {
+        init: function() {
 
             //I'm confused about here,maybe zhengxin#sogou-inc.com knows more.
 
@@ -855,27 +846,25 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
 
             var data = {};
             try {
-                var _server_data = $.evalJSON(server_data);
-                if (!_server_data) {
-                    throw "server_data not found";
-                }
-                else if (+_server_data.status) {
-                    window['console'] && console.log('operation failed');
+                var _server_data=$.evalJSON(server_data);
+                if(!_server_data){throw "server_data not found";}
+                else if(+_server_data.status){
+                    window['console']&&console.log('operation failed');
                     //If status neq 0,uploading photo will be not accepted.
                     $('#UploadPhoto').replaceWith('<div class="avatar-not-support-sohu">暂时不支持sohu域内邮箱用户修改头像</div>');
                 }
 
-                data = _server_data.data || data;
+                data = _server_data.data||data;
 
                 //trim
                 for (var e in data) {
-                    var it = data[e];
-                    if (!data.hasOwnProperty(e))continue;
-                    if (typeof it === 'string' || (it && it.constructor == String)) {
-                        data[e] = it.replace(/^\s+|\s+$/g, '');
+                    var it=data[e];
+                    if(!data.hasOwnProperty(e))continue;
+                    if(typeof it==='string'||(it&&it.constructor==String))
+                    {
+                        data[e]=it.replace(/^\s+|\s+$/g,'');
                     }
-                }
-                ;
+                };
             } catch (e) {
                 window['console'] && console.log(e);
             }
@@ -883,7 +872,8 @@ define("person", ['./common', './tpl', './form', './utils'], function (common, u
             pagefunc.index(data);
             pagefunc.common(data);
 
-            if (data && data.disable) {
+            if(data&&data.disable)
+            {
                 pagefunc.disable();
             }
 
