@@ -40,17 +40,16 @@ public class SMSUtil {
      */
     public static boolean sendSMS(String tel, String content) {
         try {
-            String contentGBK = Coder.encode(content, "gbk");
             Map<String, Object> params = Maps.newHashMap();
             params.put("appid","sogoupassport");
             params.put("number",tel);
-            params.put("desc",contentGBK);
+            params.put("desc",content);
 
             RequestModel requestModel = new RequestModel(SMS_PROXY);
             requestModel.setHttpMethodEnum(HttpMethodEnum.GET);
             requestModel.setParams(params);
             String result = SGHttpClient.executeStr(requestModel);
-            if (result.contains("code: 00")) {
+            if (result.contains("   code: 00")) {
                 return true;
             } else {
                 logger.error("send sms error;" + result);
