@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
@@ -8,6 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -19,7 +21,7 @@ public class SMSUtil {
     private static final
     String
             SMS_PROXY =
-            "http://sms.sogou-op.org/portal/mobile/smsproxy.php?appid=sogoupassport";
+            "http://sms.sogou-op.org/portal/mobile/smsproxy.php";
 
     public static final long SEND_SMS_INTERVAL = 1000 * 60; // 发送短信验证码的间隔，1分钟只能发1条短信，单位ms
 
@@ -39,11 +41,14 @@ public class SMSUtil {
     public static boolean sendSMS(String tel, String content) {
         try {
             String contentGBK = Coder.encode(content, "gbk");
-            StringBuilder url = new StringBuilder(SMS_PROXY);
-            url.append("&number=").append(tel).append("&desc=").append(contentGBK);
+            Map<String, Object> params = Maps.newHashMap();
+            params.put("appid","sogoupassport");
+            params.put("number",tel);
+            params.put("desc",contentGBK);
 
-            RequestModel requestModel = new RequestModel(url.toString());
+            RequestModel requestModel = new RequestModel(SMS_PROXY);
             requestModel.setHttpMethodEnum(HttpMethodEnum.GET);
+            requestModel.setParams(params);
             String result = SGHttpClient.executeStr(requestModel);
             if (result.contains("code: 00")) {
                 return true;
