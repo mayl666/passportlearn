@@ -79,6 +79,8 @@ public class RuValidatorTest  extends TestCase {
         result=ru.isValid(url,null);
         assertEquals(true,result);
 
-
+        url="http://skin.qq.pinyin.cn/jump.html";
+        result=ru.isValid(url,null);
+        assertEquals(true,result);
     }
 }
