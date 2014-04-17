@@ -49,7 +49,7 @@ public class SMSUtil {
             requestModel.setHttpMethodEnum(HttpMethodEnum.GET);
             requestModel.setParams(params);
             String result = SGHttpClient.executeStr(requestModel);
-            if (result.contains("   code: 00")) {
+            if (result.contains("code: 00")) {
                 return true;
             } else {
                 logger.error("send sms error;" + result);
@@ -63,5 +63,11 @@ public class SMSUtil {
 
     public static void main(String[] args) throws Exception {
         System.out.println(sendSMS("15210832767", "测试发送短信"));
+        String str ="code: 00\n" +
+                "desc: Sent to cellphone successfully, note it";
+        if(str.contains("code: 00")){
+            System.out.println("TEST OK");
+
+        }
     }
 }
