@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class SMSUtil {
 
-    private static final
+    public static final
     String
             SMS_PROXY =
             "http://sms.sogou-op.org/portal/mobile/smsproxy.php";
