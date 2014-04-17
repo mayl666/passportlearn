@@ -140,7 +140,7 @@ define(['lib/utils', 'lib/placeholder'], function(utils) {
                     href = $a.attr("href");
                 switch (id) {
                     case "oauth_qq_login":
-                        window.external && window.external.passport && window.external.passport("size", "715", "385");
+                        window.external && window.external.passport && window.external.passport("size", "446", "365");
                         window.location.href = href;
                         break;
                     case "oauth_sina_login":
@@ -170,7 +170,7 @@ define(['lib/utils', 'lib/placeholder'], function(utils) {
                     href = $a.attr("href")
                     switch (id) {
                         case "oauth_qq_reg":
-                            window.external && window.external.passport && window.external.passport("size", "715", "385")
+                            window.external && window.external.passport && window.external.passport("size", "446", "365")
                             window.location.href = href;
                             break
                         case "oauth_sina_reg":
