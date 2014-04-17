@@ -3,6 +3,8 @@ package com.sogou.upd.passport.common;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
+import com.sogou.upd.passport.common.utils.Result;
+import com.sogou.upd.passport.common.utils.XMLUtil;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,104 +23,16 @@ import java.util.Set;
  */
 public class Test {
     public static void main(String args[]) throws Exception{
-//        String str= "\\'\"@#$%^&*";
-//        String str= "你好，家盟abc-";
-//
-//        String encodeStr = Coder.encodeUTF8(str);
-//        System.out.println("encodeStr:"+encodeStr);
-//
-//        String deStr = URLDecoder.decode(encodeStr);
-//        System.out.println("decodeStr:"+deStr);
-//        String passportId ="￥ﾤﾧ￥ﾤﾧ￥ﾤﾧ31231@focus.cn";
-//        String passportId1 = "￥ﾤﾧ￥ﾤﾧ￥ﾤﾧ31231@focus.cn";
-//        String tmpPassportId =  new String(passportId.getBytes(), "GBK");
-//
-////        InputStream in = new InputStream();
-////        InputStreamReader in = new InputStreamReader();
-//        System.out.println("tmpPassportId:"+tmpPassportId);
-//        String passportId2= "%c4%e3%ba%c312345678%40focus.cn";
-//        System.out.println("code:"+Coder.decodeUTF8(passportId2));
-//        System.out.println("code:"+URLDecoder.decode(passportId2,"GBK"));
-//
-        String passportId3 = "����31231@focus.cn";
-        //解决中文账号cookie问题
-
-//        String p1 ="���31@focus.cn";
-//        String p2="%b4%f3%b4%f3%b4%f331231%40focus.cn";
-//        System.out.println("decode:"+ URLDecoder.decode(p2,"utf-8"));
-
-
-        String p3="大大大31231@focus.cn";
-        System.out.println("encode:"+ Coder.encode(passportId3,"utf-8"));
-
-
-        String p6="\\xB4\\xF3\\xB4\\xF3\\xB4\\xF331231@focus.cn";
-        String p7 = new String(p6.getBytes(),"ISO-8859-1");
-        String p8 = new String(p7.getBytes(),"gbk");
-
-
-
-//        if (p6.indexOf("@focus.cn") > 0) {
-//            char[] carr = p6.toCharArray();
-//            byte[] barr = new byte[carr.length];
-//            for (int i = 0; i < carr.length; i++) {
-//                barr[i] = (byte) (carr[i]);
-//            }
-//            try {
-//                p6 = new String(new String(barr, "utf-8"));
-//                // email = new String(new String(barr, "utf-8").getBytes(),
-//                // "GBK");
-//            } catch (UnsupportedEncodingException e) {
-//            }
-//        }
-//        System.out.println("passportId3:"+p6);
-
-
-
-         String str= "{\"ret\":0,\"msg\":\"\",\"access_token\":\"1AE6919DB680B5A321912C4E756F1408\",\"expires_in\":7776000,\"refresh_token\":\"0530E030BBA11F9607944751AEBF044C\",\"openid\":\"31680D6A6A65D32BF1E929677E78DE29\",\"userinfo\":{\"nickname\":\"加\\\"盟\\\"\",\"gender\":\"male\",\"faceurl40\":\"http://q.qlogo.cn/qqapp/100294784/31680D6A6A65D32BF1E929677E78DE29/40\",\"faceurl100\":\"http://q.qlogo.cn/qqapp/100294784/31680D6A6A65D32BF1E929677E78DE29/100\"}}";
-       Map map=JacksonJsonMapperUtil.getMapper().readValue(str, Map.class);
-          Set set = map.keySet();
-//          for(String){
-//
-//          }
-//        String p9 = "\\xB4\\xF3\\xB4\\xF3\\xB4\\xF331231@focus.cn\n";
-//        System.out.println("p7:"+p7);
-//        System.out.println("p8:"+p8);
-
-//        String p4="���31231@focus.cn";
-//        String p5= Coder.encodeUTF8(p4);
-//        System.out.println("encode:"+URLDecoder.decode(p5,"gbk"));
-//
-//        String p6="%b4%f3%b4%f3%b4%f331231%40focus.cn";
-//        System.out.println("encode:"+URLDecoder.decode(p6,"gbk"));
-
-
-//        String tmpPassportId =  new String(passportId3.getBytes(), "utf-8");
-//        String passportId4 = "���2345678@focus.cn";
-//        System.out.println("tmpPassportId:"+tmpPassportId);
-
-//        long ct = 1387264053119l;
-//        String  userId = "大大大31231@focus.cn";
-//        String code = userId + 1120 + "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY" + ct;
-//        code = Coder.encryptMD5GBK(code);
-//        System.out.println("code:"+code);
-
-
-//        String queryStr = "h=DF9BB5F023D9D0007F4EC6345416E8FE&r=2170&v=4.1.3.8974&appid=1044&userid=%c4%e3%ba%c312345678%40focus.cn&cb=%c4%e3%ba%c312345678%40focus.cn&token=SGmkuumkiavvFqhd5LQ2vAQST0icbq0PqyAEuDauMV6j3lbQibjs3ibEH2BGHaf4X7TibJV&livetime=0&authtype=0&ru=http://profile.ie.sogou.com/&ts=2147483647";
-//        String tmpstr= queryStr.substring(queryStr.indexOf("userid="),queryStr.length());
-//        String userid =  tmpstr.substring("userid=".length(),tmpstr.indexOf("&"));
-//        System.out.println("userid:"+userid);
-//
-//
-//
-//
-//        Date strartDate = DateUtil.parse("2011-01-01", DateUtil.DATE_FMT_3);
-//        Date endDate = new Date();
-//        int dateNum = DateUtil.getDayNum(strartDate, endDate);
-//        System.out.println("dateNum:"+dateNum);
-
-
-
-
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"GBK\"?>\n" +
+                        "<result>\n" +
+                        "<uid>c25971550</uid>\n" +
+                        "<status>0</status>\n" +
+                        "<userid>lanzewei@chinaren.com</userid>\n" +
+                        "<uuid>427d6c33f71a484c</uuid>\n" +
+                        "<uniqname>：^N：鳕花紛飛：^N：</uniqname>\n" +
+                        "</result>";
+        Result result = XMLUtil.xmlToBean(xml, Result.class);
+        System.out.println(result.getStatus());
     }
 }
