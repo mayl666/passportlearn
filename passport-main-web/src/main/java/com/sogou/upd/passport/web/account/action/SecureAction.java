@@ -514,7 +514,7 @@ public class SecureAction extends BaseController {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                 result.setMessage("手机号已绑定其他账号");
-                return result;
+                return result.toString();
             }
             result = secureManager.sendMobileCode(newMobile,clientId,AccountModuleEnum.SECURE);
         } catch (Exception e) {
