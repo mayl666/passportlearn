@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.math.Coder;
 import com.thoughtworks.xstream.XStream;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -9,6 +10,8 @@ import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -79,18 +82,35 @@ public class XMLUtil {
      * @param <T>  泛型支持
      * @return 转换后的bean
      */
-    public static <T> T xmlToBean(final String xml,final Class<T> type) {
+    public static <T> T xmlToBean(final String xml, final Class<T> type) {
         try {
             //由于使用重命名功能xterm.alias(rootNodeName, type);一旦设置重命名就无法在修改
             //所以这里选择将xml的root节点修改为要转换的type的name，经测试这样做基本没有性能问题
             //但如果使用xstream.alias(rootNodeName, type);就需要每次初始化一个XStream()，性能下降3倍以上
             Document document = DocumentHelper.parseText(xml);
-            document.getRootElement().setName(type.getName());
-            String newXml=document.asXML();
+            Element root = document.getRootElement();
+            root.setName(type.getName());
+
+            //如果包含uniqname节点，则修复该节点值为默认昵称；目的是去除返回的中文昵称中包含特殊字符，导致解析xml抛异常
+            List uniqNameElemList = root.elements("uniqname");//获取当前节点下的所有子节点，判断其值，以进行修改
+            if (uniqNameElemList != null && uniqNameElemList.size() > 0) {
+                String uniqname = "";
+                List useridElemList = root.elements("userid");//获取当前节点下的所有子节点，判断其值，以进行修改
+                if (useridElemList != null && useridElemList.size() > 0) {
+                    String passportId = ((Element) useridElemList.get(0)).getText();
+                    uniqname = passportId.substring(0, passportId.indexOf("@"));
+                }
+                for (Iterator childs = uniqNameElemList.iterator(); childs.hasNext(); ) {
+                    Element everyone = (Element) childs.next();
+                    everyone.setText(uniqname);
+                }
+            }
+
+            String newXml = document.asXML();
             //转换
-            return  (T) xstream.fromXML(newXml);
+            return (T) xstream.fromXML(newXml);
         } catch (DocumentException e) {
-            logger.error("xmlToBean fail,xml:"+ xml +"; type="+type, e);
+            logger.error("xmlToBean fail,xml:" + xml + "; type=" + type, e);
             throw new RuntimeException("xml to bean error", e);
         }
     }
