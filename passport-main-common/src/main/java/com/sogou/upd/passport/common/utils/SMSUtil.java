@@ -1,9 +1,14 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.model.httpclient.RequestModel;
+import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
+import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * User: mayan Date: 13-3-22 Time: 下午2:02 To change this template use File | Settings | File
@@ -36,17 +41,14 @@ public class SMSUtil {
             String contentGBK = Coder.encode(content, "gbk");
             StringBuilder url = new StringBuilder(SMS_PROXY);
             url.append("&number=").append(tel).append("&desc=").append(contentGBK);
-            Pair<Integer, String> ret = HttpClientUtil.get(url.toString());
-            if (ret.getLeft() == 200) {
-                /*(200,code: 00
-	         * desc: Sent to cellphone successfully, note it)
-	         */
-                String resbody = ret.getRight();
-                if (resbody.contains("code: 00")) {
-                    return true;
-                } else {
-                    logger.error("send sms error." + resbody);
-                }
+
+            RequestModel requestModel = new RequestModel(url.toString());
+            requestModel.setHttpMethodEnum(HttpMethodEnum.GET);
+            String result = SGHttpClient.executeStr(requestModel);
+            if (result.contains("code: 00")) {
+                return true;
+            } else {
+                logger.error("send sms error;" + result);
             }
             return false;
         } catch (Exception e) {
@@ -56,6 +58,6 @@ public class SMSUtil {
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println(sendSMS("13520069535", "测试发送短信"));
+        System.out.println(sendSMS("15210832767", "测试发送短信"));
     }
 }
