@@ -2,8 +2,9 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.MobilePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
@@ -25,18 +26,18 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
     @Autowired
     private MobilePassportMappingDAO mobilePassportMappingDAO;
     @Autowired
-    private RedisUtils redisUtils;
+    private DBShardRedisUtils dbShardRedisUtils;
 
     @Override
     public String queryPassportIdByMobile(String mobile) throws ServiceException {
         String passportId;
         try {
             String cacheKey = buildMobilePassportMappingKey(mobile);
-            passportId = redisUtils.get(cacheKey);
+            passportId = dbShardRedisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    redisUtils.set(cacheKey, passportId);
+                    dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -62,7 +63,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
             long id = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
             if (id != 0) {
                 String cacheKey = buildMobilePassportMappingKey(mobile);
-                redisUtils.set(cacheKey, passportId);
+                dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
                 return true;
             }
         } catch (Exception e) {
@@ -78,7 +79,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
             int accountRow = mobilePassportMappingDAO.updateMobilePassportMapping(mobile, passportId);
             if (accountRow != 0) {
                 String cacheKey = buildMobilePassportMappingKey(mobile);
-                redisUtils.set(cacheKey, passportId);
+                dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
                 return true;
             }
         } catch (Exception e) {
@@ -86,6 +87,12 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
         }
         return false;
     }
+
+
+    protected String buildMobilePassportMappingKey(String mobile) {
+        return CACHE_PREFIX_MOBILE_PASSPORT + mobile;
+    }
+
 
     @Override
     public boolean deleteMobilePassportMapping(String mobile) throws ServiceException {
@@ -93,7 +100,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
             int row = mobilePassportMappingDAO.deleteMobilePassportMapping(mobile);
             if (row != 0) {
                 String cacheKey = buildMobilePassportMappingKey(mobile);
-                redisUtils.delete(cacheKey);
+                dbShardRedisUtils.delete(cacheKey);
                 return true;
             }
         } catch (Exception e) {
@@ -102,8 +109,5 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
         return false;
     }
 
-    private String buildMobilePassportMappingKey(String mobile) {
-        return CACHE_PREFIX_MOBILE_PASSPORT + mobile;
-    }
 
 }

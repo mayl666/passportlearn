@@ -42,9 +42,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private static final String BROWSER_BBS_UNIQNAME_URL = "http://ie.sogou.com/passport/nickname_utf8.php";
 
     @Autowired
-    private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private LoginApiManager sgLoginApiManager;
+    private LoginApiManager loginApiManager;
     @Autowired
     private PCAccountTokenService pcAccountService;
     @Autowired
@@ -53,7 +51,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private OperateTimesService operateTimesService;
 
     @Override
-    public Result createPairToken(PcPairTokenParams pcTokenParams,String ip) {
+    public Result createPairToken(PcPairTokenParams pcTokenParams, String ip) {
         Result finalResult = new APIResultSupport(false);
         try {
             int clientId = Integer.parseInt(pcTokenParams.getAppid());
@@ -69,18 +67,13 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 AuthUserApiParams authUserApiParams = new AuthUserApiParams(clientId, passportId, password);
                 //根据域名判断是否代理，一期全部走代理
                 Result result = new APIResultSupport(false);
-                if (isLoginUserInBlackList(clientId,passportId, ip)) {
+                if (isLoginUserInBlackList(clientId, passportId, ip)) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                     return result;
                 }
-
-                if (ManagerHelper.isInvokeProxyApi(passportId)) {
-                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                } else {
-                    result = sgLoginApiManager.webAuthUser(authUserApiParams);
-                }
+                result = loginApiManager.webAuthUser(authUserApiParams);
                 if (!result.isSuccess()) {
-                    doAuthUserFailed(clientId,passportId,ip,result.getCode());
+                    doAuthUserFailed(clientId, passportId, ip, result.getCode());
                     return result;
                 }
                 passportId = (String) result.getModels().get("userid");
@@ -101,10 +94,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
         }
     }
 
-    public boolean isLoginUserInBlackList(final int clientId,final String username, final String ip) {
-        if (CommonHelper.isIePinyinToken(clientId)){
+    public boolean isLoginUserInBlackList(final int clientId, final String username, final String ip) {
+        if (CommonHelper.isIePinyinToken(clientId)) {
             //校验username是否在账户黑名单中
-            if (operateTimesService.isUserInGetPairtokenBlackList(username,ip)) {
+            if (operateTimesService.isUserInGetPairtokenBlackList(username, ip)) {
                 //是否在白名单中
                 if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
                     return true;
@@ -172,8 +165,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
     public boolean verifyRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) {
         try {
             if (CommonHelper.isExplorerToken(clientId)) {
-                return  (pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken) ||
-                         pcAccountService.verifyPCOldRefreshToken(passportId, clientId, instanceId, refreshToken));
+                return (pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken) ||
+                        pcAccountService.verifyPCOldRefreshToken(passportId, clientId, instanceId, refreshToken));
             } else if (CommonHelper.isPinyinMACToken(clientId)) {
                 return (pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken));
             } else {
@@ -212,7 +205,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
     }
 
     @Override
-    public Result createAccountToken(String passportId, String instanceId,int  clientId) {
+    public Result createAccountToken(String passportId, String instanceId, int clientId) {
         Result finalResult = new APIResultSupport(false);
         try {
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
@@ -231,10 +224,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
     @Override
     public String getBrowserBbsUniqname(String passportId) {
         try {
-            String uniqname = HttpClientUtil.getResponseBodyWget(BROWSER_BBS_UNIQNAME_URL+"?uid="+passportId);
-            if(StringUtil.isCommonStr(uniqname)){
+            String uniqname = HttpClientUtil.getResponseBodyWget(BROWSER_BBS_UNIQNAME_URL + "?uid=" + passportId);
+            if (StringUtil.isCommonStr(uniqname)) {
                 return uniqname;
-            }else {
+            } else {
                 return "";
             }
         } catch (Exception e) {
@@ -293,7 +286,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
         boolean isPCTokenSig = verifySigByPCToken(passportId, clientId, instanceId, timestamp, clientSecret, sig);
         if (!isPCTokenSig) {
             if (CommonHelper.isExplorerToken(clientId)) {
-                return  (verifySigByPCOldToken(passportId, clientId, instanceId, timestamp, clientSecret, sig));
+                return (verifySigByPCOldToken(passportId, clientId, instanceId, timestamp, clientSecret, sig));
             }
         }
         return isPCTokenSig;

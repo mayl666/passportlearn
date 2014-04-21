@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.action;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.web.JUnitActionBase;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -14,6 +15,7 @@ import javax.servlet.http.Cookie;
  * Date: 13-6-18
  * Time: 下午4:05
  */
+@Ignore
 public class IndexActionTest extends JUnitActionBase {
 
     @Test

@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Date: 13-6-9
  * Time: 下午2:08
  */
+@Ignore
 public class ProxyRegisterApiManagerImplTest extends BaseTest {
 
     private static final String MOBILE = "13520069535";
@@ -37,6 +39,16 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
         BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
         baseMoblieApiParams.setMobile("18952461329");
         Result result = proxyRegisterApiManager.sendMobileRegCaptcha(baseMoblieApiParams);
+        System.out.println(result);
+    }
+
+    @Test
+    public void testRegMobileCaptchaUser() throws Exception {
+        RegMobileCaptchaApiParams regMobileCaptchaApiParams = new RegMobileCaptchaApiParams();
+        regMobileCaptchaApiParams.setMobile("13521134303");
+        regMobileCaptchaApiParams.setPassword(Coder.encryptMD5("111111"));
+        regMobileCaptchaApiParams.setCaptcha("7808");
+        Result result = proxyRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
         System.out.println(result);
     }
 

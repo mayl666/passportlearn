@@ -19,6 +19,7 @@ import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,13 +164,50 @@ public class AccountServiceImpl implements AccountService {
             throw e;
         }
         try {
-            if (userAccount == null || !AccountHelper.isNormalAccount(userAccount)) {
+            if (userAccount == null) {
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
-            if (PwdGenerator.verify(password, needMD5, userAccount.getPassword())) {
-                result.setSuccess(true);
+            if (AccountHelper.isDisabledAccount(userAccount)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);
+                return result;
+            }
+            if (AccountHelper.isKilledAccount(userAccount)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+                return result;
+            }
+            result = verifyUserPwdValidByPasswordType(userAccount, password, needMD5);
+            if (result.isSuccess()) {
                 result.setDefaultModel(userAccount);
+            }
+            return result;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5) {
+        Result result = new APIResultSupport(false);
+        String passwordType = String.valueOf(account.getPasswordtype());
+        String storedPwd = account.getPassword();
+        boolean pwdIsTrue = false;
+        try {
+            switch (Integer.parseInt(passwordType)) {
+                case 0:   //原密码
+                    pwdIsTrue = verifyPwdWithOriginal(password, storedPwd);
+                    break;
+                case 1:   //MD5
+                    pwdIsTrue = verifyPwdWithMD5(password, storedPwd);
+                    break;
+                case 2:   //Crypt(password,salt)
+                    pwdIsTrue = PwdGenerator.verify(password, needMD5, storedPwd);
+                    break;
+            }
+            if (pwdIsTrue) {
+                result.setSuccess(true);
+                result.setMessage("操作成功");
+                result.setDefaultModel("userid", account.getPassportId());
                 return result;
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
@@ -180,6 +218,21 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    private boolean verifyPwdWithOriginal(String password, String storedPwd) {
+        if (storedPwd.equals(password)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean verifyPwdWithMD5(String password, String storedPwd) {
+        String pwdMD5 = DigestUtils.md5Hex(password.getBytes());
+        if (storedPwd.equals(pwdMD5)) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public Account queryNormalAccount(String passportId) throws ServiceException {
         Account account = queryAccountByPassportId(passportId);
@@ -187,21 +240,6 @@ public class AccountServiceImpl implements AccountService {
             return account;
         }
         return null;
-    }
-
-    @Override
-    public boolean deleteAccountByPassportId(String passportId) throws ServiceException {
-        try {
-            int row = accountDAO.deleteAccountByPassportId(passportId);
-            if (row != 0) {
-                String cacheKey = buildAccountKey(passportId);
-                redisUtils.delete(cacheKey);
-                return true;
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        return false;
     }
 
     public void setLimitResetPwd(String passportId) throws ServiceException {
@@ -473,6 +511,7 @@ public class AccountServiceImpl implements AccountService {
         }
         return true;
     }
+
     @Override
     public String checkUniqName(String uniqname) throws ServiceException {
         String passportId = null;
@@ -542,7 +581,7 @@ public class AccountServiceImpl implements AccountService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-         return false;
+        return false;
     }
 
 

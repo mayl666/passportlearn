@@ -6,7 +6,7 @@ import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
-import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,6 +18,7 @@ import java.util.Map;
  * Date: 13-6-13
  * Time: 上午11:28
  */
+@Ignore
 public class ProxyUserInfoApiManagerImplTest extends BaseTest {
 
     @Autowired

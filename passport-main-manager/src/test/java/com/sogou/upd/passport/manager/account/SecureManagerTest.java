@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.account;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-15 Time: 下午4:31 To change this template use
  * File | Settings | File Templates.
  */
+@Ignore
 public class SecureManagerTest extends BaseTest {
     @Autowired
     private SecureManager secureManager;

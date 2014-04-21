@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 public class SGRegisterApiManagerImpl implements RegisterApiManager {
     private static Logger logger = LoggerFactory.getLogger(SGRegisterApiManagerImpl.class);
     @Autowired
-    private BindApiManager proxyBindApiManager;
+    private BindApiManager sgBindApiManager;
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -132,6 +132,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
         String username = null;
         try {
             username = checkUserApiParams.getUserid();
+            //如果是手机账号注册
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
                 String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
                 if (!Strings.isNullOrEmpty(passportId)) {
@@ -139,14 +140,17 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
                     return result;
                 }
             } else {
-                Account account = accountService.queryAccountByPassportId(username);
+                //如果是外域或个性账号注册
+                Account account = accountService.queryAccountByPassportId(username.toLowerCase());
                 if (account != null) {
+                    result.setDefaultModel("userid", account.getPassportId());
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                     return result;
                 }
             }
         } catch (ServiceException e) {
             logger.error("Check account is exists Exception, username:" + username, e);
+            throw new ServiceException(e);
         }
         result.setSuccess(true);
         result.setMessage("账户未被占用，可以注册");
@@ -161,7 +165,7 @@ public class SGRegisterApiManagerImpl implements RegisterApiManager {
             BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
             baseMoblieApiParams.setMobile(mobile);
             //检测手机号是否已经注册或绑定
-            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            result = sgBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
             if (result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);

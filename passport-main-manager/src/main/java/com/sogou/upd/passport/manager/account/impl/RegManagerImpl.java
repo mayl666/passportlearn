@@ -11,7 +11,6 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
@@ -118,7 +117,7 @@ public class RegManagerImpl implements RegManager {
                 case PHONE://手机号
                     RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);
                     if (ManagerHelper.isInvokeProxyApi(username)) {
-                        result = registerMobile(username,password,clientId,captcha);
+                        result = registerMobile(username, password, clientId, captcha);
                         if (result.isSuccess()) {
                             username = (String) result.getModels().get("userid");
                         }
@@ -141,14 +140,14 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
-    public Result registerMobile(String username,String password,int clientId,String captcha) throws Exception {
+    public Result registerMobile(String username, String password, int clientId, String captcha) throws Exception {
         Result result = new APIResultSupport(false);
         result = mobileCodeSenderService.checkSmsCode(username, clientId, AccountModuleEnum.REGISTER, captcha);
         if (!result.isSuccess()) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
             return result;
         }
-        RegMobileApiParams regApiParams = new RegMobileApiParams(username,password,clientId);
+        RegMobileApiParams regApiParams = new RegMobileApiParams(username, password, clientId);
         result = proxyRegisterApiManager.regMobileUser(regApiParams);
         return result;
     }
@@ -278,10 +277,10 @@ public class RegManagerImpl implements RegManager {
 
 
     @Override
-    public Result checkRegInBlackListByIpForInternal(String ip,int clientId) throws Exception {
+    public Result checkRegInBlackListByIpForInternal(String ip, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         //如果在黑名单，也在白名单，允许注册；如果在黑名单不在白名单，不允许注册
-        if (operateTimesService.checkRegInBlackListForInternal(ip,clientId)) {
+        if (operateTimesService.checkRegInBlackListForInternal(ip, clientId)) {
             if (!operateTimesService.checkRegInWhiteList(ip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
@@ -382,7 +381,7 @@ public class RegManagerImpl implements RegManager {
     @Override
     public boolean isUserInExistBlackList(final String username, final String ip) {
         //校验username是否在账户黑名单中
-        if (operateTimesService.isUserInExistBlackList(username,ip)) {
+        if (operateTimesService.isUserInExistBlackList(username, ip)) {
             //是否在白名单中
             if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
                 return true;

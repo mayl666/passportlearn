@@ -2,20 +2,14 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
-import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
-import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
-import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -50,6 +44,8 @@ public class LoginApiController extends BaseController {
     private LoginApiManager sgLoginApiManager;
     @Autowired
     private LoginManager loginManager;
+    @Autowired
+    private LoginApiManager loginApiManager;
     @Autowired
     private ConfigureManager configureManager;
 
@@ -139,7 +135,7 @@ public class LoginApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = proxyLoginApiManager.webAuthUser(params);
+            result = loginApiManager.webAuthUser(params);
             if (result.isSuccess()) {
                 String userId = result.getModels().get("userid").toString();
                 loginManager.doAfterLoginSuccess(params.getUserid(), createip, userId, params.getClient_id());

@@ -79,15 +79,16 @@ public class DBShardRedisUtils {
     }
 
 
-    public String set(final String key, final String value, final int expire) {
+    public String set(final String key, final String value, final long expire) {
         return new Executor<String>(shardedJedisPool) {
 
             @Override
             String execute() {
-                return jedis.setex(key, expire, value);
+                return jedis.setex(key, (int) expire, value);
             }
         }.getResult();
     }
+
 
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "dbShardRedis_setWithinSeconds", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public String setWithinSeconds(final String key, final Object obj, final long timeout) {

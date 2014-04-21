@@ -2,7 +2,6 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -39,7 +38,7 @@ public class RegisterApiController extends BaseController {
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
     @Autowired
-    private BindApiManager proxyBindApiManager;
+    private BindApiManager sgBindApiManager;
     @Autowired
     private RegManager regManager;
     @Autowired
@@ -57,18 +56,23 @@ public class RegisterApiController extends BaseController {
     @ResponseBody
     public Object sendRegCaptcha(HttpServletRequest request, BaseMoblieApiParams params) {
         Result result = new APIResultSupport(false);
-        // 参数校验
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
+        try {
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            // 调用内部接口
+            result = sgRegisterApiManager.sendMobileRegCaptcha(params);
+        } catch (Exception e) {
+            logger.error("sendregcaptcha:send reg captcha is failed,mobile is " + params.getMobile(), e);
+        } finally {
+            //记录log
+            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
         }
-        // 调用内部接口
-        result = sgRegisterApiManager.sendMobileRegCaptcha(params);
-        //记录log
-        UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -94,7 +98,7 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = regManager.registerMobile(params.getMobile(),params.getPassword(),params.getClient_id(),params.getCaptcha());
+            result = regManager.registerMobile(params.getMobile(), params.getPassword(), params.getClient_id(), params.getCaptcha());
         } catch (Exception e) {
             logger.error("regMobileCaptchaUser:Mobile User With Captcha For Internal Is Failed,Mobile is " + params.getMobile(), e);
         } finally {
@@ -102,7 +106,6 @@ public class RegisterApiController extends BaseController {
             UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), params.getIp());
             UserOperationLogUtil.log(userOperationLog);
         }
-
         return result.toString();
     }
 
@@ -130,7 +133,7 @@ public class RegisterApiController extends BaseController {
             }
             ip = params.getCreateip();
             //校验用户ip是否允许注册
-            result = regManager.checkRegInBlackListByIpForInternal(ip,client_id);
+            result = regManager.checkRegInBlackListByIpForInternal(ip, client_id);
             if (!result.isSuccess()) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result.toString();
@@ -141,11 +144,10 @@ public class RegisterApiController extends BaseController {
             logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + params.getUserid(), e);
         } finally {
             //记录log
-            commonManager.incRegTimesForInternal(ip,client_id);
+            commonManager.incRegTimesForInternal(ip, client_id);
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), ip);
             UserOperationLogUtil.log(userOperationLog);
         }
-
         return result.toString();
     }
 
@@ -173,7 +175,6 @@ public class RegisterApiController extends BaseController {
             }
             // 调用内部接口
             result = proxyRegisterApiManager.regMobileUser(params);
-
         } catch (Exception e) {
             logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
         } finally {
@@ -183,8 +184,6 @@ public class RegisterApiController extends BaseController {
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
-
-
         return result.toString();
     }
 
@@ -214,7 +213,7 @@ public class RegisterApiController extends BaseController {
         if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
             BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
             baseMoblieApiParams.setMobile(userid);
-            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            result = sgBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
             //如果手机号已经被注册或被绑定其它账号，返回错误信息
             if (result.isSuccess()) {
                 result.setSuccess(false);
@@ -226,11 +225,8 @@ public class RegisterApiController extends BaseController {
                 result = new APIResultSupport(true);
             }
         } else {
-            result = proxyRegisterApiManager.checkUser(params);
+            result = sgRegisterApiManager.checkUser(params);
         }
-
         return result.toString();
     }
-
-
 }

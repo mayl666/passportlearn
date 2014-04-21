@@ -80,9 +80,8 @@ public class RegAction extends BaseController {
             return result.toString();
         }
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-
         String clientIdStr = checkParam.getClient_id();
-        int clientId = 1120;
+        int clientId = CommonConstant.SGPP_DEFAULT_CLIENTID;
         if (!Strings.isNullOrEmpty(clientIdStr)) {
             clientId = Integer.valueOf(clientIdStr);
         }
@@ -238,7 +237,6 @@ public class RegAction extends BaseController {
             }
             //验证client_id
             int clientId = Integer.parseInt(reqParams.getClient_id());
-
             //检查client_id是否存在
             if (!configureManager.checkAppIsExist(clientId)) {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
@@ -254,7 +252,6 @@ public class RegAction extends BaseController {
                 }
                 return result.toString();
             }
-
             String mobile = reqParams.getMobile();
             //为了数据迁移三个阶段，这里需要转换下参数类
             BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);

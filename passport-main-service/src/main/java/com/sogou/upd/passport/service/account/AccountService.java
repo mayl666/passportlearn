@@ -57,9 +57,15 @@ public interface AccountService {
   public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException;
 
   /**
-   * 根据passportId删除Account，内部debug接口使用
+     * 根据passwordType验证用户密码是否正确
+     *
+     * @param password 用户需要验证的密码
+     * @param account  用户实体类
+     * @param needMD5  当passwordType=2时用到此参数
+     * @return
+     * @throws ServiceException
    */
-  public boolean deleteAccountByPassportId(String passportId) throws ServiceException;
+    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5) throws ServiceException;
 
   /**
    * 重置密码
