@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class Account {
 
-    public static final int NO_PASSWORD = 0; //无密码
+    public static final int NO_PASSWORD = 4; //无密码
     public static final int NEW_ACCOUNT_VERSION = 1; // sogou-passport新生成的账号
     public static final int OLD_ACCOUNT_VERSION = 2; // sohu-passport迁移过来的账号
 
