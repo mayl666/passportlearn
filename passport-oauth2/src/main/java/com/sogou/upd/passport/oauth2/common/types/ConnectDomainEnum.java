@@ -19,7 +19,9 @@ public enum ConnectDomainEnum {
     PY("py.qq.com"), //py.qq.com
     PINYIN("pinyin.qq.com"), //pinyin.qq.com
     WUBI(" wubi.qq.com"), // wubi.qq.com
-    SHURU("shuru.qq.com"); //shuru.qq.com
+    SHURU("shuru.qq.com"), //shuru.qq.com
+    PINYIN_CN("pinyin.cn"); //pinyin.cn
+
 
     private String connectType;
     private static final List<String> DOMAIN_LIST = Lists.newArrayList();
@@ -32,6 +34,7 @@ public enum ConnectDomainEnum {
         DOMAIN_LIST.add(PINYIN.toString());
         DOMAIN_LIST.add(WUBI.toString());
         DOMAIN_LIST.add(SHURU.toString());
+        DOMAIN_LIST.add(PINYIN_CN.toString());
     }
 
     ConnectDomainEnum(String connectType) {
