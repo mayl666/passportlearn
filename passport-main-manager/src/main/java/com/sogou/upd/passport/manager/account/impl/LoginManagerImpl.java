@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
@@ -46,6 +47,10 @@ public class LoginManagerImpl implements LoginManager {
     private OperateTimesService operateTimesService;
     @Autowired
     private LoginApiManager loginApiManager;
+    @Autowired
+    private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private LoginApiManager sgLoginApiManager;
     @Autowired
     private SecureManager secureManager;
 
@@ -111,7 +116,13 @@ public class LoginManagerImpl implements LoginManager {
         authUserApiParams.setIp(ip);
         authUserApiParams.setPassword(pwdMD5);
         authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
-        loginApiManager.webAuthUser(authUserApiParams);
+//        loginApiManager.webAuthUser(authUserApiParams);
+        //根据域名判断是否代理，一期全部走代理
+        if (ManagerHelper.isInvokeProxyApi(passportId)) {
+            result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+        } else {
+            result = sgLoginApiManager.webAuthUser(authUserApiParams);
+        }
         return result;
     }
 

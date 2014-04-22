@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager;
 
 import com.sogou.upd.passport.common.math.Coder;
 import junit.framework.TestCase;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
 /**
@@ -25,7 +26,7 @@ public class ManagerHelperTest extends TestCase {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
 //        String ct =  "1381915491000";
-        String code = ManagerHelper.generatorCodeGBK("13071155730", clientId,serverSecret, ct);
+        String code = ManagerHelper.generatorCodeGBK("13071155730", clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
         /*try {
@@ -75,5 +76,11 @@ public class ManagerHelperTest extends TestCase {
         String email = "t5y-.uku@-163.com";
         String regex = "^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)+$";
         System.out.println(email.matches(regex));
+    }
+
+    @Test
+    public void testMD5Pwd(){
+        String pwd = "123456";
+        System.out.println(DigestUtils.md5Hex(pwd.getBytes()));
     }
 }

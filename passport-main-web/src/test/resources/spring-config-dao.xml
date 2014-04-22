@@ -2,10 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xsi:schemaLocation="http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context-3.0.xsd
-     http://www.springframework.org/schema/beans 
-     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+     http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
     <!-- 配置master数据库 -->
     <bean id="masterDataSource"
@@ -101,13 +102,20 @@
     <bean id="jade.routingConfigurator" class="com.sogou.upd.passport.dao.dal.routing.SGRoutingConfigurator">
         <property name="partitions">
             <list>
-                <value>sg-str-hash:account:passport_id:account_{0}:3</value>
-                <value>sg-str-hash:connect_token:passport_id:connect_token_{0}:3</value>
-                <value>sg-str-hash:connect_relation:passport_id:connect_relation_{0}:3</value>
+                <value>sg-str-hash:account:passport_id:account_{0}:32</value>
+                <value>sg-str-hash:connect_token:passport_id:connect_token_{0}:32</value>
+                <value>sg-str-hash:connect_relation:passport_id:connect_relation_{0}:32</value>
+                <value>sg-str-hash:account_info:passport_id:account_info_{0}:32</value>
             </list>
         </property>
     </bean>
 
     <bean class="net.paoding.rose.jade.context.spring.JadeBeanFactoryPostProcessor"/>
+
+    <!-- 初始化数据表结构 与默认数据-->
+    <jdbc:initialize-database data-source="masterDataSource" ignore-failures="ALL">
+        <jdbc:script location="classpath:sql/delete_data_account.sql" encoding="UTF-8"/>
+        <jdbc:script location="classpath:sql/import_data_account.sql" encoding="UTF-8"/>
+    </jdbc:initialize-database>
 
 </beans>

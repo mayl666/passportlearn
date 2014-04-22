@@ -31,7 +31,7 @@ public class SGStringHashRouterTest extends TestCase {
     @Test
     public void testRoute() {
         router = new SGStringHashRouter("id", "account_{0}", 32);
-        String id = "usef2006@163.com";
+        String id = "tinkame731@sogou.com";
         String name = router.doRoute(id);
         System.out.println(name);
 //        Assert.assertEquals(name, "account_18");
