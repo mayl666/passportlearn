@@ -29,7 +29,7 @@ public class ManagerHelper {
      * @return
      */
     public static boolean isInvokeProxyApi(String passportId) {
-        return false;
+        return true;
 //        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));
     }
 
@@ -40,8 +40,8 @@ public class ManagerHelper {
      */
     public static boolean isBothReadApi(String passportId) {
         return true;//todo 第一次双读上线的返回结果，恒为true，双读SG,SH
-//        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));todo 第二次双读上线（也即搜狗账号第二次写分离上线）打开此开关，搜狗账号恒为false，不双读，只读SG；其它账号恒为true，双读SG,SH
-//        return false;                                                                           todo 其它账号双读上线（也其它账号第二次写分离上线）打开此开关，恒为false，所有账号不双读，只读SG；
+//        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));//todo 第二次双读上线（也即搜狗账号第二次写分离上线）打开此开关，搜狗账号恒为false，不双读，只读SG；其它账号恒为true，双读SG,SH
+//        return false;                                                                        //   todo 其它账号双读上线（也其它账号第二次写分离上线）打开此开关，恒为false，所有账号不双读，只读SG；
     }
 
     /**
@@ -51,7 +51,7 @@ public class ManagerHelper {
      */
     public static boolean readSogouSwitcher() {
         return true; //todo 正常线上都应该恒为true
-//        return false;todo 若非上线后出故障，回滚至SOHU代码，打开此开关，即为回滚，前提：isBothReadApi必须为false
+//        return false;    //todo 若非上线后出故障，回滚至SOHU代码，打开此开关，即为回滚，前提：isBothReadApi必须为false
 
     }
 

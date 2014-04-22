@@ -1,6 +1,7 @@
 DELETE FROM `account_16` WHERE passport_id = '13545210241@sohu.com';
 DELETE FROM `account_28` WHERE passport_id = 'tinkame_test@sogou.com';
 DELETE FROM `account_04` WHERE passport_id = 'tinkame@126.com';
+DELETE FROM `account_00` WHERE passport_id = 'tinkame732@sogou.com';
 
 DELETE FROM `account_00` WHERE passport_id = '13581695053@sohu.com';
 DELETE FROM `account_27` WHERE passport_id = 'loveerin9460@163.com';

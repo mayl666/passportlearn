@@ -156,4 +156,9 @@ public interface AccountService {
      */
     public String checkUniqName(String nickname) throws Exception;
 
+    /*
+    *获取激活信息
+    */
+    public Map<String, String> getActiveInfo(String username);
+
 }

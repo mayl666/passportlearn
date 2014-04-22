@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -8,6 +10,7 @@ import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.service.account.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,8 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginApiManager sgLoginApiManager;
+    @Autowired
+    private AccountService accountService;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
@@ -38,9 +43,20 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
             result = bothAuthUser(authUserApiParams);
         } else {
             if (ManagerHelper.readSogouSwitcher()) {
-                result = sgLoginApiManager.webAuthUser(authUserApiParams);
+                if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(authUserApiParams.getUserid()))) {
+                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                } else {
+                    result = sgLoginApiManager.webAuthUser(authUserApiParams);
+                }
             } else {
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+            }
+        }
+        if (result.isSuccess()) {
+            //SOHU域账号登录，在SG库中创建一条只有账号没密码的记录
+            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(authUserApiParams.getUserid()))) {
+                //创建sohu域账号
+                accountService.initialAccount(passportId, null, false, authUserApiParams.getIp(), AccountTypeEnum.SOHU.getValue());
             }
         }
         return result;  //To change body of implemented methods use File | Settings | File Templates.
@@ -54,12 +70,18 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
      */
     private Result bothAuthUser(AuthUserApiParams authUserApiParams) {
         Result result;
-        result = sgLoginApiManager.webAuthUser(authUserApiParams);
-        if (!result.isSuccess()) { //读SG库，校验用户名、密码失败，此时读SH校验
+        //sohu账号调用sohu api校验用户名和密码
+        if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(authUserApiParams.getUserid()))) {
             result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-            if (result.isSuccess()) {
-                //读SG失败，读SH成功，记录userid，便于验证数据同步情况
-                logger.error("accountLogin fail,userId:" + authUserApiParams.getUserid());
+        } else {
+            //其它账号走sogou api 目前是双读阶段
+            result = sgLoginApiManager.webAuthUser(authUserApiParams);
+            if (!result.isSuccess()) { //读SG库，校验用户名、密码失败，此时读SH校验
+                result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                if (result.isSuccess()) {
+                    //读SG失败，读SH成功，记录userid，便于验证数据同步情况
+                    logger.error("bothAuthUser fail,userId:" + authUserApiParams.getUserid());
+                }
             }
         }
         return result;

@@ -30,11 +30,12 @@ public class LoginManagerTest extends BaseTest {
     private static final String username_waiyu = "tinkame@126.com";
     private static final String pwd_waiyu = "123456";
 
-    private static final String username_phone = "13581695053@sohu.com";
+    private static final String username_phone = "13581695053";
+    private static final String passportId_phone = "13581695053@sohu.com";
     private static final String pwd_phone = "111111";
 
-    private static final String username_sogou = "tinkame731@sogou.com";
-    private static final String pwd_sogou = "123456";
+    private static final String username_sogou = "tinkame732@sogou.com";
+    private static final String pwd_sogou = "111111";
 
     @Test
     public void testAccountLogin() {
@@ -47,9 +48,9 @@ public class LoginManagerTest extends BaseTest {
             Assert.assertTrue(expireResultForm.equals(email_APIResultForm));
 
 
-            WebLoginParams webLoginParams2 = getParam(username_phone, pwd_phone);
+            WebLoginParams webLoginParams2 = getParam(passportId_phone, pwd_phone);
             Result result_soji = loginManager.accountLogin(webLoginParams2, ip, scheme);
-            String expire_phone_data = "{\"data\":{\"userid\":\"" + username_phone + "\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+            String expire_phone_data = "{\"data\":{\"userid\":\"" + passportId_phone + "\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
             APIResultForm phone_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_soji.toString(), APIResultForm.class);
             APIResultForm expire_phone_ResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_phone_data, APIResultForm.class);
             Assert.assertTrue(expire_phone_ResultForm.equals(phone_APIResultForm));
@@ -69,6 +70,7 @@ public class LoginManagerTest extends BaseTest {
     @Test
     public void testAuthUser() {
         try {
+
             //外域邮箱密码验证成功
             String pwdMD5_email = DigestUtils.md5Hex(pwd_waiyu.getBytes());
             Result result_email = loginManager.authUser(username_waiyu, ip, pwdMD5_email);
@@ -76,13 +78,23 @@ public class LoginManagerTest extends BaseTest {
             String expire_email_data = "{\"data\":{\"userid\":\"" + username_waiyu + "\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
             APIResultForm expireEmailResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_email_data, APIResultForm.class);
             Assert.assertTrue(expireEmailResultForm.equals(email_APIResultForm));
-            //手机号密码验证成功
+
+            //单纯手机号可登录成功
             String pwdMD5_phone = DigestUtils.md5Hex(pwd_phone.getBytes());
             Result result_phone = loginManager.authUser(username_phone, ip, pwdMD5_phone);
             APIResultForm phone_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_phone.toString(), APIResultForm.class);
-            String expire_phone_data = "{\"data\":{\"userid\":\"" + username_phone + "\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+            String expire_phone_data = "{\"data\":{\"userid\":\"" + username_phone + "@sohu.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
             APIResultForm expirePhoneResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_phone_data, APIResultForm.class);
             Assert.assertTrue(expirePhoneResultForm.equals(phone_APIResultForm));
+
+            //手机号+@sohu.com密码验证成功
+            String pwdMD5_phone_pp = DigestUtils.md5Hex(pwd_phone.getBytes());
+            Result result_phone_pp = loginManager.authUser(passportId_phone, ip, pwdMD5_phone_pp);
+            APIResultForm phone__pp_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_phone_pp.toString(), APIResultForm.class);
+            String expire_phone_pp_data = "{\"data\":{\"userid\":\"" + passportId_phone + "\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+            APIResultForm expirePhonePPResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_phone_pp_data, APIResultForm.class);
+            Assert.assertTrue(expirePhonePPResultForm.equals(phone__pp_APIResultForm));
+
             //个性账号密码验证成功
             String pwdMD5_sogou = DigestUtils.md5Hex(pwd_sogou.getBytes());
             Result result_sogou = loginManager.authUser(username_sogou, ip, pwdMD5_sogou);
@@ -90,6 +102,7 @@ public class LoginManagerTest extends BaseTest {
             String expire_sogou_data = "{\"data\":{\"userid\":\"" + username_sogou + "\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
             APIResultForm expireSogouResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_sogou_data, APIResultForm.class);
             Assert.assertTrue(expireSogouResultForm.equals(sogou_APIResultForm));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
