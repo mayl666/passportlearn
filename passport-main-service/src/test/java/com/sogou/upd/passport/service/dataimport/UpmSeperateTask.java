@@ -8,6 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.concurrent.RecursiveTask;
@@ -54,6 +61,8 @@ public class UpmSeperateTask extends RecursiveTask<List<String>> {
         //记录失败记录
         List<String> failList = Lists.newArrayList();
 
+        List<String> resultList = Lists.newArrayList();
+
         try {
             //获取指定范围的u_p_m 信息
             List<UniqnamePassportMapping> mappingList = uniqNamePassportMappingDAO.getUpmDataByPage(start, LIMIT_THREHOLD);
@@ -66,12 +75,26 @@ public class UpmSeperateTask extends RecursiveTask<List<String>> {
                     //加check,校验某 passport_id是否已经存在子表中
 //                    UniqnamePassportMapping existMapping = uniqNamePassportMappingDAO.getUpmByPassportId(passportId);
 //                    if (checkUpmExist(existMapping)) {
-                    int result = uniqNamePassportMappingDAO.insertUpm0To32(passportId, mapping.getUniqname(), updateTimeStamp);
-                    if (result < 0) {
+                    int result;
+                    try {
+                        result = uniqNamePassportMappingDAO.insertUpm0To32(mapping.getUniqname(), passportId, updateTimeStamp);
+                    } catch (Exception e) {
                         failList.add(passportId);
                         LOGGER.info("insert into u_p_m_0_32 failed. passport_id:" + passportId);
+                        continue;
+                    }
+                    if (result == 0) {
+                        resultList.add(passportId);
+                        continue;
                     }
 //                    }
+                }
+                //记录插入shard 失败记录
+                if (CollectionUtils.isNotEmpty(failList)) {
+                    storeFile("u_p_m_" + start + "_failed.txt", failList);
+                }
+                if (CollectionUtils.isNotEmpty(resultList)) {
+                    storeFile("result_0_failed.txt", resultList);
                 }
             }
         } catch (Exception e) {
@@ -79,6 +102,20 @@ public class UpmSeperateTask extends RecursiveTask<List<String>> {
         }
         LOGGER.info("UpmSeperateTask use time :" + (System.currentTimeMillis() - startTime) + "ms");
         return failList;
+    }
+
+
+    private static void storeFile(String fileName, List<String> result) throws IOException, URISyntaxException {
+        Path filePath = Paths.get("D:\\logs\\" + fileName);
+        Files.deleteIfExists(filePath);
+        BufferedWriter writer = Files.newBufferedWriter(filePath, Charset.defaultCharset());
+        if (CollectionUtils.isNotEmpty(result)) {
+            for (String item : result) {
+                writer.write(item);
+                writer.newLine();
+            }
+            writer.flush();
+        }
     }
 
 

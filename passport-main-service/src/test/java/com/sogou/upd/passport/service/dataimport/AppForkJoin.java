@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import org.apache.commons.collections.CollectionUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import java.util.concurrent.ForkJoinPool;
  * Date: 14-4-22
  * Time: 下午2:22
  */
+@Ignore
 public class AppForkJoin extends BaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppForkJoin.class);
@@ -37,6 +39,7 @@ public class AppForkJoin extends BaseTest {
     private UniqNamePassportMappingDAO mappingDAO;
 
 
+    @Ignore
     @Test
     public void runShard() {
         LOGGER.info("u_p_m_0_32 shard started with {} processors ", CORE_COUNT);
@@ -45,7 +48,7 @@ public class AppForkJoin extends BaseTest {
         try {
             SeperatesTask task = new SeperatesTask(mappingDAO);
             List<String> generatedItems = POOL.invoke(task);
-            storeFile("shard.txt", generatedItems);
+            storeFile("failed.txt", generatedItems);
             LOGGER.info("Pools size " + POOL.getPoolSize());
         } catch (Exception e) {
             LOGGER.error("AppForkJoin failed." + e.getMessage(), e);
@@ -55,6 +58,7 @@ public class AppForkJoin extends BaseTest {
     }
 
 
+    @Ignore
     @Test
     public void testRunShard() {
         int total = 1697007;
@@ -85,6 +89,7 @@ public class AppForkJoin extends BaseTest {
     }*/
 
 
+    @Ignore
     @Test
     public void testStoreFile() throws IOException, URISyntaxException {
         List<String> result = Lists.newArrayList();

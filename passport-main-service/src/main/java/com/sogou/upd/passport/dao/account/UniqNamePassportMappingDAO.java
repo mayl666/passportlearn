@@ -49,7 +49,7 @@ public interface UniqNamePassportMappingDAO {
     @SQL("select passport_id from " +
             TABLE_NAME +
             " where uniqname=:uniqname")
-    public String getPassportIdByUniqName(@SQLParam("uniqname") String uniqname) throws DataAccessException;
+    public String getPassportIdByUniqName(@ShardBy @SQLParam("uniqname") String uniqname) throws DataAccessException;
 
 
     /**
@@ -69,7 +69,7 @@ public interface UniqNamePassportMappingDAO {
 
 
     /**
-     * u_p_m 主表分成32张子表, 查询u_p_m 主表数据总数
+     * u_p_m 主表分成32张子表,导入程序使用, 查询u_p_m 主表数据总数
      *
      * @return
      * @throws DataAccessException
@@ -79,7 +79,7 @@ public interface UniqNamePassportMappingDAO {
 
 
     /**
-     * u_p_m 主表分成32张子表, 根据 passport_id hash 数据到具体子表中
+     * u_p_m 主表分成32张子表,导入程序使用, 根据 passport_id hash 数据到具体子表中
      *
      * @param uniqname
      * @param passport_id
@@ -89,24 +89,24 @@ public interface UniqNamePassportMappingDAO {
      */
     @SQL("insert into "
             + TABLE_NAME + "(uniqname, passport_id,update_time) values (:uniqname, :passport_id,:update_time)")
-    public int insertUpm0To32(@ShardBy @SQLParam("passport_id") String passport_id,
-                              @SQLParam("uniqname") String uniqname,
+    public int insertUpm0To32(@ShardBy @SQLParam("uniqname") String uniqname,
+                              @SQLParam("passport_id") String passport_id,
                               @SQLParam("update_time") Timestamp update_time) throws DataAccessException;
 
 
     /**
-     * u_p_m 主表分成32张子表，根据　passport_id　查询子表中是否已经存在
+     * u_p_m 主表分成32张子表，导入程序使用,根据　passport_id　查询子表中是否已经存在
      *
-     * @param passport_id
+     * @param uniqname
      * @return
      */
-    @SQL("select " + ALL_FIELD + " from " + TABLE_NAME + " where passport_id=:passport_id")
-    public UniqnamePassportMapping getUpmByPassportId(@ShardBy @SQLParam("passport_id") String passport_id);
+    @SQL("select " + ALL_FIELD + " from " + TABLE_NAME + " where uniqname=:uniqname")
+    public UniqnamePassportMapping getUpmByPassportId(@ShardBy @SQLParam("uniqname") String uniqname);
 
 
     /**
      * 插入一条mobile和passportId的映射关系
-     *
+     * <p/>
      * u_p_m 分32张表，根据passport_id进行hash
      *
      * @param uniqname
@@ -117,7 +117,7 @@ public interface UniqNamePassportMappingDAO {
      */
     @SQL("insert into " +
             TABLE_NAME + "(uniqname, passport_id) values (:uniqname, :passport_id)")
-    public int insertUniqNamePassportMapping(@SQLParam("uniqname") String uniqname, @ShardBy @SQLParam("passport_id") String passport_id)
+    public int insertUniqNamePassportMapping(@ShardBy @SQLParam("uniqname") String uniqname, @SQLParam("passport_id") String passport_id)
             throws DataAccessException;
 
     /**
@@ -146,5 +146,5 @@ public interface UniqNamePassportMappingDAO {
     @SQL("delete from " +
             TABLE_NAME +
             " where uniqname=:uniqname")
-    public int deleteUniqNamePassportMapping(@SQLParam("uniqname") String uniqname) throws DataAccessException;
+    public int deleteUniqNamePassportMapping(@ShardBy @SQLParam("uniqname") String uniqname) throws DataAccessException;
 }

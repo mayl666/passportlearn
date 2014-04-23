@@ -59,8 +59,10 @@ public class SGStringHashRouterTest extends TestCase {
     @Test
     public void testUpmShard() {
         router = new SGStringHashRouter("id", "uniqname_passportid_mapping_{0}", 32);
-        Assert.assertNotNull(router.doRoute("mobile89799495@sohu.com"));
-        LOGGER.info("u_p_m shard." + router.doRoute("mobile89799495@sohu.com"));
+        Assert.assertNotNull(router.doRoute("??"));
+        LOGGER.info("u_p_m shard." + router.doRoute("?? ?? ?? ????"));
+        LOGGER.info("u_p_m shard." + router.doRoute("? ?"));
+        LOGGER.info("u_p_m shard." + router.doRoute("???"));
     }
 
 

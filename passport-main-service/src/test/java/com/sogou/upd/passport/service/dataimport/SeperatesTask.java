@@ -57,6 +57,7 @@ public class SeperatesTask extends RecursiveTask<List<String>> {
 
             for (RecursiveTask<List<String>> task : forks) {
                 try {
+                    LOGGER.info("task failed." + task.get().toString());
                     items.addAll(task.get());
                 } catch (InterruptedException | ExecutionException e) {
                     LOGGER.error("Error occured", e);
@@ -65,6 +66,8 @@ public class SeperatesTask extends RecursiveTask<List<String>> {
         } catch (Exception e) {
             LOGGER.error("SeperateTask shard error." + e.getMessage(), e);
         }
+
+        //1312931ms  总耗时：21.8821分钟
         LOGGER.info("SeperateTask total use time :" + (System.currentTimeMillis() - start) + "ms");
         return items;
     }
