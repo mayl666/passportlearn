@@ -38,6 +38,8 @@ public class RegisterApiController extends BaseController {
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
     @Autowired
+    private BindApiManager proxyBindApiManager;
+    @Autowired
     private BindApiManager sgBindApiManager;
     @Autowired
     private RegManager regManager;
@@ -213,7 +215,7 @@ public class RegisterApiController extends BaseController {
         if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
             BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
             baseMoblieApiParams.setMobile(userid);
-            result = sgBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
             //如果手机号已经被注册或被绑定其它账号，返回错误信息
             if (result.isSuccess()) {
                 result.setSuccess(false);
@@ -225,7 +227,7 @@ public class RegisterApiController extends BaseController {
                 result = new APIResultSupport(true);
             }
         } else {
-            result = sgRegisterApiManager.checkUser(params);
+            result = proxyRegisterApiManager.checkUser(params);
         }
         return result.toString();
     }

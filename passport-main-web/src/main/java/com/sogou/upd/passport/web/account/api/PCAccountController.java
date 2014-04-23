@@ -118,6 +118,7 @@ public class PCAccountController extends BaseController {
         return "/pcaccount/pclogin";
     }
 
+    //输入法的客户端登录使用
     @RequestMapping(value = "/act/gettoken")
     @ResponseBody
     public Object getToken(HttpServletRequest request, PcGetTokenParams pcGetTokenParams) throws Exception {
@@ -138,7 +139,7 @@ public class PCAccountController extends BaseController {
         pcPairTokenParams.setTs(ts);
         pcPairTokenParams.setPassword(pcGetTokenParams.getPassword());
 
-        Result result = pcAccountManager.createPairToken(pcPairTokenParams,ip);
+        Result result = pcAccountManager.createPairToken(pcPairTokenParams, ip);
         String resStr = "";
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
@@ -149,12 +150,13 @@ public class PCAccountController extends BaseController {
 
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), appId, resultCode,ip);
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), appId, resultCode, ip);
         UserOperationLogUtil.log(userOperationLog);
 
         return resStr;
     }
 
+    //除输入法外的浏览器，游戏大厅等其它客户端的登录使用
     @RequestMapping(value = "/act/getpairtoken")
     @ResponseBody
     public Object getPairToken(HttpServletRequest request, PcPairTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
@@ -179,7 +181,7 @@ public class PCAccountController extends BaseController {
         if (!CommonHelper.isIePinyinToken(appid) && loginManager.isLoginUserInBlackList(userId, ip)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
         } else {
-            result = pcAccountManager.createPairToken(reqParams,ip);
+            result = pcAccountManager.createPairToken(reqParams, ip);
         }
         String resStr;
         if (result.isSuccess()) {
@@ -194,7 +196,7 @@ public class PCAccountController extends BaseController {
         } else {
             resStr = handleGetPairTokenErr(result.getCode());
             if (!CommonHelper.isIePinyinToken(appid)) {
-                loginManager.doAfterLoginFailed(reqParams.getUserid(), ip,result.getCode());
+                loginManager.doAfterLoginFailed(reqParams.getUserid(), ip, result.getCode());
             }
         }
 
@@ -251,11 +253,11 @@ public class PCAccountController extends BaseController {
         }
 
         String userId = authPcTokenParams.getUserid();
-        if("null".equals(userId)  || StringUtil.isBlank(userId)){
-            Result getUserIdResult = oAuth2ResourceManager.getPassportIdByToken(authPcTokenParams.getToken(),Integer.parseInt(authPcTokenParams.getAppid()));
-            if(getUserIdResult.isSuccess()){
-                userId = (String)getUserIdResult.getDefaultModel();
-            }else {
+        if ("null".equals(userId) || StringUtil.isBlank(userId)) {
+            Result getUserIdResult = oAuth2ResourceManager.getPassportIdByToken(authPcTokenParams.getToken(), Integer.parseInt(authPcTokenParams.getAppid()));
+            if (getUserIdResult.isSuccess()) {
+                userId = (String) getUserIdResult.getDefaultModel();
+            } else {
                 if (!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
                     response.sendRedirect(authPcTokenParams.getRu() + "?status=1"); //status=1表示参数错误
                     return;
@@ -314,22 +316,22 @@ public class PCAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            returnErrMsg(response, ppCookieParams.getRu(),result.getCode(), result.getMessage());
+            returnErrMsg(response, ppCookieParams.getRu(), result.getCode(), result.getMessage());
             return;
         }
 
-        result = cookieManager.setPPCookie(response,ppCookieParams);
+        result = cookieManager.setPPCookie(response, ppCookieParams);
 
         String ru = ppCookieParams.getRu();
-        if(!result.isSuccess()){
-            log(request,"pp_setcookie",ru,result.getCode());
-            returnErrMsg(response,ru,result.getCode(),result.getMessage());
+        if (!result.isSuccess()) {
+            log(request, "pp_setcookie", ru, result.getCode());
+            returnErrMsg(response, ru, result.getCode(), result.getMessage());
             return;
         }
         if (!StringUtils.isBlank(ru)) {
             response.sendRedirect(ru);
         }
-        log(request,"pp_setcookie",ru,"0");
+        log(request, "pp_setcookie", ru, "0");
         return;
     }
 
@@ -339,7 +341,7 @@ public class PCAccountController extends BaseController {
         return msg;
     }
 
-    private void log(HttpServletRequest request,String passportId,String ru,String resultCode){
+    private void log(HttpServletRequest request, String passportId, String ru, String resultCode) {
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), "", resultCode, getIp(request));
         userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
@@ -347,13 +349,13 @@ public class PCAccountController extends BaseController {
         UserOperationLogUtil.log(userOperationLog);
     }
 
-    private void returnErrMsg(HttpServletResponse response, String ru,String errorCode,String errorMsg)throws Exception{
-        RuValidator ruValidator=new RuValidator();
-        boolean isValid = ruValidator.isValid(ru,null);
-        if (Strings.isNullOrEmpty(ru) || !isValid){
+    private void returnErrMsg(HttpServletResponse response, String ru, String errorCode, String errorMsg) throws Exception {
+        RuValidator ruValidator = new RuValidator();
+        boolean isValid = ruValidator.isValid(ru, null);
+        if (Strings.isNullOrEmpty(ru) || !isValid) {
             ru = DEFAULT_URL;
         }
-        response.sendRedirect(ru + "?errorCode="+errorCode+"&errorMsg="+ Coder.encodeUTF8(errorMsg));
+        response.sendRedirect(ru + "?errorCode=" + errorCode + "&errorMsg=" + Coder.encodeUTF8(errorMsg));
         return;
     }
 

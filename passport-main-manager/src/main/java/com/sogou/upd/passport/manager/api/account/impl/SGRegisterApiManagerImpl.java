@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
@@ -29,7 +30,7 @@ import org.springframework.stereotype.Component;
  * Time: 下午9:50
  */
 @Component("sgRegisterApiManager")
-public class SGRegisterApiManagerImpl implements RegisterApiManager {
+public class SGRegisterApiManagerImpl extends BaseProxyManager implements RegisterApiManager {
     private static Logger logger = LoggerFactory.getLogger(SGRegisterApiManagerImpl.class);
     @Autowired
     private BindApiManager sgBindApiManager;

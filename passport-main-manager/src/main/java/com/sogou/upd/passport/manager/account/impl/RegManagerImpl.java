@@ -221,6 +221,13 @@ public class RegManagerImpl implements RegManager {
         return accountService.getCaptchaCode(code);
     }
 
+    private Result checkUser(String username, int clientId) throws Exception {
+        Result result;
+
+        return null;
+
+    }
+
     @Override
     public Result isAccountNotExists(String username, boolean type, int clientId) throws Exception {
         Result result;
