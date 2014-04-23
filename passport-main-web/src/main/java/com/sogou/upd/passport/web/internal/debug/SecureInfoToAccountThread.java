@@ -2,7 +2,7 @@ package com.sogou.upd.passport.web.internal.debug;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.dao.account.AccountDAO;
@@ -160,7 +160,7 @@ public class SecureInfoToAccountThread implements Runnable {
                                 account.setPassportId(passportIdString);
                                 account.setRegIp(createIp);
                                 account.setRegTime(date_createtime);
-                                account.setPasswordtype(Account.NO_PASSWORD);
+                                account.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
                                 row = accountDAO.insertOrUpdateAccount(passportIdString, account);
                             } else {
                                 continue;
