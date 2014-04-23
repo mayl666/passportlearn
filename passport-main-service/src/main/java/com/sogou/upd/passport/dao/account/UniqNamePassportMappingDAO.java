@@ -107,7 +107,7 @@ public interface UniqNamePassportMappingDAO {
     /**
      * 插入一条mobile和passportId的映射关系
      *
-     * u_p_m 分32张表，根据passport_id
+     * u_p_m 分32张表，根据passport_id进行hash
      *
      * @param uniqname
      * @param passport_id
