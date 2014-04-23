@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.utils.BeanUtil;
+import com.sogou.upd.passport.common.utils.SMSUtil;
 import org.apache.commons.collections.MapUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -199,14 +200,20 @@ public class RequestModel {
         if (MapUtils.isEmpty(params)) {
             return getUrl();
         }
-        StringBuilder url = new StringBuilder(getUrl());
+        String charset = CommonConstant.DEFAULT_CONTENT_CHARSET;
+        String localUrl = getUrl();
+        if(SMSUtil.SMS_PROXY.equals(localUrl)){
+            charset = "gbk";
+
+        }
+        StringBuilder url = new StringBuilder(localUrl);
         url.append("?");
         try {
             for (Map.Entry<String, Object> entry : params.entrySet()) {
                 if (!StringUtil.isBlank(entry.getKey()) && entry.getValue() != null) {
-                    url.append(URLEncoder.encode(entry.getKey(), CommonConstant.DEFAULT_CONTENT_CHARSET));
+                    url.append(URLEncoder.encode(entry.getKey(), charset));
                     url.append("=");
-                    url.append(URLEncoder.encode(entry.getValue().toString(), CommonConstant.DEFAULT_CONTENT_CHARSET));
+                    url.append(URLEncoder.encode(entry.getValue().toString(), charset));
                     url.append("&");
                 }
             }

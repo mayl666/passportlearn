@@ -462,7 +462,7 @@ public class SecureManagerImpl implements SecureManager {
                 result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                 Map<String, String> mapResult = result.getModels();
                 String mobile = mapResult.get("sec_mobile");
-                result = checkMobileCodeByNewMobile(mobile, clientId, smsCode);
+                result =  mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
             } else {
                 result = checkMobileCodeByPassportId(userId, clientId, smsCode);
             }
