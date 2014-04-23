@@ -4,8 +4,10 @@ import com.sogou.upd.passport.model.account.UniqnamePassportMapping;
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
+import net.paoding.rose.jade.annotation.ShardBy;
 import org.springframework.dao.DataAccessException;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -49,14 +51,63 @@ public interface UniqNamePassportMappingDAO {
             " where uniqname=:uniqname")
     public String getPassportIdByUniqName(@SQLParam("uniqname") String uniqname) throws DataAccessException;
 
+
+    /**
+     * u_p_m 主表分成32张子表，分页查询u_p_m 主表数据
+     *
+     * @param pageIndex
+     * @param pageSize
+     * @return
+     * @throws DataAccessException
+     */
     @SQL("select " +
             ALL_FIELD +
             " from " +
-            TABLE_NAME)
-    public List<UniqnamePassportMapping> lisPassportIdByUniqName() throws DataAccessException;
+            TABLE_NAME + "LIMIT :pageIndex,:pageSize")
+    public List<UniqnamePassportMapping> getUpmDataByPage(@SQLParam("pageIndex") int pageIndex,
+                                                          @SQLParam("pageSize") int pageSize) throws DataAccessException;
+
+
+    /**
+     * u_p_m 主表分成32张子表, 查询u_p_m 主表数据总数
+     *
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("select count(*) from " + TABLE_NAME)
+    public int getUpmTotalCount() throws DataAccessException;
+
+
+    /**
+     * u_p_m 主表分成32张子表, 根据 passport_id hash 数据到具体子表中
+     *
+     * @param uniqname
+     * @param passport_id
+     * @param update_time
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("insert into "
+            + TABLE_NAME + "(uniqname, passport_id,update_time) values (:uniqname, :passport_id,:update_time)")
+    public int insertUpm0To32(@ShardBy @SQLParam("passport_id") String passport_id,
+                              @SQLParam("uniqname") String uniqname,
+                              @SQLParam("update_time") Timestamp update_time) throws DataAccessException;
+
+
+    /**
+     * u_p_m 主表分成32张子表，根据　passport_id　查询子表中是否已经存在
+     *
+     * @param passport_id
+     * @return
+     */
+    @SQL("select " + ALL_FIELD + " from " + TABLE_NAME + " where passport_id=:passport_id")
+    public UniqnamePassportMapping getUpmByPassportId(@ShardBy @SQLParam("passport_id") String passport_id);
+
 
     /**
      * 插入一条mobile和passportId的映射关系
+     *
+     * u_p_m 分32张表，根据passport_id
      *
      * @param uniqname
      * @param passport_id
@@ -65,8 +116,8 @@ public interface UniqNamePassportMappingDAO {
      *
      */
     @SQL("insert into " +
-            "uniqname_passportid_mapping(uniqname, passport_id) values (:uniqname, :passport_id)")
-    public int insertUniqNamePassportMapping(@SQLParam("uniqname") String uniqname, @SQLParam("passport_id") String passport_id)
+            TABLE_NAME + "(uniqname, passport_id) values (:uniqname, :passport_id)")
+    public int insertUniqNamePassportMapping(@SQLParam("uniqname") String uniqname, @ShardBy @SQLParam("passport_id") String passport_id)
             throws DataAccessException;
 
     /**

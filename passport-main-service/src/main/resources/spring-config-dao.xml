@@ -148,6 +148,8 @@
                 <value>sg-str-hash:connect_token:passport_id:connect_token_{0}:32</value>
                 <value>sg-str-hash:connect_relation:passport_id:connect_relation_{0}:32</value>
                 <value>sg-str-hash:account_info:passport_id:account_info_{0}:32</value>
+                <!-- 昵称映射表 分32张子表 -->
+                <value>sg-str-hash:uniqname_passportid_mapping:passport_id:uniqname_passportid_mapping_{0}:32</value>
             </list>
         </property>
     </bean>
