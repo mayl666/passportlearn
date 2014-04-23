@@ -116,13 +116,13 @@ public class LoginManagerImpl implements LoginManager {
         authUserApiParams.setIp(ip);
         authUserApiParams.setPassword(pwdMD5);
         authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
-//        result = loginApiManager.webAuthUser(authUserApiParams);
+        result = loginApiManager.webAuthUser(authUserApiParams);
         //根据域名判断是否代理，一期全部走代理
-        if (ManagerHelper.isInvokeProxyApi(passportId)) {
-            result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-        } else {
-            result = sgLoginApiManager.webAuthUser(authUserApiParams);
-        }
+//        if (ManagerHelper.isInvokeProxyApi(passportId)) {
+//            result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+//        } else {
+//            result = sgLoginApiManager.webAuthUser(authUserApiParams);
+//        }
         return result;
     }
 
