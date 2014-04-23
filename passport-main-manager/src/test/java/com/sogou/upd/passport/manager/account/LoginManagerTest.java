@@ -22,10 +22,12 @@ public class LoginManagerTest extends BaseTest {
 
 
     private static final int clientId = 1100;
-    private static final String username = "18600369478";
+    private static final String username = "18607369478";
     private static final String ip = "192.168.226.174";
-    private static final String pwd = "123456";
+    private static final String pwd = "654321";
     private static final String scheme = "http";
+    private static final String test_mail = "testliuliu@163.com";
+
 
     private static final String username_waiyu = "tinkame@126.com";
     private static final String pwd_waiyu = "123456";
@@ -68,7 +70,7 @@ public class LoginManagerTest extends BaseTest {
     }
 
     @Test
-    public void testAuthUser() {
+    public void testAuthUser_Success() {
         try {
 
             //外域邮箱密码验证成功
@@ -105,6 +107,36 @@ public class LoginManagerTest extends BaseTest {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testAuthUser_Error() {
+        try {
+            //用户名密码不匹配
+            String pwdMD51 = DigestUtils.md5Hex(pwd.getBytes());
+            Result result1 = loginManager.authUser(username_waiyu, ip, pwdMD51);
+            APIResultForm APIResultForm1 = JacksonJsonMapperUtil.getMapper().readValue(result1.toString(), APIResultForm.class);
+            String expire_data1 = "{\"statusText\":\"密码错误\",\"data\":{},\"status\":\"20206\"}";
+            APIResultForm expireResultForm1 = JacksonJsonMapperUtil.getMapper().readValue(expire_data1, APIResultForm.class);
+            Assert.assertTrue(expireResultForm1.equals(APIResultForm1));
+            //外域用户未激活时
+            String pwdMD52 = DigestUtils.md5Hex("111111".getBytes());
+            Result result2 = loginManager.authUser(test_mail, ip, pwdMD52);
+            APIResultForm APIResultForm2 = JacksonJsonMapperUtil.getMapper().readValue(result2.toString(), APIResultForm.class);
+            String expire_data2 = "{\"statusText\":\"账号未激活\",\"data\":{\"createtime\":\"1398246072000\",\"token\":\"699d40bde1cf0809ea6740497e780687\",\"activateurl\":\"https://passport.sohu.com/web/remind_activate.jsp\"},\"status\":\"20231\"}";
+            APIResultForm expireResultForm2 = JacksonJsonMapperUtil.getMapper().readValue(expire_data2, APIResultForm.class);
+            Assert.assertTrue(expireResultForm2.getStatus().equals(APIResultForm2.getStatus()));
+            //手机号码没有绑定
+            String pwdMD53 = DigestUtils.md5Hex("111111".getBytes());
+            Result result3 = loginManager.authUser(username, ip, pwdMD53);
+            System.out.println(result3.toString());
+            APIResultForm APIResultForm3 = JacksonJsonMapperUtil.getMapper().readValue(result3.toString(), APIResultForm.class);
+            String expire_data3 = "{\"statusText\":\"手机号未绑定账号\",\"data\":{},\"status\":\"20233\"}";
+            APIResultForm expireResultForm3 = JacksonJsonMapperUtil.getMapper().readValue(expire_data3, APIResultForm.class);
+            Assert.assertTrue(expireResultForm3.equals(APIResultForm3));
+        } catch (Exception e) {
+
         }
     }
 
