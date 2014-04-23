@@ -35,17 +35,21 @@ public class InfoAction extends BaseController {
     @RequestMapping(value = "/slowinfo", method = RequestMethod.GET)
     @ResponseBody
     public String slowInfo(HttpServletRequest request, SlowInfoParams params) throws Exception {
-        Result result = new APIResultSupport(true);
+        Result result = new APIResultSupport(false);
 
         String validateResult = ControllerHelper.validateParams(params);
-        if (Strings.isNullOrEmpty(validateResult)) {
-            UserOperationLog log = new UserOperationLog("-", request.getRequestURI(), "-", result.getCode(), getIp(request));
-            Map map = BeanUtil.objectToMap(params);
-            log.setOtherMessageMap(map);
-
-            UserOperationLogUtil.log(log);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            return result.toString();
         }
 
-        return "ok";
+        UserOperationLog log = new UserOperationLog("-", request.getRequestURI(), "-", result.getCode(), getIp(request));
+        Map map = BeanUtil.objectToMap(params);
+        log.setOtherMessageMap(map);
+
+        UserOperationLogUtil.log(log);
+
+        result.setSuccess(true);
+        return result.toString();
     }
 }
