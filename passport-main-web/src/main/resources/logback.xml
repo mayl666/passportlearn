@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Reference Manual http://logback.qos.ch/manual/index.html -->
 <configuration>
-    <property name="log.path" value="/search/passport/log" />
+    <property name="log.path" value="/search/passport/log"/>
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern> %5p [%t] %logger{36} %L %m %n</pattern>
+            <pattern>%5p [%t] %logger{36} %L %m %n</pattern>
         </encoder>
     </appender>
 
@@ -19,7 +19,7 @@
         </encoder>
     </appender>
     <logger name="com.sogou.upd.passport.regBlackListFileAppender" level="info" additivity="false">
-        <appender-ref ref="regBlackListFileAppender" />
+        <appender-ref ref="regBlackListFileAppender"/>
     </logger>
 
     <!--登陆黑名单-->
@@ -32,12 +32,13 @@
         </encoder>
     </appender>
     <logger name="com.sogou.upd.passport.loginBlackListFileAppender" level="info" additivity="false">
-        <appender-ref ref="loginBlackListFileAppender" />
+        <appender-ref ref="loginBlackListFileAppender"/>
     </logger>
 
     <appender name="userOperationAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/useroperation/useroperation.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>14</maxHistory>
         </rollingPolicy>
         <encoder>
             <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
@@ -45,7 +46,7 @@
         </encoder>
     </appender>
     <logger name="userOperationLogger" level="info" additivity="false">
-        <appender-ref ref="userOperationAppender" />
+        <appender-ref ref="userOperationAppender"/>
     </logger>
 
 
@@ -59,10 +60,11 @@
         </encoder>
     </appender>
     <logger name="interfaceLimitedLogger" level="info" additivity="false">
-        <appender-ref ref="interfaceLimitedAppender" />
+        <appender-ref ref="interfaceLimitedAppender"/>
     </logger>
 
-    <appender name="kafkaAsyncAppender" class="com.sogou.upd.passport.logback.api.kafka.MultiKafkaAppender" additivity="false">
+    <appender name="kafkaAsyncAppender" class="com.sogou.upd.passport.logback.api.kafka.MultiKafkaAppender"
+              additivity="false">
         <zkList>10.136.24.124:2181,10.136.24.125:2181,10.136.24.126:2181,10.11.211.4:2181,10.11.211.8:2181</zkList>
         <brokerList>10.136.24.124:9092,10.136.24.125:9092,10.136.24.126:9092</brokerList>
         <topic>useroperation</topic>
@@ -90,25 +92,25 @@
     <appender name="rabbitMQAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
         <queueSize>256</queueSize>
         <workerSize>4</workerSize>
-        <appender-ref ref="rabbitMQAppender" />
+        <appender-ref ref="rabbitMQAppender"/>
     </appender>
 
     <appender name="localAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
         <queueSize>512</queueSize>
         <workerSize>1</workerSize>
-        <appender-ref ref="userOperationAppender" />
+        <appender-ref ref="userOperationAppender"/>
     </appender>
 
     <logger name="userLoggerAsync" level="info" additivity="false">
-        <appender-ref ref="kafkaAsyncAppender" />
-        <appender-ref ref="rabbitMQAsyncAppender" />
-        <appender-ref ref="localAsyncAppender" />
+        <appender-ref ref="kafkaAsyncAppender"/>
+        <appender-ref ref="rabbitMQAsyncAppender"/>
+        <appender-ref ref="localAsyncAppender"/>
 
     </logger>
 
     <logger name="userLoggerLocal" level="info" additivity="false">
         <!--<appender-ref ref="userOperationAppender" />-->
-        <appender-ref ref="localAsyncAppender" />
+        <appender-ref ref="localAsyncAppender"/>
     </logger>
 
     <appender name="redisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -120,7 +122,7 @@
         </encoder>
     </appender>
     <logger name="redisMissLogger" level="info" additivity="false">
-        <appender-ref ref="redisMissAppender" />
+        <appender-ref ref="redisMissAppender"/>
     </logger>
 
     <appender name="tokenRedisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -132,7 +134,7 @@
         </encoder>
     </appender>
     <logger name="tokenRedisMissLogger" level="info" additivity="false">
-        <appender-ref ref="tokenRedisMissAppender" />
+        <appender-ref ref="tokenRedisMissAppender"/>
     </logger>
 
     <appender name="dBRedisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -144,7 +146,7 @@
         </encoder>
     </appender>
     <logger name="dBRedisMissLogger" level="info" additivity="false">
-        <appender-ref ref="dBRedisMissAppender" />
+        <appender-ref ref="dBRedisMissAppender"/>
     </logger>
 
     <appender name="shPlusTokenAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -156,7 +158,7 @@
         </encoder>
     </appender>
     <logger name="shPlusTokenLogger" level="info" additivity="false">
-        <appender-ref ref="shPlusTokenAppender" />
+        <appender-ref ref="shPlusTokenAppender"/>
     </logger>
 
     <!--start:httpClient性能log-->
@@ -170,11 +172,11 @@
     </appender>
     <appender name="httpclientCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
         <!--每分钟分析一次log，做出性能测试-->
-        <param name="TimeSlice" value="60000" />
-        <appender-ref ref="httpclientFileAppender" />
+        <param name="TimeSlice" value="60000"/>
+        <appender-ref ref="httpclientFileAppender"/>
     </appender>
     <logger name="httpClientTimingLogger" level="info" additivity="false">
-        <appender-ref ref="httpclientCoalescingStatistics" />
+        <appender-ref ref="httpclientCoalescingStatistics"/>
     </logger>
     <!--end:httpClient性能log-->
 
@@ -189,11 +191,11 @@
     </appender>
     <appender name="webCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
         <!--每分钟分析一次log，做出性能测试-->
-        <param name="TimeSlice" value="60000" />
-        <appender-ref ref="webPerfFileAppender" />
+        <param name="TimeSlice" value="60000"/>
+        <appender-ref ref="webPerfFileAppender"/>
     </appender>
     <logger name="webTimingLogger" level="info" additivity="false">
-        <appender-ref ref="webCoalescingStatistics" />
+        <appender-ref ref="webCoalescingStatistics"/>
     </logger>
     <!--end:httpClient性能log-->
 
@@ -208,11 +210,11 @@
     </appender>
     <appender name="rediesCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
         <!--每分钟分析一次log，做出性能测试-->
-        <param name="TimeSlice" value="60000" />
-        <appender-ref ref="rediesPerfFileAppender" />
+        <param name="TimeSlice" value="60000"/>
+        <appender-ref ref="rediesPerfFileAppender"/>
     </appender>
     <logger name="rediesTimingLogger" level="info" additivity="false">
-        <appender-ref ref="rediesCoalescingStatistics" />
+        <appender-ref ref="rediesCoalescingStatistics"/>
     </logger>
     <!--end:web服务器性能log-->
 
@@ -227,11 +229,11 @@
     </appender>
     <appender name="tokenRediesCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
         <!--每分钟分析一次log，做出性能测试-->
-        <param name="TimeSlice" value="60000" />
-        <appender-ref ref="tokenRediesPerfFileAppender" />
+        <param name="TimeSlice" value="60000"/>
+        <appender-ref ref="tokenRediesPerfFileAppender"/>
     </appender>
     <logger name="tokenRediesTimingLogger" level="info" additivity="false">
-        <appender-ref ref="tokenRediesCoalescingStatistics" />
+        <appender-ref ref="tokenRediesCoalescingStatistics"/>
     </logger>
     <!--end:web服务器性能log-->
 
@@ -246,11 +248,11 @@
     </appender>
     <appender name="kvCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
         <!--每分钟分析一次log，做出性能测试-->
-        <param name="TimeSlice" value="60000" />
-        <appender-ref ref="kvPerfFileAppender" />
+        <param name="TimeSlice" value="60000"/>
+        <appender-ref ref="kvPerfFileAppender"/>
     </appender>
     <logger name="kvTimingLogger" level="info" additivity="false">
-        <appender-ref ref="kvCoalescingStatistics" />
+        <appender-ref ref="kvCoalescingStatistics"/>
     </logger>
     <!--end:web服务器性能log-->
 
@@ -265,15 +267,15 @@
     </appender>
     <appender name="dbCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
         <!--每分钟分析一次log，做出性能测试-->
-        <param name="TimeSlice" value="60000" />
-        <appender-ref ref="dbPerfFileAppender" />
+        <param name="TimeSlice" value="60000"/>
+        <appender-ref ref="dbPerfFileAppender"/>
     </appender>
     <logger name="dbTimingLogger" level="info" additivity="false">
-        <appender-ref ref="dbCoalescingStatistics" />
+        <appender-ref ref="dbCoalescingStatistics"/>
     </logger>
     <!--end:web服务器性能log-->
 
     <root level="warn">
-        <appender-ref ref="Console" />
+        <appender-ref ref="Console"/>
     </root>
 </configuration>
