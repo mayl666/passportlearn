@@ -50,7 +50,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
             //封装第三方开放平台需要的参数
             HashMap<String, Object> sigMap = buildConnectParams(tokenMap, paramsMap, apiUrl);
             String protocol = CommonConstant.HTTPS;
-            String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
+            String serverName = CommonConstant.QQ_SERVER_IP;
             QQHttpClient qqHttpClient = new QQHttpClient();
             String resp = qqHttpClient.api(apiUrl, serverName, sigMap, protocol);
             result = buildCommonResultByStrategy(platform, resp);
