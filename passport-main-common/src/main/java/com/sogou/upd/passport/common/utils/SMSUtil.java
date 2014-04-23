@@ -31,7 +31,7 @@ public class SMSUtil {
 
     public static final long SMS_ONEDAY = 24 * 60 * 60; // 每日最多发送20短信验证码，时间 一天 1440分钟 ,单位s
 
-    public static final long MAX_CHECKSMS_COUNT_ONEDAY = 3; // 每日最多检查短信验证码错误次数
+    public static final long MAX_CHECKSMS_COUNT_ONEDAY = 10; // 每日最多检查短信验证码错误次数
 
     static final Logger logger = LoggerFactory.getLogger(SMSUtil.class);
 
