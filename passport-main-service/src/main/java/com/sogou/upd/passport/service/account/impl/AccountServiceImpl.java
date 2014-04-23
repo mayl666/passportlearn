@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
@@ -107,9 +108,9 @@ public class AccountServiceImpl implements AccountService {
             account.setAccountType(provider);
             account.setFlag(AccountStatusEnum.REGULAR.getValue());
             if (AccountTypeEnum.isConnect(provider)) {
-                account.setPasswordtype(Account.NO_PASSWORD);
+                account.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
             } else {
-                account.setPasswordtype(Account.NEW_ACCOUNT_VERSION);
+                account.setPasswordtype(PasswordTypeEnum.CRYPT.getValue());
             }
             String mobile = null;
             if (AccountTypeEnum.isPhone(username, provider)) {
@@ -442,7 +443,7 @@ public class AccountServiceImpl implements AccountService {
             account.setRegTime(new Date());
             account.setAccountType(provider);
             account.setFlag(AccountStatusEnum.DISABLED.getValue());
-            account.setPasswordtype(Account.NEW_ACCOUNT_VERSION);
+            account.setPasswordtype(PasswordTypeEnum.CRYPT.getValue());
             account.setRegIp(ip);
 
             String cacheKey = buildAccountKey(username);
