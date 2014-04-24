@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
@@ -37,7 +38,9 @@ import java.util.Map;
 @RequestMapping("/internal")
 public class LoginApiController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(LoginApiController.class);
-
+    private static final Logger authEmailUserLogger = LoggerFactory.getLogger("authEmailUserLogger");
+    @Autowired
+    private PCAccountManager pcAccountManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
@@ -104,6 +107,54 @@ public class LoginApiController extends BaseController {
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
+    }
+
+    /**
+     * pop3校验用户名和密码是否正确
+     *
+     * @param request
+     * @param params
+     * @return
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/account/authemailuser", method = RequestMethod.POST)
+    @ResponseBody
+    public Object authEmailUser(HttpServletRequest request, final AuthUserApiParams params) {
+        Result result = new APIResultSupport(false);
+        // 参数校验
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+        String createip = params.getCreateip();
+        String userid = params.getUserid();
+        try {
+            if (pcAccountManager.isLoginUserInBlackList(params.getClient_id(), userid, createip)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                return result.toString();
+            }
+//            if (ManagerHelper.isInvokeProxyApi(params.getUserid())) {
+//                result = proxyLoginApiManager.webAuthUser(params);
+//            } else {
+//                result = sgLoginApiManager.webAuthUser(params);
+//            }
+            result = loginApiManager.webAuthUser(params);
+            if (!result.isSuccess()) {
+                pcAccountManager.doAuthUserFailed(params.getClient_id(), userid, createip, result.getCode());
+            }
+        } catch (Exception e) {
+            logger.error("/internal/account/authemailuser failed,passportId:" + userid, e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result.toString();
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(userid, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            userOperationLog.putOtherMessage("createip", createip);
+            UserOperationLogUtil.log(userOperationLog, authEmailUserLogger);
+            return result.toString();
+
+        }
     }
 
     /**

@@ -50,49 +50,49 @@ public class RegManagerTest extends BaseTest {
     @Test
     public void testIsAccountNotExists() throws Exception {
         //搜狗账号存在
-        Result result_have_sogou = regManagerImpl.isAccountNotExists(both_hava_username_sogou, false, clientId);
+        Result result_have_sogou = regManagerImpl.isAccountNotExists(both_hava_username_sogou, clientId);
         APIResultForm actualFormOne = JacksonJsonMapperUtil.getMapper().readValue(result_have_sogou.toString(), APIResultForm.class);
         String expectStringOne = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + both_hava_username_sogou + "\"},\"status\":\"20294\"}";
         APIResultForm expectFormOne = JacksonJsonMapperUtil.getMapper().readValue(expectStringOne, APIResultForm.class);
         Assert.assertTrue(expectFormOne.equals(actualFormOne));
 
         //搜狗账号不存在
-        Result result_not_sogou = regManagerImpl.isAccountNotExists(both_no_username_sogou, false, clientId);
+        Result result_not_sogou = regManagerImpl.isAccountNotExists(both_no_username_sogou, clientId);
         APIResultForm actualFormTwo = JacksonJsonMapperUtil.getMapper().readValue(result_not_sogou.toString(), APIResultForm.class);
         String expectStringTwo = "{\"statusText\":\"操作成功\",\"data\":{},\"status\":\"0\"}";
         APIResultForm expectFormTwo = JacksonJsonMapperUtil.getMapper().readValue(expectStringTwo, APIResultForm.class);
         Assert.assertTrue(expectFormTwo.equals(actualFormTwo));
 
         //外域邮箱账号存在
-        Result result_have_mail = regManagerImpl.isAccountNotExists(both_hava_username_mail, false, clientId);
+        Result result_have_mail = regManagerImpl.isAccountNotExists(both_hava_username_mail, clientId);
         APIResultForm actualFormThree = JacksonJsonMapperUtil.getMapper().readValue(result_have_mail.toString(), APIResultForm.class);
         String expectStringThree = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + both_hava_username_mail + "\"},\"status\":\"20294\"}";
         APIResultForm expectFormThree = JacksonJsonMapperUtil.getMapper().readValue(expectStringThree, APIResultForm.class);
         Assert.assertTrue(expectFormThree.equals(actualFormThree));
 
         //外域邮箱账号不存在
-        Result result_not_mail = regManagerImpl.isAccountNotExists(both_no_username_mail, false, clientId);
+        Result result_not_mail = regManagerImpl.isAccountNotExists(both_no_username_mail, clientId);
         APIResultForm actualFormFour = JacksonJsonMapperUtil.getMapper().readValue(result_not_mail.toString(), APIResultForm.class);
         String expectStringFour = "{\"statusText\":\"操作成功\",\"data\":{},\"status\":\"0\"}";
         APIResultForm expectFormFour = JacksonJsonMapperUtil.getMapper().readValue(expectStringFour, APIResultForm.class);
         Assert.assertTrue(expectFormFour.equals(actualFormFour));
 
         //手机账号存在
-        Result result_have_mobile = regManagerImpl.isAccountNotExists(both_hava_username_mobile, true, clientId);
+        Result result_have_mobile = regManagerImpl.isAccountNotExists(both_hava_username_mobile, clientId);
         APIResultForm actualFormFive = JacksonJsonMapperUtil.getMapper().readValue(result_have_mobile.toString(), APIResultForm.class);
         String expectStringFive = "{\"statusText\":\"账号已注册\",\"data\":{},\"status\":\"20201\"}";
         APIResultForm expectFormFive = JacksonJsonMapperUtil.getMapper().readValue(expectStringFive, APIResultForm.class);
         Assert.assertTrue(expectFormFive.equals(actualFormFive));
 
         //手机账号不存在
-        Result result_not_mobile = regManagerImpl.isAccountNotExists(both_no_username_mobile, true, clientId);
+        Result result_not_mobile = regManagerImpl.isAccountNotExists(both_no_username_mobile, clientId);
         APIResultForm actualFormSix = JacksonJsonMapperUtil.getMapper().readValue(result_not_mobile.toString(), APIResultForm.class);
         String expectStringSix = "{\"statusText\":\"账户未被占用\",\"data\":{},\"status\":\"0\"}";
         APIResultForm expectFormSix = JacksonJsonMapperUtil.getMapper().readValue(expectStringSix, APIResultForm.class);
-        Assert.assertTrue(expectFormSix.equals(actualFormSix));
+        Assert.assertTrue(expectFormSix.getStatus().equals(actualFormSix.getStatus()));
 
         //账号格式非法
-        Result result_format_sogou = regManagerImpl.isAccountNotExists(wrong_format_username, false, clientId);
+        Result result_format_sogou = regManagerImpl.isAccountNotExists(wrong_format_username, clientId);
         APIResultForm actualFormSeven = JacksonJsonMapperUtil.getMapper().readValue(result_format_sogou.toString(), APIResultForm.class);
         String expectStringSeven = "{\"statusText\":\"非法userid\",\"data\":{\"userid\":\"" + wrong_format_username + "\"},\"status\":\"20239\"}";
         APIResultForm expectFormSeven = JacksonJsonMapperUtil.getMapper().readValue(expectStringSeven, APIResultForm.class);

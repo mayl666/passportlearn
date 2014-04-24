@@ -8,7 +8,9 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.validation.constraints.UserNameValidator;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
@@ -42,6 +44,10 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
     private MobileCodeSenderService mobileCodeSenderService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
+    @Autowired
+    private UserNameValidator userNameValidator;
+    @Autowired
+    private RegManager regManager;
 
     @Override
     public Result regMailUser(RegEmailApiParams params) {
@@ -114,7 +120,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             if (account != null) {
                 result.setSuccess(true);
                 result.setDefaultModel("userid", account.getPassportId());
-                result.setMessage("注册成功！");
+                result.setMessage("注册成功");
                 result.setDefaultModel("isSetCookie", true);
                 result.setDefaultModel(account);
             } else {
@@ -133,6 +139,12 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
         String username = null;
         try {
             username = checkUserApiParams.getUserid();
+            if (username.indexOf("@") == -1) {
+                //判断是否是手机号注册
+                if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
+                    username = username + "@sogou.com";
+                }
+            }
             //如果是手机账号注册
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
                 String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
@@ -141,12 +153,20 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                     return result;
                 }
             } else {
-                //如果是外域或个性账号注册
-                Account account = accountService.queryAccountByPassportId(username.toLowerCase());
-                if (account != null) {
-                    result.setDefaultModel("userid", account.getPassportId());
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                boolean isLegal = userNameValidator.isValid(username, null);
+                if (!isLegal) {
+                    result.setCode(ErrorUtil.ERR_CODE_USERID_ILLEGAL);
+                    result.setDefaultModel("userid", username);
                     return result;
+                } else {
+                    //如果是外域或个性账号注册
+                    Account account = accountService.queryAccountByPassportId(username.toLowerCase());
+                    if (account != null) {
+                        result.setCode(ErrorUtil.ERR_CODE_USER_ID_EXIST);
+                        result.setDefaultModel("flag", String.valueOf(account.getFlag()));
+                        result.setDefaultModel("userid", account.getPassportId());
+                        return result;
+                    }
                 }
             }
         } catch (ServiceException e) {
@@ -154,7 +174,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             throw new ServiceException(e);
         }
         result.setSuccess(true);
-        result.setMessage("账户未被占用，可以注册");
+        result.setMessage("操作成功");
         return result;
     }
 
@@ -166,13 +186,20 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
             baseMoblieApiParams.setMobile(mobile);
             //检测手机号是否已经注册或绑定
-            result = sgBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-            if (result.isSuccess()) {
+            result = regManager.isAccountNotExists(mobile, params.getClient_id());
+            if(!result.isSuccess()){
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                 result.setMessage("手机号已绑定其他账号");
                 return result;
             }
+//            result = sgBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+//            if (result.isSuccess()) {
+//                result.setSuccess(false);
+//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+//                result.setMessage("手机号已绑定其他账号");
+//                return result;
+//            }
             result = secureManager.sendMobileCode(params.getMobile(), params.getClient_id(), AccountModuleEnum.REGISTER);
         } catch (Exception e) {
             logger.error("send mobile code Fail, mobile:" + mobile, e);

@@ -39,10 +39,10 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
         Result result;
         String passportId = authUserApiParams.getUserid();
-        if (ManagerHelper.readSogouSwitcher()) {
-            result = bothAuthUser(authUserApiParams);
-        } else {
+        if (ManagerHelper.readSohuSwitcher()) {
             result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+        } else {
+            result = bothAuthUser(authUserApiParams);
         }
         if (result.isSuccess()) {
             //SOHU域账号登录，在SG库中创建一条只有账号没密码的记录

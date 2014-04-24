@@ -1,7 +1,22 @@
 package com.sogou.upd.passport.web.internal.account;
 
+import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.account.form.BaseResetPwdApiParams;
+import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
+import com.sogou.upd.passport.web.BaseController;
+import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -9,14 +24,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * Time: 上午10:56
  */
 @Controller
-@RequestMapping("/internal/secure")
-public class SecureApiController {
+@RequestMapping("/internal/security")
+public class SecureApiController extends BaseController {
 
 //    @Autowired
 //    private ConfigureManager configureManager;
 //
 //    @Autowired
 //    private SecureApiManager proxySecureApiManager;
+
+    @Autowired
+    private SecureManager secureManager;
+
+    /**
+     * 手机发送短信重置密码
+     */
+    @RequestMapping(value = "/resetpwd", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    @InterfaceSecurity
+    public String resetpwd(BaseResetPwdApiParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+
+        String lists = params.getLists();
+        if (!Strings.isNullOrEmpty(lists)) {
+            List<UserNamePwdMappingParams> list = new ObjectMapper().readValue(lists, new TypeReference<List<UserNamePwdMappingParams>>() {
+            });
+            secureManager.resetPwd(list);
+        }
+        result.setSuccess(true);
+        result.setMessage("获取成功");
+
+        return result.toString();
+    }
 //
 //    /**
 //     * 根据userId获取用户安全信息

@@ -4,6 +4,9 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
+import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
+
+import java.util.List;
 
 /**
  * 账户安全相关 User: mayan Date: 13-4-15 Time: 下午4:30 To change this template use File | Settings | File
@@ -44,6 +47,13 @@ public interface SecureManager {
      * @return Result格式的返回值，成功则发送验证码；失败，提示失败信息
      */
     public Result findPassword(String mobile, int clientId);
+
+    /**
+     * 手机用户发短信重置密码
+     *
+     * @return Result格式的返回值, 成功或失败，返回提示信息
+     */
+    public void resetPwd(List<UserNamePwdMappingParams> list) throws Exception;
 
     /**
      * 查询账户安全信息，包括邮箱、手机、密保问题，并模糊处理

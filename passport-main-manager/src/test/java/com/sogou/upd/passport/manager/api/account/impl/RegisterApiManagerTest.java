@@ -60,7 +60,7 @@ public class RegisterApiManagerTest extends BaseTest {
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
         Result actualResult = sgRegisterApiManager.checkUser(checkUserApiParams);
         APIResultForm actualFrom = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
-        Assert.assertTrue(expectForm.equals(actualFrom));
+        Assert.assertTrue(expectForm.getStatus().equals(actualFrom.getStatus()));
     }
 
     /**

@@ -221,58 +221,59 @@ public class RegManagerImpl implements RegManager {
         return accountService.getCaptchaCode(code);
     }
 
-    private Result checkUser(String username, int clientId) throws Exception {
+    private Result checkUserFromSohu(String username, int clientId) throws Exception {
         Result result;
-
-        return null;
-
+        try {
+            if (username.indexOf("@") == -1) {
+                //判断是否是手机号注册
+                if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
+                    username = username + "@sogou.com";
+                }
+            }
+            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+                BaseMoblieApiParams params = new BaseMoblieApiParams();
+                params.setMobile(username);
+                //手机号 判断绑定账户
+                result = proxyBindApiManager.getPassportIdByMobile(params);
+                if (result.isSuccess()) {
+                    result = new APIResultSupport(false);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    return result;
+                } else if (CommonHelper.isExplorerToken(clientId)) {
+                    result = isSohuplusUser(username, clientId);
+                } else {
+                    result.setSuccess(true);
+                    result.setMessage("账户未被占用");
+                }
+            } else {
+                CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
+                result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+                if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
+                    result = isSohuplusUser(username, clientId);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("check user from sohu error, username:" + username + "clientid:" + clientId, e);
+            throw new Exception(e);
+        }
+        return result;
     }
 
     @Override
-    public Result isAccountNotExists(String username, boolean type, int clientId) throws Exception {
+    public Result isAccountNotExists(String username, int clientId) throws Exception {
         Result result;
         try {
-            CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
-            BaseMoblieApiParams params = new BaseMoblieApiParams();
-            params.setMobile(username);
-            if (ManagerHelper.isInvokeProxyApi(username)) {
-                if (type) {
-                    //手机号 判断绑定账户
-                    result = proxyBindApiManager.getPassportIdByMobile(params);
-                    if (result.isSuccess()) {
-                        result = new APIResultSupport(false);
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        return result;
-                    } else if (CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username, clientId);
-                    } else {
-                        result.setSuccess(true);
-                        result.setMessage("账户未被占用");
-                    }
-                } else {
-                    result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-                    if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username, clientId);
-                    }
-                }
+            if (ManagerHelper.readSohuSwitcher()) {
+                result = checkUserFromSohu(username, clientId);
             } else {
-                if (type) {
-                    result = sgBindApiManager.getPassportIdByMobile(params);
-                    if (result.isSuccess()) {
-                        result = new APIResultSupport(false);
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        return result;
-                    } else if (CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username, clientId);
-                    } else {
-                        result.setSuccess(true);
-                        result.setMessage("账户未被占用");
-                    }
-                } else {
-                    result = sgRegisterApiManager.checkUser(checkUserApiParams);
-                    if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username, clientId);
-                    }
+                //双读
+                CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
+                result = sgRegisterApiManager.checkUser(checkUserApiParams);
+                if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
+                    result = isSohuplusUser(username, clientId);
+                }
+                if (result.isSuccess()) {  //SG没有，查询SH
+                    result = checkUserFromSohu(username, clientId);
                 }
             }
         } catch (ServiceException e) {
@@ -374,7 +375,7 @@ public class RegManagerImpl implements RegManager {
             return result;
         } else {
             result.setSuccess(true);
-            result.setMessage("账户未被占用");
+            result.setMessage("操作成功");
         }
         return result;
     }

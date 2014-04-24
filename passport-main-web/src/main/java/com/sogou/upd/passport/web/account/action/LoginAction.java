@@ -74,32 +74,19 @@ public class LoginAction extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-
         String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
         int clientId = Integer.valueOf(checkParam.getClient_id());
         //判断账号是否存在
-        if (username.indexOf("@") == -1) {
-            //判断是否是手机号注册
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                result = regManager.isAccountNotExists(username, true, clientId);
-            } else {
-                String tmpUsername = username + "@sogou.com";
-                result = regManager.isAccountNotExists(tmpUsername, false, clientId);
-            }
-        } else {
-            result = regManager.isAccountNotExists(username, false, clientId);
-        }
+        result = regManager.isAccountNotExists(username, clientId);
         if (!result.isSuccess()) {
             //校验是否需要验证码
             boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
-
             result.setSuccess(true);
             result.setDefaultModel("needCaptcha", needCaptcha);
         } else {
             result = new APIResultSupport(false);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
         }
-
         return result.toString();
     }
 
@@ -141,7 +128,7 @@ public class LoginAction extends BaseController {
             if (Strings.isNullOrEmpty(sogouRu)) {
                 sogouRu = CommonConstant.DEFAULT_INDEX_URL;
             }
-            result = cookieManager.setCookie(response, userId, clientId, ip,sogouRu,sogouMaxAge);
+            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
             if (result.isSuccess()) {
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
                 result.setDefaultModel("userid", userId);
@@ -149,7 +136,7 @@ public class LoginAction extends BaseController {
             }
 
         } else {
-            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip,result.getCode());
+            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
             //校验是否需要验证码
             boolean needCaptcha = loginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
             if (needCaptcha) {

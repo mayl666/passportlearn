@@ -94,6 +94,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
         }
     }
 
+    @Override
     public boolean isLoginUserInBlackList(final int clientId, final String username, final String ip) {
         if (CommonHelper.isIePinyinToken(clientId)) {
             //校验username是否在账户黑名单中
@@ -107,6 +108,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
         return false;
     }
 
+    @Override
     public void doAuthUserFailed(final int clientId, final String username, final String ip, String errCode) {
         if (CommonHelper.isIePinyinToken(clientId) && ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(errCode)) {
             operateTimesService.incGetPairTokenTimes(username, ip);

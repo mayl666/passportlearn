@@ -44,4 +44,11 @@ public interface SecureApiManager {
      * @return
      */
     Result resetPasswordByQues(ResetPasswordBySecQuesApiParams resetPasswordBySecQuesApiParams);
+
+    /**
+     * 修改密码接口
+     * @param updatePwdApiParams
+     * @return
+     */
+    void resetPwd(UpdatePwdApiParams updatePwdApiParams);
 }

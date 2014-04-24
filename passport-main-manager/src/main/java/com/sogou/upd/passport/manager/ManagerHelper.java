@@ -34,25 +34,13 @@ public class ManagerHelper {
     }
 
     /**
-     * 是否需要双读，即先读SG，再读SH，返回true表示需要双读，返回false表示不需要双读
-     *
-     * @return
-     */
-    public static boolean isBothReadApi(String passportId) {
-        return true;//todo 第一次双读上线的返回结果，恒为true，双读SG,SH
-//        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));//todo 第二次双读上线（也即搜狗账号第二次写分离上线）打开此开关，搜狗账号恒为false，不双读，只读SG；其它账号恒为true，双读SG,SH
-//        return false;                                                                        //   todo 其它账号双读上线（也其它账号第二次写分离上线）打开此开关，恒为false，所有账号不双读，只读SG；
-    }
-
-    /**
      * 是否需要只读SG库。当isBothReadApi方法返回false时：此方法返回true表示只读SG库；返回false表示只读SH线上，相当于回滚操作
      *
      * @return
      */
-    public static boolean readSogouSwitcher() {
-        return true; //todo 正常线上都应该恒为true
-//        return false;    //todo 若非上线后出故障，回滚至SOHU代码，打开此开关，即为回滚，前提：isBothReadApi必须为false
-
+    public static boolean readSohuSwitcher() {
+//        return true;   //todo 若非上线后出故障，回滚至SOHU代码，打开此开关，即为回滚，前提：isBothReadApi必须为false
+        return false; //todo 正常线上都应该恒为true
     }
 
 

@@ -23,10 +23,11 @@ public interface PCAccountManager {
      * @param pcTokenParams
      * @return
      */
-    public Result createPairToken(PcPairTokenParams pcTokenParams,String ip);
+    public Result createPairToken(PcPairTokenParams pcTokenParams, String ip);
 
     /**
      * 根据refreshtoken换一个token用来延长登陆
+     *
      * @param pcRefreshTokenParams
      * @return
      */
@@ -41,7 +42,8 @@ public interface PCAccountManager {
     public Result authToken(PcAuthTokenParams authPcTokenParams);
 
     /**
-     *验证refreshtoken是否正确
+     * 验证refreshtoken是否正确
+     *
      * @param passportId
      * @param clientId
      * @param instanceId
@@ -52,15 +54,17 @@ public interface PCAccountManager {
 
     /**
      * 获取sig
+     *
      * @param passportId
      * @param clientId
      * @param timestamp
      * @return
      */
-    public String getSig(String passportId, int clientId,String refresh_token,String timestamp) throws Exception;
+    public String getSig(String passportId, int clientId, String refresh_token, String timestamp) throws Exception;
 
     /**
      * 只生成token，不需要校验密码或者sig
+     *
      * @param clientId
      * @param passportId
      * @param instanceId
@@ -71,6 +75,7 @@ public interface PCAccountManager {
     /**
      * 从浏览器论坛获取用户昵称
      * 如果为空，则返回用户名@前面一段
+     *
      * @param passportId
      * @return
      */
@@ -78,27 +83,50 @@ public interface PCAccountManager {
 
     /**
      * 通过clientId获取不同的昵称
+     *
      * @param passportId
      * @param clientId
      * @return
      */
-    public String getUniqnameByClientId(String passportId,int clientId);
+    public String getUniqnameByClientId(String passportId, int clientId);
 
     /**
      * 创建账号account
+     *
      * @param passportId
      * @param instanceId
      * @param clientId
      * @return
      */
-    public Result createAccountToken(String passportId, String instanceId,int  clientId);
+    public Result createAccountToken(String passportId, String instanceId, int clientId);
 
     /**
      * 更新AccountToken
+     *
      * @param passportId
      * @param instanceId
      * @param appConfig
      * @return
      */
     public Result updateAccountToken(String passportId, String instanceId, AppConfig appConfig);
+
+    /**
+     * 检查用户是否在黑名单中
+     *
+     * @param clientId
+     * @param username
+     * @param ip
+     * @return
+     */
+    public boolean isLoginUserInBlackList(final int clientId, final String username, final String ip);
+
+    /**
+     * 用户验证失败后，统计失败次数
+     *
+     * @param clientId
+     * @param username
+     * @param ip
+     * @param errCode
+     */
+    public void doAuthUserFailed(final int clientId, final String username, final String ip, String errCode);
 }

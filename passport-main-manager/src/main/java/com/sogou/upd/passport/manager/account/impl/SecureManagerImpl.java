@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
+import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -22,6 +23,7 @@ import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
+import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.ActionRecord;
@@ -38,6 +40,8 @@ import org.springframework.stereotype.Component;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 安全相关：修改密码、修改密保（手机、邮箱、问题） ——接口代理OK—— .
@@ -83,6 +87,13 @@ public class SecureManagerImpl implements SecureManager {
     private PhotoUtils photoUtils;
     @Autowired
     private UserInfoApiManager shPlusUserInfoApiManager;
+    @Autowired
+    private LoginApiManager loginApiManager;
+
+    private ExecutorService service = Executors.newFixedThreadPool(10);
+
+    private static final String PREFIX_UPDATE_PWD_SEND_MESSAGE = "搜狗通行证提醒您：您的账号没有注册或绑定手机号：";
+    private static final String SUFFIX_UPDATE_PWD_SEND_MESSAGE = "重置密码失败!";
 
     /*
      * 发送短信至未绑定手机，只检测映射表，查询passportId不存在或为空即认定为未绑定
@@ -332,6 +343,47 @@ public class SecureManagerImpl implements SecureManager {
         return result;
     }
 
+    @Override
+    public void resetPwd(List<UserNamePwdMappingParams> list) throws Exception {
+
+        if (CollectionUtils.isNotEmpty(list)) {
+            for (final UserNamePwdMappingParams params : list) {
+                service.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        String username = params.getUsername();
+                        try {
+                            //查是否是手机号码
+                            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+                                //查是否进黑名单
+                                if (operateTimesService.checkLimitResetPwd(username + "@sohu.com", 0)) {
+                                    //查sogou是否注册或绑定此手机号
+                                    String passportId = mobilePassportMappingService.queryPassportIdByUsername(username);
+                                    if (!Strings.isNullOrEmpty(passportId)) {
+                                        UpdatePwdApiParams updatePwdApiParams = new UpdatePwdApiParams();
+                                        updatePwdApiParams.setUserid(username);
+                                        updatePwdApiParams.setNewpassword(params.getPwd());
+                                        //校验是否是搜狗用户
+                                        sgSecureApiManager.resetPwd(updatePwdApiParams);
+                                    } else {
+                                        //短信通知没有注册或绑定过此账号
+                                        String smsText = PREFIX_UPDATE_PWD_SEND_MESSAGE + username + SUFFIX_UPDATE_PWD_SEND_MESSAGE;
+                                        if (!Strings.isNullOrEmpty(username)) {
+                                            SMSUtil.sendSMS(username, smsText);
+                                        }
+                                    }
+                                    operateTimesService.incLimitResetPwd(username + "@sogou.com", 0);
+                                }
+                            }
+                        } catch (Exception e) {
+                            logger.error("resetPwd Fail username:" + username, e);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
     private UpdatePwdApiParams buildProxyApiParams(UpdatePwdParameters updatePwdParameters) {
         UpdatePwdApiParams updatePwdApiParams = new UpdatePwdApiParams();
         updatePwdApiParams.setUserid(updatePwdParameters.getPassport_id());
@@ -504,13 +556,11 @@ public class SecureManagerImpl implements SecureManager {
             if (!result.isSuccess()) {
                 return result;
             }
+            AuthUserApiParams authParams = new AuthUserApiParams(clientId, userId, Coder.encryptMD5(password));
             if (ManagerHelper.isInvokeProxyApi(userId)) {
                 // 代理接口
-                AuthUserApiParams authParams = new AuthUserApiParams();
-                authParams.setUserid(userId);
-                authParams.setClient_id(clientId);
-                authParams.setPassword(Coder.encryptMD5(password));
-                result = proxyLoginApiManager.webAuthUser(authParams);
+                result = loginApiManager.webAuthUser(authParams);
+                //                result = proxyLoginApiManager.webAuthUser(authParams);
                 if (!result.isSuccess()) {
                     operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
                     return result;
@@ -518,7 +568,8 @@ public class SecureManagerImpl implements SecureManager {
                 result = proxyBindApiManager.bindMobile(userId, newMobile);
             } else {
                 // 直接写实现方法，不调用sgBindApiManager，因不能分拆为两个对应方法同时避免读两次Account
-                result = accountService.verifyUserPwdVaild(userId, password, true);
+                result = loginApiManager.webAuthUser(authParams);
+//                result = accountService.verifyUserPwdVaild(userId, password, true);
                 if (!result.isSuccess()) {
                     operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
                     return result;

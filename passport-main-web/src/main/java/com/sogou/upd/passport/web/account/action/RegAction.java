@@ -301,13 +301,13 @@ public class RegAction extends BaseController {
         if (username.indexOf("@") == -1) {
             //判断是否是手机号注册
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                result = regManager.isAccountNotExists(username, true, clientId);
+                result = regManager.isAccountNotExists(username, clientId);
             } else {
                 username = username + "@sogou.com";
-                result = regManager.isAccountNotExists(username, false, clientId);
+                result = regManager.isAccountNotExists(username, clientId);
             }
         } else {
-            result = regManager.isAccountNotExists(username, false, clientId);
+            result = regManager.isAccountNotExists(username, clientId);
         }
         return result;
     }

@@ -129,7 +129,7 @@ public class PCOAuth2AccountController extends BaseController {
         if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {
             result.setCode("0");
         }
-        UserOperationLog userOperationLog = new UserOperationLog(oauthRequest.getUsername(), "/oauth2/token/?grant_type="+oauthRequest.getGrantType(), String.valueOf(oauthRequest.getClientId()), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(oauthRequest.getUsername(), "/oauth2/token/?grant_type=" + oauthRequest.getGrantType(), String.valueOf(oauthRequest.getClientId()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("refresh_token", oauthRequest.getRefreshToken());
         userOperationLog.putOtherMessage("instance_id", oauthRequest.getInstanceId());
         UserOperationLogUtil.log(userOperationLog);
@@ -153,7 +153,7 @@ public class PCOAuth2AccountController extends BaseController {
         if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {
             result.setCode("0");
         }
-        UserOperationLog userOperationLog = new UserOperationLog(params.getUsername(), "/oauth2/resource/?resource_type="+params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(params.getUsername(), "/oauth2/resource/?resource_type=" + params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("access_token", params.getAccess_token());
         userOperationLog.putOtherMessage("instance_id", params.getInstance_id());
         UserOperationLogUtil.log(userOperationLog);
@@ -314,10 +314,10 @@ public class PCOAuth2AccountController extends BaseController {
             Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
             result.setDefaultModel("autologin", loginParams.getRememberMe());
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-            ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(userId,clientId), accountToken, "sogou");
+            ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(userId, clientId), accountToken, "sogou");
             loginManager.doAfterLoginSuccess(username, ip, userId, clientId);
         } else {
-            loginManager.doAfterLoginFailed(username, ip,result.getCode());
+            loginManager.doAfterLoginFailed(username, ip, result.getCode());
             //校验是否需要验证码
             boolean needCaptcha = loginManager.needCaptchaCheck(String.valueOf(clientId), username, ip);
             if (needCaptcha) {
@@ -351,12 +351,14 @@ public class PCOAuth2AccountController extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED);
             return result;
         }
-        //判断是否是手机号注册
-        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-            result = pcoAuth2RegManager.isPcAccountNotExists(username, true);
-        } else {
-            result = pcoAuth2RegManager.isPcAccountNotExists(username, false);
-        }
+//        //判断是否是手机号注册
+//        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+//            result = pcoAuth2RegManager.isPcAccountNotExists(username, true);
+//        } else {
+//            result = pcoAuth2RegManager.isPcAccountNotExists(username, false);
+//        }
+        //检查用户是否存在
+        result = regManager.isAccountNotExists(username, CommonConstant.PC_CLIENTID);
         return result;
     }
 
@@ -379,7 +381,7 @@ public class PCOAuth2AccountController extends BaseController {
             cookieUserId = hostHolder.getPassportId();
         }
         int clientId = pcOAuth2LoginManager.getClientId(oauth2PcIndexParams.getClient_id());
-        Result queryPassportIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), clientId, oauth2PcIndexParams.getInstanceid(),"");
+        Result queryPassportIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), clientId, oauth2PcIndexParams.getInstanceid(), "");
 
         if (StringUtils.isBlank(queryPassportIdResult.getCode()) && queryPassportIdResult.isSuccess()) {
             queryPassportIdResult.setCode("0");
@@ -395,11 +397,11 @@ public class PCOAuth2AccountController extends BaseController {
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
         String redirectUrl;
-        if(oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_AVATARURL)){
-            redirectUrl = "/web/userinfo/avatarurl?client_id=" +  oauth2PcIndexParams.getClient_id();
-        }else if(oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_PASSWORD)){
-            redirectUrl = "/web/security/password?client_id=" +  oauth2PcIndexParams.getClient_id();
-        }else {
+        if (oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_AVATARURL)) {
+            redirectUrl = "/web/userinfo/avatarurl?client_id=" + oauth2PcIndexParams.getClient_id();
+        } else if (oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_PASSWORD)) {
+            redirectUrl = "/web/security/password?client_id=" + oauth2PcIndexParams.getClient_id();
+        } else {
             redirectUrl = "/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
         }
 
@@ -412,7 +414,7 @@ public class PCOAuth2AccountController extends BaseController {
             response.sendRedirect(redirectUrl);
             return;
         }
-        cookieManager.setCookie(response,passportId,oauth2PcIndexParams.getClient_id(),getIp(request),CommonConstant.DEFAULT_INDEX_URL,-1);
+        cookieManager.setCookie(response, passportId, oauth2PcIndexParams.getClient_id(), getIp(request), CommonConstant.DEFAULT_INDEX_URL, -1);
         response.sendRedirect(redirectUrl);
         return;
     }

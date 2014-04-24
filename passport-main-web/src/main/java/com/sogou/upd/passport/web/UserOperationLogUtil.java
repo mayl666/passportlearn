@@ -67,9 +67,12 @@ public class UserOperationLogUtil {
      * @param userOperationLog
      */
     public static void log(UserOperationLog userOperationLog) {
-        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap());
+        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap(),userLogger);
     }
 
+    public static void log(UserOperationLog userOperationLog, Logger authEmailUserLogger) {
+        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap(),authEmailUserLogger);
+    }
 
     /**
      * 用于记录log代码
@@ -81,7 +84,7 @@ public class UserOperationLogUtil {
      * @param resultCode   执行结果码
      * @param otherMessage 其它信息
      */
-    public static void log(String passportId, String operation, String clientId, String ip, String resultCode, Map<String, String> otherMessage) {
+    public static void log(String passportId, String operation, String clientId, String ip, String resultCode, Map<String, String> otherMessage,Logger operationLogger) {
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                     .getRequest();
@@ -138,7 +141,7 @@ public class UserOperationLogUtil {
                 }
                 log.append("\t").append(StringUtil.defaultIfEmpty(otherMsgJson, "-"));
             }
-            userLogger.info(log.toString());
+            operationLogger.info(log.toString());
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
