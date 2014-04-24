@@ -557,7 +557,7 @@ public class AccountServiceImpl implements AccountService {
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.set(cacheKey, passportId, expire);
+                    dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -591,7 +591,7 @@ public class AccountServiceImpl implements AccountService {
                         row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
                         if (row > 0) {
                             cacheKey = buildUniqnameCacheKey(uniqname);
-                            dbShardRedisUtils.set(cacheKey, passportId, expire);
+                            dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
                         }
                     }
                     return true;
