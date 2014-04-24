@@ -101,7 +101,7 @@ public interface UniqNamePassportMappingDAO {
      * @return
      */
     @SQL("select " + ALL_FIELD + " from " + TABLE_NAME + " where uniqname=:uniqname")
-    public UniqnamePassportMapping getUpmByPassportId(@ShardBy @SQLParam("uniqname") String uniqname);
+    public UniqnamePassportMapping getUpmByUniqName(@SQLParam("uniqname") String uniqname);
 
 
     /**

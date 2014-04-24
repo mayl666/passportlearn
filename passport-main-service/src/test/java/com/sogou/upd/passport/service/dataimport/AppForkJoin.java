@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.dataimport;
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
+import com.sogou.upd.passport.model.account.UniqnamePassportMapping;
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -10,15 +11,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -26,7 +28,6 @@ import java.util.concurrent.ForkJoinPool;
  * Date: 14-4-22
  * Time: 下午2:22
  */
-@Ignore
 public class AppForkJoin extends BaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppForkJoin.class);
@@ -76,18 +77,6 @@ public class AppForkJoin extends BaseTest {
 
     }
 
-/*    public static void main(String[] args) throws IOException {
-        LOGGER.info("Application started with {} processors ", CORE_COUNT);
-        try {
-            SeperatesTask task = new SeperatesTask(mappingDAO);
-            List<String> generatedItems = POOL.invoke(task);
-            storeFile("shard.txt", generatedItems);
-        } catch (Exception e) {
-            LOGGER.error("AppForkJoin failed." + e.getMessage(), e);
-        }
-        LOGGER.info("Done");
-    }*/
-
 
     @Ignore
     @Test
@@ -108,7 +97,7 @@ public class AppForkJoin extends BaseTest {
      * @throws IOException
      * @throws URISyntaxException
      */
-    private static void storeFile(String fileName, List<String> result) throws IOException, URISyntaxException {
+    private static void storeFile(String fileName, List<String> result) throws IOException {
         Path filePath = Paths.get("D:\\logs\\" + fileName);
         Files.deleteIfExists(filePath);
         BufferedWriter writer = Files.newBufferedWriter(filePath, Charset.defaultCharset());
@@ -123,5 +112,87 @@ public class AppForkJoin extends BaseTest {
         }
 
     }
+
+
+    @Test
+    public void increaseData() throws IOException {
+        Path filePath = Paths.get("D:\\logs\\failed.txt");
+        String fileName = "D:\\logs\\failed.txt";
+
+        String increaseFile = "";
+        Path increasePath = Paths.get("");
+
+        //记录导入增量数据失败记录
+        List<String> failedIncrease = Lists.newArrayList();
+        try (BufferedReader reader = Files.newBufferedReader(increasePath, Charset.defaultCharset())) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                //增量数据
+                UniqnamePassportMapping mapping = mappingDAO.getUpmByUniqName(line);
+                if (mapping != null) {
+                    Timestamp updateTime = new Timestamp(mapping.getUpdateTime().getTime());
+                    int result;
+                    try {
+                        result = mappingDAO.insertUpm0To32(mapping.getUniqname(), mapping.getPassportId(), updateTime);
+                    } catch (Exception e) {
+                        failedIncrease.add(mapping.getUniqname());
+                        continue;
+                    }
+                    if (result == 0) {
+                        failedIncrease.add(mapping.getUniqname());
+                        continue;
+                    }
+                }
+            }
+
+            //记录导入增量数据失败的记录
+            storeFile("increase_failed.txt", failedIncrease);
+        }
+
+        try (BufferedReader reader = Files.newBufferedReader(filePath, Charset.defaultCharset())) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(" try with resources Files.newBufferedReader :" + line);
+            }
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(" try with resources FileReader :" + line);
+            }
+        }
+
+
+        try {
+            InputStream in = Files.newInputStream(filePath);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(" Files.newInputStream:" + line);
+            }
+        } catch (Exception e) {
+        }
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(filePath)))) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(" try with resources  Files.newInputStream:" + line);
+            }
+        }
+
+        try (BufferedInputStream in = new BufferedInputStream(Files.newInputStream(filePath))) {
+            int inByte;
+            while ((inByte = in.read()) != -1) {
+                System.out.printf("%02X ", inByte);
+            }
+            System.out.printf("%n%n");
+        }
+
+
+        //循环读，执行增量数据更新操作
+
+    }
+
 
 }

@@ -4,11 +4,14 @@ import com.google.common.collect.Lists;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.model.account.UniqnamePassportMapping;
 import org.apache.commons.collections.CollectionUtils;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -117,6 +120,9 @@ public class UpmSeperateTask extends RecursiveTask<List<String>> {
             writer.flush();
         }
     }
+
+
+
 
 
     public static boolean checkUpmExist(UniqnamePassportMapping mapping) {
