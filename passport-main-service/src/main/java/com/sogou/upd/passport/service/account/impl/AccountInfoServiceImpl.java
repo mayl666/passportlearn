@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.account.impl;
 
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
@@ -43,7 +44,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
             if (accountInfo == null) {
                 accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 if (accountInfo != null) {
-                    dbShardRedisUtils.set(cacheKey, accountInfo);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.THREE_MONTH);
                 }
             }
         } catch (Exception e) {

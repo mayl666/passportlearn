@@ -2,7 +2,9 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.DBRedisUtils;
+import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -31,13 +33,12 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
     @Autowired
     private PhotoUtils photoUtils;
     @Autowired
-    private DBRedisUtils dbRedisUtils;
-    @Autowired
     private UniqNamePassportMappingService uniqNamePassportMappingService;
     @Autowired
     private AccountBaseInfoDAO accountBaseInfoDAO;
+    @Autowired
+    private DBShardRedisUtils dbShardRedisUtils;
 
-    private static final long ONE_MONTH = 30;
     private static final Logger logger = LoggerFactory.getLogger(AccountBaseInfoService.class);
     private static final String CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO;
 
@@ -89,11 +90,11 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
         String cacheKey = buildAccountBaseInfoKey(passportId);
         AccountBaseInfo accountBaseInfo;
         try {
-            accountBaseInfo = dbRedisUtils.getObject(cacheKey, AccountBaseInfo.class);
+            accountBaseInfo = dbShardRedisUtils.getObject(cacheKey, AccountBaseInfo.class);
             if (accountBaseInfo == null) {
                 accountBaseInfo = accountBaseInfoDAO.getAccountBaseInfoByPassportId(passportId);
                 if (accountBaseInfo != null) {
-                    dbRedisUtils.set(cacheKey, accountBaseInfo);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, accountBaseInfo, DateAndNumTimesConstant.THREE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -119,7 +120,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 if (row > 0) {
                     String cacheKey = buildAccountBaseInfoKey(passportId);
                     oldBaseInfo.setUniqname(uniqname);
-                    dbRedisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, oldBaseInfo, DateAndNumTimesConstant.THREE_MONTH);
                     //移除原来映射表
                     if (uniqNamePassportMappingService.removeUniqName(oldUniqName)) {
                         boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
@@ -145,7 +146,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 if (row > 0) {
                     String cacheKey = buildAccountBaseInfoKey(passportId);
                     oldBaseInfo.setAvatar(avatar);
-                    dbRedisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, oldBaseInfo, DateAndNumTimesConstant.THREE_MONTH);
                 }
             }
             return true;
@@ -178,7 +179,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
                 if (accountBaseInfoRow > 0) {
                     String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                    dbRedisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, accountBaseInfo, DateAndNumTimesConstant.THREE_MONTH);
                     return accountBaseInfo;
                 }
             }
@@ -197,7 +198,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
             if (accountBaseInfoRow > 0) {
                 String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                dbRedisUtils.set(cacheKey, accountBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, accountBaseInfo, DateAndNumTimesConstant.THREE_MONTH);
                 return true;
             }
             return false;

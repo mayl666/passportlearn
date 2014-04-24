@@ -67,25 +67,34 @@ public class LoginAction extends BaseController {
     public String checkNeedCaptcha(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
         Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(checkParam);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-        int clientId = Integer.valueOf(checkParam.getClient_id());
-        //判断账号是否存在
-        result = regManager.isAccountNotExists(username, clientId);
-        if (!result.isSuccess()) {
-            //校验是否需要验证码
-            boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
-            result.setSuccess(true);
-            result.setDefaultModel("needCaptcha", needCaptcha);
-        } else {
-            result = new APIResultSupport(false);
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(checkParam);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
+            int clientId = Integer.valueOf(checkParam.getClient_id());
+            //判断账号是否存在
+            result = regManager.isAccountNotExists(username, clientId);
+            if (!result.isSuccess()) {
+                //校验是否需要验证码
+                boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
+                result.setSuccess(true);
+                result.setDefaultModel("needCaptcha", needCaptcha);
+            } else {
+                result = new APIResultSupport(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            }
+        } catch (Exception e) {
+            logger.error("checkNeedCaptcha:check user need captcha or not is failed,username is " + checkParam.getUsername(), e);
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(checkParam.getUsername(), request.getRequestURI(), checkParam.getClient_id(), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
     }

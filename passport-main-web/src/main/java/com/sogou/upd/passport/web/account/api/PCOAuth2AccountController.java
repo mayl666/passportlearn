@@ -169,21 +169,27 @@ public class PCOAuth2AccountController extends BaseController {
      */
     @RequestMapping(value = "/oauth2/checkregname")
     @ResponseBody
-    public String checkRegisterName(CheckUserNameExistParameters checkParam)
+    public String checkRegisterName(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
         Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(checkParam);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-
-        result = checkPCAccountNotExists(username);
-        if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED.equals(result.getCode())) {
-            result.setMessage("该手机号已注册或已绑定，请直接登录");
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(checkParam);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
+            result = checkPCAccountNotExists(username);
+            if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED.equals(result.getCode())) {
+                result.setMessage("该手机号已注册或已绑定，请直接登录");
+            }
+        } catch (Exception e) {
+            logger.error("oauth2:checkRegisterName is failed,username is " + checkParam.getUsername(), e);
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(checkParam.getUsername(), request.getRequestURI(), checkParam.getClient_id(), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
     }

@@ -10,20 +10,14 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.ManagerHelper;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
-import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -70,31 +64,37 @@ public class RegAction extends BaseController {
     @ResponseBody
     public String checkusername(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
-
         Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(checkParam);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-        String clientIdStr = checkParam.getClient_id();
         int clientId = CommonConstant.SGPP_DEFAULT_CLIENTID;
-        if (!Strings.isNullOrEmpty(clientIdStr)) {
-            clientId = Integer.valueOf(clientIdStr);
-        }
-        if (regManager.isUserInExistBlackList(checkParam.getUsername(), getIp(request))) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-        } else {
-            result = checkAccountNotExists(username, clientId);
-            if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
-                result.setMessage("此手机号已注册或已绑定，请直接登录");
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(checkParam);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
             }
+            String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
+            String clientIdStr = checkParam.getClient_id();
+            if (!Strings.isNullOrEmpty(clientIdStr)) {
+                clientId = Integer.valueOf(clientIdStr);
+            }
+            if (regManager.isUserInExistBlackList(checkParam.getUsername(), getIp(request))) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+            } else {
+                result = checkAccountNotExists(username, clientId);
+                if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode())) {
+                    result.setMessage("此手机号已注册或已绑定，请直接登录");
+                }
+            }
+        } catch (Exception e) {
+            logger.error("checkusername:Check Username Is Failed,Username is " + checkParam.getUsername(), e);
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(checkParam.getUsername(), request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
-        UserOperationLog userOperationLog = new UserOperationLog(checkParam.getUsername(), request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
-        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -296,19 +296,20 @@ public class RegAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOGOU_REGISTER);
             return result;
         }
-
+        //检查用户名是否存在
+        result = regManager.isAccountNotExists(username, clientId);
         //判断是否是个性账号
-        if (username.indexOf("@") == -1) {
-            //判断是否是手机号注册
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                result = regManager.isAccountNotExists(username, clientId);
-            } else {
-                username = username + "@sogou.com";
-                result = regManager.isAccountNotExists(username, clientId);
-            }
-        } else {
-            result = regManager.isAccountNotExists(username, clientId);
-        }
+//        if (username.indexOf("@") == -1) {
+//            //判断是否是手机号注册
+//            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+//                result = regManager.isAccountNotExists(username, clientId);
+//            } else {
+//                username = username + "@sogou.com";
+//                result = regManager.isAccountNotExists(username, clientId);
+//            }
+//        } else {
+//            result = regManager.isAccountNotExists(username, clientId);
+//        }
         return result;
     }
 
