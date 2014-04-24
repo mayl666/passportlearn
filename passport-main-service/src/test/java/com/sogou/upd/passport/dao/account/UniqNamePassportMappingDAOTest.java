@@ -34,8 +34,8 @@ public class UniqNamePassportMappingDAOTest extends BaseDAOTest {
         String passport_id = "502011527@renren.sohu.com";
         String passport_id_not_exist = "sdfsdfsdfsdfsdfsd111111@sohu.com";
 
-        UniqnamePassportMapping mapping = mappingDAO.getUpmByPassportId(passport_id);
-        UniqnamePassportMapping notExistMapping = mappingDAO.getUpmByPassportId(passport_id_not_exist);
+        UniqnamePassportMapping mapping = mappingDAO.getUpmByUniqName(passport_id);
+        UniqnamePassportMapping notExistMapping = mappingDAO.getUpmByUniqName(passport_id_not_exist);
         Assert.assertNotNull(mapping);
         Assert.assertNotNull(notExistMapping);
     }
