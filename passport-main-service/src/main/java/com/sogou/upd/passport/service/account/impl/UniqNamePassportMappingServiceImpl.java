@@ -2,8 +2,8 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.common.utils.DBRedisUtils;
-import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
@@ -28,7 +28,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
     private static final Logger logger = LoggerFactory.getLogger(UniqNamePassportMappingService.class);
 
     @Autowired
-    private DBRedisUtils dbRedisUtils;
+    private DBShardRedisUtils dbShardRedisUtils;
     @Autowired
     private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
 
@@ -38,11 +38,11 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
         String passportId = null;
         try {
             String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-            passportId = dbRedisUtils.get(cacheKey);
+            passportId = dbShardRedisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbRedisUtils.set(cacheKey, passportId);
+                    dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -70,11 +70,11 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
             int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
             if (row > 0) {
                 String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                dbRedisUtils.set(cacheKey, passportId);
+                dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
                 return true;
             }
         } catch (Exception e) {
-            logger.error("insertUniqName fail,passportId="+passportId+",uniqname="+uniqname,e);
+            logger.error("insertUniqName fail,passportId=" + passportId + ",uniqname=" + uniqname, e);
             throw new ServiceException(e);
         }
         return false;
@@ -100,7 +100,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
                 int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(nickname, passportId);
                 if (row > 0) {
                     String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
-                    dbRedisUtils.set(cacheKey, passportId);
+                    dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
                     return true;
                 }
             } else {
@@ -123,7 +123,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
                 int row = uniqNamePassportMappingDAO.deleteUniqNamePassportMapping(uniqname);
                 if (row >= 0) {
                     String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                    dbRedisUtils.delete(cacheKey);
+                    dbShardRedisUtils.delete(cacheKey);
                     return true;
                 }
             }
