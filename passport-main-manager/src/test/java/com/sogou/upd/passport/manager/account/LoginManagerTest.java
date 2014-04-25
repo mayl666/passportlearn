@@ -120,7 +120,7 @@ public class LoginManagerTest extends BaseTest {
             String expire_data1 = "{\"statusText\":\"密码错误\",\"data\":{},\"status\":\"20206\"}";
             APIResultForm expireResultForm1 = JacksonJsonMapperUtil.getMapper().readValue(expire_data1, APIResultForm.class);
             Assert.assertTrue(expireResultForm1.equals(APIResultForm1));
-            //外域用户未激活时
+            //外域用户在搜狗这边没有，在搜狐那边未激活时
             String pwdMD52 = DigestUtils.md5Hex("111111".getBytes());
             Result result2 = loginManager.authUser(test_mail, ip, pwdMD52);
             APIResultForm APIResultForm2 = JacksonJsonMapperUtil.getMapper().readValue(result2.toString(), APIResultForm.class);
@@ -136,7 +136,7 @@ public class LoginManagerTest extends BaseTest {
             APIResultForm expireResultForm3 = JacksonJsonMapperUtil.getMapper().readValue(expire_data3, APIResultForm.class);
             Assert.assertTrue(expireResultForm3.equals(APIResultForm3));
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 

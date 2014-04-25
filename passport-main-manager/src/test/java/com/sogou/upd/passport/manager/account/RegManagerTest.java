@@ -26,8 +26,11 @@ public class RegManagerTest extends BaseTest {
 
     //检查账号是否存在
     private static final String both_no_username_sogou = "testbigday" + new Random().nextInt(1000) + "@sogou.com";
+    private static final String both_no_username_gexing = "testfuckday" + new Random().nextInt(1000);
     private static final String both_hava_username_sogou = userid_sogou_1;
     private static final String wrong_format_username = "testjisjf_c.com.com.com";
+    private static final String wrong_format_email = "testjisjf_c.com.com.com@gmail.com";
+    private static final String bad_format_email = "dfer6}*&ere_9o@163.com";
     private static final String both_no_username_mail = "imatestmail" + new Random().nextInt(1000) + "@163.com";
     private static final String both_hava_username_mail = userid_email;
     private static final int clientId = CommonConstant.SGPP_DEFAULT_CLIENTID;
@@ -63,6 +66,13 @@ public class RegManagerTest extends BaseTest {
         APIResultForm expectFormTwo = JacksonJsonMapperUtil.getMapper().readValue(expectStringTwo, APIResultForm.class);
         Assert.assertTrue(expectFormTwo.equals(actualFormTwo));
 
+        //个性账号不存在
+        Result result_not_gexing = regManagerImpl.isAccountNotExists(both_no_username_gexing, clientId);
+        APIResultForm actualFormEight = JacksonJsonMapperUtil.getMapper().readValue(result_not_gexing.toString(), APIResultForm.class);
+        String expectStringEight = "{\"statusText\":\"操作成功\",\"data\":{},\"status\":\"0\"}";
+        APIResultForm expectFormEight = JacksonJsonMapperUtil.getMapper().readValue(expectStringEight, APIResultForm.class);
+        Assert.assertTrue(expectFormEight.equals(actualFormEight));
+
         //外域邮箱账号存在
         Result result_have_mail = regManagerImpl.isAccountNotExists(both_hava_username_mail, clientId);
         APIResultForm actualFormThree = JacksonJsonMapperUtil.getMapper().readValue(result_have_mail.toString(), APIResultForm.class);
@@ -91,12 +101,26 @@ public class RegManagerTest extends BaseTest {
         APIResultForm expectFormSix = JacksonJsonMapperUtil.getMapper().readValue(expectStringSix, APIResultForm.class);
         Assert.assertTrue(expectFormSix.getStatus().equals(actualFormSix.getStatus()));
 
-        //账号格式非法
+        //搜狗账号格式非法
         Result result_format_sogou = regManagerImpl.isAccountNotExists(wrong_format_username, clientId);
         APIResultForm actualFormSeven = JacksonJsonMapperUtil.getMapper().readValue(result_format_sogou.toString(), APIResultForm.class);
         String expectStringSeven = "{\"statusText\":\"非法userid\",\"data\":{\"userid\":\"" + wrong_format_username + "\"},\"status\":\"20239\"}";
         APIResultForm expectFormSeven = JacksonJsonMapperUtil.getMapper().readValue(expectStringSeven, APIResultForm.class);
         Assert.assertTrue(expectFormSeven.equals(actualFormSeven));
+
+        //外域邮箱账号格式检测
+        Result result_format_email = regManagerImpl.isAccountNotExists(wrong_format_email, clientId);
+        APIResultForm actualFormNine = JacksonJsonMapperUtil.getMapper().readValue(result_format_email.toString(), APIResultForm.class);
+        String expectStringNine = "{\"data\":{},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expectFormNine = JacksonJsonMapperUtil.getMapper().readValue(expectStringNine, APIResultForm.class);
+        Assert.assertTrue(expectFormNine.equals(actualFormNine));
+
+        //错误的外域邮箱账号格式
+        Result result_bad_format_email = regManagerImpl.isAccountNotExists(bad_format_email, clientId);
+        APIResultForm actualFormTen = JacksonJsonMapperUtil.getMapper().readValue(result_bad_format_email.toString(), APIResultForm.class);
+        String expectStringTen = "{\"statusText\":\"非法userid\",\"data\":{\"userid\":\"" + bad_format_email + "\"},\"status\":\"20239\"}";
+        APIResultForm expectFormTen = JacksonJsonMapperUtil.getMapper().readValue(expectStringTen, APIResultForm.class);
+        Assert.assertTrue(expectFormTen.equals(actualFormTen));
     }
 
     /**

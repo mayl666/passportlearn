@@ -139,6 +139,12 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
         String username = null;
         try {
             username = checkUserApiParams.getUserid();
+            boolean isLegal = userNameValidator.isValid(username, null);
+            if (!isLegal) {
+                result.setCode(ErrorUtil.ERR_CODE_USERID_ILLEGAL);
+                result.setDefaultModel("userid", username);
+                return result;
+            }
             if (username.indexOf("@") == -1) {
                 //判断是否是手机号注册
                 if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
@@ -153,20 +159,13 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                     return result;
                 }
             } else {
-                boolean isLegal = userNameValidator.isValid(username, null);
-                if (!isLegal) {
-                    result.setCode(ErrorUtil.ERR_CODE_USERID_ILLEGAL);
-                    result.setDefaultModel("userid", username);
+                //如果是外域或个性账号注册
+                Account account = accountService.queryAccountByPassportId(username.toLowerCase());
+                if (account != null) {
+                    result.setCode(ErrorUtil.ERR_CODE_USER_ID_EXIST);
+                    result.setDefaultModel("flag", String.valueOf(account.getFlag()));
+                    result.setDefaultModel("userid", account.getPassportId());
                     return result;
-                } else {
-                    //如果是外域或个性账号注册
-                    Account account = accountService.queryAccountByPassportId(username.toLowerCase());
-                    if (account != null) {
-                        result.setCode(ErrorUtil.ERR_CODE_USER_ID_EXIST);
-                        result.setDefaultModel("flag", String.valueOf(account.getFlag()));
-                        result.setDefaultModel("userid", account.getPassportId());
-                        return result;
-                    }
                 }
             }
         } catch (ServiceException e) {
@@ -187,7 +186,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             baseMoblieApiParams.setMobile(mobile);
             //检测手机号是否已经注册或绑定
             result = regManager.isAccountNotExists(mobile, params.getClient_id());
-            if(!result.isSuccess()){
+            if (!result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                 result.setMessage("手机号已绑定其他账号");

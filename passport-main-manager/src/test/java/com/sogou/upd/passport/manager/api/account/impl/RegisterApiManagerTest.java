@@ -4,8 +4,10 @@ import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.APIResultForm;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import junit.framework.Assert;
@@ -29,9 +31,12 @@ public class RegisterApiManagerTest extends BaseTest {
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
+    @Autowired
+    private BindApiManager proxyBindApiManager;
 
 
     private static final String both_no_username = "testliuling" + new Random().nextInt(1000) + "@sogou.com";
+    private static final String both_no_gexing = "135test94" + new Random().nextInt(1000);
     private static final String both_no_username_sogou = "test" + new Random().nextInt(1000) + "@sogou.com";
     private static final String both_hava_username_sogou = userid_sogou_1;
     private static final String wrong_format_username = "adminhelpme@sogou.com"; //格式有误的账号
@@ -91,6 +96,44 @@ public class RegisterApiManagerTest extends BaseTest {
         Result actualResult = sgRegisterApiManager.checkUser(checkUserApiParams);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualForm));
+    }
+
+    /**
+     * 两边都存在此手机号的情况下
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testCheckUser_4() throws IOException {
+        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
+        checkUserApiParams.setUserid(mobile_2);
+        BaseMoblieApiParams bmap = new BaseMoblieApiParams();
+        bmap.setMobile(mobile_2);
+        Result expectResult = proxyBindApiManager.getPassportIdByMobile(bmap);
+        Assert.assertEquals("0", expectResult.getCode());
+        Assert.assertEquals(mobile_2 + "@sohu.com", expectResult.getModels().get("userid"));
+//        String expectResult = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + username_mail + "\"},\"status\":\"20294\"}";
+        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
+        Result actualResult = sgRegisterApiManager.checkUser(checkUserApiParams);
+        APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
+        Assert.assertEquals(ErrorUtil.ERR_CODE_ACCOUNT_REGED, actualForm.getStatus());
+        Assert.assertEquals(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_REGED), actualForm.getStatusText());
+    }
+
+    /**
+     * 两边都不存在此个性账号的情况下用户的情况下---检查用户是否存在:只检查@sogou.com账号和外域邮箱账号
+     */
+    @Test
+    public void testCheckUser_5() throws IOException {
+        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
+        checkUserApiParams.setUserid(both_no_gexing + "@sogou.com");
+        Result expectResult = proxyRegisterApiManager.checkUser(checkUserApiParams);
+//        String expectResult = "{\"statusText\":\"操作成功\",\"data\":{},\"status\":\"0\"}";
+        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
+        checkUserApiParams.setUserid(both_no_gexing);
+        Result actualResult = sgRegisterApiManager.checkUser(checkUserApiParams);
+        APIResultForm actualFrom = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm.equals(actualFrom));
     }
 
 
