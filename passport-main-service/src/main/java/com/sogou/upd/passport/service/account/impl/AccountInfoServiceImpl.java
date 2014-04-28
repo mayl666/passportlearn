@@ -114,7 +114,6 @@ public class AccountInfoServiceImpl implements AccountInfoService {
 
     @Override
     public boolean updateAccountInfo(AccountInfo accountInfo) throws ServiceException{
-        Result result = new APIResultSupport(false);
         try {
             String passportId= accountInfo.getPassportId();
             int row = accountInfoDAO.saveInfoOrInsert(passportId, accountInfo);

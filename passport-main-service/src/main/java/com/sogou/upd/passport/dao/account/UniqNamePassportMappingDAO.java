@@ -120,6 +120,7 @@ public interface UniqNamePassportMappingDAO {
     public int insertUniqNamePassportMapping(@ShardBy @SQLParam("uniqname") String uniqname, @SQLParam("passport_id") String passport_id)
             throws DataAccessException;
 
+
     /**
      * 更新mobile和passportId的映射关系
      *

@@ -35,7 +35,10 @@ public class SGStringHashRouterTest extends TestCase {
     @Test
     public void testRoute() {
         router = new SGStringHashRouter("id", "account_{0}", 32);
-        String id = "usef2006@163.com";
+//        String id = "056B15F99925016562B24E2070AE7AF5@qq.sohu.com";
+//        String id = "happychen09031@163.com";
+//        String id = "0C7E1BC4094CACCBDFEFC60BDDC598BD@qq.sohu.com";
+        String id = "D22B92D3073856E9C4234AEA279D1B17@qq.sohu.com";
         String name = router.doRoute(id);
         System.out.println(name);
 //        Assert.assertEquals(name, "account_18");
@@ -60,9 +63,10 @@ public class SGStringHashRouterTest extends TestCase {
     public void testUpmShard() {
         router = new SGStringHashRouter("id", "uniqname_passportid_mapping_{0}", 32);
         Assert.assertNotNull(router.doRoute("??"));
-        LOGGER.info("u_p_m shard." + router.doRoute("人生若只初相见2519"));
-        LOGGER.info("u_p_m shard." + router.doRoute("阳光216"));
-        LOGGER.info("u_p_m shard." + router.doRoute("cyqnx"));
+        LOGGER.info("u_p_m shard." + router.doRoute("happychen004"));
+        LOGGER.info("u_p_m shard." + router.doRoute("Clover陈石111"));
+        LOGGER.info("u_p_m shard." + router.doRoute("happychen09031"));
+        LOGGER.info("u_p_m shard." + router.doRoute("happychen007"));
     }
 
 

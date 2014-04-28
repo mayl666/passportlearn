@@ -46,7 +46,11 @@ public class UniqNamePassportMappingDAOTest extends BaseDAOTest {
 
         int result = 0;
         try {
-            result = mappingDAO.insertUpm0To32("???", "72CDA7AA41E0713A9DE6178306FCD7AC@qq.sohu.com", timestamp);
+//            result = mappingDAO.insertUpm0To32("???", "72CDA7AA41E0713A9DE6178306FCD7AC@qq.sohu.com", timestamp);
+
+            result = mappingDAO.insertUniqNamePassportMapping("u_p_m_test", "u_p_m_test@sogou.com");
+
+
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(result);
