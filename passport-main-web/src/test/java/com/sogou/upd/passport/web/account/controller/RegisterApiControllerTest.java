@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class RegisterApiControllerTest extends BaseActionTest {
 
-    private static final String SG_BASE_PATH_URL = "http://10.11.211.152:8090";
+    private static final String SG_BASE_PATH_URL = "http://10.16.139.157:8090";
 
     //发送短信验证码
     private static final String mobile_reged = "13581695053";
