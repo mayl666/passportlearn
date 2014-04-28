@@ -39,8 +39,8 @@ public class ManagerHelper {
      * @return
      */
     public static boolean readSohuSwitcher() {
-//        return true;   //todo 若非上线后出故障，回滚至SOHU代码，打开此开关，即为回滚
-        return false; //todo 正常线上都应该恒为false
+        return true;   //todo 若非上线后出故障，回滚至SOHU代码，打开此开关，即为回滚
+//        return false; //todo 正常线上都应该恒为false
     }
 
 

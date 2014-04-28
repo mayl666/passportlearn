@@ -22,6 +22,7 @@ import java.util.Map;
 public class RegisterApiControllerTest extends BaseActionTest {
 
     private static final String SG_BASE_PATH_URL = "http://10.16.139.157:8090";
+    private static final String SH_BASE_PATH_URL = "http://10.11.211.152:8090";
 
     //发送短信验证码
     private static final String mobile_reged = "13581695053";
@@ -32,7 +33,7 @@ public class RegisterApiControllerTest extends BaseActionTest {
     private static final String have_sogou = "amuissuper@sogou.com";
     private static final String right_mail = "amuissuper@163.com";
     private static final String have_mail = "loveerin9460@163.com";
-    private static final String have_unactive_mail = "werehuhere@163.com";
+    private static final String have_unactive_mail = "testliuliu@163.com";
     private static final String wrong_format_mail = "testjisjf_c.com.com.com";
     private static final String password = "111111";
     private static final String createip = "65.132.11.120";
@@ -100,7 +101,8 @@ public class RegisterApiControllerTest extends BaseActionTest {
         Map<String, String> params_reged = getCheckUserParams(mobile_reged);
         String actualStringOne = sendPost(SG_BASE_PATH_URL + apiUrl, params_reged);
         APIResultForm actualFormOne = JacksonJsonMapperUtil.getMapper().readValue(actualStringOne, APIResultForm.class);
-        String expectStringOne = "{\"data\":{\"flag\":\"1\",\"userid\":\"" + mobile_reged + "@sohu.com\"},\"status\":\"20225\",\"statusText\":\"手机号已绑定其他账号\"}";
+        String expectStringOne = sendPost(SH_BASE_PATH_URL + apiUrl, params_reged);
+//        String expectStringOne = "{\"data\":{\"flag\":\"1\",\"userid\":\"" + mobile_reged + "@sohu.com\"},\"status\":\"20225\",\"statusText\":\"手机号已绑定其他账号\"}";
         APIResultForm expectFormOne = JacksonJsonMapperUtil.getMapper().readValue(expectStringOne, APIResultForm.class);
         Assert.assertTrue(expectFormOne.equals(actualFormOne));
 
@@ -108,56 +110,63 @@ public class RegisterApiControllerTest extends BaseActionTest {
         Map<String, String> params_not_phone = getCheckUserParams(right_mobile);
         String actualStringTwo = sendPost(SG_BASE_PATH_URL + apiUrl, params_not_phone);
         APIResultForm actualFormTwo = JacksonJsonMapperUtil.getMapper().readValue(actualStringTwo, APIResultForm.class);
+//        String expectStringTwo = sendPost(SH_BASE_PATH_URL + apiUrl, params_not_phone);
         String expectStringTwo = "{\"data\":{},\"status\":\"0\",\"statusText\":\"\"}";
         APIResultForm expectFormTwo = JacksonJsonMapperUtil.getMapper().readValue(expectStringTwo, APIResultForm.class);
-        Assert.assertTrue(expectFormTwo.equals(actualFormTwo));
+        Assert.assertTrue(expectFormTwo.getStatus().equals(actualFormTwo.getStatus()));
 
         //搜狗用户不存在
         Map<String, String> params_not_sogou = getCheckUserParams(right_sogou);
-        String actualStringThree = sendPost(SG_BASE_PATH_URL + apiUrl, params_not_sogou);
-        APIResultForm actualFormThree = JacksonJsonMapperUtil.getMapper().readValue(actualStringThree, APIResultForm.class);
+//        String expectStringThree = sendPost(SH_BASE_PATH_URL + apiUrl, params_not_sogou);
         String expectStringThree = "{\"data\":{},\"status\":\"0\",\"statusText\":\"操作成功\"}";
         APIResultForm expectFormThree = JacksonJsonMapperUtil.getMapper().readValue(expectStringThree, APIResultForm.class);
+        String actualStringThree = sendPost(SG_BASE_PATH_URL + apiUrl, params_not_sogou);
+        APIResultForm actualFormThree = JacksonJsonMapperUtil.getMapper().readValue(actualStringThree, APIResultForm.class);
         Assert.assertTrue(expectFormThree.equals(actualFormThree));
 
         //搜狗用户已存在
         Map<String, String> params_have_sogou = getCheckUserParams(have_sogou);
-        String actualStringFour = sendPost(SG_BASE_PATH_URL + apiUrl, params_have_sogou);
-        APIResultForm actualFormFour = JacksonJsonMapperUtil.getMapper().readValue(actualStringFour, APIResultForm.class);
+//        String expectStringFour = sendPost(SH_BASE_PATH_URL + apiUrl, params_have_sogou);
         String expectStringFour = "{\"data\":{\"flag\":\"1\",\"userid\":\"" + have_sogou + "\"},\"status\":\"20294\",\"statusText\":\"用户名已经存在\"}";
         APIResultForm expectFormFour = JacksonJsonMapperUtil.getMapper().readValue(expectStringFour, APIResultForm.class);
+        String actualStringFour = sendPost(SG_BASE_PATH_URL + apiUrl, params_have_sogou);
+        APIResultForm actualFormFour = JacksonJsonMapperUtil.getMapper().readValue(actualStringFour, APIResultForm.class);
         Assert.assertTrue(expectFormFour.equals(actualFormFour));
 
         //外域邮箱用户不存在
         Map<String, String> params_not_mail = getCheckUserParams(right_mail);
-        String actualStringFive = sendPost(SG_BASE_PATH_URL + apiUrl, params_not_mail);
-        APIResultForm actualFormFive = JacksonJsonMapperUtil.getMapper().readValue(actualStringFive, APIResultForm.class);
+//        String expectStringFive = sendPost(SH_BASE_PATH_URL + apiUrl, params_not_mail);
         String expectStringFive = "{\"data\":{},\"status\":\"0\",\"statusText\":\"操作成功\"}";
         APIResultForm expectFormFive = JacksonJsonMapperUtil.getMapper().readValue(expectStringFive, APIResultForm.class);
+        String actualStringFive = sendPost(SG_BASE_PATH_URL + apiUrl, params_not_mail);
+        APIResultForm actualFormFive = JacksonJsonMapperUtil.getMapper().readValue(actualStringFive, APIResultForm.class);
         Assert.assertTrue(expectFormFive.equals(actualFormFive));
 
         //外域邮箱用户已存在且已激活
         Map<String, String> params_have_mail = getCheckUserParams(have_mail);
-        String actualStringSix = sendPost(SG_BASE_PATH_URL + apiUrl, params_have_mail);
-        APIResultForm actualFormSix = JacksonJsonMapperUtil.getMapper().readValue(actualStringSix, APIResultForm.class);
+//        String expectStringSix = sendPost(SH_BASE_PATH_URL + apiUrl, params_have_mail);
         String expectStringSix = "{\"data\":{\"flag\":\"1\",\"userid\":\"" + have_mail + "\"},\"status\":\"20294\",\"statusText\":\"用户名已经存在\"}";
         APIResultForm expectFormSix = JacksonJsonMapperUtil.getMapper().readValue(expectStringSix, APIResultForm.class);
+        String actualStringSix = sendPost(SG_BASE_PATH_URL + apiUrl, params_have_mail);
+        APIResultForm actualFormSix = JacksonJsonMapperUtil.getMapper().readValue(actualStringSix, APIResultForm.class);
         Assert.assertTrue(expectFormSix.equals(actualFormSix));
 
         //外域邮箱用户已存在但未激活
         Map<String, String> params_have_unactive_mail = getCheckUserParams(have_unactive_mail);
-        String actualStringSeven = sendPost(SG_BASE_PATH_URL + apiUrl, params_have_unactive_mail);
-        APIResultForm actualFormSeven = JacksonJsonMapperUtil.getMapper().readValue(actualStringSeven, APIResultForm.class);
+//        String expectStringSeven = sendPost(SH_BASE_PATH_URL + apiUrl, params_have_unactive_mail);
         String expectStringSeven = "{\"data\":{\"flag\":\"0\",\"userid\":\"" + have_unactive_mail + "\"},\"status\":\"20294\",\"statusText\":\"用户名已经存在\"}";
         APIResultForm expectFormSeven = JacksonJsonMapperUtil.getMapper().readValue(expectStringSeven, APIResultForm.class);
+        String actualStringSeven = sendPost(SG_BASE_PATH_URL + apiUrl, params_have_unactive_mail);
+        APIResultForm actualFormSeven = JacksonJsonMapperUtil.getMapper().readValue(actualStringSeven, APIResultForm.class);
         Assert.assertTrue(expectFormSeven.equals(actualFormSeven));
 
         //账户格式错误
         Map<String, String> params_wrong_format = getCheckUserParams(wrong_format_mail);
-        String actualStringEight = sendPost(SG_BASE_PATH_URL + apiUrl, params_wrong_format);
-        APIResultForm actualFormEight = JacksonJsonMapperUtil.getMapper().readValue(actualStringEight, APIResultForm.class);
+//        String expectStringEight = sendPost(SH_BASE_PATH_URL + apiUrl, params_wrong_format);
         String expectStringEight = "{\"data\":{\"userid\":\"" + wrong_format_mail + "\"},\"status\":\"20239\",\"statusText\":\"非法userid\"}";
         APIResultForm expectFormEight = JacksonJsonMapperUtil.getMapper().readValue(expectStringEight, APIResultForm.class);
+        String actualStringEight = sendPost(SG_BASE_PATH_URL + apiUrl, params_wrong_format);
+        APIResultForm actualFormEight = JacksonJsonMapperUtil.getMapper().readValue(actualStringEight, APIResultForm.class);
         Assert.assertTrue(expectFormEight.equals(actualFormEight));
     }
 
