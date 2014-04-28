@@ -218,6 +218,7 @@ public class RegisterApiController extends BaseController {
                 if (!result.isSuccess()) {
                     result.setDefaultModel("flag", "1");
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                    result.setMessage("手机号已绑定其他账号");
                 }
             }
 //        if (PhoneUtil.verifyPhoneNumberFormat(userid)) {

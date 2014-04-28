@@ -101,8 +101,8 @@ public class RegisterApiControllerTest extends BaseActionTest {
         Map<String, String> params_reged = getCheckUserParams(mobile_reged);
         String actualStringOne = sendPost(SG_BASE_PATH_URL + apiUrl, params_reged);
         APIResultForm actualFormOne = JacksonJsonMapperUtil.getMapper().readValue(actualStringOne, APIResultForm.class);
-        String expectStringOne = sendPost(SH_BASE_PATH_URL + apiUrl, params_reged);
-//        String expectStringOne = "{\"data\":{\"flag\":\"1\",\"userid\":\"" + mobile_reged + "@sohu.com\"},\"status\":\"20225\",\"statusText\":\"手机号已绑定其他账号\"}";
+//        String expectStringOne = sendPost(SH_BASE_PATH_URL + apiUrl, params_reged);
+        String expectStringOne = "{\"data\":{\"flag\":\"1\",\"userid\":\"" + mobile_reged + "@sohu.com\"},\"status\":\"20225\",\"statusText\":\"手机号已绑定其他账号\"}";
         APIResultForm expectFormOne = JacksonJsonMapperUtil.getMapper().readValue(expectStringOne, APIResultForm.class);
         Assert.assertTrue(expectFormOne.equals(actualFormOne));
 
