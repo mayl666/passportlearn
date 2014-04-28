@@ -236,7 +236,7 @@ public class RegManagerImpl implements RegManager {
                 //手机号 判断绑定账户
                 result = proxyBindApiManager.getPassportIdByMobile(params);
                 if (result.isSuccess()) {
-                    result = new APIResultSupport(false);
+                    result.setSuccess(false);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                     return result;
                 } else if (CommonHelper.isExplorerToken(clientId)) {
