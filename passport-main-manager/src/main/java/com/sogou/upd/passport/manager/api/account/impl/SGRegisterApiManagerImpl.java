@@ -217,9 +217,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             //检测手机号是否已经注册或绑定
             result = regManager.isAccountNotExists(mobile, params.getClient_id());
             if (!result.isSuccess()) {
-                result.setSuccess(false);
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                result.setMessage("手机号已绑定其他账号");
                 return result;
             }
 //            result = sgBindApiManager.getPassportIdByMobile(baseMoblieApiParams);

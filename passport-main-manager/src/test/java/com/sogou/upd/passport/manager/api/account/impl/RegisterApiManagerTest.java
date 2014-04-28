@@ -245,7 +245,7 @@ public class RegisterApiManagerTest extends BaseTest {
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
         Result actualResult = sgRegisterApiManager.sendMobileRegCaptcha(params);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
-//        Assert.assertTrue(!expectForm.getStatus().equals(actualForm.getStatus())); //todo 当手机号已经注册时，搜狗没有提示已经注册，业务逻辑还没移到此分支，且手机号注册时还需要写映射表
+        Assert.assertTrue(expectForm.equals(actualForm)); //todo 当手机号已经注册时，搜狗没有提示已经注册，业务逻辑还没移到此分支，且手机号注册时还需要写映射表
     }
 
     /**
