@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -20,6 +21,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.SnamePassportMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +46,8 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
     private MobileCodeSenderService mobileCodeSenderService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
+    @Autowired
+    private SnamePassportMappingService snamePassportMappingService;
     @Autowired
     private UserNameValidator userNameValidator;
     @Autowired
@@ -168,12 +172,38 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                     return result;
                 }
             }
+            int clientId = checkUserApiParams.getClient_id();
+            if (CommonHelper.isExplorerToken(clientId)) {
+                result = isSohuplusUser(username);
+            } else {
+                result.setSuccess(true);
+                result.setMessage("操作成功");
+            }
         } catch (ServiceException e) {
             logger.error("Check account is exists Exception, username:" + username, e);
             throw new ServiceException(e);
         }
-        result.setSuccess(true);
-        result.setMessage("操作成功");
+        return result;
+    }
+
+    /*
+     * client=1044的username为个性域名或手机号
+     * 都有可能是sohuplus的账号，需要判断sohuplus映射表
+     * 如果username包含@，则取@前面的
+     */
+    private Result isSohuplusUser(String username) {
+        Result result = new APIResultSupport(false);
+        if (username.contains("@")) {
+            username = username.substring(0, username.indexOf("@"));
+        }
+        String sohuplus_passportId = snamePassportMappingService.queryPassportIdBySnameOrPhone(username);
+        if (!Strings.isNullOrEmpty(sohuplus_passportId)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+            return result;
+        } else {
+            result.setSuccess(true);
+            result.setMessage("操作成功");
+        }
         return result;
     }
 

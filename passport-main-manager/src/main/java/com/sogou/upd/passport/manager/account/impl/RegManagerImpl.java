@@ -246,7 +246,7 @@ public class RegManagerImpl implements RegManager {
                     result.setMessage("账户未被占用");
                 }
             } else {
-                CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
+                CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
                 result = proxyRegisterApiManager.checkUser(checkUserApiParams);
                 if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
                     result = isSohuplusUser(username, clientId);
@@ -267,11 +267,8 @@ public class RegManagerImpl implements RegManager {
                 result = checkUserFromSohu(username, clientId);
             } else {
                 //双读
-                CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
+                CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
                 result = sgRegisterApiManager.checkUser(checkUserApiParams);
-                if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
-                    result = isSohuplusUser(username, clientId);
-                }
                 if (result.isSuccess()) {  //SG没有，查询SH
                     result = checkUserFromSohu(username, clientId);
                 }
@@ -380,9 +377,10 @@ public class RegManagerImpl implements RegManager {
         return result;
     }
 
-    private CheckUserApiParams buildProxyApiParams(String username) {
+    private CheckUserApiParams buildProxyApiParams(String username, int clientId) {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
         checkUserApiParams.setUserid(username);
+        checkUserApiParams.setClient_id(clientId);
         return checkUserApiParams;
     }
 
