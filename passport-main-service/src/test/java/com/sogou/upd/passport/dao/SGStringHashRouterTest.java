@@ -64,7 +64,7 @@ public class SGStringHashRouterTest extends TestCase {
     @Test
     public void testUpmShard() {
         router = new SGStringHashRouter("id", "uniqname_passportid_mapping_{0}", 32);
-        LOGGER.info("u_p_m shard." + router.doRoute("xiaoq1042812"));
+        LOGGER.info("u_p_m shard." + router.doRoute("宝宝妞妞Kesyren1"));
     }
 
 

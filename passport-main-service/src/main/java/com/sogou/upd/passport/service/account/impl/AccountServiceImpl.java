@@ -574,6 +574,8 @@ public class AccountServiceImpl implements AccountService {
                     String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                     redisUtils.delete(cacheKey);
                     return true;
+                } else if (row == 0) {
+                    return true;
                 }
             }
         } catch (Exception e) {
