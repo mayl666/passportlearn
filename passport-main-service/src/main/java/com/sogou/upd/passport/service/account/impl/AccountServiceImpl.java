@@ -498,7 +498,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean updateUniqName(Account account, String uniqname) throws ServiceException {
         try {
-           /* String oldUniqName = account.getUniqname();
+            String oldUniqName = account.getUniqname();
             String passportId = account.getPassportId();
 
             if (!Strings.isNullOrEmpty(uniqname) && !uniqname.equals(oldUniqName)) {
@@ -509,13 +509,27 @@ public class AccountServiceImpl implements AccountService {
                     account.setUniqname(uniqname);
                     dbShardRedisUtils.set(cacheKey, account);
 
-                    //移除原来映射表
-                    if (removeUniqName(oldUniqName)) {
+                    //第一次直接插入
+                    if (Strings.isNullOrEmpty(oldUniqName)) {
                         //更新新的映射表
                         row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
                         if (row > 0) {
                             cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                             redisUtils.set(cacheKey, passportId);
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        //移除原来映射表
+                        if (removeUniqName(oldUniqName)) {
+                            //更新新的映射表
+                            row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
+                            if (row > 0) {
+                                cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                                redisUtils.set(cacheKey, passportId);
+                            } else {
+                                return false;
+                            }
                         }
                     }
                     return true;
@@ -523,47 +537,7 @@ public class AccountServiceImpl implements AccountService {
             } else {
                 return true;
             }
-*/
-
-            String passportId = account.getPassportId();
-            if (StringUtils.isEmpty(account.getUniqname())) {
-                //插入u_p_m_{0,32}表
-                int insertUpmResult = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
-                if (insertUpmResult > 0) {
-                    String upmCacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                    redisUtils.set(upmCacheKey, passportId);
-                } else {
-                    return false;
-                }
-            } else {
-                //变更昵称、更新u_p_m_{0,32}映射关系:先删除原映射关系、在插入新的映射关系
-                // 小王: xiaowang@sogou.com  -> 小王1: xiaowang@sogou.com
-                boolean deleteResult = removeUniqName(account.getUniqname());
-                if (deleteResult) {
-                    //插入u_p_m_{0,32}表
-                    int insertUpmResult = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
-                    if (insertUpmResult > 0) {
-                        String upmCacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                        redisUtils.set(upmCacheKey, passportId);
-                    } else {
-                        return false;
-                    }
-                }
-            }
-
-            //account 表用户昵称不为空，则执行更新操作
-            if (!account.getUniqname().equalsIgnoreCase(uniqname)) {
-                //更新account_{0,32}表昵称
-                int updateAccountResult = accountDAO.updateUniqName(uniqname, passportId);
-                if (updateAccountResult > 0) {
-                    String cacheKey = buildAccountKey(passportId);
-                    account.setUniqname(uniqname);
-                    dbShardRedisUtils.set(cacheKey, account);
-                } else {
-                    return false;
-                }
-            }
-            return true;
+            return false;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
