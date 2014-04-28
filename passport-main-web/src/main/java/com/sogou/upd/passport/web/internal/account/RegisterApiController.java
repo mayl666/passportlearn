@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
@@ -213,6 +214,12 @@ public class RegisterApiController extends BaseController {
             // 调用内部接口
             String userid = params.getUserid();
             result = regManager.isAccountNotExists(userid, params.getClient_id());
+            if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
+                if (!result.isSuccess()) {
+                    result.setDefaultModel("flag", "1");
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                }
+            }
 //        if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
 //            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
 //            baseMoblieApiParams.setMobile(userid);

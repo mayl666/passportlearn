@@ -123,11 +123,6 @@ public class AccountServiceImpl implements AccountService {
             account.setMobile(mobile);
             long id = accountDAO.insertOrUpdateAccount(passportId, account);
             if (id != 0) {
-                //更新昵称映射表
-                String nickname = account.getUniqname();
-                if (!Strings.isNullOrEmpty(nickname)) {
-                    uniqNamePassportMappingDAO.insertUniqNamePassportMapping(nickname, account.getPassportId());
-                }
                 //手机注册时，写mobile与passportId映射表
                 if (PhoneUtil.verifyPhoneNumberFormat(passportId.substring(0, passportId.indexOf("@")))) {
                     int row = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
