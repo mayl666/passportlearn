@@ -160,6 +160,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                 String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
                 if (!Strings.isNullOrEmpty(passportId)) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    result.setDefaultModel("userid", passportId);
                     return result;
                 }
             } else {
