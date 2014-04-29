@@ -45,7 +45,7 @@ public class SeperatesTask extends RecursiveTask<List<String>> {
 //            int maxPage = totalCount % pageSize == 0 ? (totalCount / pageSize) : (totalCount / pageSize + 1);
 //            int currentPage = 0;
 
-            for (int i = 0; i < 17; i++) {
+            for (int i = 0; i < 18; i++) {
                 LOGGER.info("SeperatesTask exec current:" + CURRENT);
                 int pageIndex = 100001 * CURRENT;
                 LOGGER.info("SeperatesTask exec pageIndex: " + pageIndex);

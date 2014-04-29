@@ -82,9 +82,11 @@ public class UpmSeperateTask extends RecursiveTask<List<String>> {
                     try {
                         result = uniqNamePassportMappingDAO.insertUpm0To32(mapping.getUniqname(), passportId, updateTimeStamp);
                     } catch (Exception e) {
+                        e.printStackTrace();
                         failList.add(passportId);
                         LOGGER.info("insert into u_p_m_0_32 failed. passport_id:" + passportId);
                         continue;
+
                     }
                     if (result == 0) {
                         resultList.add(passportId);
@@ -120,9 +122,6 @@ public class UpmSeperateTask extends RecursiveTask<List<String>> {
             writer.flush();
         }
     }
-
-
-
 
 
     public static boolean checkUpmExist(UniqnamePassportMapping mapping) {

@@ -40,7 +40,6 @@ public class AppForkJoin extends BaseTest {
     private UniqNamePassportMappingDAO mappingDAO;
 
 
-    @Ignore
     @Test
     public void runShard() {
         LOGGER.info("u_p_m_0_32 shard started with {} processors ", CORE_COUNT);
@@ -59,10 +58,44 @@ public class AppForkJoin extends BaseTest {
     }
 
 
+    @Test
+    public void testGetTotal() {
+        int total = mappingDAO.getUpmTotalCount();
+        LOGGER.info("total count get db is :" + total);
+        int pageSize = 100000;
+        int maxPage = total % pageSize == 0 ? (total / pageSize) : (total / pageSize + 1);
+        LOGGER.info("maxPage:" + maxPage);
+        int current = 0;
+        for (int i = 0; i < maxPage; i++) {
+            LOGGER.info("for each current:" + current);
+            int pageIndex = (pageSize + 1) * current;
+            LOGGER.info("for each pageIndex:" + pageIndex);
+            current++;
+        }
+
+    }
+
+
+    @Ignore
+    @Test
+    public void testInsertUpm32() {
+        String uniqname = "限量版11111";
+        String passport_id = "91A38EBFBD142B991EBB4EB7713BEADD@qq.sohu.com";
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        try {
+            int result = mappingDAO.insertUpm0To32(uniqname, passport_id, timestamp);
+            LOGGER.info("result : " + result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     @Ignore
     @Test
     public void testRunShard() {
-        int total = 1697007;
+//        int total = 1697007;
+        int total = 1725908;
         int pageSize = 100000;
         int maxPage = total % pageSize == 0 ? (total / pageSize) : (total / pageSize + 1);
         LOGGER.info("maxPage:" + maxPage);
@@ -120,7 +153,7 @@ public class AppForkJoin extends BaseTest {
         String fileName = "D:\\logs\\failed.txt";
 
         String increaseFile = "";
-        Path increasePath = Paths.get("");
+        Path increasePath = Paths.get("D:\\logs\\increase\\increase_1.txt");
 
         //记录导入增量数据失败记录
         List<String> failedIncrease = Lists.newArrayList();
@@ -149,7 +182,7 @@ public class AppForkJoin extends BaseTest {
             storeFile("increase_failed.txt", failedIncrease);
         }
 
-        try (BufferedReader reader = Files.newBufferedReader(filePath, Charset.defaultCharset())) {
+        /*try (BufferedReader reader = Files.newBufferedReader(filePath, Charset.defaultCharset())) {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 System.out.println(" try with resources Files.newBufferedReader :" + line);
@@ -189,9 +222,7 @@ public class AppForkJoin extends BaseTest {
             System.out.printf("%n%n");
         }
 
-
-        //循环读，执行增量数据更新操作
-
+*/
     }
 
 
