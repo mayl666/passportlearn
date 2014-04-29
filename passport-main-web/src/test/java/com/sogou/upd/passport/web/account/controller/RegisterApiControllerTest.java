@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class RegisterApiControllerTest extends BaseActionTest {
 
-    private static final String SG_BASE_PATH_URL = "http://10.16.139.157:8090";
+    private static final String SG_BASE_PATH_URL = "http://localhost";
     private static final String SH_BASE_PATH_URL = "http://10.11.211.152:8090";
 
     //发送短信验证码
@@ -45,9 +45,9 @@ public class RegisterApiControllerTest extends BaseActionTest {
     private static final String reg_mail = "wehreujew@163.com";
     //注册手机号，不需短信验证码
     private static final String reg_mobile = "13926415207";
+    private static final String bind_mobile = "15737126381";
     private static final String reged_mobile = "13581695053";
     //注册手机号，需要短信验证码
-    private static final String reg_mobile_capthca = "13626415007";
     private static final String reged_mobile_capthca = "13581695053";
     private static final String wrong_capthca = "grtyr";
     private static final String right_capthca = "1q23";
@@ -62,33 +62,38 @@ public class RegisterApiControllerTest extends BaseActionTest {
      */
     @Test
     public void testSendRegCaptchaExists() throws IOException {
-        //手机号已经注册或绑定
+        //手机号已经注册
         String apiUrl = "/internal/account/sendregcaptcha";
         Map<String, String> params_reged = getSendCaptchaParams(mobile_reged);
-        String expectStringOne = sendPost(SH_BASE_PATH_URL + apiUrl, params_reged);
-        System.out.println(expectStringOne);
-//        String expectStringOne = "{\"data\":{\"userid\":\"13581695053@sohu.com\"},\"statusText\":\"手机号已绑定其他账号\",\"status\":\"20225\"}";
+//        String expectStringOne = sendPost(SH_BASE_PATH_URL + apiUrl, params_reged);
+        String expectStringOne = "{\"data\":{\"userid\":\"" + mobile_reged + "@sohu.com\"},\"statusText\":\"手机号已绑定其他账号\",\"status\":\"20225\"}";
         APIResultForm expectFormOne = JacksonJsonMapperUtil.getMapper().readValue(expectStringOne, APIResultForm.class);
         String actualStringOne = sendPost(SG_BASE_PATH_URL + apiUrl, params_reged);
-        System.out.println(actualStringOne);
         APIResultForm actualFormOne = JacksonJsonMapperUtil.getMapper().readValue(actualStringOne, APIResultForm.class);
         Assert.assertTrue(expectFormOne.equals(actualFormOne));
 
         //手机号格式错误
         Map<String, String> params_format_wrong = getSendCaptchaParams(wrong_mobile);
-        String expectStringTwo = sendPost(SH_BASE_PATH_URL + apiUrl, params_format_wrong);
-        System.out.println(expectStringTwo);
-//        String expectStringTwo = "{\"data\":{},\"status\":\"10002\",\"statusText\":\"手机号格式不正确\"}";
+//        String expectStringTwo = sendPost(SH_BASE_PATH_URL + apiUrl, params_format_wrong);
+        String expectStringTwo = "{\"data\":{},\"status\":\"10002\",\"statusText\":\"手机号格式不正确\"}";
         APIResultForm expectFormTwo = JacksonJsonMapperUtil.getMapper().readValue(expectStringTwo, APIResultForm.class);
         String actualStringTwo = sendPost(SG_BASE_PATH_URL + apiUrl, params_format_wrong);
         APIResultForm actualFormTwo = JacksonJsonMapperUtil.getMapper().readValue(actualStringTwo, APIResultForm.class);
         Assert.assertTrue(expectFormTwo.equals(actualFormTwo));
 
+        //手机已经绑定了主账号
+        Map<String, String> params_bind = getSendCaptchaParams(bind_mobile);
+//        String expectStringThree = sendPost(SH_BASE_PATH_URL + apiUrl, params_right);
+        String expectStringFour = "{\"statusText\":\"手机号已绑定其他账号\",\"data\":{\"userid\":\"loveerin@sogou.com\"},\"status\":\"20225\"}";
+        APIResultForm expectFormFour = JacksonJsonMapperUtil.getMapper().readValue(expectStringFour, APIResultForm.class);
+        String actualStringFour = sendPost(SG_BASE_PATH_URL + apiUrl, params_bind);
+        APIResultForm actualFormFour = JacksonJsonMapperUtil.getMapper().readValue(actualStringFour, APIResultForm.class);
+        Assert.assertTrue(expectFormFour.equals(actualFormFour));
+
         //正确发送验证码
         Map<String, String> params_right = getSendCaptchaParams(reg_mobile_capthca);
-        String expectStringThree = sendPost(SH_BASE_PATH_URL + apiUrl, params_right);
-        System.out.println(expectStringThree);
-//        String expectStringThree = "{\"data\":{},\"status\":\"0\",\"statusText\":\"验证码已发送至" + reg_mobile_capthca + "\"}";
+//        String expectStringThree = sendPost(SH_BASE_PATH_URL + apiUrl, params_right);
+        String expectStringThree = "{\"data\":{},\"statusText\":\"验证码已发送至" + reg_mobile_capthca + "\",\"status\":\"0\"}";
         APIResultForm expectFormThree = JacksonJsonMapperUtil.getMapper().readValue(expectStringThree, APIResultForm.class);
         String actualStringThree = sendPost(SG_BASE_PATH_URL + apiUrl, params_right);
         APIResultForm actualFormThree = JacksonJsonMapperUtil.getMapper().readValue(actualStringThree, APIResultForm.class);

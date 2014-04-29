@@ -171,16 +171,26 @@ public class RegisterApiManagerTest extends BaseTest {
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertEquals(expectForm, actualForm);
 
-        //手机已经注册或已经绑定发送验证码 note:线上已经是搜狗发送短信验证码了，所以此处不需要跟sohu接口返回结果做对比，只需跟原有线上返回结果做对比即可
+        //手机已经注册发送验证码 note:线上已经是搜狗发送短信验证码了，所以此处不需要跟sohu接口返回结果做对比，只需跟原有线上返回结果做对比即可
         String code1 = ManagerHelper.generatorCodeGBK(mobile_2, clientId, serverSecret, ct);
         params.setMobile(mobile_2);
         params.setCode(code1);
         String expectResult1 = "{\"statusText\":\"手机号已绑定其他账号\",\"data\":{\"userid\":\"" + mobile_2 + "@sohu.com\"},\"status\":\"20225\"}";
         APIResultForm expectForm1 = JacksonJsonMapperUtil.getMapper().readValue(expectResult1.toString(), APIResultForm.class);
         Result actualResult1 = sgRegisterApiManager.sendMobileRegCaptcha(params);
-        System.out.println(actualResult1.toString());
         APIResultForm actualForm1 = JacksonJsonMapperUtil.getMapper().readValue(actualResult1.toString(), APIResultForm.class);
         Assert.assertEquals(expectForm1, actualForm1);   //todo 手机号注册时还需要写映射表
+
+        //手机已经绑定主账号发送验证码 note:线上已经是搜狗发送短信验证码了，所以此处不需要跟sohu接口返回结果做对比，只需跟原有线上返回结果做对比即可
+        String code2 = ManagerHelper.generatorCodeGBK(mobile_1, clientId, serverSecret, ct);
+        params.setMobile(mobile_1);
+        params.setCode(code2);
+        String expectResult2 = "{\"statusText\":\"手机号已绑定其他账号\",\"data\":{\"userid\":\"loveerin@sogou.com\"},\"status\":\"20225\"}";
+        APIResultForm expectForm2 = JacksonJsonMapperUtil.getMapper().readValue(expectResult2.toString(), APIResultForm.class);
+        Result actualResult2 = sgRegisterApiManager.sendMobileRegCaptcha(params);
+        System.out.println(actualResult2.toString());
+        APIResultForm actualForm2 = JacksonJsonMapperUtil.getMapper().readValue(actualResult2.toString(), APIResultForm.class);
+        Assert.assertEquals(expectForm2, actualForm2);
     }
 
     /**

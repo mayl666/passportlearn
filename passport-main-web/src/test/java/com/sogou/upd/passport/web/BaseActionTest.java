@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -174,6 +175,18 @@ public class BaseActionTest extends TestCase {
         }
     }
 
+    protected String reg_mobile_capthca = new GeneratorRandomMobile().generateRandomMobile();
+
+    class GeneratorRandomMobile {
+        //生成随机的手机号码
+        private String generateRandomMobile() {
+            String mobile = "135";
+            DecimalFormat a = new DecimalFormat("00000000");//随机到非7位数时前面加0
+            mobile = mobile + a.format((int) (Math.random() * 4720001));//随机数0-4720000
+            return mobile;
+        }
+    }
+
     private static final String appId="1100";
 
     private static final String key="yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
@@ -208,4 +221,6 @@ public class BaseActionTest extends TestCase {
         String result = sendPostXml(url, sb.toString());
         System.out.println(result);
     }
+
+
 }
