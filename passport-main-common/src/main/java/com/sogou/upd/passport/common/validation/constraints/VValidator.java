@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 /**
  * 检查v是否是指定版本
- * wap版本:1-简易版；2-炫彩版；5-触屏版
+ * wap版本:1-简易版；2-炫彩版；5-触屏版  0- json
  * User: mayan
  * Date: 14-1-15
  * Time: 下午2:47
@@ -22,6 +22,7 @@ public class VValidator implements ConstraintValidator<V, String> {
     private static List SUPPORT_VERSION = Lists.newArrayList();
 
     static {
+        SUPPORT_VERSION.add("0");
         SUPPORT_VERSION.add("1");
         SUPPORT_VERSION.add("2");
         SUPPORT_VERSION.add("5");
