@@ -105,7 +105,7 @@ public class WapRegAction  extends BaseController{
 
 
             if (result.isSuccess()) {
-                Result sessionResult = sessionServerManager.createSession(result.getModels().get("username").toString());
+                Result sessionResult = sessionServerManager.createSession(result.getModels().get("userid").toString());
                 String sgid = null;
                 if (sessionResult.isSuccess()) {
                     sgid = (String) sessionResult.getModels().get("sgid");
@@ -113,6 +113,8 @@ public class WapRegAction  extends BaseController{
                     if (!Strings.isNullOrEmpty(sgid)) {
                         result.getModels().put("sgid", sgid);
                     }
+                }else{
+                    logger.warn("can't get session result, userid:"+result.getModels().get("userid"));
                 }
 
 
