@@ -1,16 +1,13 @@
 package com.sogou.upd.passport.web.internal.account;
 
-import com.alibaba.dubbo.common.utils.StringUtils;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultForm;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.web.BaseActionTest;
-import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import junit.framework.Assert;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +35,7 @@ public class LoginApiControllerTest extends BaseActionTest {
         String code = ManagerHelper.generatorCode("tinkame_test@sogou.com", clientId, serverSecret, ct) ;
         System.out.println("code:" + code);
         params.put("client_id", String.valueOf(clientId));
-        params.put("password", Coder.encryptMD5("1223456"));
+        params.put("password", Coder.encryptMD5("123456"));
         params.put("userid","tinkame_test@sogou.com");
         params.put("createip","127.0.0.1");
         params.put("code", code);
@@ -53,27 +50,41 @@ public class LoginApiControllerTest extends BaseActionTest {
 
     @Test
     public void testAuthuser() throws Exception {
+        //搜狗账号校验用户名密码
         Map<String, String> params = getAuthuserParam("tinkame_0414@sogou.com", "123456");
         String result = sendPost(httpUrl+"/internal/account/authuser", params);
-        String expire_data ="{\"data\":{\"userid\":\"tinkame_0414@sogou.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
-        APIResultForm expireResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expire_data, APIResultForm.class);
+        String expect_data ="{\"data\":{\"userid\":\"tinkame_0414@sogou.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expectResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expect_data, APIResultForm.class);
         APIResultForm resultForm =  JacksonJsonMapperUtil.getMapper().readValue(result, APIResultForm.class);
-        Assert.assertTrue(expireResultForm.equals(resultForm));
-
+        Assert.assertTrue(expectResultForm.equals(resultForm));
+        //手机账号校验用户名密码
         Map<String, String> params_soji = getAuthuserParam("13545210241@sohu.com","111111");
         String result_soji = sendPost(httpUrl+"/internal/account/authuser", params_soji);
         APIResultForm form_soji = JacksonJsonMapperUtil.getMapper().readValue(result_soji, APIResultForm.class);
-        String expire_soji_data ="{\"data\":{\"userid\":\"13545210241@sohu.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
-        APIResultForm expire_sojiResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expire_soji_data, APIResultForm.class);
+        String expect_soji_data ="{\"data\":{\"userid\":\"13545210241@sohu.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expire_sojiResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expect_soji_data, APIResultForm.class);
         Assert.assertTrue(expire_sojiResultForm.equals(form_soji));
-
-
+        //外域邮箱校验用户名密码
         Map<String, String> params_waiyu = getAuthuserParam("tinkame@126.com","123456");
         String result_waiyu = sendPost(httpUrl+"/internal/account/authuser", params_waiyu);
         APIResultForm form_waiyu = JacksonJsonMapperUtil.getMapper().readValue(result_waiyu, APIResultForm.class);
-        String expire_waiyu_data ="{\"data\":{\"userid\":\"tinkame@126.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
-        APIResultForm expire_waiyu_ResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expire_waiyu_data, APIResultForm.class);
+        String expect_waiyu_data ="{\"data\":{\"userid\":\"tinkame@126.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expire_waiyu_ResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expect_waiyu_data, APIResultForm.class);
         Assert.assertTrue(expire_waiyu_ResultForm.equals(form_waiyu));
+        //搜狐账号校验用户名密码（模拟搜狐账号登录后创建无密码情况）
+        Map<String, String> params_sohu = getAuthuserParam("testliuling@sohu.com","111111");
+        String result_sohu = sendPost(httpUrl+"/internal/account/authuser", params_sohu);
+        APIResultForm form_sohu = JacksonJsonMapperUtil.getMapper().readValue(result_sohu, APIResultForm.class);
+        String expect_sohu_data ="{\"data\":{\"userid\":\"testliuling@sohu.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expire_sohu_ResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expect_sohu_data, APIResultForm.class);
+        Assert.assertTrue(expire_sohu_ResultForm.equals(form_sohu));
+        //用户在搜狐库中有，在搜狗库中没有（模拟同步延迟的情况）
+        Map<String, String> params_sohu_have = getAuthuserParam("testjiushiwo@sogou.com","111111");
+        String result_sohu_have = sendPost(httpUrl+"/internal/account/authuser", params_sohu_have);
+        APIResultForm form_sohu_have = JacksonJsonMapperUtil.getMapper().readValue(result_sohu_have, APIResultForm.class);
+        String expect_sohu_have_data ="{\"data\":{\"userid\":\"testjiushiwo@sogou.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expire_sohu_have_ResultForm =  JacksonJsonMapperUtil.getMapper().readValue(expect_sohu_have_data, APIResultForm.class);
+        Assert.assertTrue(expire_sohu_have_ResultForm.equals(form_sohu_have));
     }
 
     @Test
@@ -108,31 +119,6 @@ public class LoginApiControllerTest extends BaseActionTest {
         Assert.assertEquals("tinkame@126.com",form_waiyu.getData().get("userid"));
     }
 
-    @Test
-    public void testCheckNeedCaptcha() throws Exception {
-        Map<String, String> params = getCheckNeedCaptchaParam("tinkame_0414@sogou.com");
-        String expiredata = "{\"data\":{\"flag\":\"1\",\"userid\":\"tinkame_0414@sogou.com\",\"needCaptcha\":false},\"status\":\"0\",\"statusText\":\"\"}\n";
-        APIResultForm expireForm = JacksonJsonMapperUtil.getMapper().readValue(expiredata, APIResultForm.class);
-        String actualResult = sendGet(httpUrl+"/web/login/checkNeedCaptcha", params);
-        APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult, APIResultForm.class);
-        Assert.assertTrue(expireForm.equals(actualForm));
-
-        Map<String, String> params_soji = getCheckNeedCaptchaParam("13545210241@sohu.com");
-        String result_soji = sendGet(httpUrl+"/web/login/checkNeedCaptcha", params_soji);
-        APIResultForm form_soji = JacksonJsonMapperUtil.getMapper().readValue(result_soji, APIResultForm.class);
-        String expire_soji_data = "{\"data\":{\"flag\":\"1\",\"userid\":\"13545210241@sohu.com\",\"needCaptcha\":false},\"status\":\"0\",\"statusText\":\"\"}";
-        APIResultForm expireForm_soji = JacksonJsonMapperUtil.getMapper().readValue(expire_soji_data, APIResultForm.class);
-        Assert.assertTrue(expireForm_soji.equals(form_soji));
-
-        Map<String, String> params_waiju = getCheckNeedCaptchaParam("tinkame@126.com");
-        String result_waiyu = sendGet(httpUrl+"/web/login/checkNeedCaptcha", params_waiju);
-        APIResultForm form_waiyu = JacksonJsonMapperUtil.getMapper().readValue(result_waiyu, APIResultForm.class);
-        String expire_waiyu_data = "{\"data\":{\"flag\":\"1\",\"userid\":\"tinkame@126.com\",\"needCaptcha\":false},\"status\":\"0\",\"statusText\":\"\"}";
-        APIResultForm expireForm_waiyu = JacksonJsonMapperUtil.getMapper().readValue(expire_waiyu_data, APIResultForm.class);
-        Assert.assertTrue(expireForm_waiyu.equals(form_waiyu));
-    }
-
-
     public Map getAuthuserParam(String passportId,String password) throws Exception{
         Map<String, String> params = new HashMap<String, String>();
         long ct = System.currentTimeMillis();
@@ -145,10 +131,4 @@ public class LoginApiControllerTest extends BaseActionTest {
         return params;
     }
 
-    public Map getCheckNeedCaptchaParam(String passportId) throws Exception{
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("client_id", String.valueOf(clientId));
-        params.put("username",passportId);
-        return params;
-    }
 }
