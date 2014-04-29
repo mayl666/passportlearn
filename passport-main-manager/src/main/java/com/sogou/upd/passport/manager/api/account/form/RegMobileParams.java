@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
 import com.sogou.upd.passport.common.validation.constraints.Phone;
+import com.sogou.upd.passport.common.validation.constraints.UserName;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
@@ -11,16 +12,16 @@ import javax.validation.constraints.Min;
 public class RegMobileParams {
 
 
-    @Phone
-    @NotBlank(message = "手机号不允许为空")
-    protected String mobile;
+    @UserName
+    @NotBlank(message = "用户名不允许为空")
+    protected String username;
 
 
     @Min(0)
     protected int client_id; //应用id
 
     @NotBlank(message = "密码不允许为空")
-    private String password;  //必须为md5
+    private String password; //md5
     @NotBlank(message = "手机验证码不允许为空")
     private String captcha;
     private String ip;
@@ -49,13 +50,12 @@ public class RegMobileParams {
         this.captcha = captcha;
     }
 
-
-    public String getMobile() {
-        return mobile;
+    public String getUsername() {
+        return username;
     }
 
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public int getClient_id() {

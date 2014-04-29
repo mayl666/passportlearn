@@ -94,7 +94,14 @@ public class WapRegAction  extends BaseController{
             }
 
             // 调用内部接口
-            result = regManager.registerMobile(regParams.getMobile(),regParams.getPassword(),regParams.getClient_id(),regParams.getCaptcha());
+            if(PhoneUtil.verifyPhoneNumberFormat(regParams.getUsername())){
+                result = regManager.registerMobile(regParams.getUsername(),regParams.getPassword(),regParams.getClient_id(),regParams.getCaptcha());
+            }else{
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage("只支持手机号注册");
+                return result.toString();
+            }
+
 
 
             if (result.isSuccess()) {
@@ -111,7 +118,7 @@ public class WapRegAction  extends BaseController{
 
             }
         } catch (Exception e) {
-            logger.error("wap reguser:User Register Is Failed,Username is " + regParams.getMobile(), e);
+            logger.error("wap reguser:User Register Is Failed,Username is " + regParams.getUsername(), e);
         } finally {
             String logCode = null;
             if (!Strings.isNullOrEmpty(finalCode)) {
@@ -129,7 +136,7 @@ public class WapRegAction  extends BaseController{
                 }
             }
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(regParams.getMobile(), request.getRequestURI(), regParams.getClient_id()+"", logCode, getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id()+"", logCode, getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
