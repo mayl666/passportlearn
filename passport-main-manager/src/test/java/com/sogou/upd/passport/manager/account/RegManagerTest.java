@@ -92,7 +92,7 @@ public class RegManagerTest extends BaseTest {
         APIResultForm actualFormFive = JacksonJsonMapperUtil.getMapper().readValue(result_have_mobile.toString(), APIResultForm.class);
         String expectStringFive = "{\"statusText\":\"账号已注册\",\"data\":{},\"status\":\"20201\"}";
         APIResultForm expectFormFive = JacksonJsonMapperUtil.getMapper().readValue(expectStringFive, APIResultForm.class);
-        Assert.assertTrue(expectFormFive.equals(actualFormFive));
+        Assert.assertTrue(expectFormFive.getStatus().equals(actualFormFive.getStatus()));
 
         //手机账号不存在
         Result result_not_mobile = regManagerImpl.isAccountNotExists(both_no_username_mobile, clientId);
@@ -106,7 +106,7 @@ public class RegManagerTest extends BaseTest {
         APIResultForm actualFormSeven = JacksonJsonMapperUtil.getMapper().readValue(result_format_sogou.toString(), APIResultForm.class);
         String expectStringSeven = "{\"statusText\":\"非法userid\",\"data\":{\"userid\":\"" + wrong_format_username + "\"},\"status\":\"20239\"}";
         APIResultForm expectFormSeven = JacksonJsonMapperUtil.getMapper().readValue(expectStringSeven, APIResultForm.class);
-        Assert.assertTrue(expectFormSeven.equals(actualFormSeven));
+        Assert.assertTrue(expectFormSeven.equals(actualFormSeven)); //note sohu的checkuser接口没有对账号格式做校验，打开读sohu开关测时，此处会报错
 
         //外域邮箱账号格式检测
         Result result_format_email = regManagerImpl.isAccountNotExists(wrong_format_email, clientId);
@@ -120,7 +120,14 @@ public class RegManagerTest extends BaseTest {
         APIResultForm actualFormTen = JacksonJsonMapperUtil.getMapper().readValue(result_bad_format_email.toString(), APIResultForm.class);
         String expectStringTen = "{\"statusText\":\"非法userid\",\"data\":{\"userid\":\"" + bad_format_email + "\"},\"status\":\"20239\"}";
         APIResultForm expectFormTen = JacksonJsonMapperUtil.getMapper().readValue(expectStringTen, APIResultForm.class);
-        Assert.assertTrue(expectFormTen.equals(actualFormTen));
+        Assert.assertTrue(expectFormTen.equals(actualFormTen)); //note sohu的checkuser接口没有对账号格式做校验，打开读sohu开关测时，此处会报错
+
+        //手机账号已经绑定
+        Result result_bind_mobile = regManagerImpl.isAccountNotExists(mobile_1, clientId);
+        APIResultForm actualFormEleven = JacksonJsonMapperUtil.getMapper().readValue(result_bind_mobile.toString(), APIResultForm.class);
+        String expectStringEleven = "{\"data\":{\"userid\":\"loveerin@sogou.com\"},\"status\":\"20201\",\"statusText\":\"账号已注册\"}";
+        APIResultForm expectFormEleven = JacksonJsonMapperUtil.getMapper().readValue(expectStringEleven, APIResultForm.class);
+        Assert.assertTrue(expectFormEleven.equals(actualFormEleven));
     }
 
     /**

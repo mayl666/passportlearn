@@ -31,7 +31,7 @@ public class BaseTest extends AbstractJUnit4SpringContextTests {
     protected static final String userid_sogou_2 = "osadnfdf@sogou.com";
     //随机生成手机号码
     protected String new_mobile = new GeneratorRandomMobile().generateRandomMobile();
-    protected static final String mobile_1 = "15737126381";
+    protected static final String mobile_1 = "15737126381";    //已经绑定了某主账号的手机号
     protected static final String mobile_2 = "13581695053";
     //密码
     protected static final String password = "111111";

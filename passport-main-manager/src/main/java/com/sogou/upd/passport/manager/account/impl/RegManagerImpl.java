@@ -238,6 +238,7 @@ public class RegManagerImpl implements RegManager {
                 if (result.isSuccess()) {
                     result.setSuccess(false);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    result.setMessage("账号已注册");
                     return result;
                 } else if (CommonHelper.isExplorerToken(clientId)) {
                     result = isSohuplusUser(username, clientId);
