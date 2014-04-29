@@ -15,6 +15,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.manager.form.WapLogoutParams;
@@ -56,6 +57,9 @@ public class WapLoginAction extends BaseController {
     private LoginManager loginManager;
     @Autowired
     private WapLoginManager wapLoginManager;
+
+    @Autowired
+    private SecureManager secureManager;
 
     private static final Logger logger = LoggerFactory.getLogger(WapLoginAction.class);
     private static final String SECRETKEY="afE0WZf345@werdm";
@@ -129,6 +133,17 @@ public class WapLoginAction extends BaseController {
 
             wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
             response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
+
+            if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
+                //在返回的数据中导入 json格式，用来给客户端用。
+                result = secureManager.queryAccountSecureInfo(userId, Integer.parseInt(loginParams.getClient_id()), true);
+                result.getModels().put("sgid",sgid);
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(result.toString());
+                return "empty";
+
+            }
+
             return "empty";
         } else {
             int isNeedCaptcha = 0;
@@ -142,6 +157,21 @@ public class WapLoginAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("密码错误");
             }
+
+            if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
+
+                if(needCaptcha){
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+                    result.setMessage("验证码错误或已过期");
+                }else{
+                    result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                    result.setMessage("用户名或者密码错误");
+                }
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(result.toString());
+                return "empty";
+            }
+
             return getErrorReturnStr(loginParams, "用户名或者密码错误", isNeedCaptcha);
 
         }
