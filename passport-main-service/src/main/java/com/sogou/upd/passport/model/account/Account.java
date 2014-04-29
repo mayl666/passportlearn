@@ -17,7 +17,7 @@ public class Account {
     private Date regTime;
     private String regIp;
     private int flag;   // 1-正式用户，2-未激活账号，3-锁定或封杀用户
-    private int passwordtype;  // 密码类型,默认为0
+    private int passwordtype;  //  0-原密码 1：md5 2：crypt(MD5（password）, salt )salt  salt = 8位随机的a-zA-Z0-9
     private int accountType; // 账号类型，1-email，2-phone，3-qq，4-sina，5-renren，6-taobao；7-baidu；
     private String uniqname; // 昵称
     private String avatar;  // 头像url

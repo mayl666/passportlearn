@@ -513,7 +513,7 @@ public class AccountServiceImpl implements AccountService {
             account.setRegTime(new Date());
             account.setAccountType(provider);
             account.setFlag(AccountStatusEnum.DISABLED.getValue());
-            account.setPasswordtype(Account.NEW_ACCOUNT_VERSION);
+            account.setPasswordtype(PasswordTypeEnum.CRYPT.getValue());
             account.setRegIp(ip);
 
             String cacheKey = buildAccountKey(username);
