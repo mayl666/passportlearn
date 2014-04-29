@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
 
@@ -32,15 +33,14 @@ public class InfoAction extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(InfoAction.class);
 
     @RequestMapping(value = "/slowinfo", method = RequestMethod.GET)
-    public void slowInfo(HttpServletRequest request, SlowInfoParams params) throws Exception {
-        Result result = new APIResultSupport(true);
+    @ResponseBody
+    public String slowInfo(HttpServletRequest request, SlowInfoParams params) throws Exception {
+        Result result = new APIResultSupport(false);
 
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            return;
-            /*result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();*/
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            return result.toString();
         }
 
         UserOperationLog log = new UserOperationLog("-", request.getRequestURI(), "-", result.getCode(), getIp(request));
@@ -48,5 +48,8 @@ public class InfoAction extends BaseController {
         log.setOtherMessageMap(map);
 
         UserOperationLogUtil.log(log);
+
+        result.setSuccess(true);
+        return result.toString();
     }
 }
