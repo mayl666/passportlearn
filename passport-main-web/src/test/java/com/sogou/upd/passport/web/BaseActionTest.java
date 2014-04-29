@@ -109,10 +109,10 @@ public class BaseActionTest extends TestCase {
             String sendUrlWithParams = new String(sendUrl);
             sendUrlWithParams += "?";
             for (Map.Entry<String, String> entry : params.entrySet()) {
-                String sch = entry.getKey() + "=" + entry.getValue();
+                String sch = entry.getKey() + "=" + entry.getValue() + "&";
                 sendUrlWithParams += sch;
             }
-            HttpGet method = new HttpGet(sendUrl);
+            HttpGet method = new HttpGet(sendUrlWithParams);
 
             HttpResponse response = client.execute(method);
 
