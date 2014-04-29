@@ -135,7 +135,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
 
                 switch (type) {
                     case "qq":
-                        exPassport("size", "446", "365")
+                        exPassport("size", "715", "385")
                         window.location.href = url
                         break
                     case "weibo":

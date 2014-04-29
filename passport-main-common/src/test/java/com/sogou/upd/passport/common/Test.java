@@ -28,8 +28,9 @@ public class Test {
                         "<result>\n" +
                         "<uid>c25971550</uid>\n" +
                         "<status>0</status>\n" +
-                        "<userid>lanzewei@chinaren.com</userid>\n" +
+//                        "<userid>lanzewei@chinaren.com</userid>\n" +
                         "<uuid>427d6c33f71a484c</uuid>\n" +
+                        "<uniqname>：^N：鳕花紛飛：^N：</uniqname>\n" +
                         "<uniqname>：^N：鳕花紛飛：^N：</uniqname>\n" +
                         "</result>";
         Result result = XMLUtil.xmlToBean(xml, Result.class);

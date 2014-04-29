@@ -1,12 +1,18 @@
 package com.sogou.upd.passport.web.account.form;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 /**
  * Created by hujunfei Date: 14-4-15 Time: 下午12:38
  */
 public class SlowInfoParams {
+    @NotBlank
     private String api;     // 请求接口
+    @NotBlank
     private String cost;    // 响应时间
+    @NotBlank
     private String limit;   // 阈值
+    @NotBlank
     private String status;  // 返回的结果码，请求失败则为-1
 
     public String getApi() {

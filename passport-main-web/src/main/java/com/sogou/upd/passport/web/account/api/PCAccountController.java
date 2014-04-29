@@ -251,7 +251,7 @@ public class PCAccountController extends BaseController {
             response.getWriter().print("Error: parameter error!");
             return;
         }
-
+        //线上存在userid=null的校验情况，此时，通过accesstoken反解出passportid
         String userId = authPcTokenParams.getUserid();
         if ("null".equals(userId) || StringUtil.isBlank(userId)) {
             Result getUserIdResult = oAuth2ResourceManager.getPassportIdByToken(authPcTokenParams.getToken(), Integer.parseInt(authPcTokenParams.getAppid()));
