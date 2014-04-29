@@ -14,6 +14,8 @@ import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileParams;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
@@ -63,6 +65,12 @@ public class WapRegAction  extends BaseController{
     private SessionServerManager sessionServerManager;
 
 
+    @Autowired
+    private UserInfoApiManager proxyUserInfoApiManager;
+    @Autowired
+    private UserInfoApiManager sgUserInfoApiManager;
+
+
     @RequestMapping(value = "/wap/reguser", method = RequestMethod.POST)
     @ResponseBody
     public Object reguser(HttpServletRequest request, HttpServletResponse response, RegMobileParams regParams, Model model)  throws Exception{
@@ -105,19 +113,29 @@ public class WapRegAction  extends BaseController{
 
 
             if (result.isSuccess()) {
-                Result sessionResult = sessionServerManager.createSession(result.getModels().get("userid").toString());
+
+                //第三方获取个人资料
+                String userid = result.getModels().get("userid").toString();
+                AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userid);
+                // 调用内部接口
+                GetUserInfoApiparams userInfoApiparams=new GetUserInfoApiparams(userid,"uniqname,avatarurl,gender");
+                if (domain == AccountDomainEnum.THIRD) {
+                    result = sgUserInfoApiManager.getUserInfo(userInfoApiparams);
+                }else {
+                    result = proxyUserInfoApiManager.getUserInfo(userInfoApiparams);
+                }
+
+                Result sessionResult = sessionServerManager.createSession(userid);
                 String sgid = null;
                 if (sessionResult.isSuccess()) {
                     sgid = (String) sessionResult.getModels().get("sgid");
-                    result.getModels().put("userid", result.getModels().get("userid").toString());
+                    result.getModels().put("userid", userid);
                     if (!Strings.isNullOrEmpty(sgid)) {
                         result.getModels().put("sgid", sgid);
                     }
                 }else{
                     logger.warn("can't get session result, userid:"+result.getModels().get("userid"));
                 }
-
-
             }
         } catch (Exception e) {
             logger.error("wap reguser:User Register Is Failed,Username is " + regParams.getUsername(), e);
