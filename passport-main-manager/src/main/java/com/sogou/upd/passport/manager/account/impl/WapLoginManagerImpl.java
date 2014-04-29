@@ -63,7 +63,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
 
         //简易版 炫彩版 需要md5加密
         String v = loginParams.getV();
-        if (!v.equals(WapConstant.WAP_TOUCH)) {
+        if (!v.equals(WapConstant.WAP_TOUCH) && !v.equals(WapConstant.WAP_JSON)) {
             password = DigestUtils.md5Hex(password.getBytes());
         }
         String passportId = username;

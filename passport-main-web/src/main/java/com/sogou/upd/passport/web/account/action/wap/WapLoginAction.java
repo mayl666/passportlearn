@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -17,6 +18,8 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.manager.form.WapLogoutParams;
 import com.sogou.upd.passport.manager.form.WapPassThroughParams;
@@ -60,6 +63,13 @@ public class WapLoginAction extends BaseController {
 
     @Autowired
     private SecureManager secureManager;
+
+
+    @Autowired
+    private UserInfoApiManager proxyUserInfoApiManager;
+    @Autowired
+    private UserInfoApiManager sgUserInfoApiManager;
+
 
     private static final Logger logger = LoggerFactory.getLogger(WapLoginAction.class);
     private static final String SECRETKEY="afE0WZf345@werdm";
@@ -131,12 +141,19 @@ public class WapLoginAction extends BaseController {
 
             ServletUtil.setCookie(response, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
-            wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
-            response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
-
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
                 //在返回的数据中导入 json格式，用来给客户端用。
-                result = secureManager.queryAccountSecureInfo(userId, Integer.parseInt(loginParams.getClient_id()), true);
+                //第三方获取个人资料
+                AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(result.getModels().get("userid").toString());
+                // 调用内部接口
+                GetUserInfoApiparams userInfoApiparams=new GetUserInfoApiparams(result.getModels().get("userid").toString(),"uniqname,avatarurl,gender");
+                if (domain == AccountDomainEnum.THIRD) {
+                    result = sgUserInfoApiManager.getUserInfo(userInfoApiparams);
+                }else {
+                    result = proxyUserInfoApiManager.getUserInfo(userInfoApiparams);
+                }
+
+                //result = secureManager.queryAccountSecureInfo(userId, Integer.parseInt(loginParams.getClient_id()), true);
                 result.getModels().put("sgid",sgid);
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(result.toString());
@@ -144,6 +161,8 @@ public class WapLoginAction extends BaseController {
 
             }
 
+            wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
+            response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
             return "empty";
         } else {
             int isNeedCaptcha = 0;
