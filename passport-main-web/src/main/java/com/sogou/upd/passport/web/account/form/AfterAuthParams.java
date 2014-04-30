@@ -28,6 +28,9 @@ public class AfterAuthParams {
     @NotBlank(message = "code不允许为空！")
     private String code;
 
+    @Min(0)
+    private int appidtype=0; //如果appidtype=1，则根据应用传入的client_id查询相关的第三方appid；如果appidtype=0，则使用sogou passport的appid；
+
 
     public String getOpenid() {
         return openid;
@@ -91,5 +94,13 @@ public class AfterAuthParams {
 
     public void setRefresh_token(String refresh_token) {
         this.refresh_token = refresh_token;
+    }
+
+    public int getAppidtype() {
+        return appidtype;
+    }
+
+    public void setAppidtype(int appidtype) {
+        this.appidtype = appidtype;
     }
 }
