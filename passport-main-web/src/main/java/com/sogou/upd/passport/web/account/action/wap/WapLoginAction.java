@@ -157,6 +157,8 @@ public class WapLoginAction extends BaseController {
                 result.getModels().put("sgid",sgid);
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(result.toString());
+                wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
+
                 return "empty";
 
             }
