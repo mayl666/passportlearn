@@ -64,6 +64,8 @@ public class LoginManagerTest extends BaseTest {
             APIResultForm expire_sogou_ResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_sogou_data, APIResultForm.class);
             Assert.assertTrue(expire_sogou_ResultForm.equals(sogou_APIResultForm));
 
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }

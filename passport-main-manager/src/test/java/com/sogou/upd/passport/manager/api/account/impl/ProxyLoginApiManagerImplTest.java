@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Date: 13-6-6
  * Time: 下午2:28
  */
-@Ignore
+//@Ignore
 public class ProxyLoginApiManagerImplTest extends BaseTest {
 
     private static final int clientId = 1100;
@@ -30,9 +30,9 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     public void testAuthUser() {
         try {
             AuthUserApiParams authUserParameters = new AuthUserApiParams();
-            authUserParameters.setUserid("lin_zhonghui@chinaren.com");
-            authUserParameters.setClient_id(clientId);
-            authUserParameters.setPassword(Coder.encryptMD5("Cooperlin#sh7166"));
+            authUserParameters.setUserid("lxy790458144@game.sohu.com");
+            authUserParameters.setClient_id(1044);
+            authUserParameters.setPassword(Coder.encryptMD5("ChenLiu1314!!"));
             Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
             System.out.println(result);
         } catch (Exception e) {
