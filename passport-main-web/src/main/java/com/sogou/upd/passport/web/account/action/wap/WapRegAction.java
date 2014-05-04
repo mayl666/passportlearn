@@ -124,7 +124,7 @@ public class WapRegAction  extends BaseController{
                 }else {
                     result = proxyUserInfoApiManager.getUserInfo(userInfoApiparams);
                 }
-
+                System.out.println("wap reg userinfo result:"+result);
                 Result sessionResult = sessionServerManager.createSession(userid);
                 String sgid = null;
                 if (sessionResult.isSuccess()) {
