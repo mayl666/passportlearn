@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginApiManagerImpl.class);
+    private static final Logger readLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothReadSyncErrorLogger");
 
     @Autowired
     private LoginApiManager proxyLoginApiManager;
@@ -72,7 +73,7 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
                 if (result.isSuccess()) {
                     //读SG失败，读SH成功，记录userid，便于验证数据同步情况
-                    logger.error("bothAuthUser fail,userId:" + authUserApiParams.getUserid());
+                    readLogger.error("userId:" + authUserApiParams.getUserid());
                 }
             }
         }

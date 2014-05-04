@@ -113,6 +113,21 @@
         <appender-ref ref="localAsyncAppender"/>
     </logger>
 
+    <!--双读校验用户名和密码时，当SG校验失败，SH校验成功时，记录userid-->
+    <appender name="bothReadSyncErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/bothReadSyncError/bothreaderror.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>14</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.sogou.upd.passport.bothReadSyncErrorLogger" level="info" additivity="false">
+        <appender-ref ref="bothReadSyncErrorAppender"/>
+    </logger>
+
     <appender name="redisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/redisMiss/redisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
