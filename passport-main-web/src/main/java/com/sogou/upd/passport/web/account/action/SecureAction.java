@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
+import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
@@ -60,6 +61,8 @@ public class SecureAction extends BaseController {
     private OAuth2ResourceManager oAuth2ResourceManager;
     @Autowired
     private BindApiManager proxyBindApiManager;
+    @Autowired
+    private RegManager regManager;
 
 
     /*
@@ -262,7 +265,7 @@ public class SecureAction extends BaseController {
         }
 
         result.setSuccess(true);
-        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId,clientId));
+        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -299,7 +302,7 @@ public class SecureAction extends BaseController {
         result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
 
         result.setSuccess(true);
-        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId,clientId));
+        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -509,14 +512,16 @@ public class SecureAction extends BaseController {
             BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
             baseMoblieApiParams.setMobile(newMobile);
             //检测手机号是否已经注册或绑定
-            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-            if (result.isSuccess()) {
+//            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            //双读，检查新手机是否允许绑定
+            result = regManager.isAccountNotExists(newMobile, clientId);
+            if (!result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                 result.setMessage("手机号已绑定其他账号");
                 return result.toString();
             }
-            result = secureManager.sendMobileCode(newMobile,clientId,AccountModuleEnum.SECURE);
+            result = secureManager.sendMobileCode(newMobile, clientId, AccountModuleEnum.SECURE);
         } catch (Exception e) {
             logger.error("method[sendSmsNewMobile] send mobile sms to new mobile error.{}", e);
         } finally {

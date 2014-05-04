@@ -14,6 +14,7 @@ import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.account.vo.ActionRecordVO;
@@ -69,6 +70,8 @@ public class SecureManagerImpl implements SecureManager {
     private OperateTimesService operateTimesService;
     @Autowired
     private AppConfigService appConfigService;
+    @Autowired
+    private RegManager regManager;
 
     // 自动注入Manager
     @Autowired
@@ -514,7 +517,7 @@ public class SecureManagerImpl implements SecureManager {
                 result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                 Map<String, String> mapResult = result.getModels();
                 String mobile = mapResult.get("sec_mobile");
-                result =  mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
+                result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
             } else {
                 result = checkMobileCodeByPassportId(userId, clientId, smsCode);
             }
@@ -757,8 +760,10 @@ public class SecureManagerImpl implements SecureManager {
             //检查手机账号能否被绑定
             BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
             baseMoblieApiParams.setMobile(mobile);
-            Result bindResult = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-            if (bindResult.isSuccess()) {
+//            Result bindResult = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            //双读，检查新手机能否被绑定
+            Result bindResult = regManager.isAccountNotExists(mobile, clientId);
+            if (!bindResult.isSuccess()) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                 return result;
             }

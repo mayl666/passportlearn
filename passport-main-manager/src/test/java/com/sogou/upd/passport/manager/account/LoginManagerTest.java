@@ -65,7 +65,6 @@ public class LoginManagerTest extends BaseTest {
             Assert.assertTrue(expire_sogou_ResultForm.equals(sogou_APIResultForm));
 
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,7 +82,7 @@ public class LoginManagerTest extends BaseTest {
             APIResultForm expireEmailResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_email_data, APIResultForm.class);
             Assert.assertTrue(expireEmailResultForm.equals(email_APIResultForm));
 
-            //单纯手机号可登录成功
+            //单纯注册手机号可登录成功
             String pwdMD5_phone = DigestUtils.md5Hex(pwd_phone.getBytes());
             Result result_phone = loginManager.authUser(username_phone, ip, pwdMD5_phone);
             APIResultForm phone_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_phone.toString(), APIResultForm.class);
@@ -91,7 +90,7 @@ public class LoginManagerTest extends BaseTest {
             APIResultForm expirePhoneResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_phone_data, APIResultForm.class);
             Assert.assertTrue(expirePhoneResultForm.equals(phone_APIResultForm));
 
-            //手机号+@sohu.com密码验证成功
+            //注册手机号+@sohu.com密码验证成功
             String pwdMD5_phone_pp = DigestUtils.md5Hex(pwd_phone.getBytes());
             Result result_phone_pp = loginManager.authUser(passportId_phone, ip, pwdMD5_phone_pp);
             APIResultForm phone__pp_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_phone_pp.toString(), APIResultForm.class);
@@ -106,6 +105,22 @@ public class LoginManagerTest extends BaseTest {
             String expire_sogou_data = "{\"data\":{\"userid\":\"" + username_sogou + "\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
             APIResultForm expireSogouResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_sogou_data, APIResultForm.class);
             Assert.assertTrue(expireSogouResultForm.equals(sogou_APIResultForm));
+
+            //单纯个性账号不加@sogou.com可也登录成功
+            String pwdMD5_gexing = DigestUtils.md5Hex(pwd_sogou.getBytes());
+            Result result_gexing = loginManager.authUser("tinkame732", ip, pwdMD5_gexing);
+            APIResultForm gexing_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_gexing.toString(), APIResultForm.class);
+            String expire_gexing_data = "{\"data\":{\"userid\":\"tinkame732@sogou.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+            APIResultForm expireGexingResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_gexing_data, APIResultForm.class);
+            Assert.assertTrue(expireGexingResultForm.equals(gexing_APIResultForm));
+
+            //绑定手机不加@sohu.com可也登录成功
+            String pwdMD5_bind_mobile = DigestUtils.md5Hex(pwd_sogou.getBytes());
+            Result result_bind_mobile = loginManager.authUser(mobile_1, ip, pwdMD5_bind_mobile);
+            APIResultForm bind_mobile_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_bind_mobile.toString(), APIResultForm.class);
+            String expire_bind_mobile_data = "{\"data\":{\"userid\":\"loveerin@sogou.com\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+            APIResultForm expireBindMobileResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_bind_mobile_data, APIResultForm.class);
+            Assert.assertTrue(expireBindMobileResultForm.equals(bind_mobile_APIResultForm));
 
         } catch (Exception e) {
             e.printStackTrace();
