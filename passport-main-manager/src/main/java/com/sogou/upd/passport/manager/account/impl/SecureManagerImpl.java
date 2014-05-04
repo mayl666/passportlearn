@@ -153,7 +153,7 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         try {
 
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
+            if (ManagerHelper.readSohuSwitcher()) {
                 // SOHU接口
                 GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
                 getUserInfoApiparams.setUserid(userId);
@@ -508,7 +508,7 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
+            if (ManagerHelper.readSohuSwitcher()) {
                 // 代理接口
                 GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
                 getUserInfoApiparams.setUserid(userId);
