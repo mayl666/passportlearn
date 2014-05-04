@@ -298,18 +298,6 @@ public class RegAction extends BaseController {
         }
         //检查用户名是否存在
         result = regManager.isAccountNotExists(username, clientId);
-        //判断是否是个性账号
-//        if (username.indexOf("@") == -1) {
-//            //判断是否是手机号注册
-//            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-//                result = regManager.isAccountNotExists(username, clientId);
-//            } else {
-//                username = username + "@sogou.com";
-//                result = regManager.isAccountNotExists(username, clientId);
-//            }
-//        } else {
-//            result = regManager.isAccountNotExists(username, clientId);
-//        }
         return result;
     }
 
