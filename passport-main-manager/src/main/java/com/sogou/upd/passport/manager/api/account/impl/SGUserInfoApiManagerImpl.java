@@ -180,40 +180,44 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         try {
             Account account = accountService.queryAccountByPassportId(params.getUserid());
             if (account != null) {
+                //更新用户除“昵称”外的其他信息
+                AccountInfo info = new AccountInfo();
+                info.setPassportId(params.getUserid());
+
+                String[] birthday = !Strings.isNullOrEmpty(params.getBirthday()) ? params.getBirthday().split("-") : null;
+                Calendar calendar = Calendar.getInstance();
+                if (birthday != null) {
+                    calendar.set(Calendar.YEAR, Integer.valueOf(birthday[0]));
+                    calendar.set(Calendar.MONTH, Integer.valueOf(birthday[1]) - 1);
+                    calendar.set(Calendar.DATE, Integer.valueOf(birthday[2]));
+                }
+
+                info.setBirthday(calendar.getTime());
+                info.setGender(params.getGender());
+                info.setProvince(params.getProvince());
+                info.setCity(params.getCity());
+                info.setFullname(params.getUsername());
+                info.setPersonalid(params.getPersonalId());
+                info.setModifyip(params.getModifyip());
+                info.setUpdateTime(new Date());
+
+                //更新用户信息AccountInfo
+                boolean updateResult = accountInfoService.updateAccountInfo(info);
+                if (updateResult) {
+                    result.setSuccess(true);
+                    result.setMessage("修改个人资料成功");
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
+                }
+
                 //判断昵称是否存在
                 String checkExist = accountService.checkUniqName(params.getUniqname());
                 if (Strings.isNullOrEmpty(checkExist)) {
-                    //更新昵称 Account表
+                    //更新昵称 Account表 u_p_m映射表
                     boolean accountUpdateResult = accountService.updateUniqName(account, params.getUniqname());
                     if (accountUpdateResult) {
-                        AccountInfo info = new AccountInfo();
-                        info.setPassportId(params.getUserid());
-
-                        String[] birthday = !Strings.isNullOrEmpty(params.getBirthday()) ? params.getBirthday().split("-") : null;
-                        Calendar calendar = Calendar.getInstance();
-                        if (birthday != null) {
-                            calendar.set(Calendar.YEAR, Integer.valueOf(birthday[0]));
-                            calendar.set(Calendar.MONTH, Integer.valueOf(birthday[1]) - 1);
-                            calendar.set(Calendar.DATE, Integer.valueOf(birthday[2]));
-                        }
-
-                        info.setBirthday(calendar.getTime());
-                        info.setGender(params.getGender());
-                        info.setProvince(params.getProvince());
-                        info.setCity(params.getCity());
-                        info.setFullname(params.getUsername());
-                        info.setPersonalid(params.getPersonalId());
-                        info.setModifyip(params.getModifyip());
-                        info.setUpdateTime(new Date());
-
-                        //更新用户信息AccountInfo
-                        boolean updateResult = accountInfoService.updateAccountInfo(info);
-                        if (updateResult) {
-                            result.setSuccess(true);
-                            result.setMessage("修改个人资料成功");
-                        } else {
-                            result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
-                        }
+                        result.setSuccess(true);
+                        result.setMessage("修改个人资料成功");
                     } else {
                         result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
                     }

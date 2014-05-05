@@ -149,10 +149,7 @@ public class AppForkJoin extends BaseTest {
 
     @Test
     public void increaseData() throws IOException {
-        Path filePath = Paths.get("D:\\logs\\failed.txt");
-        String fileName = "D:\\logs\\failed.txt";
 
-        String increaseFile = "";
         Path increasePath = Paths.get("D:\\logs\\increase\\increase_1.txt");
 
         //记录导入增量数据失败记录
@@ -166,12 +163,15 @@ public class AppForkJoin extends BaseTest {
                     Timestamp updateTime = new Timestamp(mapping.getUpdateTime().getTime());
                     int result;
                     try {
+                        //插入前，先判断是否已经存在，若存在，先删除db、在清缓存，在插入新的映射
                         result = mappingDAO.insertUpm0To32(mapping.getUniqname(), mapping.getPassportId(), updateTime);
                     } catch (Exception e) {
+                        LOGGER.error("increase data error.", e);
                         failedIncrease.add(mapping.getUniqname());
                         continue;
                     }
                     if (result == 0) {
+                        LOGGER.info("increase data result equals 0. name:" + mapping.getUniqname());
                         failedIncrease.add(mapping.getUniqname());
                         continue;
                     }
