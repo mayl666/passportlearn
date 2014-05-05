@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.web.BaseActionTest;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.Map;
  * User: mayan
  * Date: 13-6-7 Time: 下午5:48
  */
+@Ignore
 public class LoginApiControllerTest extends BaseActionTest {
 
     public static String httpUrl= "http://localhost";

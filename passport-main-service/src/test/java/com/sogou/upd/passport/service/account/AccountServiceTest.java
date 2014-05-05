@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.account;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -13,6 +14,7 @@ import javax.inject.Inject;
  * Created with IntelliJ IDEA. User: liuling Date: 13-4-7 Time: 下午4:09 To change this template use
  * File | Settings | File Templates.
  */
+@Ignore
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
 

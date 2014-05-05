@@ -3,6 +3,7 @@ package com.sogou.upd.passport.dao.account;
 import com.sogou.upd.passport.dao.BaseDAOTest;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * Time: 下午2:10
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class AccountBaseInfoDAOTest extends BaseDAOTest {
 
     @Autowired

@@ -4,6 +4,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Map;
  * Date: 14-4-14
  * Time: 下午4:06
  */
+@Ignore
 public class ProvinceAndCityUtilTest {
 
 

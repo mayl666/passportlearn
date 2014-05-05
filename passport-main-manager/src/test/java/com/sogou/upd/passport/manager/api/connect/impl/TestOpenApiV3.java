@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpenApiV3;
 import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
+import org.junit.Ignore;
 
 import java.util.HashMap;
 
@@ -14,7 +15,7 @@ import java.util.HashMap;
  * @History: 3.0.0 | nemozhang | 2012-03-21 12:01:05 | initialization
  * @since jdk1.5
  */
-
+@Ignore
 public class TestOpenApiV3 {
     public static void main(String args[]) {
         // 应用基本信息

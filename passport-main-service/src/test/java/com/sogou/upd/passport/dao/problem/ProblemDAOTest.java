@@ -6,6 +6,7 @@ import com.sogou.upd.passport.model.problem.Problem;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * Created with IntelliJ IDEA. User: shipengzhi Date: 13-4-17 Time: 下午4:32 To change this template
  * use File | Settings | File Templates.
  */
+@Ignore
 public class ProblemDAOTest extends BaseDAOTest {
 
     @Autowired

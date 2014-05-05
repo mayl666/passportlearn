@@ -4,6 +4,7 @@ import com.sogou.upd.passport.FileIOUtil;
 import com.sogou.upd.passport.dao.dal.routing.SGStringHashRouter;
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedWriter;
@@ -17,6 +18,7 @@ import java.util.List;
  * Time: 下午11:48
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class SGStringHashRouterTest extends TestCase {
 
     private static SGStringHashRouter router;

@@ -5,6 +5,7 @@ import com.sogou.upd.passport.model.connect.ConnectRelation;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,6 +18,7 @@ import java.util.List;
  * Time: 上午3:58
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class ConnectRelationDAOTest extends BaseDAOTest {
 
     @Autowired

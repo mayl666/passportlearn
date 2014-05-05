@@ -9,6 +9,7 @@ import com.sogou.upd.passport.manager.account.vo.OAuth2TokenVO;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.oauth2.authzserver.request.OAuthTokenASRequest;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -24,6 +25,7 @@ import java.util.Map;
  * Time: 下午9:17
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class OAuth2AuthorizeManagerImplTest extends BaseTest {
     @Autowired
     private OAuth2AuthorizeManager oAuth2AuthorizeManager;

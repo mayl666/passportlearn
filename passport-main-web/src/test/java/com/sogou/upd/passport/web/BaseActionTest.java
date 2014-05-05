@@ -15,6 +15,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonProcessingException;
+import org.junit.Ignore;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,6 +31,7 @@ import java.util.Map;
  * File | Settings | File Templates.
  */
 //@ContextConfiguration(locations = "classpath:spring-config-test.xml")
+@Ignore
 public class BaseActionTest extends TestCase {
 
     protected String sendPostXml(String sendUrl, String xmlStr) throws IOException {

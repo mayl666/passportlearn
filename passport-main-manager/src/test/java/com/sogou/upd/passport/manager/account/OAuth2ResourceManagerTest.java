@@ -12,6 +12,7 @@ import com.sogou.upd.passport.manager.form.PCOAuth2LoginParams;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,6 +25,7 @@ import java.util.Map;
  * Time: 上午12:21
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class OAuth2ResourceManagerTest extends BaseTest {
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;

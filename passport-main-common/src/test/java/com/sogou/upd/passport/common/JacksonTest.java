@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.utils.JsonUtil;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.codehaus.jackson.type.TypeReference;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -21,6 +22,7 @@ import java.util.Map;
  * Time: 下午5:46
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class JacksonTest extends TestCase {
 
     public void testWriteValueAsString() {

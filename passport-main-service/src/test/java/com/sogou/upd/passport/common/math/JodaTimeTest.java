@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common.math;
 
 import junit.framework.Assert;
 import org.joda.time.DateTime;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -11,6 +12,7 @@ import org.junit.Test;
  * Time: 下午4:42
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class JodaTimeTest {
 
     @Test

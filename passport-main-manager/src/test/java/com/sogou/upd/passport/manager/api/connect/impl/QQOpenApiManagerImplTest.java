@@ -5,6 +5,7 @@ import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,6 +20,7 @@ import java.util.Map;
  * Time: 上午12:00
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class QQOpenApiManagerImplTest extends BaseTest {
 

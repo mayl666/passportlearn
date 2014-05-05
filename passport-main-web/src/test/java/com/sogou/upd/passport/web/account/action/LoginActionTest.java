@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.web.BaseActionTest;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.Map;
  * Time: 下午7:37
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class LoginActionTest extends BaseActionTest {
 
     public static String httpUrl = "http://localhost";

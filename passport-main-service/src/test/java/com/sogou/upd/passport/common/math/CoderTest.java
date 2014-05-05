@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common.math;
 
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -11,6 +12,7 @@ import org.junit.Test;
  * Time: 上午2:22
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class CoderTest {
 
     private String str = "shipengzhi1986@126.com|1003|1363018968121|dafasdfasdfasdfasdfasdfasdfa";

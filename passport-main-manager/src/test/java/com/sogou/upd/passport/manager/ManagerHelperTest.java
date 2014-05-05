@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager;
 import com.sogou.upd.passport.common.math.Coder;
 import junit.framework.TestCase;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -12,6 +13,7 @@ import org.junit.Test;
  * Time: 下午3:37
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class ManagerHelperTest extends TestCase {
 
     private static final int clientId = 1100;

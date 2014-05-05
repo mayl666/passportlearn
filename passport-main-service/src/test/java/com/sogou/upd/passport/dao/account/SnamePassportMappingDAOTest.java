@@ -2,6 +2,7 @@ package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.dao.BaseDAOTest;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 上午3:39
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class SnamePassportMappingDAOTest extends BaseDAOTest {
 
     @Autowired

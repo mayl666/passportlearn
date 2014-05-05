@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import junit.framework.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -23,6 +24,7 @@ import java.util.Map;
  * Created with IntelliJ IDEA. User: mayan Date: 12-11-22 Time: 下午6:26 To change this template use
  * File | Settings | File Templates.
  */
+@Ignore
 @ContextConfiguration(locations = {"classpath:spring-config-jredis-test.xml"})
 public class JredisTest extends AbstractJUnit4SpringContextTests {
     private static final String TEST_KEY = "TEST_REDIS_KEY";

@@ -18,10 +18,7 @@ import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.MobileCodeSenderService;
-import com.sogou.upd.passport.service.account.OperateTimesService;
-import com.sogou.upd.passport.service.account.SnamePassportMappingService;
+import com.sogou.upd.passport.service.account.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +50,8 @@ public class RegManagerImpl implements RegManager {
     private OperateTimesService operateTimesService;
     @Autowired
     private SnamePassportMappingService snamePassportMappingService;
+    @Autowired
+    private AccountSecureService accountSecureService;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
@@ -269,18 +268,31 @@ public class RegManagerImpl implements RegManager {
         Result result;
         try {
             if (ManagerHelper.readSohuSwitcher()) {
+                //回滚流程
                 result = checkUserFromSohu(username, clientId);
             } else {
-                //双读
-                CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
-                result = sgRegisterApiManager.checkUser(checkUserApiParams);
-                if (result.isSuccess()) {  //SG没有，查询SH
-                    result = checkUserFromSohu(username, clientId);
-                }
+                //正常流程
+                result = bothCheck(username, clientId);
             }
         } catch (ServiceException e) {
             logger.error("Check account is exists Exception, username:" + username, e);
             throw new Exception(e);
+        }
+        return result;
+    }
+
+    private Result bothCheck(String username, int clientId) throws Exception {
+        Result result;
+        if (PhoneUtil.verifyPhoneNumberFormat(username) && accountSecureService.getUpdateSuccessFlag(username)) {
+            //主账号有更新绑定手机的操作时，调用sohu api检查账号是否可用
+            result = checkUserFromSohu(username, clientId);
+        } else {
+            ////没有更新绑定手机时，走正常的双读检查账号是否可用流程
+            CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
+            result = sgRegisterApiManager.checkUser(checkUserApiParams);
+            if (result.isSuccess()) {  //SG没有，查询SH
+                result = checkUserFromSohu(username, clientId);
+            }
         }
         return result;
     }
@@ -366,6 +378,7 @@ public class RegManagerImpl implements RegManager {
      * 都有可能是sohuplus的账号，需要判断sohuplus映射表
      * 如果username包含@，则取@前面的
      */
+
     private Result isSohuplusUser(String username, int clientId) {
         Result result = new APIResultSupport(false);
         if (username.contains("@")) {

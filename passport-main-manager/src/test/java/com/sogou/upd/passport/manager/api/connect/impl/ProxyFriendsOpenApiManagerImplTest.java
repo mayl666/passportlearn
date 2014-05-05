@@ -8,6 +8,7 @@ import com.sogou.upd.passport.manager.api.connect.FriendsOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.manager.api.connect.form.relation.FriendsOpenApiParams;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,6 +22,7 @@ import java.util.Map;
  * Time: 下午8:43
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class ProxyFriendsOpenApiManagerImplTest extends BaseTest {
 
     @Autowired

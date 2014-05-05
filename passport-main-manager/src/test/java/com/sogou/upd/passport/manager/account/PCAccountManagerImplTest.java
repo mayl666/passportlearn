@@ -9,6 +9,7 @@ import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 下午8:57
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class PCAccountManagerImplTest extends BaseTest {
     @Autowired
     private PCAccountManager pcAccountManager;

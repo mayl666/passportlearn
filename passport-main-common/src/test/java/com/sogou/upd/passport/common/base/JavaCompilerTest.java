@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.base;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.junit.Ignore;
 
 import javax.tools.SimpleJavaFileObject;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.Date;
  * Date: 13-6-20
  * Time: 下午12:09
  */
+@Ignore
 public class JavaCompilerTest {
 
     public static void main(String[] args) throws Exception {

@@ -6,6 +6,7 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.web.BaseActionTest;
 import com.sogou.upd.passport.web.account.form.APIResultForm;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.util.Map;
  * Time: 下午3:09
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class RegisterApiControllerTest extends BaseActionTest {
 
     private static final String SG_BASE_PATH_URL = "http://localhost";

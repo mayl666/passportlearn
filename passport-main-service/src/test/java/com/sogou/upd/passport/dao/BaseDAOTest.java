@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.dao;
 
 import com.sogou.upd.passport.BaseTest;
+import org.junit.Ignore;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,6 +10,7 @@ import com.sogou.upd.passport.BaseTest;
  * Time: 上午1:19
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class BaseDAOTest extends BaseTest {
 
     // Account Test Constant

@@ -4,13 +4,14 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-3 Time: 下午4:40 To change this template use
  * File | Settings | File Templates.
  */
-
+@Ignore
 public class AccountEnumTest extends TestCase {
 
     @Test

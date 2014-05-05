@@ -15,6 +15,7 @@ import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,6 +28,7 @@ import java.io.IOException;
  * Time: 上午10:57
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class ConnectAuthorizeServiceTest extends BaseTest {
 
     private static final int clientId = 1120;

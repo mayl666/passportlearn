@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Date: 13-6-6
  * Time: 下午2:28
  */
-//@Ignore
+@Ignore
 public class ProxyLoginApiManagerImplTest extends BaseTest {
 
     private static final int clientId = 1100;

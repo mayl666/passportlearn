@@ -4,6 +4,7 @@ import com.sogou.upd.passport.common.result.*;
 import com.sogou.upd.passport.common.result.Result;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -17,6 +18,7 @@ import java.util.UUID;
  * Created with IntelliJ IDEA. User: mayan Date: 12-11-22 Time: 下午6:26 To change this template use
  * File | Settings | File Templates.
  */
+@Ignore
 @ContextConfiguration(locations = {"classpath:spring-config-image.xml"})
 public class ImgTest extends AbstractJUnit4SpringContextTests {
     private static final String TEST_KEY = "TEST_REDIS_KEY";

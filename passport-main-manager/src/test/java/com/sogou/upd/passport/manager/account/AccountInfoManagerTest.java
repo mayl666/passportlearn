@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.form.AccountInfoParams;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,7 +19,7 @@ import java.util.Random;
  * Created with IntelliJ IDEA. User: mayan Date: 13-5-15 Time: 下午4:31 To change this template use
  * File | Settings | File Templates.
  */
-//@Ignore
+@Ignore
 public class AccountInfoManagerTest extends BaseTest {
 
     @Autowired
