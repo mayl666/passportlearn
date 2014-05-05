@@ -596,7 +596,10 @@ public class SecureManagerImpl implements SecureManager {
                 // TODO:事务安全问题，暂不解决
                 result.setSuccess(true);
             }
-
+            //TODO 所有账号只写SG库时此判断即可去掉
+            if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
+                accountSecureService.updateSuccessFlag(userId, newMobile);
+            }
             if (!result.isSuccess()) {
                 return result;
             }
