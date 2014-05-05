@@ -62,10 +62,14 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     }
 
     @Override
-    public boolean updateSuccessFlag(String passportId) throws ServiceException {
-        String cacheKey = buildCacheKey(passportId);
+    public boolean updateSuccessFlag(String passportId, String newMobile) throws ServiceException {
+        String cachePassportIdKey = buildCacheKey(passportId); //主账号
         try {
-            redisUtils.setWithinSeconds(cacheKey, CommonConstant.HAVE_UPDATE, DateAndNumTimesConstant.THREE_DAY_INSECONDS);
+            redisUtils.setWithinSeconds(cachePassportIdKey, CommonConstant.HAVE_UPDATE, DateAndNumTimesConstant.THREE_DAY_INSECONDS);
+            if (!Strings.isNullOrEmpty(newMobile)) {
+                String cacheMobileKey = buildCacheKey(newMobile);     //绑定的新手机号
+                redisUtils.setWithinSeconds(cacheMobileKey, CommonConstant.HAVE_UPDATE, DateAndNumTimesConstant.THREE_DAY_INSECONDS);
+            }
             return true;
         } catch (Exception e) {
             throw new ServiceException(e);

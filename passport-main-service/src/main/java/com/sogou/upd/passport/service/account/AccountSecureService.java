@@ -26,10 +26,11 @@ public interface AccountSecureService {
      * 用户更新操作成功后，更新状态
      *
      * @param passportId
+     * @param newMobile
      * @return
      * @throws ServiceException
      */
-    public boolean updateSuccessFlag(String passportId) throws ServiceException;
+    public boolean updateSuccessFlag(String passportId, String newMobile) throws ServiceException;
 
     /**
      * 产生secureCode，放入缓存，设置有效时间；返回secureCode——重置密码

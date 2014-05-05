@@ -330,7 +330,7 @@ public class SecureManagerImpl implements SecureManager {
             }
             //TODO 所有账号只写SG库时此判断即可去掉
             if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
-                accountSecureService.updateSuccessFlag(username);
+                accountSecureService.updateSuccessFlag(username, null);
             }
             if (result.isSuccess()) {
                 operateTimesService.incLimitResetPwd(updatePwdApiParams.getUserid(), updatePwdApiParams.getClient_id());
@@ -680,7 +680,7 @@ public class SecureManagerImpl implements SecureManager {
             }
             //TODO 所有账号只写SG库时此判断即可去掉
             if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
-                accountSecureService.updateSuccessFlag(userId);
+                accountSecureService.updateSuccessFlag(userId, newMobile);
             }
             if (!result.isSuccess()) {
                 return result;
