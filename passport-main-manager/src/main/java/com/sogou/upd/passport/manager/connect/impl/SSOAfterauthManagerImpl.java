@@ -62,7 +62,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
             int isthird = Integer.parseInt(req.getParameter("isthird"));
 //            String instance_id = req.getParameter("instance_id");
 
-            Integer appidType=new Integer(req.getParameter("appidtype"));
+            Integer appidType= Integer.valueOf(req.getParameter("appidtype"));
 
             int provider = AccountTypeEnum.getProvider(providerStr);
 
