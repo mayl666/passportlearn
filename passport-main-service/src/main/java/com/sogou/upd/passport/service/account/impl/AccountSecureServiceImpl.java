@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.CoreKvUtils;
@@ -44,6 +45,36 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     private CoreKvUtils coreKvUtils;
     @Autowired
     private TaskExecutor discardTaskExecutor;
+
+    @Override
+    public boolean getUpdateSuccessFlag(String passportId) throws ServiceException {
+        String cacheKey = buildCacheKey(passportId);
+        try {
+            String flag = redisUtils.get(cacheKey);
+            if (CommonConstant.HAVE_UPDATE.equals(flag)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean updateSuccessFlag(String passportId) throws ServiceException {
+        String cacheKey = buildCacheKey(passportId);
+        try {
+            redisUtils.setWithinSeconds(cacheKey, CommonConstant.HAVE_UPDATE, DateAndNumTimesConstant.THREE_DAY_INSECONDS);
+            return true;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    private String buildCacheKey(String passportId) {
+        return CacheConstant.CACHE_PREFIX_PASSPORTID_UPDATE_PWD_OR_BIND + passportId;
+    }
 
     @Override
     public String getSecureCodeResetPwd(String passportId, int clientId) throws ServiceException {

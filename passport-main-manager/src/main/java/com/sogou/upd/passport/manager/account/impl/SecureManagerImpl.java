@@ -311,29 +311,27 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         String username = null;
         try {
-
             username = updatePwdParameters.getPassport_id();
-
             UpdatePwdApiParams updatePwdApiParams = buildProxyApiParams(updatePwdParameters);
             int clientId = updatePwdApiParams.getClient_id();
-
             //检查是否在ip黑名单里
             if (operateTimesService.checkIPLimitResetPwd(ip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
-
             if (operateTimesService.checkLimitResetPwd(username, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
                 return result;
             }
-
             if (ManagerHelper.isInvokeProxyApi(username)) {
                 result = proxySecureApiManager.updatePwd(updatePwdApiParams);
             } else {
                 result = sgSecureApiManager.updatePwd(updatePwdApiParams);
             }
-
+            //TODO 所有账号只写SG库时此判断即可去掉
+            if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
+                accountSecureService.updateSuccessFlag(username);
+            }
             if (result.isSuccess()) {
                 operateTimesService.incLimitResetPwd(updatePwdApiParams.getUserid(), updatePwdApiParams.getClient_id());
                 operateTimesService.incResetPwdIPTimes(ip);
@@ -680,7 +678,10 @@ public class SecureManagerImpl implements SecureManager {
                 result.setSuccess(true);
                 // TODO:事务安全问题，暂不解决
             }
-
+            //TODO 所有账号只写SG库时此判断即可去掉
+            if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
+                accountSecureService.updateSuccessFlag(userId);
+            }
             if (!result.isSuccess()) {
                 return result;
             }

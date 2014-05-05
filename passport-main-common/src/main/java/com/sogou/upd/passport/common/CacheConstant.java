@@ -21,6 +21,7 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_REGISTER_COOKIEBLACKLIST = "SP.REGISTER:COOKIEBLACKLIST_"; // cookie与注册次数映射
     public static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = "SP.PASSPORTID:ACTIVEMAILTOKEN_"; //passportId 与第三方邮件注册token有效期验证
     public static final String CACHE_PREFIX_NICKNAME_PASSPORTID = "SP.NICKNAME:PASSPORTID_"; //昵称与passportId映射
+    public static final String CACHE_PREFIX_PASSPORTID_UPDATE_PWD_OR_BIND = "SP.UPDATE:PASSPORTID_"; //passportId与该用户是否修改了密码或绑定手机映射
 
     // public static final String CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN = "SP.PASSPORTID:RESETPWDEMAILTOKEN_"; //passportId与邮件重置密码token有效期验证
     public static final String CACHE_PREFIX_PASSPORTID_ACCOUNTINFO = "SP.PASSPORTID:ACCOUNTINFO_"; // passportId与accountInfo映射
