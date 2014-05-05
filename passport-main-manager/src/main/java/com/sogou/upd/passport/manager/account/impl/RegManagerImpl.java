@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
@@ -108,6 +109,8 @@ public class RegManagerImpl implements RegManager {
                     }
                     RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                             clientId, ru);
+                    //调用SOHU API注册时，未激活的外域邮箱先临时注册到SG缓存,有效期一天
+                    accountService.initialMailToCache(username, password, ip);
                     if (ManagerHelper.isInvokeProxyApi(username)) {
                         result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
                     } else {

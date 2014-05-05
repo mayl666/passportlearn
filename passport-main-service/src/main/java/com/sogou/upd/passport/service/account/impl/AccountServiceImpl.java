@@ -496,10 +496,25 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
+    /**
+     * 调SOHU接口注册前，未激活的外域邮箱先写SG缓存，保存时间为一天，再调
+     *
+     * @param username
+     * @param password
+     * @param ip
+     * @throws ServiceException
+     */
+    @Override
+    public void initialMailToCache(String username, String password, String ip) throws ServiceException {
+        Account account = initialAccountToCache(username, password, ip);
+        String cacheKey = buildAccountKey(username);
+        dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.TIME_ONEDAY);
+    }
+
     /*
      * 外域邮箱注册
      */
-    public void initialAccountToCache(String username, String password, String ip) throws ServiceException {
+    public Account initialAccountToCache(String username, String password, String ip) throws ServiceException {
         int provider = AccountTypeEnum.EMAIL.getValue();
         Account account = new Account();
         String passportId = PassportIDGenerator.generator(username, provider);
@@ -522,6 +537,7 @@ public class AccountServiceImpl implements AccountService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+        return account;
     }
 
     protected String buildAccountKey(String passportId) {
