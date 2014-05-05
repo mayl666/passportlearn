@@ -28,6 +28,7 @@ import java.util.concurrent.ForkJoinPool;
  * Date: 14-4-22
  * Time: 下午2:22
  */
+@Ignore
 public class AppForkJoin extends BaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppForkJoin.class);
@@ -147,6 +148,7 @@ public class AppForkJoin extends BaseTest {
     }
 
 
+    @Ignore
     @Test
     public void increaseData() throws IOException {
 
@@ -221,9 +223,6 @@ public class AppForkJoin extends BaseTest {
             }
             System.out.printf("%n%n");
         }
-
-*/
+    }*/
     }
-
-
 }
