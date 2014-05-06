@@ -79,14 +79,16 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                 ConnectConfig connectConfig = null;
                 if(appidType==null){
                     connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
-                }
-                if(appidType==0) {
-                    connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
-                }else if(appidType==1){
-                    connectConfig = connectConfigService.querySpecifyConnectConfig(client_id, provider);
                 }else{
-                    connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
+                    if(appidType==0) {
+                        connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
+                    }else if(appidType==1){
+                        connectConfig = connectConfigService.querySpecifyConnectConfig(client_id, provider);
+                    }else{
+                        connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
+                    }
                 }
+
 
                 if (connectConfig == null) {
                     result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
