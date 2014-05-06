@@ -104,9 +104,9 @@ public class AccountWeb extends BaseController {
             result.setSuccess(true);
         }
         result.setDefaultModel("email", webParams.getEmail());
-//        if (result.isSuccess()) {
+        if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
-//        }
+        }
         return "/reg/remind";
     }
 
