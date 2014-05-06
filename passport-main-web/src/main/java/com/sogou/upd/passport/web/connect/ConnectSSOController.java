@@ -91,7 +91,10 @@ public class ConnectSSOController extends BaseConnectController {
                 map.put("refresh_token",params.getRefresh_token());
             }
             map.put("instance_id",params.getInstance_id());
-
+            Object appidType=req.getParameterMap().get("appid_type");
+            if(appidType!=null){
+                map.put("appid_type",appidType);
+            }
             //计算默认的code
             String code = "";
             try {

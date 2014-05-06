@@ -29,7 +29,7 @@ public class AfterAuthParams {
     private String code;
 
     @Min(0)
-    private Integer appidtype; //如果appidtype=1，则根据应用传入的client_id查询相关的第三方appid；如果appidtype=0，则使用sogou passport的appid；
+    private Integer appid_type; //如果appidtype=1，则根据应用传入的client_id查询相关的第三方appid；如果appidtype=0，则使用sogou passport的appid；
 
 
     public String getOpenid() {
@@ -96,11 +96,11 @@ public class AfterAuthParams {
         this.refresh_token = refresh_token;
     }
 
-    public Integer getAppidtype() {
-        return appidtype;
+    public Integer getAppid_type() {
+        return appid_type;
     }
 
-    public void setAppidtype(Integer appidtype) {
-        this.appidtype = appidtype;
+    public void setAppid_type(Integer appid_type) {
+        this.appid_type = appid_type;
     }
 }
