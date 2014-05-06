@@ -95,7 +95,7 @@ public class AccountWeb extends BaseController {
     */
     @RequestMapping(value = "/remindActivate", method = RequestMethod.GET)
     private String remind_activate(AccountWebParams webParams, Model model) {
-        Result result = new APIResultSupport(true);
+        Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(webParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
@@ -104,7 +104,7 @@ public class AccountWeb extends BaseController {
             result.setSuccess(true);
         }
         result.setDefaultModel("email", webParams.getEmail());
-        if(result.isSuccess()){
+        if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
         }
         return "/reg/remind";
