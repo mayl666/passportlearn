@@ -182,8 +182,10 @@ public class WapLoginAction extends BaseController {
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
 
                 if(needCaptcha){
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-                    result.setMessage("验证码错误或已过期");
+                    if(!result.getCode()==ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR) {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+                        result.setMessage("验证码错误或已过期");
+                    }
                 }else{
                     result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                     result.setMessage("用户名或者密码错误");
