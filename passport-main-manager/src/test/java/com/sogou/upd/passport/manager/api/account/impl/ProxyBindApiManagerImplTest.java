@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Date: 13-6-7
  * Time: 下午2:02
  */
-@Ignore
+//@Ignore
 public class ProxyBindApiManagerImplTest extends BaseTest {
 
     @Autowired
@@ -100,6 +100,7 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 
 
 
+    @Ignore
     @Test
     public void testBindEmail() throws Exception {
         BindEmailApiParams bindEmailApiParams=new BindEmailApiParams();
