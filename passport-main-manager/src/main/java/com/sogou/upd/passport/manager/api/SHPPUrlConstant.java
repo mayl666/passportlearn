@@ -48,8 +48,6 @@ public class SHPPUrlConstant {
     /*================================手机绑定相关=======================================*/
     //绑定手机号
     public static final String BING_MOBILE = BASE_INTERNAL_URL + "wapbindmobile";
-    //查询手机号绑定的账号
-    public static final String QUERY_MOBILE_BING_ACCOUNT = BASE_INTERNAL_URL + "wapgetuserid";
     //解绑手机号
     public static final String UNBING_MOBILE = BASE_INTERNAL_URL + "wapunbindmobile";
     //发送手机验证码

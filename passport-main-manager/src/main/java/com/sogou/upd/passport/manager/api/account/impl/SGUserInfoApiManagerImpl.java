@@ -137,16 +137,6 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         return result;
     }
 
-    private ConnectToken getConnectToken(String userId, int clientId) {
-        //从connect_token中获取
-        int provider = AccountTypeEnum.getAccountType(userId).getValue();
-        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-        ConnectToken connectToken = null;
-        if (connectConfig != null) {
-            connectToken = connectTokenService.queryConnectToken(userId, provider, connectConfig.getAppKey());
-        }
-        return connectToken;
-    }
     private String replaceParam(String param) {
         //sec_mobile, sec_email, sec_ques,  username
         if(param.contains("username")){
