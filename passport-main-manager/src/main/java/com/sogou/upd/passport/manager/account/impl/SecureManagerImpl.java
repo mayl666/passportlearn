@@ -328,9 +328,9 @@ public class SecureManagerImpl implements SecureManager {
             } else {
                 result = sgSecureApiManager.updatePwd(updatePwdApiParams);
             }
-            //TODO 所有账号只写SG库时此判断即可去掉
+            //TODO 所有账号只写SG库时此判断即可去掉；因SG账号只写先上，所以SG账号写分离时不需要再记此标记了
             if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
-                accountSecureService.updateSuccessFlag(username, null);
+                accountSecureService.updateSuccessFlag(username);
             }
             if (result.isSuccess()) {
                 operateTimesService.incLimitResetPwd(updatePwdApiParams.getUserid(), updatePwdApiParams.getClient_id());
@@ -598,7 +598,7 @@ public class SecureManagerImpl implements SecureManager {
             }
             //TODO 所有账号只写SG库时此判断即可去掉
             if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
-                accountSecureService.updateSuccessFlag(userId, newMobile);
+                accountSecureService.updateSuccessFlag(userId);
             }
             if (!result.isSuccess()) {
                 return result;
@@ -683,7 +683,7 @@ public class SecureManagerImpl implements SecureManager {
             }
             //TODO 所有账号只写SG库时此判断即可去掉
             if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
-                accountSecureService.updateSuccessFlag(userId, newMobile);
+                accountSecureService.updateSuccessFlag(userId);
             }
             if (!result.isSuccess()) {
                 return result;

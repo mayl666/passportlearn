@@ -4,18 +4,18 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
-import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.service.account.AccountSecureService;
 import com.sogou.upd.passport.service.account.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,6 +34,8 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginApiManager sgLoginApiManager;
+    @Autowired
+    private CommonManager commonManager;
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -72,7 +74,8 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
             //sohu账号调用sohu api校验用户名和密码
             result = proxyLoginApiManager.webAuthUser(authUserApiParams);
         } else {
-            if (accountSecureService.getUpdateSuccessFlag(authUserApiParams.getUserid())) {
+            String passportId = commonManager.getPassportIdByUsername(authUserApiParams.getUserid());
+            if (accountSecureService.getUpdateSuccessFlag(passportId)) {
                 //主账号有更新密码或绑定手机的操作时，调用sohu api校验用户名和密码
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
             } else {
@@ -82,13 +85,15 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                     result = proxyLoginApiManager.webAuthUser(authUserApiParams);
                     if (result.isSuccess()) {
                         //读SG失败，读SH成功，记录userid，便于验证数据同步情况
-                        readLogger.error("SG error,SH right,userId:" + authUserApiParams.getUserid());
+                        //日志记录可能存在的情况：新注册用户登录时，同步延迟；用户找回密码后登录；用户校验密码失败等
+                        readLogger.error("auth sogou error,auth sohu success,userId:[{}];time:[{}]", authUserApiParams.getUserid(), new Date());
                     }
                 }
             }
         }
         return result;
     }
+
 
     @Override
     public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {

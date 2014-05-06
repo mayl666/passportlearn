@@ -202,7 +202,7 @@ public class CookieManagerImpl implements CookieManager {
             result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
             return result;
         }
-        boolean isCtValid = commonManager.isSecCtValid(ct);
+        boolean isCtValid = ManagerHelper.isSecCtValid(ct);
         if (!isCtValid) {
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
             result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
@@ -251,7 +251,7 @@ public class CookieManagerImpl implements CookieManager {
             result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));
             return result;
         }
-        boolean isCtValid = commonManager.isMillCtValid(ct);
+        boolean isCtValid = ManagerHelper.isMillCtValid(ct);
         if (!isCtValid) {
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
             result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.INTERNAL_REQUEST_INVALID));

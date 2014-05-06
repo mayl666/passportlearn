@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
@@ -43,7 +44,7 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private BindApiManager proxyBindApiManager;
     @Autowired
-    private BindApiManager sgBindApiManager;
+    private CommonManager commonManager;
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
     @Autowired
@@ -271,7 +272,7 @@ public class RegManagerImpl implements RegManager {
                 //回滚流程
                 result = checkUserFromSohu(username, clientId);
             } else {
-                //正常流程
+                //正常双读流程
                 result = bothCheck(username, clientId);
             }
         } catch (ServiceException e) {
@@ -283,7 +284,8 @@ public class RegManagerImpl implements RegManager {
 
     private Result bothCheck(String username, int clientId) throws Exception {
         Result result;
-        if (PhoneUtil.verifyPhoneNumberFormat(username) && accountSecureService.getUpdateSuccessFlag(username)) {
+        String passportId = commonManager.getPassportIdByUsername(username);
+        if (PhoneUtil.verifyPhoneNumberFormat(username) && accountSecureService.getUpdateSuccessFlag(passportId)) {
             //主账号有更新绑定手机的操作时，调用sohu api检查账号是否可用
             result = checkUserFromSohu(username, clientId);
         } else {

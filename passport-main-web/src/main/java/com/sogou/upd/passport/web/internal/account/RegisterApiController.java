@@ -221,23 +221,6 @@ public class RegisterApiController extends BaseController {
                     result.setMessage("手机号已绑定其他账号");
                 }
             }
-//        if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
-//            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-//            baseMoblieApiParams.setMobile(userid);
-//            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-//            //如果手机号已经被注册或被绑定其它账号，返回错误信息
-//            if (result.isSuccess()) {
-//                result.setSuccess(false);
-//                result.setDefaultModel("flag", "1");
-//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-//                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED));
-//            } else if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND)) {
-//                //如果手机号没有被注册或绑定其它账号，返回正确
-//                result = new APIResultSupport(true);
-//            }
-//        } else {
-//            result = proxyRegisterApiManager.checkUser(params);
-//        }
         } catch (Exception e) {
             logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getUserid(), e);
         } finally {

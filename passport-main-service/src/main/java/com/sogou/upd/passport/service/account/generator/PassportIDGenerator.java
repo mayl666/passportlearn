@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.generator;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -30,10 +31,12 @@ public class PassportIDGenerator {
      */
     public static String generator(String username, int provider) {
         String passportID;
-        if (AccountTypeEnum.isPhone(username, provider)) {
+        if (AccountTypeEnum.isPhone(username, provider)) {  //手机号
             passportID = username + SEPARATOR_1 + "sohu.com";
-        } else if (AccountTypeEnum.isConnect(provider)) {
+        } else if (AccountTypeEnum.isConnect(provider)) {  //第三方
             passportID = username + SEPARATOR_1 + AccountTypeEnum.getProviderStr(provider) + ".sohu.com";
+        } else if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(username))) { //个性账号
+            passportID = username + SEPARATOR_1 + "sogou.com";
         } else {
             passportID = username;
         }

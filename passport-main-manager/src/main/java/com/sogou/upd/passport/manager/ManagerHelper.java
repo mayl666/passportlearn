@@ -1,14 +1,11 @@
 package com.sogou.upd.passport.manager;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.model.connect.ConnectRelation;
-import com.sogou.upd.passport.model.connect.ConnectToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -100,5 +97,17 @@ public class ManagerHelper {
         result.setDefaultModel("sid", accountToken.getPassportId());
         result.setDefaultModel("logintype", loginType);
         return result;
+    }
+
+    public static boolean isMillCtValid(long ct) {
+        long currentTime = System.currentTimeMillis();
+        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM_IN_MILLI;
+        return timeRight;
+    }
+
+    public static boolean isSecCtValid(long ct) {
+        long currentTime = System.currentTimeMillis() / 1000;
+        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
+        return timeRight;
     }
 }

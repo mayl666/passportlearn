@@ -1,11 +1,5 @@
 package com.sogou.upd.passport.manager.account;
 
-import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.model.account.Account;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -14,6 +8,15 @@ import javax.servlet.http.HttpServletResponse;
  * To change this template use File | Settings | File Templates.
  */
 public interface CommonManager {
+
+    /**
+     * 根据用户名生成passportId
+     *
+     * @param username
+     * @return
+     */
+    public String getPassportIdByUsername(String username);
+
     /**
      * 用户注册时ip次数的累加
      *
@@ -27,19 +30,22 @@ public interface CommonManager {
      *
      * @param ip
      */
-    public void incRegTimesForInternal(String ip,int client_id);
+    public void incRegTimesForInternal(String ip, int client_id);
 
     /**
      * 检验code是否正确
+     *
      * @param firstStr
      * @param clientId
      * @param ct
      * @param originalCode
      * @return
      */
-    public boolean isCodeRight(String firstStr,int clientId,long ct,String originalCode);
+    public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode);
+
     /**
      * 根据字符串获取code值
+     *
      * @param firstStr
      * @param clientId
      * @param ct
@@ -47,17 +53,4 @@ public interface CommonManager {
      */
     public String getCode(String firstStr, int clientId, long ct);
 
-    /**
-     * 判断时间戳（秒）是否有效
-     * @param ct
-     * @return
-     */
-    public boolean isSecCtValid(long ct);
-
-    /**
-     * 判断时间戳（毫秒）是否有效
-     * @param ct
-     * @return
-     */
-    public boolean isMillCtValid(long ct);
 }
