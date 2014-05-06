@@ -6,8 +6,10 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.web.BaseController;
+import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.AccountWebParams;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,6 +124,13 @@ public class AccountWeb extends BaseController {
     ru跳转
      */
     private Result paramProcess(Result result, AccountWebParams webParams) {
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(webParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result;
+        }
         Map<String, String> map = Maps.newHashMap();
         String ru = webParams.getRu();
         String client_id = webParams.getClient_id();
