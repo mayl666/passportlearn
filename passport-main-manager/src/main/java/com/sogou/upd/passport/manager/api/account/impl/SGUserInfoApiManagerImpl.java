@@ -60,15 +60,15 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     @Override
     public Result getUserInfo(GetUserInfoApiparams infoApiparams) {
         Result result = new APIResultSupport(false);
-        String passportId=infoApiparams.getUserid();
+        String passportId = infoApiparams.getUserid();
         try {
-            String params= infoApiparams.getFields();
-            if(!Strings.isNullOrEmpty(params)){
+            String params = infoApiparams.getFields();
+            if (!Strings.isNullOrEmpty(params)) {
                 //替换sogou相关字段
 
-                params=replaceParam(params);
+                params = replaceParam(params);
 
-                String []paramArray=params.split(",");
+                String[] paramArray = params.split(",");
 
                 if (ArrayUtils.isNotEmpty(paramArray)) {
                     //调用 获取昵称接口 拼接返回的result map
@@ -111,6 +111,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                             result.setDefaultModel("sex", value);
                                             continue;
                                         }
+                                        //TODO 此处存在异常，有paramArray[i] 不存在于 accountInfo的情况
                                         String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
                                         result.setDefaultModel(paramArray[i], value);
                                     } else {
@@ -128,8 +129,8 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     }
                 }
             }
-        }catch (Exception e) {
-            logger.error("getUserInfo Fail,passportId:"+passportId, e);
+        } catch (Exception e) {
+            logger.error("getUserInfo Fail,passportId:" + passportId, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
@@ -139,21 +140,21 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
 
     private String replaceParam(String param) {
         //sec_mobile, sec_email, sec_ques,  username
-        if(param.contains("username")){
+        if (param.contains("username")) {
             //真实姓名
-            param= param.replaceAll("username","fullname");
+            param = param.replaceAll("username", "fullname");
         }
-        if(param.contains("sec_mobile")){
+        if (param.contains("sec_mobile")) {
             //绑定手机号
-            param= param.replaceAll("sec_mobile","mobile");
+            param = param.replaceAll("sec_mobile", "mobile");
         }
-        if(param.contains("sec_email")){
+        if (param.contains("sec_email")) {
             //绑定手机号
-            param= param.replaceAll("sec_email","email");
+            param = param.replaceAll("sec_email", "email");
         }
-        if(param.contains("sec_ques")){
+        if (param.contains("sec_ques")) {
             //绑定手机号
-            param= param.replaceAll("sec_ques","question");
+            param = param.replaceAll("sec_ques", "question");
         }
         return param;
     }
@@ -162,79 +163,84 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     public Result updateUserInfo(UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
         try {
-            Account account= accountService.queryAccountByPassportId(params.getUserid());
-            if(account!=null){
+            Account account = accountService.queryAccountByPassportId(params.getUserid());
+            if (account != null) {
+                //更新用户除“昵称”外的其他信息
+                AccountInfo info = new AccountInfo();
+                info.setPassportId(params.getUserid());
+
+                String[] birthday = !Strings.isNullOrEmpty(params.getBirthday()) ? params.getBirthday().split("-") : null;
+                Calendar calendar = Calendar.getInstance();
+                if (birthday != null) {
+                    calendar.set(Calendar.YEAR, Integer.valueOf(birthday[0]));
+                    calendar.set(Calendar.MONTH, Integer.valueOf(birthday[1]) - 1);
+                    calendar.set(Calendar.DATE, Integer.valueOf(birthday[2]));
+                }
+
+                info.setBirthday(calendar.getTime());
+                info.setGender(params.getGender());
+                info.setProvince(params.getProvince());
+                info.setCity(params.getCity());
+                info.setFullname(params.getUsername());
+                info.setPersonalid(params.getPersonalId());
+                info.setModifyip(params.getModifyip());
+                info.setUpdateTime(new Date());
+
+                //更新用户信息AccountInfo
+                boolean updateResult = accountInfoService.updateAccountInfo(info);
+                if (updateResult) {
+                    result.setSuccess(true);
+                    result.setMessage("修改个人资料成功");
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
+                }
+
                 //判断昵称是否存在
-                if(Strings.isNullOrEmpty(accountService.checkUniqName(params.getUniqname()))){
-                    //更新昵称 Account表
-                    if(accountService.updateUniqName(account, params.getUniqname())){
-
-                        AccountInfo info=new AccountInfo();
-                        info.setPassportId(params.getUserid());
-
-                        String[] birthday = !Strings.isNullOrEmpty(params.getBirthday()) ? params.getBirthday().split("-") : null;
-                        Calendar calendar = Calendar.getInstance();
-                        if (birthday != null) {
-                            calendar.set(Calendar.YEAR, Integer.valueOf(birthday[0]));
-                            calendar.set(Calendar.MONTH, Integer.valueOf(birthday[1])-1);
-                            calendar.set(Calendar.DATE, Integer.valueOf(birthday[2]));
-                        }
-
-                        info.setBirthday(calendar.getTime());
-                        info.setGender(params.getGender());
-                        info.setProvince(params.getProvince());
-                        info.setCity(params.getCity());
-                        info.setFullname(params.getUsername());
-                        info.setPersonalid(params.getPersonalId());
-                        info.setModifyip(params.getModifyip());
-                        info.setUpdateTime(new Date());
-
-                        //更新用户信息AccountInfo
-                        boolean updateResult=accountInfoService.updateAccountInfo(info);
-                        if(updateResult){
-                            result.setSuccess(true);
-                            result.setMessage("修改个人资料成功");
-                        }else{
-                            result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
-                        }
-                    } else{
+                String checkExist = accountService.checkUniqName(params.getUniqname());
+                if (Strings.isNullOrEmpty(checkExist)) {
+                    //更新昵称 Account表 u_p_m映射表
+                    boolean accountUpdateResult = accountService.updateUniqName(account, params.getUniqname());
+                    if (accountUpdateResult) {
+                        result.setSuccess(true);
+                        result.setMessage("修改个人资料成功");
+                    } else {
                         result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
                     }
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
                 }
-            } else{
+            } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
 
-        }catch (Exception e) {
-            logger.error("updateUserInfo Fail,passportId:"+params.getUserid(), e);
+        } catch (Exception e) {
+            logger.error("updateUserInfo Fail,passportId:" + params.getUserid(), e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
-        return  result;
+        return result;
     }
 
     @Override
     public Result checkUniqName(UpdateUserUniqnameApiParams updateUserUniqnameApiParams) {
 
         Result result = new APIResultSupport(false);
-        String nickname=null;
+        String nickname = null;
         try {
-            nickname=new String(updateUserUniqnameApiParams.getUniqname().getBytes("ISO8859-1"),"UTF-8");
+            nickname = new String(updateUserUniqnameApiParams.getUniqname().getBytes("ISO8859-1"), "UTF-8");
 
-            String passportId= accountService.checkUniqName(nickname);
-            if(!Strings.isNullOrEmpty(passportId)){
+            String passportId = accountService.checkUniqName(nickname);
+            if (!Strings.isNullOrEmpty(passportId)) {
                 result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
-                result.setDefaultModel("userid",passportId);
+                result.setDefaultModel("userid", passportId);
                 return result;
             } else {
                 result.setSuccess(true);
                 result.setMessage("昵称未被占用,可以使用");
                 return result;
             }
-        }catch (Exception e) {
-            logger.error("checkUniqName Fail,nickname:"+nickname, e);
+        } catch (Exception e) {
+            logger.error("checkUniqName Fail,nickname:" + nickname, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }

@@ -20,12 +20,14 @@ import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+import org.apache.commons.lang.StringUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -474,6 +476,7 @@ public class AccountServiceImpl implements AccountService {
         }
         return true;
     }
+
     @Override
     public String checkUniqName(String uniqname) throws ServiceException {
         String passportId = null;
@@ -495,7 +498,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean updateUniqName(Account account, String uniqname) throws ServiceException {
         try {
-
             String oldUniqName = account.getUniqname();
             String passportId = account.getPassportId();
 
@@ -507,13 +509,27 @@ public class AccountServiceImpl implements AccountService {
                     account.setUniqname(uniqname);
                     dbShardRedisUtils.set(cacheKey, account);
 
-                    //移除原来映射表
-                    if (removeUniqName(oldUniqName)) {
+                    //第一次直接插入
+                    if (Strings.isNullOrEmpty(oldUniqName)) {
                         //更新新的映射表
                         row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
                         if (row > 0) {
                             cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                             redisUtils.set(cacheKey, passportId);
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        //移除原来映射表
+                        if (removeUniqName(oldUniqName)) {
+                            //更新新的映射表
+                            row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
+                            if (row > 0) {
+                                cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                                redisUtils.set(cacheKey, passportId);
+                            } else {
+                                return false;
+                            }
                         }
                     }
                     return true;
@@ -521,10 +537,10 @@ public class AccountServiceImpl implements AccountService {
             } else {
                 return true;
             }
+            return false;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        return false;
     }
 
     @Override
@@ -543,7 +559,7 @@ public class AccountServiceImpl implements AccountService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-         return false;
+        return false;
     }
 
 
@@ -557,6 +573,8 @@ public class AccountServiceImpl implements AccountService {
                 if (row > 0) {
                     String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                     redisUtils.delete(cacheKey);
+                    return true;
+                } else if (row == 0) {
                     return true;
                 }
             }

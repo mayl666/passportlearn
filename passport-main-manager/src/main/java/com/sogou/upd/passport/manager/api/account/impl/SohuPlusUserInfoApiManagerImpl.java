@@ -140,9 +140,10 @@ public class SohuPlusUserInfoApiManagerImpl extends BaseProxyManager implements 
                     }
                     return result;
                 } catch (Exception e) {
-                    logger.error("updateUserInfo error,userid=", updateUserInfoApiParams.getUserid()
-                            + "uniqname=" + updateUserInfoApiParams.getUniqname());
-                    logger.error("updateUserInfo error", e);
+//                    logger.error("updateUserInfo error,userid=", updateUserInfoApiParams.getUserid() + "uniqname=" + updateUserInfoApiParams.getUniqname());
+//                    logger.error("updateUserInfo error", e);
+                    logger.error(String.format("SohuPlusUserInfoApiManagerImpl updateUserInfo error.userid:[%s],uniqname:[%s]",
+                            updateUserInfoApiParams.getUserid(), updateUserInfoApiParams.getUniqname()), e);
                 }
             }
         }
