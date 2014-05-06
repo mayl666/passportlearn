@@ -30,8 +30,6 @@ public class RuValidator implements ConstraintValidator<Ru, String> {
             Pattern p = Pattern.compile("^(https?:\\/\\/)?[\\w\\-.]+\\.(sogou\\.com|sohu\\.com|qq\\.com|soso\\.com|go2map\\.com|pinyin\\.cn)($|\\?|\\/|\\\\|:[\\d])", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(value);
             return matcher.find();
-
-
         } catch (Exception e) {
             return false;
         }
