@@ -169,7 +169,7 @@ public class WapLoginAction extends BaseController {
             int isNeedCaptcha = 0;
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip,result.getCode());
             //校验是否需要验证码
-            if(result.getCode()==ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED){
+            if(result.getCode()==ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE){
                 writeResultToResponse(response, result);
                 return "empty";
             }
