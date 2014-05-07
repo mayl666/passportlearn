@@ -131,7 +131,7 @@ public class AccountWeb extends BaseController {
             model.addAttribute("data", result.toString());
             return "index";
         }
-        return "404";
+        return "/404";
     }
 
     /*
