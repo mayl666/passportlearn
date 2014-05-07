@@ -2,27 +2,24 @@ package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
-import com.sogou.upd.passport.common.model.httpclient.RequestModelXmlGBK;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.HttpClientUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
+import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.httpclient.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +28,6 @@ import org.springframework.stereotype.Component;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -148,7 +143,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             result.setSuccess(true);
             result.setMessage("获取cookie成功");
             result.setDefaultModel("userid", cookieApiParams.getUserid());
-        }else {
+        } else {
             result = getCookieInfoResult;
         }
         return result;
@@ -157,10 +152,11 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     @Override
     public Result getCookieInfoWithRedirectUrl(CreateCookieUrlApiParams createCookieUrlApiParams) {
         //生成cookie
+        String ru = createCookieUrlApiParams.getRu();
         CookieApiParams cookieApiParams = new CookieApiParams();
         cookieApiParams.setUserid(createCookieUrlApiParams.getUserid());
         cookieApiParams.setClient_id(CommonConstant.PC_CLIENTID);
-        cookieApiParams.setRu(createCookieUrlApiParams.getRu());
+        cookieApiParams.setRu(ru);
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         Result cookieInfoResult = getCookieInfo(cookieApiParams);
@@ -176,14 +172,14 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             result.setDefaultModel("passport", passport);
 
             long ct = System.currentTimeMillis();
-            String code1 ="",code2="",code3="";
-            if(!StringUtil.isBlank(ppinf)){
+            String code1 = "", code2 = "", code3 = "";
+            if (!StringUtil.isBlank(ppinf)) {
                 code1 = commonManager.getCode(ppinf, CommonConstant.PC_CLIENTID, ct);
             }
-            if(!StringUtil.isBlank(ppinf)){
+            if (!StringUtil.isBlank(ppinf)) {
                 code2 = commonManager.getCode(pprdig, CommonConstant.PC_CLIENTID, ct);
             }
-            if(!StringUtil.isBlank(ppinf)){
+            if (!StringUtil.isBlank(ppinf)) {
                 code3 = commonManager.getCode(passport, CommonConstant.PC_CLIENTID, ct);
             }
 
@@ -199,12 +195,25 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             if (1 == createCookieUrlApiParams.getPersistentcookie()) {
                 locationUrlBuilder.append("&livetime=1");
             }
-            locationUrlBuilder.append("&ru=").append(createCookieUrlApiParams.getRu() + "?status=0");   // 输入法Mac要求Location里的ru不能decode
+            ru = buildRedirectUrl(ru, 0);
+            try {
+                ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            } catch (UnsupportedEncodingException e) {
+            }
+            locationUrlBuilder.append("&ru=").append(ru);   // 输入法Mac要求Location里的ru不能decode
             result.setDefaultModel("redirectUrl", locationUrlBuilder.toString());
         } else {
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
         return result;
+    }
+
+    private String buildRedirectUrl(String ru, int status) {
+        if (ru.contains("?")) {
+            return ru + "&status=" + status;
+        } else {
+            return ru + "?status=" + status;
+        }
     }
 
     /*@Override
