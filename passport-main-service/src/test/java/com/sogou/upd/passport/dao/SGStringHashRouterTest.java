@@ -5,6 +5,8 @@ import com.sogou.upd.passport.dao.dal.routing.SGStringHashRouter;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -19,6 +21,8 @@ import java.util.List;
  */
 public class SGStringHashRouterTest extends TestCase {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SGStringHashRouterTest.class);
+
     private static SGStringHashRouter router;
 
     static {
@@ -31,7 +35,14 @@ public class SGStringHashRouterTest extends TestCase {
     @Test
     public void testRoute() {
         router = new SGStringHashRouter("id", "account_{0}", 32);
-        String id = "usef2006@163.com";
+//        String id = "056B15F99925016562B24E2070AE7AF5@qq.sohu.com";
+//        String id = "happychen09031@163.com";
+//        String id = "0C7E1BC4094CACCBDFEFC60BDDC598BD@qq.sohu.com";
+//        String id = "15BF5B2E00BCB4A7E8AD31E59480FF8C@qq.sohu.com";
+//        String id = "B5008F7D2813EDCCE03BCE3EA6DC7FFA@qq.sohu.com";
+//        String id = "gang.chen0505@gmail.com";
+        String id = "wangqingemail@sohu.com";
+//        String id = "gang.chen0505@gmail.com";
         String name = router.doRoute(id);
         System.out.println(name);
 //        Assert.assertEquals(name, "account_18");
@@ -49,6 +60,13 @@ public class SGStringHashRouterTest extends TestCase {
         System.out.println("mobile_table_name:" + mobile_table_name);
         System.out.println("mobile_table_name_1:" + mobile_table_name_1);
 
+    }
+
+
+    @Test
+    public void testUpmShard() {
+        router = new SGStringHashRouter("id", "uniqname_passportid_mapping_{0}", 32);
+        LOGGER.info("u_p_m shard." + router.doRoute("簩龖"));
     }
 
 

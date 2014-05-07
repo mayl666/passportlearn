@@ -120,6 +120,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                     String cacheKey = buildAccountBaseInfoKey(passportId);
                     oldBaseInfo.setUniqname(uniqname);
                     dbRedisUtils.set(cacheKey, oldBaseInfo, ONE_MONTH, TimeUnit.DAYS);
+
                     //移除原来映射表
                     if (uniqNamePassportMappingService.removeUniqName(oldUniqName)) {
                         boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
