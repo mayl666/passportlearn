@@ -156,10 +156,11 @@ public class ErrorUtil {
     public static final String ERR_CODE_REMOVE_COOKIE_FAILED = "20255";
     //SSOAfterauth失败
     public static final String ERR_CODE_SSO_After_Auth_FAILED = "20256";
-    //非法的RU参数
-    public static final String ERR_CODE_RU_ILLEGAL = "20257";
     //需要验证码
-    public static final String ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE = "20258";
+    public static final String ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE = "20257";
+    //非法的RU参数
+    public static final String ERR_CODE_RU_ILLEGAL = "20258";
+
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
