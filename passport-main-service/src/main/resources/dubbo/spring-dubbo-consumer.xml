@@ -12,7 +12,7 @@
 <!--    <dubbo:application name="consumer-of-helloworld-app"  />-->
 
     <!-- registry address, used for consumer to discover services -->
-    <dubbo:registry protocol="zookeeper" address="10.12.140.226:2181,10.16.135.181:2181,10.16.135.210:2181" />
+    <dubbo:registry protocol="zookeeper" address="10.12.140.226:2181,10.134.71.150:2181,10.16.135.210:2181" />
 
     <!-- which service to consume? -->
     <dubbo:reference id="demoService" interface="com.sogou.upd.passport.processor.mongodb.service.UserRecommendService" />
