@@ -45,11 +45,11 @@ import javax.servlet.http.HttpServletResponse;
  * Created by denghua on 14-4-28.
  */
 @Controller
-public class WapRegAction  extends BaseController{
+public class WapRegAction extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(WapRegAction.class);
 
-    private static final String LOGIN_INDEX_URL ="" ;
+    private static final String LOGIN_INDEX_URL = "";
 
     @Autowired
     private RegManager regManager;
@@ -73,7 +73,7 @@ public class WapRegAction  extends BaseController{
 
     @RequestMapping(value = "/wap/reguser", method = RequestMethod.POST)
     @ResponseBody
-    public Object reguser(HttpServletRequest request, HttpServletResponse response, RegMobileParams regParams, Model model)  throws Exception{
+    public Object reguser(HttpServletRequest request, HttpServletResponse response, RegMobileParams regParams, Model model) throws Exception {
 
         Result result = new APIResultSupport(false);
         String ip = null;
@@ -102,14 +102,13 @@ public class WapRegAction  extends BaseController{
             }
 
             // 调用内部接口
-            if(PhoneUtil.verifyPhoneNumberFormat(regParams.getUsername())){
-                result = regManager.registerMobile(regParams.getUsername(),regParams.getPassword(),regParams.getClient_id(),regParams.getCaptcha());
-            }else{
+            if (PhoneUtil.verifyPhoneNumberFormat(regParams.getUsername())) {
+                result = regManager.registerMobile(regParams.getUsername(), regParams.getPassword(), regParams.getClient_id(), regParams.getCaptcha(), null);
+            } else {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage("只支持手机号注册");
                 return result.toString();
             }
-
 
 
             if (result.isSuccess()) {
@@ -118,13 +117,13 @@ public class WapRegAction  extends BaseController{
                 String userid = result.getModels().get("userid").toString();
                 AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userid);
                 // 调用内部接口
-                GetUserInfoApiparams userInfoApiparams=new GetUserInfoApiparams(userid,"uniqname,avatarurl,gender");
+                GetUserInfoApiparams userInfoApiparams = new GetUserInfoApiparams(userid, "uniqname,avatarurl,gender");
                 if (domain == AccountDomainEnum.THIRD) {
                     result = sgUserInfoApiManager.getUserInfo(userInfoApiparams);
-                }else {
+                } else {
                     result = proxyUserInfoApiManager.getUserInfo(userInfoApiparams);
                 }
-                System.out.println("wap reg userinfo result:"+result);
+                System.out.println("wap reg userinfo result:" + result);
                 Result sessionResult = sessionServerManager.createSession(userid);
                 String sgid = null;
                 if (sessionResult.isSuccess()) {
@@ -133,8 +132,8 @@ public class WapRegAction  extends BaseController{
                     if (!Strings.isNullOrEmpty(sgid)) {
                         result.getModels().put("sgid", sgid);
                     }
-                }else{
-                    logger.warn("can't get session result, userid:"+result.getModels().get("userid"));
+                } else {
+                    logger.warn("can't get session result, userid:" + result.getModels().get("userid"));
                 }
             }
         } catch (Exception e) {
@@ -156,7 +155,7 @@ public class WapRegAction  extends BaseController{
                 }
             }
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id()+"", logCode, getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id() + "", logCode, getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);

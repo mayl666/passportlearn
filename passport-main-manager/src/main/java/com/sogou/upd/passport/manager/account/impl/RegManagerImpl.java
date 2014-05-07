@@ -5,24 +5,27 @@ import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,8 @@ public class RegManagerImpl implements RegManager {
     private BindApiManager proxyBindApiManager;
     @Autowired
     private BindApiManager sgBindApiManager;
+    @Autowired
+    private SessionServerManager sessionServerManager;
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
     @Autowired
@@ -118,7 +123,7 @@ public class RegManagerImpl implements RegManager {
                 case PHONE://手机号
                     RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);
                     if (ManagerHelper.isInvokeProxyApi(username)) {
-                        result = registerMobile(username,password,clientId,captcha);
+                        result = registerMobile(username, password, clientId, captcha, null);
                         if (result.isSuccess()) {
                             username = (String) result.getModels().get("userid");
                         }
@@ -141,15 +146,33 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
-    public Result registerMobile(String username,String password,int clientId,String captcha) throws Exception {
-        Result result = new APIResultSupport(false);
+    public Result registerMobile(String username, String password, int clientId, String captcha, String type) throws Exception {
+        Result result;
         result = mobileCodeSenderService.checkSmsCode(username, clientId, AccountModuleEnum.REGISTER, captcha);
         if (!result.isSuccess()) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
             return result;
         }
-        RegMobileApiParams regApiParams = new RegMobileApiParams(username,password,clientId);
+        RegMobileApiParams regApiParams = new RegMobileApiParams(username, password, clientId);
         result = proxyRegisterApiManager.regMobileUser(regApiParams);
+        if (!Strings.isNullOrEmpty(type)) {
+            if (ConnectTypeEnum.WAP.toString().equals(type)) {
+                String sgid;
+                String passportId = PassportIDGenerator.generator(username, AccountTypeEnum.PHONE.getValue());
+                Result sessionResult = sessionServerManager.createSession(passportId);
+                if (!sessionResult.isSuccess()) {
+                    result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                    return result;
+                }
+                sgid = (String) sessionResult.getModels().get("sgid");
+                result.setSuccess(true);
+                result.getModels().put("sgid", sgid);
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage("type参数有误！");
+                return result;
+            }
+        }
         return result;
     }
 
@@ -278,10 +301,10 @@ public class RegManagerImpl implements RegManager {
 
 
     @Override
-    public Result checkRegInBlackListByIpForInternal(String ip,int clientId) throws Exception {
+    public Result checkRegInBlackListByIpForInternal(String ip, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         //如果在黑名单，也在白名单，允许注册；如果在黑名单不在白名单，不允许注册
-        if (operateTimesService.checkRegInBlackListForInternal(ip,clientId)) {
+        if (operateTimesService.checkRegInBlackListForInternal(ip, clientId)) {
             if (!operateTimesService.checkRegInWhiteList(ip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
@@ -382,7 +405,7 @@ public class RegManagerImpl implements RegManager {
     @Override
     public boolean isUserInExistBlackList(final String username, final String ip) {
         //校验username是否在账户黑名单中
-        if (operateTimesService.isUserInExistBlackList(username,ip)) {
+        if (operateTimesService.isUserInExistBlackList(username, ip)) {
             //是否在白名单中
             if (!operateTimesService.checkLoginUserInWhiteList(username, ip)) {
                 return true;
