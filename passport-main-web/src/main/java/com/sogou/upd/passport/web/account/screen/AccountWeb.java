@@ -49,9 +49,10 @@ public class AccountWeb extends BaseController {
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
+            return "/reg/email";
         }
 
-        return "/reg/email";
+        return "/404";
     }
 
     /*
@@ -68,8 +69,9 @@ public class AccountWeb extends BaseController {
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
+            return "/reg/tel";
         }
-        return "/reg/tel";
+        return "/404";
     }
 
     /*
@@ -86,8 +88,9 @@ public class AccountWeb extends BaseController {
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
+            return "/reg/nick";
         }
-        return "/reg/nick";
+        return "/404";
     }
 
     /*
@@ -106,8 +109,9 @@ public class AccountWeb extends BaseController {
         result.setDefaultModel("email", webParams.getEmail());
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
+            return "/reg/remind";
         }
-        return "/reg/remind";
+        return "/404";
     }
 
     /*
@@ -125,8 +129,9 @@ public class AccountWeb extends BaseController {
 
         if (result.isSuccess()) {
             model.addAttribute("data", result.toString());
+            return "index";
         }
-        return "index";
+        return "404";
     }
 
     /*
