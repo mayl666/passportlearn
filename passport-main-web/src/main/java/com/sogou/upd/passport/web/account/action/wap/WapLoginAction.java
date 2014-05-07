@@ -186,7 +186,7 @@ public class WapLoginAction extends BaseController {
 
                 if(needCaptcha){
                     if(result.getCode()!=ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR) {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                         result.setMessage("验证码错误或已过期");
                     }
                 }else{
