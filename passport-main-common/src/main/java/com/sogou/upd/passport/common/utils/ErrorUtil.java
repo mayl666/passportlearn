@@ -157,7 +157,7 @@ public class ErrorUtil {
     //SSOAfterauth失败
     public static final String ERR_CODE_SSO_After_Auth_FAILED = "20256";
     //非法的RU参数
-    public static final String ERR_CODE_RU_ILLEGAL = "20257";
+    public static final String ERR_CODE_RU_ILLEGAL = "20258";
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
