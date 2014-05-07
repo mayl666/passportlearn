@@ -74,7 +74,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
                 return true;
             }
         } catch (Exception e) {
-            logger.error("insertUniqName fail,passportId="+passportId+",uniqname="+uniqname,e);
+            logger.error("insertUniqName fail,passportId=" + passportId + ",uniqname=" + uniqname, e);
             throw new ServiceException(e);
         }
         return false;
@@ -121,9 +121,11 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
             if (!Strings.isNullOrEmpty(uniqname)) {
                 //更新映射
                 int row = uniqNamePassportMappingDAO.deleteUniqNamePassportMapping(uniqname);
-                if (row >= 0) {
+                if (row > 0) {
                     String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                     dbRedisUtils.delete(cacheKey);
+                    return true;
+                } else if (row == 0) {
                     return true;
                 }
             }

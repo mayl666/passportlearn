@@ -25,7 +25,7 @@ public class SMSUtil {
 
     public static final long SEND_SMS_INTERVAL = 1000 * 60; // 发送短信验证码的间隔，1分钟只能发1条短信，单位ms
 
-    public static final long MAX_SMS_COUNT_ONEDAY = 20; // 每日最多发送20短信验证码
+    public static final long MAX_SMS_COUNT_ONEDAY = 3; // 每日最多发送短信验证码条数
 
     public static final long SMS_VALID = 30 * 60; // 短信验证码的有效期，30分钟
 
