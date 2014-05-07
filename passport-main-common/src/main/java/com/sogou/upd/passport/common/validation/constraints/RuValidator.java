@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.validation.constraints;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.filter.HTMLFilter;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -25,6 +26,15 @@ public class RuValidator implements ConstraintValidator<Ru, String> {
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (Strings.isNullOrEmpty(value)) {
             return true;
+        }
+        HTMLFilter filter = new HTMLFilter();
+        String afterFilter = filter.filter(value);
+        if (!value.equals(afterFilter)) {
+            String temp = afterFilter.replaceAll("\\&amp\\;", "&");
+            if (value.equals(temp)) {
+                return true;
+            }
+            return false;
         }
         try {
             Pattern p = Pattern.compile("^(https?:\\/\\/)?[\\w\\-.]+\\.(sogou\\.com|sohu\\.com|qq\\.com|soso\\.com|go2map\\.com|pinyin\\.cn)($|\\?|\\/|\\\\|:[\\d])", Pattern.CASE_INSENSITIVE);
