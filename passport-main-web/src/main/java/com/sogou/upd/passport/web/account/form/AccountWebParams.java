@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
@@ -16,9 +17,9 @@ import org.springframework.data.redis.connection.rjc.RjcUtils;
 public class AccountWebParams {
     @Ru
     @URL
-    private String ru;
+    private String ru = CommonConstant.DEFAULT_INDEX_URL;
     @Length(min = 4, max = 4, message = "格式有误")
-    private String client_id;
+    private String client_id = String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID);
     @Email(message = "邮箱格式有误")
     private String email;
 
