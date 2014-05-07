@@ -6,10 +6,8 @@ import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.List;
 
 /**
@@ -27,20 +25,28 @@ public class PhoneFileTest extends BaseTest {
     @Test
     public void testQueryPassportIdByPhone() {
         try {
-            List<String> phoneList = FileIOUtil.readFileByLines("D:\\statis_phone.txt");
-            FileOutputStream fos = new FileOutputStream("D:/phone_passportid");
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
+            List<String> phoneList = FileIOUtil.readFileByLines("D:\\statis_phone_201404.txt");
+            FileOutputStream fos = new FileOutputStream("D:\\statis_phone_bindpassportid_201404.txt");
             int i = 0, j = 0;
-            BufferedWriter bw = new BufferedWriter(osw);
-            for (String phone : phoneList) {
+            for (String str : phoneList) {
+                String[] strArray = str.split("\\t");
+                String phone = strArray[0];
+                String clientId = strArray[1];
+                String date = strArray[2];
                 BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
                 baseMoblieApiParams.setMobile(phone);
                 Result result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
                 if (result.isSuccess()) {
                     String passportId = (String) result.getModels().get("userid");
-                    i++;
-                    bw.write(phone + " " + passportId + "\n");
-
+                    try {
+                        if (!passportId.equals(phone + "@sohu.com") && passportId.contains("@sohu.com")) {
+                            i++;
+                            String outputStr = phone + " " + clientId + " " + date + " " + passportId + "\n";
+                            fos.write(outputStr.getBytes());
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 j++;
             }
