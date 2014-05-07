@@ -155,8 +155,7 @@ public class WapLoginAction extends BaseController {
 
                 //result = secureManager.queryAccountSecureInfo(userId, Integer.parseInt(loginParams.getClient_id()), true);
                 result.getModels().put("sgid",sgid);
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(result.toString());
+                writeResultToResponse(response, result);
                 wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
 
                 return "empty";
@@ -170,6 +169,10 @@ public class WapLoginAction extends BaseController {
             int isNeedCaptcha = 0;
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip,result.getCode());
             //校验是否需要验证码
+            if(result.getCode()==ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED){
+                writeResultToResponse(response, result);
+                return "empty";
+            }
             boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
             if (needCaptcha) {
                 isNeedCaptcha = 1;
@@ -190,14 +193,18 @@ public class WapLoginAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                     result.setMessage("用户名或者密码错误");
                 }
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(result.toString());
+                writeResultToResponse(response, result);
                 return "empty";
             }
 
             return getErrorReturnStr(loginParams, "用户名或者密码错误", isNeedCaptcha);
 
         }
+    }
+
+    private void writeResultToResponse(HttpServletResponse response, Result result) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(result.toString());
     }
 
     /**
