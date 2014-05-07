@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 import java.util.Calendar;
 
 /**
@@ -241,9 +242,10 @@ public class PCAccountController extends BaseController {
     public void authToken(HttpServletRequest request, HttpServletResponse response, PcAuthTokenParams authPcTokenParams) throws Exception {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
+        String ru = authPcTokenParams.getRu();
         if (!Strings.isNullOrEmpty(validateResult)) {
-            if (!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
-                response.sendRedirect(authPcTokenParams.getRu() + "?status=1"); //status=1表示参数错误
+            if (!Strings.isNullOrEmpty(ru)) {
+                response.sendRedirect(ru + "?status=1"); //status=1表示参数错误
                 return;
             }
             response.getWriter().print("Error: parameter error!");
@@ -256,8 +258,8 @@ public class PCAccountController extends BaseController {
             if(getUserIdResult.isSuccess()){
                 userId = (String)getUserIdResult.getDefaultModel();
             }else {
-                if (!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
-                    response.sendRedirect(authPcTokenParams.getRu() + "?status=1"); //status=1表示参数错误
+                if (!Strings.isNullOrEmpty(ru)) {
+                    response.sendRedirect(ru + "?status=1"); //status=1表示参数错误
                     return;
                 }
                 response.getWriter().print("Error: parameter error!");
@@ -279,7 +281,7 @@ public class PCAccountController extends BaseController {
         if (authTokenResult.isSuccess()) {
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(userId);
-            createCookieUrlApiParams.setRu(authPcTokenParams.getRu());
+            createCookieUrlApiParams.setRu(URLEncoder.encode(ru,CommonConstant.DEFAULT_CONTENT_CHARSET));
             if (!"0".equals(authPcTokenParams.getLivetime())) {
                 createCookieUrlApiParams.setPersistentcookie(1);
             }
@@ -301,7 +303,7 @@ public class PCAccountController extends BaseController {
             }
         }
         //token验证失败
-        response.sendRedirect(authPcTokenParams.getRu() + "?status=6");  //status=6表示验证失败
+        response.sendRedirect(ru + "?status=6");  //status=6表示验证失败
         return;
     }
 
