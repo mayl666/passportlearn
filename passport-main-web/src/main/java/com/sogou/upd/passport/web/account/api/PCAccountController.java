@@ -282,6 +282,7 @@ public class PCAccountController extends BaseController {
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(userId);
             createCookieUrlApiParams.setRu(ru);
+            createCookieUrlApiParams.setClientId(authPcTokenParams.getAppid());
             if (!"0".equals(authPcTokenParams.getLivetime())) {
                 createCookieUrlApiParams.setPersistentcookie(1);
             }

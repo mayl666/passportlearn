@@ -197,7 +197,10 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             }
             ru = buildRedirectUrl(ru, 0);
             try {
-                ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                // 1105不允许URLEncode，但壁纸需要URLEncode，所以传clientId区分
+                if (!createCookieUrlApiParams.getClientId().equals(String.valueOf(CommonConstant.PINYIN_MAC_CLIENTID))) {
+                    ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                }
             } catch (UnsupportedEncodingException e) {
             }
             locationUrlBuilder.append("&ru=").append(ru);   // 输入法Mac要求Location里的ru不能decode
