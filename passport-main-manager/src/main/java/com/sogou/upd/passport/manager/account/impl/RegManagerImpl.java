@@ -160,22 +160,24 @@ public class RegManagerImpl implements RegManager {
         }
         RegMobileApiParams regApiParams = new RegMobileApiParams(username, password, clientId);
         result = proxyRegisterApiManager.regMobileUser(regApiParams);
-        if (!Strings.isNullOrEmpty(type)) {
-            if (ConnectTypeEnum.WAP.toString().equals(type)) {
-                String sgid;
-                String passportId = PassportIDGenerator.generator(username, AccountTypeEnum.PHONE.getValue());
-                Result sessionResult = sessionServerManager.createSession(passportId);
-                if (!sessionResult.isSuccess()) {
-                    result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        if (result.isSuccess()) {
+            if (!Strings.isNullOrEmpty(type)) {
+                if (ConnectTypeEnum.WAP.toString().equals(type)) {
+                    String sgid;
+                    String passportId = PassportIDGenerator.generator(username, AccountTypeEnum.PHONE.getValue());
+                    Result sessionResult = sessionServerManager.createSession(passportId);
+                    if (!sessionResult.isSuccess()) {
+                        result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                        return result;
+                    }
+                    sgid = (String) sessionResult.getModels().get("sgid");
+                    result.setSuccess(true);
+                    result.getModels().put("sgid", sgid);
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                    result.setMessage("type参数有误！");
                     return result;
                 }
-                sgid = (String) sessionResult.getModels().get("sgid");
-                result.setSuccess(true);
-                result.getModels().put("sgid", sgid);
-            } else {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage("type参数有误！");
-                return result;
             }
         }
         return result;
