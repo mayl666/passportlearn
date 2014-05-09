@@ -123,8 +123,4 @@ public class UpmSeperateTask extends RecursiveTask<List<String>> {
         }
     }
 
-
-    public static boolean checkUpmExist(UniqnamePassportMapping mapping) {
-        return null == mapping || "null".equals(mapping);
-    }
 }

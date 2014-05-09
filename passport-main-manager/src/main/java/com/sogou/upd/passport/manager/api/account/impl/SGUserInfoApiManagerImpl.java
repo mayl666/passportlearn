@@ -1,12 +1,9 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.AccountInfoManager;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -15,12 +12,8 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
-import com.sogou.upd.passport.model.app.ConnectConfig;
-import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.app.ConnectConfigService;
-import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -49,12 +42,6 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     @Autowired
     private AccountInfoService accountInfoService;
     @Autowired
-    private CommonManager commonManager;
-    @Autowired
-    private ConnectTokenService connectTokenService;
-    @Autowired
-    private ConnectConfigService connectConfigService;
-    @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
 
     @Override
@@ -71,6 +58,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 String[] paramArray = params.split(",");
 
                 if (ArrayUtils.isNotEmpty(paramArray)) {
+
                     //调用 获取昵称接口 拼接返回的result map
                     result = oAuth2ResourceManager.getUserInfo(infoApiparams.getUserid(), infoApiparams.getClient_id());
 
@@ -83,6 +71,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                         paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "mobile"));
                     }
 
+                    //查询用户其他信息、查询account_info_0~32
                     //查询其他的个人信息 参数匹配
                     AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
                     if (accountInfo != null) {
@@ -245,4 +234,17 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
             return result;
         }
     }
+
+    /**
+     * 非第三方账号数据迁移完成后、用户信息读搜狗 V2版本
+     *
+     * @param getUserInfoApiparams
+     * @return
+     */
+   /* @Override
+    public Result getUserInfoVersion2(GetUserInfoApiparams getUserInfoApiparams) {
+
+
+        return null;
+    }*/
 }

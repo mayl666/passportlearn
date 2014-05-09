@@ -108,7 +108,18 @@ public class AccountInfoAction extends BaseController {
 
     }
 
-    //获取用户信息
+    /**
+     * 获取用户信息
+     * <p/>
+     * 数据迁移前（全量数据+增量数据完成导入前）:非第三方账号用户昵称、头像信息 读取account_base_info表，用户其他信息通过调用搜狐api获取
+     * <p/>
+     * 目标:数据迁移后（全量数据+增量数据完成导入后）:非第三方账号用户昵称、头像信息 读取account_0~32表，用户其他信息读取account_info_0~32表
+     *
+     * @param request
+     * @param params
+     * @param model
+     * @return
+     */
     @RequestMapping(value = "/userinfo/getuserinfo", method = RequestMethod.GET)
     @LoginRequired(resultType = ResponseResultType.redirect)
     public String obtainUserinfo(HttpServletRequest request, ObtainAccountInfoParams params, Model model) {
@@ -136,9 +147,15 @@ public class AccountInfoAction extends BaseController {
             }
 
             params.setUsername(userId);
+            //获取用户信息
+
+            //TODO 待修改获取用户信息
+
             result = accountInfoManager.getUserInfo(params);
 //            result.getModels().put("uniqname",(String)result.getModels().get("uniqname"));
-            result.getModels().put("uniqname",oAuth2ResourceManager.getEncodedUniqname(params.getUsername(),clientId));
+
+            //TODO 待修改此处取昵称
+            result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(params.getUsername(), clientId));
 
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);

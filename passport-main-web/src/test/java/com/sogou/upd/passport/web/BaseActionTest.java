@@ -15,6 +15,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonProcessingException;
+import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class BaseActionTest extends TestCase {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != 200) {
                 System.out.println("请求错误，错误码：" + statusCode + " - " +
-                                   response.getStatusLine().getReasonPhrase());
+                        response.getStatusLine().getReasonPhrase());
                 return null;
             }
 
@@ -53,7 +54,7 @@ public class BaseActionTest extends TestCase {
 
             String resultStr = "";
             String res;
-            while ((res = bf.readLine())!= null) {
+            while ((res = bf.readLine()) != null) {
                 resultStr += res + "\n";
             }
 
@@ -81,7 +82,7 @@ public class BaseActionTest extends TestCase {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != 200) {
                 System.out.println("请求错误，错误码：" + statusCode + " - " +
-                                   response.getStatusLine().getReasonPhrase());
+                        response.getStatusLine().getReasonPhrase());
                 return null;
             }
 
@@ -90,7 +91,7 @@ public class BaseActionTest extends TestCase {
 
             String resultStr = "";
             String res;
-            while ((res = bf.readLine())!= null) {
+            while ((res = bf.readLine()) != null) {
                 resultStr += res + "\n";
             }
 
@@ -118,7 +119,7 @@ public class BaseActionTest extends TestCase {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != 200) {
                 System.out.println("请求错误，错误码：" + statusCode + " - " +
-                                   response.getStatusLine().getReasonPhrase());
+                        response.getStatusLine().getReasonPhrase());
                 return null;
             }
 
@@ -127,7 +128,7 @@ public class BaseActionTest extends TestCase {
 
             String resultStr = "";
             String res;
-            while ((res = bf.readLine())!= null) {
+            while ((res = bf.readLine()) != null) {
                 resultStr += res + "\n";
             }
 
@@ -174,37 +175,37 @@ public class BaseActionTest extends TestCase {
         }
     }
 
-    private static final String appId="1100";
+    private static final String appId = "1100";
 
-    private static final String key="yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
+    private static final String key = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
 
+
+    @Test
     public void testPostXml() throws Exception {
 
-        long ct=System.currentTimeMillis();
-        String code= "shipengzhi1986@sogou.com" +appId+ key+ ct;
-        code= Coder.encryptMD5(code);
-
-
+        long ct = System.currentTimeMillis();
+        String code = "shipengzhi1986@sogou.com" + appId + key + ct;
+        code = Coder.encryptMD5(code);
 
         String url = "http://internal.passport.sohu.com/interface/getuserinfo";
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         sb.append("<register>\n"
-                  + "    <userid>shipengzhi1986@sogou.com</userid>\n"
-                  + "    <appid>1100</appid>\n"
-                  + "    <ct>"+ct+"</ct>\n"
-                  + "    <code>"+code+"</code>\n"
-                  + "    <password></password>\n"
-                  + "    <passwordtype></passwordtype>\n"
-                  + "    <question></question>\n"
-                  + "    <answer></answer>\n"
-                  + "    <email></email>\n"
-                  + "    <mobile></mobile>\n"
-                  + "    <createip></createip>\n"
-                  + "    <uniqname></uniqname>\n"
+//                + "    <userid>shipengzhi1986@sogou.com</userid>\n"
+                + "    <appid>1100</appid>\n"
+                + "    <ct>" + ct + "</ct>\n"
+                + "    <code>" + code + "</code>\n"
+       /*         + "    <password></password>\n"
+                + "    <passwordtype></passwordtype>\n"
+                + "    <question></question>\n"
+                + "    <answer></answer>\n"
+                + "    <email></email>\n"
+                + "    <mobile></mobile>\n"
+                + "    <createip></createip>\n"*/
+                + "    <uniqname>玩游戏就是最好的游戏</uniqname>\n"
                   /*+ "    <avatarurl></avatarurl>\n"*/
-                  + "    <regappid></regappid>\n"
-                  + "</register>");
+                + "    <regappid></regappid>\n"
+                + "</register>");
         String result = sendPostXml(url, sb.toString());
         System.out.println(result);
     }

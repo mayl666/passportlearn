@@ -41,6 +41,7 @@ public class AppForkJoin extends BaseTest {
     private UniqNamePassportMappingDAO mappingDAO;
 
 
+    @Ignore
     @Test
     public void runShard() {
         LOGGER.info("u_p_m_0_32 shard started with {} processors ", CORE_COUNT);
@@ -55,7 +56,6 @@ public class AppForkJoin extends BaseTest {
             LOGGER.error("AppForkJoin failed." + e.getMessage(), e);
         }
         LOGGER.info("u_p_m_0_32 shard  total use time :" + (System.currentTimeMillis() - start) + "ms");
-
     }
 
 
@@ -152,7 +152,7 @@ public class AppForkJoin extends BaseTest {
     @Test
     public void increaseData() throws IOException {
 
-        Path increasePath = Paths.get("D:\\logs\\increase\\increase_1.txt");
+        /*Path increasePath = Paths.get("D:\\logs\\increase\\increase_1.txt");
 
         //记录导入增量数据失败记录
         List<String> failedIncrease = Lists.newArrayList();
@@ -183,7 +183,7 @@ public class AppForkJoin extends BaseTest {
             //记录导入增量数据失败的记录
             storeFile("increase_failed.txt", failedIncrease);
         }
-
+*/
         /*try (BufferedReader reader = Files.newBufferedReader(filePath, Charset.defaultCharset())) {
             String line = null;
             while ((line = reader.readLine()) != null) {

@@ -19,7 +19,7 @@ public interface UserInfoApiManager {
      * @param getUserInfoApiparams
      * @return
      */
-    Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams) ;
+    Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams);
 
     /**
      * @param updateUserInfoApiParams
@@ -34,4 +34,14 @@ public interface UserInfoApiManager {
      * @return
      */
     Result checkUniqName(UpdateUserUniqnameApiParams updateUserUniqnameApiParams);
+
+
+    /**
+     * 非第三方数据迁移后，获取用户信息，用户昵称、头像 信息读取account_0~32、用户其他信息读 account_info_0~32
+     *
+     * @param getUserInfoApiparams
+     * @return
+     */
+//    Result getUserInfoVersion2(GetUserInfoApiparams getUserInfoApiparams);
+
 }

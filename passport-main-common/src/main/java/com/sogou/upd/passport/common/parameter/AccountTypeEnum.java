@@ -21,7 +21,9 @@ public enum AccountTypeEnum {
     RENREN(5), // 人人
     TAOBAO(6), // 淘宝
     BAIDU(7),  // 百度
-    SOGOU(8);  // @sogou.com账号
+    SOGOU(8),  // @sogou.com账号
+    SOHU(9);  //sohu域账号
+
 
     // provider数字与字符串映射字典表
     private static BiMap<String, Integer> PROVIDER_MAPPING_DICT = HashBiMap.create();
@@ -35,6 +37,7 @@ public enum AccountTypeEnum {
         PROVIDER_MAPPING_DICT.put("renren", RENREN.getValue());
         PROVIDER_MAPPING_DICT.put("taobao", TAOBAO.getValue());
         PROVIDER_MAPPING_DICT.put("baidu", BAIDU.getValue());
+        PROVIDER_MAPPING_DICT.put("sohu", SOHU.getValue());
     }
 
     private int value;
