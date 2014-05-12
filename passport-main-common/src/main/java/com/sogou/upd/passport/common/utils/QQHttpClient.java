@@ -34,13 +34,13 @@ public class QQHttpClient {
             requestModel.setParams(params);
             Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
             try {
-                //打印出完整请求串
+                //todo 打印出完整请求串，上线时需注释掉
                 printRequest(url, HttpMethodEnum.POST, params);
             } catch (Exception e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
             resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
-            //打印出完整的返回串
+            //todo 打印出完整的返回串，上线时需注释掉
             printRespond(resp);
         } catch (IOException e) {
             logger.error("api:Transfer Map To String Failed :", e);
