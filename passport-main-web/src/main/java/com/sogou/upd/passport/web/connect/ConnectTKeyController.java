@@ -76,27 +76,27 @@ public class ConnectTKeyController {
             userId = hostHolder.getPassportId();
         }
 
-        String tKeyString=""; //未加密前的字符串  //tKey组成: openId|openkey|expireIn|appid|userid|clientid|timestamp
+
         //根据client来获取相关信息。
 //        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(tKeyParams.getClient_id(), AccountTypeEnum.getProvider("qq"));
-        ConnectToken connectToken=getConnectToken(userId,tKeyParams.getClient_id());
-        if(connectToken==null){
+        int clientId = tKeyParams.getClient_id();
+        ConnectToken connectToken = getConnectToken(userId, clientId);
+        if (connectToken == null) {
             result.setMessage("请重新登录!");
             return result.toString();
         }
+        String tKey = createTKey_V01(clientId, connectToken);
 
-        tKeyString+=connectToken.getOpenid()+ SEPARATOR_1;
-        tKeyString+=connectToken.getAccessToken()+SEPARATOR_1;
-        tKeyString+=connectToken.getExpiresIn()+SEPARATOR_1;
-        tKeyString+=connectToken.getAppKey()+SEPARATOR_1;
-        tKeyString+=connectToken.getPassportId()+SEPARATOR_1;
-        tKeyString+=tKeyParams.getClient_id()+SEPARATOR_1;
-        tKeyString+=System.currentTimeMillis();
-
-        String tKey="01"+SEPARATOR_1+AES.encryptURLSafeString(tKeyString,"adfab231rqwqerq");
         result.setSuccess(true);
-        result.getModels().put("tKey",tKey);
+        result.getModels().put("tKey", tKey);
         return result.toString();
+    }
+
+    private String createTKey_V01(int clientId, ConnectToken connectToken) throws Exception {
+        //未加密前的字符串  //tKey组成: openId|openkey|expireIn|appid|userid|clientid|timestamp
+        String tKeyString=String.format("%s|%s|%s|%s|%s|%s|%s", connectToken.getOpenid(), connectToken.getAccessToken(), connectToken.getExpiresIn(), connectToken.getAppKey(), connectToken.getPassportId(), clientId, System.currentTimeMillis());
+
+        return "01" + SEPARATOR_1 + AES.encryptURLSafeString(tKeyString, "adfab231rqwqerq");
     }
 
     private ConnectToken getConnectToken(String userId, int clientId) {
