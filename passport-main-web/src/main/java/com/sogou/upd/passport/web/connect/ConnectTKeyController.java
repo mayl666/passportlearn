@@ -80,6 +80,11 @@ public class ConnectTKeyController {
         //根据client来获取相关信息。
 //        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(tKeyParams.getClient_id(), AccountTypeEnum.getProvider("qq"));
         ConnectToken connectToken=getConnectToken(userId,tKeyParams.getClient_id());
+        if(connectToken==null){
+            result.setMessage("请重新登录!");
+            return result.toString();
+        }
+
         tKeyString+=connectToken.getOpenid()+ SEPARATOR_1;
         tKeyString+=connectToken.getAccessToken()+SEPARATOR_1;
         tKeyString+=connectToken.getExpiresIn()+SEPARATOR_1;
