@@ -19,7 +19,6 @@ import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.model.account.Account;
@@ -364,70 +363,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     public Result getUserInfo(String passportId, int clientId) {
         Result result = new APIResultSupport(false);
 
-        String avatarurl = "";
-        String uniqname = defaultUniqname(passportId), large_avatar = "", mid_avatar = "", tiny_avatar = "";
-        AccountBaseInfo accountBaseInfo;
-        try {
-            Account account = accountService.queryAccountByPassportId(passportId);
-            if (account != null) {
-                uniqname = account.getUniqname();
-                avatarurl = account.getAvatar();
-            }
-            //第三方账户先从account里获取
-            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
-            if (domain == AccountDomainEnum.THIRD) {
-                ConnectToken connectToken = null;
-                if (Strings.isNullOrEmpty(uniqname) || Strings.isNullOrEmpty(avatarurl)) {
-                    connectToken = getConnectToken(passportId, clientId);
-                    if (connectToken != null) {
-                        if (Strings.isNullOrEmpty(uniqname)) {
-                            uniqname = connectToken.getConnectUniqname();
-                        }
-                        if (Strings.isNullOrEmpty(avatarurl)) {
-                            large_avatar = connectToken.getAvatarLarge();
-                            mid_avatar = connectToken.getAvatarMiddle();
-                            tiny_avatar = connectToken.getAvatarSmall();
-                        }
-                    }
-                } else {
-                    //获取不同尺寸头像
-                    Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
-                    large_avatar = (String) getPhotoResult.getModels().get("img_180");
-                    mid_avatar = (String) getPhotoResult.getModels().get("img_50");
-                    tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
-                }
-                result.setDefaultModel("userid", passportId);
-            } else {
-                //TODO 非第三方账号 用户“昵称”数据读取需要从 account_base_info 切换至 account_0~32
-                accountBaseInfo = getBaseInfo(passportId);
-                if (accountBaseInfo != null) {
-                    uniqname = accountBaseInfo.getUniqname();
-                    Result getPhotoResult = photoUtils.obtainPhoto(accountBaseInfo.getAvatar(), "30,50,180");
-                    large_avatar = (String) getPhotoResult.getModels().get("img_180");
-                    mid_avatar = (String) getPhotoResult.getModels().get("img_50");
-                    tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
-                    uniqname = getAndUpdateUniqname(passportId, accountBaseInfo, uniqname);
-                }
-
-
-            }
-            result.setSuccess(true);
-            result.setDefaultModel("uniqname", uniqname);
-            result.setDefaultModel("img_30", tiny_avatar);
-            result.setDefaultModel("img_50", mid_avatar);
-            result.setDefaultModel("img_180", large_avatar);
-        } catch (Exception e) {
-            log.error("getUserInfo error! passportId:" + passportId, e);
-        }
-
-        return result;
-    }
-
-
-    /*@Override
-    public Result getUserInfo(String passportId, int clientId) {
-        Result result = new APIResultSupport(false);
-
         String avatarurl;
         String uniqname = defaultUniqname(passportId), large_avatar = "", mid_avatar = "", tiny_avatar = "";
         AccountBaseInfo accountBaseInfo;
@@ -483,7 +418,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
 
         return result;
     }
-*/
 
     /**
      * 从浏览器论坛取昵称

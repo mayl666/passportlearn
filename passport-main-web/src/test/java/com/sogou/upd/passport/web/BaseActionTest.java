@@ -1,8 +1,13 @@
 package com.sogou.upd.passport.web;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.model.account.UniqnamePassportMapping;
 import junit.framework.TestCase;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -15,12 +20,15 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonProcessingException;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -184,14 +192,14 @@ public class BaseActionTest extends TestCase {
     public void testPostXml() throws Exception {
 
         long ct = System.currentTimeMillis();
-        String code = "shipengzhi1986@sogou.com" + appId + key + ct;
+        String code = "18910873053@sohu.com" + appId + key + ct;
         code = Coder.encryptMD5(code);
 
         String url = "http://internal.passport.sohu.com/interface/getuserinfo";
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         sb.append("<register>\n"
-//                + "    <userid>shipengzhi1986@sogou.com</userid>\n"
+                + "    <userid>18910873053@sohu.com</userid>\n"
                 + "    <appid>1100</appid>\n"
                 + "    <ct>" + ct + "</ct>\n"
                 + "    <code>" + code + "</code>\n"
@@ -202,11 +210,66 @@ public class BaseActionTest extends TestCase {
                 + "    <email></email>\n"
                 + "    <mobile></mobile>\n"
                 + "    <createip></createip>\n"*/
-                + "    <uniqname>玩游戏就是最好的游戏</uniqname>\n"
+                + "    <uniqname></uniqname>\n"
                   /*+ "    <avatarurl></avatarurl>\n"*/
                 + "    <regappid></regappid>\n"
                 + "</register>");
         String result = sendPostXml(url, sb.toString());
         System.out.println(result);
+    }
+
+
+    @Ignore
+    @Test
+    public void testGetCheck() throws Exception {
+        long ct = System.currentTimeMillis();
+        String code = appId + key + ct;
+        code = Coder.encryptMD5(code);
+
+        String url = "http://internal.passport.sohu.com/interface/getuserinfo";
+
+        Path increasePath = Paths.get("D:\\搜狗指数昵称.txt");
+
+        //记录导入增量数据失败记录
+        List<String> resultList = Lists.newArrayList();
+        try (BufferedReader reader = Files.newBufferedReader(increasePath, Charset.defaultCharset())) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                StringBuffer sb = new StringBuffer();
+                sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+                sb.append("<register>\n"
+                        + "    <userid></userid>\n"
+                        + "    <appid>1100</appid>\n"
+                        + "    <ct>" + ct + "</ct>\n"
+                        + "    <code>" + code + "</code>\n"
+                        + "    <uniqname>" + line + "</uniqname>\n"
+                        + "</register>");
+                String result = sendPostXml(url, sb.toString());
+                if (!Strings.isNullOrEmpty(result)) {
+                    resultList.add(line + ":" + StringUtils.substringBetween(result, "<userid>", "</userid>"));
+                }
+            }
+            //记录导入增量数据失败的记录
+            storeFile("result_sohu_zhishu.txt", resultList);
+        }
+    }
+
+    /**
+     * @param fileName
+     * @param result
+     * @throws IOException
+     */
+    private static void storeFile(String fileName, List<String> result) throws IOException {
+        Path filePath = Paths.get("D:\\logs\\" + fileName);
+        Files.deleteIfExists(filePath);
+        BufferedWriter writer = Files.newBufferedWriter(filePath, Charset.defaultCharset());
+        if (CollectionUtils.isNotEmpty(result)) {
+            for (String item : result) {
+                writer.write(item);
+                writer.newLine();
+            }
+            writer.flush();
+        }
+
     }
 }

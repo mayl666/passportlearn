@@ -1,16 +1,13 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
@@ -25,7 +22,6 @@ import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.service.account.AccountService;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,8 +52,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     private UserInfoApiManager shPlusUserInfoApiManager;
     @Autowired
     private AccountBaseInfoDAO accountBaseInfoDAO;
-    @Autowired
-    private OAuth2ResourceManager oAuth2ResourceManager;
+
     @Autowired
     private AccountService accountService;
 
@@ -216,6 +210,14 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         return result;
     }
 
+    /**
+     * 更新用户信息
+     * 非第三方账号迁移前:
+     *
+     * @param infoParams
+     * @param ip
+     * @return
+     */
     @Override
     public Result updateUserInfo(AccountInfoParams infoParams, String ip) {
 
@@ -266,6 +268,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
             }
         } else {
+            //TODO 提醒 非第三方账号迁移完成后, 更新用户信息,开启此分支
             updateUserInfoApiParams = buildUpdateUserInfoApiParams(infoParams, ip);
             result = sgUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
         }
@@ -308,9 +311,24 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 }
             }
         } else {
+            //TODO 非第三方账号迁移完成后，第三方账号、非第三方账号走相同逻辑、开启此分支
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);
         }
         return result;
+    }
+
+
+    /**
+     * 非第三方全量数据迁移完成后，采用此方法
+     * 获取用户信息，用户昵称、头像 信息读取account_0~32、用户其他信息读 account_info_0~32
+     *
+     * @param params
+     * @return
+     */
+    @Override
+    public Result getUserInfoVersion2(ObtainAccountInfoParams params) {
+        GetUserInfoApiparams infoApiparams = buildGetUserInfoApiparams(params);
+        return sgUserInfoApiManager.getUserInfo(infoApiparams);
     }
 
 

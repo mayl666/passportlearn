@@ -233,6 +233,7 @@ public class AccountInfoAction extends BaseController {
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
             CommonsMultipartFile multipartFile = (CommonsMultipartFile) multipartRequest.getFile("Filedata");
 
+            //TODO 非第三方账号数据迁移 用户更新头像信息
             byte[] byteArr = multipartFile.getBytes();
             result = accountInfoManager.uploadImg(byteArr, userId, "0");
 
