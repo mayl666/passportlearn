@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.service.dataimport.nick_migration;
+package com.sogou.upd.passport.service.dataimport.nick_name_migration;
 
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
