@@ -325,7 +325,7 @@ public class PCOAuth2AccountController extends BaseController {
             }
             if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
-                result.setMessage("密码错误");
+                result.setMessage("账号操作异常");
             }
         }
 
