@@ -37,11 +37,11 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 
 //        this.testUnbindMobile();
     }
-//
-//
+
+    //解除手机号的绑定关系
     @Test
     public void testUnbindMobile(){
-        Result result = proxyBindApiManager.unBindMobile("15210832767");
+        Result result = proxyBindApiManager.unBindMobile("13925763025");
         System.out.println(result.toString());
         Assert.assertTrue(result.isSuccess());
     }
@@ -117,7 +117,7 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
     @Test
     public void testGetPassportIdFromMobile(){
         BaseMoblieApiParams baseMoblieApiParams=new BaseMoblieApiParams();
-        baseMoblieApiParams.setMobile("13621050796");
+        baseMoblieApiParams.setMobile("13925763025");
         Result result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
         System.out.println("result:"+result.toString());
     }
