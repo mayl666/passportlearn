@@ -12,7 +12,7 @@
     <dubbo:application name="sogou-passport"  />
 
     <!-- registry address, used for service to register itself -->
-    <dubbo:registry protocol="zookeeper" address="10.12.140.226:2181,10.16.135.181:2181,10.16.135.210:2181" />
+    <dubbo:registry protocol="zookeeper" address="10.12.140.226:2181,10.134.71.150:2181,10.16.135.210:2181" />
 
     <!-- expose this service through dubbo protocol, through port 20880 -->
     <dubbo:protocol name="dubbo" port="20880" />

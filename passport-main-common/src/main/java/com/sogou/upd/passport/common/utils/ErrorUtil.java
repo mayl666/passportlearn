@@ -156,8 +156,11 @@ public class ErrorUtil {
     public static final String ERR_CODE_REMOVE_COOKIE_FAILED = "20255";
     //SSOAfterauth失败
     public static final String ERR_CODE_SSO_After_Auth_FAILED = "20256";
+    //需要验证码
+    public static final String ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE = "20257";
     //非法的RU参数
     public static final String ERR_CODE_RU_ILLEGAL = "20258";
+
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -390,6 +393,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED, "重置密码失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ALREADY_ACTIVED_FAILED, "已经激活，无需再次激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, "验证码验证失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE, "请输入验证码");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED, "激活链接已经失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已绑定其他账号");
 
