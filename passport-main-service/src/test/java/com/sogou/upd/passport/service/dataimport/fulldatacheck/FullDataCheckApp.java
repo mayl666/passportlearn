@@ -26,7 +26,7 @@ import java.util.Map;
  * Date: 14-5-13
  * Time: 下午2:50
  */
-public class FullDataCheckApp {
+public class FullDataCheckApp extends BaseTest {
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FullDataCheckApp.class);
@@ -84,12 +84,11 @@ public class FullDataCheckApp {
                     mapA.put("personalid", accountInfo.getPassportId());
 
 
+                    //比较文件
                     MapDifference difference = Maps.difference(mapA, mapB);
                     if (!difference.areEqual()) {
                         //记录对比不同的数据到Log 记录到文件
-
                         LOGGER.info("记录下比对结果不同的数据到文件 passportId:" + passportId);
-
                     }
                 }
             } else {
