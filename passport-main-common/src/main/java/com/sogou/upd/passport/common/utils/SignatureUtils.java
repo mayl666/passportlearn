@@ -2,7 +2,6 @@ package com.sogou.upd.passport.common.utils;
 
 import com.sogou.upd.passport.common.math.Coder;
 
-import javax.sound.midi.Soundbank;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Set;
@@ -23,7 +22,6 @@ public class SignatureUtils {
         }
         String enParams=paramsBase.toString();
         String baseStr = enParams + secret;
-        System.out.println("code will encode string:+"+enParams);
         return Coder.encryptMD5(baseStr);
     }
 

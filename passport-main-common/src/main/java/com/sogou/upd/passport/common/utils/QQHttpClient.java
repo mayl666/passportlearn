@@ -33,15 +33,7 @@ public class QQHttpClient {
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
             requestModel.setParams(params);
             Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
-            try {
-                //todo 打印出完整请求串，上线时需注释掉
-                printRequest(url, HttpMethodEnum.POST, params);
-            } catch (Exception e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
             resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
-            //todo 打印出完整的返回串，上线时需注释掉
-            printRespond(resp);
         } catch (IOException e) {
             logger.error("api:Transfer Map To String Failed :", e);
         }
