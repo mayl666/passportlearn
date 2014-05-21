@@ -3,6 +3,8 @@ package com.sogou.upd.passport.service.dataimport.util;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -20,6 +22,7 @@ import java.util.List;
  */
 public class FileUtil {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
 
     private static final int HOLD_NUMBER = 500000;
 
@@ -29,21 +32,25 @@ public class FileUtil {
     /**
      * 存储操作日志到本地
      *
-     * @param fileName
+     * @param path
      * @param result
      * @throws IOException
      * @throws URISyntaxException
      */
-    public static void storeFile(String fileName, List<String> result) throws IOException, URISyntaxException {
-        Path filePath = Paths.get("D:\\logs\\" + fileName);
-        Files.deleteIfExists(filePath);
-        BufferedWriter writer = Files.newBufferedWriter(filePath, Charset.defaultCharset());
-        if (CollectionUtils.isNotEmpty(result)) {
-            for (String item : result) {
-                writer.write(item);
-                writer.newLine();
+    public static void storeFile(String path, List<String> result) throws IOException, URISyntaxException {
+        try {
+            Path filePath = Paths.get(path);
+            Files.deleteIfExists(filePath);
+            BufferedWriter writer = Files.newBufferedWriter(filePath, Charset.defaultCharset());
+            if (CollectionUtils.isNotEmpty(result)) {
+                for (String item : result) {
+                    writer.write(item);
+                    writer.newLine();
+                }
+                writer.flush();
             }
-            writer.flush();
+        } catch (Exception e) {
+            LOGGER.error("FileUtil storeFile  error. ", e);
         }
     }
 

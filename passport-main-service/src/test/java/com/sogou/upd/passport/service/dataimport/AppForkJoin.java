@@ -1,12 +1,25 @@
 package com.sogou.upd.passport.service.dataimport;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.MapDifference;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.parameter.HttpTransformat;
+import com.sogou.upd.passport.common.utils.SGHttpClient;
+import com.sogou.upd.passport.dao.account.AccountDAO;
+import com.sogou.upd.passport.dao.account.AccountInfoDAO;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
+import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.model.account.UniqnamePassportMapping;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.perf4j.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +41,7 @@ import java.util.concurrent.ForkJoinPool;
  * Date: 14-4-22
  * Time: 下午2:22
  */
-@Ignore
+//@Ignore
 public class AppForkJoin extends BaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppForkJoin.class);
@@ -39,6 +52,20 @@ public class AppForkJoin extends BaseTest {
 
     @Autowired
     private UniqNamePassportMappingDAO mappingDAO;
+
+    @Autowired
+    private AccountDAO accountDAO;
+
+    @Autowired
+    private AccountInfoDAO accountInfoDAO;
+
+    private static final String appId = "1100";
+
+    private static final String key = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
+
+    private static final String REQUEST_URL = "http://internal.passport.sohu.com/interface/getuserinfo";
+
+    private static final String REQUEST_INFO = "info";
 
 
     @Ignore
@@ -223,5 +250,165 @@ public class AppForkJoin extends BaseTest {
             System.out.printf("%n%n");
         }
     }*/
+    }
+
+    @Test
+    public void testCheckData() {
+
+        String passportId = "1031126049@qq.com";
+
+        StopWatch watch = new StopWatch();
+        watch.start();
+
+        RequestModelXml requestModelXml = bulidRequestModelXml(passportId);
+
+        try {
+            Map<String, Object> mapB = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
+
+            //处理 mapB
+            if (mapB != null) {
+                if (mapB.containsKey("flag")) {
+                    mapB.remove("flag");
+                }
+                if (mapB.containsKey("status")) {
+                    mapB.remove("status");
+                }
+
+                if (mapB.containsKey("birthday")) {
+                    String birthday = String.valueOf(mapB.get("birthday"));
+                    if (StringUtils.isNotEmpty(birthday) && birthday.length() >= 10) {
+                        mapB.put("birthday", StringUtils.substring(birthday, 0, 10));
+                    }
+                }
+            }
+
+
+            LOGGER.info("testCheckData mapB :" + mapB.toString());
+            if (StringUtils.isNotEmpty(passportId)) {
+                Account account = accountDAO.getAccountByPassportId(passportId);
+
+
+                AccountInfo accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
+
+
+                if (account != null && accountInfo != null) {
+
+
+                    /**
+                     * birthday=1978-05-1,
+                     createip=,
+                     userid=12345653100@sohu.com,
+                     personalid=,
+                     city=,
+                     createtime=2006-05-19 08:46:36,
+                     username=fullname,
+                     email=,
+                     province=,
+                     gender=1,
+                     mobile=}
+                     */
+
+
+                    //Test 库数据
+                    Map<String, Object> mapA = Maps.newHashMap();
+//                    mapA.put("birthday", accountInfo.getBirthday() == null ? StringUtils.EMPTY : accountInfo.getBirthday());
+
+                    String birthday = String.valueOf(accountInfo.getBirthday());
+                    if (StringUtils.isNotEmpty(birthday)) {
+                        if (birthday.length() >= 10) {
+                            mapA.put("birthday", StringUtils.substring(birthday, 0, 10));
+                        }
+                    } else {
+                        mapA.put("birthday", StringUtils.EMPTY);
+                    }
+
+                    mapA.put("createip", account.getRegIp() == null || account.getRegIp() == "" ? StringUtils.EMPTY : account.getRegIp());
+                    mapA.put("userid", passportId);
+                    mapA.put("personalid", accountInfo.getPersonalid() == null ? StringUtils.EMPTY : accountInfo.getPersonalid());
+                    mapA.put("city", accountInfo.getCity() == null ? StringUtils.EMPTY : accountInfo.getCity());
+//                    mapA.put("createtime", account.getRegTime());
+
+                    String createTime = String.valueOf(account.getRegTime());
+                    if (StringUtils.isNotEmpty(createTime)) {
+                        if (createTime.length() >= 19) {
+                            mapA.put("createtime", StringUtils.substring(createTime, 0, 19));
+                        }
+                    } else {
+                        mapA.put("createtime", StringUtils.EMPTY);
+                    }
+
+                    mapA.put("username", accountInfo.getFullname() == null ? StringUtils.EMPTY : accountInfo.getFullname());
+                    mapA.put("email", accountInfo.getEmail() == null ? StringUtils.EMPTY : accountInfo.getEmail());
+                    mapA.put("province", accountInfo.getProvince() == null ? StringUtils.EMPTY : accountInfo.getProvince());
+                    mapA.put("gender", accountInfo.getGender() == null ? StringUtils.EMPTY : accountInfo.getGender());
+                    mapA.put("mobile", account.getMobile() == null ? StringUtils.EMPTY : account.getMobile());
+
+                    LOGGER.info("testCheckData mapA :" + mapA.toString());
+
+                    //比较文件
+                    if (mapA != null && mapB != null) {
+                        MapDifference difference = Maps.difference(mapA, mapB);
+                        if (!difference.areEqual()) {
+                            LOGGER.info("testCheckData mapA and mapB is difference {}", difference.entriesDiffering().toString());
+//                            differenceList.add(passportId);
+                            //记录对比不同的数据到Log 记录到文件
+//                            LOGGER.info("FullDataCheckApp check full data difference passportId {} " + passportId);
+                        } else {
+                            LOGGER.info("testCheckData mapA and mapB is equal}");
+                        }
+                    }
+                }
+            }
+            LOGGER.info("testCheckData use time {}", watch.stop());
+        } catch (Exception e) {
+            LOGGER.error("testCheckData error", e);
+        }
+
+
+    }
+
+
+    @Test
+    public void testSubStr() {
+        String str1 = "1980-01-01 00:00:00.0";
+
+        String str2 = "2007-05-16 16:33:18.0";
+        System.out.println("=====================" + StringUtils.substring(str1, 0, 10));
+        System.out.println("=====================" + StringUtils.substring(str2, 0, 19));
+
+    }
+
+    /**
+     * 构建请求参数
+     *
+     * @return
+     */
+    public static RequestModelXml bulidRequestModelXml(String passportId) {
+
+        RequestModelXml requestModelXml = new RequestModelXml(REQUEST_URL, REQUEST_INFO);
+        try {
+            long ct = System.currentTimeMillis();
+            String code = passportId + appId + key + ct;
+            code = Coder.encryptMD5(code);
+
+            requestModelXml.addParam("mobile", "");
+            requestModelXml.addParam("createtime", "");
+            requestModelXml.addParam("createip", "");
+            requestModelXml.addParam("email", "");
+            requestModelXml.addParam("birthday", "");
+            requestModelXml.addParam("gender", "");
+            requestModelXml.addParam("province", "");
+            requestModelXml.addParam("city", "");
+            requestModelXml.addParam("username", "");
+            requestModelXml.addParam("personalid", "");
+            requestModelXml.addParam("userid", passportId);
+            requestModelXml.addParam("appid", appId);
+            requestModelXml.addParam("ct", ct);
+            requestModelXml.addParam("code", code);
+        } catch (Exception e) {
+            LOGGER.error("build RequestModelXml error.", e);
+            e.printStackTrace();
+        }
+        return requestModelXml;
     }
 }
