@@ -38,8 +38,8 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 //        this.testUnbindMobile();
     }
 
-    //
-//
+ 
+    //安卓，通用语和皮肤词库官网都是
     @Test
     public void testUnbindMobile() {
         Result result = proxyBindApiManager.unBindMobile("15210832767");
