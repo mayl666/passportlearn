@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -55,6 +56,7 @@ public class RegManagerImpl implements RegManager {
     private AccountSecureService accountSecureService;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
+    private static final Logger checkLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothCheckSyncErrorLogger");
 
     private static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
@@ -294,6 +296,10 @@ public class RegManagerImpl implements RegManager {
             result = sgRegisterApiManager.checkUser(checkUserApiParams);
             if (result.isSuccess()) {  //SG没有，查询SH
                 result = checkUserFromSohu(username, clientId);
+                if (!result.isSuccess()) {
+                    //检查用户名是否存在时，SG不存在，SH存在，全量数据迁移有遗漏或是双读延迟
+                    checkLogger.error("check sogou error,check sohu success,username:{};time:{}", username, new Date());
+                }
             }
         }
         return result;

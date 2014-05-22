@@ -86,7 +86,7 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                     if (result.isSuccess()) {
                         //读SG失败，读SH成功，记录userid，便于验证数据同步情况
                         //日志记录可能存在的情况：新注册用户登录时，同步延迟；用户找回密码后登录；用户校验密码失败等
-                        readLogger.error("auth sogou error,auth sohu success,userId:[{}];time:[{}]", authUserApiParams.getUserid(), new Date());
+                        readLogger.error("auth sogou error,auth sohu success,userId:{};time:{}", authUserApiParams.getUserid(), new Date());
                     }
                 }
             }
