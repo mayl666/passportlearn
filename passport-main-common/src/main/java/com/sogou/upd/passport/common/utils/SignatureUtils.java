@@ -21,7 +21,6 @@ public class SignatureUtils {
             paramsBase.append(key).append("=").append(params.get(key)).append("&");
         }
         String enParams=paramsBase.toString();
-
         String baseStr = enParams + secret;
         return Coder.encryptMD5(baseStr);
     }

@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.connect.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -61,6 +62,9 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
             int isthird = Integer.parseInt(req.getParameter("isthird"));
 //            String instance_id = req.getParameter("instance_id");
 
+            String appidtypeString = req.getParameter("appid_type");
+            Integer appidType= appidtypeString ==null?null:Integer.valueOf(appidtypeString);
+
             int provider = AccountTypeEnum.getProvider(providerStr);
 
 
@@ -72,7 +76,20 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                 }
 
                 //根据code值获取access_token
-                ConnectConfig connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
+                ConnectConfig connectConfig = null;
+                if(appidType==null){
+                    connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
+                }else{
+                    if(appidType==0) {
+                        connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
+                    }else if(appidType==1){
+                        connectConfig = connectConfigService.querySpecifyConnectConfig(client_id, provider);
+                    }else{
+                        connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
+                    }
+                }
+
+
                 if (connectConfig == null) {
                     result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                     return result;

@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectProxyOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.proxy.ConnectProxyOpenApiParams;
@@ -14,6 +15,7 @@ import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +83,68 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 if (!CollectionUtils.isEmpty(tokenMap)) {
                     tokenMap.put("client_id", String.valueOf(clientId));
                     result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, null);
+                }
+            } else {
+                result = openResult;
+            }
+        } catch (Exception e) {
+            logger.error("qzoneConnectProxyOpenApi Is Failed,UserId is " + passportId, e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, uri, String.valueOf(clientId), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            userOperationLog.putOtherMessage("connectResult", result.toString());
+            UserOperationLogUtil.log(userOperationLog);
+        }
+        return result.toString();
+    }
+
+    /**
+     * 输入法获取QQ用户的词库
+     *
+     * @param request
+     * @param params  第三方开放平台接口所需参数
+     * @return
+     * @throws Exception
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/qq/user/qzone/picface", method = RequestMethod.POST)
+    @ResponseBody
+    public Object qzoneGetUserPicface(HttpServletRequest request, ConnectProxyOpenApiParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        String passportId = params.getUserid();
+        int clientId = params.getClient_id();
+        String uri = request.getRequestURI();
+        try {
+            // 仅支持qq账号调用此接口
+            if (AccountTypeEnum.getAccountType(passportId) != AccountTypeEnum.QQ) {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
+                return result.toString();
+            }
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
+            if (openResult.isSuccess()) {
+                //获取用户的openId/openKey
+                ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
+                Map<String, String> tokenMap = covertObjectToMap(connectToken);
+                if (!CollectionUtils.isEmpty(tokenMap)) {
+                    tokenMap.put("client_id", String.valueOf(clientId));
+                    Object paramsObj = params.getParams();
+                    HashMap<String, Object> paramMap = new HashMap<>();
+                    ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
+                    if (paramsObj != null) {
+                        paramMap = objectMapper.readValue(paramsObj.toString(), HashMap.class);
+                    }
+                    paramMap.put("pf", "qzone");
+                    paramMap.put("format", "json");
+                    result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, paramMap);
                 }
             } else {
                 result = openResult;
