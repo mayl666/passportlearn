@@ -125,13 +125,6 @@ public class FileReader {
         return endPointer;
     }
 
-
-
-
-
-
-
-
     /**
      * <p>合并文件</p>
      *
@@ -154,7 +147,5 @@ public class FileReader {
         }
         ok.close();
     }
-
-
 }
 
