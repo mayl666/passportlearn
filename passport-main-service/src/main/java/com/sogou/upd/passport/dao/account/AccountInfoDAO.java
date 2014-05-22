@@ -47,6 +47,19 @@ public interface AccountInfoDAO {
     public AccountInfo getAccountInfoByPassportId(@ShardBy @SQLParam("passport_id") String passport_id) throws
             DataAccessException;
 
+
+    /**
+     * 非第三方账号迁移，特别提示，仅供数据验证使用，根据passportId获取AccountInfo
+     */
+    @SQL("select " +
+            " email,gender, province, city,fullname,personalid" +
+            " from " +
+            TABLE_NAME +
+            " where passport_id=:passport_id")
+    public AccountInfo getAccountInfoByPid4DataCheck(@ShardBy @SQLParam("passport_id") String passport_id) throws
+            DataAccessException;
+
+
     /**
      * 根据passportId删除用户的AccountInfo信息，
      * 内部调试接口使用

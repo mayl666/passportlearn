@@ -17,6 +17,7 @@ import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.model.account.UniqnamePassportMapping;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.perf4j.StopWatch;
@@ -252,21 +253,23 @@ public class AppForkJoin extends BaseTest {
     }*/
     }
 
+    //    @Ignore
     @Test
     public void testCheckData() {
 
-        String passportId = "1031126049@qq.com";
+        Map<String, String> differenceMap = Maps.newConcurrentMap();
+
+        String passportId = "002zmm@163.com";
 
         StopWatch watch = new StopWatch();
         watch.start();
 
         RequestModelXml requestModelXml = bulidRequestModelXml(passportId);
-
         try {
             Map<String, Object> mapB = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
 
             //处理 mapB
-            if (mapB != null) {
+           /* if (mapB != null) {
                 if (mapB.containsKey("flag")) {
                     mapB.remove("flag");
                 }
@@ -274,53 +277,39 @@ public class AppForkJoin extends BaseTest {
                     mapB.remove("status");
                 }
 
-                if (mapB.containsKey("birthday")) {
+
+               *//* if (mapB.containsKey("birthday")) {
                     String birthday = String.valueOf(mapB.get("birthday"));
                     if (StringUtils.isNotEmpty(birthday) && birthday.length() >= 10) {
                         mapB.put("birthday", StringUtils.substring(birthday, 0, 10));
+                    } else {
+                        mapB.put("birthday", StringUtils.EMPTY);
                     }
-                }
-            }
-
-
+                }*//*
+            }*/
             LOGGER.info("testCheckData mapB :" + mapB.toString());
+
             if (StringUtils.isNotEmpty(passportId)) {
                 Account account = accountDAO.getAccountByPassportId(passportId);
 
-
-                AccountInfo accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
-
+//                AccountInfo accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
+                AccountInfo accountInfo = accountInfoDAO.getAccountInfoByPid4DataCheck(passportId);
 
                 if (account != null && accountInfo != null) {
-
-
-                    /**
-                     * birthday=1978-05-1,
-                     createip=,
-                     userid=12345653100@sohu.com,
-                     personalid=,
-                     city=,
-                     createtime=2006-05-19 08:46:36,
-                     username=fullname,
-                     email=,
-                     province=,
-                     gender=1,
-                     mobile=}
-                     */
-
 
                     //Test 库数据
                     Map<String, Object> mapA = Maps.newHashMap();
 //                    mapA.put("birthday", accountInfo.getBirthday() == null ? StringUtils.EMPTY : accountInfo.getBirthday());
-
-                    String birthday = String.valueOf(accountInfo.getBirthday());
-                    if (StringUtils.isNotEmpty(birthday)) {
+                  /*  String birthday = String.valueOf(accountInfo.getBirthday());
+                    if (!Strings.isNullOrEmpty(birthday)) {
                         if (birthday.length() >= 10) {
                             mapA.put("birthday", StringUtils.substring(birthday, 0, 10));
+                        } else {
+                            mapA.put("birthday", StringUtils.EMPTY);
                         }
                     } else {
                         mapA.put("birthday", StringUtils.EMPTY);
-                    }
+                    }*/
 
                     mapA.put("createip", account.getRegIp() == null || account.getRegIp() == "" ? StringUtils.EMPTY : account.getRegIp());
                     mapA.put("userid", passportId);
@@ -347,14 +336,20 @@ public class AppForkJoin extends BaseTest {
 
                     //比较文件
                     if (mapA != null && mapB != null) {
+                        mapA.put("flag", mapB.get("flag"));
+                        mapA.put("status", mapB.get("status"));
+
                         MapDifference difference = Maps.difference(mapA, mapB);
                         if (!difference.areEqual()) {
+
+                            differenceMap.put(passportId, difference.entriesDiffering().toString());
+
                             LOGGER.info("testCheckData mapA and mapB is difference {}", difference.entriesDiffering().toString());
 //                            differenceList.add(passportId);
                             //记录对比不同的数据到Log 记录到文件
 //                            LOGGER.info("FullDataCheckApp check full data difference passportId {} " + passportId);
                         } else {
-                            LOGGER.info("testCheckData mapA and mapB is equal}");
+                            LOGGER.info("testCheckData mapA and mapB is equal");
                         }
                     }
                 }
@@ -363,7 +358,7 @@ public class AppForkJoin extends BaseTest {
         } catch (Exception e) {
             LOGGER.error("testCheckData error", e);
         }
-
+        System.out.println("===============" + differenceMap.toString());
 
     }
 
@@ -371,12 +366,65 @@ public class AppForkJoin extends BaseTest {
     @Test
     public void testSubStr() {
         String str1 = "1980-01-01 00:00:00.0";
-
         String str2 = "2007-05-16 16:33:18.0";
         System.out.println("=====================" + StringUtils.substring(str1, 0, 10));
         System.out.println("=====================" + StringUtils.substring(str2, 0, 19));
+    }
+
+
+    @Test
+    public void testMapDifference() {
+        Map<String, String> mapA = Maps.newHashMap();
+        Map<String, String> mapB = Maps.newHashMap();
+
+        mapA.put("key1", "value1");
+        mapA.put("key2", "value2");
+        mapA.put("key3", "value3");
+        mapA.put("key4", "value4");
+        mapA.put("key5", "value5");
+        mapA.put("key6", "value6");
+
+        mapB.put("key1", "value1");
+        mapB.put("key2", "value2");
+        mapB.put("key3", "value3");
+        mapB.put("key4", "value4");
+        mapB.put("key5", "value5");
+        mapB.put("key6", "value5");
+
+
+        Map<String, String> map1 = Maps.newHashMap();
+        Map<String, String> map2 = Maps.newHashMap();
+
+        map1.put("key1", "value1");
+        map1.put("key2", "value2");
+        map1.put("key3", "value3");
+        map1.put("key4", "value4");
+        map1.put("key5", "value5");
+        map1.put("key6", "value6");
+
+        map2.put("key11", "value11");
+        map2.put("key22", "value22");
+        map2.put("key33", "value33");
+        map2.put("key44", "value44");
+        map2.put("key55", "value55");
+        map2.put("key66", "value66");
+
+
+       /* MapDifference difference = Maps.difference(mapA, mapB);
+        System.out.println(difference.entriesDiffering().toString());
+        Assert.assertEquals("check map difference ", difference.areEqual(), true);
+*/
+
+        List<Map<String, String>> maps = Lists.newArrayList();
+
+        for (int i = 0; i < 2; i++) {
+            maps.add(map1);
+            maps.add(map2);
+        }
+        System.out.println("==============================" + maps.toString());
 
     }
+
 
     /**
      * 构建请求参数
@@ -395,7 +443,7 @@ public class AppForkJoin extends BaseTest {
             requestModelXml.addParam("createtime", "");
             requestModelXml.addParam("createip", "");
             requestModelXml.addParam("email", "");
-            requestModelXml.addParam("birthday", "");
+//            requestModelXml.addParam("birthday", "");
             requestModelXml.addParam("gender", "");
             requestModelXml.addParam("province", "");
             requestModelXml.addParam("city", "");

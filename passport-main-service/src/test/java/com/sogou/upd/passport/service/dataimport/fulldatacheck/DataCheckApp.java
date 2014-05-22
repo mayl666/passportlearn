@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -46,8 +47,8 @@ public class DataCheckApp extends BaseTest {
         watch.start();
         try {
             FullDataCheckApps tasks = new FullDataCheckApps(accountDAO, accountInfoDAO);
-            List<String> resultList = POOL.invoke(tasks);
-            FileUtil.storeFile("D:\\项目\\非第三方账号迁移\\check_full_data\\check_full_data_difference.txt", resultList);
+            List<Map<String, String>> resultList = POOL.invoke(tasks);
+            FileUtil.storeFileToLocal("D:\\项目\\非第三方账号迁移\\check_full_data\\check_full_data_difference_2.txt", resultList);
         } catch (Exception e) {
             LOGGER.error("DataCheckApp failed." + e.getMessage(), e);
         }

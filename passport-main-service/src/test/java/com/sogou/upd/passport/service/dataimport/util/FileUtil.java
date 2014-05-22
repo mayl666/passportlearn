@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -53,6 +54,36 @@ public class FileUtil {
             LOGGER.error("FileUtil storeFile  error. ", e);
         }
     }
+
+    /**
+     * 存储操作日志到本地
+     *
+     * @param path
+     * @param result
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    public static void storeFileToLocal(String path, List<Map<String, String>> result) throws IOException, URISyntaxException {
+        try {
+            Path filePath = Paths.get(path);
+            Files.deleteIfExists(filePath);
+            BufferedWriter writer = Files.newBufferedWriter(filePath, Charset.defaultCharset());
+            if (CollectionUtils.isNotEmpty(result)) {
+                for (Map<String, String> map : result) {
+                    if (!map.isEmpty()) {
+                        for (Map.Entry entry : map.entrySet()) {
+                            writer.write(entry.getKey() + ":" + entry.getValue());
+                            writer.newLine();
+                        }
+                    }
+                }
+                writer.flush();
+            }
+        } catch (Exception e) {
+            LOGGER.error("FileUtil storeFile  error. ", e);
+        }
+    }
+
 
     public static void split(String filePath, int count) throws Exception {
 

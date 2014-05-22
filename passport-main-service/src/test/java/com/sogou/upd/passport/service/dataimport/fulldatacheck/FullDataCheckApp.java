@@ -35,7 +35,8 @@ import java.util.concurrent.RecursiveTask;
  * Date: 14-5-13
  * Time: 下午2:50
  */
-public class FullDataCheckApp extends RecursiveTask<List<String>> {
+//public class FullDataCheckApp extends RecursiveTask<List<String>> {
+public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FullDataCheckApp.class);
@@ -53,9 +54,12 @@ public class FullDataCheckApp extends RecursiveTask<List<String>> {
     private List<String> differenceList = Lists.newArrayList();
 
 
+    //记录对不不同的结果，记录不同的内容
+    private Map<String, String> differenceMap = Maps.newConcurrentMap();
+
+
     //从搜狐获取数据失败记录
     private List<String> failedList = Lists.newArrayList();
-
 
     private AccountDAO accountDAO;
 
@@ -69,33 +73,10 @@ public class FullDataCheckApp extends RecursiveTask<List<String>> {
         this.filePath = filePath;
     }
 
-    @Test
-    public void testMapDifference() {
-        Map<String, Object> mapA = Maps.newHashMap();
-        Map<String, Object> mapB = Maps.newHashMap();
-
-        mapA.put("key1", "value1");
-        mapA.put("key2", "value2");
-        mapA.put("key3", "value3");
-        mapA.put("key4", "value4");
-        mapA.put("key5", "value5");
-        mapA.put("key6", "value6");
-
-        mapB.put("key1", "value1");
-        mapB.put("key2", "value2");
-        mapB.put("key3", "value3");
-        mapB.put("key4", "value4");
-        mapB.put("key5", "value5");
-        mapB.put("key6", "value5");
-
-        MapDifference difference = Maps.difference(mapA, mapB);
-        System.out.println(difference.entriesDiffering().toString());
-        Assert.assertEquals("check map difference ", difference.areEqual(), true);
-    }
-
 
     @Override
-    protected List<String> compute() {
+//    protected List<String> compute() {
+    protected Map<String, String> compute() {
 
         LOGGER.info("start check full data ");
 
@@ -113,6 +94,16 @@ public class FullDataCheckApp extends RecursiveTask<List<String>> {
                 Map<String, Object> mapB = null;
                 try {
                     mapB = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
+
+                    //处理 mapB
+                    /*if (mapB != null) {
+                        if (mapB.containsKey("flag")) {
+                            mapB.remove("flag");
+                        }
+                        if (mapB.containsKey("status")) {
+                            mapB.remove("status");
+                        }
+                    }*/
                 } catch (Exception e) {
                     failedList.add(passportId);
                     LOGGER.error("FullDataCheckApp get account from SOHU error.", e);
@@ -121,28 +112,47 @@ public class FullDataCheckApp extends RecursiveTask<List<String>> {
 
                 if (StringUtils.isNotEmpty(passportId)) {
                     Account account = accountDAO.getAccountByPassportId(passportId);
-                    AccountInfo accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
+
+                    //不验证 birthday 采用 getAccountInfoByPid4DataCheck 方法  email,gender, province, city,fullname,personalid
+                    AccountInfo accountInfo = accountInfoDAO.getAccountInfoByPid4DataCheck(passportId);
                     if (account != null && accountInfo != null) {
                         //Test 库数据
                         Map<String, Object> mapA = Maps.newHashMap();
-                        mapA.put("mobile", account.getMobile());
-                        mapA.put("reg_time", account.getRegTime());
-                        mapA.put("reg_ip", account.getRegIp());
-                        mapA.put("email", accountInfo.getEmail());
-                        mapA.put("birthday", accountInfo.getBirthday());
-                        mapA.put("gender", accountInfo.getGender());
-                        mapA.put("province", accountInfo.getProvince());
-                        mapA.put("city", accountInfo.getCity());
-                        mapA.put("fullname", accountInfo.getFullname());
-                        mapA.put("personalid", accountInfo.getPassportId());
+
+                        mapA.put("createip", account.getRegIp() == null || account.getRegIp() == "" ? StringUtils.EMPTY : account.getRegIp());
+                        mapA.put("userid", passportId);
+                        mapA.put("personalid", accountInfo.getPersonalid() == null ? StringUtils.EMPTY : accountInfo.getPersonalid());
+                        mapA.put("city", accountInfo.getCity() == null ? StringUtils.EMPTY : accountInfo.getCity());
+//                    mapA.put("createtime", account.getRegTime());
+
+                        String createTime = String.valueOf(account.getRegTime());
+                        if (StringUtils.isNotEmpty(createTime)) {
+                            if (createTime.length() >= 19) {
+                                mapA.put("createtime", StringUtils.substring(createTime, 0, 19));
+                            }
+                        } else {
+                            mapA.put("createtime", StringUtils.EMPTY);
+                        }
+
+                        mapA.put("username", accountInfo.getFullname() == null ? StringUtils.EMPTY : accountInfo.getFullname());
+                        mapA.put("email", accountInfo.getEmail() == null ? StringUtils.EMPTY : accountInfo.getEmail());
+                        mapA.put("province", accountInfo.getProvince() == null ? StringUtils.EMPTY : accountInfo.getProvince());
+                        mapA.put("gender", accountInfo.getGender() == null ? StringUtils.EMPTY : accountInfo.getGender());
+                        mapA.put("mobile", account.getMobile() == null ? StringUtils.EMPTY : account.getMobile());
 
                         //比较文件
                         if (mapA != null && mapB != null) {
+                            mapA.put("flag", mapB.get("flag"));
+                            mapA.put("status", mapB.get("status"));
                             MapDifference difference = Maps.difference(mapA, mapB);
                             if (!difference.areEqual()) {
-                                differenceList.add(passportId);
+//                                differenceList.add(passportId);
+                                differenceMap.put(passportId, difference.entriesDiffering().toString());
                                 //记录对比不同的数据到Log 记录到文件
-                                LOGGER.info("FullDataCheckApp check full data difference passportId {} " + passportId);
+                                LOGGER.info("FullDataCheckApp check full data difference passportId {},difference {} ", passportId, difference.entriesDiffering().toString())
+                                ;
+                            } else {
+                                LOGGER.info("mapA and mapB is equal");
                             }
                         }
                     }
@@ -160,7 +170,8 @@ public class FullDataCheckApp extends RecursiveTask<List<String>> {
         } catch (Exception e) {
             LOGGER.error(" FullDataCheckApp check full data error.", e);
         }
-        return differenceList;
+//        return differenceList;
+        return differenceMap;
     }
 
     /**
@@ -180,7 +191,7 @@ public class FullDataCheckApp extends RecursiveTask<List<String>> {
             requestModelXml.addParam("createtime", "");
             requestModelXml.addParam("createip", "");
             requestModelXml.addParam("email", "");
-            requestModelXml.addParam("birthday", "");
+//            requestModelXml.addParam("birthday", ""); //数据验证,暂先不取生日
             requestModelXml.addParam("gender", "");
             requestModelXml.addParam("province", "");
             requestModelXml.addParam("city", "");
@@ -196,8 +207,6 @@ public class FullDataCheckApp extends RecursiveTask<List<String>> {
         }
         return requestModelXml;
     }
-
-
 
 
 }
