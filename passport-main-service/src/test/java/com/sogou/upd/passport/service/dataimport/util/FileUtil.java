@@ -85,6 +85,32 @@ public class FileUtil {
     }
 
 
+    /**
+     * storeFileMap2Local
+     *
+     * @param path
+     * @param result
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    public static void storeFileMap2Local(String path, Map<String, String> result) throws IOException, URISyntaxException {
+        try {
+            Path filePath = Paths.get(path);
+            Files.deleteIfExists(filePath);
+            BufferedWriter writer = Files.newBufferedWriter(filePath, Charset.defaultCharset());
+            if (!result.isEmpty()) {
+                for (Map.Entry entry : result.entrySet()) {
+                    writer.write(entry.getKey() + ":" + entry.getValue());
+                    writer.newLine();
+                }
+                writer.flush();
+            }
+        } catch (Exception e) {
+            LOGGER.error("FileUtil storeFile  error. ", e);
+        }
+    }
+
+
     public static void split(String filePath, int count) throws Exception {
 
         try {

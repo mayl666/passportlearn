@@ -21,10 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.RecursiveTask;
@@ -50,6 +52,8 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
 
     private static final String REQUEST_INFO = "info";
 
+    private static final long serialVersionUID = 506833609075209712L;
+
     //记录对比不同的结果
     private List<String> differenceList = Lists.newArrayList();
 
@@ -58,8 +62,16 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
     private Map<String, String> differenceMap = Maps.newConcurrentMap();
 
 
+    private Map<String, String> userFlagMap = Maps.newConcurrentMap();
+
+
     //从搜狐获取数据失败记录
     private List<String> failedList = Lists.newArrayList();
+
+
+    //检查用户flag信息 存储文件
+    private static final String CHECK_USER_FLAG_FILE_PATCH = "D:\\项目\\非第三方账号迁移\\check_full_data\\check_user_flag.txt";
+
 
     private AccountDAO accountDAO;
 
@@ -85,7 +97,11 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
 
         Path checkFilePath = Paths.get(filePath);
 
+//        Path saveFlagLocalPath = Paths.get(CHECK_USER_FLAG_FILE_PATCH);
+
         try (BufferedReader reader = Files.newBufferedReader(checkFilePath, Charset.defaultCharset())) {
+
+//            BufferedWriter writer = Files.newBufferedWriter(saveFlagLocalPath, Charset.defaultCharset());
 
             String passportId;
             while ((passportId = reader.readLine()) != null) {
@@ -94,16 +110,6 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
                 Map<String, Object> mapB = null;
                 try {
                     mapB = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
-
-                    //处理 mapB
-                    /*if (mapB != null) {
-                        if (mapB.containsKey("flag")) {
-                            mapB.remove("flag");
-                        }
-                        if (mapB.containsKey("status")) {
-                            mapB.remove("status");
-                        }
-                    }*/
                 } catch (Exception e) {
                     failedList.add(passportId);
                     LOGGER.error("FullDataCheckApp get account from SOHU error.", e);
@@ -123,7 +129,6 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
                         mapA.put("userid", passportId);
                         mapA.put("personalid", accountInfo.getPersonalid() == null ? StringUtils.EMPTY : accountInfo.getPersonalid());
                         mapA.put("city", accountInfo.getCity() == null ? StringUtils.EMPTY : accountInfo.getCity());
-//                    mapA.put("createtime", account.getRegTime());
 
                         String createTime = String.valueOf(account.getRegTime());
                         if (StringUtils.isNotEmpty(createTime)) {
@@ -144,21 +149,37 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
                         if (mapA != null && mapB != null) {
                             mapA.put("flag", mapB.get("flag"));
                             mapA.put("status", mapB.get("status"));
+
+                            //记录调用搜狐接口获取用户信息对应的Flag
+                            userFlagMap.put(passportId, mapB.get("flag").toString());
+
                             MapDifference difference = Maps.difference(mapA, mapB);
                             if (!difference.areEqual()) {
-//                                differenceList.add(passportId);
-                                differenceMap.put(passportId, difference.entriesDiffering().toString());
-                                //记录对比不同的数据到Log 记录到文件
-                                LOGGER.info("FullDataCheckApp check full data difference passportId {},difference {} ", passportId, difference.entriesDiffering().toString())
-                                ;
-                            } else {
-                                LOGGER.info("mapA and mapB is equal");
+                                if (!difference.entriesDiffering().isEmpty()) {
+                                    differenceMap.put(passportId, difference.entriesDiffering().toString());
+//                                    LOGGER.info("mapA and mapB entriesDiffering {}", difference.entriesDiffering().toString());
+                                } else if (!difference.entriesOnlyOnLeft().isEmpty()) {
+                                    differenceMap.put(passportId, difference.entriesOnlyOnLeft().toString());
+//                                    LOGGER.info("mapA and mapB entriesOnlyOnLeft {}", difference.entriesOnlyOnLeft().toString());
+                                } else if (!difference.entriesOnlyOnRight().isEmpty()) {
+                                    differenceMap.put(passportId, difference.entriesOnlyOnRight().toString());
+//                                    LOGGER.info("mapA and mapB entriesOnlyOnRight {}", difference.entriesOnlyOnRight().toString());
+                                }
                             }
                         }
+
+                        //记录用户flag信息到本地文件
+//                        {
+//                            writer.write(passportId + " | " + mapB.get("flag"));
+//                            writer.newLine();
+//                        }
                     }
-                } else {
-                    LOGGER.info("check full data passportId |" + passportId + "| is Null");
                 }
+            }
+//            writer.flush();
+//            writer.close();
+            if (userFlagMap != null && !userFlagMap.isEmpty()) {
+                FileUtil.storeFileMap2Local("D:\\项目\\非第三方账号迁移\\check_full_data\\check_full_data_flag.txt", userFlagMap);
             }
 
             if (CollectionUtils.isNotEmpty(failedList)) {

@@ -4,8 +4,6 @@ import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.dao.account.AccountInfoDAO;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountInfo;
-import com.sogou.upd.passport.service.dataimport.nick_name_migration.NickNameMigrationTasks;
 import com.sogou.upd.passport.service.dataimport.util.FileUtil;
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,6 +51,24 @@ public class DataCheckApp extends BaseTest {
             LOGGER.error("DataCheckApp failed." + e.getMessage(), e);
         }
         LOGGER.info("DataCheckApp finish use time {} s", watch.stop());
+    }
+
+
+    @Test
+    public void checkFullData1() {
+        LOGGER.info("DataCheckApp start check full data ");
+
+        LOGGER.info("DataCheckApp checkFullData1 start with {} processors ", CORE_COUNT);
+        StopWatch watch = new StopWatch();
+        watch.start();
+        try {
+            FullDataCheckApps1 tasks = new FullDataCheckApps1(accountDAO, accountInfoDAO);
+            List<Map<String, String>> resultList = POOL.invoke(tasks);
+            FileUtil.storeFileToLocal("D:\\项目\\非第三方账号迁移\\check_full_data\\check_full_data_difference_3.txt", resultList);
+        } catch (Exception e) {
+            LOGGER.error("DataCheckApp checkFullData1 failed." + e.getMessage(), e);
+        }
+        LOGGER.info("DataCheckApp checkFullData1 finish use time {} s", watch.stop());
     }
 
 
