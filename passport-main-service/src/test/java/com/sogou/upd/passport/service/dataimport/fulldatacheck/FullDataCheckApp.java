@@ -5,6 +5,7 @@ import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
+import com.sogou.upd.passport.common.model.httpclient.RequestModelXmlGBK;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.dao.account.AccountDAO;
@@ -14,8 +15,6 @@ import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.dataimport.util.FileUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.junit.Assert;
-import org.junit.Test;
 import org.perf4j.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -208,6 +207,7 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
             String code = passportId + appId + key + ct;
             code = Coder.encryptMD5(code);
 
+            requestModelXml.addParam("question", "");
             requestModelXml.addParam("mobile", "");
             requestModelXml.addParam("createtime", "");
             requestModelXml.addParam("createip", "");
@@ -229,5 +229,33 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
         return requestModelXml;
     }
 
+    public static RequestModelXmlGBK bulidRequestModelXmlGBK(String passportId) {
 
+        RequestModelXmlGBK requestModelXml = new RequestModelXmlGBK(REQUEST_URL, REQUEST_INFO);
+        try {
+            long ct = System.currentTimeMillis();
+            String code = passportId + appId + key + ct;
+            code = Coder.encryptMD5(code);
+
+            requestModelXml.addParam("question", "");
+            requestModelXml.addParam("mobile", "");
+            requestModelXml.addParam("createtime", "");
+            requestModelXml.addParam("createip", "");
+            requestModelXml.addParam("email", "");
+//            requestModelXml.addParam("birthday", ""); //数据验证,暂先不取生日
+            requestModelXml.addParam("gender", "");
+            requestModelXml.addParam("province", "");
+            requestModelXml.addParam("city", "");
+            requestModelXml.addParam("username", "");
+            requestModelXml.addParam("personalid", "");
+            requestModelXml.addParam("userid", passportId);
+            requestModelXml.addParam("appid", appId);
+            requestModelXml.addParam("ct", ct);
+            requestModelXml.addParam("code", code);
+        } catch (Exception e) {
+            LOGGER.error("build RequestModelXml error.", e);
+            e.printStackTrace();
+        }
+        return requestModelXml;
+    }
 }

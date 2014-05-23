@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
@@ -16,9 +18,13 @@ public class ProvinceAndCityUtil {
 
     //省份映射信息
     public static final Map<String, String> immutableProvinceMap = ImmutableMap.copyOf(initProvinceMap());
+    //省份映射信息，双向Map
+    public static final BiMap<String, String> inverseProvinceMap = HashBiMap.create(initProvinceMap()).inverse();
 
     //城市映射信息
     public static final Map<String, String> immutableCityMap = ImmutableMap.copyOf(initCityMap());
+    //城市映射信息，双向Map
+    public static final BiMap<String, String> inverseCityMap = HashBiMap.create(initCityMap()).inverse();
 
 //    public static final Map<String, String> builderProvinceMap = ImmutableMap.<String, String>builder().putAll(initProvinceMap()).build();
 //    public static final Map<String, String> builderCityMap = ImmutableMap.<String, String>builder().putAll(initCityMap()).build();
