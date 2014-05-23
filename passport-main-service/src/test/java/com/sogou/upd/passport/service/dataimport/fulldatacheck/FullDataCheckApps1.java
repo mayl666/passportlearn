@@ -21,7 +21,7 @@ import java.util.concurrent.RecursiveTask;
  * Date: 14-5-20
  * Time: 下午7:48
  */
-public class FullDataCheckApps extends RecursiveTask<List<Map<String, String>>> {
+public class FullDataCheckApps1 extends RecursiveTask<List<Map<String, String>>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FullDataCheckApps.class);
 
@@ -40,7 +40,7 @@ public class FullDataCheckApps extends RecursiveTask<List<Map<String, String>>> 
     private final List<RecursiveTask<Map<String, String>>> forks = Lists.newLinkedList();
 
 
-    public FullDataCheckApps(AccountDAO accountDAO, AccountInfoDAO accountInfoDAO) {
+    public FullDataCheckApps1(AccountDAO accountDAO, AccountInfoDAO accountInfoDAO) {
         this.accountDAO = accountDAO;
         this.accountInfoDAO = accountInfoDAO;
     }
@@ -57,7 +57,7 @@ public class FullDataCheckApps extends RecursiveTask<List<Map<String, String>>> 
         watch.start();
         try {
             for (int i = 1; i < 5; i++) {
-                String filePath = BASE_FILE_PATH + "full_check_data_split_2" + i + ".txt";
+                String filePath = BASE_FILE_PATH + "full_check_data_split_3" + i + ".txt";
                 FullDataCheckApp task = new FullDataCheckApp(accountDAO, accountInfoDAO, filePath);
                 task.fork();
                 forks.add(task);
@@ -69,7 +69,7 @@ public class FullDataCheckApps extends RecursiveTask<List<Map<String, String>>> 
                     LOGGER.info(String.format("FullDataCheckApps check full data task:[%s] failList", task.getClass().getName()));
                     differences.add(task.get());
 
-                    if (task.get().size() > 0) {
+                    if (CollectionUtils.isNotEmpty((Collection) task.get())) {
                         differenceLists.add(task.get().size());
                     }
                 } catch (InterruptedException | ExecutionException e) {
