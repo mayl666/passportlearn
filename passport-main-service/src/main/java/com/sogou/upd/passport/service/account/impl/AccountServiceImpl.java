@@ -546,7 +546,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean updateAvatar(Account account, String avatar) {
         try {
-            String oldUniqName = account.getUniqname();
             String passportId = account.getPassportId();
             //更新数据库
             int row = accountDAO.updateAvatar(avatar, passportId);

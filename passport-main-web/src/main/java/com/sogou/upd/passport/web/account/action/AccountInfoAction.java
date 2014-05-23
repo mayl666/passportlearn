@@ -291,6 +291,8 @@ public class AccountInfoAction extends BaseController {
 //            }else {
 //                result = secureManager.queryAccountSecureInfo(userId, 1120, false);
 //            }
+
+
             result = secureManager.queryAccountSecureInfo(userId, 1120, false);
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
@@ -304,14 +306,6 @@ public class AccountInfoAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
         return "/person/avatar";
-    }
-
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    @ResponseBody
-    public String maxUploadSizeExceeded() {
-        Result result = new APIResultSupport(false);
-        result.setCode(ErrorUtil.ERR_PHOTO_TO_LARGE);
-        return result.toString();
     }
 
 }

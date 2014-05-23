@@ -56,6 +56,17 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Autowired
     private AccountService accountService;
 
+
+    /**
+     * 上传头像信息
+     * <p/>
+     * 非第三方账号迁移，第三方账号、非第三方账号 上传头像均到 account 32张表，走统一流程
+     *
+     * @param byteArr    需要上传图片流
+     * @param passportId 用户ID
+     * @param type       上传类别  0:本地图片上传 1:网络URL图片上传
+     * @return
+     */
     public Result uploadImg(byte[] byteArr, String passportId, String type) {
         Result result = new APIResultSupport(false);
         try {
@@ -69,8 +80,17 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             // 上传到OP图片平台
             if (photoUtils.uploadImg(imgName, byteArr, null, type)) {
                 String imgURL = photoUtils.accessURLTemplate(imgName);
+                Account account = accountService.queryAccountByPassportId(passportId);
+                boolean updateAvatarSuccess = accountService.updateAvatar(account, imgURL);
+                if (!updateAvatarSuccess) {
+                    result.setCode(ErrorUtil.ERR_CODE_UPLOAD_PHOTO);
+                    return result;
+                }
+
+                //TODO 非第三方账号迁移，注释掉之前老的流程，待上线成功后，删除掉下面老的逻辑代码
+
                 //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
-                GetUserInfoApiparams apiparams = new GetUserInfoApiparams();
+                /*GetUserInfoApiparams apiparams = new GetUserInfoApiparams();
                 apiparams.setUserid(passportId);
 
                 AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
@@ -102,12 +122,13 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                             baseInfo.setUniqname("");
                             accountBaseInfoDAO.insertAccountBaseInfo(passportId, baseInfo);
                         }
+
+                        //更新缓存
                         String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
                         dbRedisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
                     }
                 }
-
-
+                */
                 result.setSuccess(true);
                 result.setDefaultModel("image", imgURL);
                 result.setMessage("头像设置成功");
@@ -122,6 +143,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             return result;
         }
     }
+
 
     @Override
     public Result uploadDefaultImg(String webUrl, String clientId) {
