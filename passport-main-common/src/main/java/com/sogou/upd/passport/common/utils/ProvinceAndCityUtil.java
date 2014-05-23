@@ -183,6 +183,8 @@ public class ProvinceAndCityUtil {
         initCityMap.put("230601", "大庆");
         initCityMap.put("232601", "黑河");
         initCityMap.put("232700", "加格达奇");
+        //add by shipengzhi 2014-05-23
+        initCityMap.put("232700", "大兴安岭");
 
         initCityMap.put("310100", "上海");
 
@@ -414,7 +416,7 @@ public class ProvinceAndCityUtil {
 
         initCityMap.put("500100", "重庆");
         initCityMap.put("500239", "黔江");
-        initCityMap.put("513200", "阿坝州");
+        initCityMap.put("513200", "阿坝");
 
         //贵州省 4地级市-贵阳、六盘水、遵义、安顺
         initCityMap.put("520101", "贵阳");
@@ -448,6 +450,7 @@ public class ProvinceAndCityUtil {
         //add by chengang 2014-04-14
         initCityMap.put("532500", "红河");
         initCityMap.put("532800", "西双版纳");
+        initCityMap.put("533100", "德宏州");
 
         //西藏
         initCityMap.put("540101", "拉萨");
@@ -492,6 +495,7 @@ public class ProvinceAndCityUtil {
         //add by chengang 2014-04-14
         initCityMap.put("621001", "庆阳");
         initCityMap.put("621201", "陇南");
+        initCityMap.put("623000", "甘南");
 
         //青海省 西宁市、海东地区、海北藏族自治州、黄南藏族自治州
         initCityMap.put("630100", "西宁");
@@ -504,6 +508,7 @@ public class ProvinceAndCityUtil {
         initCityMap.put("632802", "德令哈");
         //add by chengang 2014-04-14
         initCityMap.put("632100", "海东");
+        initCityMap.put("632600", "果洛");
 
         //宁夏 5地级市-银川、石嘴山、吴忠、固原、中卫
         initCityMap.put("640101", "银川");
