@@ -9,7 +9,6 @@ import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.utils.ProvinceAndCityUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.dao.account.UserExtInfoTmpDAO;
-import com.sogou.upd.passport.dao.account.UserOtherInfoTmpBakDAO;
 import com.sogou.upd.passport.dao.account.UserOtherInfoTmpDAO;
 import com.sogou.upd.passport.model.account.UserExtInfoTmp;
 import com.sogou.upd.passport.model.account.UserOtherInfoTmp;
@@ -35,8 +34,6 @@ public class RepairTmpData extends BaseTest {
     @Autowired
     private UserOtherInfoTmpDAO userOtherInfoTmpDAO;
     @Autowired
-    private UserOtherInfoTmpBakDAO userOtherInfoTmpBakDAO;
-    @Autowired
     private UserExtInfoTmpDAO userExtInfoTmpDAO;
 
     private static List<String> errorProviceAndCityList = Lists.newArrayList();
@@ -54,9 +51,9 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testRepairtProvinceAndCity() {
-        List<String> useridList = FileIOUtil.readFileByLines("D:\\repairDataList\\province_city_error.csv");
+        List<String> useridList = FileIOUtil.readFileByLines("D:\\repairDataList\\all_province_city_error.txt");
         String errorText = "";
-        String[] errorProviceAndCity = new String[]{"请选择", "不限", "-1"};
+        String[] errorProviceAndCity = new String[]{"请选择", "不限", "-1","请选择城市"};
         int total = 0;
         int repairNum = 0;
         for (String userid : useridList) {
@@ -72,17 +69,15 @@ public class RepairTmpData extends BaseTest {
                     //如果是中文则取到响应的代码
                     province = getCodeByChinese(province, ProvinceAndCityUtil.inverseProvinceMap);
                     city = getCodeByChinese(city, ProvinceAndCityUtil.inverseCityMap);
-                    UserOtherInfoTmp userOtherInfoTmp = userOtherInfoTmpBakDAO.getUserOtherInfoTmpByUserid(userid);
-                    if(userOtherInfoTmp != null){
-                        userOtherInfoTmp.setProvince(province);
-                        userOtherInfoTmp.setCity(city);
-                        int row = userOtherInfoTmpBakDAO.updateUserOtherInfoTmp(userid, userOtherInfoTmp);
+                    UserOtherInfoTmp userOtherInfoTmp = userOtherInfoTmpDAO.getUserOtherInfoTmpByUserid(userid);
+                    if (userOtherInfoTmp != null) {
+                        int row = userOtherInfoTmpDAO.updateProvinceAndCity(userid, province, city);
                         if (row != 1) {
                             errorText = userid + ":updateQuestion fail!";
                         } else {
                             repairNum++;
                         }
-                    }   else {
+                    } else {
                         errorText = userid + ":getUserOtherInfoTmpByUserid is empty!";
                     }
                 } else {
@@ -106,22 +101,20 @@ public class RepairTmpData extends BaseTest {
 
     private static String strInArrayToEmpty(String str, String[] array) {
         for (String s : array) {
-            if (!s.equals(str)) {
-                return str;
-            } else {
+            if (s.equals(str)) {
                 return "";
             }
         }
-        return "";
+        return str;
     }
 
     private static String getCodeByChinese(String str, Map<String, String> map) {
         String regex = "^[0-9]*$";
-        if(!str.matches(regex)){
+        if (!str.matches(regex)) {
             String code = map.get(str);
-            if(Strings.isNullOrEmpty(code)){
+            if (Strings.isNullOrEmpty(code)) {
                 return str;
-            }  else{
+            } else {
                 return code;
             }
         }

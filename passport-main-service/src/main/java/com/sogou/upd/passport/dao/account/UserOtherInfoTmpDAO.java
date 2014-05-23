@@ -48,18 +48,8 @@ public interface UserOtherInfoTmpDAO {
     /**
      * 验证合法，用户注册
      */
-    @SQL(
-            "update " + TABLE_NAME + " set "
-                    + "#if(:userOtherInfoTmp.personalid != null){personalid=:userOtherInfoTmp.personalid,} "
-                    + "#if(:userOtherInfoTmp.mobile != null){mobile=:userOtherInfoTmp.mobile,} "
-                    + "#if(:userOtherInfoTmp.mobileflag != null){mobileflag=:userOtherInfoTmp.mobileflag,} "
-                    + "#if(:userOtherInfoTmp.email != null){email=:userOtherInfoTmp.email,} "
-                    + "#if(:userOtherInfoTmp.emailflag ! = null){emailflag=:userOtherInfoTmp.emailflag,} "
-                    + "#if(:userOtherInfoTmp.province ! = null){province=:userOtherInfoTmp.province,} "
-                    + "#if(:userOtherInfoTmp.uniqname != null){uniqname=:userOtherInfoTmp.uniqname,} "
-                    + "#if(:userOtherInfoTmp.city != null){city=:userOtherInfoTmp.city} "
-                    + " where userid = :userid")
-    public int updateUserOtherInfoTmp(@SQLParam("userid") String userid,
-                                     @SQLParam("userOtherInfoTmp") UserOtherInfoTmp userOtherInfoTmp) throws DataAccessException;
+    @SQL("update " + TABLE_NAME + " set province=:province, city=:city where userid=:userid")
+    public int updateProvinceAndCity(@SQLParam("userid") String userid, @SQLParam("province") String province, @SQLParam("city") String city)
+            throws DataAccessException;
 
 }
