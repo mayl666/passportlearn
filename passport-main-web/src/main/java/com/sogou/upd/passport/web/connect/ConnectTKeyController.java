@@ -36,6 +36,8 @@ import java.io.IOException;
 @RequestMapping("/connect/")
 public class ConnectTKeyController {
 
+    public static final String TKEY_VERSION = "01";
+    public static final String TKEY_SECURE_KEY = "adfab231rqwqerq";
     @Autowired
     private HostHolder hostHolder;
 
@@ -96,7 +98,7 @@ public class ConnectTKeyController {
         //未加密前的字符串  //tKey组成: openId|openkey|expireIn|appid|userid|clientid|timestamp
         String tKeyString=String.format("%s|%s|%s|%s|%s|%s|%s", connectToken.getOpenid(), connectToken.getAccessToken(), connectToken.getExpiresIn(), connectToken.getAppKey(), connectToken.getPassportId(), clientId, System.currentTimeMillis());
 
-        return "01" + SEPARATOR_1 + AES.encryptURLSafeString(tKeyString, "adfab231rqwqerq");
+        return TKEY_VERSION + SEPARATOR_1 + AES.encryptURLSafeString(tKeyString, TKEY_SECURE_KEY);
     }
 
     private ConnectToken getConnectToken(String userId, int clientId) {
