@@ -82,10 +82,8 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
             String params = infoApiparams.getFields();
             if (!Strings.isNullOrEmpty(params)) {
                 //替换sogou相关字段
-
                 params = replaceParam(params);
                 String[] paramArray = params.split(",");
-
                 if (ArrayUtils.isNotEmpty(paramArray)) {
 
                     //调用 获取昵称接口 拼接返回的result map 原调用方法
@@ -102,8 +100,6 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                             }
                             paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "mobile"));
                         }
-
-
                     }
 
                     //查询用户其他信息、查询account_info_0~32
@@ -279,15 +275,15 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     @Override
     public Result updateUserInfo(UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
+        String passportId = params.getUserid();
         try {
-
             //获取用户账号类型
-            AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(params.getUserid());
-            Account account = accountService.queryAccountByPassportId(params.getUserid());
+            AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
+            Account account = accountService.queryAccountByPassportId(passportId);
             if (account != null) {
                 //更新用户除“昵称”外的其他信息
                 AccountInfo info = new AccountInfo();
-                info.setPassportId(params.getUserid());
+                info.setPassportId(passportId);
 
                 String[] birthday = !Strings.isNullOrEmpty(params.getBirthday()) ? params.getBirthday().split("-") : null;
                 Calendar calendar = Calendar.getInstance();
@@ -331,7 +327,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 }
             } else if (accountDomain == AccountDomainEnum.SOHU) {
                 //如果是搜狐矩阵账号，则插入到account表一条无密码的记录
-                Account insertSoHuAccount = accountService.initialAccount(params.getUserid(), null, false, params.getModifyip(), AccountTypeEnum.SOHU.getValue());
+                Account insertSoHuAccount = accountService.initialAccount(passportId, null, false, params.getModifyip(), AccountTypeEnum.SOHU.getValue());
                 if (insertSoHuAccount == null) {
                     result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
                 }
@@ -340,7 +336,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
             }
 
         } catch (Exception e) {
-            logger.error("updateUserInfo Fail,passportId:" + params.getUserid(), e);
+            logger.error("updateUserInfo Fail,passportId:" + passportId, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
@@ -383,7 +379,6 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     private Result buildUserNickNameAndAvatar(Result userInfoResult, Account account, int clientId) {
 
         //TODO 非第三方账号数据迁移 、业务逻辑方法重构
-
         Result result = userInfoResult;
 
         String avatarurl = "";
