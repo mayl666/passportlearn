@@ -5,6 +5,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.text.DecimalFormat;
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -17,7 +19,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class BaseTest extends AbstractJUnit4SpringContextTests {
     protected static final String userid = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
 
-    protected static final String password = "testtest1";
+    //随机生成手机号码
+    protected String new_mobile = new GeneratorRandomMobile().generateRandomMobile();
+
+    protected static final String password = "111111";
 
     protected static final String uniqname = "你好";
 
@@ -30,4 +35,14 @@ public class BaseTest extends AbstractJUnit4SpringContextTests {
     protected static final String question = "测试啊，我是来测试的";
 
     protected static final String answer = "测试成功";
+
+    class GeneratorRandomMobile {
+        //生成随机的手机号码
+        private String generateRandomMobile() {
+            String mobile = "135";
+            DecimalFormat a = new DecimalFormat("00000000");//随机到非7位数时前面加0
+            mobile = mobile + a.format((int) (Math.random() * 4720001));//随机数0-4720000
+            return mobile;
+        }
+    }
 }

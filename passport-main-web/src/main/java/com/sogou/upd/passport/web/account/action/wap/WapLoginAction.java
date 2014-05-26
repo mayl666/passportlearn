@@ -9,13 +9,17 @@ import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
+import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.manager.form.WapLogoutParams;
 import com.sogou.upd.passport.manager.form.WapPassThroughParams;
@@ -33,7 +37,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -56,6 +59,16 @@ public class WapLoginAction extends BaseController {
     private LoginManager loginManager;
     @Autowired
     private WapLoginManager wapLoginManager;
+
+    @Autowired
+    private SecureManager secureManager;
+
+
+    @Autowired
+    private UserInfoApiManager proxyUserInfoApiManager;
+    @Autowired
+    private UserInfoApiManager sgUserInfoApiManager;
+
 
     private static final Logger logger = LoggerFactory.getLogger(WapLoginAction.class);
     private static final String SECRETKEY="afE0WZf345@werdm";
@@ -127,6 +140,27 @@ public class WapLoginAction extends BaseController {
 
             ServletUtil.setCookie(response, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
+            if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
+                //在返回的数据中导入 json格式，用来给客户端用。
+                //第三方获取个人资料
+                AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(result.getModels().get("userid").toString());
+                // 调用内部接口
+                GetUserInfoApiparams userInfoApiparams=new GetUserInfoApiparams(result.getModels().get("userid").toString(),"uniqname,avatarurl,gender");
+                if (domain == AccountDomainEnum.THIRD) {
+                    result = sgUserInfoApiManager.getUserInfo(userInfoApiparams);
+                }else {
+                    result = proxyUserInfoApiManager.getUserInfo(userInfoApiparams);
+                }
+
+                //result = secureManager.queryAccountSecureInfo(userId, Integer.parseInt(loginParams.getClient_id()), true);
+                result.getModels().put("sgid",sgid);
+                writeResultToResponse(response, result);
+                wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
+
+                return "empty";
+
+            }
+
             wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
             response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
             return "empty";
@@ -134,17 +168,42 @@ public class WapLoginAction extends BaseController {
             int isNeedCaptcha = 0;
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip,result.getCode());
             //校验是否需要验证码
+            if(result.getCode()==ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE){
+                writeResultToResponse(response, result);
+                return "empty";
+            }
             boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
             if (needCaptcha) {
                 isNeedCaptcha = 1;
             }
             if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
-                result.setMessage("密码错误");
+                result.setMessage("您登陆过于频繁，请稍后再试。");
             }
+
+            if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
+
+                if(needCaptcha){
+                    if(result.getCode()!=ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR) {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                        result.setMessage("验证码错误或已过期");
+                    }
+                }else{
+                    result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                    result.setMessage("用户名或者密码错误");
+                }
+                writeResultToResponse(response, result);
+                return "empty";
+            }
+
             return getErrorReturnStr(loginParams, "用户名或者密码错误", isNeedCaptcha);
 
         }
+    }
+
+    private void writeResultToResponse(HttpServletResponse response, Result result) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(result.toString());
     }
 
     /**

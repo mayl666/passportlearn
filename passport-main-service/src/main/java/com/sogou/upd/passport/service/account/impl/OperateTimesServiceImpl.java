@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * User: chenjiameng Date: 13-6-8 Time: 下午3:38 To change this template use File | Settings | File Templates.
@@ -639,9 +640,15 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
     }
 
+    public static boolean isIPAdress( String str )
+    {
+        Pattern pattern = Pattern.compile("^((\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5]|[*])\\.){3}(\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5]|[*])$");
+        return pattern.matcher( str ).matches();
+    }
+
     private boolean checkInSubIpList(String ip) throws ServiceException {
         try {
-            if (!Strings.isNullOrEmpty(ip)) {
+            if (!Strings.isNullOrEmpty(ip) && isIPAdress(ip)) {
                 String[] subIpArr = ip.split("\\.");
 
                 StringBuilder sb = new StringBuilder();

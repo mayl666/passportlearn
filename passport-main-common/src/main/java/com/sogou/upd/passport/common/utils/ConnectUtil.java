@@ -20,6 +20,7 @@ public class ConnectUtil {
         //QQ第三方信息映射
         CONNECT_INFO_MAP.put("qq", "oauth_consumer_key|openid|access_token|sig");
         CONNECT_INFO_MAP.put("/internal/connect/qq/user/qzone/unread_num", "/user/get_qzoneupdates|qzone");
+        CONNECT_INFO_MAP.put("/internal/connect/qq/user/qzone/picface", "/v3/user/get_pinyin|qzone");
         CONNECT_INFO_MAP.put("/internal/connect/qq/user/weibo/unread_num", "/v3/update/get_num|weibo");
         CONNECT_INFO_MAP.put("/internal/connect/qq/user/mail/unread_num", "/user/get_mail_count|mail");
     }

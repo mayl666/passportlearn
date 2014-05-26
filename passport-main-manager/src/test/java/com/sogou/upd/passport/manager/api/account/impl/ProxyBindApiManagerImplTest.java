@@ -26,24 +26,35 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
     private BaseProxyManager baseProxyManager;
 
     @Test
-    public void testBindMobile(){
+    public void testBindMobile() {
         BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
         bindMobileApiParams.setUserid(userid);
 //        bindMobileApiParams.setMobile("13940075348");
         bindMobileApiParams.setClient_id(clientId);
-        Result result = proxyBindApiManager.bindMobile("tinkame710@sogou.com","15210832767");
+        Result result = proxyBindApiManager.bindMobile("tinkame710@sogou.com", "15210832767");
         System.out.println(result.toString());
         Assert.assertTrue(result.isSuccess());
 
 //        this.testUnbindMobile();
     }
-//
-//
+
+ 
+    //安卓，通用语和皮肤词库官网都是
     @Test
-    public void testUnbindMobile(){
+    public void testUnbindMobile() {
         Result result = proxyBindApiManager.unBindMobile("15210832767");
         System.out.println(result.toString());
         Assert.assertTrue(result.isSuccess());
+    }
+
+    @Test
+    public void testGetPassportIdByMobile() {
+        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+        baseMoblieApiParams.setMobile("15901151021");
+        baseMoblieApiParams.setClient_id(1120);
+        Result result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+        System.out.println(result.toString());
+//        Assert.assertTrue(result.isSuccess());
     }
 //
 //    @Test
@@ -99,10 +110,9 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 //    }
 
 
-
     @Test
     public void testBindEmail() throws Exception {
-        BindEmailApiParams bindEmailApiParams=new BindEmailApiParams();
+        BindEmailApiParams bindEmailApiParams = new BindEmailApiParams();
         bindEmailApiParams.setNewbindemail("411541129@qq.com");
         bindEmailApiParams.setOldbindemail("34310327@qq.com");
         bindEmailApiParams.setPassword(Coder.encryptMD5(password));
@@ -115,10 +125,10 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
     }
 
     @Test
-    public void testGetPassportIdFromMobile(){
-        BaseMoblieApiParams baseMoblieApiParams=new BaseMoblieApiParams();
+    public void testGetPassportIdFromMobile() {
+        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
         baseMoblieApiParams.setMobile("13621050796");
         Result result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-        System.out.println("result:"+result.toString());
+        System.out.println("result:" + result.toString());
     }
 }
