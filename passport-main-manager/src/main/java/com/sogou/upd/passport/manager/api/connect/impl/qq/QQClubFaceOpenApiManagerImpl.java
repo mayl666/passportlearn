@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager.api.connect.impl.qq;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.connect.QQClubFaceApiManager;
@@ -40,7 +39,7 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
         String resp;
         try {
             //QQ提供的openapi服务器
-            String serverName = CommonConstant.QQ_SERVER_IP;
+            String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
             //应用的基本信息，搜狗在QQ的第三方appid与appkey
             String userId = qqParams.getUserid();
             int provider = AccountTypeEnum.getAccountType(userId).getValue();
