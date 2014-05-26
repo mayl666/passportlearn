@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.service.dataimport.fulldatacheck;
+package com.sogou.upd.passport.service.dataimport.datacheck;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapDifference;
@@ -12,7 +12,6 @@ import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.dao.account.AccountInfoDAO;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
-import com.sogou.upd.passport.service.dataimport.util.FileUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.perf4j.StopWatch;
@@ -20,12 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.RecursiveTask;
@@ -178,12 +175,12 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
 //            writer.flush();
 //            writer.close();
             if (userFlagMap != null && !userFlagMap.isEmpty()) {
-                FileUtil.storeFileMap2Local("D:\\项目\\非第三方账号迁移\\check_full_data\\check_full_data_flag.txt", userFlagMap);
+                com.sogou.upd.passport.common.utils.FileUtil.storeFileMap2Local("D:\\项目\\非第三方账号迁移\\check_full_data\\check_full_data_flag.txt", userFlagMap);
             }
 
             if (CollectionUtils.isNotEmpty(failedList)) {
                 //记录调用搜狐接口，获取失败的数据，在对失败的数据进行验证
-                FileUtil.storeFile("D:\\项目\\非第三方账号迁移\\check_full_data\\check_full_data_fail.txt", failedList);
+                com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\项目\\非第三方账号迁移\\check_full_data\\check_full_data_fail.txt", failedList);
             }
 
             LOGGER.info("FullDataCheckApp finish check full data use time {} s", watch.stop());

@@ -109,7 +109,8 @@ public class AccountServiceImpl implements AccountService {
             account.setRegIp(ip);
             account.setAccountType(provider);
             account.setFlag(AccountStatusEnum.REGULAR.getValue());
-            if (AccountTypeEnum.isConnect(provider)) {
+            if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider)) {
+                //对于第三方账号和sohu域账号来讲，无密码  搜狗账号迁移完成后，需要增加一个值表示无密码
                 account.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
             } else {
                 account.setPasswordtype(PasswordTypeEnum.CRYPT.getValue());

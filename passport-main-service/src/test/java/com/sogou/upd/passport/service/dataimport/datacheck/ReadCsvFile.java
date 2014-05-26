@@ -1,11 +1,9 @@
-package com.sogou.upd.passport.service.dataimport.fulldatacheck;
+package com.sogou.upd.passport.service.dataimport.datacheck;
 
 import com.google.common.collect.Lists;
-import com.sogou.upd.passport.service.dataimport.util.FileUtil;
 
 import java.io.*;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,7 +37,7 @@ public class ReadCsvFile {
             }
             br.close();
 
-            FileUtil.storeFile("2014.1.1-2014.5.7_sgwan_other_userid_new.txt", list);
+            com.sogou.upd.passport.common.utils.FileUtil.storeFile("2014.1.1-2014.5.7_sgwan_other_userid_new.txt", list);
 
         } catch (FileNotFoundException e) {
             // 捕获File对象生成时的异常

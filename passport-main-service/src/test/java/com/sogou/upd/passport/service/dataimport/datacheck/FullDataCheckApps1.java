@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.service.dataimport.fulldatacheck;
+package com.sogou.upd.passport.service.dataimport.datacheck;
 
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.dao.account.AccountDAO;

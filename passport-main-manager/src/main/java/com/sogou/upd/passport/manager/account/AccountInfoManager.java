@@ -48,7 +48,17 @@ public interface AccountInfoManager {
      * @param params
      * @return
      */
-    Result getUserInfoVersion2(ObtainAccountInfoParams params);
+    Result getUserInfoFromSGAfterDataMigration(ObtainAccountInfoParams params);
+
+
+    /**
+     * 非第三方数据迁移后，获取用户昵称信息采用此方法
+     *
+     * @param passportId
+     * @param clientId
+     * @return
+     */
+    public String getUserUniqName(String passportId, int clientId);
 
 
 }

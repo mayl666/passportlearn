@@ -24,7 +24,6 @@ public enum AccountTypeEnum {
     SOGOU(8),  // @sogou.com账号
     SOHU(9);  //sohu域账号
 
-
     // provider数字与字符串映射字典表
     private static BiMap<String, Integer> PROVIDER_MAPPING_DICT = HashBiMap.create();
 
@@ -80,7 +79,15 @@ public enum AccountTypeEnum {
     }
 
     public static boolean isConnect(int provider) {
-        if (provider != PHONE.getValue() && provider != EMAIL.getValue()) {
+        if (provider != PHONE.getValue() && provider != EMAIL.getValue() && provider != SOHU.getValue()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isSOHU(int provider) {
+        if (provider == SOHU.getValue()) {
             return true;
         } else {
             return false;

@@ -355,6 +355,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
      * 用户昵称、头像信息 读写 account_base_info 切换到 account_0~32
      * 用户其他信息 读写调用搜狐Api 切换到 读写 account_info_0~32
      *
+     * TODO 改为调用 AccountInfoManager getUserInfo 方法
+     *
      * @param passportId
      * @param clientId
      * @return

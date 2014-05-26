@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.service.dataimport.fulldatacheck;
+package com.sogou.upd.passport.service.dataimport.datacheck;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.dao.account.AccountDAO;

@@ -102,6 +102,8 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                             }
                             paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "mobile"));
                         }
+
+
                     }
 
                     //查询用户其他信息、查询account_info_0~32
@@ -268,10 +270,19 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         return param;
     }
 
+    /**
+     * 非第三方账号迁移，更新用户信息，对于搜狐矩阵账号，新增一条无密码的记录
+     *
+     * @param params
+     * @return
+     */
     @Override
     public Result updateUserInfo(UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
         try {
+
+            //获取用户账号类型
+            AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(params.getUserid());
             Account account = accountService.queryAccountByPassportId(params.getUserid());
             if (account != null) {
                 //更新用户除“昵称”外的其他信息
@@ -317,6 +328,12 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     }
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
+                }
+            } else if (accountDomain == AccountDomainEnum.SOHU) {
+                //如果是搜狐矩阵账号，则插入到account表一条无密码的记录
+                Account insertSoHuAccount = accountService.initialAccount(params.getUserid(), null, false, params.getModifyip(), AccountTypeEnum.SOHU.getValue());
+                if (insertSoHuAccount == null) {
+                    result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
                 }
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);

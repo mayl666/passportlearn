@@ -154,8 +154,9 @@ public class AccountInfoAction extends BaseController {
             result = accountInfoManager.getUserInfo(params);
 //            result.getModels().put("uniqname",(String)result.getModels().get("uniqname"));
 
-            //TODO 待修改此处取昵称
-            result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(params.getUsername(), clientId));
+            //TODO 修改此处取昵称 非第三方账号迁移后，统一调用 accountInfoManager 的 getUserUniqName 方法
+//            result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(params.getUsername(), clientId));
+            result.getModels().put("uniqname", accountInfoManager.getUserUniqName(params.getUsername(), clientId));
 
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
@@ -297,7 +298,10 @@ public class AccountInfoAction extends BaseController {
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
-                result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(userId, 1120));
+
+                //非第三方账号迁移，获取用户昵称信息，统一调用 accountInfoManager 的 getUserUniqName方法
+//                result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(userId, 1120));
+                result.getModels().put("uniqname", accountInfoManager.getUserUniqName(userId, 1120));
 
                 result.setDefaultModel("disable", true);
             }
