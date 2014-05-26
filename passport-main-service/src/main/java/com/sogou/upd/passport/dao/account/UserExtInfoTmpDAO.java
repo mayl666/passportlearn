@@ -36,7 +36,7 @@ public interface UserExtInfoTmpDAO {
                     ":userExtInfoTmp.createip ";
 
     /**
-     * 根据passportId获取Account
+     * 根据passportId获取UserExtInfo表数据
      */
     @SQL("select" +
             ALL_FIELD +
@@ -46,7 +46,7 @@ public interface UserExtInfoTmpDAO {
     public UserExtInfoTmp getUserExtInfoTmpByUserid(@SQLParam("userid") String userid) throws DataAccessException;
 
     /**
-     * 验证合法，用户注册
+     * 更新所有不为空的字段
      */
     @SQL(
             "update " + TABLE_NAME + " set "
@@ -60,5 +60,11 @@ public interface UserExtInfoTmpDAO {
                     + " where userid = :userid")
     public int updateUserExtInfoTmp(@SQLParam("userid") String userid,
                                     @SQLParam("userExtInfoTmp") UserExtInfoTmp userExtInfoTmp) throws DataAccessException;
+
+    /**
+     * 根据passportId删除UserExtInfo表数据
+     */
+    @SQL("delete from" + TABLE_NAME + " where userid=:userid")
+    public int deleteUserExtInfoTmpByUserid(@SQLParam("userid") String userid) throws DataAccessException;
 
 }

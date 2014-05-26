@@ -36,7 +36,7 @@ public interface UserOtherInfoTmpDAO {
                     ":userOtherInfoTmp.uniqname, :userOtherInfoTmp.city ";
 
     /**
-     * 根据passportId获取Account
+     * 根据passportId获取UserOtherInfo表数据
      */
     @SQL("select" +
             ALL_FIELD +
@@ -46,10 +46,16 @@ public interface UserOtherInfoTmpDAO {
     public UserOtherInfoTmp getUserOtherInfoTmpByUserid(@SQLParam("userid") String userid) throws DataAccessException;
 
     /**
-     * 验证合法，用户注册
+     * 更新省份、城市
      */
     @SQL("update " + TABLE_NAME + " set province=:province, city=:city where userid=:userid")
     public int updateProvinceAndCity(@SQLParam("userid") String userid, @SQLParam("province") String province, @SQLParam("city") String city)
             throws DataAccessException;
+
+    /**
+     * 根据passportId删除UserOtherInfo表数据
+     */
+    @SQL("delete from" + TABLE_NAME + " where userid = :userid")
+    public int deleteUserOtherInfoTmpByUserid(@SQLParam("userid") String userid) throws DataAccessException;
 
 }
