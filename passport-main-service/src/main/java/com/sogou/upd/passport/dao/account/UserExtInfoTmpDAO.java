@@ -54,7 +54,7 @@ public interface UserExtInfoTmpDAO {
                     + "#if(:userExtInfoTmp.answer != null){answer=:userExtInfoTmp.answer,} "
                     + "#if(:userExtInfoTmp.username != null){username=:userExtInfoTmp.username,} "
                     + "#if(:userExtInfoTmp.birthday != null){birthday=:userExtInfoTmp.birthday,} "
-                    + "#if(:userExtInfoTmp.gender != 0){gender=:userExtInfoTmp.gender,} "
+                    + "#if(:userExtInfoTmp.gender != null){gender=:userExtInfoTmp.gender,} "
                     + "#if(:userExtInfoTmp.createtime != null){createtime=:userExtInfoTmp.createtime,} "
                     + "#if(:userExtInfoTmp.createip != null){createip=:userExtInfoTmp.createip} "
                     + " where userid = :userid")

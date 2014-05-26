@@ -114,11 +114,9 @@ public class ProvinceAndCityUtil {
         initCityMap.put("142601", "临汾");
         initCityMap.put("142701", "运城");
         initCityMap.put("140401", "长治");
-
         //add by chengang 2014-04-14
         initCityMap.put("140701", "晋中");
         initCityMap.put("141101", "吕梁");
-
 
         //内蒙古  9地级市-呼和浩特、包头、乌海、赤峰、通辽、鄂尔多斯、呼伦贝尔、巴彦淖尔、乌兰察布
         initCityMap.put("150101", "呼和浩特");
@@ -133,8 +131,6 @@ public class ProvinceAndCityUtil {
         initCityMap.put("152502", "锡林浩特");
         initCityMap.put("152101", "海拉尔");
         initCityMap.put("152201", "乌兰浩特");
-
-
         //add by chengang 2014-04-14
         initCityMap.put("150701", "呼伦贝尔");
         initCityMap.put("150600", "鄂尔多斯");
@@ -157,10 +153,8 @@ public class ProvinceAndCityUtil {
         initCityMap.put("211301", "朝阳");
         initCityMap.put("211401", "锦西");//不属于地市级、属于“葫芦岛”的一个区
         initCityMap.put("210601", "丹东");
-
         //add by chengang 2014-04-14
         initCityMap.put("211400", "葫芦岛");
-
 
         //吉林省  8地级市-长春、吉林、四平、辽源、通化、白山、松原、白城
         initCityMap.put("220101", "长春");
@@ -171,7 +165,6 @@ public class ProvinceAndCityUtil {
         initCityMap.put("222301", "白城");
         initCityMap.put("222401", "延吉");
         initCityMap.put("220501", "通化");
-
         //add by chengang 2014-04-14
         initCityMap.put("220701", "松原");
         initCityMap.put("220601", "白山");
@@ -190,6 +183,8 @@ public class ProvinceAndCityUtil {
         initCityMap.put("230601", "大庆");
         initCityMap.put("232601", "黑河");
         initCityMap.put("232700", "加格达奇");
+        //add by shipengzhi 2014-05-23
+        initCityMap.put("232700", "大兴安岭");
 
         initCityMap.put("310100", "上海");
 
@@ -205,12 +200,10 @@ public class ProvinceAndCityUtil {
         initCityMap.put("320901", "盐城");
         initCityMap.put("321001", "扬州");
         initCityMap.put("321101", "镇江");
-
         //add by chengang 2014-04-14
         initCityMap.put("321301", "宿迁");
         initCityMap.put("320800", "淮安");
         initCityMap.put("321201", "泰州");
-
 
         //浙江省  11地级市-杭州、嘉兴、湖州、宁波、金华、温州、丽水、绍兴、衢州、舟山、台州
         initCityMap.put("330101", "杭州");
@@ -224,10 +217,8 @@ public class ProvinceAndCityUtil {
         initCityMap.put("330901", "舟山");
         initCityMap.put("332501", "丽水");
         initCityMap.put("332602", "临海");
-
         //add by chengang 2014-04-14
         initCityMap.put("331001", "台州");
-
 
         //安徽省  17地级市-合肥、蚌埠、芜湖、淮南、亳州、阜阳、淮北、宿州、滁州、安庆、巢湖、马鞍山、宣城、黄山、池州、铜陵
         initCityMap.put("340101", "合肥");
@@ -246,11 +237,9 @@ public class ProvinceAndCityUtil {
         initCityMap.put("342501", "宣州");
         initCityMap.put("342601", "巢湖");
         initCityMap.put("342901", "贵池");//不是地级市、属于“池州”的一个区 不能删，因库表中可能已经存储相应的城市码
-
         //add by chengang 2014-04-14
         initCityMap.put("341601", "亳州");
         initCityMap.put("341701", "池州");
-
 
         //福建省  9地级市-福州、厦门、泉州、三明、南平、漳州、莆田、宁德、龙岩
         initCityMap.put("350101", "福州");
@@ -275,10 +264,8 @@ public class ProvinceAndCityUtil {
         initCityMap.put("362301", "上饶");
         initCityMap.put("362401", "吉安");
         initCityMap.put("362502", "临川");
-
         //add by chengang 2014-04-14
         initCityMap.put("361001", "抚州");
-
 
         //山东 17地级市-济南、青岛、淄博、枣庄、东营、烟台、潍坊、济宁、泰安、威海、日照、莱芜、临沂、德州、聊城、菏泽、滨州
         initCityMap.put("370101", "济南");
@@ -297,7 +284,6 @@ public class ProvinceAndCityUtil {
         initCityMap.put("372501", "聊城");
         initCityMap.put("372801", "临沂");
         initCityMap.put("372901", "菏泽");
-
         //add by chengang 2014-04-14
         initCityMap.put("371201", "莱芜");
 
@@ -334,12 +320,10 @@ public class ProvinceAndCityUtil {
         initCityMap.put("422301", "咸宁");
         initCityMap.put("422421", "江陵");//部署地级市，属于荆州的一个县
         initCityMap.put("422801", "恩施");
-
         //add by chengang 2014-04-14
         initCityMap.put("421001", "荆州");
         initCityMap.put("421101", "黄冈");
         initCityMap.put("421301", "随州");
-
 
         //湖南  13地级市-长沙、株洲、湘潭、衡阳、岳阳、郴州、永州、邵阳、怀化、常德、益阳、张家界、娄底
         initCityMap.put("430101", "长沙");
@@ -356,10 +340,8 @@ public class ProvinceAndCityUtil {
         initCityMap.put("430701", "常德");
         initCityMap.put("432301", "益阳");
         initCityMap.put("432501", "娄底");
-
         //add by chengang 2014-04-14
         initCityMap.put("430801", "张家界");
-
 
         //广东省  21地级市-广州、深圳、汕头、惠州、珠海、揭阳、佛山、河源、阳江、茂名、湛江、梅州、肇庆、韶关、潮州、东莞、中山、清远、江门、汕尾、云浮
         initCityMap.put("440101", "广州");
@@ -380,12 +362,10 @@ public class ProvinceAndCityUtil {
         initCityMap.put("440501", "汕头");
         initCityMap.put("441401", "梅州");
         initCityMap.put("441701", "阳江");
-
         // add by chengang 2014-04-14
         initCityMap.put("445101", "潮州");
         initCityMap.put("445201", "揭阳");
         initCityMap.put("445301", "云浮");
-
 
         //广西  14地级市-南宁、柳州、桂林、梧州、北海、崇左、来宾、贺州、玉林、百色、河池、钦州、防城港、贵港
         initCityMap.put("450101", "南宁");
@@ -397,7 +377,6 @@ public class ProvinceAndCityUtil {
         initCityMap.put("452802", "钦州");
         initCityMap.put("450201", "柳州");
         initCityMap.put("450501", "北海");
-
         //add by chengang 2014-04-14
         initCityMap.put("450601", "防城港");
         initCityMap.put("451101", "贺州");
@@ -428,7 +407,6 @@ public class ProvinceAndCityUtil {
         initCityMap.put("513021", "达县");
         initCityMap.put("513401", "西昌");
         initCityMap.put("510401", "攀枝花");
-
         //add by chengang 2014-04-14
         initCityMap.put("511601", "广安");
         initCityMap.put("511901", "巴中");
@@ -437,8 +415,8 @@ public class ProvinceAndCityUtil {
 
 
         initCityMap.put("500100", "重庆");
-        initCityMap.put("500239", "黔江土家族苗族自治县");
-        initCityMap.put("513200", "阿坝藏族羌族自治州");
+        initCityMap.put("500239", "黔江");
+        initCityMap.put("513200", "阿坝");
 
         //贵州省 4地级市-贵阳、六盘水、遵义、安顺
         initCityMap.put("520101", "贵阳");
@@ -465,14 +443,14 @@ public class ProvinceAndCityUtil {
         initCityMap.put("532901", "大理");
         initCityMap.put("533001", "保山");
         initCityMap.put("533121", "潞西");
-        initCityMap.put("533221", "丽江纳西族自治县");
+        initCityMap.put("533221", "丽江");
         initCityMap.put("533321", "泸水");
         initCityMap.put("533421", "中甸");
         initCityMap.put("533521", "临沧");
-
         //add by chengang 2014-04-14
         initCityMap.put("532500", "红河");
-        initCityMap.put("532800", "西双版纳傣族自治州");
+        initCityMap.put("532800", "西双版纳");
+        initCityMap.put("533100", "德宏州");
 
         //西藏
         initCityMap.put("540101", "拉萨");
@@ -496,7 +474,6 @@ public class ProvinceAndCityUtil {
         initCityMap.put("612501", "商州");
         initCityMap.put("612601", "延安");
         initCityMap.put("612701", "榆林");
-
         //add by chengang 2014-04-14
         initCityMap.put("611001", "商洛");
 
@@ -515,34 +492,31 @@ public class ProvinceAndCityUtil {
         initCityMap.put("623027", "夏河");
         initCityMap.put("620201", "嘉峪关");
         initCityMap.put("622102", "酒泉");
-
         //add by chengang 2014-04-14
         initCityMap.put("621001", "庆阳");
         initCityMap.put("621201", "陇南");
+        initCityMap.put("623000", "甘南");
 
         //青海省 西宁市、海东地区、海北藏族自治州、黄南藏族自治州
         initCityMap.put("630100", "西宁");
         initCityMap.put("632121", "平安");
-        initCityMap.put("632221", "门源回族自治县");
+        initCityMap.put("632221", "门源");
         initCityMap.put("632321", "同仁");
         initCityMap.put("632521", "共和");
         initCityMap.put("632621", "玛沁");
         initCityMap.put("632721", "玉树");
         initCityMap.put("632802", "德令哈");
-
         //add by chengang 2014-04-14
         initCityMap.put("632100", "海东");
-
+        initCityMap.put("632600", "果洛");
 
         //宁夏 5地级市-银川、石嘴山、吴忠、固原、中卫
         initCityMap.put("640101", "银川");
         initCityMap.put("640201", "石嘴山");
         initCityMap.put("642101", "吴忠");
         initCityMap.put("642221", "固原");
-
         //add by chengang 2014-04-14
         initCityMap.put("640501", "中卫");
-
 
         //新疆 2地级市-乌鲁木齐、克拉玛依
         //19县级市-石河子、阿拉尔市、图木舒克、五家渠、哈密、吐鲁番、阿克苏、喀什、和田、伊宁、塔城、阿勒泰、奎屯、博乐、昌吉、阜康、库尔勒、阿图什、乌苏
@@ -558,7 +532,6 @@ public class ProvinceAndCityUtil {
         initCityMap.put("653101", "喀什");
         initCityMap.put("653201", "和田");
         initCityMap.put("654101", "伊宁");
-
         //add by chengang 2014-04-14
         initCityMap.put("654301", "阿勒泰");
         initCityMap.put("654202", "乌苏");
@@ -570,21 +543,17 @@ public class ProvinceAndCityUtil {
         initCityMap.put("659002", "阿拉尔市");
         initCityMap.put("659001", "石河子");
 
-
         //台湾  7市-台北、台中、基隆、高雄、台南、新竹、嘉义
         initCityMap.put("710001", "台北");
         initCityMap.put("710002", "基隆");
         initCityMap.put("710020", "台南");
         initCityMap.put("710019", "高雄");
         initCityMap.put("710008", "台中");
-
         initCityMap.put("820000", "澳门");
         initCityMap.put("810000", "香港");
-
         initCityMap.put("990000", "国外");
         return initCityMap;
     }
-
 
     /**
      * 根据省份代码获取省份信息
