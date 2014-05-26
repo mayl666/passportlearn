@@ -93,14 +93,15 @@ public class DBShardRedisUtils {
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "dbShardRedis_setWithinSeconds", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public String setWithinSeconds(final String key, final Object obj, final long timeout) {
         return new Executor<String>(shardedJedisPool) {
-            ShardedJedisPipeline pipeline=null;
+            ShardedJedisPipeline pipeline = null;
+
             @Override
             String execute() throws IOException {
                 pipeline = jedis.pipelined();
-                Response result=pipeline.set(key,jsonMapper.writeValueAsString(obj));
-                pipeline.expire(key, (int)timeout);
+                Response result = pipeline.set(key, jsonMapper.writeValueAsString(obj));
+                pipeline.expire(key, (int) timeout);
                 pipeline.sync();
-                return (String)result.get();
+                return (String) result.get();
             }
         }.getResult();
     }

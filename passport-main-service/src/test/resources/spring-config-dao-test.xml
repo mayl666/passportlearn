@@ -115,7 +115,7 @@
 
     <!-- 分表设置 -->
     <bean id="jade.routerInterpreter" class="com.xiaomi.common.service.dal.routing.RewriteSQLInterpreter">
-        <property name="routingConfigurator" ref="jade.routingConfigurator" />
+        <property name="routingConfigurator" ref="jade.routingConfigurator"/>
     </bean>
     <bean id="jade.routingConfigurator" class="com.sogou.upd.passport.dao.dal.routing.SGRoutingConfigurator">
         <property name="partitions">
@@ -124,6 +124,8 @@
                 <value>sg-str-hash:connect_token:passport_id:connect_token_{0}:32</value>
                 <value>sg-str-hash:connect_relation:passport_id:connect_relation_{0}:32</value>
                 <value>sg-str-hash:account_info:passport_id:account_info_{0}:32</value>
+                <!-- 昵称映射表 根据昵称分32张子表 -->
+                <value>sg-str-hash:uniqname_passportid_mapping:uniqname:uniqname_passportid_mapping_{0}:32</value>
             </list>
         </property>
     </bean>

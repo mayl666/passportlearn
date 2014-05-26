@@ -42,6 +42,7 @@ import java.util.UUID;
 public class AccountServiceImpl implements AccountService {
 
     private static final int expire = 30 * DateAndNumTimesConstant.ONE_DAY_INSECONDS;
+    private static final String CACHE_PREFIX_NICKNAME_PASSPORTID = CacheConstant.CACHE_PREFIX_NICKNAME_PASSPORTID;
 
 
     private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
@@ -559,6 +560,7 @@ public class AccountServiceImpl implements AccountService {
         return true;
     }
 
+
     @Override
     public String checkUniqName(String uniqname) throws ServiceException {
         String passportId = null;
@@ -584,7 +586,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean updateUniqName(Account account, String uniqname) throws ServiceException {
         try {
-
             String oldUniqName = account.getUniqname();
             String passportId = account.getPassportId();
             //如果新昵称不为空且与原昵称不重复，则更新数据库及缓存
@@ -596,13 +597,27 @@ public class AccountServiceImpl implements AccountService {
                     account.setUniqname(uniqname);
                     dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
 
-                    //移除原来映射表
-                    if (removeUniqName(oldUniqName)) {
+                    //第一次直接插入
+                    if (Strings.isNullOrEmpty(oldUniqName)) {
                         //更新新的映射表
                         row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
                         if (row > 0) {
-                            cacheKey = buildUniqnameCacheKey(uniqname);
+                            cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                             dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.THREE_MONTH);
+                    } else {
+                        return false;
+                    }
+                    } else {
+                        //移除原来映射表
+                        if (removeUniqName(oldUniqName)) {
+                            //更新新的映射表
+                            row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
+                            if (row > 0) {
+                                cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
+                                redisUtils.set(cacheKey, passportId);
+                            } else {
+                                return false;
+                            }
                         }
                     }
                     return true;
@@ -610,10 +625,10 @@ public class AccountServiceImpl implements AccountService {
             } else {
                 return true;
             }
+            return false;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        return false;
     }
 
     @Override
@@ -644,8 +659,10 @@ public class AccountServiceImpl implements AccountService {
                 //更新映射
                 int row = uniqNamePassportMappingDAO.deleteUniqNamePassportMapping(uniqname);
                 if (row > 0) {
-                    String cacheKey = buildUniqnameCacheKey(uniqname);
+                    String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                     dbShardRedisUtils.delete(cacheKey);
+                    return true;
+                } else if (row == 0) {
                     return true;
                 }
             }

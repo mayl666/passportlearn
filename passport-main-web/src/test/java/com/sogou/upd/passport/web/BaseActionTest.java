@@ -16,6 +16,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonProcessingException;
 import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class BaseActionTest extends TestCase {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != 200) {
                 System.out.println("请求错误，错误码：" + statusCode + " - " +
-                                   response.getStatusLine().getReasonPhrase());
+                        response.getStatusLine().getReasonPhrase());
                 return null;
             }
 
@@ -56,7 +57,7 @@ public class BaseActionTest extends TestCase {
 
             String resultStr = "";
             String res;
-            while ((res = bf.readLine())!= null) {
+            while ((res = bf.readLine()) != null) {
                 resultStr += res + "\n";
             }
 
@@ -84,7 +85,7 @@ public class BaseActionTest extends TestCase {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != 200) {
                 System.out.println("请求错误，错误码：" + statusCode + " - " +
-                                   response.getStatusLine().getReasonPhrase());
+                        response.getStatusLine().getReasonPhrase());
                 return null;
             }
 
@@ -93,7 +94,7 @@ public class BaseActionTest extends TestCase {
 
             String resultStr = "";
             String res;
-            while ((res = bf.readLine())!= null) {
+            while ((res = bf.readLine()) != null) {
                 resultStr += res + "\n";
             }
 
@@ -111,17 +112,17 @@ public class BaseActionTest extends TestCase {
             String sendUrlWithParams = new String(sendUrl);
             sendUrlWithParams += "?";
             for (Map.Entry<String, String> entry : params.entrySet()) {
-                String sch = entry.getKey() + "=" + entry.getValue() + "&";
+                String sch = entry.getKey() + "=" + entry.getValue();
                 sendUrlWithParams += sch;
             }
-            HttpGet method = new HttpGet(sendUrlWithParams);
+            HttpGet method = new HttpGet(sendUrl);
 
             HttpResponse response = client.execute(method);
 
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != 200) {
                 System.out.println("请求错误，错误码：" + statusCode + " - " +
-                                   response.getStatusLine().getReasonPhrase());
+                        response.getStatusLine().getReasonPhrase());
                 return null;
             }
 
@@ -130,7 +131,7 @@ public class BaseActionTest extends TestCase {
 
             String resultStr = "";
             String res;
-            while ((res = bf.readLine())!= null) {
+            while ((res = bf.readLine()) != null) {
                 resultStr += res + "\n";
             }
 
@@ -189,40 +190,54 @@ public class BaseActionTest extends TestCase {
         }
     }
 
-    private static final String appId="1100";
+    private static final String appId = "1100";
 
-    private static final String key="yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
+    private static final String key = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
 
     public void testPostXml() throws Exception {
-
-        long ct=System.currentTimeMillis();
-        String code= "shipengzhi1986@sogou.com" +appId+ key+ ct;
-        code= Coder.encryptMD5(code);
-
-
-
+        long ct = System.currentTimeMillis();
+        String code = "shipengzhi1986@sogou.com" + appId + key + ct;
+        code = Coder.encryptMD5(code);
         String url = "http://internal.passport.sohu.com/interface/getuserinfo";
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         sb.append("<register>\n"
-                  + "    <userid>shipengzhi1986@sogou.com</userid>\n"
-                  + "    <appid>1100</appid>\n"
-                  + "    <ct>"+ct+"</ct>\n"
-                  + "    <code>"+code+"</code>\n"
-                  + "    <password></password>\n"
-                  + "    <passwordtype></passwordtype>\n"
-                  + "    <question></question>\n"
-                  + "    <answer></answer>\n"
-                  + "    <email></email>\n"
-                  + "    <mobile></mobile>\n"
-                  + "    <createip></createip>\n"
-                  + "    <uniqname></uniqname>\n"
-                  /*+ "    <avatarurl></avatarurl>\n"*/
-                  + "    <regappid></regappid>\n"
-                  + "</register>");
+                + "    <userid>shipengzhi1986@sogou.com</userid>\n"
+                + "    <appid>1100</appid>\n"
+                + "    <ct>" + ct + "</ct>\n"
+                + "    <code>" + code + "</code>\n"
+                + "    <password></password>\n"
+                + "    <passwordtype></passwordtype>\n"
+                + "    <question></question>\n"
+                + "    <answer></answer>\n"
+                + "    <email></email>\n"
+                + "    <mobile></mobile>\n"
+                + "    <createip></createip>\n"
+                + "    <uniqname></uniqname>\n"
+                + "    <regappid></regappid>\n"
+                + "</register>");
         String result = sendPostXml(url, sb.toString());
         System.out.println(result);
     }
 
-
+    @Test
+    public void testGetCheck() throws Exception {
+        long ct = System.currentTimeMillis();
+        String code = appId + key + ct;
+        code = Coder.encryptMD5(code);
+        String url = "http://internal.passport.sohu.com/interface/getuserinfo";
+        StringBuffer sb = new StringBuffer();
+        sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        sb.append("<register>\n"
+                + "    <userid></userid>\n"
+                + "    <appid>1100</appid>\n"
+                + "    <ct>" + ct + "</ct>\n"
+                + "    <code>" + code + "</code>\n"
+                + "    <uniqname>汽车驾驶模拟器1946在搜狐</uniqname>\n"
+                + "</register>");
+        String result = sendPostXml(url, sb.toString());
+        String userid = result.substring(result.indexOf("<userid>") + 8, result.lastIndexOf("</userid>"));
+        System.out.println(userid);
+        System.out.println(result);
+    }
 }

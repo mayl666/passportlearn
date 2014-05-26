@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager.api.connect.impl.qq;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.connect.QQClubFaceApiManager;

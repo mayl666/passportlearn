@@ -6,6 +6,8 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -20,6 +22,8 @@ import java.util.List;
  */
 @Ignore
 public class SGStringHashRouterTest extends TestCase {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SGStringHashRouterTest.class);
 
     private static SGStringHashRouter router;
 
@@ -51,6 +55,13 @@ public class SGStringHashRouterTest extends TestCase {
         System.out.println("mobile_table_name:" + mobile_table_name);
         System.out.println("mobile_table_name_1:" + mobile_table_name_1);
 
+    }
+
+
+    @Test
+    public void testUpmShard() {
+        router = new SGStringHashRouter("id", "uniqname_passportid_mapping_{0}", 32);
+        LOGGER.info("u_p_m shard." + router.doRoute("簩龖"));
     }
 
 

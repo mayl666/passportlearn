@@ -283,7 +283,7 @@ public class RegAction extends BaseController {
     }
 
     //检查用户是否存在
-    private Result checkAccountNotExists(String username, int clientId) throws Exception {
+    protected Result checkAccountNotExists(String username, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         //校验是否是搜狐域内用户
 

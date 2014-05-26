@@ -121,9 +121,11 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
             if (!Strings.isNullOrEmpty(uniqname)) {
                 //更新映射
                 int row = uniqNamePassportMappingDAO.deleteUniqNamePassportMapping(uniqname);
-                if (row >= 0) {
+                if (row > 0) {
                     String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                     dbShardRedisUtils.delete(cacheKey);
+                    return true;
+                } else if (row == 0) {
                     return true;
                 }
             }

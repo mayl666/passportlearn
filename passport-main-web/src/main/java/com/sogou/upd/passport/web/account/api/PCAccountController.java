@@ -243,9 +243,10 @@ public class PCAccountController extends BaseController {
     public void authToken(HttpServletRequest request, HttpServletResponse response, PcAuthTokenParams authPcTokenParams) throws Exception {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
+        String ru = authPcTokenParams.getRu();
         if (!Strings.isNullOrEmpty(validateResult)) {
-            if (!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
-                response.sendRedirect(authPcTokenParams.getRu() + "?status=1"); //status=1表示参数错误
+            if (!Strings.isNullOrEmpty(ru)) {
+                response.sendRedirect(buildRedirectUrl(ru, 1)); //status=1表示参数错误
                 return;
             }
             response.getWriter().print("Error: parameter error!");
@@ -258,8 +259,8 @@ public class PCAccountController extends BaseController {
             if (getUserIdResult.isSuccess()) {
                 userId = (String) getUserIdResult.getDefaultModel();
             } else {
-                if (!Strings.isNullOrEmpty(authPcTokenParams.getRu())) {
-                    response.sendRedirect(authPcTokenParams.getRu() + "?status=1"); //status=1表示参数错误
+                if (!Strings.isNullOrEmpty(ru)) {
+                    response.sendRedirect(buildRedirectUrl(ru, 1)); //status=1表示参数错误
                     return;
                 }
                 response.getWriter().print("Error: parameter error!");
@@ -281,7 +282,8 @@ public class PCAccountController extends BaseController {
         if (authTokenResult.isSuccess()) {
             CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
             createCookieUrlApiParams.setUserid(userId);
-            createCookieUrlApiParams.setRu(authPcTokenParams.getRu());
+            createCookieUrlApiParams.setRu(ru);
+            createCookieUrlApiParams.setClientId(authPcTokenParams.getAppid());
             if (!"0".equals(authPcTokenParams.getLivetime())) {
                 createCookieUrlApiParams.setPersistentcookie(1);
             }
@@ -303,9 +305,10 @@ public class PCAccountController extends BaseController {
             }
         }
         //token验证失败
-        response.sendRedirect(authPcTokenParams.getRu() + "?status=6");  //status=6表示验证失败
+        response.sendRedirect(buildRedirectUrl(ru, 6));  //status=6表示验证失败
         return;
     }
+
 
     @RequestMapping(value = "/act/setppcookie", method = RequestMethod.GET)
     public void setPPCookie(HttpServletRequest request, HttpServletResponse response, PPCookieParams ppCookieParams)
@@ -316,16 +319,16 @@ public class PCAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            returnErrMsg(response, ppCookieParams.getRu(), result.getCode(), result.getMessage());
+            returnErrMsg(response, ppCookieParams.getRu(),result.getCode(), result.getMessage());
             return;
         }
 
-        result = cookieManager.setPPCookie(response, ppCookieParams);
+        result = cookieManager.setPPCookie(response,ppCookieParams);
 
         String ru = ppCookieParams.getRu();
-        if (!result.isSuccess()) {
-            log(request, "pp_setcookie", ru, result.getCode());
-            returnErrMsg(response, ru, result.getCode(), result.getMessage());
+        if(!result.isSuccess()){
+            log(request,"pp_setcookie",ru,result.getCode());
+            returnErrMsg(response,ru,result.getCode(),result.getMessage());
             return;
         }
         if (!StringUtils.isBlank(ru)) {
@@ -416,5 +419,13 @@ public class PCAccountController extends BaseController {
                 break;
         }
         return errStr;
+    }
+
+    private String buildRedirectUrl(String ru, int status) {
+        if (ru.contains("?")) {
+            return ru + "&status=" + status;
+        } else {
+            return ru + "?status=" + status;
+        }
     }
 }

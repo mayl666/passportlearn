@@ -65,7 +65,7 @@ public interface RegManager {
      * @return
      * @throws Exception
      */
-    public Result checkRegInBlackListByIpForInternal(String ip,int clientId) throws Exception;
+    public Result checkRegInBlackListByIpForInternal(String ip, int clientId) throws Exception;
 
     /**
      * 检查手机注册ip是否在发短信超限黑名单中
@@ -86,6 +86,7 @@ public interface RegManager {
 
     /**
      * 检查用户名是否存在调用是否超过频率限制
+     *
      * @param username
      * @param ip
      * @return
@@ -94,13 +95,15 @@ public interface RegManager {
 
     /**
      * 校验sogou验证码，并注册手机号账号
+     *
      * @param username
      * @param password
      * @param clientId
      * @param captcha
+     * @param type
      * @return
      * @throws Exception
      */
-    public Result registerMobile(String username,String password,int clientId,String captcha) throws Exception;
+    public Result registerMobile(String username, String password, int clientId, String captcha, String type) throws Exception;
 
 }

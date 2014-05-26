@@ -100,7 +100,7 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = regManager.registerMobile(params.getMobile(), params.getPassword(), params.getClient_id(), params.getCaptcha());
+            result = regManager.registerMobile(params.getMobile(), params.getPassword(), params.getClient_id(), params.getCaptcha(), params.getType());
         } catch (Exception e) {
             logger.error("regMobileCaptchaUser:Mobile User With Captcha For Internal Is Failed,Mobile is " + params.getMobile(), e);
         } finally {
