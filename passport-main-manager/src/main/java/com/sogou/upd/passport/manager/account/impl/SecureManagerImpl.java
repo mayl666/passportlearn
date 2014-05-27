@@ -297,29 +297,31 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         String username = null;
         try {
-
             username = updatePwdParameters.getPassport_id();
-
+            String captcha = updatePwdParameters.getCaptcha();
             UpdatePwdApiParams updatePwdApiParams = buildProxyApiParams(updatePwdParameters);
             int clientId = updatePwdApiParams.getClient_id();
-
+            String token = updatePwdParameters.getToken();
+            //判断验证码
+            if (!accountService.checkCaptchaCode(token, captcha)) {
+                logger.debug("[webRegister captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captcha);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                return result;
+            }
             //检查是否在ip黑名单里
             if (operateTimesService.checkIPLimitResetPwd(ip)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
-
             if (operateTimesService.checkLimitResetPwd(username, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
                 return result;
             }
-
             if (ManagerHelper.isInvokeProxyApi(username)) {
                 result = proxySecureApiManager.updatePwd(updatePwdApiParams);
             } else {
                 result = sgSecureApiManager.updatePwd(updatePwdApiParams);
             }
-
             if (result.isSuccess()) {
                 operateTimesService.incLimitResetPwd(updatePwdApiParams.getUserid(), updatePwdApiParams.getClient_id());
                 operateTimesService.incResetPwdIPTimes(ip);
