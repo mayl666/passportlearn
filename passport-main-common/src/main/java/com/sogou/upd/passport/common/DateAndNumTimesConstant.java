@@ -11,6 +11,7 @@ public class DateAndNumTimesConstant {
     public static final long TWO_WEEKS = 14 * 24 * 60 * 60; // 时间 一天 1440分钟 ,单位s
     public static final long SIX_MONTH = 6 * 30 * 24 * 60 * 60; // 时间 6个月 ,单位s
     public static final long THREE_MONTH = 3 * 30 * 24 * 60 * 60; // 时间 6个月 ,单位s
+    public static final long ONE_MONTH = 1 * 30 * 24 * 60 * 60; // 时间 1个月 ,单位s
     public static final long TIME_TWODAY = 2 * 24 * 60 * 60; // 时间 两天 2880分钟 ,单位s
     public static final long IP_LIMITED = 20; // ip一天限制次数
     public static final int RESETPWD_NUM = 10; // 密码修改一天限制次数
