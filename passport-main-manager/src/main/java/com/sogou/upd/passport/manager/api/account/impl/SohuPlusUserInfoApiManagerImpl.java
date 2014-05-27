@@ -20,7 +20,6 @@ import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;

@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.URL;
-import org.springframework.data.redis.connection.rjc.RjcUtils;
 
 /**
  * Created with IntelliJ IDEA.

@@ -6,8 +6,6 @@ import com.google.common.collect.Lists;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 检查v是否是指定版本

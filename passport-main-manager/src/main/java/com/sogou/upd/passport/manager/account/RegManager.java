@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager.account;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
-import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 
 import java.util.Map;
