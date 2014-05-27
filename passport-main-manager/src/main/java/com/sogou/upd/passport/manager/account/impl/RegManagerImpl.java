@@ -322,7 +322,7 @@ public class RegManagerImpl implements RegManager {
             //主账号有更新绑定手机的操作时，调用sohu api检查账号是否可用
             result = checkUserFromSohu(username, clientId);
         } else {
-            ////没有更新绑定手机时，走正常的双读检查账号是否可用流程
+            //没有更新绑定手机时，走正常的双读检查账号是否可用流程
             CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
             result = sgRegisterApiManager.checkUser(checkUserApiParams);
             if (result.isSuccess()) {  //SG没有，查询SH

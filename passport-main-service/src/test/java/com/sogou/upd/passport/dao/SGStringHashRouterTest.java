@@ -4,7 +4,6 @@ import com.sogou.upd.passport.FileIOUtil;
 import com.sogou.upd.passport.dao.dal.routing.SGStringHashRouter;
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,7 @@ import java.util.List;
  * Time: 下午11:48
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 public class SGStringHashRouterTest extends TestCase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SGStringHashRouterTest.class);
@@ -37,7 +36,7 @@ public class SGStringHashRouterTest extends TestCase {
     @Test
     public void testRoute() {
         router = new SGStringHashRouter("id", "account_{0}", 32);
-        String id = "testliuling@sohu.com";
+        String id = "E1624B0B053479DB67B8FB021FE74744@qq.sohu.com";
         String name = router.doRoute(id);
         System.out.println(name);
 //        Assert.assertEquals(name, "account_18");
