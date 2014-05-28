@@ -7,7 +7,10 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
+import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.service.account.AccountSecureService;
 import com.sogou.upd.passport.service.account.AccountService;
 import org.slf4j.Logger;
@@ -27,7 +30,6 @@ import java.util.Date;
 @Component("loginApiManager")
 public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoginApiManagerImpl.class);
     private static final Logger readLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothReadSyncErrorLogger");
 
     @Autowired
@@ -86,7 +88,10 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                     if (result.isSuccess()) {
                         //读SG失败，读SH成功，记录userid，便于验证数据同步情况
                         //日志记录可能存在的情况：新注册用户登录时，同步延迟；用户找回密码后登录；用户校验密码失败等
-                        readLogger.error("auth sogou error,auth sohu success,userId:{};time:{}", authUserApiParams.getUserid(), new Date());
+                        readLogger.error("SoGouCheckError-SoHuCheckSuccess,userId:{};time:{}", authUserApiParams.getUserid(), new Date());
+                    } else {
+                        //记录下来SH验证失败的情况
+                        readLogger.error("SoHuCheckError,userId:{};SoHuResult:{}", authUserApiParams.getUserid(), result.toString());
                     }
                 }
             }

@@ -357,12 +357,6 @@ public class PCOAuth2AccountController extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED);
             return result;
         }
-//        //判断是否是手机号注册
-//        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-//            result = pcoAuth2RegManager.isPcAccountNotExists(username, true);
-//        } else {
-//            result = pcoAuth2RegManager.isPcAccountNotExists(username, false);
-//        }
         //检查用户是否存在
         result = regManager.isAccountNotExists(username, CommonConstant.PC_CLIENTID);
         return result;

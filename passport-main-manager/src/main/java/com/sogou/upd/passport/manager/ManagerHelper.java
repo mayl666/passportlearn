@@ -26,7 +26,7 @@ public class ManagerHelper {
      * @return
      */
     public static boolean isInvokeProxyApi(String passportId) {
-        return true;
+        return true;                 //相当于写开关
 //        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));
     }
 
