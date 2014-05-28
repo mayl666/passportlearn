@@ -147,18 +147,4 @@ public interface AccountDAO {
     public int updateNickNameAndAvatar(@ShardBy @SQLParam("passport_id") String passport_id,
                                        @SQLParam("uniqname") String uniqname,
                                        @SQLParam("avatar") String avatar) throws DataAccessException;
-
-
-    /**
-     * account_base_info 表昵称、头像迁移至 account_0~32表,对于搜狐矩阵账号，插入一条无密码的记录
-     *
-     * @param passport_id
-     * @param account
-     * @return
-     * @throws DataAccessException
-     */
-
-    @SQL("insert into " + TABLE_NAME + "(" + ALL_FIELD + ") " + "values (" + VALUE_FIELD + ")")
-    public int insertSoHuAccount(@ShardBy @SQLParam("passport_id") String passport_id, @SQLParam("account") Account account) throws DataAccessException;
-
 }

@@ -1,16 +1,12 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
-import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
-import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
@@ -18,12 +14,8 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
-import com.sogou.upd.passport.model.app.ConnectConfig;
-import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.app.ConnectConfigService;
-import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +27,6 @@ import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * 搜狗用户个人信息
@@ -75,10 +66,8 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
             String params = infoApiparams.getFields();
             if (!Strings.isNullOrEmpty(params)) {
                 //替换sogou相关字段
-
                 params = replaceParam(params);
                 String[] paramArray = StringUtils.split(params, ",");
-
                 if (ArrayUtils.isNotEmpty(paramArray)) {
                     //获取用户账号 域类型
                     AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
@@ -210,13 +199,15 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     @Override
     public Result updateUserInfo(UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
+        String passportId = params.getUserid();
         try {
             //获取用户账号类型
-            AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(params.getUserid());
-            Account account = accountService.queryAccountByPassportId(params.getUserid());
+            AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
+            Account account = accountService.queryAccountByPassportId(passportId);
             if (account != null) {
                 //更新用户非昵称信息，性别、所在地、生日、真实姓名、身份证
                 result = updateAccountInfo(result, params);
+
 
                 if (!Strings.isNullOrEmpty(params.getUniqname()) && !params.getUniqname().equalsIgnoreCase(account.getUniqname())) {
                     //更新用户昵称信息
@@ -240,7 +231,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
         } catch (Exception e) {
-            logger.error("updateUserInfo Fail,passportId:" + params.getUserid(), e);
+            logger.error("updateUserInfo Fail,passportId:" + passportId, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
@@ -294,6 +285,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     result.setMessage("修改个人资料成功");
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
+
                 }
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
@@ -356,3 +348,4 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     }
 
 }
+

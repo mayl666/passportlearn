@@ -358,10 +358,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
      */
     @Override
     public Result getUserInfo(ObtainAccountInfoParams params) {
-        Result result = new APIResultSupport(false);
         GetUserInfoApiparams infoApiparams = buildGetUserInfoApiparams(params);
         //TODO 非第三方账号迁移完成后，第三方账号、非第三方账号 获取用户信息走相同逻辑、开启此分支
-        result = sgUserInfoApiManager.getUserInfo(infoApiparams);
+        Result result = sgUserInfoApiManager.getUserInfo(infoApiparams);
 
         // 调用内部接口
         /*String passportId = params.getUsername();

@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.RecursiveTask;
@@ -139,10 +140,11 @@ public class MigrationTask extends RecursiveTask<List<String>> {
                         sohuAccount.setFlag(1);
                         sohuAccount.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
                         sohuAccount.setAccountType(AccountTypeEnum.SOHU.getValue());
+                        sohuAccount.setRegTime(new Date());
 
                         int insertSohuAccountResult;
                         try {
-                            insertSohuAccountResult = accountDAO.insertSoHuAccount(passportId, sohuAccount);
+                            insertSohuAccountResult = accountDAO.insertAccount(passportId, sohuAccount);
                             if (insertSohuAccountResult > 0) {
                                 //更新缓存
                                 dbShardRedisUtils.setWithinSeconds(cacheKey, sohuAccount, DateAndNumTimesConstant.THREE_MONTH);

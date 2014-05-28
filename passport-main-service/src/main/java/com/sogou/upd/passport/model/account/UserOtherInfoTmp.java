@@ -3,8 +3,8 @@ package com.sogou.upd.passport.model.account;
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
- * Date: 14-5-23
- * Time: 上午12:40
+ * Date: 14-5-26
+ * Time: 下午8:58
  * To change this template use File | Settings | File Templates.
  */
 public class UserOtherInfoTmp {

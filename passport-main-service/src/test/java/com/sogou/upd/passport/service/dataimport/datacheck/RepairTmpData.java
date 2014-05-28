@@ -45,6 +45,17 @@ public class RepairTmpData extends BaseTest {
     }
 
     /**
+     * 根据userid，调用搜狐API获取用户信息
+     */
+    @Test
+    public void testGetUserInfo() {
+        String userid = "00000000000011111111111@163.com";
+        RequestModelXml requestModelXml = FullDataCheckApp.bulidRequestModelXml(userid);
+        Map<String, Object> shApiResult = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
+        System.out.println("result:" + shApiResult);
+    }
+
+    /**
      * 修复user_other_info_tmp表里Province、city为中文的情况
      * 输入：userid列表
      * 输出：更新user_other_info_tmp表
@@ -53,12 +64,12 @@ public class RepairTmpData extends BaseTest {
     public void testRepairtProvinceAndCity() {
         List<String> useridList = FileIOUtil.readFileByLines("D:\\repairDataList\\all_province_city_error.txt");
         String errorText = "";
-        String[] errorProviceAndCity = new String[]{"请选择", "不限", "-1","请选择城市"};
+        String[] errorProviceAndCity = new String[]{"请选择", "不限", "-1", "请选择城市"};
         int total = 0;
         int repairNum = 0;
         for (String userid : useridList) {
             RequestModelXml requestModelXml = FullDataCheckApp.bulidRequestModelXml(userid);
-            Map<String, Object> shApiResult = null;
+            Map<String, Object> shApiResult;
             try {
                 shApiResult = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
                 String status = (String) shApiResult.get("status");
@@ -167,6 +178,54 @@ public class RepairTmpData extends BaseTest {
         System.out.println("total:" + total);
         try {
             FileUtil.storeFile("D:\\repairDataList\\repair_question_userid_error.txt", failedList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 检查在user_info表，但不在user_other_info表的数据
+     */
+    @Test
+    public void testNoOtherInfo() {
+        List<String> useridList = FileIOUtil.readFileByLines("D:\\repairDataList\\no_other_info");
+        String errorText = "";
+        int total = 0;
+        int repairNum = 0;
+        for (String userid : useridList) {
+            RequestModelXml requestModelXml = FullDataCheckApp.bulidRequestModelXml(userid);
+            Map<String, Object> shApiResult;
+            try {
+                shApiResult = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
+                String status = (String) shApiResult.get("status");
+                if (!shApiResult.isEmpty() || !status.equals("0")) {
+                    String personalid = (String) shApiResult.get("personalid");
+                    String mobile = (String) shApiResult.get("personalid");
+                    String mobileflag = (String) shApiResult.get("mobileflag");
+                    String email = (String) shApiResult.get("email");
+                    String emailflag = (String) shApiResult.get("emailflag");
+                    String province = (String) shApiResult.get("province");
+                    String city = (String) shApiResult.get("city");
+                    if (!Strings.isNullOrEmpty(personalid) || !Strings.isNullOrEmpty(mobile) || !Strings.isNullOrEmpty(mobileflag)
+                            || !Strings.isNullOrEmpty(email) || !Strings.isNullOrEmpty(emailflag)
+                            || !Strings.isNullOrEmpty(province) || !Strings.isNullOrEmpty(city)){
+                        errorText = shApiResult.toString();
+                        repairNum++;
+                    }
+                } else {
+                    errorText = userid + ":request shApi empty!";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                errorText = userid + ":request shApi fail!";
+            }
+            total++;
+            failedList.add(errorText);
+        }
+        System.out.println("repairNum:" + repairNum);
+        System.out.println("total:" + total);
+        try {
+            FileUtil.storeFile("D:\\repairDataList\\no_other_info_error", failedList);
         } catch (Exception e) {
             e.printStackTrace();
         }

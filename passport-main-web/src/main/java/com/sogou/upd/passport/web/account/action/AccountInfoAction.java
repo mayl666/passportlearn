@@ -63,7 +63,6 @@ public class AccountInfoAction extends BaseController {
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
 
-
     @RequestMapping(value = "/userinfo/checknickname", method = RequestMethod.GET)
     @ResponseBody
     public Object checkNickName(HttpServletRequest request, CheckOrUpdateNickNameParams checkOrUpdateNickNameParams) {
@@ -103,7 +102,6 @@ public class AccountInfoAction extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-
         if (!hostHolder.isLogin()) {
             return "redirect:/web/webLogin";
         }
@@ -141,7 +139,6 @@ public class AccountInfoAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/person/index";
             }
-
             String userId = hostHolder.getPassportId();
             //验证client_id是否存在
             int clientId = Integer.parseInt(params.getClient_id());
@@ -150,14 +147,11 @@ public class AccountInfoAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/person/index";
             }
-
             if (Strings.isNullOrEmpty(params.getFields())) {
                 params.setFields("province,city,gender,birthday,fullname,personalid");
             }
-
             params.setUsername(userId);
             //获取用户信息
-
             //TODO 待修改获取用户信息
 
             result = accountInfoManager.getUserInfo(params);
@@ -202,13 +196,10 @@ public class AccountInfoAction extends BaseController {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result.toString();
             }
-
             String ip = getIp(request);
             String userId = hostHolder.getPassportId();
-
             infoParams.setUsername(userId);
             result = accountInfoManager.updateUserInfo(infoParams, ip);
-
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
@@ -221,9 +212,7 @@ public class AccountInfoAction extends BaseController {
     @ResponseBody
     public Object uploadAvatar(HttpServletRequest request, UploadAvatarParams params) {
         Result result = new APIResultSupport(false);
-
         if (hostHolder.isLogin()) {
-
             //参数验证
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -239,14 +228,11 @@ public class AccountInfoAction extends BaseController {
             }
 
             String userId = hostHolder.getPassportId();
-
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
             CommonsMultipartFile multipartFile = (CommonsMultipartFile) multipartRequest.getFile("Filedata");
-
             //TODO 非第三方账号数据迁移 用户更新头像信息
             byte[] byteArr = multipartFile.getBytes();
             result = accountInfoManager.uploadImg(byteArr, userId, "0", getIp(request));
-
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
@@ -259,7 +245,6 @@ public class AccountInfoAction extends BaseController {
     @ResponseBody
     public Object uploadDefaultAvatar(HttpServletRequest request, UploadAvatarParams params) {
         Result result = new APIResultSupport(false);
-
         //参数验证
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -273,9 +258,7 @@ public class AccountInfoAction extends BaseController {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
             return result.toString();
         }
-
         String size = params.getImgsize();
-
         result = accountInfoManager.uploadDefaultImg(params.getImgurl(), String.valueOf(clientId));
         if (result.isSuccess()) {
             result = accountInfoManager.obtainPhoto(String.valueOf(clientId), size);
@@ -291,9 +274,7 @@ public class AccountInfoAction extends BaseController {
         Result result = new APIResultSupport(false);
 
         if (hostHolder.isLogin()) {
-
             String userId = hostHolder.getPassportId();
-
 //            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(userId)) ||AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(userId))){
 //                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
 //                Result result1 = secureManager.queryAccountSecureInfo(userId, 1120, false);
@@ -301,18 +282,14 @@ public class AccountInfoAction extends BaseController {
 //            }else {
 //                result = secureManager.queryAccountSecureInfo(userId, 1120, false);
 //            }
-
             //TODO 此处获取用户信息
             result = secureManager.queryAccountSecureInfo(userId, 1120, false);
-
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
-
                 //非第三方账号迁移，获取用户昵称信息，统一调用 accountInfoManager 的 getUserUniqName方法
 //                result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(userId, 1120));
 
                 result.getModels().put("uniqname", accountInfoManager.getUserUniqName(userId, 1120));
-
                 //TODO disable 作用是对于第三方账号，不显示安全信息tab
                 result.setDefaultModel("disable", true);
             }
