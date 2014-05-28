@@ -30,6 +30,17 @@ public interface AccountService {
     public Account initialConnectAccount(String passportId, String ip, int provider)
             throws ServiceException;
 
+
+    /**
+     * 非第三方账号数据迁移，新写方法 初始化用户账号
+     *
+     * @param account
+     * @return
+     * @throws ServiceException
+     */
+    public boolean initAccount(Account account) throws ServiceException;
+
+
     /**
      * 根据passportId获取Account
      */

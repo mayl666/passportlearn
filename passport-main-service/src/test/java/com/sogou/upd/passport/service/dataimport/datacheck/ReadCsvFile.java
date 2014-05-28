@@ -1,9 +1,13 @@
 package com.sogou.upd.passport.service.dataimport.datacheck;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.sogou.upd.passport.common.utils.JsonUtil;
+import org.junit.Test;
 
 import java.io.*;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -48,5 +52,13 @@ public class ReadCsvFile {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testJsonUtil() {
+        String str = "access_token=D2583C1A9809EE646CE26BB83DC29214&expires_in=7776000&refresh_token=33B7D25DA4F5FCD9F5DB7B4EE9136E67";
+        System.out.println("========================" + JsonUtil.obj2Json(str));
+        Map<String, String> map = Splitter.on("&").withKeyValueSeparator("=").split(str);
+        System.out.println("=======================" + map.toString());
     }
 }

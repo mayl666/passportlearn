@@ -103,7 +103,8 @@ public interface AccountInfoDAO {
             "insert into " +
                     TABLE_NAME +
                     "(passport_id, birthday, gender, province, city, fullname, personalid, modifyip,create_time,update_time)"
-                    + "values(:passport_id,:accountInfo.birthday,:accountInfo.gender,:accountInfo.province,:accountInfo.city,:accountInfo.fullname, :accountInfo.personalid,:accountInfo.modifyip,:accountInfo.createTime,:accountInfo.updateTime) on duplicate key "
+                    + "values(:passport_id,:accountInfo.birthday,:accountInfo.gender,:accountInfo.province,:accountInfo.city,:accountInfo.fullname, :accountInfo.personalid,:accountInfo.modifyip,:accountInfo.createTime,:accountInfo.updateTime) " +
+                    "on duplicate key "
                     + "update birthday = :accountInfo.birthday, gender = :accountInfo.gender, province = :accountInfo.province, city = :accountInfo.city, fullname = :accountInfo.fullname, modifyip = :accountInfo.modifyip,create_time = :accountInfo.createTime,update_time=:accountInfo.updateTime")
     public int saveInfoOrInsert(@ShardBy @SQLParam("passport_id") String passport_id,
                                 @SQLParam("accountInfo") AccountInfo account_info)

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.dataimport.nick_name_migration;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -10,16 +11,19 @@ import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.dao.account.AccountDAO;
+import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.service.dataimport.util.FileUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.RecursiveTask;
 
 /**
@@ -42,34 +46,45 @@ public class MigrationTask extends RecursiveTask<List<String>> {
 
     private AccountBaseInfoDAO baseInfoDAO;
 
+
+    private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
+
     private DBShardRedisUtils dbShardRedisUtils;
 
 
-    public MigrationTask(AccountBaseInfoDAO baseDao, AccountDAO accountDao, DBShardRedisUtils shardRedisUtils, int start) {
+    List<String> taskFailList = Lists.newLinkedList();
+
+    //更新db 失败记录
+    List<String> updateDBFailList = Lists.newLinkedList();
+
+    //非第三方账号不存在 记录
+    List<String> accountNotExistList = Lists.newLinkedList();
+
+    //sohu 矩阵账号，插入db 失败记录
+    List<String> insertSoHuAccountFailList = Lists.newLinkedList();
+
+
+    //在 u_p_m 映射表中已经存在的昵称信息
+    Map<String, String> nickNameUpmExistMap = Maps.newConcurrentMap();
+
+
+    public MigrationTask(AccountBaseInfoDAO baseDao, AccountDAO accountDao, UniqNamePassportMappingDAO uniqNamePassportMappingDAO, DBShardRedisUtils shardRedisUtils, int start) {
         this.baseInfoDAO = baseDao;
         this.accountDAO = accountDao;
+        this.uniqNamePassportMappingDAO = uniqNamePassportMappingDAO;
         this.dbShardRedisUtils = shardRedisUtils;
         this.start = start;
     }
 
 
+    /**
+     * 判断账号类型：搜狗账号、手机账号、外域邮箱账号、
+     * 搜狐矩阵账号：生成一条无密码的记录
+     *
+     * @return
+     */
     @Override
     protected List<String> compute() {
-
-        List<String> taskFailList = Lists.newLinkedList();
-
-        //更新db 失败记录
-        List<String> updateDBFailList = Lists.newLinkedList();
-
-        //非第三方账号不存在 记录
-        List<String> accountNotExistList = Lists.newLinkedList();
-
-        //sohu 矩阵账号，插入db 失败记录
-        List<String> insertSoHuAccountFailList = Lists.newLinkedList();
-
-        //判断账号类型：搜狗账号、手机账号、外域邮箱账号、
-        //搜狐矩阵账号：生成一条无密码的记录
-
         try {
             List<AccountBaseInfo> accountBaseInfoList = baseInfoDAO.getNotThirdPartyAccountByPage(start, LIMIT_HOLD);
             if (accountBaseInfoList != null && accountBaseInfoList.size() > 0) {
@@ -85,18 +100,25 @@ public class MigrationTask extends RecursiveTask<List<String>> {
                         try {
                             Account account = accountDAO.getAccountByPassportId(passportId);
                             if (account != null) {
-                                //存在、则更新DB中账号的昵称和头像信息
-                                int updateDbResult = accountDAO.updateNickNameAndAvatar(passportId, nickName, avatar);
-                                if (updateDbResult > 0) {
-                                    account.setUniqname(nickName);
-                                    if (!Strings.isNullOrEmpty(avatar)) {
-                                        account.setAvatar(avatar);
+                                //检查 u_p_m 昵称映射表中是否已经存在昵称
+                                String temp_passportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(nickName);
+                                if (Strings.isNullOrEmpty(temp_passportId)) {
+                                    //存在、则更新DB中账号的昵称和头像信息
+                                    int updateDbResult = accountDAO.updateNickNameAndAvatar(passportId, nickName, avatar);
+                                    if (updateDbResult > 0) {
+                                        account.setUniqname(nickName);
+                                        if (!Strings.isNullOrEmpty(avatar)) {
+                                            account.setAvatar(avatar);
+                                        }
+                                        //更新缓存
+                                        dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
+                                    } else {
+                                        //更新db失败、记录Log : fail_update_account.txt
+                                        updateDBFailList.add(passportId);
                                     }
-                                    //更新缓存
-                                    dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
                                 } else {
-                                    //更新db失败、记录Log : fail_update_account.txt
-                                    updateDBFailList.add(passportId);
+                                    //account_base_info 表昵称
+                                    nickNameUpmExistMap.put(temp_passportId, nickName);
                                 }
                             } else {
                                 //在全量+增量数据导入完成后，对于非第三方账号数据应该都存在于account_0_32表中，若不存在，则记录Log

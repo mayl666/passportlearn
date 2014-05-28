@@ -82,6 +82,15 @@ public class AccountInfoAction extends BaseController {
         return result.toString();
     }
 
+
+    /**
+     * TODO 此方法无调用 ，之后可删除
+     *
+     * @param request
+     * @param checkOrUpdateNickNameParams
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/userinfo/updatenickname", method = RequestMethod.POST)
     @LoginRequired(resultType = ResponseResultType.redirect)
     @ResponseBody
@@ -152,16 +161,16 @@ public class AccountInfoAction extends BaseController {
             //TODO 待修改获取用户信息
 
             result = accountInfoManager.getUserInfo(params);
-//            result.getModels().put("uniqname",(String)result.getModels().get("uniqname"));
+            result.getModels().put("uniqname", result.getModels().get("uniqname"));
 
-            //TODO 修改此处取昵称 非第三方账号迁移后，统一调用 accountInfoManager 的 getUserUniqName 方法
+            //TODO 修改此处取昵称 非第三方账号迁移后，统一调用 accountInfoManager 的 getUserUniqName 方法 暂先注释
 //            result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(params.getUsername(), clientId));
-            result.getModels().put("uniqname", accountInfoManager.getUserUniqName(params.getUsername(), clientId));
-
+//            result.getModels().put("uniqname", accountInfoManager.getUserUniqName(params.getUsername(), clientId));
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (result.isSuccess()) {
-                if (domain == AccountDomainEnum.THIRD) {
+                if (domain == AccountDomainEnum.THIRD || domain == AccountDomainEnum.SOHU) {
+                    //TODO disable 作用是 对于第三方账号，不显示安全信息 ，搜狐矩阵账号也先加上
                     result.setDefaultModel("disable", true);
                 }
                 model.addAttribute("data", result.toString());
@@ -236,7 +245,7 @@ public class AccountInfoAction extends BaseController {
 
             //TODO 非第三方账号数据迁移 用户更新头像信息
             byte[] byteArr = multipartFile.getBytes();
-            result = accountInfoManager.uploadImg(byteArr, userId, "0");
+            result = accountInfoManager.uploadImg(byteArr, userId, "0", getIp(request));
 
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
@@ -293,7 +302,7 @@ public class AccountInfoAction extends BaseController {
 //                result = secureManager.queryAccountSecureInfo(userId, 1120, false);
 //            }
 
-
+            //TODO 此处获取用户信息
             result = secureManager.queryAccountSecureInfo(userId, 1120, false);
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
@@ -301,8 +310,10 @@ public class AccountInfoAction extends BaseController {
 
                 //非第三方账号迁移，获取用户昵称信息，统一调用 accountInfoManager 的 getUserUniqName方法
 //                result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(userId, 1120));
+
                 result.getModels().put("uniqname", accountInfoManager.getUserUniqName(userId, 1120));
 
+                //TODO disable 作用是对于第三方账号，不显示安全信息tab
                 result.setDefaultModel("disable", true);
             }
             model.addAttribute("data", result.toString());

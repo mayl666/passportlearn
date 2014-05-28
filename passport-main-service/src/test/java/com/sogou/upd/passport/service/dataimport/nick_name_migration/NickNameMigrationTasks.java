@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.dao.account.AccountDAO;
+import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import org.perf4j.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +36,15 @@ public class NickNameMigrationTasks extends RecursiveTask<List<String>> {
 
     private AccountDAO accountDAO;
 
+    private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
+
     private DBShardRedisUtils dbShardRedisUtils;
 
 
-    public NickNameMigrationTasks(AccountBaseInfoDAO baseDao, AccountDAO accountDao, DBShardRedisUtils shardRedisUtils) {
+    public NickNameMigrationTasks(AccountBaseInfoDAO baseDao, AccountDAO accountDao, UniqNamePassportMappingDAO uniqNamePassportMappingDAO, DBShardRedisUtils shardRedisUtils) {
         this.baseInfoDAO = baseDao;
         this.accountDAO = accountDao;
+        this.uniqNamePassportMappingDAO = uniqNamePassportMappingDAO;
         this.dbShardRedisUtils = shardRedisUtils;
     }
 
@@ -57,7 +61,7 @@ public class NickNameMigrationTasks extends RecursiveTask<List<String>> {
             int maxPage = totalCount % DATA_RANGE_LIMIT == 0 ? (totalCount / DATA_RANGE_LIMIT) : (totalCount / DATA_RANGE_LIMIT + 1);
             for (int i = 0; i < maxPage; i++) {
                 int pageIndex = (DATA_RANGE_LIMIT + 1) * CURRENT;
-                MigrationTask migrationTask = new MigrationTask(baseInfoDAO, accountDAO, dbShardRedisUtils, pageIndex);
+                MigrationTask migrationTask = new MigrationTask(baseInfoDAO, accountDAO, uniqNamePassportMappingDAO, dbShardRedisUtils, pageIndex);
                 migrationTask.fork();
                 forks.add(migrationTask);
                 CURRENT++;

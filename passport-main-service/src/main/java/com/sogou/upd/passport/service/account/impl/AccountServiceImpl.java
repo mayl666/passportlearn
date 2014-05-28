@@ -137,6 +137,31 @@ public class AccountServiceImpl implements AccountService {
         return initialAccount(passportId, null, false, ip, provider);
     }
 
+    /**
+     * 非第三方账号迁移，新写 初始化 Account 方法
+     *
+     * @param account
+     * @return
+     * @throws ServiceException
+     */
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public boolean initAccount(Account account) throws ServiceException {
+        boolean initSuccess = false;
+        try {
+            long id = accountDAO.insertOrUpdateAccount(account.getPassportId(), account);
+            if (id != 0) {
+                initSuccess = true;
+                String cacheKey = buildAccountKey(account.getPassportId());
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
+                return initSuccess;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return initSuccess;
+    }
+
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccountByPassportId", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public Account queryAccountByPassportId(String passportId) throws ServiceException {

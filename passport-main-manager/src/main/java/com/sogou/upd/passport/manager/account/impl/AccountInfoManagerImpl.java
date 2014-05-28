@@ -4,7 +4,9 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DBRedisUtils;
@@ -36,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -80,9 +83,10 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
      * @param byteArr    需要上传图片流
      * @param passportId 用户ID
      * @param type       上传类别  0:本地图片上传 1:网络URL图片上传
+     * @param ip         用户操作IP
      * @return
      */
-    public Result uploadImg(byte[] byteArr, String passportId, String type) {
+    public Result uploadImg(byte[] byteArr, String passportId, String type, String ip) {
         Result result = new APIResultSupport(false);
         try {
             //判断后缀是否符合要求
@@ -96,9 +100,35 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             if (photoUtils.uploadImg(imgName, byteArr, null, type)) {
                 String imgURL = photoUtils.accessURLTemplate(imgName);
                 Account account = accountService.queryAccountByPassportId(passportId);
-                boolean updateAvatarSuccess = accountService.updateAvatar(account, imgURL);
-                if (!updateAvatarSuccess) {
-                    result.setCode(ErrorUtil.ERR_CODE_UPLOAD_PHOTO);
+
+                //获取用户账号域类型
+                AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+                //account 判空处理
+                if (account != null) {
+                    boolean updateAvatarSuccess = accountService.updateAvatar(account, imgURL);
+                    if (!updateAvatarSuccess) {
+                        result.setCode(ErrorUtil.ERR_CODE_UPLOAD_PHOTO);
+                        return result;
+                    }
+                } else if (domain == AccountDomainEnum.SOHU) {
+                    //如果是搜狐矩阵账号、则初始化至account表
+                    Account initAccount = new Account();
+                    initAccount.setPassportId(passportId);
+                    initAccount.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
+                    initAccount.setAccountType(AccountTypeEnum.SOHU.getValue());
+                    initAccount.setFlag(AccountStatusEnum.REGULAR.getValue());
+                    initAccount.setAvatar(imgURL);
+                    initAccount.setRegIp(ip);
+                    initAccount.setRegTime(new Date());
+
+                    boolean initSuccess = accountService.initAccount(initAccount);
+                    if (!initSuccess) {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                        return result;
+                    }
+                } else {
+                    //账号不存在
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                     return result;
                 }
 
@@ -400,6 +430,10 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                     ConnectToken connectToken = getConnectToken(passportId, clientId);
                     if (connectToken != null) {
                         uniqname = connectToken.getConnectUniqname();
+                        //判断uniqname,若为空，则调用 getAndUpdateUniqname 方法
+                        if (Strings.isNullOrEmpty(uniqname)) {
+                            uniqname = getAndUpdateUniqname(passportId, account, uniqname);
+                        }
                     }
                 }
             } else {
@@ -411,6 +445,71 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             logger.error("getUserUniqName error. passportId:" + passportId, e);
         }
         return Strings.isNullOrEmpty(uniqname) ? passportId : Coder.encode(uniqname, "UTF-8");
+    }
+
+    @Override
+    public Result getUserNickNameAndAvatar(String passportId, int clientId) {
+        Result result = new APIResultSupport(false);
+        String large_avatar = "";
+        String mid_avatar = "";
+        String tiny_avatar = "";
+        String uniqname = "";
+        String avatarurl = "";
+
+        //判断用户类型
+        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+        Account account = accountService.queryAccountByPassportId(passportId);
+        if (account != null) {
+            uniqname = account.getUniqname();
+            avatarurl = account.getAvatar();
+            if (domain == AccountDomainEnum.THIRD) {
+                ConnectToken connectToken = null;
+                if (Strings.isNullOrEmpty(uniqname) || Strings.isNullOrEmpty(avatarurl)) {
+                    connectToken = getConnectToken(passportId, clientId);
+                    if (connectToken != null) {
+                        if (Strings.isNullOrEmpty(uniqname)) {
+                            uniqname = connectToken.getConnectUniqname();
+                        }
+                        if (Strings.isNullOrEmpty(avatarurl)) {
+                            large_avatar = connectToken.getAvatarLarge();
+                            mid_avatar = connectToken.getAvatarMiddle();
+                            tiny_avatar = connectToken.getAvatarSmall();
+                        }
+                    }
+                } else {
+                    //获取不同尺寸头像
+                    Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
+                    large_avatar = (String) getPhotoResult.getModels().get("img_180");
+                    mid_avatar = (String) getPhotoResult.getModels().get("img_50");
+                    tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
+                }
+
+            } else {
+                //非第三方账号 用户昵称、头像、数据读取从 account_base_info 切换至 account_0~32
+                Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
+                large_avatar = (String) getPhotoResult.getModels().get("img_180");
+                mid_avatar = (String) getPhotoResult.getModels().get("img_50");
+                tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
+                uniqname = getAndUpdateUniqname(passportId, account, uniqname);
+            }
+        } else if (domain == AccountDomainEnum.SOHU) {
+            //TODO 若为搜狐矩阵账号，如何处理?
+
+        } else {
+            //若 account 为空，并且账号域类型不是"搜狐域"账号，错误码返回:账号不存在、并且返回
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            return result;
+        }
+
+        result.setSuccess(true);
+        //是否需要编码？TODO 此处对昵称做UTF-8编码
+        result.setDefaultModel("uniqname", Coder.encode(uniqname, "UTF-8"));
+        result.getModels().put("avatarurl", mid_avatar);
+        result.setDefaultModel("userid", passportId);
+        result.setDefaultModel("img_30", tiny_avatar);
+        result.setDefaultModel("img_50", mid_avatar);
+        result.setDefaultModel("img_180", large_avatar);
+        return result;
     }
 
     /**

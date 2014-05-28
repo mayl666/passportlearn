@@ -14,6 +14,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -80,6 +81,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     private ConnectTokenService connectTokenService;
     @Autowired
     private ConnectConfigService connectConfigService;
+
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
 
     @Override
@@ -265,7 +269,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
 
-            Result getUserInfoResult = getUserInfo(passportId, clientId);
+            //取用户昵称、头像信息
+//            Result getUserInfoResult = getUserInfo(passportId, clientId);
+            Result getUserInfoResult = accountInfoManager.getUserNickNameAndAvatar(passportId, clientId);
             String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
             if (getUserInfoResult.isSuccess()) {
                 uniqname = (String) getUserInfoResult.getModels().get("uniqname");
@@ -351,16 +357,15 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     }
 
     /**
-     * 非第三方账号全量数据迁移完成后
-     * 用户昵称、头像信息 读写 account_base_info 切换到 account_0~32
-     * 用户其他信息 读写调用搜狐Api 切换到 读写 account_info_0~32
-     *
-     * TODO 改为调用 AccountInfoManager getUserInfo 方法
+     * 其实此方法只是取用户昵称和头像
+     * <p/>
+     * TODO 非第三方账号数据迁移完成后，此方法作废
      *
      * @param passportId
      * @param clientId
      * @return
      */
+    @Deprecated
     @Override
     public Result getUserInfo(String passportId, int clientId) {
         Result result = new APIResultSupport(false);

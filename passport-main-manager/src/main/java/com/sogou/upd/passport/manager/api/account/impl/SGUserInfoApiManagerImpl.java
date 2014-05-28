@@ -1,12 +1,14 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -24,6 +26,7 @@ import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,7 @@ import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * 搜狗用户个人信息
@@ -50,18 +54,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     private AccountInfoService accountInfoService;
 
     @Autowired
-    private ConnectTokenService connectTokenService;
-    @Autowired
-    private ConnectConfigService connectConfigService;
-
-    @Autowired
-    private PhotoUtils photoUtils;
-    @Autowired
-    private PCAccountManager pcAccountManager;
-
-
-    @Autowired
-    private OAuth2ResourceManager oAuth2ResourceManager;
+    private AccountInfoManager accountInfoManager;
 
 
     /**
@@ -84,29 +77,31 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 //替换sogou相关字段
 
                 params = replaceParam(params);
-                String[] paramArray = params.split(",");
+                String[] paramArray = StringUtils.split(params, ",");
 
                 if (ArrayUtils.isNotEmpty(paramArray)) {
-
-                    //调用 获取昵称接口 拼接返回的result map 原调用方法
-//                    result = oAuth2ResourceManager.getUserInfo(infoApiparams.getUserid(), infoApiparams.getClient_id());
-
+                    //获取用户账号 域类型
+                    AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
                     Account account = accountService.queryAccountByPassportId(passportId);
                     if (account != null) {
                         //构建用户昵称、头像信息
-                        result = buildUserNickNameAndAvatar(result, account, infoApiparams.getClient_id());
+                        result = accountInfoManager.getUserNickNameAndAvatar(passportId, infoApiparams.getClient_id());
+
                         //检查是否有绑定手机
                         if (ArrayUtils.contains(paramArray, "mobile")) {
-                            if (account != null) {
-                                result.setDefaultModel("sec_mobile", account.getMobile());
-                            }
+                            result.setDefaultModel("sec_mobile", account.getMobile());
                             paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "mobile"));
                         }
-
-
+                    } else if (domain == AccountDomainEnum.SOHU) {
+                        //如果为"搜狐域"账号，则根据请求参数构建值为 "" 的result
+                        return buildSoHuEmptyResult(result, paramArray);
+                    } else {
+                        //若 account 为空，并且账号域类型不是"搜狐域"账号，错误码返回:账号不存在、并且返回
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                        return result;
                     }
 
-                    //查询用户其他信息、查询account_info_0~32
+                    //查询用户其他信息、查询account_info_0~32 TODO 重构
                     //查询其他的个人信息 参数匹配
                     AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
                     if (accountInfo != null) {
@@ -130,11 +125,12 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                             result.setDefaultModel("fullname", value);
                                             continue;
                                         }
-                                        if ("sex".equals(paramArray[i])) {
+                                        //TODO 暂先注释掉，sex 数据项应该没用
+                                       /* if ("sex".equals(paramArray[i])) {
                                             String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
                                             result.setDefaultModel("sex", value);
                                             continue;
-                                        }
+                                        }*/
                                         //TODO 此处存在异常，有paramArray[i] 不存在于 accountInfo的情况
                                         String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
                                         result.setDefaultModel(paramArray[i], value);
@@ -162,92 +158,24 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         return result;
     }
 
-
-
-    /*@Override
-    public Result getUserInfo(GetUserInfoApiparams infoApiparams) {
-        Result result = new APIResultSupport(false);
-        String passportId = infoApiparams.getUserid();
-        try {
-            String params = infoApiparams.getFields();
-            if (!Strings.isNullOrEmpty(params)) {
-                //替换sogou相关字段
-
-                params = replaceParam(params);
-
-                String[] paramArray = params.split(",");
-
-                if (ArrayUtils.isNotEmpty(paramArray)) {
-
-                    //调用 获取昵称接口 拼接返回的result map
-                    result = oAuth2ResourceManager.getUserInfo(infoApiparams.getUserid(), infoApiparams.getClient_id());
-
-                    //检查是否有绑定手机
-                    if (ArrayUtils.contains(paramArray, "mobile")) {
-                        Account account = accountService.queryAccountByPassportId(passportId);
-                        if (account != null) {
-                            result.setDefaultModel("sec_mobile", account.getMobile());
-                        }
-                        paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "mobile"));
-                    }
-
-                    //查询用户其他信息、查询account_info_0~32
-                    //查询其他的个人信息 参数匹配
-                    AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
-                    if (accountInfo != null) {
-                        if (ArrayUtils.isNotEmpty(paramArray)) {
-                            result.setSuccess(true);
-                            for (int i = 0; i < paramArray.length; i++) {
-                                try {
-                                    if (!"birthday".equals(paramArray[i])) {
-                                        if ("email".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("sec_email", value);
-                                            continue;
-                                        }
-                                        if ("question".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("sec_ques", value);
-                                            continue;
-                                        }
-                                        if ("fullname".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("fullname", value);
-                                            continue;
-                                        }
-                                        if ("sex".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("sex", value);
-                                            continue;
-                                        }
-                                        //TODO 此处存在异常，有paramArray[i] 不存在于 accountInfo的情况
-                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                        result.setDefaultModel(paramArray[i], value);
-                                    } else {
-                                        Date birthday = accountInfo.getBirthday();
-                                        result.setDefaultModel(paramArray[i], new SimpleDateFormat("yyyy-MM-dd").format(birthday));
-                                    }
-                                } catch (Exception e) {
-                                    paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, paramArray[i]));
-                                }
-                            }
-                        }
-                    }
-                    if (!result.getModels().isEmpty()) {
-                        result.setSuccess(true);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            logger.error("getUserInfo Fail,passportId:" + passportId, e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+    /**
+     * 若获取Account为空，并且Account域为搜狐域，构建基于请求参数的、值为""、的Result
+     *
+     * @param result
+     * @param paramArray
+     * @return
+     */
+    private Result buildSoHuEmptyResult(Result result, String[] paramArray) {
+        if (paramArray.length == 0) {
             return result;
+        } else {
+            for (String param : paramArray) {
+                result.setDefaultModel(param, StringUtils.EMPTY);
+            }
         }
-
+        result.setSuccess(true);
         return result;
     }
-*/
-
 
     private String replaceParam(String param) {
         //sec_mobile, sec_email, sec_ques,  username
@@ -260,18 +188,21 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
             param = param.replaceAll("sec_mobile", "mobile");
         }
         if (param.contains("sec_email")) {
-            //绑定手机号
+            //绑定密保邮箱
             param = param.replaceAll("sec_email", "email");
         }
         if (param.contains("sec_ques")) {
-            //绑定手机号
+            //绑定密保问题
             param = param.replaceAll("sec_ques", "question");
         }
         return param;
     }
 
     /**
-     * 非第三方账号迁移，更新用户信息，对于搜狐矩阵账号，新增一条无密码的记录
+     * 非第三方账号迁移，更新用户信息
+     * 对于搜狐矩阵账号，新增一条无密码的记录
+     * <p/>
+     * TODO 需要兼容内部接口方法
      *
      * @param params
      * @return
@@ -280,65 +211,34 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     public Result updateUserInfo(UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
         try {
-
             //获取用户账号类型
             AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(params.getUserid());
             Account account = accountService.queryAccountByPassportId(params.getUserid());
             if (account != null) {
-                //更新用户除“昵称”外的其他信息
-                AccountInfo info = new AccountInfo();
-                info.setPassportId(params.getUserid());
+                //更新用户非昵称信息，性别、所在地、生日、真实姓名、身份证
+                result = updateAccountInfo(result, params);
 
-                String[] birthday = !Strings.isNullOrEmpty(params.getBirthday()) ? params.getBirthday().split("-") : null;
-                Calendar calendar = Calendar.getInstance();
-                if (birthday != null) {
-                    calendar.set(Calendar.YEAR, Integer.valueOf(birthday[0]));
-                    calendar.set(Calendar.MONTH, Integer.valueOf(birthday[1]) - 1);
-                    calendar.set(Calendar.DATE, Integer.valueOf(birthday[2]));
-                }
-
-                info.setBirthday(calendar.getTime());
-                info.setGender(params.getGender());
-                info.setProvince(params.getProvince());
-                info.setCity(params.getCity());
-                info.setFullname(params.getUsername());
-                info.setPersonalid(params.getPersonalId());
-                info.setModifyip(params.getModifyip());
-                info.setUpdateTime(new Date());
-
-                //更新用户信息AccountInfo
-                boolean updateResult = accountInfoService.updateAccountInfo(info);
-                if (updateResult) {
-                    result.setSuccess(true);
-                    result.setMessage("修改个人资料成功");
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
-                }
-
-                //判断昵称是否存在
-                String checkExist = accountService.checkUniqName(params.getUniqname());
-                if (Strings.isNullOrEmpty(checkExist)) {
-                    //更新昵称 Account表 u_p_m映射表
-                    boolean accountUpdateResult = accountService.updateUniqName(account, params.getUniqname());
-                    if (accountUpdateResult) {
-                        result.setSuccess(true);
-                        result.setMessage("修改个人资料成功");
-                    } else {
-                        result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
-                    }
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
+                if (!Strings.isNullOrEmpty(params.getUniqname()) && !params.getUniqname().equalsIgnoreCase(account.getUniqname())) {
+                    //更新用户昵称信息
+                    result = updateAccountNickName(result, account, params.getUniqname());
                 }
             } else if (accountDomain == AccountDomainEnum.SOHU) {
-                //如果是搜狐矩阵账号，则插入到account表一条无密码的记录
+                //如果是搜狐矩阵账号，则插入到account表一条无密码的记录,插入成功、涉及到用户信息更改的话，在继续执行更新操作
                 Account insertSoHuAccount = accountService.initialAccount(params.getUserid(), null, false, params.getModifyip(), AccountTypeEnum.SOHU.getValue());
                 if (insertSoHuAccount == null) {
-                    result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                    return result;
+                } else {
+                    //更新用户非昵称信息，性别、所在地、生日、真实姓名、身份证
+                    result = updateAccountInfo(result, params);
+                    if (!Strings.isNullOrEmpty(params.getUniqname()) && !params.getUniqname().equalsIgnoreCase(account.getUniqname())) {
+                        //更新用户昵称信息
+                        result = updateAccountNickName(result, account, params.getUniqname());
+                    }
                 }
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
-
         } catch (Exception e) {
             logger.error("updateUserInfo Fail,passportId:" + params.getUserid(), e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -374,132 +274,85 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
 
 
     /**
-     * 构建用户"昵称、头像"信息
+     * 非第三方账号迁移， 新增 更新用户昵称方法
      *
-     * @param userInfoResult
-     * @param clientId
+     * @param result
+     * @param account
+     * @param nickName
      * @return
      */
-    private Result buildUserNickNameAndAvatar(Result userInfoResult, Account account, int clientId) {
-
-        //TODO 非第三方账号数据迁移 、业务逻辑方法重构
-
-        Result result = userInfoResult;
-
-        String avatarurl = "";
-        String large_avatar = "";
-        String mid_avatar = "";
-        String tiny_avatar = "";
-        String passportId = account.getPassportId();
-        String uniqname = defaultUniqname(passportId);
-
-        if (account != null) {
-            uniqname = account.getUniqname();
-            avatarurl = account.getAvatar();
-        }
-
-        //判断用户类型
-        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
-        if (domain == AccountDomainEnum.THIRD) {
-            ConnectToken connectToken = null;
-            if (Strings.isNullOrEmpty(uniqname) || Strings.isNullOrEmpty(avatarurl)) {
-                connectToken = getConnectToken(passportId, clientId);
-                if (connectToken != null) {
-                    if (Strings.isNullOrEmpty(uniqname)) {
-                        uniqname = connectToken.getConnectUniqname();
-                    }
-                    if (Strings.isNullOrEmpty(avatarurl)) {
-                        large_avatar = connectToken.getAvatarLarge();
-                        mid_avatar = connectToken.getAvatarMiddle();
-                        tiny_avatar = connectToken.getAvatarSmall();
-                    }
+    private Result updateAccountNickName(Result result, Account account, String nickName) {
+        try {
+            //更新昵称
+            //判断昵称是否存在
+            String checkExist = accountService.checkUniqName(nickName);
+            if (Strings.isNullOrEmpty(checkExist)) {
+                //更新昵称 Account表 u_p_m映射表
+                boolean accountUpdateResult = accountService.updateUniqName(account, nickName);
+                if (accountUpdateResult) {
+                    result.setSuccess(true);
+                    result.setMessage("修改个人资料成功");
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
                 }
             } else {
-                //获取不同尺寸头像
-                Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
-                large_avatar = (String) getPhotoResult.getModels().get("img_180");
-                mid_avatar = (String) getPhotoResult.getModels().get("img_50");
-                tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
+                result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
             }
-            result.setDefaultModel("userid", passportId);
-        } else {
-            //非第三方账号 用户昵称、头像、数据读取从 account_base_info 切换至 account_0~32
-            Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
-            large_avatar = (String) getPhotoResult.getModels().get("img_180");
-            mid_avatar = (String) getPhotoResult.getModels().get("img_50");
-            tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
-            uniqname = getAndUpdateUniqname(passportId, account, uniqname);
+        } catch (Exception e) {
+            logger.error("updateAccountNickName error. passportId:" + account.getPassportId(), e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
         }
-
-        //是否需要编码？TODO
-        result.setDefaultModel("uniqname", uniqname);
-
-        result.setDefaultModel("img_30", tiny_avatar);
-        result.setDefaultModel("img_50", mid_avatar);
-        result.setDefaultModel("img_180", large_avatar);
         return result;
     }
 
 
     /**
-     * 获取用户 默认昵称
+     * 非第三方账号迁移，新增 更新用户其他信息 方法
+     * <p/>
+     * TODO 兼容内部接口方法
      *
-     * @param passportId
+     * @param result
      * @return
      */
-    public String defaultUniqname(String passportId) {
-        if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(passportId)) {
-            return "搜狗用户";
-        }
-        return passportId.substring(0, passportId.indexOf("@"));
-    }
+    private Result updateAccountInfo(Result result, UpdateUserInfoApiParams params) {
 
-    /**
-     * 获取用户 ConnectToken
-     *
-     * @param userId
-     * @param clientId
-     * @return
-     */
-    private ConnectToken getConnectToken(String userId, int clientId) {
-        //从connect_token中获取
-        int provider = AccountTypeEnum.getAccountType(userId).getValue();
-        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-        ConnectToken connectToken = null;
-        if (connectConfig != null) {
-            connectToken = connectTokenService.queryConnectToken(userId, provider, connectConfig.getAppKey());
-        }
-        return connectToken;
-    }
+        try {
+            //更新用户除“昵称”外的其他信息
+            AccountInfo info = new AccountInfo();
+            info.setPassportId(params.getUserid());
 
-    /**
-     * 从浏览器论坛取昵称
-     *
-     * @param passportId
-     * @param account
-     * @param uniqname
-     * @return
-     */
-    private String getAndUpdateUniqname(String passportId, Account account, String uniqname) {
-        if (!isValidUniqname(passportId, uniqname)) {
-            //从论坛获取昵称
-            uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
-            if (isValidUniqname(passportId, uniqname)) {
-                accountService.updateUniqName(account, uniqname);
+            String[] birthday = !Strings.isNullOrEmpty(params.getBirthday()) ? params.getBirthday().split("-") : null;
+            Calendar calendar = Calendar.getInstance();
+            if (birthday != null) {
+                calendar.set(Calendar.YEAR, Integer.valueOf(birthday[0]));
+                calendar.set(Calendar.MONTH, Integer.valueOf(birthday[1]) - 1);
+                calendar.set(Calendar.DATE, Integer.valueOf(birthday[2]));
             }
-        }
-        if (!isValidUniqname(passportId, uniqname)) {
-            uniqname = defaultUniqname(passportId);
-        }
-        return uniqname;
-    }
 
-    private boolean isValidUniqname(String passportId, String uniqname) {
-        if (Strings.isNullOrEmpty(uniqname) || uniqname.equals(passportId.substring(0, passportId.indexOf("@")))) {
-            return false;
-        }
-        return true;
-    }
+            info.setBirthday(calendar.getTime());
+            info.setGender(params.getGender());
+            info.setProvince(params.getProvince());
+            info.setCity(params.getCity());
+            info.setFullname(params.getUsername());
+            info.setPersonalid(params.getPersonalId());
+            info.setModifyip(params.getModifyip());
+            info.setUpdateTime(new Date());
 
+            //更新用户信息AccountInfo
+            boolean updateResult = accountInfoService.updateAccountInfo(info);
+            if (updateResult) {
+                result.setSuccess(true);
+                result.setMessage("修改个人资料成功");
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
+            }
+        } catch (Exception e) {
+            logger.error("updateAccountInfo error. passportId:" + params.getUserid(), e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+        return result;
+    }
 
 }

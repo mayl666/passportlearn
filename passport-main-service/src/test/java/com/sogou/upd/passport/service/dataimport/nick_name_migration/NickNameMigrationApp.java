@@ -4,6 +4,7 @@ import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.dao.account.AccountDAO;
+import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.service.dataimport.util.FileUtil;
 import org.junit.Test;
 import org.perf4j.StopWatch;
@@ -36,6 +37,9 @@ public class NickNameMigrationApp extends BaseTest {
     private AccountDAO accountDAO;
 
     @Autowired
+    private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
+
+    @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
     @Test
@@ -44,7 +48,7 @@ public class NickNameMigrationApp extends BaseTest {
         StopWatch watch = new StopWatch();
         watch.start();
         try {
-            NickNameMigrationTasks tasks = new NickNameMigrationTasks(accountBaseInfoDAO, accountDAO, dbShardRedisUtils);
+            NickNameMigrationTasks tasks = new NickNameMigrationTasks(accountBaseInfoDAO, accountDAO, uniqNamePassportMappingDAO, dbShardRedisUtils);
             List<String> resultList = POOL.invoke(tasks);
             FileUtil.storeFile("migration_nickname_fail.txt", resultList);
         } catch (Exception e) {

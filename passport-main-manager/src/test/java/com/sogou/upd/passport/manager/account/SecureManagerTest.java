@@ -28,44 +28,13 @@ public class SecureManagerTest extends BaseTest {
     private static final String NEW_ANSWER = "New secure answer";
 
     @Test
-    public void testAll() {
-
-    }
-
-    /* ------------------------------------修改密保Begin------------------------------------ */
-    public void testModify() {
-
-    }
-
-    public void testModifyEmail() {
-
-    }
-
-    /* ------------------------------------修改密保End------------------------------------ */
-
-    /* ------------------------------------修改密保End------------------------------------ */
-
-    public void testResetPwd() {
-
-    }
-
-    public void testResetPwdByEmail() {
-
-    }
-
-    @Test
     public void testActionRecord() {
         for (int i = 0; i < 15; i++) {
             secureManager.logActionRecord(PASSPORT_ID, CLIENT_ID, AccountModuleEnum.LOGIN, "202.106.180." + (i + 1), null);
         }
-
-        Result
-                result = secureManager.queryActionRecords(PASSPORT_ID, CLIENT_ID, AccountModuleEnum.LOGIN);
+        Result result = secureManager.queryActionRecords(PASSPORT_ID, CLIENT_ID, AccountModuleEnum.LOGIN);
         System.out.println(result.toString());
     }
-
-    /* ------------------------------------修改密保End------------------------------------ */
-
 
     /**
      * 安全 获取用户信息单元测试
@@ -88,37 +57,37 @@ public class SecureManagerTest extends BaseTest {
              "message": "查询成功",
              "success": true,
              "models": {
-                 "_defaultModel": {
-                     "sec_mobile": null,
-                     "last_login_loc": "北京市",
-                     "last_login_time": 1401096899539,
-                     "reg_email": "ga*****5@gmail.com",
-                     "sec_score": 60,
-                     "sec_email": "lo*****5@163.com",
-                     "sec_ques": "您就读的中学名称"
+             "_defaultModel": {
+             "sec_mobile": null,
+             "last_login_loc": "北京市",
+             "last_login_time": 1401096899539,
+             "reg_email": "ga*****5@gmail.com",
+             "sec_score": 60,
+             "sec_email": "lo*****5@163.com",
+             "sec_ques": "您就读的中学名称"
              },
 
              //sec_email,sec_mobile,sec_ques
 
-                 "sec_ques": "您就读的中学名称",
-                 "flag": "1",
-                 "userid": "gang.chen0505@gmail.com",
-                 "sec_email": "loveclover0505@163.com",
-                 "sec_mobile": "",
-                 "uniqname": "happychenb",
-                 "avatarurl": {
-                 "img_50": "http://img01.sogoucdn.com/app/a/100140007/kdxKnJx3oAY0YQIj_1399892269607"
-                 }
+             "sec_ques": "您就读的中学名称",
+             "flag": "1",
+             "userid": "gang.chen0505@gmail.com",
+             "sec_email": "loveclover0505@163.com",
+             "sec_mobile": "",
+             "uniqname": "happychenb",
+             "avatarurl": {
+             "img_50": "http://img01.sogoucdn.com/app/a/100140007/kdxKnJx3oAY0YQIj_1399892269607"
+             }
              },
              "code": "0",
              "defaultModel": {
-                 "sec_mobile": null,
-                 "last_login_loc": "北京市",
-                 "last_login_time": 1401096899539,
-                 "reg_email": "ga*****5@gmail.com",
-                 "sec_score": 60,
-                 "sec_email": "lo*****5@163.com",
-                 "sec_ques": "您就读的中学名称"
+             "sec_mobile": null,
+             "last_login_loc": "北京市",
+             "last_login_time": 1401096899539,
+             "reg_email": "ga*****5@gmail.com",
+             "sec_score": 60,
+             "sec_email": "lo*****5@163.com",
+             "sec_ques": "您就读的中学名称"
              },
              "defaultModelKey": "_defaultModel"
              }
@@ -131,37 +100,37 @@ public class SecureManagerTest extends BaseTest {
              "success": true,
              "models": {
              "_defaultModel": {
-                 "sec_mobile": null,
-                 "last_login_loc": "北京市",
-                 "last_login_time": 1401096899539,
-                 "sec_score": 0,
-                 "sec_email": null,
-                 "sec_ques": null,
-                 "reg_email": "ga*****5@gmail.com"
+             "sec_mobile": null,
+             "last_login_loc": "北京市",
+             "last_login_time": 1401096899539,
+             "sec_score": 0,
+             "sec_email": null,
+             "sec_ques": null,
+             "reg_email": "ga*****5@gmail.com"
              },
-                 "img_30": null,
-                 "img_50": null,
-                 "img_180": null,
-                 "sec_mobile": null,
-                 "uniqname": "gang.chen0505"
+             "img_30": null,
+             "img_50": null,
+             "img_180": null,
+             "sec_mobile": null,
+             "uniqname": "gang.chen0505"
 
 
-                 //缺少的数据项
-                 //sec_ques
-                 //flag
-                 //userid
-                 //sec_email
-                 //avatarurl
+             //缺少的数据项
+             //sec_ques
+             //flag
+             //userid
+             //sec_email
+             //avatarurl
 
              },
              "defaultModel": {
-                 "sec_mobile": null,
-                 "last_login_loc": "北京市",
-                 "last_login_time": 1401096899539,
-                 "sec_score": 0,
-                 "sec_email": null,
-                 "sec_ques": null,
-                 "reg_email": "ga*****5@gmail.com"
+             "sec_mobile": null,
+             "last_login_loc": "北京市",
+             "last_login_time": 1401096899539,
+             "sec_score": 0,
+             "sec_email": null,
+             "sec_ques": null,
+             "reg_email": "ga*****5@gmail.com"
              },
              "code": "0",
              "defaultModelKey": "_defaultModel"

@@ -28,4 +28,6 @@ public interface AccountInfoService {
      */
     public boolean updateAccountInfo(AccountInfo accountInfo);
 
+
+
 }

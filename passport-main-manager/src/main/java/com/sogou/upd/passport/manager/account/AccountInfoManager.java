@@ -18,9 +18,10 @@ public interface AccountInfoManager {
      * @param byteArr    需要上传图片流
      * @param passportId 用户ID
      * @param type       上传类别  0:本地图片上传 1:网络URL图片上传
+     * @param ip         用户操作IP
      * @return Result格式的返回值，提示上传状态
      */
-    public Result uploadImg(byte[] byteArr, String passportId, String type);
+    public Result uploadImg(byte[] byteArr, String passportId, String type, String ip);
 
     /**
      * 图片上传
@@ -60,5 +61,16 @@ public interface AccountInfoManager {
      */
     public String getUserUniqName(String passportId, int clientId);
 
+
+    /**
+     * 获取用户昵称、头像信息
+     * <p/>
+     * TODO 之后抽取至AccountInfoService中
+     *
+     * @param passportId
+     * @param clientId
+     * @return
+     */
+    public Result getUserNickNameAndAvatar(String passportId, int clientId);
 
 }
