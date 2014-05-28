@@ -500,10 +500,14 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             return result;
         }
 
+        Result photoResult = photoUtils.obtainPhoto(avatarurl, "50");
+        if (photoResult.isSuccess()) {
+            result.setDefaultModel("avatarurl", photoResult.getModels());
+        }
+
         result.setSuccess(true);
         //是否需要编码？TODO 此处对昵称做UTF-8编码
         result.setDefaultModel("uniqname", Coder.encode(uniqname, "UTF-8"));
-        result.getModels().put("avatarurl", mid_avatar);
         result.setDefaultModel("userid", passportId);
         result.setDefaultModel("img_30", tiny_avatar);
         result.setDefaultModel("img_50", mid_avatar);
