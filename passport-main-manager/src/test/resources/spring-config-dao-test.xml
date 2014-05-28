@@ -12,7 +12,7 @@
     <bean id="masterDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
-            <value>jdbc:mysql://10.11.211.18:3306/test_sogou_passport?characterEncoding=utf-8</value>
+            <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
             <value>sogou_passport</value>
@@ -59,7 +59,7 @@
     <bean id="slaveDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
-            <value>jdbc:mysql://10.11.211.18:3306/test_sogou_passport?characterEncoding=utf-8</value>
+            <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
             <value>sogou_passport</value>
