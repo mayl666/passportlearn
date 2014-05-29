@@ -259,14 +259,16 @@ public class AppForkJoin extends BaseTest {
 
         Map<String, String> differenceMap = Maps.newConcurrentMap();
 
-        String passportId = "002zmm@163.com";
+        String passportId = "wangqingemail@sohu.com";
 
-        StopWatch watch = new StopWatch();
-        watch.start();
+        /*StopWatch watch = new StopWatch();
+        watch.start();*/
 
         RequestModelXml requestModelXml = bulidRequestModelXml(passportId);
         try {
             Map<String, Object> mapB = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
+
+            LOGGER.info("================testCheckData mapB :" + mapB.toString());
 
             //处理 mapB
            /* if (mapB != null) {
@@ -277,18 +279,17 @@ public class AppForkJoin extends BaseTest {
                     mapB.remove("status");
                 }
 
-
-               *//* if (mapB.containsKey("birthday")) {
+             if (mapB.containsKey("birthday")) {
                     String birthday = String.valueOf(mapB.get("birthday"));
                     if (StringUtils.isNotEmpty(birthday) && birthday.length() >= 10) {
                         mapB.put("birthday", StringUtils.substring(birthday, 0, 10));
                     } else {
                         mapB.put("birthday", StringUtils.EMPTY);
                     }
-                }*//*
+                }
             }*/
-            LOGGER.info("testCheckData mapB :" + mapB.toString());
 
+/*
             if (StringUtils.isNotEmpty(passportId)) {
                 Account account = accountDAO.getAccountByPassportId(passportId);
 
@@ -300,7 +301,7 @@ public class AppForkJoin extends BaseTest {
                     //Test 库数据
                     Map<String, Object> mapA = Maps.newHashMap();
 //                    mapA.put("birthday", accountInfo.getBirthday() == null ? StringUtils.EMPTY : accountInfo.getBirthday());
-                  /*  String birthday = String.valueOf(accountInfo.getBirthday());
+                    String birthday = String.valueOf(accountInfo.getBirthday());
                     if (!Strings.isNullOrEmpty(birthday)) {
                         if (birthday.length() >= 10) {
                             mapA.put("birthday", StringUtils.substring(birthday, 0, 10));
@@ -309,7 +310,8 @@ public class AppForkJoin extends BaseTest {
                         }
                     } else {
                         mapA.put("birthday", StringUtils.EMPTY);
-                    }*/
+                    }
+
 
                     mapA.put("createip", account.getRegIp() == null || account.getRegIp() == "" ? StringUtils.EMPTY : account.getRegIp());
                     mapA.put("userid", passportId);
@@ -354,7 +356,7 @@ public class AppForkJoin extends BaseTest {
                     }
                 }
             }
-            LOGGER.info("testCheckData use time {}", watch.stop());
+*/
         } catch (Exception e) {
             LOGGER.error("testCheckData error", e);
         }
@@ -448,6 +450,7 @@ public class AppForkJoin extends BaseTest {
             requestModelXml.addParam("province", "");
             requestModelXml.addParam("city", "");
             requestModelXml.addParam("username", "");
+            requestModelXml.addParam("uniqname", "");
             requestModelXml.addParam("personalid", "");
             requestModelXml.addParam("userid", passportId);
             requestModelXml.addParam("appid", appId);

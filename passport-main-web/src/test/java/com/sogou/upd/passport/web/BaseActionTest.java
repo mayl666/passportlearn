@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.FileUtil;
+import com.sogou.upd.passport.common.utils.JsonUtil;
 import junit.framework.TestCase;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -214,6 +216,42 @@ public class BaseActionTest extends TestCase {
 
     }
 
+    /**
+     * 调用sohu 接口取用户数据
+     *
+     * @throws Exception
+     */
+
+    @Test
+    public void testGetUserInfoFromSH() throws Exception {
+
+        String passportId = "wangqingemail@sohu.com";
+
+        long ct = System.currentTimeMillis();
+        String code = passportId + appId + key + ct;
+        code = Coder.encryptMD5(code);
+        String url = "http://internal.passport.sohu.com/interface/getuserinfo";
+        StringBuffer sb = new StringBuffer();
+        sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        sb.append("<register>\n"
+                + "    <userid>" + passportId + "</userid>\n"
+                + "    <appid>1100</appid>\n"
+                + "    <ct>" + ct + "</ct>\n"
+                + "    <code>" + code + "</code>\n"
+                + "    <password></password>\n"
+                + "    <passwordtype></passwordtype>\n"
+                + "    <question></question>\n"
+                + "    <answer></answer>\n"
+                + "    <email></email>\n"
+                + "    <mobile></mobile>\n"
+                + "    <createip></createip>\n"
+                + "    <uniqname></uniqname>\n"
+                + "    <regappid></regappid>\n"
+                + "</register>");
+        String result = sendPostXml(url, sb.toString());
+        System.out.println("===============testGetUserInfoFromSH:" + JsonUtil.obj2Json(result));
+    }
+
 
     @Ignore
     @Test
@@ -246,26 +284,7 @@ public class BaseActionTest extends TestCase {
                 }
             }
             //记录导入增量数据失败的记录
-            storeFile("result_sohu_zhishu.txt", resultList);
+            FileUtil.storeFile("result_sohu_zhishu.txt", resultList);
         }
-    }
-
-    /**
-     * @param fileName
-     * @param result
-     * @throws IOException
-     */
-    private static void storeFile(String fileName, List<String> result) throws IOException {
-        Path filePath = Paths.get("D:\\logs\\" + fileName);
-        Files.deleteIfExists(filePath);
-        BufferedWriter writer = Files.newBufferedWriter(filePath, Charset.defaultCharset());
-        if (CollectionUtils.isNotEmpty(result)) {
-            for (String item : result) {
-                writer.write(item);
-                writer.newLine();
-            }
-            writer.flush();
-        }
-
     }
 }
