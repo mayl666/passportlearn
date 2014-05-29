@@ -32,12 +32,11 @@ public class QQJSONAccessTokenResponse extends OAuthAccessTokenResponse {
                 this.parameters = OAuthUtils.parseQQIrregularJSONObject(this.body);
             } catch (Exception e1) {
                 try {
-                   this.parameters = OAuthUtils.parseQQIrregularStringObject(this.body);
+                    this.parameters = OAuthUtils.parseQQIrregularStringObject(this.body);
                 } catch (Exception e2) {
                     throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
                             "Invalid response! Response body resolve error,body is " + this.body);
                 }
-
             }
         }
     }
