@@ -54,7 +54,6 @@ public class ConnectTKeyController {
 
     @ResponseBody
     @RequestMapping(value = "/t_key")
-    @LoginRequired
     public String tKey(HttpServletRequest req, HttpServletResponse res, TKeyParams tKeyParams) throws Exception {
         Result result = new APIResultSupport(false);
 
