@@ -4,6 +4,11 @@ package com.sogou.upd.passport.common;
  * Wap登陆使用的常量类 User: ligang201716@sogou-inc.com Date: 13-5-13 Time: 下午4:55
  */
 public class WapConstant {
+
+    /**
+     * JSON格式标识
+     */
+    public  static final String WAP_JSON="0";
     /**
      * 简版页面标识
      */

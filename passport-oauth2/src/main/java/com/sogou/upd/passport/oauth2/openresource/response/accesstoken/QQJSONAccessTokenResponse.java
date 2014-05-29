@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.oauth2.openresource.response.accesstoken;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.oauth2.common.OAuth;
@@ -32,8 +31,12 @@ public class QQJSONAccessTokenResponse extends OAuthAccessTokenResponse {
             try {
                 this.parameters = OAuthUtils.parseQQIrregularJSONObject(this.body);
             } catch (Exception e1) {
-                throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
-                        "Invalid response! Response body is not " + HttpConstant.ContentType.JSON + " encoded");
+                try {
+                    this.parameters = OAuthUtils.parseQQIrregularStringObject(this.body);
+                } catch (Exception e2) {
+                    throw OAuthProblemException.error(ErrorUtil.UNSUPPORTED_RESPONSE_TYPE,
+                            "Invalid response! Response body resolve error,body is " + this.body);
+                }
             }
         }
     }

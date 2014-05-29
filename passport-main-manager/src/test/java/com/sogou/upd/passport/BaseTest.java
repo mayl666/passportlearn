@@ -25,51 +25,13 @@ import java.text.DecimalFormat;
 public class BaseTest extends AbstractJUnit4SpringContextTests {
     //主账号
     protected static final String userid = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
-    protected static final String userid_sohu = "13581695053@sohu.com";
-    protected static final String userid_email = "loveerin9460@163.com";
-    protected static final String userid_sogou_1 = "liulingtest01@sogou.com";
-    protected static final String userid_sogou_2 = "osadnfdf@sogou.com";
+
     //随机生成手机号码
     protected String new_mobile = new GeneratorRandomMobile().generateRandomMobile();
-    protected static final String mobile_1 = "15737126381";    //已经绑定了某主账号的手机号
-    protected static final String mobile_2 = "13581695053";
-    //密码
+
     protected static final String password = "111111";
-    //绑定的手机
-    protected static final String mobile_sohu = "13581695053";
-    protected static final String mobile_sogou_1 = null;
-    protected static final String mobile_sogou_2 = null;
-    protected static final String mobile_email = null;
-    //注册时间
-    protected static final String reg_time_sohu = "2014-3-24 22:26:49";
-    protected static final String reg_time_sogou_1 = "2014-3-24 22:35:52";
-    protected static final String reg_time_sogou_2 = "2014-3-25 11:22:04";
-    protected static final String reg_time_email = "2014-3-24 22:28:11";
-    //注册ip
-    protected static final String reg_ip_sohu = "10.129.192.128";
-    protected static final String reg_ip_sogou_1 = "10.129.192.121";
-    protected static final String reg_ip_sogou_2 = "10.129.192.29";
-    protected static final String reg_ip_email = "10.129.192.131";
-    //用户状态
-    protected static final String flag_sohu = "1";
-    protected static final String flag_sogou_1 = "1";
-    protected static final String flag_sogou_2 = "1";
-    protected static final String flag_email = "1";
-    //密码加密类型
-    protected static final String pwdtype_sohu = "2";
-    protected static final String pwdtype_sogou_1 = "2";
-    protected static final String pwdtype_sogou_2 = "2";
-    protected static final String pwdtype_email = "2";
-    //账号类型
-    protected static final String acctype_sohu = "2";
-    protected static final String acctype_sogou_1 = "1";
-    protected static final String acctype_sogou_2 = "1";
-    protected static final String acctype_email = "1";
-    //昵称
-    protected static final String uniqname_sohu = null;
-    protected static final String uniqname_sogou_1 = "阿沐测试01";
-    protected static final String uniqname_sogou_2 = null;
-    protected static final String uniqname_email = null;
+
+    protected static final String uniqname = "你好";
 
     protected static final int clientId = 2009;
 
@@ -92,7 +54,6 @@ public class BaseTest extends AbstractJUnit4SpringContextTests {
             return mobile;
         }
     }
-
 
     //构建检查昵称是否唯一参数
     protected UpdateUserUniqnameApiParams getUpdateUserUniqnameApiParams(String uniqname) {

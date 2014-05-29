@@ -94,7 +94,7 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = regManager.registerMobile(params.getMobile(),params.getPassword(),params.getClient_id(),params.getCaptcha());
+            result = regManager.registerMobile(params.getMobile(), params.getPassword(), params.getClient_id(), params.getCaptcha(), params.getType());
         } catch (Exception e) {
             logger.error("regMobileCaptchaUser:Mobile User With Captcha For Internal Is Failed,Mobile is " + params.getMobile(), e);
         } finally {
@@ -130,7 +130,7 @@ public class RegisterApiController extends BaseController {
             }
             ip = params.getCreateip();
             //校验用户ip是否允许注册
-            result = regManager.checkRegInBlackListByIpForInternal(ip,client_id);
+            result = regManager.checkRegInBlackListByIpForInternal(ip, client_id);
             if (!result.isSuccess()) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result.toString();
@@ -141,7 +141,7 @@ public class RegisterApiController extends BaseController {
             logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + params.getUserid(), e);
         } finally {
             //记录log
-            commonManager.incRegTimesForInternal(ip,client_id);
+            commonManager.incRegTimesForInternal(ip, client_id);
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), ip);
             UserOperationLogUtil.log(userOperationLog);
         }

@@ -63,7 +63,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
 
         //简易版 炫彩版 需要md5加密
         String v = loginParams.getV();
-        if (!v.equals(WapConstant.WAP_TOUCH)) {
+        if (!v.equals(WapConstant.WAP_TOUCH) && !v.equals(WapConstant.WAP_JSON)) {
             password = DigestUtils.md5Hex(password.getBytes());
         }
         String passportId = username;
@@ -115,6 +115,12 @@ public class WapLoginManagerImpl implements WapLoginManager {
         Result result = new APIResultSupport(true);
         //校验验证码
         if (needCaptchaCheck(clientId, username, ip)) {
+            if(Strings.isNullOrEmpty(captchaCode)){
+                logger.info("[checkCaptchaVaild needd captchaCode]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captchaCode);
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
+                return result;
+            }
             if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
                 logger.info("[checkCaptchaVaild captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captchaCode);
                 result.setSuccess(false);

@@ -16,6 +16,7 @@ public class RegMobileCaptchaApiParams extends BaseMoblieApiParams {
     @NotBlank(message = "手机验证码不允许为空")
     private String captcha;
     private String ip;
+    private String type;//wap端注册时才用到此字段，值为wap
 
     public String getIp() {
         return ip;
@@ -41,4 +42,11 @@ public class RegMobileCaptchaApiParams extends BaseMoblieApiParams {
         this.captcha = captcha;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

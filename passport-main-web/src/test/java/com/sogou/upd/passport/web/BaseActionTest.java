@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.model.account.UniqnamePassportMapping;
 import junit.framework.TestCase;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +27,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -190,7 +188,6 @@ public class BaseActionTest extends TestCase {
 
     @Test
     public void testPostXml() throws Exception {
-
         String passportId = "344029328@QQ.com";
 
         long ct = System.currentTimeMillis();
@@ -201,23 +198,20 @@ public class BaseActionTest extends TestCase {
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         sb.append("<register>\n"
-                + "    <userid>" + passportId + "</userid>\n"
+                + "    <userid></userid>\n"
                 + "    <appid>1100</appid>\n"
                 + "    <ct>" + ct + "</ct>\n"
                 + "    <code>" + code + "</code>\n"
-                + "    <password></password>\n"
-                + "    <passwordtype></passwordtype>\n"
-                + "    <question></question>\n"
-                + "    <answer></answer>\n"
-                + "    <email></email>\n"
-                + "    <mobile></mobile>\n"
-                + "    <createip></createip>\n"
-                + "    <uniqname></uniqname>\n"
-                  /*+ "    <avatarurl></avatarurl>\n"*/
-                + "    <regappid></regappid>\n"
+                + "    <uniqname>汽车驾驶模拟器1946在搜狐</uniqname>\n"
                 + "</register>");
         String result = sendPostXml(url, sb.toString());
+
+        String userid = result.substring(result.indexOf("<userid>") + 8, result.lastIndexOf("</userid>"));
+
+        System.out.println(userid);
         System.out.println(result);
+
+
     }
 
 
