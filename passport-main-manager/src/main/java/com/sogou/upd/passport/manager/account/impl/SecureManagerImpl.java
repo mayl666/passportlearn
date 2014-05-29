@@ -21,10 +21,8 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
-import com.sogou.upd.passport.manager.api.account.impl.SGUserInfoApiManagerImpl;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.*;
@@ -147,20 +145,20 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         try {
 
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
-                // SOHU接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-                getUserInfoApiparams.setUserid(userId);
-                getUserInfoApiparams.setClient_id(clientId);
-                getUserInfoApiparams.setFields(SECURE_FIELDS);
-                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                Map<String, String> mapResult = result.getModels();
-                String mobile = mapResult.get("sec_mobile");
-                result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
-
-            } else {
+//            if (ManagerHelper.isInvokeProxyApi(userId)) {
+//                // SOHU接口
+//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+//                getUserInfoApiparams.setUserid(userId);
+//                getUserInfoApiparams.setClient_id(clientId);
+//                getUserInfoApiparams.setFields(SECURE_FIELDS);
+//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+//                Map<String, String> mapResult = result.getModels();
+//                String mobile = mapResult.get("sec_mobile");
+//                result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
+//
+//            } else {
                 result = sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.SECURE);
-            }
+//            }
 
             if (!result.isSuccess()) {
                 return result;
@@ -204,33 +202,33 @@ public class SecureManagerImpl implements SecureManager {
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
 
             //TODO 去掉开关
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
-                // 代理接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-                getUserInfoApiparams.setUserid(userId);
-                getUserInfoApiparams.setClient_id(clientId);
-//                getUserInfoApiparams.setImagesize("50");
-                getUserInfoApiparams.setFields(SECURE_FIELDS);
-
-                //调用sohu 接口取用户信息
-                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-
-                Result shPlusResult = shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                if (shPlusResult.isSuccess()) {
-                    Object obj = shPlusResult.getModels().get("baseInfo");
-                    if (obj != null) {
-                        AccountBaseInfo baseInfo = (AccountBaseInfo) obj;
-                        String uniqname = baseInfo.getUniqname();
-                        result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
-                        Result photoResult = photoUtils.obtainPhoto(baseInfo.getAvatar(), "50");
-                        if (photoResult.isSuccess()) {
-                            result.getModels().put("avatarurl", photoResult.getModels());
-                        }
-                    } else {
-                        result.getModels().put("uniqname", userId);
-                    }
-                }
-            } else {
+//            if (ManagerHelper.isInvokeProxyApi(userId)) {
+//                // 代理接口
+//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+//                getUserInfoApiparams.setUserid(userId);
+//                getUserInfoApiparams.setClient_id(clientId);
+////                getUserInfoApiparams.setImagesize("50");
+//                getUserInfoApiparams.setFields(SECURE_FIELDS);
+//
+//                //调用sohu 接口取用户信息
+//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+//
+//                Result shPlusResult = shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+//                if (shPlusResult.isSuccess()) {
+//                    Object obj = shPlusResult.getModels().get("baseInfo");
+//                    if (obj != null) {
+//                        AccountBaseInfo baseInfo = (AccountBaseInfo) obj;
+//                        String uniqname = baseInfo.getUniqname();
+//                        result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
+//                        Result photoResult = photoUtils.obtainPhoto(baseInfo.getAvatar(), "50");
+//                        if (photoResult.isSuccess()) {
+//                            result.getModels().put("avatarurl", photoResult.getModels());
+//                        }
+//                    } else {
+//                        result.getModels().put("uniqname", userId);
+//                    }
+//                }
+//            } else {
 
                 //TODO 统一调用 AccountInfoManager getUserInfo 方法
 
@@ -248,7 +246,7 @@ public class SecureManagerImpl implements SecureManager {
 
                 result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
 
-            }
+//            }
 
             Map<String, String> map = result.getModels();
             result.setModels(map);
