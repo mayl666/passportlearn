@@ -124,7 +124,9 @@ public class RegAction extends BaseController {
             ip = getIp(request);
             //校验用户是否允许注册
             uuidName = ServletUtil.getCookie(request, "uuidName");
-            result = regManager.checkRegInBlackList(ip, uuidName);
+
+            //TODO 中了注册限制 暂时注释
+            /*result = regManager.checkRegInBlackList(ip, uuidName);
             if (!result.isSuccess()) {
                 if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
                     finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
@@ -132,7 +134,7 @@ public class RegAction extends BaseController {
                     result.setMessage("注册失败");
                 }
                 return result.toString();
-            }
+            }*/
 
             //检验用户名是否存在
             String username = regParams.getUsername();
