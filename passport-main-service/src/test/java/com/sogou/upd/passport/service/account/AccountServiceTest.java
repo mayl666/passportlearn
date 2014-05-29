@@ -3,6 +3,8 @@ package com.sogou.upd.passport.service.account;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
+import junit.framework.Assert;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -109,4 +111,14 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
         }
         accountService.modifyMobile(account, account.getMobile());
     }
+
+
+    @Test
+    public void testCheckNickName() throws Exception {
+        String nickName = "KeSyren1234";
+        Assert.assertTrue(StringUtils.isNotEmpty(accountService.checkUniqName(nickName)));
+        System.out.println("================= testCheckNickName:" + accountService.checkUniqName(nickName));
+
+    }
+
 }

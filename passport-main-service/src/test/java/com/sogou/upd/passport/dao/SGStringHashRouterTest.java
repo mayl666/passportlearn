@@ -42,16 +42,27 @@ public class SGStringHashRouterTest extends TestCase {
 //        String id = "B5008F7D2813EDCCE03BCE3EA6DC7FFA@qq.sohu.com";
 //        String id = "gang.chen0505@gmail.com";
 //        String id = "056B15F99925016562B24E2070AE7AF5@qq.sohu.com";
-        String id = "wangqingemail@sohu.com";
+//        String id = "wangqingemail@sohu.com";
 //        String id = "wangqingtest@sogou.com";
 //        String id = "gang.chen0505@gmail.com";
 //        String id = "002zmm@163.com";
+        String id = "wangqingdata@sohu.com";
         String name = router.doRoute(id);
         System.out.println(name);
 //        Assert.assertEquals(name, "account_18");
     }
 
 
+    @Test
+    public void testUpmShard() {
+
+        String id = "KeSyren1234";  //wangqingemail@sohu.com
+
+//        String id ="wangqingtest009";  //wangqingtest009@sogou.com
+
+        router = new SGStringHashRouter("id", "uniqname_passportid_mapping_{0}", 32);
+        LOGGER.info("u_p_m shard." + router.doRoute(id));
+    }
 
 
     @Test
@@ -65,13 +76,6 @@ public class SGStringHashRouterTest extends TestCase {
         System.out.println("mobile_table_name:" + mobile_table_name);
         System.out.println("mobile_table_name_1:" + mobile_table_name_1);
 
-    }
-
-
-    @Test
-    public void testUpmShard() {
-        router = new SGStringHashRouter("id", "uniqname_passportid_mapping_{0}", 32);
-        LOGGER.info("u_p_m shard." + router.doRoute("Mack"));
     }
 
 
