@@ -51,7 +51,7 @@ public class PCOAuth2LoginManagerImpl implements PCOAuth2LoginManager {
             //二者都能验证成功，产生账号冲突，人工解决
             Result error_result = new APIResultSupport(false);
             error_result.setCode(ErrorUtil.ERR_CODE_ERROR_ACCOUNT);
-            error_result.setMessage("账号冲突或者异常，请到论坛问题反馈区找回账号");
+            error_result.setMessage("账号异常，请联系passportkf@sogou-inc.com找回账号");
             return error_result;
         }
     }

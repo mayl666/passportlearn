@@ -24,6 +24,8 @@ public class CreateCookieUrlApiParams {
 
     private String domain;
 
+    private String clientId; //setppcookie接口参数中ru，1105不允许URLEncode，但壁纸需要URLEncode，所以传clientId区分
+
     public CreateCookieUrlApiParams() {
     }
 
@@ -71,5 +73,13 @@ public class CreateCookieUrlApiParams {
 
     public void setDomain(String domain) {
         this.domain = domain;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 }
