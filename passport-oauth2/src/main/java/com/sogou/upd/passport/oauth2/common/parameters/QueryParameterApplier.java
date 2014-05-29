@@ -28,10 +28,15 @@ public class QueryParameterApplier implements OAuthParametersApplier {
     public static String applyOAuthParametersString(String messageUrl, Map<String, Object> params) {
         boolean isContainsQuery = messageUrl.contains("?");
         StringBuilder url = new StringBuilder(messageUrl);
-
+        //scope参数不编码，QQ和RENREN,scope目前不为空，BAIDU和SINA的scope值为空
+        Object scope = null;
+        if (params.containsKey("scope") && params.get("scope") != null) {
+            scope = params.get("scope");
+            params.remove("scope");
+        }
         StringBuilder query = new StringBuilder(OAuthUtils.format(params.entrySet(),
                 CommonConstant.DEFAULT_CONTENT_CHARSET));
-
+        params.put("scope", scope);
         if (!Strings.isNullOrEmpty(query.toString())) {
             if (isContainsQuery) {
                 url.append("&").append(query);
