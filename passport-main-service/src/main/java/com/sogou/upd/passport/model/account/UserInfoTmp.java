@@ -45,4 +45,28 @@ public class UserInfoTmp {
     public void setFlag(String flag) {
         this.flag = flag;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserInfoTmp that = (UserInfoTmp) o;
+
+        if (!flag.equals(that.flag)) return false;
+        if (!password.equals(that.password)) return false;
+        if (!passwordtype.equals(that.passwordtype)) return false;
+        if (!userid.equals(that.userid)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = userid.hashCode();
+        result = 31 * result + password.hashCode();
+        result = 31 * result + passwordtype.hashCode();
+        result = 31 * result + flag.hashCode();
+        return result;
+    }
 }

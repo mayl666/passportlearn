@@ -1,11 +1,9 @@
 package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.model.account.AccountInfo;
-
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
-
 import net.paoding.rose.jade.annotation.ShardBy;
 import org.springframework.dao.DataAccessException;
 
@@ -103,8 +101,7 @@ public interface AccountInfoDAO {
             "insert into " +
                     TABLE_NAME +
                     "(passport_id, birthday, gender, province, city, fullname, personalid, modifyip,create_time,update_time)"
-                    + "values(:passport_id,:accountInfo.birthday,:accountInfo.gender,:accountInfo.province,:accountInfo.city,:accountInfo.fullname, :accountInfo.personalid,:accountInfo.modifyip,:accountInfo.createTime,:accountInfo.updateTime) " +
-                    "on duplicate key "
+                    + "values(:passport_id,:accountInfo.birthday,:accountInfo.gender,:accountInfo.province,:accountInfo.city,:accountInfo.fullname, :accountInfo.personalid,:accountInfo.modifyip,:accountInfo.createTime,:accountInfo.updateTime) on duplicate key "
                     + "update birthday = :accountInfo.birthday, gender = :accountInfo.gender, province = :accountInfo.province, city = :accountInfo.city, fullname = :accountInfo.fullname, modifyip = :accountInfo.modifyip,create_time = :accountInfo.createTime,update_time=:accountInfo.updateTime")
     public int saveInfoOrInsert(@ShardBy @SQLParam("passport_id") String passport_id,
                                 @SQLParam("accountInfo") AccountInfo account_info)
@@ -122,5 +119,8 @@ public interface AccountInfoDAO {
                                  @SQLParam("accountInfo") AccountInfo account_info)
             throws DataAccessException;
 
-
+    @SQL("update " + TABLE_NAME + "set birthday=:birthday where passport_id=:passport_id")
+    public int updateBirthday(@ShardBy @SQLParam("passport_id") String passport_id,
+                              @SQLParam("birthday") String birthday)
+            throws DataAccessException;
 }
