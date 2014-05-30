@@ -1,10 +1,13 @@
 package com.sogou.upd.passport.dao.account;
 
+import com.sogou.upd.passport.model.account.UserExtInfoTmp;
 import com.sogou.upd.passport.model.account.UserOtherInfoTmp;
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
 import org.springframework.dao.DataAccessException;
+
+import java.util.List;
 
 /**
  * Account表的DAO操作
@@ -17,7 +20,7 @@ public interface UserOtherInfoTmpDAO {
     /**
      * 对应数据库表名称
      */
-    String TABLE_NAME = " user_other_info_tmp ";
+    String TABLE_NAME = " user_other_info_tmp_inc0527wy ";
 
     /**
      * 所有字段列表
@@ -46,6 +49,16 @@ public interface UserOtherInfoTmpDAO {
     public UserOtherInfoTmp getUserOtherInfoTmpByUserid(@SQLParam("userid") String userid) throws DataAccessException;
 
     /**
+     * 根据passportId获取UserExtInfo表数据
+     */
+    @SQL("select" +
+            ALL_FIELD +
+            "from" +
+            TABLE_NAME +
+            " where userid=:userid")
+    public List<UserOtherInfoTmp> listUserOtherInfoTmpByUserid(@SQLParam("userid") String userid) throws DataAccessException;
+
+    /**
      * 更新省份、城市
      */
     @SQL("update " + TABLE_NAME + " set province=:province, city=:city where userid=:userid")
@@ -55,7 +68,7 @@ public interface UserOtherInfoTmpDAO {
     /**
      * 根据passportId删除UserOtherInfo表数据
      */
-    @SQL("delete from" + TABLE_NAME + " where userid = :userid")
-    public int deleteUserOtherInfoTmpByUserid(@SQLParam("userid") String userid) throws DataAccessException;
+    @SQL("delete from" + TABLE_NAME + " where userid = :userid  limit :count")
+    public int deleteMulUserOtherInfoTmpByUserid(@SQLParam("userid") String userid, @SQLParam("count") int count) throws DataAccessException;
 
 }

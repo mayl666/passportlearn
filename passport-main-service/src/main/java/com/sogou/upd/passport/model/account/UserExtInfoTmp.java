@@ -15,7 +15,7 @@ public class UserExtInfoTmp {
     private String question;
     private String answer;
     private String username;
-    private Date birthday;
+    private String birthday;
     private String gender;
     private String createtime;
     private String createip;
@@ -52,11 +52,11 @@ public class UserExtInfoTmp {
         this.username = username;
     }
 
-    public Date getBirthday() {
+    public String getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 
@@ -82,5 +82,37 @@ public class UserExtInfoTmp {
 
     public void setCreateip(String createip) {
         this.createip = createip;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserExtInfoTmp that = (UserExtInfoTmp) o;
+
+        if (!answer.equals(that.answer)) return false;
+        if (!birthday.equals(that.birthday)) return false;
+        if (!createip.equals(that.createip)) return false;
+        if (!createtime.equals(that.createtime)) return false;
+        if (!gender.equals(that.gender)) return false;
+        if (!question.equals(that.question)) return false;
+        if (!userid.equals(that.userid)) return false;
+        if (!username.equals(that.username)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = userid.hashCode();
+        result = 31 * result + question.hashCode();
+        result = 31 * result + answer.hashCode();
+        result = 31 * result + username.hashCode();
+        result = 31 * result + birthday.hashCode();
+        result = 31 * result + gender.hashCode();
+        result = 31 * result + createtime.hashCode();
+        result = 31 * result + createip.hashCode();
+        return result;
     }
 }

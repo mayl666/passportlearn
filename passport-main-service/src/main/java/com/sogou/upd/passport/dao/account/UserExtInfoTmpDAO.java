@@ -6,6 +6,8 @@ import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
 import org.springframework.dao.DataAccessException;
 
+import java.util.List;
+
 /**
  * Account表的DAO操作
  * User: shipengzhi Date: 13-4-17 Time: 下午3:55 To change this template
@@ -46,6 +48,16 @@ public interface UserExtInfoTmpDAO {
     public UserExtInfoTmp getUserExtInfoTmpByUserid(@SQLParam("userid") String userid) throws DataAccessException;
 
     /**
+     * 根据passportId获取UserExtInfo表数据
+     */
+    @SQL("select" +
+            ALL_FIELD +
+            "from" +
+            TABLE_NAME +
+            " where userid=:userid")
+    public List<UserExtInfoTmp> listUserExtInfoTmpByUserid(@SQLParam("userid") String userid) throws DataAccessException;
+
+    /**
      * 更新所有不为空的字段
      */
     @SQL(
@@ -64,7 +76,7 @@ public interface UserExtInfoTmpDAO {
     /**
      * 根据passportId删除UserExtInfo表数据
      */
-    @SQL("delete from" + TABLE_NAME + " where userid=:userid")
-    public int deleteUserExtInfoTmpByUserid(@SQLParam("userid") String userid) throws DataAccessException;
+    @SQL("delete from" + TABLE_NAME + " where userid=:userid limit :count")
+    public int deleteMulUserExtInfoTmpByUserid(@SQLParam("userid") String userid, @SQLParam("count") int count) throws DataAccessException;
 
 }

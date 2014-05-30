@@ -90,4 +90,38 @@ public class UserOtherInfoTmp {
     public void setCity(String city) {
         this.city = city;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserOtherInfoTmp that = (UserOtherInfoTmp) o;
+
+        if (!city.equals(that.city)) return false;
+        if (!email.equals(that.email)) return false;
+        if (!emailflag.equals(that.emailflag)) return false;
+        if (!mobile.equals(that.mobile)) return false;
+        if (!mobileflag.equals(that.mobileflag)) return false;
+        if (!personalid.equals(that.personalid)) return false;
+        if (!province.equals(that.province)) return false;
+        if (!uniqname.equals(that.uniqname)) return false;
+        if (!userid.equals(that.userid)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = userid.hashCode();
+        result = 31 * result + personalid.hashCode();
+        result = 31 * result + mobile.hashCode();
+        result = 31 * result + mobileflag.hashCode();
+        result = 31 * result + email.hashCode();
+        result = 31 * result + emailflag.hashCode();
+        result = 31 * result + province.hashCode();
+        result = 31 * result + uniqname.hashCode();
+        result = 31 * result + city.hashCode();
+        return result;
+    }
 }
