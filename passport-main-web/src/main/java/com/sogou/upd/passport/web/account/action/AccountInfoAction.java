@@ -207,7 +207,7 @@ public class AccountInfoAction extends BaseController {
         Result result = new APIResultSupport(false);
 
         // TODO 禁止修改昵称
-        if (params.getImgurl() != null) {
+        if (params.getClient_id() != null) {
             result.setCode(ErrorUtil.FORBID_UPDATE_USERINFO);
         } else {
             if (hostHolder.isLogin()) {
