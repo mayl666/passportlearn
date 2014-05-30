@@ -179,10 +179,19 @@ public class BaseActionTest extends TestCase {
 
     private static final String key = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
 
+
+    /**
+     * 调用搜狐接口 获取用户信息单元测试
+     *
+     * @throws Exception
+     */
+    @Test
     public void testPostXml() throws Exception {
 
         long ct = System.currentTimeMillis();
-        String code = "shipengzhi1986@sogou.com" + appId + key + ct;
+//        String code = "shipengzhi1986@sogou.com" + appId + key + ct;
+//        String code = "gang.chen0505@gmail.com" + appId + key + ct;   //happychen006
+        String code = "happychen006@sogou.com" + appId + key + ct;   //happychen006
         code = Coder.encryptMD5(code);
 
 
@@ -190,7 +199,9 @@ public class BaseActionTest extends TestCase {
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         sb.append("<register>\n"
-                + "    <userid>shipengzhi1986@sogou.com</userid>\n"
+//                + "    <userid>gang.chen0505@gmail.com</userid>\n"
+//                + "    <userid>shipengzhi1986@sogou.com</userid>\n"
+                + "    <userid>happychen006@sogou.com</userid>\n"
                 + "    <appid>1100</appid>\n"
                 + "    <ct>" + ct + "</ct>\n"
                 + "    <code>" + code + "</code>\n"
@@ -201,6 +212,7 @@ public class BaseActionTest extends TestCase {
                 + "    <email></email>\n"
                 + "    <mobile></mobile>\n"
                 + "    <createip></createip>\n"
+                + "    <personalid></personalid>\n"
                 + "    <uniqname></uniqname>\n"
                 + "    <regappid></regappid>\n"
                 + "</register>");
@@ -208,13 +220,48 @@ public class BaseActionTest extends TestCase {
         System.out.println(result);
     }
 
+
+    /**
+     * 调用搜狐接口 更新用户信息 单元测试
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testUpdateUserInfo() throws Exception {
+
+        long ct = System.currentTimeMillis();
+//        String code = "shipengzhi1986@sogou.com" + appId + key + ct;
+//        String code = "gang.chen0505@gmail.com" + appId + key + ct;
+        String code = "happychen006@sogou.com" + appId + key + ct;
+        code = Coder.encryptMD5(code);
+
+
+        String url = "http://internal.passport.sohu.com/interface/updateuser";
+        StringBuffer sb = new StringBuffer();
+        sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        sb.append("<register>\n"
+//                + "    <userid>gang.chen0505@gmail.com</userid>\n"
+//                + "    <userid>shipengzhi1986@sogou.com</userid>\n"
+                + "    <userid>happychen006@sogou.com</userid>\n"
+                + "    <appid>1100</appid>\n"
+                + "    <ct>" + ct + "</ct>\n"
+                + "    <code>" + code + "</code>\n"
+                + "    <personalid>110101201401012570</personalid>\n"
+                + "    <birthday>1987-01-01</birthday>\n"
+                + "    <uniqname></uniqname>\n"
+                + "    <username>小陈</username>\n"
+                + "    <modifyip>10.129.192.45</modifyip>\n"
+                + "</register>");
+        String result = sendPostXml(url, sb.toString());
+        System.out.println(result);
+    }
+
+
     @Test
     public void testGetCheck() throws Exception {
         long ct = System.currentTimeMillis();
         String code = appId + key + ct;
         code = Coder.encryptMD5(code);
-
-
 
 
         String url = "http://internal.passport.sohu.com/interface/getuserinfo";
@@ -230,7 +277,6 @@ public class BaseActionTest extends TestCase {
         String result = sendPostXml(url, sb.toString());
 
         String userid = result.substring(result.indexOf("<userid>") + 8, result.lastIndexOf("</userid>"));
-
 
 
         System.out.println(userid);
