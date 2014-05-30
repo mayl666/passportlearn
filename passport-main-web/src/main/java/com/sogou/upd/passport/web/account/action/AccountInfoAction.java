@@ -27,11 +27,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -155,11 +153,12 @@ public class AccountInfoAction extends BaseController {
             //TODO 待修改获取用户信息
 
             result = accountInfoManager.getUserInfo(params);
-            result.getModels().put("uniqname", result.getModels().get("uniqname"));
+
+//            result.getModels().put("uniqname", result.getModels().get("uniqname"));
 
             //TODO 修改此处取昵称 非第三方账号迁移后，统一调用 accountInfoManager 的 getUserUniqName 方法 暂先注释
 //            result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(params.getUsername(), clientId));
-//            result.getModels().put("uniqname", accountInfoManager.getUserUniqName(params.getUsername(), clientId));
+            result.getModels().put("uniqname", accountInfoManager.getUserUniqName(params.getUsername(), clientId));
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (result.isSuccess()) {
