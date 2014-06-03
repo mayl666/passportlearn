@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -18,6 +19,7 @@ import com.sogou.upd.passport.manager.form.AccountInfoParams;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckOrUpdateNickNameParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
@@ -76,6 +78,10 @@ public class AccountInfoAction extends BaseController {
         updateUserUniqnameApiParams.setUniqname(checkOrUpdateNickNameParams.getNickname());
         updateUserUniqnameApiParams.setClient_id(SHPPUrlConstant.APP_ID);
         result = sgUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
+
+        //用于记录log
+        UserOperationLog userOperationLog = new UserOperationLog("", String.valueOf(SHPPUrlConstant.APP_ID), result.getCode(), getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -151,7 +157,6 @@ public class AccountInfoAction extends BaseController {
             params.setUsername(userId);
             //获取用户信息
             //TODO 待修改获取用户信息
-
             result = accountInfoManager.getUserInfo(params);
 
 //            result.getModels().put("uniqname", result.getModels().get("uniqname"));
@@ -159,6 +164,10 @@ public class AccountInfoAction extends BaseController {
             //TODO 修改此处取昵称 非第三方账号迁移后，统一调用 accountInfoManager 的 getUserUniqName 方法 暂先注释
 //            result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(params.getUsername(), clientId));
             result.getModels().put("uniqname", accountInfoManager.getUserUniqName(params.getUsername(), clientId));
+
+            //用于记录log
+            UserOperationLog userOperationLog = new UserOperationLog(userId, params.getClient_id(), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (result.isSuccess()) {
@@ -199,6 +208,10 @@ public class AccountInfoAction extends BaseController {
             String userId = hostHolder.getPassportId();
             infoParams.setUsername(userId);
             result = accountInfoManager.updateUserInfo(infoParams, ip);
+
+            //用于记录log
+            UserOperationLog userOperationLog = new UserOperationLog(userId, infoParams.getClient_id(), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
@@ -232,6 +245,10 @@ public class AccountInfoAction extends BaseController {
             //TODO 非第三方账号数据迁移 用户更新头像信息
             byte[] byteArr = multipartFile.getBytes();
             result = accountInfoManager.uploadImg(byteArr, userId, "0", getIp(request));
+
+            //用于记录log
+            UserOperationLog userOperationLog = new UserOperationLog(userId, params.getClient_id(), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
@@ -282,7 +299,12 @@ public class AccountInfoAction extends BaseController {
 //                result = secureManager.queryAccountSecureInfo(userId, 1120, false);
 //            }
             //TODO 此处获取用户信息
-            result = secureManager.queryAccountSecureInfo(userId, 1120, false);
+            result = secureManager.queryAccountSecureInfo(userId, SHPPUrlConstant.APP_ID, false);
+
+            //用于记录log
+            UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(SHPPUrlConstant.APP_ID), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
+
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
                 //非第三方账号迁移，获取用户昵称信息，统一调用 accountInfoManager 的 getUserUniqName方法
