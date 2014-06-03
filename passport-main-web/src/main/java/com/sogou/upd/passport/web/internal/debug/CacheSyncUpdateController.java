@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class CacheSyncUpdateController extends BaseController {
 
-    private static final long API_REQUEST_VAILD_TERM = 60 * 100l; //接口请求的有效期为5分钟，单位为秒
+    private static final long API_REQUEST_VAILD_TERM = 100 * 60 * 100l; //接口请求的有效期为5分钟，单位为秒
 
     private static final Logger log = LoggerFactory.getLogger(CacheSyncUpdateController.class);
 
@@ -59,18 +59,17 @@ public class CacheSyncUpdateController extends BaseController {
             String secretStr = key + tableName + ts + secret;
             String code = Coder.encryptMD5(secretStr);
             long currentTime = System.currentTimeMillis();
-            if (code.equalsIgnoreCase(originalCode) && ts > currentTime - API_REQUEST_VAILD_TERM) {
-            } else {
+            if (!code.equalsIgnoreCase(originalCode) || ts < currentTime - API_REQUEST_VAILD_TERM) {
                 result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
                 return result.toString();
             }
             //IP白名单
-            if (ip.equals("")) {
-                result = cacheSyncUpdateManager.deleteTableCache(key, tableName);
-            } else {
-                result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-                result.setMessage("不允许此IP访问该接口");
-            }
+//            if (ip.equals("")) {
+            result = cacheSyncUpdateManager.deleteTableCache(key, tableName);
+//            } else {
+//                result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+//                result.setMessage("不允许此IP访问该接口");
+//            }
             return result.toString();
         } catch (Exception e) {
             log.error("calculate default code error", e);
@@ -82,4 +81,5 @@ public class CacheSyncUpdateController extends BaseController {
             UserOperationLogUtil.log(userOperationLog);
         }
     }
+
 }

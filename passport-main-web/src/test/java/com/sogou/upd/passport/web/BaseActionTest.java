@@ -180,12 +180,9 @@ public class BaseActionTest extends TestCase {
     private static final String key = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
 
     public void testPostXml() throws Exception {
-
         long ct = System.currentTimeMillis();
         String code = "shipengzhi1986@sogou.com" + appId + key + ct;
         code = Coder.encryptMD5(code);
-
-
         String url = "http://internal.passport.sohu.com/interface/getuserinfo";
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
@@ -213,10 +210,6 @@ public class BaseActionTest extends TestCase {
         long ct = System.currentTimeMillis();
         String code = appId + key + ct;
         code = Coder.encryptMD5(code);
-
-
-
-
         String url = "http://internal.passport.sohu.com/interface/getuserinfo";
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
@@ -230,14 +223,21 @@ public class BaseActionTest extends TestCase {
         String result = sendPostXml(url, sb.toString());
 
         String userid = result.substring(result.indexOf("<userid>") + 8, result.lastIndexOf("</userid>"));
-
-
-
         System.out.println(userid);
         System.out.println(result);
-
-
     }
 
-
+    public static void main(String[] args) {
+        String key = "shipengzhi1986@sogou.com";
+        String tableName = "account";
+        long ts = System.currentTimeMillis();
+        String secret = "c3%uH@FSOIkeopP23#wk_hUj7^?\"OP";
+        try {
+            String code = Coder.encryptMD5(key + tableName + ts + secret);
+            System.out.println("ts:" + ts);
+            System.out.println("code:" + code);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
