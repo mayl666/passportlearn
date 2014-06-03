@@ -22,10 +22,7 @@ import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -147,6 +144,31 @@ public class OAuthUtils {
             return true;
         }
         return false;
+    }
+
+    /**
+     * QQ OAuth根据refreshToken刷新accessToken时，
+     * 返回的格式为"xx=xx&xx=xx&xx=xx"字符串时
+     * 的解析方法
+     *
+     * @param body
+     * @return
+     * @throws OAuthProblemException
+     */
+    public static Map<String, Object> parseQQIrregularStringObject(String body) throws Exception {
+        Map<String, Object> parameters = new HashMap<>();
+        try {
+            String[] params = StringUtils.split(body, "\\&");
+            if (params.length > 0) {
+                for (String str : params) {
+                    parameters.put(StringUtils.split(str, "\\=")[0], (Object) StringUtils.split(str, "\\=")[1]);
+                }
+            }
+        } catch (Exception e) {
+            throw new Exception("[parseQQIrregularStringObject]Parse string to map error,", e);
+        }
+        return parameters;
+
     }
 
     /**
