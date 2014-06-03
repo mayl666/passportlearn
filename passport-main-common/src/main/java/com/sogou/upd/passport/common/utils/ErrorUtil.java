@@ -338,6 +338,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_UPDATE_USERINFO = "30801";
     //获取个人资料失败
     public static final String ERR_OBTAIN_ACCOUNT_INFO = "30802";
+    //增量数据同步中,需要删除的缓存表名不存在 TODO 写分离后可删除
+    public static final String DELETE_CACHE_TABLE_ERROR = "30900";
 
     public ErrorUtil() {
         super();
@@ -511,6 +513,8 @@ public class ErrorUtil {
 
         //SSO setcookie接口
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_COOKIE, "cookie值无效");
+
+        ERR_CODE_MSG_MAP.put(DELETE_CACHE_TABLE_ERROR, "增量数据同步中,需要删除的缓存表名不存在");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

@@ -73,7 +73,7 @@ public class AccountDAOTest extends BaseDAOTest {
 //
 //    @After
 //    public void end() {
-//        int row = accountDAO.deleteAccountByPassportId(PASSPORT_ID);
+//        int row = accountDAO.deleteAccountCacheByPassportId(PASSPORT_ID);
 //        Assert.assertTrue(row == 1);
 //    }
 }
