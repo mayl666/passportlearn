@@ -390,8 +390,11 @@ public class SecureAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result.toString();
         }
-
         result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail, modifyIp, ru);
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -418,7 +421,6 @@ public class SecureAction extends BaseController {
             case THIRD:
                 return "redirect:/web/security";
         }
-
         result = secureManager.modifyEmailByPassportId(userId, clientId, scode);
         model.addAttribute("data", result.toString());
         return "redirect:" + params.getRu();
@@ -591,7 +593,7 @@ public class SecureAction extends BaseController {
     @RequestMapping(value = "/checksms", method = RequestMethod.POST)
     @LoginRequired
     @ResponseBody
-    public Object checkSmsSecMobile(WebSmsParams params, Model model) throws Exception {
+    public Object checkSmsSecMobile(WebSmsParams params, Model model, HttpServletRequest request) throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -616,6 +618,12 @@ public class SecureAction extends BaseController {
         }
 
         result = secureManager.checkMobileCodeOldForBinding(userId, clientId, smsCode);
+
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
+        String referer = request.getHeader("referer");
+        userOperationLog.putOtherMessage("ref", referer);
+        UserOperationLogUtil.log(userOperationLog);
+
         return result.toString();
     }
 
