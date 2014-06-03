@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class CacheSyncUpdateController extends BaseController {
 
-    private static final long API_REQUEST_VAILD_TERM = 100 * 60 * 100l; //接口请求的有效期为5分钟，单位为秒
+    private static final long API_REQUEST_VAILD_TERM = 50 * 61 * 1000; //接口请求的有效期为5分钟，单位为毫秒
 
     private static final Logger log = LoggerFactory.getLogger(CacheSyncUpdateController.class);
 

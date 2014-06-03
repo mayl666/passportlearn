@@ -229,7 +229,7 @@ public class BaseActionTest extends TestCase {
 
     public static void main(String[] args) {
         String key = "shipengzhi1986@sogou.com";
-        String tableName = "account";
+        String tableName = "mobile_passportid_mapping";
         long ts = System.currentTimeMillis();
         String secret = "c3%uH@FSOIkeopP23#wk_hUj7^?\"OP";
         try {
