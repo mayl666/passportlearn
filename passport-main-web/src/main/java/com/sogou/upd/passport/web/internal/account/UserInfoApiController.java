@@ -69,11 +69,11 @@ public class UserInfoApiController extends BaseController {
         // 调用内部接口
         if (domain == AccountDomainEnum.THIRD) {
             result = sgUserInfoApiManager.getUserInfo(params);
-        }else {
+        } else {
             result = proxyUserInfoApiManager.getUserInfo(params);
         }
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        userOperationLog.putOtherMessage("fields",params.getFields());
+        userOperationLog.putOtherMessage("fields", params.getFields());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
@@ -98,11 +98,17 @@ public class UserInfoApiController extends BaseController {
             return result.toString();
         }
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(params.getUserid());
-        // 调用内部接口
-        if (domain == AccountDomainEnum.THIRD) {
-            result = sgUserInfoApiManager.updateUserInfo(params);
-        }else {
-            result = proxyUserInfoApiManager.updateUserInfo(params);
+
+        // TODO 禁止修改昵称
+        if (params.getUniqname() != null) {
+            result.setCode(ErrorUtil.FORBID_UPDATE_USERINFO);
+        } else {
+            // 调用内部接口
+            if (domain == AccountDomainEnum.THIRD) {
+                result = sgUserInfoApiManager.updateUserInfo(params);
+            } else {
+                result = proxyUserInfoApiManager.updateUserInfo(params);
+            }
         }
 
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), params.getModifyip());

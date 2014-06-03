@@ -11,6 +11,9 @@ public class ErrorUtil {
     // 成功过
     public static final String SUCCESS = "0";
 
+    //5.31日18:00至6.6日0:00禁止修改用户信息
+    public static final String FORBID_UPDATE_USERINFO = "50000";
+
     /**
      * ************************通用的错误代码start********************************
      */
@@ -511,6 +514,8 @@ public class ErrorUtil {
 
         //SSO setcookie接口
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_COOKIE, "cookie值无效");
+
+        ERR_CODE_MSG_MAP.put(FORBID_UPDATE_USERINFO,"5.31日18:00至6.6日0:00禁止修改用户信息");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -18,6 +19,7 @@ import com.sogou.upd.passport.manager.form.AccountInfoParams;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckOrUpdateNickNameParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
@@ -138,7 +140,7 @@ public class AccountInfoAction extends BaseController {
             params.setUsername(userId);
             result = accountInfoManager.getUserInfo(params);
 //            result.getModels().put("uniqname",(String)result.getModels().get("uniqname"));
-            result.getModels().put("uniqname",oAuth2ResourceManager.getEncodedUniqname(params.getUsername(),clientId));
+            result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(params.getUsername(), clientId));
 
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
@@ -160,31 +162,40 @@ public class AccountInfoAction extends BaseController {
     @ResponseBody
     public String updateUserInfo(HttpServletRequest request, AccountInfoParams infoParams) {
         Result result = new APIResultSupport(false);
-        if (hostHolder.isLogin()) {
 
-            //参数验证
-            String validateResult = ControllerHelper.validateParams(infoParams);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
-            }
-            //验证client_id是否存在
-            int clientId = Integer.parseInt(infoParams.getClient_id());
-            if (!configureManager.checkAppIsExist(clientId)) {
-                result.setCode(ErrorUtil.INVALID_CLIENTID);
-                return result.toString();
-            }
-
-            String ip = getIp(request);
-            String userId = hostHolder.getPassportId();
-
-            infoParams.setUsername(userId);
-            result = accountInfoManager.updateUserInfo(infoParams, ip);
-
+        // TODO 禁止修改昵称
+        if (infoParams.getUniqname() != null) {
+            result.setCode(ErrorUtil.FORBID_UPDATE_USERINFO);
         } else {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
+            if (hostHolder.isLogin()) {
+
+                //参数验证
+                String validateResult = ControllerHelper.validateParams(infoParams);
+                if (!Strings.isNullOrEmpty(validateResult)) {
+                    result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                    result.setMessage(validateResult);
+                    return result.toString();
+                }
+                //验证client_id是否存在
+                int clientId = Integer.parseInt(infoParams.getClient_id());
+                if (!configureManager.checkAppIsExist(clientId)) {
+                    result.setCode(ErrorUtil.INVALID_CLIENTID);
+                    return result.toString();
+                }
+
+                String ip = getIp(request);
+                String userId = hostHolder.getPassportId();
+
+                infoParams.setUsername(userId);
+                result = accountInfoManager.updateUserInfo(infoParams, ip);
+
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
+            }
         }
+
+        UserOperationLog userOperationLog = new UserOperationLog(infoParams.getUsername(), String.valueOf(infoParams.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -195,33 +206,41 @@ public class AccountInfoAction extends BaseController {
     public Object uploadAvatar(HttpServletRequest request, UploadAvatarParams params) {
         Result result = new APIResultSupport(false);
 
-        if (hostHolder.isLogin()) {
-
-            //参数验证
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
-            }
-            //验证client_id是否存在
-            int clientId = Integer.parseInt(params.getClient_id());
-            if (!configureManager.checkAppIsExist(clientId)) {
-                result.setCode(ErrorUtil.INVALID_CLIENTID);
-                return result.toString();
-            }
-
-            String userId = hostHolder.getPassportId();
-
-            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-            CommonsMultipartFile multipartFile = (CommonsMultipartFile) multipartRequest.getFile("Filedata");
-
-            byte[] byteArr = multipartFile.getBytes();
-            result = accountInfoManager.uploadImg(byteArr, userId, "0");
-
+        // TODO 禁止修改昵称
+        if (params.getClient_id() != null) {
+            result.setCode(ErrorUtil.FORBID_UPDATE_USERINFO);
         } else {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
+            if (hostHolder.isLogin()) {
+
+                //参数验证
+                String validateResult = ControllerHelper.validateParams(params);
+                if (!Strings.isNullOrEmpty(validateResult)) {
+                    result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                    result.setMessage(validateResult);
+                    return result.toString();
+                }
+                //验证client_id是否存在
+                int clientId = Integer.parseInt(params.getClient_id());
+                if (!configureManager.checkAppIsExist(clientId)) {
+                    result.setCode(ErrorUtil.INVALID_CLIENTID);
+                    return result.toString();
+                }
+
+                String userId = hostHolder.getPassportId();
+
+                MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+                CommonsMultipartFile multipartFile = (CommonsMultipartFile) multipartRequest.getFile("Filedata");
+
+                byte[] byteArr = multipartFile.getBytes();
+                result = accountInfoManager.uploadImg(byteArr, userId, "0");
+
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
+            }
         }
+
+//        UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+//        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
