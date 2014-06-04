@@ -21,8 +21,8 @@ import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
+import com.sogou.upd.passport.web.account.form.RegUserNameParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +62,7 @@ public class RegAction extends BaseController {
      */
     @RequestMapping(value = "/account/checkusername", method = RequestMethod.GET)
     @ResponseBody
-    public String checkusername(HttpServletRequest request, CheckUserNameExistParameters checkParam)
+    public String checkusername(HttpServletRequest request, RegUserNameParams checkParam)
             throws Exception {
         Result result = new APIResultSupport(false);
         int clientId = CommonConstant.SGPP_DEFAULT_CLIENTID;

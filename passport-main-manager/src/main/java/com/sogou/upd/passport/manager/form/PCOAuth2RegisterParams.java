@@ -6,7 +6,6 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.validation.constraints.Password;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
-import com.sogou.upd.passport.common.validation.constraints.UserName;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
@@ -20,7 +19,7 @@ import javax.validation.constraints.Min;
  * Time: 上午11:03
  * To change this template use File | Settings | File Templates.
  */
-public class PCOAuth2RegisterParams extends UsernameParams{
+public class PCOAuth2RegisterParams extends BaseRegUserNameParams{
     @Password(message = "密码必须为字母、数字、字符且长度为6~16位!")
     @NotBlank(message = "请输入密码!")
     private String password;

@@ -24,9 +24,9 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.PCOAuth2BaseParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
+import com.sogou.upd.passport.web.account.form.RegUserNameParams;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -169,7 +169,7 @@ public class PCOAuth2AccountController extends BaseController {
      */
     @RequestMapping(value = "/oauth2/checkregname")
     @ResponseBody
-    public String checkRegisterName(HttpServletRequest request, CheckUserNameExistParameters checkParam)
+    public String checkRegisterName(HttpServletRequest request, RegUserNameParams checkParam)
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
