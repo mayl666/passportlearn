@@ -226,7 +226,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 } else {
                     //更新用户非昵称信息，性别、所在地、生日、真实姓名、身份证
                     result = updateAccountInfo(result, params);
-                    if (!Strings.isNullOrEmpty(params.getUniqname()) && !params.getUniqname().equalsIgnoreCase(account.getUniqname())) {
+                    if (!Strings.isNullOrEmpty(params.getUniqname())) {
                         //更新用户昵称信息
                         result = updateAccountNickName(result, account, params.getUniqname());
                     }

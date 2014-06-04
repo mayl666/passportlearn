@@ -266,7 +266,7 @@ public class AppForkJoin extends BaseTest {
         Map<String, String> differenceMap = Maps.newConcurrentMap();
 
 //        String passportId = "joblim@sogou.com";  //返回有昵称
-        String passportId = "13862500162@sohu.com";  //返回有昵称
+        String passportId = "wangqingemail@sohu.com";  //返回有昵称
 
 
         /*StopWatch watch = new StopWatch();
@@ -287,12 +287,15 @@ public class AppForkJoin extends BaseTest {
                     }
                 }
 
+                System.out.println("===================mapB:" + mapB.toString());
+
             } catch (Exception e) {
 //                failedList.add(passportId);
                 LOGGER.error("FullDataCheckApp get account from sohu error.", e);
 //                continue;
             }
 
+/*
             if (StringUtils.isNotEmpty(passportId)) {
 
                 Account account = accountDAO.getAccountByPassportId(passportId);
@@ -371,6 +374,7 @@ public class AppForkJoin extends BaseTest {
                     }
                 }
             }
+*/
         } catch (Exception e) {
             LOGGER.error("testCheckData error", e);
         }
@@ -441,9 +445,6 @@ public class AppForkJoin extends BaseTest {
     }
 
 
-
-
-
     /**
      * 构建请求参数
      *
@@ -466,7 +467,7 @@ public class AppForkJoin extends BaseTest {
             requestModelXml.addParam("province", "");
             requestModelXml.addParam("city", "");
             requestModelXml.addParam("username", "");
-//            requestModelXml.addParam("uniqname", "");
+            requestModelXml.addParam("uniqname", "");
             requestModelXml.addParam("personalid", "");
             requestModelXml.addParam("userid", passportId);
             requestModelXml.addParam("appid", appId);

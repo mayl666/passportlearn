@@ -225,7 +225,8 @@ public class BaseActionTest extends TestCase {
     @Test
     public void testGetUserInfoFromSH() throws Exception {
 
-        String passportId = "13133192669@sohu.com";
+//        String passportId = "13133192669@sohu.com";
+        String passportId = "wangqingemail@sohu.com";
 
         long ct = System.currentTimeMillis();
         String code = passportId + appId + key + ct;
