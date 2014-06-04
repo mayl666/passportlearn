@@ -85,7 +85,7 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
             int row = connectConfigDAO.updateConnectConfig(connectConfig);
             if (row > 0) {
                 String cacheKey = buildConnectConfigCacheKey(connectConfig.getClientId(), connectConfig.getProvider());
-                dbShardRedisUtils.setWithinSeconds(cacheKey, connectConfig, DateAndNumTimesConstant.THREE_MONTH);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, connectConfig, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
         } catch (Exception e) {
@@ -97,7 +97,7 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
     private boolean addClientIdMapConnectConfigToCache(String cacheKey, ConnectConfig connectConfig) {
         boolean flag = true;
         try {
-            dbShardRedisUtils.setWithinSeconds(cacheKey, connectConfig, DateAndNumTimesConstant.THREE_MONTH);
+            dbShardRedisUtils.setWithinSeconds(cacheKey, connectConfig, DateAndNumTimesConstant.ONE_MONTH);
         } catch (Exception e) {
             flag = false;
             logger.error("[App] service method addClientIdMapAppConfig error.{}", e);
