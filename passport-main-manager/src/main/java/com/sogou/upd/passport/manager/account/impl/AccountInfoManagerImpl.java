@@ -577,6 +577,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(passportId)) {
             return "搜狗用户";
         }
+        if(AccountDomainEnum.PHONE == AccountDomainEnum.getAccountDomain(passportId) || ){}
         return passportId.substring(0, passportId.indexOf("@"));
     }
 

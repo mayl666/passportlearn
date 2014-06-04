@@ -3,6 +3,7 @@ package com.sogou.upd.passport.dao.account;
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
+import net.paoding.rose.jade.annotation.ShardBy;
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -46,6 +47,19 @@ public interface MobilePassportMappingDAO {
             TABLE_NAME +
             " where mobile=:mobile")
     public String getPassportIdByMobile(@SQLParam("mobile") String mobile) throws DataAccessException;
+
+    /**
+     * 根据手机号码获取passportId
+     *
+     * @param mobile
+     * @return 获取不到则抛出异常
+     * @throws DataAccessException
+     */
+    @SQL("select passport_id from " +
+            TABLE_NAME +
+            " where mobile=:mobile")
+    public String getPassportIdByHashMobile(@ShardBy @SQLParam("mobile") String mobile) throws DataAccessException;
+
 
     /**
      * 插入一条mobile和passportId的映射关系

@@ -40,13 +40,13 @@ public class SGStringHashRouterTest extends TestCase {
 //        String id = "0C7E1BC4094CACCBDFEFC60BDDC598BD@qq.sohu.com";
 //        String id = "15BF5B2E00BCB4A7E8AD31E59480FF8C@qq.sohu.com";
 //        String id = "B5008F7D2813EDCCE03BCE3EA6DC7FFA@qq.sohu.com";
-//        String id = "gang.chen0505@gmail.com";
 //        String id = "056B15F99925016562B24E2070AE7AF5@qq.sohu.com";
 //        String id = "wangqingemail@sohu.com";
 //        String id = "wangqingtest@sogou.com";
 //        String id = "gang.chen0505@gmail.com";
 //        String id = "002zmm@163.com";
-        String id = "wangqingdata@sohu.com";
+//        String id = "wangqingdata@sohu.com";
+        String id = "13693610763@sohu.com";
         String name = router.doRoute(id);
         System.out.println(name);
 //        Assert.assertEquals(name, "account_18");
@@ -69,7 +69,7 @@ public class SGStringHashRouterTest extends TestCase {
     public void testMobileRoute() {
         router = new SGStringHashRouter("id", "mobile_passportid_mapping_{0}", 32);
 
-        String mobile_flag_0 = "13522010566";
+        String mobile_flag_0 = "15228657121";
         String mobile_flag_1 = "13703211617";
         String mobile_table_name = router.doRoute(mobile_flag_0);
         String mobile_table_name_1 = router.doRoute(mobile_flag_1);

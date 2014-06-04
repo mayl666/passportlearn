@@ -57,7 +57,7 @@ public class RepairTmpData extends BaseTest {
     @Test
     public void testGetUserInfo() {
         String userid = "lvcunxiao@sogou.com";
-        RequestModelXml requestModelXml = FullDataCheckApp.bulidRequestModelXml(userid);
+        RequestModelXml requestModelXml = FullDataCheckApp.buildRequestModelXml(userid);
         Map<String, Object> shApiResult = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
         System.out.println("result:" + shApiResult);
     }
@@ -75,7 +75,7 @@ public class RepairTmpData extends BaseTest {
         int total = 0;
         int repairNum = 0;
         for (String userid : useridList) {
-            RequestModelXml requestModelXml = FullDataCheckApp.bulidRequestModelXml(userid);
+            RequestModelXml requestModelXml = FullDataCheckApp.buildRequestModelXml(userid);
             Map<String, Object> shApiResult;
             try {
                 shApiResult = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
@@ -151,7 +151,7 @@ public class RepairTmpData extends BaseTest {
         int total = 0;
         int repairNum = 0;
         for (String userid : useridList) {
-            RequestModelXml requestModelXml = FullDataCheckApp.bulidRequestModelXml(userid);
+            RequestModelXml requestModelXml = FullDataCheckApp.buildRequestModelXml(userid);
             Map<String, Object> shApiResult = null;
             try {
                 shApiResult = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
@@ -200,7 +200,7 @@ public class RepairTmpData extends BaseTest {
         int total = 0;
         int repairNum = 0;
         for (String userid : useridList) {
-            RequestModelXml requestModelXml = FullDataCheckApp.bulidRequestModelXml(userid);
+            RequestModelXml requestModelXml = FullDataCheckApp.buildRequestModelXml(userid);
             Map<String, Object> shApiResult;
             try {
                 shApiResult = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);

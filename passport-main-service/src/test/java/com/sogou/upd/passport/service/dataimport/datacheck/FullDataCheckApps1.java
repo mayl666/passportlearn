@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.dataimport.datacheck;
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.dao.account.AccountInfoDAO;
+import com.sogou.upd.passport.dao.account.MobilePassportMappingDAO;
 import org.apache.commons.collections.CollectionUtils;
 import org.perf4j.StopWatch;
 import org.slf4j.Logger;
@@ -31,7 +32,9 @@ public class FullDataCheckApps1 extends RecursiveTask<List<Map<String, String>>>
 
     private AccountInfoDAO accountInfoDAO;
 
-    private static final String BASE_FILE_PATH = "D:\\项目\\非第三方账号迁移\\check_full_data\\";
+    private MobilePassportMappingDAO mobilePassportMappingDAO;
+
+    private static final String BASE_FILE_PATH = "D:\\项目\\非第三方账号迁移\\check_full_data\\05_test\\";
 
 
     //返回结果
@@ -40,16 +43,18 @@ public class FullDataCheckApps1 extends RecursiveTask<List<Map<String, String>>>
     private final List<RecursiveTask<Map<String, String>>> forks = Lists.newLinkedList();
 
 
-    public FullDataCheckApps1(AccountDAO accountDAO, AccountInfoDAO accountInfoDAO) {
+    public FullDataCheckApps1(AccountDAO accountDAO, AccountInfoDAO accountInfoDAO, MobilePassportMappingDAO mobilePassportMappingDAO) {
         this.accountDAO = accountDAO;
         this.accountInfoDAO = accountInfoDAO;
+        this.mobilePassportMappingDAO = mobilePassportMappingDAO;
+
     }
 
 
     @Override
     protected List<Map<String, String>> compute() {
         LOGGER.info("FullDataCheckApps check full data start......");
-        List<Integer> differenceLists = Lists.newLinkedList();
+//        List<Integer> differenceLists = Lists.newLinkedList();
 
         List<Map<String, String>> differences = new ArrayList<>();
 
@@ -57,8 +62,8 @@ public class FullDataCheckApps1 extends RecursiveTask<List<Map<String, String>>>
         watch.start();
         try {
             for (int i = 1; i < 5; i++) {
-                String filePath = BASE_FILE_PATH + "full_check_data_split_3" + i + ".txt";
-                FullDataCheckApp task = new FullDataCheckApp(accountDAO, accountInfoDAO, filePath);
+                String filePath = BASE_FILE_PATH + "05_test_phone_userid_0" + i + ".txt";
+                FullDataCheckApp1 task = new FullDataCheckApp1(accountDAO, accountInfoDAO, mobilePassportMappingDAO, filePath);
                 task.fork();
                 forks.add(task);
             }
@@ -66,20 +71,20 @@ public class FullDataCheckApps1 extends RecursiveTask<List<Map<String, String>>>
             //结果整合
             for (RecursiveTask<Map<String, String>> task : forks) {
                 try {
-                    LOGGER.info(String.format("FullDataCheckApps check full data task:[%s] failList", task.getClass().getName()));
+                    LOGGER.info(String.format("FullDataCheckApps check full data 05 test phone task:[%s] failList", task.getClass().getName()));
                     differences.add(task.get());
 
-                    if (CollectionUtils.isNotEmpty((Collection) task.get())) {
+                  /*  if (CollectionUtils.isNotEmpty((Collection) task.get())) {
                         differenceLists.add(task.get().size());
-                    }
+                    }*/
                 } catch (InterruptedException | ExecutionException e) {
-                    LOGGER.error("FullDataCheckApps check full data fail.", e);
+                    LOGGER.error("FullDataCheckApps check full data 05 test phone fail.", e);
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("FullDataCheckApps check full data  error.", e);
+            LOGGER.error("FullDataCheckApps check full data 05 test phone error.", e);
         }
-        LOGGER.info("FullDataCheckApps finish use time {},total difference {}", watch.stop(), differenceLists.size());
+        LOGGER.info("FullDataCheckApps finish use time 05 test phone {}", watch.stop());
         return differences;
     }
 }

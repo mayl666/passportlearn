@@ -50,7 +50,7 @@ public interface AccountInfoDAO {
      * 非第三方账号迁移，特别提示，仅供数据验证使用，根据passportId获取AccountInfo
      */
     @SQL("select " +
-            " email,gender, province, city,fullname,personalid" +
+            " email,gender, province,birthday, city,fullname,personalid" +
             " from " +
             TABLE_NAME +
             " where passport_id=:passport_id")

@@ -225,7 +225,7 @@ public class BaseActionTest extends TestCase {
     @Test
     public void testGetUserInfoFromSH() throws Exception {
 
-        String passportId = "wangqingemail@sohu.com";
+        String passportId = "13133192669@sohu.com";
 
         long ct = System.currentTimeMillis();
         String code = passportId + appId + key + ct;
@@ -244,12 +244,13 @@ public class BaseActionTest extends TestCase {
                 + "    <answer></answer>\n"
                 + "    <email></email>\n"
                 + "    <mobile></mobile>\n"
+                + "    <birthday></birthday>\n"
                 + "    <createip></createip>\n"
                 + "    <uniqname></uniqname>\n"
                 + "    <regappid></regappid>\n"
                 + "</register>");
         String result = sendPostXml(url, sb.toString());
-        System.out.println("===============testGetUserInfoFromSH:" + JsonUtil.obj2Json(result));
+        System.out.println("===============testGetUserInfoFromSH:" + result.toString());
     }
 
 

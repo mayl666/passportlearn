@@ -8,9 +8,11 @@ import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
+import com.sogou.upd.passport.common.utils.JsonUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.dao.account.AccountInfoDAO;
+import com.sogou.upd.passport.dao.account.MobilePassportMappingDAO;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
@@ -59,6 +61,10 @@ public class AppForkJoin extends BaseTest {
 
     @Autowired
     private AccountInfoDAO accountInfoDAO;
+
+
+    @Autowired
+    private MobilePassportMappingDAO mobilePassportMappingDAO;
 
     private static final String appId = "1100";
 
@@ -259,65 +265,48 @@ public class AppForkJoin extends BaseTest {
 
         Map<String, String> differenceMap = Maps.newConcurrentMap();
 
-        String passportId = "wangqingemail@sohu.com";
+//        String passportId = "joblim@sogou.com";  //返回有昵称
+        String passportId = "13862500162@sohu.com";  //返回有昵称
+
 
         /*StopWatch watch = new StopWatch();
         watch.start();*/
 
         RequestModelXml requestModelXml = bulidRequestModelXml(passportId);
         try {
-            Map<String, Object> mapB = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
+            Map<String, Object> mapB = null;
+            try {
+                mapB = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
 
-            LOGGER.info("================testCheckData mapB :" + mapB.toString());
-
-            //处理 mapB
-           /* if (mapB != null) {
-                if (mapB.containsKey("flag")) {
-                    mapB.remove("flag");
-                }
-                if (mapB.containsKey("status")) {
-                    mapB.remove("status");
-                }
-
-             if (mapB.containsKey("birthday")) {
+                if (mapB.containsKey("birthday")) {
                     String birthday = String.valueOf(mapB.get("birthday"));
-                    if (StringUtils.isNotEmpty(birthday) && birthday.length() >= 10) {
-                        mapB.put("birthday", StringUtils.substring(birthday, 0, 10));
+                    if (StringUtils.isNotEmpty(birthday)) {
+                        mapB.put("birthday", birthday);
                     } else {
-                        mapB.put("birthday", StringUtils.EMPTY);
+                        mapB.put("birthday", "1900-01-01");
                     }
                 }
-            }*/
 
-/*
+            } catch (Exception e) {
+//                failedList.add(passportId);
+                LOGGER.error("FullDataCheckApp get account from sohu error.", e);
+//                continue;
+            }
+
             if (StringUtils.isNotEmpty(passportId)) {
+
                 Account account = accountDAO.getAccountByPassportId(passportId);
 
-//                AccountInfo accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
+                //不验证 birthday 采用 getAccountInfoByPid4DataCheck 方法  email,gender, province, city,fullname,personalid
                 AccountInfo accountInfo = accountInfoDAO.getAccountInfoByPid4DataCheck(passportId);
-
                 if (account != null && accountInfo != null) {
-
                     //Test 库数据
                     Map<String, Object> mapA = Maps.newHashMap();
-//                    mapA.put("birthday", accountInfo.getBirthday() == null ? StringUtils.EMPTY : accountInfo.getBirthday());
-                    String birthday = String.valueOf(accountInfo.getBirthday());
-                    if (!Strings.isNullOrEmpty(birthday)) {
-                        if (birthday.length() >= 10) {
-                            mapA.put("birthday", StringUtils.substring(birthday, 0, 10));
-                        } else {
-                            mapA.put("birthday", StringUtils.EMPTY);
-                        }
-                    } else {
-                        mapA.put("birthday", StringUtils.EMPTY);
-                    }
-
 
                     mapA.put("createip", account.getRegIp() == null || account.getRegIp() == "" ? StringUtils.EMPTY : account.getRegIp());
                     mapA.put("userid", passportId);
                     mapA.put("personalid", accountInfo.getPersonalid() == null ? StringUtils.EMPTY : accountInfo.getPersonalid());
                     mapA.put("city", accountInfo.getCity() == null ? StringUtils.EMPTY : accountInfo.getCity());
-//                    mapA.put("createtime", account.getRegTime());
 
                     String createTime = String.valueOf(account.getRegTime());
                     if (StringUtils.isNotEmpty(createTime)) {
@@ -334,34 +323,58 @@ public class AppForkJoin extends BaseTest {
                     mapA.put("gender", accountInfo.getGender() == null ? StringUtils.EMPTY : accountInfo.getGender());
                     mapA.put("mobile", account.getMobile() == null ? StringUtils.EMPTY : account.getMobile());
 
-                    LOGGER.info("testCheckData mapA :" + mapA.toString());
+
+                    if (accountInfo.getBirthday() != null) {
+                        if (accountInfo.getBirthday().toString().length() > 10) {
+                            mapA.put("birthday", accountInfo.getBirthday().toString().substring(0, 10));
+                        }
+                    }
 
                     //比较文件
                     if (mapA != null && mapB != null) {
                         mapA.put("flag", mapB.get("flag"));
                         mapA.put("status", mapB.get("status"));
 
+                        //记录调用搜狐接口获取用户信息对应的Flag
+//                        userFlagMap.put(passportId, mapB.get("flag").toString());
+
                         MapDifference difference = Maps.difference(mapA, mapB);
                         if (!difference.areEqual()) {
-
-                            differenceMap.put(passportId, difference.entriesDiffering().toString());
-
-                            LOGGER.info("testCheckData mapA and mapB is difference {}", difference.entriesDiffering().toString());
-//                            differenceList.add(passportId);
-                            //记录对比不同的数据到Log 记录到文件
-//                            LOGGER.info("FullDataCheckApp check full data difference passportId {} " + passportId);
-                        } else {
-                            LOGGER.info("testCheckData mapA and mapB is equal");
+                            if (!difference.entriesDiffering().isEmpty()) {
+                                differenceMap.put(passportId, difference.entriesDiffering().toString());
+//                                    LOGGER.info("mapA and mapB entriesDiffering {}", difference.entriesDiffering().toString());
+                            } else if (!difference.entriesOnlyOnLeft().isEmpty()) {
+                                differenceMap.put(passportId, difference.entriesOnlyOnLeft().toString());
+//                                    LOGGER.info("mapA and mapB entriesOnlyOnLeft {}", difference.entriesOnlyOnLeft().toString());
+                            } else if (!difference.entriesOnlyOnRight().isEmpty()) {
+                                differenceMap.put(passportId, difference.entriesOnlyOnRight().toString());
+//                                    LOGGER.info("mapA and mapB entriesOnlyOnRight {}", difference.entriesOnlyOnRight().toString());
+                            }
                         }
+                    }
+
+
+                    //验证手机映射
+                    {
+                        try {
+                            String passportId_MM = mobilePassportMappingDAO.getPassportIdByHashMobile(account.getMobile());
+                            if (passportId.equalsIgnoreCase(passportId_MM)) {
+                                LOGGER.info("account and mobile mapping passportId  equal");
+                            } else {
+                                LOGGER.info(String.format("account passportId:{},mobile mapping passportId:{} not equal"), passportId, passportId_MM);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            LOGGER.error("get mobile passport mapping error. passportId:" + passportId, e);
+                        }
+
                     }
                 }
             }
-*/
         } catch (Exception e) {
             LOGGER.error("testCheckData error", e);
         }
         System.out.println("===============" + differenceMap.toString());
-
     }
 
 
@@ -428,6 +441,9 @@ public class AppForkJoin extends BaseTest {
     }
 
 
+
+
+
     /**
      * 构建请求参数
      *
@@ -445,12 +461,12 @@ public class AppForkJoin extends BaseTest {
             requestModelXml.addParam("createtime", "");
             requestModelXml.addParam("createip", "");
             requestModelXml.addParam("email", "");
-//            requestModelXml.addParam("birthday", "");
+            requestModelXml.addParam("birthday", "");
             requestModelXml.addParam("gender", "");
             requestModelXml.addParam("province", "");
             requestModelXml.addParam("city", "");
             requestModelXml.addParam("username", "");
-            requestModelXml.addParam("uniqname", "");
+//            requestModelXml.addParam("uniqname", "");
             requestModelXml.addParam("personalid", "");
             requestModelXml.addParam("userid", passportId);
             requestModelXml.addParam("appid", appId);

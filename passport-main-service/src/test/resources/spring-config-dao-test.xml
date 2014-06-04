@@ -129,6 +129,8 @@
                 <value>sg-str-hash:connect_relation:passport_id:connect_relation_{0}:32</value>
                 <!-- 昵称映射表 根据昵称分32张子表 -->
                 <value>sg-str-hash:uniqname_passportid_mapping:uniqname:uniqname_passportid_mapping_{0}:32</value>
+                <!-- 手机映射表 分32张子表-->
+                <value>sg-str-hash:mobile_passportid_mapping:mobile:mobile_passportid_mapping_{0}:32</value>
             </list>
         </property>
     </bean>
