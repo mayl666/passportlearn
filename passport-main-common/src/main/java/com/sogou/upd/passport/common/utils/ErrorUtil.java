@@ -11,9 +11,6 @@ public class ErrorUtil {
     // 成功过
     public static final String SUCCESS = "0";
 
-    //5.31日18:00至6.6日0:00禁止修改用户信息
-    public static final String FORBID_UPDATE_USERINFO = "50000";
-
     /**
      * ************************通用的错误代码start********************************
      */
@@ -510,12 +507,10 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_ADDTIMES_LIMITED, "您一天内提交反馈的次数超过限制");
 
         //sohu+相关接口
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_ACCOUNT, "账号异常，请联系passportkf@sogou-inc.com找回账号");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_ACCOUNT, "账号冲突或者异常，请到论坛问题反馈区找回账号");
 
         //SSO setcookie接口
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_COOKIE, "cookie值无效");
-
-        ERR_CODE_MSG_MAP.put(FORBID_UPDATE_USERINFO,"5.31日18:00至6.6日0:00禁止修改用户信息");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

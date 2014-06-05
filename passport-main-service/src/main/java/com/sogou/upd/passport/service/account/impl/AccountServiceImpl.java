@@ -193,18 +193,18 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean deleteAccountByPassportId(String passportId) throws ServiceException {
+    public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException {
         try {
-            int row = accountDAO.deleteAccountByPassportId(passportId);
-            if (row != 0) {
+//            int row = accountDAO.deleteAccountByPassportId(passportId);
+//            if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
-                redisUtils.delete(cacheKey);
+                dbShardRedisUtils.delete(cacheKey);
                 return true;
-            }
+//            }
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        return false;
+//        return false;
     }
 
     public void setLimitResetPwd(String passportId) throws ServiceException {

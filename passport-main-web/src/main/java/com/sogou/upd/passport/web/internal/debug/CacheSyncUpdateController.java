@@ -42,7 +42,6 @@ public class CacheSyncUpdateController extends BaseController {
     public String cacheSync(HttpServletRequest req, CacheSyncParam params) throws Exception {
         Result result = new APIResultSupport(false);
         String key = params.getKey();
-        String tableName = params.getTn();
         long ts = params.getTs();
         String originalCode = params.getCode();
         String ip = getIp(req);
@@ -56,7 +55,7 @@ public class CacheSyncUpdateController extends BaseController {
                 return result.toString();
             }
             //签名校验
-            String secretStr = key + tableName + ts + secret;
+            String secretStr = key + ts + secret;
             String code = Coder.encryptMD5(secretStr);
             long currentTime = System.currentTimeMillis();
             if (!code.equalsIgnoreCase(originalCode) || ts < currentTime - API_REQUEST_VAILD_TERM) {
@@ -64,8 +63,8 @@ public class CacheSyncUpdateController extends BaseController {
                 return result.toString();
             }
             //IP白名单
-            if (ip.equals("")) {
-            result = cacheSyncUpdateManager.deleteTableCache(key, tableName);
+            if (ip.equals("10.146.16.142")) {
+                result = cacheSyncUpdateManager.deleteTableCache(key);
             } else {
                 result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
                 result.setMessage("不允许此IP访问该接口");

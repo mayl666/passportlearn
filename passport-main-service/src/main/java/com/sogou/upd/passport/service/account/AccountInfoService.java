@@ -27,5 +27,9 @@ public interface AccountInfoService {
      * 修改个人信息
      */
     public boolean updateAccountInfo(AccountInfo accountInfo);
+    /**
+     * 根据passportId删除AccountInfo表缓存，增量数据迁移的内部debug接口使用
+     */
+    public boolean deleteAccountInfoCacheByPassportId(String passportId) throws ServiceException;
 
 }

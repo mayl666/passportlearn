@@ -6,7 +6,6 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,32 +27,24 @@ public class CacheSyncUpdateManager {
     private AccountService accountService;
     @Autowired
     private AccountInfoService accountInfoService;
-    @Autowired
-    private MobilePassportMappingService mobilePassportMappingService;
 
-    public Result deleteTableCache(String key, String tableName) {
+    public Result deleteTableCache(String passportId) {
         Result result = new APIResultSupport(false);
         try {
-            switch (tableName) {
-                case "account":
-                    accountService.deleteAccountCacheByPassportId(key);
-                    break;
-                case "account_info":
-                    accountInfoService.deleteAccountInfoCacheByPassportId(key);
-                    break;
-                case "mobile_passportid_mapping":
-                    mobilePassportMappingService.deleteMobilePassportMappingCache(key);
-                    break;
-                default:
-                    result.setCode(ErrorUtil.DELETE_CACHE_TABLE_ERROR);
-                    return result;
+            boolean isDelAccount = accountService.deleteAccountCacheByPassportId(passportId);
+            boolean isDelAccountInfo = accountInfoService.deleteAccountInfoCacheByPassportId(passportId);
+            if (isDelAccount && isDelAccountInfo) {
+//                    mobilePassportMappingService.deleteMobilePassportMappingCache(key);
+                result.setSuccess(true);
+                result.setMessage("passportId：" + passportId + " delete cache success!");
+            } else {
+                result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             }
-            result.setSuccess(true);
-            result.setMessage("key：" + key + " delete " + tableName + " cache success!");
         } catch (ServiceException e) {
-            log.error("key：" + key + " delete " + tableName + " cache success!", e);
+            log.error("passportId：" + passportId + " delete cache fail!", e);
             result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
         }
         return result;
     }
 }
+
