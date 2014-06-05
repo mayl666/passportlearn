@@ -127,6 +127,12 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
                             mapB.put("birthday", "1900-01-01");
                         }
                     }
+                    if (!"1".equals(String.valueOf(mapB.get("mobileflag")))) {
+                        mapB.put("mobile", null);
+                    }
+                    if (!"1".equals(String.valueOf(mapB.get("emailflag")))) {
+                        mapB.put("email", null);
+                    }
 
                 } catch (Exception e) {
                     failedList.add(passportId);
@@ -256,9 +262,11 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
 
             requestModelXml.addParam("question", "");
             requestModelXml.addParam("mobile", "");
+            requestModelXml.addParam("mobileflag", "");
             requestModelXml.addParam("createtime", "");
             requestModelXml.addParam("createip", "");
             requestModelXml.addParam("email", "");
+            requestModelXml.addParam("emailflag", "");
             requestModelXml.addParam("birthday", ""); //数据验证,暂先不取生日
             requestModelXml.addParam("gender", "");
             requestModelXml.addParam("province", "");
