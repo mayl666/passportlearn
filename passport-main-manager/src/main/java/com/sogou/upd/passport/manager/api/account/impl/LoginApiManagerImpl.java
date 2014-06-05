@@ -73,8 +73,8 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
     private Result bothAuthUser(AuthUserApiParams authUserApiParams) {
         Result result;
         String passportId = commonManager.getPassportIdByUsername(authUserApiParams.getUserid());
-        if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(authUserApiParams.getUserid()))) {
-            //sohu账号调用sohu api校验用户名和密码
+        if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+            //主账号是sohu域账号调用sohu api校验用户名和密码
             result = proxyLoginApiManager.webAuthUser(authUserApiParams);
         } else {
             if (accountSecureService.getUpdateSuccessFlag(passportId)) {
