@@ -59,7 +59,7 @@ public class LoginManagerTest extends BaseTest {
 
             WebLoginParams webLoginParams1 = getParam(username_sogou, pwd_sogou);
             Result result_sogou = loginManager.accountLogin(webLoginParams1, ip, scheme);
-            String expire_sogou_data = "{\"data\":{\"userid\":\"" + username_sogou + "\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+            String expire_sogou_data = "{\"data\":{},\"status\":\"20206\",\"statusText\":\"密码错误\"}";
             APIResultForm sogou_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_sogou.toString(), APIResultForm.class);
             APIResultForm expire_sogou_ResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_sogou_data, APIResultForm.class);
             Assert.assertTrue(expire_sogou_ResultForm.equals(sogou_APIResultForm));

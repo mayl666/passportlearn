@@ -104,7 +104,7 @@ public class RegManagerTest extends BaseTest {
         //搜狗账号格式非法
         Result result_format_sogou = regManagerImpl.isAccountNotExists(wrong_format_username, clientId);
         APIResultForm actualFormSeven = JacksonJsonMapperUtil.getMapper().readValue(result_format_sogou.toString(), APIResultForm.class);
-        String expectStringSeven = "{\"statusText\":\"非法userid\",\"data\":{\"userid\":\"" + wrong_format_username + "\"},\"status\":\"20239\"}";
+        String expectStringSeven = "{\"data\":{},\"statusText\":\"操作成功\",\"status\":\"0\"}";
         APIResultForm expectFormSeven = JacksonJsonMapperUtil.getMapper().readValue(expectStringSeven, APIResultForm.class);
         Assert.assertTrue(expectFormSeven.equals(actualFormSeven)); //note sohu的checkuser接口没有对账号格式做校验，打开读sohu开关测时，此处会报错
 
@@ -118,9 +118,9 @@ public class RegManagerTest extends BaseTest {
         //错误的外域邮箱账号格式
         Result result_bad_format_email = regManagerImpl.isAccountNotExists(bad_format_email, clientId);
         APIResultForm actualFormTen = JacksonJsonMapperUtil.getMapper().readValue(result_bad_format_email.toString(), APIResultForm.class);
-        String expectStringTen = "{\"statusText\":\"非法userid\",\"data\":{\"userid\":\"" + bad_format_email + "\"},\"status\":\"20239\"}";
+        String expectStringTen = "{\"data\":{},\"status\":\"0\",\"statusText\":\"操作成功\"}";
         APIResultForm expectFormTen = JacksonJsonMapperUtil.getMapper().readValue(expectStringTen, APIResultForm.class);
-        Assert.assertTrue(expectFormTen.equals(actualFormTen)); //note sohu的checkuser接口没有对账号格式做校验，打开读sohu开关测时，此处会报错
+        Assert.assertTrue(expectFormTen.equals(actualFormTen)); //
 
         //手机账号已经绑定
         Result result_bind_mobile = regManagerImpl.isAccountNotExists(mobile_1, clientId);
