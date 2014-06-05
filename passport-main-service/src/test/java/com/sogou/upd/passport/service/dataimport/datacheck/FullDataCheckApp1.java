@@ -118,7 +118,7 @@ public class FullDataCheckApp1 extends RecursiveTask<Map<String, String>> {
                             //手机账号，验证 插入 mobile passportId mapping
                             try {
                                 if (StringUtils.isNotEmpty(account.getMobile())) {
-                                    String passportId_MM = mobilePassportMappingDAO.getPassportIdByHashMobile(account.getMobile());
+                                    String passportId_MM = mobilePassportMappingDAO.getPassportIdByMobile(account.getMobile());
                                     if (!passportId.equalsIgnoreCase(passportId_MM)) {
 //                                            LOGGER.info(String.format("account passportId:{},mobile mapping passportId:{} not equal"), passportId, passportId_MM);
                                         //记录到文件
