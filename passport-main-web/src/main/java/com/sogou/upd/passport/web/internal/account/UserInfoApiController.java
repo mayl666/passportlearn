@@ -99,16 +99,11 @@ public class UserInfoApiController extends BaseController {
         }
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(params.getUserid());
 
-        // TODO 禁止修改昵称
-        if (params.getUniqname() != null) {
-            result.setCode(ErrorUtil.FORBID_UPDATE_USERINFO);
+        // 调用内部接口
+        if (domain == AccountDomainEnum.THIRD) {
+            result = sgUserInfoApiManager.updateUserInfo(params);
         } else {
-            // 调用内部接口
-            if (domain == AccountDomainEnum.THIRD) {
-                result = sgUserInfoApiManager.updateUserInfo(params);
-            } else {
-                result = proxyUserInfoApiManager.updateUserInfo(params);
-            }
+            result = proxyUserInfoApiManager.updateUserInfo(params);
         }
 
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), params.getModifyip());
