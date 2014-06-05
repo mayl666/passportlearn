@@ -229,11 +229,10 @@ public class BaseActionTest extends TestCase {
 
     public static void main(String[] args) {
         String key = "shipengzhi1986@sogou.com";
-        String tableName = "mobile_passportid_mapping";
         long ts = System.currentTimeMillis();
         String secret = "c3%uH@FSOIkeopP23#wk_hUj7^?\"OP";
         try {
-            String code = Coder.encryptMD5(key + tableName + ts + secret);
+            String code = Coder.encryptMD5(key + ts + secret);
             System.out.println("ts:" + ts);
             System.out.println("code:" + code);
         } catch (Exception e) {

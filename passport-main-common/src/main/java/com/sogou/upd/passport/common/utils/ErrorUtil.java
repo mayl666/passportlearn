@@ -512,7 +512,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_ADDTIMES_LIMITED, "您一天内提交反馈的次数超过限制");
 
         //sohu+相关接口
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_ACCOUNT, "账号冲突或者异常，请到论坛问题反馈区找回账号");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_ACCOUNT, "账号异常，请联系passportkf@sogou-inc.com找回账号");
 
         //SSO setcookie接口
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_COOKIE, "cookie值无效");
