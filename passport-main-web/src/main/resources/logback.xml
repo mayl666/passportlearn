@@ -116,7 +116,7 @@
     <!--双读校验用户名和密码时，当SG校验失败，SH校验成功时，记录userid-->
     <appender name="bothReadSyncErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/bothReadSyncError/bothreaderror.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/bothAuthUserSyncError/authusererror.log.%d{yyyy-MM-dd}</fileNamePattern>
             <maxHistory>14</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -131,7 +131,7 @@
     <!--双读检查用户名是否存在时，当SG不存在，SH存在时，记录userid-->
     <appender name="bothCheckSyncErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/bothCheckSyncError/bothcheckerror.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/bothCheckUserSyncError/checkusererror.log.%d{yyyy-MM-dd}</fileNamePattern>
             <maxHistory>14</maxHistory>
         </rollingPolicy>
         <encoder>
