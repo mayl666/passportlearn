@@ -318,8 +318,9 @@ public class RegManagerImpl implements RegManager {
     private Result bothCheck(String username, int clientId) throws Exception {
         Result result;
         String passportId = commonManager.getPassportIdByUsername(username);
-        if (PhoneUtil.verifyPhoneNumberFormat(username) && accountSecureService.getUpdateSuccessFlag(passportId)) {
-            //主账号有更新绑定手机的操作时，调用sohu api检查账号是否可用
+        if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(username)) &&
+                accountSecureService.getUpdateSuccessFlag(passportId)) {
+            //手机号检查用户名且主账号有更新绑定手机的操作时，调用sohu api检查账号是否可用
             result = checkUserFromSohu(username, clientId);
         } else {
             //没有更新绑定手机时，走正常的双读检查账号是否可用流程
@@ -328,7 +329,7 @@ public class RegManagerImpl implements RegManager {
             if (result.isSuccess()) {  //SG没有，查询SH
                 result = checkUserFromSohu(username, clientId);
                 if (!result.isSuccess()) {
-                    //检查用户名是否存在时，SG不存在，SH存在，全量数据迁移有遗漏或是双读延迟
+                    //检查用户名是否存在时，SG不存在，SH存在，全量数据迁移有遗漏或是双读延迟;未激活外域来登录
                     checkLogger.error("check sogou error,check sohu success,username:{};time:{}", username, new Date());
                 }
             }
