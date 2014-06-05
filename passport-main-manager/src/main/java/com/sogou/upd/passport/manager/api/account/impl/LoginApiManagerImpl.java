@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -90,8 +91,10 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                         //日志记录可能存在的情况：新注册用户登录时，同步延迟；用户找回密码后登录；用户校验密码失败等
                         readLogger.error("SoGouError-SoHuSuccess,userId:{};time:{}", authUserApiParams.getUserid(), new Date());
                     } else {
-                        //记录下来SH验证失败的情况
-                        readLogger.error("SoGouError-SoHuError,userId:{};SoHuResult:{}", authUserApiParams.getUserid(), result.toString());
+                        //记录下来SH验证失败的情况:去除真正是用户名和密码都不匹配的情况
+                        if (!ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(result.getCode())) {
+                            readLogger.error("SoGouError-SoHuError,userId:{};SoHuResult:{}", authUserApiParams.getUserid(), result.toString());
+                        }
                     }
                 }
             }
