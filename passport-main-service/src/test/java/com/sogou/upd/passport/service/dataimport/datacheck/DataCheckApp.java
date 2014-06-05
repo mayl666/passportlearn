@@ -52,7 +52,7 @@ public class DataCheckApp extends BaseTest {
         try {
             FullDataCheckApps tasks = new FullDataCheckApps(accountDAO, accountInfoDAO, mobilePassportMappingDAO);
             List<Map<String, String>> resultList = POOL.invoke(tasks);
-            FileUtil.storeFileToLocal("D:\\项目\\非第三方账号迁移\\check_full_data\\05_test\\check_full_data_05_test_sg.txt", resultList);
+            FileUtil.storeFileToLocal("D:\\repairDataList\\inc_user_info_his_error_check.txt", resultList);
         } catch (Exception e) {
             LOGGER.error("DataCheckApp failed." + e.getMessage(), e);
         }

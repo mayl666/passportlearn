@@ -163,6 +163,7 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
                         mapA.put("province", accountInfo.getProvince() == null ? StringUtils.EMPTY : accountInfo.getProvince());
                         mapA.put("gender", accountInfo.getGender() == null ? StringUtils.EMPTY : accountInfo.getGender());
                         mapA.put("mobile", account.getMobile() == null ? StringUtils.EMPTY : account.getMobile());
+                        mapA.put("question", accountInfo.getQuestion() == null ? StringUtils.EMPTY : accountInfo.getQuestion());
 
                         if (accountInfo.getBirthday() != null) {
                             if (accountInfo.getBirthday().toString().length() > 10) {
@@ -194,12 +195,12 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
                         }
 
                         //手机账号，验证 插入 mobile passportId mapping
-                        /*{
+                        {
                             try {
                                 AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
                                 if (domain == AccountDomainEnum.PHONE) {
                                     if (StringUtils.isNotEmpty(account.getMobile())) {
-                                        String passportId_MM = mobilePassportMappingDAO.getPassportIdByHashMobile(account.getMobile());
+                                        String passportId_MM = mobilePassportMappingDAO.getPassportIdByMobile(account.getMobile());
                                         if (!passportId.equalsIgnoreCase(passportId_MM)) {
 //                                            LOGGER.info(String.format("account passportId:{},mobile mapping passportId:{} not equal"), passportId, passportId_MM);
                                             //记录到文件
@@ -211,8 +212,10 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
                                 e.printStackTrace();
                                 LOGGER.error("get mobile passport mapping error. passportId:" + passportId, e);
                             }
-                        }*/
+                        }
                     }
+                }  else {
+                    failedList.add(passportId + " in sogoudb empty！");
                 }
             }
 
@@ -227,7 +230,7 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
 
             if (CollectionUtils.isNotEmpty(failedList)) {
                 //记录调用搜狐接口，获取失败的数据，在对失败的数据进行验证
-                com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\项目\\非第三方账号迁移\\check_full_data\\check_full_data_05_test_fail.txt", failedList);
+                FileUtil.storeFile("D:\\repairDataList\\inc_user_info_his_error.txt", failedList);
             }
 
             LOGGER.info("FullDataCheckApp finish check full data use time {} s", watch.stop());
