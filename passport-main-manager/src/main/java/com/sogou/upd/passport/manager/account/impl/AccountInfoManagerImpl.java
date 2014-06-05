@@ -491,9 +491,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
                 uniqname = getAndUpdateUniqname(passportId, account, uniqname);
             }
-        } else if (domain == AccountDomainEnum.SOHU) {
-            //TODO 若为搜狐矩阵账号，如何处理?
-
         } else {
             //若 account 为空，并且账号域类型不是"搜狐域"账号，错误码返回:账号不存在、并且返回
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);

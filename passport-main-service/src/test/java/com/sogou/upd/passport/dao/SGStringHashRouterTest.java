@@ -47,7 +47,9 @@ public class SGStringHashRouterTest extends TestCase {
 //        String id = "002zmm@163.com";
 //        String id = "wangqingdata@sohu.com";
 //        String id = "13693610763@sohu.com";
-        String id = "wangqing31278@163.com";    // account_06
+//        String id = "wangqing31278@163.com";    // account_06
+//        String id = "FCE6E963554E2F279B96D92FE40CEBEE@qq.sohu.com";     // account_08 18库不存在
+        String id = "056B15F99925016562B24E2070AE7AF5@qq.sohu.com";       //
         String name = router.doRoute(id);
         System.out.println(name);
 //        Assert.assertEquals(name, "account_18");

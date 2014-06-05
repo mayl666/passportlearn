@@ -156,12 +156,11 @@ public class AccountInfoAction extends BaseController {
             }
             params.setUsername(userId);
             //获取用户信息
-            //TODO 待修改获取用户信息
             result = accountInfoManager.getUserInfo(params);
 
 //            result.getModels().put("uniqname", result.getModels().get("uniqname"));
 
-            //TODO 修改此处取昵称 非第三方账号迁移后，统一调用 accountInfoManager 的 getUserUniqName 方法 暂先注释
+            //TODO 修改此处取昵称 非第三方账号迁移后，统一调用 accountInfoManager 的 getUserUniqName 方法
 //            result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(params.getUsername(), clientId));
             result.getModels().put("uniqname", accountInfoManager.getUserUniqName(params.getUsername(), clientId));
 

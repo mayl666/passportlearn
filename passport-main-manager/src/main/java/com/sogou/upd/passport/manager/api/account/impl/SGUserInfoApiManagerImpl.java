@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -312,31 +313,52 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
      * @return
      */
     private Result updateAccountInfo(Result result, UpdateUserInfoApiParams params) {
-
         try {
-            //更新用户除“昵称”外的其他信息
-            AccountInfo info = new AccountInfo();
-            info.setPassportId(params.getUserid());
+            AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(params.getUserid());
+            if (accountInfo == null) {
+                accountInfo = new AccountInfo();
+                accountInfo.setPassportId(params.getUserid());
 
-            String[] birthday = !Strings.isNullOrEmpty(params.getBirthday()) ? params.getBirthday().split("-") : null;
-            Calendar calendar = Calendar.getInstance();
-            if (birthday != null) {
-                calendar.set(Calendar.YEAR, Integer.valueOf(birthday[0]));
-                calendar.set(Calendar.MONTH, Integer.valueOf(birthday[1]) - 1);
-                calendar.set(Calendar.DATE, Integer.valueOf(birthday[2]));
+                String[] birthday = !Strings.isNullOrEmpty(params.getBirthday()) ? params.getBirthday().split("-") : null;
+                Calendar calendar = Calendar.getInstance();
+                if (birthday != null) {
+                    calendar.set(Calendar.YEAR, Integer.valueOf(birthday[0]));
+                    calendar.set(Calendar.MONTH, Integer.valueOf(birthday[1]) - 1);
+                    calendar.set(Calendar.DATE, Integer.valueOf(birthday[2]));
+                }
+
+                accountInfo.setBirthday(calendar.getTime());
+                accountInfo.setGender(params.getGender());
+                accountInfo.setProvince(params.getProvince());
+                accountInfo.setCity(params.getCity());
+                accountInfo.setFullname(params.getUsername());
+                accountInfo.setPersonalid(params.getPersonalId());
+                accountInfo.setCreateTime(new Date());
+            } else {
+                if (!Strings.isNullOrEmpty(params.getBirthday()) && !params.getBirthday().equalsIgnoreCase(accountInfo.getBirthday().toString())) {
+                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    accountInfo.setBirthday(format.parse(params.getBirthday()));
+                }
+                if (!Strings.isNullOrEmpty(params.getGender()) && !params.getGender().equalsIgnoreCase(accountInfo.getGender())) {
+                    accountInfo.setGender(params.getGender());
+                }
+                if (!Strings.isNullOrEmpty(params.getProvince()) && !params.getPersonalId().equalsIgnoreCase(accountInfo.getProvince())) {
+                    accountInfo.setProvince(params.getProvince());
+                }
+                if (!Strings.isNullOrEmpty(params.getCity()) && !params.getCity().equalsIgnoreCase(accountInfo.getCity())) {
+                    accountInfo.setCity(params.getCity());
+                }
+                if (!Strings.isNullOrEmpty(params.getPersonalId()) && !params.getPersonalId().equalsIgnoreCase(accountInfo.getPersonalid())) {
+                    accountInfo.setPassportId(params.getPersonalId());
+                }
+                if (!Strings.isNullOrEmpty(params.getUsername()) && !params.getUsername().equalsIgnoreCase(accountInfo.getFullname())) {
+                    accountInfo.setFullname(params.getUsername());
+                }
             }
-
-            info.setBirthday(calendar.getTime());
-            info.setGender(params.getGender());
-            info.setProvince(params.getProvince());
-            info.setCity(params.getCity());
-            info.setFullname(params.getUsername());
-            info.setPersonalid(params.getPersonalId());
-            info.setModifyip(params.getModifyip());
-            info.setCreateTime(new Date());
+            accountInfo.setModifyip(params.getModifyip());
 
             //更新用户信息AccountInfo
-            boolean updateResult = accountInfoService.updateAccountInfo(info);
+            boolean updateResult = accountInfoService.updateAccountInfo(accountInfo);
             if (updateResult) {
                 result.setSuccess(true);
                 result.setMessage("修改个人资料成功");
