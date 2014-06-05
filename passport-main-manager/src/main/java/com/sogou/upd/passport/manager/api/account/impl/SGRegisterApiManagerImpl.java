@@ -143,12 +143,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
         String username = null;
         try {
             username = checkUserApiParams.getUserid();
-            boolean isLegal = userNameValidator.isValid(username, null);
-            if (!isLegal) {
-                result.setCode(ErrorUtil.ERR_CODE_USERID_ILLEGAL);
-                result.setDefaultModel("userid", username);
-                return result;
-            }
             if (username.indexOf("@") == -1) {
                 //判断是否是手机号注册
                 if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
