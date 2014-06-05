@@ -17,6 +17,8 @@ public class UpdatePwdParameters {
     private String newpwd;
     // @NotBlank(message = "passport_id不允许为空!")
     private String passport_id;
+    private String captcha;//验证码
+    private String token;//标识码
     private String ip;
 
     public String getClient_id() {
@@ -57,5 +59,21 @@ public class UpdatePwdParameters {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getCaptcha() {
+        return captcha;
+    }
+
+    public void setCaptcha(String captcha) {
+        this.captcha = captcha;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

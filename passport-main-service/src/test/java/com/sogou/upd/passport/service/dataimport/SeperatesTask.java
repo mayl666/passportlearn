@@ -57,6 +57,7 @@ public class SeperatesTask extends RecursiveTask<List<String>> {
 
             for (RecursiveTask<List<String>> task : forks) {
                 try {
+                    task.getClass().getName();
                     LOGGER.info("task failed." + task.get().toString());
                     items.addAll(task.get());
                 } catch (InterruptedException | ExecutionException e) {

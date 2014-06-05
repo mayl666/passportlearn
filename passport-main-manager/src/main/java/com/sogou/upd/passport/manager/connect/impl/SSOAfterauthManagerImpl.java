@@ -19,6 +19,7 @@ import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.slf4j.Logger;
@@ -178,6 +179,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_LOGIN);
             }
 
+            result.getModels().put("userid",PassportIDGenerator.generator(openId,provider));
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException");

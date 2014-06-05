@@ -14,12 +14,12 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.model.account.Account;
@@ -81,6 +81,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     private ConnectTokenService connectTokenService;
     @Autowired
     private ConnectConfigService connectConfigService;
+
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
 
     @Override
@@ -208,7 +211,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
                 return finalResult;
             }
-            String passportId =  pcAccountTokenService.getPassportIdByToken(accessToken, appConfig.getClientSecret());;
+            String passportId = pcAccountTokenService.getPassportIdByToken(accessToken, appConfig.getClientSecret());
+            ;
             if (Strings.isNullOrEmpty(passportId)) {
                 finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return finalResult;
@@ -265,7 +269,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
 
-            Result getUserInfoResult = getUserInfo(passportId, clientId);
+            //取用户昵称、头像信息
+//            Result getUserInfoResult = getUserInfo(passportId, clientId);
+            Result getUserInfoResult = accountInfoManager.getUserNickNameAndAvatar(passportId, clientId);
             String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
             if (getUserInfoResult.isSuccess()) {
                 uniqname = (String) getUserInfoResult.getModels().get("uniqname");
@@ -350,6 +356,16 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         return passportId.substring(0, passportId.indexOf("@"));
     }
 
+    /**
+     * 其实此方法只是取用户昵称和头像
+     * <p/>
+     * TODO 非第三方账号数据迁移完成后，此方法作废
+     *
+     * @param passportId
+     * @param clientId
+     * @return
+     */
+    @Deprecated
     @Override
     public Result getUserInfo(String passportId, int clientId) {
         Result result = new APIResultSupport(false);
@@ -385,7 +401,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                         mid_avatar = (String) getPhotoResult.getModels().get("img_50");
                         tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
                     }
-                    result.setDefaultModel("userid",account.getPassportId());
+                    result.setDefaultModel("userid", account.getPassportId());
                 }
             } else {
                 accountBaseInfo = getBaseInfo(passportId);
@@ -410,6 +426,14 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         return result;
     }
 
+    /**
+     * 从浏览器论坛取昵称
+     *
+     * @param passportId
+     * @param accountBaseInfo
+     * @param uniqname
+     * @return
+     */
     private String getAndUpdateUniqname(String passportId, AccountBaseInfo accountBaseInfo, String uniqname) {
         if (!isValidUniqname(passportId, uniqname)) {
             //从论坛获取昵称

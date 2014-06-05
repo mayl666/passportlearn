@@ -108,7 +108,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
             //重新设置缓存
             String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
-            tokenRedisUtils.set(redisKey, accountToken);
+            tokenRedisUtils.setWithinSeconds(redisKey, accountToken, DateAndNumTimesConstant.ONE_MONTH);
             //保存映射关系
 //            kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
         } catch (Exception e) {
