@@ -233,21 +233,6 @@ public class AccountServiceImpl implements AccountService {
 //        return false;
     }
 
-    public void setLimitResetPwd(String passportId) throws ServiceException {
-        // 设置密码修改次数限制
-        String resetCacheKey = CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
-                DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
-        try {
-            if (redisUtils.checkKeyIsExist(resetCacheKey)) {
-                redisUtils.increment(resetCacheKey);
-            } else {
-                redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
-            }
-        } catch (Exception e) {
-            redisUtils.delete(resetCacheKey);// DO NOTHING 不作任何处理？
-        }
-    }
-
     @Override
     public boolean checkLimitResetPwd(String passportId) throws ServiceException {
         try {

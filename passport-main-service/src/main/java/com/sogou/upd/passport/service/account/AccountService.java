@@ -30,25 +30,6 @@ public interface AccountService {
     public Account initialConnectAccount(String passportId, String ip, int provider)
             throws ServiceException;
 
-  /**
-   * 根据passportId获取Account
-   */
-  public Account queryAccountByPassportId(String passportId) throws ServiceException;
-  /**
-   * 检测密码修改次数是否超出每天限制
-   *
-   * @param passportId
-   * @return 不超出返回true，超出返回false
-   * @throws ServiceException
-   */
-  public boolean checkLimitResetPwd(String passportId) throws ServiceException;
-  /**
-   * 验证账号的有效性，返回正常用户
-   *
-   * @return 验证不通过，则返回null
-   */
-  public Account queryNormalAccount(String passportId) throws ServiceException;
-
     /**
      * 非第三方账号数据迁移，新写方法 初始化用户账号
      *
@@ -90,11 +71,6 @@ public interface AccountService {
      * @return 用户名或密码不匹配，则返回null
      */
     public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException;
-
-    /**
-     * 根据passportId删除Account，内部debug接口使用
-     */
-    public boolean deleteAccountByPassportId(String passportId) throws ServiceException;
 
     /**
      * 重置密码
