@@ -21,7 +21,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         return $el.parent().parent().find('.' + className);
     };
     var checkNickname = function($el, cb) {
-        var ipt = $el.find('input[name="nickname"]');
+        var ipt = $el.find('input[name="uniqname"]');
         if (!ipt || !ipt.length) {
             cb && cb(0);
             return;
