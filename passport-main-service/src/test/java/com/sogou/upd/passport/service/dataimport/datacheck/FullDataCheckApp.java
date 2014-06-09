@@ -1,13 +1,11 @@
 package com.sogou.upd.passport.service.dataimport.datacheck;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXmlGBK;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.dao.account.AccountDAO;
@@ -128,10 +126,10 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
                         }
                     }
                     if (!"1".equals(String.valueOf(mapB.get("mobileflag")))) {
-                        mapB.put("mobile", null);
+                        mapB.put("mobile", "");
                     }
                     if (!"1".equals(String.valueOf(mapB.get("emailflag")))) {
-                        mapB.put("email", null);
+                        mapB.put("email", "");
                     }
 
                 } catch (Exception e) {
@@ -181,7 +179,8 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
                         if (mapA != null && mapB != null) {
                             mapA.put("flag", mapB.get("flag"));
                             mapA.put("status", mapB.get("status"));
-
+                            mapB.remove("mobileflag");
+                            mapB.remove("emailflag");
                             //记录调用搜狐接口获取用户信息对应的Flag
 //                            userFlagMap.put(passportId, mapB.get("flag").toString());
 
@@ -203,15 +202,12 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
                         //手机账号，验证 插入 mobile passportId mapping
                         {
                             try {
-                                AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
-                                if (domain == AccountDomainEnum.PHONE) {
-                                    if (StringUtils.isNotEmpty(account.getMobile())) {
-                                        String passportId_MM = mobilePassportMappingDAO.getPassportIdByMobile(account.getMobile());
-                                        if (!passportId.equalsIgnoreCase(passportId_MM)) {
+                                if (StringUtils.isNotEmpty(account.getMobile())) {
+                                    String passportId_MM = mobilePassportMappingDAO.getPassportIdByMobile(account.getMobile());
+                                    if (!passportId.equalsIgnoreCase(passportId_MM)) {
 //                                            LOGGER.info(String.format("account passportId:{},mobile mapping passportId:{} not equal"), passportId, passportId_MM);
-                                            //记录到文件
-                                            mobile_passport_mappingMap.put(account.getMobile(), passportId + " | " + passportId_MM);
-                                        }
+                                        //记录到文件
+                                        mobile_passport_mappingMap.put(account.getMobile(), passportId + " | " + passportId_MM);
                                     }
                                 }
                             } catch (Exception e) {
@@ -220,7 +216,7 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
                             }
                         }
                     }
-                }  else {
+                } else {
                     failedList.add(passportId + " in sogoudb empty！");
                 }
             }
@@ -236,7 +232,7 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
 
             if (CollectionUtils.isNotEmpty(failedList)) {
                 //记录调用搜狐接口，获取失败的数据，在对失败的数据进行验证
-                FileUtil.storeFile("D:\\repairDataList\\inc_user_info_his_error.txt", failedList);
+                FileUtil.storeFile("D:\\repairDataList\\inc_user_info_his_0609_error.txt", failedList);
             }
 
             LOGGER.info("FullDataCheckApp finish check full data use time {} s", watch.stop());

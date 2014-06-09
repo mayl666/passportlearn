@@ -7,6 +7,8 @@ import net.paoding.rose.jade.annotation.SQLParam;
 import net.paoding.rose.jade.annotation.ShardBy;
 import org.springframework.dao.DataAccessException;
 
+import java.util.Date;
+
 /**
  * Account表的DAO操作
  * User: shipengzhi Date: 13-4-17 Time: 下午3:55 To change this template
@@ -147,4 +149,16 @@ public interface AccountDAO {
     public int updateNickNameAndAvatar(@ShardBy @SQLParam("passport_id") String passport_id,
                                        @SQLParam("uniqname") String uniqname,
                                        @SQLParam("avatar") String avatar) throws DataAccessException;
+
+    /**
+     * 数据迁移过程中，修复数据使用，以后可删除
+     * @param passport_id
+     * @param reg_time
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("update " + TABLE_NAME + "set reg_time=:reg_time where passport_id=:passport_id")
+    public int updateRegTime(@ShardBy @SQLParam("passport_id") String passport_id,
+                              @SQLParam("reg_time") Date reg_time)
+            throws DataAccessException;
 }

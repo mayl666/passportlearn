@@ -119,6 +119,13 @@ public interface AccountInfoDAO {
                                  @SQLParam("accountInfo") AccountInfo account_info)
             throws DataAccessException;
 
+    /**
+     * 数据迁移过程中，修复数据使用，以后可删除
+     * @param passport_id
+     * @param birthday
+     * @return
+     * @throws DataAccessException
+     */
     @SQL("update " + TABLE_NAME + "set birthday=:birthday where passport_id=:passport_id")
     public int updateBirthday(@ShardBy @SQLParam("passport_id") String passport_id,
                               @SQLParam("birthday") String birthday)
