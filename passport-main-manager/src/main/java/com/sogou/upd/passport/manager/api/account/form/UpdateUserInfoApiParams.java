@@ -42,9 +42,10 @@ public class UpdateUserInfoApiParams extends BaseUserApiParams {
     //搜狐姓名
     private String username;
 
+
     //身份证号
     @IdCard
-    private String personalId;
+    private String personalid;
 
     @AssertTrue(message = "用户昵称格式不正确!")
     private boolean isCheckUinqName() {
@@ -178,13 +179,14 @@ public class UpdateUserInfoApiParams extends BaseUserApiParams {
         this.fullname = fullname;
     }
 
-    public String getPersonalId() {
-        return personalId;
+    public String getPersonalid() {
+        return personalid;
     }
 
-    public void setPersonalId(String personalId) {
-        this.personalId = personalId;
+    public void setPersonalid(String personalid) {
+        this.personalid = personalid;
     }
+
 
     public String getUsername() {
         return username;

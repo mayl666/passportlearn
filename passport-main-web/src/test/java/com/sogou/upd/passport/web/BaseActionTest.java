@@ -1,14 +1,8 @@
 package com.sogou.upd.passport.web;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.FileUtil;
-import com.sogou.upd.passport.common.utils.JsonUtil;
 import junit.framework.TestCase;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -21,14 +15,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonProcessingException;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -188,13 +180,89 @@ public class BaseActionTest extends TestCase {
     private static final String key = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
 
 
+    /**
+     * 调用搜狐接口 获取用户信息单元测试
+     *
+     * @throws Exception
+     */
     @Test
     public void testPostXml() throws Exception {
-        String passportId = "344029328@QQ.com";
 
         long ct = System.currentTimeMillis();
-        String code = passportId + appId + key + ct;
+//        String code = "shipengzhi1986@sogou.com" + appId + key + ct;
+//        String code = "gang.chen0505@gmail.com" + appId + key + ct;   //happychen006
+        String code = "happychen006@sogou.com" + appId + key + ct;   //happychen006
         code = Coder.encryptMD5(code);
+
+
+        String url = "http://internal.passport.sohu.com/interface/getuserinfo";
+        StringBuffer sb = new StringBuffer();
+        sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        sb.append("<register>\n"
+//                + "    <userid>gang.chen0505@gmail.com</userid>\n"
+//                + "    <userid>shipengzhi1986@sogou.com</userid>\n"
+                + "    <userid>happychen006@sogou.com</userid>\n"
+                + "    <appid>1100</appid>\n"
+                + "    <ct>" + ct + "</ct>\n"
+                + "    <code>" + code + "</code>\n"
+                + "    <password></password>\n"
+                + "    <passwordtype></passwordtype>\n"
+                + "    <question></question>\n"
+                + "    <answer></answer>\n"
+                + "    <email></email>\n"
+                + "    <mobile></mobile>\n"
+                + "    <createip></createip>\n"
+                + "    <personalid></personalid>\n"
+                + "    <uniqname></uniqname>\n"
+                + "    <regappid></regappid>\n"
+                + "</register>");
+        String result = sendPostXml(url, sb.toString());
+        System.out.println(result);
+    }
+
+
+    /**
+     * 调用搜狐接口 更新用户信息 单元测试
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testUpdateUserInfo() throws Exception {
+
+        long ct = System.currentTimeMillis();
+//        String code = "shipengzhi1986@sogou.com" + appId + key + ct;
+//        String code = "gang.chen0505@gmail.com" + appId + key + ct;
+        String code = "happychen006@sogou.com" + appId + key + ct;
+        code = Coder.encryptMD5(code);
+
+
+        String url = "http://internal.passport.sohu.com/interface/updateuser";
+        StringBuffer sb = new StringBuffer();
+        sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        sb.append("<register>\n"
+//                + "    <userid>gang.chen0505@gmail.com</userid>\n"
+//                + "    <userid>shipengzhi1986@sogou.com</userid>\n"
+                + "    <userid>happychen006@sogou.com</userid>\n"
+                + "    <appid>1100</appid>\n"
+                + "    <ct>" + ct + "</ct>\n"
+                + "    <code>" + code + "</code>\n"
+                + "    <personalid>110101201401012570</personalid>\n"
+                + "    <birthday>1987-01-01</birthday>\n"
+                + "    <uniqname></uniqname>\n"
+                + "    <username>小陈</username>\n"
+                + "    <modifyip>10.129.192.45</modifyip>\n"
+                + "</register>");
+        String result = sendPostXml(url, sb.toString());
+        System.out.println(result);
+    }
+
+
+    @Test
+    public void testGetCheck() throws Exception {
+        long ct = System.currentTimeMillis();
+        String code = appId + key + ct;
+        code = Coder.encryptMD5(code);
+
 
         String url = "http://internal.passport.sohu.com/interface/getuserinfo";
         StringBuffer sb = new StringBuffer();
@@ -210,83 +278,12 @@ public class BaseActionTest extends TestCase {
 
         String userid = result.substring(result.indexOf("<userid>") + 8, result.lastIndexOf("</userid>"));
 
+
         System.out.println(userid);
         System.out.println(result);
 
 
     }
 
-    /**
-     * 调用sohu 接口取用户数据
-     *
-     * @throws Exception
-     */
 
-    @Test
-    public void testGetUserInfoFromSH() throws Exception {
-
-//        String passportId = "13133192669@sohu.com";
-        String passportId = "wangqingemail@sohu.com";
-
-        long ct = System.currentTimeMillis();
-        String code = passportId + appId + key + ct;
-        code = Coder.encryptMD5(code);
-        String url = "http://internal.passport.sohu.com/interface/getuserinfo";
-        StringBuffer sb = new StringBuffer();
-        sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-        sb.append("<register>\n"
-                + "    <userid>" + passportId + "</userid>\n"
-                + "    <appid>1100</appid>\n"
-                + "    <ct>" + ct + "</ct>\n"
-                + "    <code>" + code + "</code>\n"
-                + "    <password></password>\n"
-                + "    <passwordtype></passwordtype>\n"
-                + "    <question></question>\n"
-                + "    <answer></answer>\n"
-                + "    <email></email>\n"
-                + "    <mobile></mobile>\n"
-                + "    <birthday></birthday>\n"
-                + "    <createip></createip>\n"
-                + "    <uniqname></uniqname>\n"
-                + "    <regappid></regappid>\n"
-                + "</register>");
-        String result = sendPostXml(url, sb.toString());
-        System.out.println("===============testGetUserInfoFromSH:" + result.toString());
-    }
-
-
-    @Ignore
-    @Test
-    public void testGetCheck() throws Exception {
-        long ct = System.currentTimeMillis();
-        String code = appId + key + ct;
-        code = Coder.encryptMD5(code);
-
-        String url = "http://internal.passport.sohu.com/interface/getuserinfo";
-
-        Path increasePath = Paths.get("D:\\搜狗指数昵称.txt");
-
-        //记录导入增量数据失败记录
-        List<String> resultList = Lists.newArrayList();
-        try (BufferedReader reader = Files.newBufferedReader(increasePath, Charset.defaultCharset())) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                StringBuffer sb = new StringBuffer();
-                sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-                sb.append("<register>\n"
-                        + "    <userid></userid>\n"
-                        + "    <appid>1100</appid>\n"
-                        + "    <ct>" + ct + "</ct>\n"
-                        + "    <code>" + code + "</code>\n"
-                        + "    <uniqname>" + line + "</uniqname>\n"
-                        + "</register>");
-                String result = sendPostXml(url, sb.toString());
-                if (!Strings.isNullOrEmpty(result)) {
-                    resultList.add(line + ":" + StringUtils.substringBetween(result, "<userid>", "</userid>"));
-                }
-            }
-            //记录导入增量数据失败的记录
-            FileUtil.storeFile("result_sohu_zhishu.txt", resultList);
-        }
-    }
 }
