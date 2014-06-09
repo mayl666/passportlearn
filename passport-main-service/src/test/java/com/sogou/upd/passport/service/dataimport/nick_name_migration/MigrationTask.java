@@ -124,6 +124,11 @@ public class MigrationTask extends RecursiveTask<List<String>> {
                                             LOGGER.error("update account error.", e);
                                             continue;
                                         }
+                                        //更新缓存
+                                        dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+                                    } else {
+                                        //更新db失败、记录Log : fail_update_account.txt
+                                        updateDBFailList.add(passportId);
                                     }
                                 } else if (Strings.isNullOrEmpty(temp_passportId)) {
                                     //account base 中昵称在 u_p_m 映射表中查询不到，需要记录，记录account base中对应的账号
