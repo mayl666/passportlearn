@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.service.dataimport.nick_name_migration;
 
+import com.google.common.collect.Lists;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
+import com.sogou.upd.passport.common.utils.JsonUtil;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -74,6 +77,33 @@ public class NickNameMigrationApp extends BaseTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        List<String> list1 = Lists.newArrayList();
+        List<String> list2 = Lists.newArrayList();
+        List<String> list3 = Lists.newArrayList();
+        List<String> list4 = Lists.newArrayList();
+        for (int i = 0; i < 4; i++) {
+            list1.add("aaaa");
+        }
+        for (int i = 0; i < 4; i++) {
+            list2.add("bbbb");
+        }
+        for (int i = 0; i < 4; i++) {
+            list3.add("cccc");
+        }
+        for (int i = 0; i < 4; i++) {
+            list4.add("dddd");
+        }
+
+
+        List<String> allList = Lists.newArrayList();
+        allList.addAll(list1);
+        allList.addAll(list2);
+        allList.addAll(list3);
+        allList.addAll(list4);
+
+        System.out.println("========" + JsonUtil.obj2Json(allList));
+
     }
 
 
