@@ -94,7 +94,7 @@
                 return $.trim(value).length;
             },
             email: function(value){
-                return !value.length || /^(\w)+(\.\w+)*@([\w_\-])+((\.\w+)+)$/.test(value);
+                return !value.length || /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(value);
             },
             min:function(value , min){
                 return !value.length|| value.length >= min;
