@@ -12,7 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
 
 /**
@@ -42,6 +44,8 @@ public class NickNameMigrationApp extends BaseTest {
     @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
+    private static final String DATA_STORE_PATH = "D:\\项目\\非第三方账号迁移\\内部昵称数据迁移\\account_base_info\\";
+
     @Test
     public void runMigrationApp() {
         LOGGER.info("NickNameMigrationApp start with {} processors ", CORE_COUNT);
@@ -50,11 +54,26 @@ public class NickNameMigrationApp extends BaseTest {
         try {
             NickNameMigrationTasks tasks = new NickNameMigrationTasks(accountBaseInfoDAO, accountDAO, uniqNamePassportMappingDAO, dbShardRedisUtils);
             List<String> resultList = POOL.invoke(tasks);
-            FileUtil.storeFile("migration_nickname_fail.txt", resultList);
+            FileUtil.storeFile(DATA_STORE_PATH + "migration_nickname_fail.txt", resultList);
         } catch (Exception e) {
             LOGGER.error("NickNameMigrationApp failed." + e.getMessage(), e);
         }
         LOGGER.info("NickNameMigrationApp finish use time {} s", watch.stop());
+    }
+
+
+    @Test
+    public void testFileStore2Local() {
+        Map<String, String> map = new HashMap();
+        map.put("1", "1");
+        map.put("2", "1");
+        map.put("3", "1");
+        map.put("4", "1");
+        try {
+            FileUtil.storeFileMap2Local("D:\\项目\\非第三方账号迁移\\内部昵称数据迁移\\account_base_info\\test_data.txt", map);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

@@ -170,8 +170,7 @@ public class AccountInfoAction extends BaseController {
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (result.isSuccess()) {
-                if (domain == AccountDomainEnum.THIRD || domain == AccountDomainEnum.SOHU) {
-                    //TODO disable 作用是 对于第三方账号，不显示安全信息 ，搜狐矩阵账号也先加上
+                if (domain == AccountDomainEnum.THIRD) {
                     result.setDefaultModel("disable", true);
                 }
                 model.addAttribute("data", result.toString());

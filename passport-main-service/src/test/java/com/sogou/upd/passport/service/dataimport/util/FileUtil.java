@@ -134,6 +134,7 @@ public class FileUtil {
                 writer.flush();
             }
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.error("FileUtil storeFile  error. ", e);
         }
     }

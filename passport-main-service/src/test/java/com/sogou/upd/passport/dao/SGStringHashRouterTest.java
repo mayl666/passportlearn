@@ -49,22 +49,53 @@ public class SGStringHashRouterTest extends TestCase {
 //        String id = "13693610763@sohu.com";
 //        String id = "wangqing31278@163.com";    // account_06
 //        String id = "FCE6E963554E2F279B96D92FE40CEBEE@qq.sohu.com";     // account_08 18库不存在
-        String id = "056B15F99925016562B24E2070AE7AF5@qq.sohu.com";       //
-        String name = router.doRoute(id);
-        System.out.println(name);
-//        Assert.assertEquals(name, "account_18");
+//        String id = "056B15F99925016562B24E2070AE7AF5@qq.sohu.com";       //
+//        String passportId1 = "897203D1C04149F1A3D1B9FC6F4FE871@qq.sohu.com";       // account_04
+//        String passportId2 = "againshow@163.com";       //   account_26
+//        String passportId3 = "18643922663@sohu.com";       //   account_11
+//        String passportId4 = "lyf1462075862@sohu.com";       //  account_21
+//        String passportId5 = "loveair1981@sohu.com";       //  account_21
+//        String passportId6 = "zjhan@sogou.com";       //   account_22
+        String passportId7 = "apple529@sogou.com";       //  account_29
+//        String passportId8 = "zhangsu11@17173.com";       // account_08
+        String passportId8 = "feiwenxi123@sogou.com";       //
+//        System.out.println(router.doRoute(passportId1));
+//        System.out.println(router.doRoute(passportId2));
+//        System.out.println(router.doRoute(passportId3));
+//        System.out.println(router.doRoute(passportId4));
+//        System.out.println(router.doRoute(passportId5));
+//        System.out.println(router.doRoute(passportId6));
+        System.out.println(router.doRoute(passportId7));
+        System.out.println(router.doRoute(passportId8));
     }
 
 
     @Test
     public void testUpmShard() {
-
-        String id = "KeSyren1234";  //wangqingemail@sohu.com
-
-//        String id ="wangqingtest009";  //wangqingtest009@sogou.com
-
         router = new SGStringHashRouter("id", "uniqname_passportid_mapping_{0}", 32);
-        LOGGER.info("u_p_m shard." + router.doRoute(id));
+
+//        String passportId0 = "KeSyren1234";  //KeSyren1234  wangqingemail@sohu.com                     uniqname_passportid_mapping_30
+//        String passportId1 = "Again";       //  Again  897203D1C04149F1A3D1B9FC6F4FE871@qq.sohu.com    uniqname_passportid_mapping_19
+//        String passportId2 = "again";       // again   againshow@163.com                               uniqname_passportid_mapping_03
+//        String passportId3 = "一帘幽梦";       // 一帘幽梦  D4BA9CBB2E4BBA3739DE1CE5AB69453B@qq.sohu.com  guizupet120@126.com     uniqname_passportid_mapping_11
+//        String passportId4 = "追求简单的心情";       // 追求简单的心情  david1978@sogou.com       uniqname_passportid_mapping_29
+//        String passportId5 = "rostan";       // rostan  konsy2005@sohu.com  uniqname_passportid_mapping_01
+//        String passportId6 = "茅屋有闭";       // zxj55xmy@sohu.com     uniqname_passportid_mapping_21
+//        String passportId7 = "赵包子";       // 18643922663@sohu.com   uniqname_passportid_mapping_25
+//        String passportId8 = "zjhan658";     //  uniqname_passportid_mapping_12
+        String passportId8 = "不晓得5337";     //   uniqname_passportid_mapping_05
+        String passportId9 = "apple0529";     //   uniqname_passportid_mapping_31
+
+//        System.out.println(router.doRoute(passportId0));
+//        System.out.println(router.doRoute(passportId1));
+//        System.out.println(router.doRoute(passportId2));
+//        System.out.println(router.doRoute(passportId3));
+//        System.out.println(router.doRoute(passportId4));
+//        System.out.println(router.doRoute(passportId5));
+//        System.out.println(router.doRoute(passportId6));
+//        System.out.println(router.doRoute(passportId7));
+        System.out.println(router.doRoute(passportId8));
+        System.out.println(router.doRoute(passportId9));
     }
 
 
