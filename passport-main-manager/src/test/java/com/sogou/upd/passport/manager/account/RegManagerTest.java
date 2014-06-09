@@ -15,8 +15,8 @@ import java.util.Random;
 /**
  * Created with IntelliJ IDEA.
  * User: liuling
- * Date: 14-4-21
- * Time: 下午9:12
+ * Date: 14-5-7
+ * Time: 下午5:22
  * To change this template use File | Settings | File Templates.
  */
 public class RegManagerTest extends BaseTest {

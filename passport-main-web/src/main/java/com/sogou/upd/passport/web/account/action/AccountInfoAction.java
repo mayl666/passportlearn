@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -18,6 +19,7 @@ import com.sogou.upd.passport.manager.form.AccountInfoParams;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckOrUpdateNickNameParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
@@ -138,7 +140,7 @@ public class AccountInfoAction extends BaseController {
             params.setUsername(userId);
             result = accountInfoManager.getUserInfo(params);
 //            result.getModels().put("uniqname",(String)result.getModels().get("uniqname"));
-            result.getModels().put("uniqname",oAuth2ResourceManager.getEncodedUniqname(params.getUsername(),clientId));
+            result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(params.getUsername(), clientId));
 
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
@@ -160,6 +162,7 @@ public class AccountInfoAction extends BaseController {
     @ResponseBody
     public String updateUserInfo(HttpServletRequest request, AccountInfoParams infoParams) {
         Result result = new APIResultSupport(false);
+
         if (hostHolder.isLogin()) {
 
             //参数验证
@@ -181,10 +184,13 @@ public class AccountInfoAction extends BaseController {
 
             infoParams.setUsername(userId);
             result = accountInfoManager.updateUserInfo(infoParams, ip);
-
+            UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(infoParams.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
+
+
         return result.toString();
     }
 
@@ -218,7 +224,8 @@ public class AccountInfoAction extends BaseController {
 
             byte[] byteArr = multipartFile.getBytes();
             result = accountInfoManager.uploadImg(byteArr, userId, "0");
-
+            UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }

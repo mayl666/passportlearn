@@ -142,4 +142,15 @@ public class AccountInfoServiceImpl implements AccountInfoService {
         }
         return false;
     }
+
+    @Override
+    public boolean deleteAccountInfoCacheByPassportId(String passportId) throws ServiceException {
+        try {
+            String cacheKey = buildAccountInfoKey(passportId);
+            redisUtils.delete(cacheKey);
+            return true;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
 }

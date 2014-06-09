@@ -32,7 +32,6 @@ import java.util.Map;
  * File | Settings | File Templates.
  */
 //@ContextConfiguration(locations = "classpath:spring-config-test.xml")
-@Ignore
 public class BaseActionTest extends TestCase {
 
     protected String sendPostXml(String sendUrl, String xmlStr) throws IOException {
@@ -239,5 +238,18 @@ public class BaseActionTest extends TestCase {
         String userid = result.substring(result.indexOf("<userid>") + 8, result.lastIndexOf("</userid>"));
         System.out.println(userid);
         System.out.println(result);
+    }
+
+    public static void main(String[] args) {
+        String key = "shipengzhi1986@sogou.com";
+        long ts = System.currentTimeMillis();
+        String secret = "c3%uH@FSOIkeopP23#wk_hUj7^?\"OP";
+        try {
+            String code = Coder.encryptMD5(key + ts + secret);
+            System.out.println("ts:" + ts);
+            System.out.println("code:" + code);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

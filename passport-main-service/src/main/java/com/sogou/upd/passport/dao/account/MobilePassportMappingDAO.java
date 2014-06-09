@@ -3,6 +3,7 @@ package com.sogou.upd.passport.dao.account;
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
+import net.paoding.rose.jade.annotation.ShardBy;
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -45,7 +46,7 @@ public interface MobilePassportMappingDAO {
     @SQL("select passport_id from " +
             TABLE_NAME +
             " where mobile=:mobile")
-    public String getPassportIdByMobile(@SQLParam("mobile") String mobile) throws DataAccessException;
+    public String getPassportIdByMobile(@ShardBy @SQLParam("mobile") String mobile) throws DataAccessException;
 
     /**
      * 插入一条mobile和passportId的映射关系
@@ -58,7 +59,7 @@ public interface MobilePassportMappingDAO {
     @SQL("insert into " +
             "mobile_passportid" +
             "_mapping(mobile, passport_id) values (:mobile, :passport_id)")
-    public int insertMobilePassportMapping(@SQLParam("mobile") String mobile, @SQLParam("passport_id") String passport_id)
+    public int insertMobilePassportMapping(@ShardBy @SQLParam("mobile") String mobile, @SQLParam("passport_id") String passport_id)
             throws DataAccessException;
 
     /**
@@ -72,7 +73,7 @@ public interface MobilePassportMappingDAO {
     @SQL("update " +
             TABLE_NAME +
             " set passport_id=:passport_id where mobile=:mobile")
-    public int updateMobilePassportMapping(@SQLParam("mobile") String mobile, @SQLParam("passport_id") String passport_id)
+    public int updateMobilePassportMapping(@ShardBy @SQLParam("mobile") String mobile, @SQLParam("passport_id") String passport_id)
             throws DataAccessException;
 
     /**
@@ -85,5 +86,5 @@ public interface MobilePassportMappingDAO {
     @SQL("delete from " +
             TABLE_NAME +
             " where mobile=:mobile")
-    public int deleteMobilePassportMapping(@SQLParam("mobile") String mobile) throws DataAccessException;
+    public int deleteMobilePassportMapping(@ShardBy @SQLParam("mobile") String mobile) throws DataAccessException;
 }
