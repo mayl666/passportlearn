@@ -12,7 +12,6 @@ import java.util.Map;
  */
 public interface AccountService {
 
-
     /**
      * 初始化web用户账号
      */
@@ -75,6 +74,12 @@ public interface AccountService {
      */
     public boolean deleteAccountByPassportId(String passportId) throws ServiceException;
 
+
+    /**
+     * 根据passportId删除Account表的缓存，增量数据迁移的内部debug接口使用
+     */
+    public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException;
+
     /**
      * 重置密码
      */
@@ -125,8 +130,7 @@ public interface AccountService {
      * @param account
      * @param newMobile
      * @return
-     * @throws com.sogou.upd.passport.exception.ServiceException
-     *
+     * @throws ServiceException
      */
     public boolean modifyMobile(Account account, String newMobile);
 
@@ -138,6 +142,7 @@ public interface AccountService {
      * @return
      * @throws ServiceException
      */
+
     public boolean updateState(Account account, int newState) throws ServiceException;
 
     /*

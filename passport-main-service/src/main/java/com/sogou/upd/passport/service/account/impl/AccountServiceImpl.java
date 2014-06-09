@@ -153,7 +153,7 @@ public class AccountServiceImpl implements AccountService {
             if (id != 0) {
                 initSuccess = true;
                 String cacheKey = buildAccountKey(account.getPassportId());
-                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return initSuccess;
             }
         } catch (Exception e) {
@@ -219,13 +219,28 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public boolean deleteAccountByPassportId(String passportId) throws ServiceException {
+        try {
+            int row = accountDAO.deleteAccountByPassportId(passportId);
+            if (row != 0) {
+                String cacheKey = buildAccountKey(passportId);
+                redisUtils.delete(cacheKey);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Override
     public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException {
         try {
 //            int row = accountDAO.deleteAccountByPassportId(passportId);
 //            if (row != 0) {
-                String cacheKey = buildAccountKey(passportId);
-                dbShardRedisUtils.delete(cacheKey);
-                return true;
+            String cacheKey = buildAccountKey(passportId);
+            dbShardRedisUtils.delete(cacheKey);
+            return true;
 //            }
         } catch (Exception e) {
             throw new ServiceException(e);
