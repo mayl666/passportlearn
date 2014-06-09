@@ -6,12 +6,10 @@ import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.FileIOUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
+import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.ProvinceAndCityUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
-import com.sogou.upd.passport.dao.account.AccountInfoDAO;
-import com.sogou.upd.passport.dao.account.UserExtInfoTmpDAO;
-import com.sogou.upd.passport.dao.account.UserInfoTmpDAO;
-import com.sogou.upd.passport.dao.account.UserOtherInfoTmpDAO;
+import com.sogou.upd.passport.dao.account.*;
 import com.sogou.upd.passport.model.account.UserExtInfoTmp;
 import com.sogou.upd.passport.model.account.UserInfoTmp;
 import com.sogou.upd.passport.model.account.UserOtherInfoTmp;
@@ -19,6 +17,7 @@ import com.sogou.upd.passport.service.dataimport.util.FileUtil;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +41,8 @@ public class RepairTmpData extends BaseTest {
     private UserInfoTmpDAO userInfoTmpDAO;
     @Autowired
     private AccountInfoDAO accountInfoDAO;
+    @Autowired
+    private AccountDAO accountDAO;
 
     private static List<String> errorProviceAndCityList = Lists.newArrayList();
 
@@ -411,6 +412,45 @@ public class RepairTmpData extends BaseTest {
         System.out.println("total:" + total);
         try {
             FileUtil.storeFile("D:\\repairDataList\\account_00_userid_error.csv", failedList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 修复account表中regTime字段
+     */
+    @Test
+    public void testErrorRegTime() {
+        List<String> useridList = FileIOUtil.readFileByLines("D:\\repairDataList\\account_regtimeerror_0609.csv");
+        String errorText = "";
+        int total = 0;
+        int repairNum = 0;
+        for (String userid : useridList) {
+            try {
+                RequestModelXml requestModelXml = FullDataCheckApp.buildRequestModelXml(userid);
+                Map<String, Object> shApiResult = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
+                String createTime = (String) shApiResult.get("createtime");
+                Date regTime;
+                if (createTime.equals("0000-00-00 00:00:00")) {
+                    regTime = new Date();
+                }
+                regTime = DateUtil.parse(createTime, DateUtil.DATE_FMT_2);
+                int row = accountDAO.updateRegTime(userid, regTime);
+                if (row != 1) {
+                    errorText = userid + ":update birthday fail!";
+                }
+                repairNum++;
+            } catch (Exception e) {
+                errorText = userid + ":db operation fail!";
+            }
+            total++;
+            failedList.add(errorText);
+        }
+        System.out.println("repairNum:" + repairNum);
+        System.out.println("total:" + total);
+        try {
+            FileUtil.storeFile("D:\\repairDataList\\account_regtimeerror_0609_error.txt", failedList);
         } catch (Exception e) {
             e.printStackTrace();
         }
