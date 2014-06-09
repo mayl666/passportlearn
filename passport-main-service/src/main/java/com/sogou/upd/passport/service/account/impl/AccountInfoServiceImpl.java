@@ -31,8 +31,6 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     @Autowired
     private AccountInfoDAO accountInfoDAO;
     @Autowired
-    private RedisUtils redisUtils;
-    @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
     @Override
@@ -72,7 +70,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 } else {
                     accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
-                dbShardRedisUtils.set(cacheKey, accountInfo);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.ONE_MONTH);
                 return accountInfo;
             }
         } catch (Exception e) {
@@ -101,7 +99,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 } else {
                     accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
-                dbShardRedisUtils.set(cacheKey, accountInfo);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.ONE_MONTH);
                 return accountInfo;
             }
             return null;
@@ -135,7 +133,6 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 } else {
                     accountInfoTmp = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
-//                dbShardRedisUtils.set(cacheKey, accountInfoTmp);
                 dbShardRedisUtils.setWithinSeconds(cacheKey, accountInfoTmp, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }

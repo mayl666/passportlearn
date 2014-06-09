@@ -40,7 +40,7 @@ public class SGStringHashRouterTest extends TestCase {
 //        String id = "0C7E1BC4094CACCBDFEFC60BDDC598BD@qq.sohu.com";
 //        String id = "15BF5B2E00BCB4A7E8AD31E59480FF8C@qq.sohu.com";
 //        String id = "B5008F7D2813EDCCE03BCE3EA6DC7FFA@qq.sohu.com";
-        String id = "gang.chen0505@gmail.com";    // account_03
+        String id = "912086925@qq.com";    // account_03
 //        String id = "wangqingemail@sohu.com";
 //        String id = "gang.chen0505@gmail.com";
         String name = router.doRoute(id);
