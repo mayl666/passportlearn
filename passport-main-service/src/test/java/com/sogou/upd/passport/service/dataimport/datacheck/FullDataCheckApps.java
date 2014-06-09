@@ -32,7 +32,7 @@ public class FullDataCheckApps extends RecursiveTask<List<Map<String, String>>> 
 
     private MobilePassportMappingDAO mobilePassportMappingDAO;
 
-    private static final String BASE_FILE_PATH = "D:\\项目\\非第三方账号迁移\\check_full_data\\05_test\\";
+    private static final String BASE_FILE_PATH = "D:\\repairDataList\\inc_user_info_his_0609";
 
 
     //返回结果
@@ -58,12 +58,15 @@ public class FullDataCheckApps extends RecursiveTask<List<Map<String, String>>> 
         StopWatch watch = new StopWatch();
         watch.start();
         try {
-            for (int i = 1; i < 5; i++) {
-                String filePath = BASE_FILE_PATH + "05_test_sogou_userid_0" + i + ".txt";
+            for (int i = 1; i < 4; i++) {
+                String filePath = BASE_FILE_PATH + "_split_" + i;
                 FullDataCheckApp task = new FullDataCheckApp(accountDAO, accountInfoDAO, mobilePassportMappingDAO, filePath);
                 task.fork();
                 forks.add(task);
             }
+//            FullDataCheckApp task1 = new FullDataCheckApp(accountDAO, accountInfoDAO, mobilePassportMappingDAO, BASE_FILE_PATH);
+//            task1.fork();
+//            forks.add(task1);
 
             //结果整合
             for (RecursiveTask<Map<String, String>> task : forks) {

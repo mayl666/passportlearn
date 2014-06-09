@@ -25,7 +25,8 @@ public class NickNameMigrationTasks extends RecursiveTask<List<String>> {
 
     private static final long serialVersionUID = -6427450835193991812L;
 
-    private static final int DATA_RANGE_LIMIT = 50000;
+    private static final int DATA_RANGE_LIMIT = 150000;
+//    private static final int DATA_RANGE_LIMIT = 100;
 
     private static volatile int CURRENT = 0;
 
@@ -57,9 +58,10 @@ public class NickNameMigrationTasks extends RecursiveTask<List<String>> {
         try {
             LOGGER.info("NickNameMigrationTasks start ");
             //查询非第三方账号+搜狐域账号总数
-            int totalCount = baseInfoDAO.getNotThirdPartyTotalCount();
-            int maxPage = totalCount % DATA_RANGE_LIMIT == 0 ? (totalCount / DATA_RANGE_LIMIT) : (totalCount / DATA_RANGE_LIMIT + 1);
-            for (int i = 0; i < maxPage; i++) {
+//            int totalCount = 400;
+//            int totalCount = baseInfoDAO.getNotThirdPartyTotalCount();
+//            int maxPage = totalCount % DATA_RANGE_LIMIT == 0 ? (totalCount / DATA_RANGE_LIMIT) : (totalCount / DATA_RANGE_LIMIT + 1);
+            for (int i = 0; i < 4; i++) {
                 int pageIndex = (DATA_RANGE_LIMIT + 1) * CURRENT;
                 MigrationTask migrationTask = new MigrationTask(baseInfoDAO, accountDAO, uniqNamePassportMappingDAO, dbShardRedisUtils, pageIndex);
                 migrationTask.fork();
@@ -70,7 +72,6 @@ public class NickNameMigrationTasks extends RecursiveTask<List<String>> {
             //结果整合
             for (RecursiveTask<List<String>> task : forks) {
                 try {
-                    LOGGER.info(String.format("get migration task:[%s] failList", task.getClass().getName()));
                     failList.addAll(task.get());
                 } catch (InterruptedException | ExecutionException e) {
                     LOGGER.error("get migration task result fail.", e);
@@ -79,7 +80,7 @@ public class NickNameMigrationTasks extends RecursiveTask<List<String>> {
         } catch (Exception e) {
             LOGGER.error("NickNameMigrationTasks error.", e);
         }
-        LOGGER.info(String.format("NickNameMigrationTasks finish use time:[%s] s", watch.stop()));
+        LOGGER.info("NickNameMigrationTasks finish use time {} s", watch.stop());
         return failList;
     }
 }

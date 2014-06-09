@@ -15,8 +15,6 @@ public class CacheSyncParam {
 
     @NotBlank(message = "用户id不允许为空")
     private String key; // passport_id 或 mobile
-    @NotBlank(message = "用户id不允许为空")
-    private String tn; //table name
     @Min(0)
     private long ts; //timestamp,单位
     @NotBlank(message = "code不允许为空")
@@ -28,14 +26,6 @@ public class CacheSyncParam {
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    public String getTn() {
-        return tn;
-    }
-
-    public void setTn(String tn) {
-        this.tn = tn;
     }
 
     public long getTs() {

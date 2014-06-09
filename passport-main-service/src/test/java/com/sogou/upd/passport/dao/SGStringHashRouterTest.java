@@ -40,16 +40,10 @@ public class SGStringHashRouterTest extends TestCase {
 //        String id = "0C7E1BC4094CACCBDFEFC60BDDC598BD@qq.sohu.com";
 //        String id = "15BF5B2E00BCB4A7E8AD31E59480FF8C@qq.sohu.com";
 //        String id = "B5008F7D2813EDCCE03BCE3EA6DC7FFA@qq.sohu.com";
-//        String id = "056B15F99925016562B24E2070AE7AF5@qq.sohu.com";
-//        String id = "wangqingemail@sohu.com";    //  account_07      wangqingemail@sohu.com
-//        String id = "wangqingtest@sogou.com";
-//        String id = "gang.chen0505@gmail.com";   //  account_03      gang.chen0505@gmail.com
-//        String id = "002zmm@163.com";
-//        String id = "wangqingdata@sohu.com";
-//        String id = "13693610763@sohu.com";
-//        String id = "wangqing31278@163.com";    // account_06
-//        String id = "FCE6E963554E2F279B96D92FE40CEBEE@qq.sohu.com";     // account_08 18库不存在
-        String id = "056B15F99925016562B24E2070AE7AF5@qq.sohu.com";       //
+//        String id = "gang.chen0505@gmail.com";    // account_03
+//        String id = "wangqingemail@sohu.com";
+//        String id = "lkmydn@126.com";   //       account_14
+        String id = "yangking2010@gmail.com";   // account_12
         String name = router.doRoute(id);
         System.out.println(name);
 //        Assert.assertEquals(name, "account_18");
@@ -57,28 +51,32 @@ public class SGStringHashRouterTest extends TestCase {
 
 
     @Test
-    public void testUpmShard() {
-
-        String id = "KeSyren1234";  //wangqingemail@sohu.com
-
-//        String id ="wangqingtest009";  //wangqingtest009@sogou.com
-
-        router = new SGStringHashRouter("id", "uniqname_passportid_mapping_{0}", 32);
-        LOGGER.info("u_p_m shard." + router.doRoute(id));
-    }
-
-
-    @Test
     public void testMobileRoute() {
         router = new SGStringHashRouter("id", "mobile_passportid_mapping_{0}", 32);
 
-        String mobile_flag_0 = "15228657121";
+        String mobile_flag_0 = "13522010566";
         String mobile_flag_1 = "13703211617";
         String mobile_table_name = router.doRoute(mobile_flag_0);
         String mobile_table_name_1 = router.doRoute(mobile_flag_1);
         System.out.println("mobile_table_name:" + mobile_table_name);
         System.out.println("mobile_table_name_1:" + mobile_table_name_1);
 
+    }
+
+
+    @Test
+    public void testUpmShard() {
+        router = new SGStringHashRouter("id", "uniqname_passportid_mapping_{0}", 32);
+
+        String nickName = "<html>\n" +
+                "<head><title>502 Bad Gateway</title></head>\n" +
+                "<body bgcolor=\"white\">\n" +
+                "<center><h1>502 Bad Gateway</h1></center>\n" +
+                "<hr><center>nginx</center>\n" +
+                "</body>\n" +
+                "</html>\n";
+
+        LOGGER.info("u_p_m shard." + router.doRoute(nickName));
     }
 
 

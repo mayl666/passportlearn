@@ -16,7 +16,7 @@ public interface MobilePassportMappingService {
      *
      * @param mobile
      * @return 获取不到则抛出异常
-     * @throws ServiceException
+     * @throws com.sogou.upd.passport.exception.ServiceException
      */
     public String queryPassportIdByMobile(String mobile) throws ServiceException;
 
@@ -24,7 +24,7 @@ public interface MobilePassportMappingService {
      * 根据username获取passport，手机号则查映射表，邮箱账号直接返回
      * @param username
      * @return passportId
-     * @throws ServiceException
+     * @throws com.sogou.upd.passport.exception.ServiceException
      */
     public String queryPassportIdByUsername(String username) throws ServiceException;
 
@@ -34,7 +34,7 @@ public interface MobilePassportMappingService {
      * @param mobile
      * @param passportId
      * @return
-     * @throws ServiceException
+     * @throws com.sogou.upd.passport.exception.ServiceException
      */
     public boolean initialMobilePassportMapping(String mobile, String passportId) throws ServiceException;
 
@@ -44,7 +44,7 @@ public interface MobilePassportMappingService {
      * @param mobile
      * @param passportId
      * @return
-     * @throws ServiceException
+     * @throws com.sogou.upd.passport.exception.ServiceException
      */
     public boolean updateMobilePassportMapping(String mobile, String passportId) throws ServiceException;
 
@@ -53,7 +53,7 @@ public interface MobilePassportMappingService {
      *
      * @param mobile
      * @return
-     * @throws ServiceException
+     * @throws com.sogou.upd.passport.exception.ServiceException
      */
     public boolean deleteMobilePassportMapping(String mobile) throws ServiceException;
     /**

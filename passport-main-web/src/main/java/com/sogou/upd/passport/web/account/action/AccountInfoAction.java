@@ -157,6 +157,8 @@ public class AccountInfoAction extends BaseController {
             params.setUsername(userId);
             //获取用户信息
             result = accountInfoManager.getUserInfo(params);
+//            result.getModels().put("uniqname",(String)result.getModels().get("uniqname"));
+            result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(params.getUsername(), clientId));
 
 //            result.getModels().put("uniqname", result.getModels().get("uniqname"));
 
@@ -170,8 +172,7 @@ public class AccountInfoAction extends BaseController {
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (result.isSuccess()) {
-                if (domain == AccountDomainEnum.THIRD || domain == AccountDomainEnum.SOHU) {
-                    //TODO disable 作用是 对于第三方账号，不显示安全信息 ，搜狐矩阵账号也先加上
+                if (domain == AccountDomainEnum.THIRD) {
                     result.setDefaultModel("disable", true);
                 }
                 model.addAttribute("data", result.toString());
@@ -188,6 +189,7 @@ public class AccountInfoAction extends BaseController {
     @ResponseBody
     public String updateUserInfo(HttpServletRequest request, AccountInfoParams infoParams) {
         Result result = new APIResultSupport(false);
+
         if (hostHolder.isLogin()) {
 
             //参数验证
@@ -207,13 +209,14 @@ public class AccountInfoAction extends BaseController {
             String userId = hostHolder.getPassportId();
             infoParams.setUsername(userId);
             result = accountInfoManager.updateUserInfo(infoParams, ip);
+            UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(infoParams.getClient_id()), result.getCode(), getIp(request));
 
-            //用于记录log
-            UserOperationLog userOperationLog = new UserOperationLog(userId, infoParams.getClient_id(), result.getCode(), getIp(request));
             UserOperationLogUtil.log(userOperationLog);
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
+
+
         return result.toString();
     }
 
@@ -243,6 +246,7 @@ public class AccountInfoAction extends BaseController {
             CommonsMultipartFile multipartFile = (CommonsMultipartFile) multipartRequest.getFile("Filedata");
             //TODO 非第三方账号数据迁移 用户更新头像信息
             byte[] byteArr = multipartFile.getBytes();
+
             result = accountInfoManager.uploadImg(byteArr, userId, "0", getIp(request));
 
             //用于记录log

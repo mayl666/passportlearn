@@ -72,6 +72,12 @@ public interface AccountService {
      */
     public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException;
 
+
+    /**
+     * 根据passportId删除Account表的缓存，增量数据迁移的内部debug接口使用
+     */
+    public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException;
+
     /**
      * 重置密码
      */

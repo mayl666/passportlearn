@@ -1,10 +1,12 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,7 +27,7 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
     @Test
     public void testRegMailUser() {
         RegEmailApiParams params = new RegEmailApiParams();
-        params.setUserid("23dsafasdf@qq.com");
+        params.setUserid("23ds-afasdf@qq.com");
         params.setPassword(PASSWORD);
         params.setCreateip("10.1.164.65");
         Result result = proxyRegisterApiManager.regMailUser(params);
@@ -43,7 +45,7 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
     @Test
     public void testCheckUser() {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid("scanrecord@sogou.com");
+        checkUserApiParams.setUserid("scanre-cord@sogou.com");
         Result result = proxyRegisterApiManager.checkUser(checkUserApiParams);
         System.out.println("result1:" + result.toString());
         checkUserApiParams = new CheckUserApiParams();
