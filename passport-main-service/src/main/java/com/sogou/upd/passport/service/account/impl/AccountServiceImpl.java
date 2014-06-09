@@ -257,6 +257,35 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException {
+        try {
+//            int row = accountDAO.deleteAccountByPassportId(passportId);
+//            if (row != 0) {
+            String cacheKey = buildAccountKey(passportId);
+            dbShardRedisUtils.delete(cacheKey);
+            return true;
+//            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+//        return false;
+    }
+
+    public void setLimitResetPwd(String passportId) throws ServiceException {
+        // 设置密码修改次数限制
+        String resetCacheKey = buildResetPwdCacheKey(passportId);
+        try {
+            if (redisUtils.checkKeyIsExist(resetCacheKey)) {
+                redisUtils.increment(resetCacheKey);
+            } else {
+                redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+            }
+        } catch (Exception e) {
+            redisUtils.delete(resetCacheKey);// DO NOTHING 不作任何处理？
+        }
+    }
+
+    @Override
     public boolean checkLimitResetPwd(String passportId) throws ServiceException {
         try {
             String cacheKey = buildResetPwdCacheKey(passportId);

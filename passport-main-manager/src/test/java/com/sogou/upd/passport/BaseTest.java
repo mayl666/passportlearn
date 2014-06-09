@@ -124,7 +124,7 @@ public class BaseTest extends AbstractJUnit4SpringContextTests {
         if (!Strings.isNullOrEmpty(province)) params.setProvince(province);
         if (!Strings.isNullOrEmpty(city)) params.setCity(city);
         if (!Strings.isNullOrEmpty(gender)) params.setGender(gender);
-        if (!Strings.isNullOrEmpty(personalId)) params.setPersonalId(personalId);
+        if (!Strings.isNullOrEmpty(personalId)) params.setPersonalid(personalId);
         if (!Strings.isNullOrEmpty(birthday)) params.setBirthday(birthday);
         return params;
     }
