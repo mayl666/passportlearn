@@ -154,8 +154,7 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
          * "regTime":1395990989000,
          * "regIp":"10.1.99.33"}
          */
-
-
     }
+
 
 }

@@ -319,7 +319,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             updateUserInfoApiParams.setUniqname(infoParams.getUniqname());
             updateUserInfoApiParams.setProvince(infoParams.getProvince());
             updateUserInfoApiParams.setCity(infoParams.getCity());
-            updateUserInfoApiParams.setPersonalId(infoParams.getPersonalid());
+            updateUserInfoApiParams.setPersonalid(infoParams.getPersonalid());
             updateUserInfoApiParams.setModifyip(ip);
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(infoParams.getUsername());
@@ -606,7 +606,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             updateUserInfoApiParams.setGender(infoParams.getGender());
             updateUserInfoApiParams.setProvince(infoParams.getProvince());
             updateUserInfoApiParams.setFullname(infoParams.getFullname());
-            updateUserInfoApiParams.setPersonalId(infoParams.getPersonalid());
+            updateUserInfoApiParams.setPersonalid(infoParams.getPersonalid());
             updateUserInfoApiParams.setModifyip(ip);
 
         } catch (Exception e) {
