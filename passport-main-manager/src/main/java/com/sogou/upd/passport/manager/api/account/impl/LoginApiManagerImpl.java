@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
@@ -13,7 +12,6 @@ import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.service.account.AccountSecureService;
-import com.sogou.upd.passport.service.account.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,27 +38,17 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
     @Autowired
     private CommonManager commonManager;
     @Autowired
-    private AccountService accountService;
-    @Autowired
     private AccountSecureService accountSecureService;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
         Result result;
-        String passportId = authUserApiParams.getUserid();
         if (ManagerHelper.readSohuSwitcher()) {
             //回滚操作时，调用sohu api校验用户名和密码
             result = proxyLoginApiManager.webAuthUser(authUserApiParams);
         } else {
             //正常流程
             result = bothAuthUser(authUserApiParams);
-        }
-        if (result.isSuccess()) {
-            //SOHU域账号登录，在SG库中创建一条只有账号没密码的记录
-            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(authUserApiParams.getUserid()))) {
-                //创建sohu域账号
-                accountService.initialAccount(passportId, null, false, authUserApiParams.getIp(), AccountTypeEnum.SOHU.getValue());
-            }
         }
         return result;  //To change body of implemented methods use File | Settings | File Templates.
     }
