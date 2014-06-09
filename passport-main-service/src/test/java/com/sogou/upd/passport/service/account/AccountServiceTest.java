@@ -1,8 +1,11 @@
 package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.utils.JsonUtil;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
+import junit.framework.Assert;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -109,4 +112,49 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
         }
         accountService.modifyMobile(account, account.getMobile());
     }
+
+
+    @Test
+    public void testCheckNickName() throws Exception {
+        String nickName = "KeSyren1234";
+        Assert.assertTrue(StringUtils.isNotEmpty(accountService.checkUniqName(nickName)));
+        System.out.println("================= testCheckNickName:" + accountService.checkUniqName(nickName));
+
+    }
+
+
+    @Test
+    public void testFixData() {
+        String passportId = "wangqingemail@sohu.com";
+        Account account = accountService.queryAccountByPassportId(passportId);
+
+
+        //初始化 王卿测试账号
+        //INSERT INTO account_07 (passport_id,PASSWORD,mobile,reg_time,reg_ip,flag,passwordtype,account_type,uniqname,avatar)VALUE
+        // ('wangqingemail@sohu.com',NULL,NULL,'1395990989000','10.1.99.33','1','0','9','KeSyren1234',NULL);
+
+
+        /**
+         * {birthday=1969-03-28, createip=61.135.151.250, status=0, userid=wangqingemail@sohu.com,
+         *  personalid=410811198901100105, uniqname=自由的青的夏天, city=450101, createtime=2013-07-18 15:10:51, username=希希,
+         *  flag=1, email=wangqing3127@163.com, province=450000, gender=1, mobile=}
+         */
+        if (account != null) {
+            System.out.println("cache has wangqingemail@sohu.com" + JsonUtil.obj2Json(account));
+        }
+        /**
+         * {"id":0,"password":null,
+         * "mobile":null,
+         * "flag":1,
+         * "accountType":9,
+         * "passportId":"wangqingemail@sohu.com",
+         * "uniqname":"KeSyren1234",
+         * "avatar":null,
+         * "passwordtype":0,
+         * "regTime":1395990989000,
+         * "regIp":"10.1.99.33"}
+         */
+    }
+
+
 }

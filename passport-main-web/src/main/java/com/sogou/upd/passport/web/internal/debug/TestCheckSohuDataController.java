@@ -31,6 +31,8 @@ import java.util.concurrent.Executors;
  * Time: 下午7:38
  * To change this template use File | Settings | File Templates.
  */
+
+@Deprecated
 @Controller
 public class TestCheckSohuDataController {
 

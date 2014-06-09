@@ -32,4 +32,6 @@ public interface AccountInfoService {
      */
     public boolean deleteAccountInfoCacheByPassportId(String passportId) throws ServiceException;
 
+
+
 }

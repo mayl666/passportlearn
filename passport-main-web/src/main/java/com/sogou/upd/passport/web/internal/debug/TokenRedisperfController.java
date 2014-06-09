@@ -24,6 +24,7 @@ import java.util.Date;
  * Time: 上午1:16
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 @Controller
 public class TokenRedisperfController {
     private static final int clientId = 1044;

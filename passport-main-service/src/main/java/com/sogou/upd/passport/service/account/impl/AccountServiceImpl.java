@@ -109,7 +109,8 @@ public class AccountServiceImpl implements AccountService {
             account.setRegIp(ip);
             account.setAccountType(provider);
             account.setFlag(AccountStatusEnum.REGULAR.getValue());
-            if (AccountTypeEnum.isConnect(provider)) {
+            if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider)) {
+                //对于第三方账号和sohu域账号来讲，无密码  搜狗账号迁移完成后，需要增加一个值表示无密码
                 account.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
             } else {
                 account.setPasswordtype(PasswordTypeEnum.CRYPT.getValue());
@@ -136,6 +137,31 @@ public class AccountServiceImpl implements AccountService {
         return initialAccount(passportId, null, false, ip, provider);
     }
 
+    /**
+     * 非第三方账号迁移，新写 初始化 Account 方法
+     *
+     * @param account
+     * @return
+     * @throws ServiceException
+     */
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public boolean initAccount(Account account) throws ServiceException {
+        boolean initSuccess = false;
+        try {
+            long id = accountDAO.insertOrUpdateAccount(account.getPassportId(), account);
+            if (id != 0) {
+                initSuccess = true;
+                String cacheKey = buildAccountKey(account.getPassportId());
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
+                return initSuccess;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return initSuccess;
+    }
+
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccountByPassportId", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public Account queryAccountByPassportId(String passportId) throws ServiceException {
@@ -147,7 +173,7 @@ public class AccountServiceImpl implements AccountService {
             if (account == null) {
                 account = accountDAO.getAccountByPassportId(passportId);
                 if (account != null) {
-                    dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -546,7 +572,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean updateAvatar(Account account, String avatar) {
         try {
-            String oldUniqName = account.getUniqname();
             String passportId = account.getPassportId();
             //更新数据库
             int row = accountDAO.updateAvatar(avatar, passportId);
