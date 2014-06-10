@@ -344,6 +344,15 @@ public class ErrorUtil {
     //增量数据同步中,需要删除的缓存表名不存在 TODO 写分离后可删除
     public static final String DELETE_CACHE_TABLE_ERROR = "30900";
 
+    /**
+     * RAS加解密错误
+     */
+    //解密错误
+    public static final String ERR_CODE_RSA_DECRYPT = "31000";
+
+
+
+
     public ErrorUtil() {
         super();
     }
@@ -518,6 +527,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_COOKIE, "cookie值无效");
 
         ERR_CODE_MSG_MAP.put(FORBID_UPDATE_USERINFO,"5.31日18:00至6.6日0:00禁止修改用户信息");
+
+        //RSA
+        ERR_CODE_MSG_MAP.put(ERR_CODE_RSA_DECRYPT,"解密错误");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {
