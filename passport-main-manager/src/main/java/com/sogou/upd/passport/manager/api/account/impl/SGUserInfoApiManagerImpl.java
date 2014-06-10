@@ -229,7 +229,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     result = updateAccountInfo(result, params);
                     if (!Strings.isNullOrEmpty(params.getUniqname())) {
                         //更新用户昵称信息
-                        result = updateAccountNickName(result, account, params.getUniqname());
+                        result = updateAccountNickName(result, insertSoHuAccount, params.getUniqname());
                     }
                 }
             } else {
@@ -295,6 +295,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
             }
+
         } catch (Exception e) {
             logger.error("updateAccountNickName error. passportId:" + account.getPassportId(), e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
