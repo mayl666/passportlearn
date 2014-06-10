@@ -48,16 +48,14 @@ public interface CommonManager {
     public String getCode(String firstStr, int clientId, long ct);
 
     /**
-     * 判断时间戳（秒）是否有效
-     * @param ct
+     * 应用是否有此API访问权限
+     * 1.应用服务器在appconfig配置里的server_ip白名单里；
+     * 2.APIName在appconfig配置里的scope里；
+     * @param clientId
+     * @param requestIp 服务器ip
+     * @param apiName  如果此API有访问限制则传API名称，否则传null
      * @return
      */
-    public boolean isSecCtValid(long ct);
+    public boolean isAccessAccept(int clientId, String requestIp, String apiName);
 
-    /**
-     * 判断时间戳（毫秒）是否有效
-     * @param ct
-     * @return
-     */
-    public boolean isMillCtValid(long ct);
 }

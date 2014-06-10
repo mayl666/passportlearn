@@ -124,7 +124,6 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.6", SYSTEM_UNKNOWN_EXCEPTION);//取得用户信息失败
 
         //updateuser 更新用户基本信息
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.-1", FORBID_UPDATE_USERINFO);  //5.31日18:00至6.6日0:00禁止修改用户信息
         SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.3", ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户名不存在
         SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.4", ERR_CODE_ACCOUNT_NOTHASACCOUNT);//手机号码没有绑定
         SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.6", SYSTEM_UNKNOWN_EXCEPTION);//取得用户信息失败

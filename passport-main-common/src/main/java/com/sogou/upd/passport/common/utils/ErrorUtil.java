@@ -34,6 +34,8 @@ public class ErrorUtil {
     public static final String INVALID_CLIENTID = "10010";
     // 生成token失败
     public static final String CREATE_TOKEN_FAIL = "10011";
+    // 应用没有该API访问权限
+    public static final String ACCESS_DENIED_CLIENT = "10012";
 
     /* ============================================================================ */
     /*  OAuth2授权错误码                                                             */
@@ -356,6 +358,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_SIGNATURE_OR_TOKEN, "签名或token验证失败");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
         ERR_CODE_MSG_MAP.put(CREATE_TOKEN_FAIL, "生成token失败");
+        ERR_CODE_MSG_MAP.put(ACCESS_DENIED_CLIENT, "应用没有该API访问权限");
 
         // oauth2授权
         ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");

@@ -24,6 +24,16 @@ public interface RegManager {
     public Result webRegister(WebRegisterParams regParams, String ip) throws Exception;
 
     /**
+     * 快速注册手机用户接口
+     * 1.判断createip是否中安全限制；
+     * 2.判断手机号是否被绑定或已被注册；
+     * 3.生成手机账号，并发送验证码；
+     * @param mobile 要注册的手机号
+     * @return Result格式的返回值，提示注册成功信息
+     */
+    public Result fastRegisterPhone(String mobile, String createip) throws Exception;
+
+    /**
      * 激活验证邮件
      *
      * @return Result格式的返回值, 成功或失败，返回提示信息

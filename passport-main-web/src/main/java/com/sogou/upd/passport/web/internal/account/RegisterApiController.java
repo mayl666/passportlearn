@@ -2,7 +2,6 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -183,8 +182,53 @@ public class RegisterApiController extends BaseController {
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
+        return result.toString();
+    }
 
+    /**
+     * passport生成该手机号对应的“手机号@sohu.com”账号，并给用户下发随机密码，用户使用手机号和随机密码即可登录。
+     * 供搜狗小说使用
+     *
+     * @param request
+     * @param params
+     * @return
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/regmobilefast", method = RequestMethod.POST)
+    @ResponseBody
+    public Object regMobileFast(HttpServletRequest request, RegMobileFastApiParams params) {
+        Result result = new APIResultSupport(false);
+        String createIp = params.getCreateip();
+        String mobile = params.getMobile();
 
+        try {
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            int clientId = Integer.valueOf(params.getClient_id());
+            //判断访问者是否有权限
+            if (!commonManager.isAccessAccept(clientId, getIp(request), request.getLocalName())) {
+                result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
+                return result.toString();
+            }
+
+            // 调用内部接口
+            result = regManager.fastRegisterPhone(mobile, createIp);
+        } catch (Exception e) {
+            logger.error("regMobileFast:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
+        } finally {
+            //记录log
+            String passportId = (String) result.getModels().get("userid");
+            passportId = Strings.isNullOrEmpty(passportId) ? mobile : passportId;
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, String.valueOf(params.getClient_id()), result.getCode(), createIp);
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
+        }
         return result.toString();
     }
 

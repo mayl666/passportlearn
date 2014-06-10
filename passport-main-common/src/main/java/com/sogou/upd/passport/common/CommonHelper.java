@@ -96,6 +96,18 @@ public class CommonHelper {
         return false;
     }
 
+    public static boolean isMillCtValid(long ct){
+        long currentTime = System.currentTimeMillis();
+        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM_IN_MILLI;
+        return timeRight;
+    }
+
+    public static boolean isSecCtValid(long ct){
+        long currentTime = System.currentTimeMillis()/1000;
+        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
+        return timeRight;
+    }
+
     /*public static void recordTimestamp(long start, String msg) {
         long end = System.currentTimeMillis();
         long costTime = end -start;
@@ -103,5 +115,4 @@ public class CommonHelper {
             logger.info(msg +" " +costTime);
         }
     } */
-
 }

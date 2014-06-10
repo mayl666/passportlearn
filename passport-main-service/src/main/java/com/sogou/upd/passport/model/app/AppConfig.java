@@ -20,6 +20,8 @@ public class AppConfig {
     private String clientSecret;
     private Date createTime;
     private String clientName;
+    private String scope;
+    private String serverIp;
 
     public long getId() {
         return id;
@@ -91,5 +93,21 @@ public class AppConfig {
 
     public void setClientName(String clientName) {
         this.clientName = clientName;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
+    public String getServerIp() {
+        return serverIp;
+    }
+
+    public void setServerIp(String serverIp) {
+        this.serverIp = serverIp;
     }
 }

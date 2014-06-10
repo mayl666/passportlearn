@@ -37,7 +37,7 @@ public class AppConfigServiceImpl implements AppConfigService {
 
     @Override
     public AppConfig queryAppConfigByClientId(int clientId) throws ServiceException {
-        AppConfig appConfig = null;
+        AppConfig appConfig;
         try {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
             //缓存根据clientId读取AppConfig

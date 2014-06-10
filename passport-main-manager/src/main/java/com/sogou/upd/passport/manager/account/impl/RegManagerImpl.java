@@ -146,6 +146,41 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
+    public Result fastRegisterPhone(String mobile, String createip) throws Exception {
+        // 检查ip安全限制
+        //发送手机验证码，验证码作为密码
+//        result = mobileCodeSenderService.checkSmsCode(username, clientId, AccountModuleEnum.REGISTER, captcha);
+//        if (!result.isSuccess()) {
+//            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
+//            return result;
+//        }
+//        RegMobileApiParams regApiParams = new RegMobileApiParams(username, password, clientId);
+//        result = proxyRegisterApiManager.regMobileUser(regApiParams);
+//        if (result.isSuccess()) {
+//            if (!Strings.isNullOrEmpty(type)) {
+//                if (ConnectTypeEnum.WAP.toString().equals(type)) {
+//                    String sgid;
+//                    String passportId = PassportIDGenerator.generator(username, AccountTypeEnum.PHONE.getValue());
+//                    Result sessionResult = sessionServerManager.createSession(passportId);
+//                    if (!sessionResult.isSuccess()) {
+//                        result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+//                        return result;
+//                    }
+//                    sgid = (String) sessionResult.getModels().get("sgid");
+//                    result.setSuccess(true);
+//                    result.getModels().put("sgid", sgid);
+//                } else {
+//                    result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+//                    result.setMessage("type参数有误！");
+//                    return result;
+//                }
+//            }
+//        }
+
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public Result registerMobile(String username, String password, int clientId, String captcha, String type) throws Exception {
         Result result = new APIResultSupport(false);
         if (!Strings.isNullOrEmpty(type) && !ConnectTypeEnum.WAP.toString().equals(type)) {
