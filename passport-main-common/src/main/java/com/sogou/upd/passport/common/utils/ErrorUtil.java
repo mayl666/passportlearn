@@ -70,11 +70,11 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_RESET_SOURCEPWD_FAILD = "20198";
     //重新发送激活邮件失败
     public static final String ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED = "20199";
-    //注册异常
+    //注册失败
     public static final String ERR_CODE_REGISTER_UNUSUAL = "20200";
     // 账号已经注册，请直接登录
     public static final String ERR_CODE_ACCOUNT_REGED = "20201";
-    // 短信发送已达今天的最高上限20条
+    // 短信发送已达今天的最高上限
     public static final String ERR_CODE_ACCOUNT_CANTSENTSMS = "20202";
     // 手机号格式错误
     public static final String ERR_CODE_ACCOUNT_PHONEERROR = "20203";
@@ -92,7 +92,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT = "20209";
     // 密码验证失败次数超过上限
     public static final String ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT = "20210";
-    // 手机验证码发送失败
+    // 手机短信发送失败
     public static final String ERR_CODE_ACCOUNT_SMSCODE_SEND = "20213";
     //创建用户失败
     public static final String ERR_CODE_ACCOUNT_REGISTER_FAILED = "20214";
@@ -384,7 +384,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码错误或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT, "今日验证码校验错误次数已超过上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT, "今日密码验证失败次数超过上限");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机短信发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED, "创建用户失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_FAILED, "用户登录失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED, "账号未登录，请先登录");
@@ -398,7 +398,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, "验证码验证失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE, "请输入验证码");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED, "激活链接已经失效");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已绑定其他账号");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已注册或已被绑定");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "账号未激活");

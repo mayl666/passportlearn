@@ -10,7 +10,6 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -48,7 +47,6 @@ public class SecureManagerImpl implements SecureManager {
 
     private static String SECURE_FIELDS = "sec_email,sec_mobile,sec_ques";
 
-
     //搜狗安全信息字段:密保邮箱、密保手机、密保问题
     private static final String SOGOU_SECURE_FIELDS = "email,mobile,question";
 
@@ -68,25 +66,16 @@ public class SecureManagerImpl implements SecureManager {
     private OperateTimesService operateTimesService;
     @Autowired
     private AppConfigService appConfigService;
-
-    // 自动注入Manager
     @Autowired
     private SecureApiManager sgSecureApiManager;
     @Autowired
     private SecureApiManager proxySecureApiManager;
-    @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private BindApiManager sgBindApiManager;
     @Autowired
     private BindApiManager proxyBindApiManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private PhotoUtils photoUtils;
-    @Autowired
-    private UserInfoApiManager shPlusUserInfoApiManager;
-
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
 
@@ -116,7 +105,6 @@ public class SecureManagerImpl implements SecureManager {
             return result;
         }
     }
-
 
     private Result sendMobileCodeByPassportId(String passportId, int clientId, AccountModuleEnum module)
             throws Exception {

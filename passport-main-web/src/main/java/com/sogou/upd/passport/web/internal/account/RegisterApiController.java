@@ -217,7 +217,7 @@ public class RegisterApiController extends BaseController {
             }
 
             // 调用内部接口
-            result = regManager.fastRegisterPhone(mobile, createIp);
+            result = regManager.fastRegisterPhone(mobile, clientId, createIp);
         } catch (Exception e) {
             logger.error("regMobileFast:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
         } finally {

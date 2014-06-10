@@ -29,9 +29,10 @@ public interface RegManager {
      * 2.判断手机号是否被绑定或已被注册；
      * 3.生成手机账号，并发送验证码；
      * @param mobile 要注册的手机号
+     * @param clientId 应用ID
      * @return Result格式的返回值，提示注册成功信息
      */
-    public Result fastRegisterPhone(String mobile, String createip) throws Exception;
+    public Result fastRegisterPhone(String mobile, int clientId, String createip);
 
     /**
      * 激活验证邮件
