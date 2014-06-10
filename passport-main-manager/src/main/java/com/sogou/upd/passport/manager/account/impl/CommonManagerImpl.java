@@ -58,19 +58,24 @@ public class CommonManagerImpl implements CommonManager {
 
     @Override
     public boolean isAccessAccept(int clientId, String requestIp, String apiName) {
-        AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-        if (appConfig != null) {
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                return false;
+            }
+            String scope = appConfig.getScope();
+            if (!Strings.isNullOrEmpty(apiName) && !StringUtil.splitStringContains(scope, ",", apiName)) {
+                return false;
+            }
+            String serverIp = appConfig.getServerIp();
+            if (!Strings.isNullOrEmpty(requestIp) && !StringUtil.splitStringContains(serverIp, ",", requestIp)) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            log.error("isAccessAccept error, api:" + apiName, e);
             return false;
         }
-        String scope = appConfig.getScope();
-        if (!Strings.isNullOrEmpty(apiName) && !StringUtil.splitStringContains(scope, ",", apiName)) {
-            return false;
-        }
-        String serverIp = appConfig.getServerIp();
-        if (!Strings.isNullOrEmpty(requestIp) && !StringUtil.splitStringContains(serverIp, ",", requestIp)) {
-            return false;
-        }
-        return true;
     }
 
 }

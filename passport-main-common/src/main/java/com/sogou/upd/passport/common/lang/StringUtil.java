@@ -143,7 +143,7 @@ public class StringUtil {
      * @return
      */
     public static boolean splitStringContains(String initStr, String split, String targetStr) {
-        if (!Strings.isNullOrEmpty(initStr) || !Strings.isNullOrEmpty(targetStr)) {
+        if (!Strings.isNullOrEmpty(initStr) && !Strings.isNullOrEmpty(targetStr)) {
             String[] strArray = initStr.split(split);
             return Arrays.asList(strArray).contains(targetStr);
         }

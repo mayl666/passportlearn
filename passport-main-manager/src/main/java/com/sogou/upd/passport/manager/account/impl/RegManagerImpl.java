@@ -172,7 +172,7 @@ public class RegManagerImpl implements RegManager {
                 String smsText = "【搜狗通行证】注册成功，密码为" + randomPwd + "， 请用本机号码登录。";
                 if (Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
                     result.setSuccess(true);
-                    result.setMessage("已发送短信至手机号：" + mobile);
+                    result.setMessage("注册成功，并发送短信至手机号：" + mobile);
                     result.setDefaultModel("userid", passportId);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);

@@ -211,11 +211,10 @@ public class RegisterApiController extends BaseController {
             }
             int clientId = Integer.valueOf(params.getClient_id());
             //判断访问者是否有权限
-            if (!commonManager.isAccessAccept(clientId, getIp(request), request.getLocalName())) {
+            if (!commonManager.isAccessAccept(clientId, getIp(request), "regmobilefast")) {
                 result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
                 return result.toString();
             }
-
             // 调用内部接口
             result = regManager.fastRegisterPhone(mobile, clientId, createIp);
         } catch (Exception e) {
