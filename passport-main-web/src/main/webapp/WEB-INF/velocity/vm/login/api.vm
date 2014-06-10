@@ -1,8 +1,14 @@
 <!doctype html>
-<html><head> <meta charset="utf-8" /> <title></title> </head> <body ></body>
+<html><head><meta charset="utf-8"/></head><body></body>
 <script type="text/javascript">
-        var sdata = eval( '(' + '${data}' + ')' );     
-        (function(xdurl,status){
-                location.href = xdurl + ( xdurl.indexOf('?') == -1 ? '?' : '&' ) + "status=" + status + "&needcaptcha=" + (+sdata.data.needCaptcha || 0);
-        })(sdata.data.xd,sdata.status);
-</script> </html>
+    var sdata = eval( '(' + '${data}' + ')' );
+    (function(xdurl,params){
+        location.href = xdurl + ( xdurl.indexOf('?') === -1 ? '?' : '&' ) + params.join('&');
+    })(sdata.data.xd,
+        [
+            'status=' + sdata.status,
+            'needcaptcha=' + (sdata.data.needCaptcha|0),
+            'msg=' + encodeURIComponent(sdata.statusText||"")
+        ]
+    );
+</script></html>
