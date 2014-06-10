@@ -123,7 +123,7 @@ public class AccountServiceImpl implements AccountService {
             long id = accountDAO.insertOrUpdateAccount(passportId, account);
             if (id != 0) {
                 String cacheKey = buildAccountKey(passportId);
-                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return account;
             }
         } catch (Exception e) {
@@ -548,7 +548,7 @@ public class AccountServiceImpl implements AccountService {
                 if (row > 0) {
                     String cacheKey = buildAccountKey(passportId);
                     account.setUniqname(uniqname);
-                    dbShardRedisUtils.set(cacheKey, account);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
 
                     //第一次直接插入
                     if (Strings.isNullOrEmpty(oldUniqName)) {
@@ -593,7 +593,8 @@ public class AccountServiceImpl implements AccountService {
             if (row > 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setAvatar(avatar);
-                dbShardRedisUtils.set(cacheKey, account);
+//                dbShardRedisUtils.set(cacheKey, account);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
         } catch (Exception e) {

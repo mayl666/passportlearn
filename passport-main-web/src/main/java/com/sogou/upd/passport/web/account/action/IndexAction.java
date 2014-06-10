@@ -58,10 +58,6 @@ public class IndexAction extends BaseController {
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);
             } else {
-                //搜狐矩阵账号，不显示账号安全tab
-               /* if (domain == AccountDomainEnum.SOHU) {
-                    result.setDefaultModel("disable", true);
-                }*/
                 result = secureManager.queryAccountSecureInfo(userId, clientId, true);
             }
 

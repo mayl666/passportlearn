@@ -115,12 +115,6 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                             result.setDefaultModel("fullname", value);
                                             continue;
                                         }
-                                        //TODO 暂先注释掉，sex 数据项应该没用
-                                       /* if ("sex".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("sex", value);
-                                            continue;
-                                        }*/
                                         //TODO 此处存在异常，有paramArray[i] 不存在于 accountInfo的情况
                                         String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
                                         result.setDefaultModel(paramArray[i], value);
@@ -229,7 +223,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     result = updateAccountInfo(result, params);
                     if (!Strings.isNullOrEmpty(params.getUniqname())) {
                         //更新用户昵称信息
-                        result = updateAccountNickName(result, account, params.getUniqname());
+                        result = updateAccountNickName(result, insertSoHuAccount, params.getUniqname());
                     }
                 }
             } else {
@@ -295,6 +289,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
             }
+
         } catch (Exception e) {
             logger.error("updateAccountNickName error. passportId:" + account.getPassportId(), e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -342,14 +337,14 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 if (!Strings.isNullOrEmpty(params.getGender()) && !params.getGender().equalsIgnoreCase(accountInfo.getGender())) {
                     accountInfo.setGender(params.getGender());
                 }
-                if (!Strings.isNullOrEmpty(params.getProvince()) && !params.getPersonalid().equalsIgnoreCase(accountInfo.getProvince())) {
+                if (!Strings.isNullOrEmpty(params.getProvince()) && !params.getProvince().equalsIgnoreCase(accountInfo.getProvince())) {
                     accountInfo.setProvince(params.getProvince());
                 }
                 if (!Strings.isNullOrEmpty(params.getCity()) && !params.getCity().equalsIgnoreCase(accountInfo.getCity())) {
                     accountInfo.setCity(params.getCity());
                 }
                 if (!Strings.isNullOrEmpty(params.getPersonalid()) && !params.getPersonalid().equalsIgnoreCase(accountInfo.getPersonalid())) {
-                    accountInfo.setPassportId(params.getPersonalid());
+                    accountInfo.setPersonalid(params.getPersonalid());
                 }
                 if (!Strings.isNullOrEmpty(params.getUsername()) && !params.getUsername().equalsIgnoreCase(accountInfo.getFullname())) {
                     accountInfo.setFullname(params.getUsername());
