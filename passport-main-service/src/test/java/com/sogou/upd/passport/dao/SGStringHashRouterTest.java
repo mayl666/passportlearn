@@ -40,10 +40,9 @@ public class SGStringHashRouterTest extends TestCase {
 //        String id = "0C7E1BC4094CACCBDFEFC60BDDC598BD@qq.sohu.com";
 //        String id = "15BF5B2E00BCB4A7E8AD31E59480FF8C@qq.sohu.com";
 //        String id = "B5008F7D2813EDCCE03BCE3EA6DC7FFA@qq.sohu.com";
-//        String id = "gang.chen0505@gmail.com";    // account_03
+        String id = "912086925@qq.com";    // account_03
 //        String id = "wangqingemail@sohu.com";
-//        String id = "lkmydn@126.com";   //       account_14
-        String id = "yangking2010@gmail.com";   // account_12
+//        String id = "gang.chen0505@gmail.com";
         String name = router.doRoute(id);
         System.out.println(name);
 //        Assert.assertEquals(name, "account_18");
@@ -67,16 +66,7 @@ public class SGStringHashRouterTest extends TestCase {
     @Test
     public void testUpmShard() {
         router = new SGStringHashRouter("id", "uniqname_passportid_mapping_{0}", 32);
-
-        String nickName = "<html>\n" +
-                "<head><title>502 Bad Gateway</title></head>\n" +
-                "<body bgcolor=\"white\">\n" +
-                "<center><h1>502 Bad Gateway</h1></center>\n" +
-                "<hr><center>nginx</center>\n" +
-                "</body>\n" +
-                "</html>\n";
-
-        LOGGER.info("u_p_m shard." + router.doRoute(nickName));
+        LOGGER.info("u_p_m shard." + router.doRoute("簩龖"));
     }
 
 

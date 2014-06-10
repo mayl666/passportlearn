@@ -224,7 +224,7 @@ public class AccountServiceImpl implements AccountService {
             int row = accountDAO.deleteAccountByPassportId(passportId);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
-                redisUtils.delete(cacheKey);
+                dbShardRedisUtils.delete(cacheKey);
                 return true;
             }
         } catch (Exception e) {
