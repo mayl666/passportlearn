@@ -59,4 +59,14 @@ public class RSATest {
         String decStr = RSA.decryptByPublicKey(encbyte, TokenGenerator.PUBLIC_KEY);
         Assert.assertEquals(str, decStr);
     }
+
+    @Test
+    public void testEncryptBypublicKey_DecryptByPrivateKey() throws Exception {
+          String content="afbwer@adfadsf.com|adf412312|3213123213213";
+
+        String kk=new String(Base64Coder.encode(RSA.encryptByPublicKey(content.getBytes(),TokenGenerator.PUBLIC_KEY)));
+
+        Assert.assertEquals(content,RSA.decryptByPrivateKey(Base64Coder.decode(kk),TokenGenerator.PRIVATE_KEY));
+
+    }
 }

@@ -53,6 +53,7 @@
     <mvc:resources mapping="/favicon.ico" location="/static/favicon.ico"/>
     <mvc:resources mapping="/s.gif" location="/s.gif"/>
     <mvc:resources mapping="/static/**" location="/static/"/>
+    <mvc:resources mapping="/testRSA.jsp" location="/testRSA.jsp"/>
     <!--这个不再需要了，因为静态资源都在上面配置了，所有的请求都由spring来处理，不再需要使用容器的default-servlet-handler来处理了-->
     <!--<mvc:default-servlet-handler/>-->
 
