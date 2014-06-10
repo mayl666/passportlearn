@@ -342,14 +342,14 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 if (!Strings.isNullOrEmpty(params.getGender()) && !params.getGender().equalsIgnoreCase(accountInfo.getGender())) {
                     accountInfo.setGender(params.getGender());
                 }
-                if (!Strings.isNullOrEmpty(params.getProvince()) && !params.getPersonalid().equalsIgnoreCase(accountInfo.getProvince())) {
+                if (!Strings.isNullOrEmpty(params.getProvince()) && !params.getProvince().equalsIgnoreCase(accountInfo.getProvince())) {
                     accountInfo.setProvince(params.getProvince());
                 }
                 if (!Strings.isNullOrEmpty(params.getCity()) && !params.getCity().equalsIgnoreCase(accountInfo.getCity())) {
                     accountInfo.setCity(params.getCity());
                 }
                 if (!Strings.isNullOrEmpty(params.getPersonalid()) && !params.getPersonalid().equalsIgnoreCase(accountInfo.getPersonalid())) {
-                    accountInfo.setPassportId(params.getPersonalid());
+                    accountInfo.setPersonalid(params.getPersonalid());
                 }
                 if (!Strings.isNullOrEmpty(params.getUsername()) && !params.getUsername().equalsIgnoreCase(accountInfo.getFullname())) {
                     accountInfo.setFullname(params.getUsername());
