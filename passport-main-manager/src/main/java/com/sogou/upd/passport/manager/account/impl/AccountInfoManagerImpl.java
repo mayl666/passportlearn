@@ -360,10 +360,12 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     public Result getUserInfo(ObtainAccountInfoParams params) {
         GetUserInfoApiparams infoApiparams = buildGetUserInfoApiparams(params);
         //TODO 非第三方账号迁移完成后，第三方账号、非第三方账号 获取用户信息走相同逻辑、开启此分支
-        Result result = sgUserInfoApiManager.getUserInfo(infoApiparams);
+//        Result result = sgUserInfoApiManager.getUserInfo(infoApiparams);
+
+        Result result;
 
         // 调用内部接口
-        /*String passportId = params.getUsername();
+        String passportId = params.getUsername();
         if (ManagerHelper.isInvokeProxyApi(passportId)) {
             //第三方获取个人资料
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
@@ -383,7 +385,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             }
         } else {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);
-        }*/
+        }
 
         return result;
     }
