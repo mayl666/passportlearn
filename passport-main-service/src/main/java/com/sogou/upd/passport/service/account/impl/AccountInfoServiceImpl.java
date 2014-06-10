@@ -31,6 +31,8 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     @Autowired
     private AccountInfoDAO accountInfoDAO;
     @Autowired
+    private RedisUtils redisUtils;
+    @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
     @Override
