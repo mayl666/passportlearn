@@ -115,12 +115,6 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                             result.setDefaultModel("fullname", value);
                                             continue;
                                         }
-                                        //TODO 暂先注释掉，sex 数据项应该没用
-                                       /* if ("sex".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("sex", value);
-                                            continue;
-                                        }*/
                                         //TODO 此处存在异常，有paramArray[i] 不存在于 accountInfo的情况
                                         String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
                                         result.setDefaultModel(paramArray[i], value);
