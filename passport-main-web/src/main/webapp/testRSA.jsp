@@ -1,7 +1,8 @@
 <%@ page import="com.sogou.upd.passport.common.math.RSA" %>
 <%@ page import="com.sogou.upd.passport.service.account.generator.TokenGenerator" %>
 <%@ page import="com.sogou.upd.passport.common.math.Base64Coder" %>
-<%@ page import="com.sogou.upd.passport.common.math.Base62" %>
+<%@ page import="java.net.URLDecoder" %>
+<%@ page import="java.net.URLEncoder" %>
 <%--
   Created by IntelliJ IDEA.
   User: denghua
@@ -54,11 +55,11 @@
             byte[] contentByte=content.getBytes();
             if("de".equals(type)){
                 //解密
-                out.print(RSA.decryptByPrivateKey(Base62.decodeBase62(content.toCharArray()),TokenGenerator.PRIVATE_KEY));
+                out.print(RSA.decryptByPrivateKey(Base64Coder.decode(URLDecoder.decode(content,"UTF-8")),TokenGenerator.PRIVATE_KEY));
             };
             if("en".equals(type)){
                 //加密
-                out.print(new String(Base62.encodeBase62(RSA.encryptByPublicKey(contentByte, TokenGenerator.PUBLIC_KEY))));
+                out.print(URLEncoder.encode(new String(Base64Coder.encode(RSA.encryptByPublicKey(contentByte, TokenGenerator.PUBLIC_KEY))),"UTF-8"));
             }
 
         }
