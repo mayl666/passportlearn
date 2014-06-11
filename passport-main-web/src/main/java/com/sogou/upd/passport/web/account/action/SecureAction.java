@@ -9,7 +9,6 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -61,9 +60,6 @@ public class SecureAction extends BaseController {
     private OAuth2ResourceManager oAuth2ResourceManager;
     @Autowired
     private BindApiManager proxyBindApiManager;
-
-    @Autowired
-    private AccountInfoManager accountInfoManager;
 
 
     /*
@@ -266,12 +262,7 @@ public class SecureAction extends BaseController {
         }
 
         result.setSuccess(true);
-
-//        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId,clientId));
-
-        //非第三方账号迁移，获取用户昵称信息，统一调用 accountInfoManager 的 getUserUniqName方法
-        result.getModels().put("username", accountInfoManager.getUserUniqName(userId, clientId));
-
+        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -308,12 +299,7 @@ public class SecureAction extends BaseController {
         result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
 
         result.setSuccess(true);
-
-//        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId, clientId));
-
-        //非第三方账号迁移，获取用户昵称信息，统一调用 accountInfoManager 的 getUserUniqName方法
-        result.getModels().put("username", accountInfoManager.getUserUniqName(userId, clientId));
-
+        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }

@@ -23,6 +23,7 @@ import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.*;
@@ -47,10 +48,6 @@ public class SecureManagerImpl implements SecureManager {
     private static Logger logger = LoggerFactory.getLogger(SecureManagerImpl.class);
 
     private static String SECURE_FIELDS = "sec_email,sec_mobile,sec_ques";
-
-
-    //搜狗安全信息字段:密保邮箱、密保手机、密保问题
-    private static final String SOGOU_SECURE_FIELDS = "email,mobile,question";
 
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
@@ -86,9 +83,6 @@ public class SecureManagerImpl implements SecureManager {
     private PhotoUtils photoUtils;
     @Autowired
     private UserInfoApiManager shPlusUserInfoApiManager;
-
-    @Autowired
-    private UserInfoApiManager sgUserInfoApiManager;
 
     /*
      * 发送短信至未绑定手机，只检测映射表，查询passportId不存在或为空即认定为未绑定
@@ -201,52 +195,40 @@ public class SecureManagerImpl implements SecureManager {
             int score = 0; // 安全系数
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
 
-            //TODO 去掉开关
-//            if (ManagerHelper.isInvokeProxyApi(userId)) {
-//                // 代理接口
-//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-//                getUserInfoApiparams.setUserid(userId);
-//                getUserInfoApiparams.setClient_id(clientId);
-////                getUserInfoApiparams.setImagesize("50");
-//                getUserInfoApiparams.setFields(SECURE_FIELDS);
-//
-//                //调用sohu 接口取用户信息
-//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-//
-//                Result shPlusResult = shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-//                if (shPlusResult.isSuccess()) {
-//                    Object obj = shPlusResult.getModels().get("baseInfo");
-//                    if (obj != null) {
-//                        AccountBaseInfo baseInfo = (AccountBaseInfo) obj;
-//                        String uniqname = baseInfo.getUniqname();
-//                        result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
-//                        Result photoResult = photoUtils.obtainPhoto(baseInfo.getAvatar(), "50");
-//                        if (photoResult.isSuccess()) {
-//                            result.getModels().put("avatarurl", photoResult.getModels());
-//                        }
-//                    } else {
-//                        result.getModels().put("uniqname", userId);
-//                    }
-//                }
-//            } else {
-
-                //TODO 统一调用 AccountInfoManager getUserInfo 方法
-
-//                GetSecureInfoApiParams params = new GetSecureInfoApiParams();
-//                params.setUserid(userId);
-//                params.setClient_id(clientId);
-//                result = sgSecureApiManager.getUserSecureInfo(params);
-
-
-                //调用 SGUserInfoApiManagerImpl 中 getUserInfo
+            if (ManagerHelper.isInvokeProxyApi(userId)) {
+                // 代理接口
                 GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
                 getUserInfoApiparams.setUserid(userId);
                 getUserInfoApiparams.setClient_id(clientId);
-                getUserInfoApiparams.setFields(SOGOU_SECURE_FIELDS);
+//                getUserInfoApiparams.setImagesize("50");
+                getUserInfoApiparams.setFields(SECURE_FIELDS /*+",uniqname,avatarurl"*/);
 
-                result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                //调用sohu 接口取用户信息
+                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
 
-//            }
+
+                //调 sohu+ manager 取用户信息
+                Result shPlusResult = shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                if (shPlusResult.isSuccess()) {
+                    Object obj = shPlusResult.getModels().get("baseInfo");
+                    if (obj != null) {
+                        AccountBaseInfo baseInfo = (AccountBaseInfo) obj;
+                        String uniqname = baseInfo.getUniqname();
+                        result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
+                        Result photoResult = photoUtils.obtainPhoto(baseInfo.getAvatar(), "50");
+                        if (photoResult.isSuccess()) {
+                            result.getModels().put("avatarurl", photoResult.getModels());
+                        }
+                    } else {
+                        result.getModels().put("uniqname", userId);
+                    }
+                }
+            } else {
+                GetSecureInfoApiParams params = new GetSecureInfoApiParams();
+                params.setUserid(userId);
+                params.setClient_id(clientId);
+                result = sgSecureApiManager.getUserSecureInfo(params);
+            }
 
             Map<String, String> map = result.getModels();
             result.setModels(map);
@@ -612,7 +594,7 @@ public class SecureManagerImpl implements SecureManager {
                 getUserInfoApiparams.setUserid(userId);
                 getUserInfoApiparams.setClient_id(clientId);
                 getUserInfoApiparams.setFields(SECURE_FIELDS);
-                result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                 Map<String, String> mapResult = result.getModels();
                 String mobile = mapResult.get("sec_mobile");
 
