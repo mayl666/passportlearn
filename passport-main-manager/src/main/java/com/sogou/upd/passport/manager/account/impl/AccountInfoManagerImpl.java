@@ -32,6 +32,7 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -366,27 +367,26 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
 
         // 调用内部接口
         String passportId = params.getUsername();
-        if (ManagerHelper.isInvokeProxyApi(passportId)) {
-            //第三方获取个人资料
-            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
-            if (domain == AccountDomainEnum.THIRD) {
-                result = sgUserInfoApiManager.getUserInfo(infoApiparams);
-            } else {
+
+        //第三方获取个人资料
+        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+        if (domain == AccountDomainEnum.THIRD) {
+            result = sgUserInfoApiManager.getUserInfo(infoApiparams);
+        } else {
+            result = sgUserInfoApiManager.getUserInfo(infoApiparams);
+            if (!result.isSuccess()) {
+                //记录Log 跟踪数据同步延时情况
+                logger.warn("Data synchronization delay. passportId {}", passportId);
                 result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
-                //其中昵称和头像是获取的account_base_info
-                if (infoApiparams.getFields().contains("avatarurl") || infoApiparams.getFields().contains("uniqname")) {
-                    AccountBaseInfo baseInfo = getBaseInfo(infoApiparams.getUserid());
-                    //如果有sogou有存储，则用sogou存的
-                    if (baseInfo != null) {
-                        result.getModels().put("uniqname", baseInfo.getUniqname());
-                        result.getModels().put("avatarurl", baseInfo.getAvatar());
+                if (result.isSuccess()) {
+                    //其中昵称和头像是获取的account_base_info
+                    if (infoApiparams.getFields().contains("avatarurl") || infoApiparams.getFields().contains("uniqname")) {
+                        result.getModels().put("uniqname", defaultUniqname(passportId));
+                        result.getModels().put("avatarurl", StringUtils.EMPTY);
                     }
                 }
             }
-        } else {
-            result = sgUserInfoApiManager.getUserInfo(infoApiparams);
         }
-
         return result;
     }
 
