@@ -62,36 +62,37 @@ public class RSAApiController {
 //        try {
         String clearText = null;
         try {
+            System.out.println(params.getCipherText());
             clearText = RSA.decryptByPrivateKey(Base64Coder.decode(params.getCipherText()), TokenGenerator.PRIVATE_KEY);
         } catch (Exception e) {
             logger.error("decrypt error, cipherText:"+params.getCipherText(),e);
             result.setCode(ErrorUtil.ERR_CODE_RSA_DECRYPT);
-            return result;
+            return result.toString();
         }
 
-        if (Strings.isNullOrEmpty(clearText)) {
-            String[] textArray = clearText.split("|");
+        if (!Strings.isNullOrEmpty(clearText)) {
+            String[] textArray = clearText.split("\\|");
             if (textArray.length == 3) { //数据组成： userid|token|timestamp
                 try {
-                    String passportId = mappTokenService.getPassprotIdByToken(textArray[1]);
-                    if (!Strings.isNullOrEmpty(passportId) && passportId.equals(textArray[0])) { //解密后的token得到userid，需要和传入的userid一样，保证安全及toke有效性。
+//                    String passportId = mappTokenService.getPassprotIdByToken(textArray[1]);
+//                    if (!Strings.isNullOrEmpty(passportId) && passportId.equals(textArray[0])) { //解密后的token得到userid，需要和传入的userid一样，保证安全及toke有效性。
                         result.setSuccess(true);
                         result.setMessage("操作成功");
-                        result.setDefaultModel("userid", passportId);
-                        return result;
-                    }
-                    result.setCode(ErrorUtil.ERR_SIGNATURE_OR_TOKEN);
-                    return result;
+                        result.getModels().put("userid", textArray[0]);
+                        return result.toString();
+//                    }
+//                    result.setCode(ErrorUtil.ERR_SIGNATURE_OR_TOKEN);
+//                    return result;
 
                 } catch (Exception e) {
                     logger.error("ras token error fail, clear text:" + clearText, e);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
-                    return result;
+                    return result.toString();
                 }
             } else {
                 //长度不对。
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
-                return result;
+                return result.toString();
             }
         }
 
