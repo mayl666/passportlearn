@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.math.Base62;
 import com.sogou.upd.passport.common.math.Base64Coder;
 import com.sogou.upd.passport.common.math.RSA;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -63,7 +64,7 @@ public class RSAApiController {
         String clearText = null;
         try {
             System.out.println(params.getCipherText());
-            clearText = RSA.decryptByPrivateKey(Base64Coder.decode(params.getCipherText()), TokenGenerator.PRIVATE_KEY);
+            clearText = RSA.decryptByPrivateKey(Base62.decodeBase62(params.getCipherText().toCharArray()), TokenGenerator.PRIVATE_KEY);
         } catch (Exception e) {
             logger.error("decrypt error, cipherText:"+params.getCipherText(),e);
             result.setCode(ErrorUtil.ERR_CODE_RSA_DECRYPT);
