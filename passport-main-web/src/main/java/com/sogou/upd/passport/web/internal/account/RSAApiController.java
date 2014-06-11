@@ -64,6 +64,7 @@ public class RSAApiController {
         try {
             clearText = RSA.decryptByPrivateKey(Base64Coder.decode(params.getCipherText()), TokenGenerator.PRIVATE_KEY);
         } catch (Exception e) {
+            logger.error("decrypt error, cipherText:"+params.getCipherText(),e);
             result.setCode(ErrorUtil.ERR_CODE_RSA_DECRYPT);
             return result;
         }
