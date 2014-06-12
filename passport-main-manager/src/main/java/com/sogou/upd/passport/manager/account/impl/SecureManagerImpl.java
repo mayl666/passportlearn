@@ -139,20 +139,20 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         try {
 
-//            if (ManagerHelper.isInvokeProxyApi(userId)) {
-//                // SOHU接口
-//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-//                getUserInfoApiparams.setUserid(userId);
-//                getUserInfoApiparams.setClient_id(clientId);
-//                getUserInfoApiparams.setFields(SECURE_FIELDS);
-//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-//                Map<String, String> mapResult = result.getModels();
-//                String mobile = mapResult.get("sec_mobile");
-//                result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
-//
-//            } else {
+            if (ManagerHelper.isInvokeProxyApi(userId)) {
+                // SOHU接口
+                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                getUserInfoApiparams.setUserid(userId);
+                getUserInfoApiparams.setClient_id(clientId);
+                getUserInfoApiparams.setFields(SECURE_FIELDS);
+                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                Map<String, String> mapResult = result.getModels();
+                String mobile = mapResult.get("sec_mobile");
+                result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
+
+            } else {
                 result = sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.SECURE);
-//            }
+            }
 
             if (!result.isSuccess()) {
                 return result;
@@ -459,19 +459,19 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
-//            if (ManagerHelper.isInvokeProxyApi(userId)) {
-//                // 代理接口
-//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-//                getUserInfoApiparams.setUserid(userId);
-//                getUserInfoApiparams.setClient_id(clientId);
-//                getUserInfoApiparams.setFields(SECURE_FIELDS);
-//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-//                Map<String, String> mapResult = result.getModels();
-//                String mobile = mapResult.get("sec_mobile");
-//                result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
-//            } else {
+            if (ManagerHelper.isInvokeProxyApi(userId)) {
+                // 代理接口
+                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+                getUserInfoApiparams.setUserid(userId);
+                getUserInfoApiparams.setClient_id(clientId);
+                getUserInfoApiparams.setFields(SECURE_FIELDS);
+                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                Map<String, String> mapResult = result.getModels();
+                String mobile = mapResult.get("sec_mobile");
+                result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
+            } else {
                 result = checkMobileCodeByPassportId(userId, clientId, smsCode);
-//            }
+            }
 
             if (result.isSuccess()) {
                 result.setDefaultModel("scode", accountSecureService.getSecureCodeModSecInfo(
