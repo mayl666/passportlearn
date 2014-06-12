@@ -326,7 +326,7 @@ public class RegManagerImpl implements RegManager {
                 result = checkUserFromSohu(username, clientId);
                 if (!result.isSuccess()) {
                     //检查用户名是否存在时，SG不存在，SH存在，全量数据迁移有遗漏或是双读延迟;未激活外域来登录
-                    checkLogger.error("SoGouNotExist-SoHuExist,username:{};time:{}", username, new Date());
+                    checkLogger.error("SoGouNotExist-SoHuExist,username:{};passportId:{};time:{}", username, passportId, new Date());
                 }
             }
         }
