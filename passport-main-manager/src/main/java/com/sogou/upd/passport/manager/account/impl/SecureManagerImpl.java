@@ -256,6 +256,9 @@ public class SecureManagerImpl implements SecureManager {
                         result.getModels().put("uniqname", defaultUniqname(userId));
                         result.getModels().put("avatarurl", StringUtils.EMPTY);
                     }
+                } else {
+                    result.getModels().put("uniqname", defaultUniqname(userId));
+                    result.getModels().put("avatarurl", StringUtils.EMPTY);
                 }
             }
 
