@@ -375,11 +375,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 //记录Log 跟踪数据同步延时情况
                 logger.warn("Data synchronization delay. passportId {}", passportId);
                 result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
-                if (result.isSuccess()) {
-                    if (infoApiparams.getFields().contains("avatarurl") || infoApiparams.getFields().contains("uniqname")) {
-                        result.getModels().put("uniqname", defaultUniqname(passportId));
-                        result.getModels().put("avatarurl", StringUtils.EMPTY);
-                    }
+                if (infoApiparams.getFields().contains("avatarurl") || infoApiparams.getFields().contains("uniqname")) {
+                    result.getModels().put("uniqname", defaultUniqname(passportId));
+                    result.getModels().put("avatarurl", StringUtils.EMPTY);
                 }
             }
         }

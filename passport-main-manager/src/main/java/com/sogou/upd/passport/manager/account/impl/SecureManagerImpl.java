@@ -247,10 +247,10 @@ public class SecureManagerImpl implements SecureManager {
             if (domain == AccountDomainEnum.THIRD) {
                 result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
             } else {
-                //记录Log 跟踪数据同步延时情况
-                logger.warn("Data synchronization delay. passportId {}", userId);
                 result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                 if (!result.isSuccess()) {
+                    //记录Log 跟踪数据同步延时情况
+                    logger.warn("Data synchronization delay. passportId {}", userId);
                     result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                     result.getModels().put("uniqname", defaultUniqname(userId));
                     result.getModels().put("avatarurl", StringUtils.EMPTY);
