@@ -271,7 +271,11 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
 
             //取用户昵称、头像信息
 //            Result getUserInfoResult = getUserInfo(passportId, clientId);
-            Result getUserInfoResult = accountInfoManager.getUserNickNameAndAvatar(passportId, clientId);
+
+            GetUserInfoApiparams params = new GetUserInfoApiparams();
+            params.setClient_id(clientId);
+            params.setUserid(passportId);
+            Result getUserInfoResult = accountInfoManager.getUserNickNameAndAvatar(params);
             String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
             if (getUserInfoResult.isSuccess()) {
                 uniqname = (String) getUserInfoResult.getModels().get("uniqname");

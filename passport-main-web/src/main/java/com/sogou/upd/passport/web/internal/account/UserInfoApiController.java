@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
@@ -46,6 +47,9 @@ public class UserInfoApiController extends BaseController {
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
 
+    @Autowired
+    private AccountInfoManager accountInfoManager;
+
     /**
      * 获取用户基本信息
      *
@@ -64,13 +68,31 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
+
+        /**
+         *  109306 1100 {"fields":"birthday,gender,sec_mobile,sec_email,personalid,username"} 游戏
+         68757  1115 {"fields":"uniqname,birthday,gender,sec_mobile"}                      搜狗阅读
+         4473   1100 {"fields":"userid"}                                                   游戏
+         1485   1024 {"fields":"sec_mobile,sec_email"}                                     搜狗地图
+         752    1065 {"fields":"uniqname"}                                                 浏览器
+         276    1099 {"fields":"uniqname,avatarurl"}                                       手机助手
+         54     2008 {"fields":"uniqname,username,gender,avatarurl"}                       搜狗游戏盒子
+         17     1099 {"fields":"uniqname"}                                                 手机助手
+         */
+
         //第三方获取个人资料
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(params.getUserid());
-        // 调用内部接口
+//        调用内部接口
         if (domain == AccountDomainEnum.THIRD) {
             result = sgUserInfoApiManager.getUserInfo(params);
         } else {
-            result = proxyUserInfoApiManager.getUserInfo(params);
+            result = sgUserInfoApiManager.getUserInfo(params);
+            if (!result.isSuccess()) {
+                result = proxyUserInfoApiManager.getUserInfo(params);
+                //记录Log 跟踪数据同步延时情况
+                logger.warn("Data synchronization delay. passportId {}", params.getUserid());
+            }
+//            result = proxyUserInfoApiManager.getUserInfo(params);
         }
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("fields", params.getFields());
@@ -100,11 +122,13 @@ public class UserInfoApiController extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(params.getUserid());
 
         // 调用内部接口
-        if (domain == AccountDomainEnum.THIRD) {
-            result = sgUserInfoApiManager.updateUserInfo(params);
-        } else {
-            result = proxyUserInfoApiManager.updateUserInfo(params);
-        }
+//        if (domain == AccountDomainEnum.THIRD) {
+//            result = sgUserInfoApiManager.updateUserInfo(params);
+//        } else {
+//            result = proxyUserInfoApiManager.updateUserInfo(params);
+//        }
+        //更新用户信息走搜狗
+        result = sgUserInfoApiManager.updateUserInfo(params);
 
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), params.getModifyip());
         UserOperationLogUtil.log(userOperationLog);
@@ -131,7 +155,10 @@ public class UserInfoApiController extends BaseController {
             return result.toString();
         }
         //调用检查昵称是否唯一的内部接口
-        result = proxyUserInfoApiManager.checkUniqName(params);
+//        result = proxyUserInfoApiManager.checkUniqName(params);
+
+        //调用搜狗接口check用户昵称
+        result = sgUserInfoApiManager.checkUniqName(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUniqname(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();

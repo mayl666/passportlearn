@@ -13,9 +13,7 @@ import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
-import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
@@ -40,7 +38,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * User: mayan
@@ -379,7 +376,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 logger.warn("Data synchronization delay. passportId {}", passportId);
                 result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
                 if (result.isSuccess()) {
-                    //其中昵称和头像是获取的account_base_info
                     if (infoApiparams.getFields().contains("avatarurl") || infoApiparams.getFields().contains("uniqname")) {
                         result.getModels().put("uniqname", defaultUniqname(passportId));
                         result.getModels().put("avatarurl", StringUtils.EMPTY);
@@ -449,7 +445,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     }
 
     @Override
-    public Result getUserNickNameAndAvatar(String passportId, int clientId) {
+    public Result getUserNickNameAndAvatar(GetUserInfoApiparams params) {
         Result result = new APIResultSupport(false);
         String large_avatar = "";
         String mid_avatar = "";
@@ -457,60 +453,53 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         String uniqname = "";
         String avatarurl = "";
 
+        String passportId = params.getUserid();
+        int clientId = params.getClient_id();
+
         //判断用户类型
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
         Account account = accountService.queryAccountByPassportId(passportId);
         if (account != null) {
-            uniqname = account.getUniqname();
-            avatarurl = account.getAvatar();
-            if (domain == AccountDomainEnum.THIRD) {
-                ConnectToken connectToken = null;
-                if (Strings.isNullOrEmpty(uniqname) || Strings.isNullOrEmpty(avatarurl)) {
-                    connectToken = getConnectToken(passportId, clientId);
-                    if (connectToken != null) {
-                        if (Strings.isNullOrEmpty(uniqname)) {
-                            uniqname = connectToken.getConnectUniqname();
-                        }
-                        if (Strings.isNullOrEmpty(avatarurl)) {
-                            large_avatar = connectToken.getAvatarLarge();
-                            mid_avatar = connectToken.getAvatarMiddle();
-                            tiny_avatar = connectToken.getAvatarSmall();
-                        }
+            //参数包含 昵称
+            if (StringUtils.contains(params.getFields(), "uniqname")) {
+                uniqname = account.getUniqname();
+                if (domain == AccountDomainEnum.THIRD) {
+                    //第三方账号
+                    if (Strings.isNullOrEmpty(uniqname)) {
+                        uniqname = getConnectToken(passportId, clientId).getConnectUniqname();
                     }
                 } else {
-                    //获取不同尺寸头像
+                    //非第三方账号
+                    uniqname = getAndUpdateUniqname(passportId, account, uniqname);
+                }
+                result.setDefaultModel("uniqname", Coder.encode(uniqname, "UTF-8"));
+            }
+            //参数包含 头像
+            if (StringUtils.contains(params.getFields(), "avatarurl")) {
+                avatarurl = account.getAvatar();
+                if (Strings.isNullOrEmpty(avatarurl)) {
+                    large_avatar = getConnectToken(passportId, clientId).getAvatarLarge();
+                    mid_avatar = getConnectToken(passportId, clientId).getAvatarMiddle();
+                    tiny_avatar = getConnectToken(passportId, clientId).getAvatarSmall();
+                } else {
                     Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
                     large_avatar = (String) getPhotoResult.getModels().get("img_180");
                     mid_avatar = (String) getPhotoResult.getModels().get("img_50");
                     tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
                 }
+                result.setDefaultModel("img_30", tiny_avatar);
+                result.setDefaultModel("img_50", mid_avatar);
+                result.setDefaultModel("img_180", large_avatar);
+                result.setDefaultModel("avatarurl", mid_avatar);
 
-            } else {
-                //非第三方账号 用户昵称、头像、数据读取从 account_base_info 切换至 account_0~32
-                Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
-                large_avatar = (String) getPhotoResult.getModels().get("img_180");
-                mid_avatar = (String) getPhotoResult.getModels().get("img_50");
-                tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
-                uniqname = getAndUpdateUniqname(passportId, account, uniqname);
             }
-        } else {
-            //若 account 为空，并且账号域类型不是"搜狐域"账号，错误码返回:账号不存在、并且返回
+        } else if (domain != AccountDomainEnum.SOHU) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             return result;
         }
-
-        Result photoResult = photoUtils.obtainPhoto(avatarurl, "50");
-        if (photoResult.isSuccess()) {
-            result.setDefaultModel("avatarurl", photoResult.getModels());
-        }
-
-        result.setSuccess(true);
-        //是否需要编码？TODO 此处对昵称做UTF-8编码
-        result.setDefaultModel("uniqname", Coder.encode(uniqname, "UTF-8"));
+        result.getModels().put("account", account);
         result.setDefaultModel("userid", passportId);
-        result.setDefaultModel("img_30", tiny_avatar);
-        result.setDefaultModel("img_50", mid_avatar);
-        result.setDefaultModel("img_180", large_avatar);
+        result.setSuccess(true);
         return result;
     }
 

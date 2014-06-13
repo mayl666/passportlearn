@@ -72,61 +72,90 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 if (ArrayUtils.isNotEmpty(paramArray)) {
                     //获取用户账号 域类型
                     AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
-                    Account account = accountService.queryAccountByPassportId(passportId);
-                    if (account != null) {
-                        //构建用户昵称、头像信息
-                        result = accountInfoManager.getUserNickNameAndAvatar(passportId, infoApiparams.getClient_id());
-
-                        //检查是否有绑定手机
-                        if (ArrayUtils.contains(paramArray, "mobile")) {
-                            result.setDefaultModel("sec_mobile", account.getMobile());
-                            paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "mobile"));
+                    Result accountResult = accountInfoManager.getUserNickNameAndAvatar(infoApiparams);
+                    if (accountResult.isSuccess()) {
+                        Account account = null;
+                        Object object = accountResult.getModels().get("account");
+                        if (object != null) {
+                            account = (Account) object;
                         }
-                    } else if (domain == AccountDomainEnum.SOHU) {
-                        //如果为"搜狐域"账号，则根据请求参数构建值为 "" 的result
-                        return buildSoHuEmptyResult(result, paramArray, passportId);
+                        if (account != null) {
+                            //检查是否有绑定手机
+                            if (ArrayUtils.contains(paramArray, "mobile")) {
+                                result.setDefaultModel("sec_mobile", account.getMobile());
+                                paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "mobile"));
+                            }
+                            //昵称
+                            if (accountResult.getModels().containsKey("uniqname")) {
+                                result.setDefaultModel("uniqname", accountResult.getModels().get("uniqname"));
+                                paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "uniqname"));
+                            }
+                            //头像
+                            if (accountResult.getModels().containsKey("avatarurl")) {
+                                result.setDefaultModel("avatarurl", accountResult.getModels().get("avatarurl"));
+                                paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "avatarurl"));
+                            }
+                            result.setDefaultModel("userid", passportId);
+                        } else if (domain == AccountDomainEnum.SOHU) {
+                            //如果为"搜狐域"账号，则根据请求参数构建值为 "" 的result
+                            return buildSoHuEmptyResult(result, paramArray, passportId);
+                        } else {
+                            //若 account 为空，并且账号域类型不是"搜狐域"账号，错误码返回:账号不存在、并且返回
+                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                            return result;
+                        }
                     } else {
-                        //若 account 为空，并且账号域类型不是"搜狐域"账号，错误码返回:账号不存在、并且返回
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                        return result;
+                        return accountResult;
                     }
 
-                    //查询用户其他信息、查询account_info_0~32 TODO 重构
-                    //查询其他的个人信息 参数匹配
-                    AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
-                    if (accountInfo != null) {
-                        if (ArrayUtils.isNotEmpty(paramArray)) {
-                            result.setSuccess(true);
-                            for (int i = 0; i < paramArray.length; i++) {
-                                try {
-                                    if (!"birthday".equals(paramArray[i])) {
-                                        if ("email".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("sec_email", value);
-                                            continue;
-                                        }
-                                        if ("question".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("sec_ques", value);
-                                            continue;
-                                        }
-                                        if ("fullname".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("fullname", value);
-                                            continue;
-                                        }
-                                        //TODO 此处存在异常，有paramArray[i] 不存在于 accountInfo的情况
+                    if ((ArrayUtils.isNotEmpty(paramArray))) {
+                        //查询用户其他信息、查询account_info_0~32
+                        AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
+                        int arrayLen = paramArray.length;
+                        for (int i = 0; i < arrayLen; i++) {
+                            try {
+                                if (!"birthday".equals(paramArray[i])) {
+                                    if ("email".equals(paramArray[i])) {
                                         String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                        result.setDefaultModel(paramArray[i], value);
-                                    } else {
-                                        Date birthday = accountInfo.getBirthday();
-                                        result.setDefaultModel(paramArray[i], new SimpleDateFormat("yyyy-MM-dd").format(birthday));
+                                        result.setDefaultModel("sec_email", value);
+                                        continue;
                                     }
-                                } catch (Exception e) {
-                                    paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, paramArray[i]));
+                                    if ("question".equals(paramArray[i])) {
+                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                        result.setDefaultModel("sec_ques", value);
+                                        continue;
+                                    }
+                                    if ("fullname".equals(paramArray[i])) {
+                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                        result.setDefaultModel("fullname", value);
+                                        continue;
+                                    }
+
+                                    if ("gender".equals(paramArray[i])) {
+                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                        result.setDefaultModel("gender", value);
+                                        continue;
+                                    }
+
+                                    if ("personalid".equals(paramArray[i])) {
+                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                        result.setDefaultModel("personalid", value);
+                                        continue;
+                                    }
+                                    //TODO 此处存在异常，有paramArray[i] 不存在于 accountInfo的情况
+                                    String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                    result.setDefaultModel(paramArray[i], value);
+                                } else {
+                                    Date birthday = accountInfo.getBirthday();
+                                    result.setDefaultModel(paramArray[i], new SimpleDateFormat("yyyy-MM-dd").format(birthday));
                                 }
+                            } catch (Exception e) {
+                                paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, paramArray[i]));
                             }
                         }
+                    } else {
+                        result.setSuccess(true);
+                        return result;
                     }
                     if (!result.getModels().isEmpty()) {
                         result.setSuccess(true);
