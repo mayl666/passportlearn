@@ -252,11 +252,6 @@ public class SecureManagerImpl implements SecureManager {
                 result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                 if (!result.isSuccess()) {
                     result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                    if (result.isSuccess()) {
-                        result.getModels().put("uniqname", defaultUniqname(userId));
-                        result.getModels().put("avatarurl", StringUtils.EMPTY);
-                    }
-                } else {
                     result.getModels().put("uniqname", defaultUniqname(userId));
                     result.getModels().put("avatarurl", StringUtils.EMPTY);
                 }

@@ -48,18 +48,15 @@ public class IndexAction extends BaseController {
             // 第三方账号、搜狐矩阵账号 不显示安全信息
             Result result = new APIResultSupport(false);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+            String uniqname = accountInfoManager.getUserUniqName(userId, clientId);
             if (domain == AccountDomainEnum.THIRD) {
-                //注释掉此方法，采用accountInfoManager 方法
-//                String uniqname = oAuth2ResourceManager.getEncodedUniqname(userId, clientId);
-                String uniqname = accountInfoManager.getUserUniqName(userId, clientId);
-                result.setDefaultModel("uniqname", uniqname);
                 result.setDefaultModel("username", uniqname);
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);
             } else {
                 result = secureManager.queryAccountSecureInfo(userId, clientId, true);
             }
-
+            result.setDefaultModel("uniqname", uniqname);
             if (domain == AccountDomainEnum.PHONE) {
                 result.setDefaultModel("actype", "phone");
             }
