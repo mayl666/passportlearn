@@ -93,11 +93,11 @@ public class SecureAction extends BaseController {
             result = secureManager.queryAccountSecureInfo(userId, clientId, true);
         }
 
-        String nickName = hostHolder.getNickName();
-        if (Strings.isNullOrEmpty(nickName)) {
-            nickName = userId;
-        }
-        result.setDefaultModel("username", nickName);
+//        String nickName = hostHolder.getNickName();
+//        if (Strings.isNullOrEmpty(nickName)) {
+//            nickName = userId;
+//        }
+        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -137,11 +137,11 @@ public class SecureAction extends BaseController {
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-        String nickName = hostHolder.getNickName();
-        if (Strings.isNullOrEmpty(nickName)) {
-            nickName = userId;
-        }
-        result.setDefaultModel("username", nickName);
+//        String nickName = hostHolder.getNickName();
+//        if (Strings.isNullOrEmpty(nickName)) {
+//            nickName = userId;
+//        }
+        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -182,11 +182,11 @@ public class SecureAction extends BaseController {
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-        String nickName = hostHolder.getNickName();
-        if (Strings.isNullOrEmpty(nickName)) {
-            nickName = userId;
-        }
-        result.setDefaultModel("username", nickName);
+//        String nickName = hostHolder.getNickName();
+//        if (Strings.isNullOrEmpty(nickName)) {
+//            nickName = userId;
+//        }
+        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -225,11 +225,11 @@ public class SecureAction extends BaseController {
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-        String nickName = hostHolder.getNickName();
-        if (Strings.isNullOrEmpty(nickName)) {
-            nickName = userId;
-        }
-        result.setDefaultModel("username", nickName);
+//        String nickName = hostHolder.getNickName();
+//        if (Strings.isNullOrEmpty(nickName)) {
+//            nickName = userId;
+//        }
+        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }

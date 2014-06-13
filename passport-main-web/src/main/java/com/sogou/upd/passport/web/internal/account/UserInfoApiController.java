@@ -68,18 +68,6 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-
-        /**
-         *  109306 1100 {"fields":"birthday,gender,sec_mobile,sec_email,personalid,username"} 游戏
-         68757  1115 {"fields":"uniqname,birthday,gender,sec_mobile"}                      搜狗阅读
-         4473   1100 {"fields":"userid"}                                                   游戏
-         1485   1024 {"fields":"sec_mobile,sec_email"}                                     搜狗地图
-         752    1065 {"fields":"uniqname"}                                                 浏览器
-         276    1099 {"fields":"uniqname,avatarurl"}                                       手机助手
-         54     2008 {"fields":"uniqname,username,gender,avatarurl"}                       搜狗游戏盒子
-         17     1099 {"fields":"uniqname"}                                                 手机助手
-         */
-
         //第三方获取个人资料
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(params.getUserid());
 //        调用内部接口
