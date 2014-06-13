@@ -19,8 +19,7 @@
 <form action="/testRSA.jsp" method="post">
 <table>
     <tr>
-        <th>公钥加密</th>
-        <td>
+        <th>公钥加密</th>       <td>
             <textarea name="content" cols="20" rows="5"></textarea>
         </td>
         <td><input type="hidden" name="type" value="en">
@@ -61,7 +60,6 @@
                 //加密
                 out.print(URLEncoder.encode(new String(Base64Coder.encode(RSA.encryptByPublicKey(contentByte, TokenGenerator.PUBLIC_KEY))),"UTF-8"));
             }
-
         }
 
     %></textarea>
