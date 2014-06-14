@@ -28,6 +28,13 @@ import java.util.concurrent.RecursiveTask;
 
 /**
  * 搜狐昵称迁移Task
+ * <p/>
+ * 失败结果解析：
+ * <p/>
+ * A：调用搜狐接口超时、或者其他错误
+ * B：插入到u_p_m 昵称映射表失败
+ * C：
+ * <p/>
  * User: chengang
  * Date: 14-6-13
  * Time: 下午7:00
@@ -46,22 +53,15 @@ public class SoHuNNMigrationTask extends RecursiveTask<List<String>> {
 
     private RedisUtils redisUtils;
 
-
-    private String filePath;
-
-    //结果文件
-    private List<String> operateUpmList = Lists.newLinkedList();
-
-    //操作account 结果文件
-    private List<String> operateAccountList = Lists.newLinkedList();
+    private String file;
 
     public SoHuNNMigrationTask(UniqNamePassportMappingDAO uniqNamePassportMappingDAO, AccountDAO accountDAO,
-                               DBShardRedisUtils dbShardRedisUtils, RedisUtils redisUtils, String filePath) {
+                               DBShardRedisUtils dbShardRedisUtils, RedisUtils redisUtils, String file) {
         this.uniqNamePassportMappingDAO = uniqNamePassportMappingDAO;
         this.accountDAO = accountDAO;
         this.dbShardRedisUtils = dbShardRedisUtils;
         this.redisUtils = redisUtils;
-        this.filePath = filePath;
+        this.file = file;
     }
 
 
@@ -69,7 +69,7 @@ public class SoHuNNMigrationTask extends RecursiveTask<List<String>> {
     protected List<String> compute() {
         List<String> failList = Lists.newLinkedList();
 
-        Path dataPath = Paths.get(filePath);
+        Path dataPath = Paths.get(file);
         try (BufferedReader reader = Files.newBufferedReader(dataPath, Charset.defaultCharset())) {
             String passportId;
             while ((passportId = reader.readLine()) != null) {
@@ -116,7 +116,7 @@ public class SoHuNNMigrationTask extends RecursiveTask<List<String>> {
                         } else {
                             failList.add("B:" + passportId);
                         }
-                    } else {
+                    } else if (!u_p_m_passportId.equalsIgnoreCase(passportId)) {
                         //昵称已经存在，已经被占用，则跳过! “|” 前面是test库中 userid、后面是 upm中占用此昵称的 userid
                         failList.add("C:" + passportId + " | " + u_p_m_passportId);
                     }
