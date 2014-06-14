@@ -48,16 +48,12 @@ public class MigrationTask extends RecursiveTask<List<String>> {
     private static final int LIMIT_HOLD = 150000;
 //    private static final int LIMIT_HOLD = 100;
 
-    //    @Autowired
     private AccountDAO accountDAO;
 
-    //    @Autowired
     private AccountBaseInfoDAO baseInfoDAO;
 
-    //    @Autowired
     private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
 
-    //    @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
 
