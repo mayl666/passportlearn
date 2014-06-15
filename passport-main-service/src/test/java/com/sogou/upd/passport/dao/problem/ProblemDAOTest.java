@@ -37,10 +37,6 @@ public class ProblemDAOTest extends BaseDAOTest {
 //      Assert.assertTrue(row != 0);
     }
 
-    @After
-    public void end() {
-    }
-
     /**
      * 测试单条记录查询
      */

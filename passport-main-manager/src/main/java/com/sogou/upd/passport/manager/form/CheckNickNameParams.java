@@ -44,7 +44,7 @@ public class CheckNickNameParams {
         return nickname;
     }
 
-    public void setNickname(String nickname) throws UnsupportedEncodingException {
+    public void setNickname(String nickname) {
         this.nickname = nickname;
     }
 

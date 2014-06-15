@@ -88,14 +88,14 @@ public interface AccountService {
      *
      * @return Result格式的返回值, 成功或失败，返回提示信息
      */
-    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws Exception;
+    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException;
 
     /**
      * 激活验证邮件
      *
      * @return
      */
-    public boolean activeEmail(String username, String token, int clientId) throws Exception;
+    public boolean activeEmail(String username, String token, int clientId) throws ServiceException;
 
     /**
      * 种根域和子域下的cookie
@@ -179,6 +179,6 @@ public interface AccountService {
      * @return
      * @throws Exception
      */
-    public String checkUniqName(String nickname) throws Exception;
+    public String checkUniqName(String nickname) throws ServiceException;
 
 }

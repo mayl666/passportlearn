@@ -16,10 +16,4 @@ public class ProblemServiceTest extends AbstractJUnit4SpringContextTests {
     @Autowired
     private ProblemService problemService;
 
-    /**
-     * 测试查询是否成功
-     */
-    @Test
-    public void testQueryProblemListByPassportId() {
-    }
 }

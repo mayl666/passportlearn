@@ -24,9 +24,4 @@ public class JodaTimeTest {
         Assert.assertEquals(time1, dateTime.getMillis()+expiresIn*1000);
     }
 
-
-    @Test
-    public void testTime(){
-
-    }
 }

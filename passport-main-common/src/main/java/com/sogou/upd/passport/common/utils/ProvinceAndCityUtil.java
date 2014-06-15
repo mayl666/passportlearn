@@ -561,7 +561,7 @@ public class ProvinceAndCityUtil {
      * @param provinceCode
      * @return
      */
-    public static final String getProvinceByPCode(String provinceCode) {
+    public static String getProvinceByPCode(String provinceCode) {
         return immutableProvinceMap.get(provinceCode);
     }
 
@@ -571,7 +571,7 @@ public class ProvinceAndCityUtil {
      * @param cityCode
      * @return
      */
-    public static final String getCityByCityCode(String cityCode) {
+    public static String getCityByCityCode(String cityCode) {
         return immutableCityMap.get(cityCode);
     }
 }

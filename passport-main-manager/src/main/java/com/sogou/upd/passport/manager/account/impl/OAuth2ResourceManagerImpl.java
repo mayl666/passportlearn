@@ -212,7 +212,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return finalResult;
             }
             String passportId = pcAccountTokenService.getPassportIdByToken(accessToken, appConfig.getClientSecret());
-            ;
             if (Strings.isNullOrEmpty(passportId)) {
                 finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return finalResult;

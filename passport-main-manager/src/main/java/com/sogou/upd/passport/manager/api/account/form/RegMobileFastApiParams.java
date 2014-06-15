@@ -9,6 +9,7 @@ public class RegMobileFastApiParams extends BaseMoblieApiParams {
 
     @NotBlank(message = "createip不允许为空")
     private String createip;  //用户真实ip
+    private String type; //wap端注册时才用到此字段，值为wap
 
     public RegMobileFastApiParams(){
 
@@ -20,5 +21,13 @@ public class RegMobileFastApiParams extends BaseMoblieApiParams {
 
     public void setCreateip(String createip) {
         this.createip = createip;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -28,11 +28,14 @@ public interface RegManager {
      * 1.判断createip是否中安全限制；
      * 2.判断手机号是否被绑定或已被注册；
      * 3.生成手机账号，并发送验证码；
+     * 4.如果是wap端注册，额外返回sgid
      * @param mobile 要注册的手机号
      * @param clientId 应用ID
+     * @param createip 用户真实ip
+     * @param type wap端注册时才用到此字段，值为wap
      * @return Result格式的返回值，提示注册成功信息
      */
-    public Result fastRegisterPhone(String mobile, int clientId, String createip);
+    public Result fastRegisterPhone(String mobile, int clientId, String createip, String type);
 
     /**
      * 激活验证邮件

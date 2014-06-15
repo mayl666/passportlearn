@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
@@ -189,14 +190,14 @@ public class RegisterApiController extends BaseController {
      * passport生成该手机号对应的“手机号@sohu.com”账号，并给用户下发随机密码，用户使用手机号和随机密码即可登录。
      * 供搜狗小说使用
      *
-     * @param request
+     * @param req
      * @param params
      * @return
      */
     @InterfaceSecurity
     @RequestMapping(value = "/regmobilefast", method = RequestMethod.POST)
     @ResponseBody
-    public Object regMobileFast(HttpServletRequest request, RegMobileFastApiParams params) {
+    public Object regMobileFast(HttpServletRequest req, RegMobileFastApiParams params) {
         Result result = new APIResultSupport(false);
         String createIp = params.getCreateip();
         String mobile = params.getMobile();
@@ -211,12 +212,12 @@ public class RegisterApiController extends BaseController {
             }
             int clientId = Integer.valueOf(params.getClient_id());
             //判断访问者是否有权限
-            if (!commonManager.isAccessAccept(clientId, getIp(request), "regmobilefast")) {
+            if (!commonManager.isAccessAccept(clientId, getIp(req), "regmobilefast")) {
                 result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
                 return result.toString();
             }
             // 调用内部接口
-            result = regManager.fastRegisterPhone(mobile, clientId, createIp);
+            result = regManager.fastRegisterPhone(mobile, clientId, createIp, params.getType());
         } catch (Exception e) {
             logger.error("regMobileFast:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
         } finally {
@@ -224,8 +225,7 @@ public class RegisterApiController extends BaseController {
             String passportId = (String) result.getModels().get("userid");
             passportId = Strings.isNullOrEmpty(passportId) ? mobile : passportId;
             UserOperationLog userOperationLog = new UserOperationLog(passportId, String.valueOf(params.getClient_id()), result.getCode(), createIp);
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("ref", referer);
+            userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
