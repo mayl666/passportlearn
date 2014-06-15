@@ -103,4 +103,36 @@ public interface AccountBaseInfoDAO {
     public int getConnectTotalCount() throws DataAccessException;
 
 
+    /**
+     * account_base_info 表昵称、头像迁移至 account_0~32表，查询非第三方账号数据总数
+     *
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("select count(*) from " + TABLE_NAME + " where passport_id NOT LIKE \'%@%.sohu.com\'")
+    public int getNotThirdPartyTotalCount() throws DataAccessException;
+
+
+    /**
+     * account_base_info 表昵称、头像迁移至 account_0~32表,分页查询非第三方账号数据
+     *
+     * @param pageIndex 起始位置
+     * @param pageSize  每页查询总数
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("select" +
+            ALL_FIELD +
+            "from" +
+            TABLE_NAME +
+            " where passport_id NOT LIKE \'%@%.sohu.com\' LIMIT :pageIndex,:pageSize")
+    public List<AccountBaseInfo> getNotThirdPartyAccountByPage(@SQLParam("pageIndex") int pageIndex,
+                                                               @SQLParam("pageSize") int pageSize) throws DataAccessException;
+
+
+
+
+
+
+
 }

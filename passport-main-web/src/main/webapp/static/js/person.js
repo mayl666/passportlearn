@@ -21,7 +21,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
         return $el.parent().parent().find('.' + className);
     };
     var checkNickname = function($el, cb) {
-        var ipt = $el.find('input[name="nickname"]');
+        var ipt = $el.find('input[name="uniqname"]');
         if (!ipt || !ipt.length) {
             cb && cb(0);
             return;
@@ -633,7 +633,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                         var date = new Date(year, month-1, day);//may be a invalid date
                         //Check whether the date is illegal
                         if (!(date.getFullYear() == year && date.getMonth() == month-1 && date.getDate() == day)) {
-                            return alert("日期不合法");
+                            return alert("请选择正确的生日");
                         } else {
                             if(month<10)month="0"+String(month);
                             if(day<10)day="0"+String(day);
@@ -646,7 +646,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                         //as DOM could be modified.
 
                         //if nickname has never changed,do not check
-                        if ($("#NicknameIpt").val() != decodeURIComponent(data.uniqname)) {
+                        if ($("#UniqnameIpt").val() != decodeURIComponent(data.uniqname)) {
                             checkNickname($el, function(status) {
                                 if (!+status) {
                                     $.post($el.attr('action'), $el.serialize(), function(data) {
@@ -690,7 +690,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                     history.back();
                 });
 
-                $el.find('input[name=nickname]').blur(function() {
+                $el.find('input[name=uniqname]').blur(function() {
                     if(data.uniqname==$(this).val())return;
                     var errorspan = $(this).parent().parent().find('.error');
                     if (!errorspan || !errorspan.length || errorspan.css('display') == 'none') {
@@ -700,14 +700,16 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                     }
                 });
 
-                var birthday = (/\d{4}\-\d{1,2}\-\d{1,2}/.test(data.birthday)) ? data.birthday.split('-') : [1987, 0, 1];
-                if (birthday.length != 3) birthday = [1987, 0, 1]; //Default:Thu Jan 01 1987 00:00:00 GMT+0900 (CST)
+                var birthday = (/\d{4}\-\d{1,2}\-\d{1,2}/.test(data.birthday)) ? data.birthday.split('-') : [-1, -1, -1];
+                if (birthday.length != 3) birthday = [-1, -1, -1]; 
 
                 var yearS = $("#s-year");
                 var monthS = $("#s-month");
                 var dayS = $("#s-day");
 
                 var thisYear=new Date().getFullYear();
+
+                yearS.append('<option value="-1">请选择</option>');
                 //From 1900 AD. to this year
                 for (var i = 1900; i <=thisYear;  ++i) {
                     yearS.append("<option value=" + i + ">" + i + "</option>");
@@ -715,12 +717,14 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                 //Set input
                 yearS.val(+birthday[0]);
 
+                monthS.append('<option value="-1">请选择</option>');
                 for (var i = 0; i <=11; ++i) {
                     monthS.append("<option value=" +(1+ i )+ ">" +(i+1)+ "</option>");
                 }
                 //Sever offers the month at 1.Damn.
                 monthS.val(+birthday[1] );
 
+                dayS.append('<option value="-1">请选择</option>');
                 //Note that Jan has 31 days,even not 1st or 1987.
                 //If u wanna change the default month,u may need to change here.
                 for (var i = 1; i <= 31; ++i) {

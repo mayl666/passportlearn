@@ -11,6 +11,9 @@
     <bean id="masterDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
+            <!--<value>jdbc:mysql://passport03.upd.mysql.db.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
+            <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/test?characterEncoding=utf-8</value>-->
+            <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
             <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
@@ -58,6 +61,9 @@
     <bean id="slaveDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
+            <!--<value>jdbc:mysql://readpassport03.upd.mysql.db.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
+            <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/test?characterEncoding=utf-8</value>-->
+            <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
             <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
@@ -120,10 +126,13 @@
         <property name="partitions">
             <list>
                 <value>sg-str-hash:account:passport_id:account_{0}:32</value>
+                <value>sg-str-hash:account_info:passport_id:account_info_{0}:32</value>
                 <value>sg-str-hash:connect_token:passport_id:connect_token_{0}:32</value>
                 <value>sg-str-hash:connect_relation:passport_id:connect_relation_{0}:32</value>
                 <!-- 昵称映射表 根据昵称分32张子表 -->
                 <value>sg-str-hash:uniqname_passportid_mapping:uniqname:uniqname_passportid_mapping_{0}:32</value>
+                <!-- 手机映射表 分32张子表-->
+                <value>sg-str-hash:mobile_passportid_mapping:mobile:mobile_passportid_mapping_{0}:32</value>
             </list>
         </property>
     </bean>

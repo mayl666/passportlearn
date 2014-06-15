@@ -202,8 +202,12 @@ public class SecureManagerImpl implements SecureManager {
                 getUserInfoApiparams.setClient_id(clientId);
 //                getUserInfoApiparams.setImagesize("50");
                 getUserInfoApiparams.setFields(SECURE_FIELDS /*+",uniqname,avatarurl"*/);
+
+                //调用sohu 接口取用户信息
                 result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
 
+
+                //调 sohu+ manager 取用户信息
                 Result shPlusResult = shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                 if (shPlusResult.isSuccess()) {
                     Object obj = shPlusResult.getModels().get("baseInfo");
@@ -464,7 +468,7 @@ public class SecureManagerImpl implements SecureManager {
                 result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                 Map<String, String> mapResult = result.getModels();
                 String mobile = mapResult.get("sec_mobile");
-                result =  mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
+                result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
             } else {
                 result = checkMobileCodeByPassportId(userId, clientId, smsCode);
             }

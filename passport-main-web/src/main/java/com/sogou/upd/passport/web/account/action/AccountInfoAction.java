@@ -81,9 +81,22 @@ public class AccountInfoAction extends BaseController {
         updateUserUniqnameApiParams.setUniqname(checkOrUpdateNickNameParams.getNickname());
         updateUserUniqnameApiParams.setClient_id(SHPPUrlConstant.APP_ID);
         result = sgUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
+
+        //用于记录log
+        UserOperationLog userOperationLog = new UserOperationLog("", String.valueOf(SHPPUrlConstant.APP_ID), result.getCode(), getIp(request));
+        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
+
+    /**
+     * TODO 此方法无调用 ，之后可删除
+     *
+     * @param request
+     * @param checkOrUpdateNickNameParams
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/userinfo/updatenickname", method = RequestMethod.POST)
     @LoginRequired(resultType = ResponseResultType.redirect)
     @ResponseBody
@@ -110,7 +123,18 @@ public class AccountInfoAction extends BaseController {
 
     }
 
-    //获取用户信息
+    /**
+     * 获取用户信息
+     * <p/>
+     * 数据迁移前（全量数据+增量数据完成导入前）:非第三方账号用户昵称、头像信息 读取account_base_info表，用户其他信息通过调用搜狐api获取
+     * <p/>
+     * 目标:数据迁移后（全量数据+增量数据完成导入后）:非第三方账号用户昵称、头像信息 读取account_0~32表，用户其他信息读取account_info_0~32表
+     *
+     * @param request
+     * @param params
+     * @param model
+     * @return
+     */
     @RequestMapping(value = "/userinfo/getuserinfo", method = RequestMethod.GET)
     @LoginRequired(resultType = ResponseResultType.redirect)
     public String obtainUserinfo(HttpServletRequest request, ObtainAccountInfoParams params, Model model) {
@@ -138,10 +162,19 @@ public class AccountInfoAction extends BaseController {
             }
 
             params.setUsername(userId);
+            //获取用户信息
+
+            //TODO 待修改获取用户信息
+
             result = accountInfoManager.getUserInfo(params);
 //            result.getModels().put("uniqname",(String)result.getModels().get("uniqname"));
+
+            //TODO 待修改此处取昵称
             result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(params.getUsername(), clientId));
 
+            //用于记录log
+            UserOperationLog userOperationLog = new UserOperationLog(userId, params.getClient_id(), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (result.isSuccess()) {
@@ -162,7 +195,6 @@ public class AccountInfoAction extends BaseController {
     @ResponseBody
     public String updateUserInfo(HttpServletRequest request, AccountInfoParams infoParams) {
         Result result = new APIResultSupport(false);
-
         if (hostHolder.isLogin()) {
 
             //参数验证
@@ -185,12 +217,11 @@ public class AccountInfoAction extends BaseController {
             infoParams.setUsername(userId);
             result = accountInfoManager.updateUserInfo(infoParams, ip);
             UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(infoParams.getClient_id()), result.getCode(), getIp(request));
+
             UserOperationLogUtil.log(userOperationLog);
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
-
-
         return result.toString();
     }
 
@@ -224,8 +255,7 @@ public class AccountInfoAction extends BaseController {
 
             byte[] byteArr = multipartFile.getBytes();
             result = accountInfoManager.uploadImg(byteArr, userId, "0");
-            UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-            UserOperationLogUtil.log(userOperationLog);
+
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
@@ -281,6 +311,10 @@ public class AccountInfoAction extends BaseController {
 //                result = secureManager.queryAccountSecureInfo(userId, 1120, false);
 //            }
             result = secureManager.queryAccountSecureInfo(userId, 1120, false);
+
+            //用于记录log
+            UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(SHPPUrlConstant.APP_ID), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {

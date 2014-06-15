@@ -20,7 +20,7 @@ public enum ConnectDomainEnum {
     PINYIN("pinyin.qq.com"), //pinyin.qq.com
     WUBI(" wubi.qq.com"), // wubi.qq.com
     SHURU("shuru.qq.com"), //shuru.qq.com
-    PINYIN_CN("pinyin.cn"); //pinyin.cn
+    PINYIN_CN("qq.pinyin.cn"); //qq.pinyin.cn
 
 
     private String connectType;

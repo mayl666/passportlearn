@@ -36,8 +36,8 @@ public class PhotoUtils {
 
     private HttpClient httpClient;
 
-    private String storageEngineURL ;
-    private int timeout=5000;               // timeout毫秒数
+    private String storageEngineURL;
+    private int timeout = 5000;               // timeout毫秒数
     private String appid;
     private Map<String, String> sizeToAppIdMap = null;
     private List<String> listCDN = null;
@@ -72,6 +72,7 @@ public class PhotoUtils {
         listCDN.add("http://img03.sogoucdn.com");
         listCDN.add("http://img04.sogoucdn.com");
     }
+
     //图片名生成
     public String generalFileName() {
         StringBuilder sb = new StringBuilder();
@@ -114,6 +115,7 @@ public class PhotoUtils {
 
     /**
      * 根据网络图片的Url，切割图片并上传图片平台
+     *
      * @param webUrl 网络图片的url
      * @return imgUrl sg图片Url
      */

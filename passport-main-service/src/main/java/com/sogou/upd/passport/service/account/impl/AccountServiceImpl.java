@@ -20,14 +20,12 @@ import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
-import org.apache.commons.lang.StringUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -109,7 +107,8 @@ public class AccountServiceImpl implements AccountService {
             account.setRegIp(ip);
             account.setAccountType(provider);
             account.setFlag(AccountStatusEnum.REGULAR.getValue());
-            if (AccountTypeEnum.isConnect(provider)) {
+            if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider)) {
+                //对于第三方账号和sohu域账号来讲，无密码  搜狗账号迁移完成后，需要增加一个值表示无密码
                 account.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
             } else {
                 account.setPasswordtype(PasswordTypeEnum.CRYPT.getValue());
@@ -122,7 +121,7 @@ public class AccountServiceImpl implements AccountService {
             long id = accountDAO.insertOrUpdateAccount(passportId, account);
             if (id != 0) {
                 String cacheKey = buildAccountKey(passportId);
-                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return account;
             }
         } catch (Exception e) {
@@ -136,6 +135,31 @@ public class AccountServiceImpl implements AccountService {
         return initialAccount(passportId, null, false, ip, provider);
     }
 
+    /**
+     * 非第三方账号迁移，新写 初始化 Account 方法
+     *
+     * @param account
+     * @return
+     * @throws ServiceException
+     */
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public boolean initAccount(Account account) throws ServiceException {
+        boolean initSuccess = false;
+        try {
+            long id = accountDAO.insertOrUpdateAccount(account.getPassportId(), account);
+            if (id != 0) {
+                initSuccess = true;
+                String cacheKey = buildAccountKey(account.getPassportId());
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+                return initSuccess;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return initSuccess;
+    }
+
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccountByPassportId", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public Account queryAccountByPassportId(String passportId) throws ServiceException {
@@ -147,7 +171,7 @@ public class AccountServiceImpl implements AccountService {
             if (account == null) {
                 account = accountDAO.getAccountByPassportId(passportId);
                 if (account != null) {
-                    dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.THREE_MONTH);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -193,13 +217,28 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public boolean deleteAccountByPassportId(String passportId) throws ServiceException {
+        try {
+            int row = accountDAO.deleteAccountByPassportId(passportId);
+            if (row != 0) {
+                String cacheKey = buildAccountKey(passportId);
+                redisUtils.delete(cacheKey);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Override
     public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException {
         try {
 //            int row = accountDAO.deleteAccountByPassportId(passportId);
 //            if (row != 0) {
-                String cacheKey = buildAccountKey(passportId);
-                dbShardRedisUtils.delete(cacheKey);
-                return true;
+            String cacheKey = buildAccountKey(passportId);
+            dbShardRedisUtils.delete(cacheKey);
+            return true;
 //            }
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -507,7 +546,7 @@ public class AccountServiceImpl implements AccountService {
                 if (row > 0) {
                     String cacheKey = buildAccountKey(passportId);
                     account.setUniqname(uniqname);
-                    dbShardRedisUtils.set(cacheKey, account);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
 
                     //第一次直接插入
                     if (Strings.isNullOrEmpty(oldUniqName)) {
@@ -546,14 +585,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean updateAvatar(Account account, String avatar) {
         try {
-            String oldUniqName = account.getUniqname();
             String passportId = account.getPassportId();
             //更新数据库
             int row = accountDAO.updateAvatar(avatar, passportId);
             if (row > 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setAvatar(avatar);
-                dbShardRedisUtils.set(cacheKey, account);
+//                dbShardRedisUtils.set(cacheKey, account);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
         } catch (Exception e) {

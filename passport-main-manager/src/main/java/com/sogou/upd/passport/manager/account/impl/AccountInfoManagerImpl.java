@@ -1,16 +1,13 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
@@ -25,7 +22,6 @@ import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.service.account.AccountService;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Calendar;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,8 +52,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     private UserInfoApiManager shPlusUserInfoApiManager;
     @Autowired
     private AccountBaseInfoDAO accountBaseInfoDAO;
-    @Autowired
-    private OAuth2ResourceManager oAuth2ResourceManager;
     @Autowired
     private AccountService accountService;
 
@@ -272,6 +265,16 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         return result;
     }
 
+    /**
+     * 获取用户信息
+     * <p/>
+     * 非第三方账号迁移完成后
+     * 用户昵称、头像信息 读写 account_base_info 切换到 account_0~32
+     * 用户其他信息 读写调用搜狐Api 切换到 读写 account_info_0~32
+     *
+     * @param params
+     * @return
+     */
     @Override
     public Result getUserInfo(ObtainAccountInfoParams params) {
         Result result = new APIResultSupport(false);
@@ -284,7 +287,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             if (domain == AccountDomainEnum.THIRD) {
                 result = sgUserInfoApiManager.getUserInfo(infoApiparams);
             } else {
+
                 result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
+
                 //其中昵称和头像是获取的account_base_info
                 if (infoApiparams.getFields().contains("avatarurl") || infoApiparams.getFields().contains("uniqname")) {
                     AccountBaseInfo baseInfo = getBaseInfo(infoApiparams.getUserid());
@@ -346,6 +351,12 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         return updateUserUniqnameApiParams;
     }
 
+    /**
+     * 用户 昵称、头像 信息读 account_base_info
+     *
+     * @param passportId
+     * @return
+     */
     private AccountBaseInfo getBaseInfo(String passportId) {
         GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
         infoApiparams.setUserid(passportId);

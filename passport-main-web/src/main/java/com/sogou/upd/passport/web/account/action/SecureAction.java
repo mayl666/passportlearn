@@ -262,7 +262,7 @@ public class SecureAction extends BaseController {
         }
 
         result.setSuccess(true);
-        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId,clientId));
+        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -299,7 +299,7 @@ public class SecureAction extends BaseController {
         result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
 
         result.setSuccess(true);
-        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId,clientId));
+        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -516,7 +516,7 @@ public class SecureAction extends BaseController {
                 result.setMessage("手机号已绑定其他账号");
                 return result.toString();
             }
-            result = secureManager.sendMobileCode(newMobile,clientId,AccountModuleEnum.SECURE);
+            result = secureManager.sendMobileCode(newMobile, clientId, AccountModuleEnum.SECURE);
         } catch (Exception e) {
             logger.error("method[sendSmsNewMobile] send mobile sms to new mobile error.{}", e);
         } finally {

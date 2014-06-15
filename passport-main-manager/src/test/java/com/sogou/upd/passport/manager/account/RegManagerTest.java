@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager.account;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
@@ -43,6 +42,20 @@ public class RegManagerTest extends BaseTest {
         Assert.assertTrue(result.isSuccess());
         System.out.println(result.toString());
         System.out.println(result.getModels().get("sgid").toString());
+
+    }
+
+    /**
+     * 检查用户名是否存在
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testCheckUser() throws Exception {
+        String username = "dfrere-erer@qq.com";
+        Result result = regManager.isAccountNotExists(username, false, clientId);
+        Assert.assertTrue(result.isSuccess());
+        System.out.println("结果如下：" + result.toString());
 
     }
 }
