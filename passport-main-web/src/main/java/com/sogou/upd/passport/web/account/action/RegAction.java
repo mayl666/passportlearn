@@ -123,10 +123,6 @@ public class RegAction extends BaseController {
 
             ip = getIp(request);
 
-            if(ip.equals("113.16.48.82")) {
-                result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
-                return result.toString();
-            }
             //校验用户是否允许注册
             uuidName = ServletUtil.getCookie(request, "uuidName");
             result = regManager.checkRegInBlackList(ip, uuidName);
