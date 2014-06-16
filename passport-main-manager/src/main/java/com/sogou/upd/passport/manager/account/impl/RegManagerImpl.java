@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -318,6 +319,9 @@ public class RegManagerImpl implements RegManager {
                 accountSecureService.getUpdateSuccessFlag(passportId)) {
             //手机号检查用户名且主账号有更新绑定手机的操作时，调用sohu api检查账号是否可用
             result = checkUserFromSohu(username, clientId);
+            //存在主账号更新绑定手机去sohu查的情况就记录log
+            String message = CommonConstant.CHECK_MESSAGE;
+            LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.REGISTER, "isAccountNotExists", message, username, passportId, result.toString());
         } else {
             //没有更新绑定手机时，走正常的双读检查账号是否可用流程
             CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
@@ -326,8 +330,8 @@ public class RegManagerImpl implements RegManager {
                 result = checkUserFromSohu(username, clientId);
                 if (!result.isSuccess()) {
                     //检查用户名是否存在时，SG不存在，SH存在，全量数据迁移有遗漏或是双读延迟;未激活外域来登录
-                    String message = "SoGouNotExist-SoHuExist";
-                    LogUtil.buildErrorLog(checkLogger, message, username, passportId, result.toString());
+                    String message = CommonConstant.CHECK_SGN_SHY_MESSAGE;
+                    LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.REGISTER, "isAccountNotExists", message, username, passportId, result.toString());
                 }
             }
         }
