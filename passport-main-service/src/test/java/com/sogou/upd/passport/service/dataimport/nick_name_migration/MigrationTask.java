@@ -120,8 +120,6 @@ public class MigrationTask extends RecursiveTask<List<String>> {
                                             LOGGER.error("update account error.", e);
                                             continue;
                                         }
-                                        //更新缓存
-                                        dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                                     } else {
                                         //更新db失败、记录Log : fail_update_account.txt
                                         updateDBFailList.add(passportId);
