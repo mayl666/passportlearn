@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -326,11 +327,23 @@ public class RegManagerImpl implements RegManager {
                 result = checkUserFromSohu(username, clientId);
                 if (!result.isSuccess()) {
                     //检查用户名是否存在时，SG不存在，SH存在，全量数据迁移有遗漏或是双读延迟;未激活外域来登录
-                    checkLogger.error("SoGouNotExist-SoHuExist,username:{};passportId:{};time:{}", username, passportId, new Date());
+                    String message = "SoGouNotExist-SoHuExist";
+                    buildErrorLog(message, username, passportId);
                 }
             }
         }
         return result;
+    }
+
+
+    private void buildErrorLog(String message, String username, String passportId) {
+        StringBuilder log = new StringBuilder();
+        Date date = new Date();
+        log.append(new SimpleDateFormat("yyy-MM-dd_HH:mm:ss").format(date));    //记录时间
+        log.append("\t").append(message);                                       //记录原因
+        log.append("\t").append(username);                                      //记录用户名
+        log.append("\t").append(passportId);                                    //记录主账号
+        checkLogger.error(log.toString());                                     //写log
     }
 
 
