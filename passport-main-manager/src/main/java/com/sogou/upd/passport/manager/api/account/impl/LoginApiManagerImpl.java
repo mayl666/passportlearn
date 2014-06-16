@@ -1,9 +1,9 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -17,9 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -80,12 +77,12 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                         //读SG失败，读SH成功，记录userid，便于验证数据同步情况
                         //日志记录可能存在的情况：新注册用户登录时，同步延迟；用户找回密码后登录；用户校验密码失败等
                         String message = "SoGouError-SoHuSuccess";
-                        buildErrorLog(message, authUserApiParams.getUserid(), passportId, null);
+                        LogUtil.buildErrorLog(readLogger, message, authUserApiParams.getUserid(), passportId, result.toString());
                     } else {
                         //记录下来SH验证失败的情况:去除真正是用户名和密码都不匹配的情况
                         if (!ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(result.getCode())) {
                             String message = "SoGouError-SoHuError";
-                            buildErrorLog(message, authUserApiParams.getUserid(), passportId, result.toString());
+                            LogUtil.buildErrorLog(readLogger, message, authUserApiParams.getUserid(), passportId, result.toString());
                         }
                     }
                 }
@@ -93,20 +90,6 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
         }
         return result;
     }
-
-    private void buildErrorLog(String message, String username, String passportId, String resultString) {
-        StringBuilder log = new StringBuilder();
-        Date date = new Date();
-        log.append(new SimpleDateFormat("yyy-MM-dd_HH:mm:ss").format(date));    //记录时间
-        log.append("\t").append(message);                                       //记录原因
-        log.append("\t").append(username);                                      //记录用户名
-        log.append("\t").append(passportId);                                    //记录主账号
-        if (!Strings.isNullOrEmpty(resultString)) {
-            log.append("\t").append(resultString);                             //记录搜狐返回的结果
-        }
-        readLogger.error(log.toString());                                     //写log
-    }
-
 
     @Override
     public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {
