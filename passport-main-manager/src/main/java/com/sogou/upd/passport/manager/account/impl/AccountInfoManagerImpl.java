@@ -456,6 +456,28 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
         Account account = accountService.queryAccountByPassportId(passportId);
         if (account != null) {
+            if (!StringUtils.contains(params.getFields(), "uniqname") && !StringUtils.contains(params.getFields(), "avatarurl")) {
+                result.getModels().put("account", account);
+                result.setDefaultModel("userid", passportId);
+                result.setSuccess(true);
+                return result;
+            }
+            if (Strings.isNullOrEmpty(account.getUniqname()) || Strings.isNullOrEmpty(account.getAvatar())) {
+                if (domain == AccountDomainEnum.THIRD) {
+                    ConnectToken token = getConnectToken(passportId, clientId);
+                    if (token != null) {
+                        if (Strings.isNullOrEmpty(uniqname)) {
+                            uniqname = token.getConnectUniqname();
+                        }
+                        if (Strings.isNullOrEmpty(avatarurl)) {
+                            large_avatar = token.getAvatarLarge();
+                            mid_avatar = token.getAvatarMiddle();
+                            tiny_avatar = token.getAvatarSmall();
+                        }
+                    }
+                }
+            }
+
             //参数包含 昵称
             if (StringUtils.contains(params.getFields(), "uniqname")) {
                 uniqname = account.getUniqname();
@@ -474,9 +496,11 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             if (StringUtils.contains(params.getFields(), "avatarurl")) {
                 avatarurl = account.getAvatar();
                 if (Strings.isNullOrEmpty(avatarurl)) {
-                    large_avatar = getConnectToken(passportId, clientId).getAvatarLarge();
-                    mid_avatar = getConnectToken(passportId, clientId).getAvatarMiddle();
-                    tiny_avatar = getConnectToken(passportId, clientId).getAvatarSmall();
+                    if (domain == AccountDomainEnum.THIRD) {
+                        large_avatar = getConnectToken(passportId, clientId).getAvatarLarge();
+                        mid_avatar = getConnectToken(passportId, clientId).getAvatarMiddle();
+                        tiny_avatar = getConnectToken(passportId, clientId).getAvatarSmall();
+                    }
                 } else {
                     Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
                     large_avatar = (String) getPhotoResult.getModels().get("img_180");

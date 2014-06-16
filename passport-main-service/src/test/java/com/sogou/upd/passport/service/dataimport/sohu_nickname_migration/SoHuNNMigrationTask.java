@@ -12,6 +12,7 @@ import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.service.dataimport.datacheck.FullDataCheckApp;
 import com.sogou.upd.passport.service.dataimport.util.ParamUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -72,7 +73,8 @@ public class SoHuNNMigrationTask extends RecursiveTask<List<String>> {
             while ((passportId = reader.readLine()) != null) {
 
                 //构建参数
-                RequestModelXml requestModelXml = ParamUtil.buildRequestModelXml(passportId);
+//                RequestModelXml requestModelXml = ParamUtil.buildRequestModelXml(passportId);
+                RequestModelXml requestModelXml = FullDataCheckApp.buildRequestModelXml(passportId);
 
                 Map<String, Object> mapB = null;
                 //昵称
@@ -84,6 +86,9 @@ public class SoHuNNMigrationTask extends RecursiveTask<List<String>> {
                     if (status == 0) {
                         nickName = mapB.get("uniqname").toString();
                         if (!Strings.isNullOrEmpty(nickName)) {
+                            if ((StringUtils.contains(nickName, "搜狐网友"))) {
+                                continue;
+                            }
                             if (StringUtils.contains(nickName, "在搜狐")) {
                                 nickName = StringUtils.substringBefore(nickName, "在搜狐");
                             }
@@ -106,13 +111,14 @@ public class SoHuNNMigrationTask extends RecursiveTask<List<String>> {
                     if (Strings.isNullOrEmpty(u_p_m_passportId)) {
                         //插入u_p_m 映射表
                         int insertUpmResult = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(nickName, passportId);
-                        if (insertUpmResult > 0) {
+                        if (insertUpmResult < 0) {
                             //更新u_p_m缓存
 //                            String cacheKey = CacheConstant.CACHE_PREFIX_NICKNAME_PASSPORTID + nickName;
 //                            redisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
-                        } else {
                             failList.add("B:" + passportId);
-                        }
+                        } /*else {
+                            failList.add("B:" + passportId);
+                        }*/
                     } else if (!u_p_m_passportId.equalsIgnoreCase(passportId)) {
                         //昵称已经存在，已经被占用，则跳过! “|” 前面是test库中 userid、后面是 upm中占用此昵称的 userid
                         failList.add("C:" + passportId + " | " + u_p_m_passportId);
