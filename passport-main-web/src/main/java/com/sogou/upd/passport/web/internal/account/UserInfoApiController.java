@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -42,7 +41,7 @@ import java.util.Date;
 @RequestMapping("/internal/account")
 public class UserInfoApiController extends BaseController {
 
-    protected static Logger profileLogger = LoggerFactory.getLogger("profileErrorLogger");
+    private static Logger profileErrorLogger = LoggerFactory.getLogger("profileErrorLogger");
 
     //TODO 需要改为配置的，但目前配置有问题
     @InitBinder
@@ -87,7 +86,7 @@ public class UserInfoApiController extends BaseController {
                 result = proxyUserInfoApiManager.getUserInfo(params);
                 //记录Log 跟踪数据同步延时情况
                 String passportId = (String) result.getModels().get("userid");
-                LogUtil.buildErrorLog(profileLogger, AccountModuleEnum.USERINFO, "/internal/account/userinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, passportId, passportId, result.toString());
+                LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "/internal/account/userinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, passportId, passportId, result.toString());
             }
 //            result = proxyUserInfoApiManager.getUserInfo(params);
         }

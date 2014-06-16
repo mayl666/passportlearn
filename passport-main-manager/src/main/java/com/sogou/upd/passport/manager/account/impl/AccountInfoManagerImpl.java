@@ -2,17 +2,15 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
+import com.sogou.upd.passport.common.parameter.*;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
-import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -47,6 +45,7 @@ import java.util.Date;
 @Component("accountInfoManager")
 public class AccountInfoManagerImpl implements AccountInfoManager {
     private static final Logger logger = LoggerFactory.getLogger(AccountInfoManagerImpl.class);
+    private static Logger profileErrorLogger = LoggerFactory.getLogger("profileErrorLogger");
 
     @Autowired
     private PhotoUtils photoUtils;
@@ -59,16 +58,11 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Autowired
     private UserInfoApiManager shPlusUserInfoApiManager;
     @Autowired
-    private AccountBaseInfoDAO accountBaseInfoDAO;
-
-    @Autowired
     private AccountService accountService;
-
     @Autowired
     private ConnectTokenService connectTokenService;
     @Autowired
     private ConnectConfigService connectConfigService;
-
     @Autowired
     private PCAccountManager pcAccountManager;
 
@@ -361,20 +355,22 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
 //        Result result = sgUserInfoApiManager.getUserInfo(infoApiparams);
         Result result;
         // 调用内部接口
-        String passportId = params.getUsername();
+        String username = params.getUsername();
 
         //第三方获取个人资料
-        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
         if (domain == AccountDomainEnum.THIRD) {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);
         } else {
             result = sgUserInfoApiManager.getUserInfo(infoApiparams);
             if (!result.isSuccess()) {
                 //记录Log 跟踪数据同步延时情况
-                logger.warn("Data synchronization delay. passportId {}", passportId);
                 result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
+                //记录Log 跟踪数据同步延时情况
+                String passportId = (String) result.getModels().get("userid");
+                LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "getuserinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, username, passportId, result.toString());
                 if (infoApiparams.getFields().contains("avatarurl") || infoApiparams.getFields().contains("uniqname")) {
-                    result.getModels().put("uniqname", defaultUniqname(passportId));
+                    result.getModels().put("uniqname", defaultUniqname(username));
                     result.getModels().put("avatarurl", StringUtils.EMPTY);
                 }
             }
