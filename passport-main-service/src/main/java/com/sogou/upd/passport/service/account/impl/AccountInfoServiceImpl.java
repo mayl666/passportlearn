@@ -31,8 +31,6 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     @Autowired
     private AccountInfoDAO accountInfoDAO;
     @Autowired
-    private RedisUtils redisUtils;
-    @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
     @Override
@@ -44,7 +42,6 @@ public class AccountInfoServiceImpl implements AccountInfoService {
             if (accountInfo == null) {
                 accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 if (accountInfo != null) {
-//                    dbShardRedisUtils.set(cacheKey, accountInfo);
                     dbShardRedisUtils.setWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
@@ -148,7 +145,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     public boolean deleteAccountInfoCacheByPassportId(String passportId) throws ServiceException {
         try {
             String cacheKey = buildAccountInfoKey(passportId);
-            redisUtils.delete(cacheKey);
+            dbShardRedisUtils.delete(cacheKey);
             return true;
         } catch (Exception e) {
             throw new ServiceException(e);
