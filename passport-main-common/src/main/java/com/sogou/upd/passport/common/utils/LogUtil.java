@@ -28,7 +28,7 @@ public class LogUtil {
      * @param passportId    异常用户对应的主账号
      * @param resultString  搜狐返回的结果
      */
-    /*public static void buildErrorLog(Logger logger, AccountModuleEnum module, String interfaceName, String message, String username, String passportId, String resultString) {
+    public static void buildErrorLog(Logger logger, AccountModuleEnum module, String interfaceName, String message, String username, String passportId, String resultString) {
         StringBuilder log = new StringBuilder();
         Date date = new Date();
         log.append(new SimpleDateFormat("yyy-MM-dd_HH:mm:ss").format(date));                                    //记录时间
@@ -37,8 +37,7 @@ public class LogUtil {
         log.append("\t").append(StringUtil.defaultIfEmpty(message, "-"));                                       //记录原因
         log.append("\t").append(StringUtil.defaultIfEmpty(username, "-"));                                      //记录用户名
         String passportIdLog = null;
-        String prefix = passportId.substring(0, passportId.lastIndexOf(
-                "@sohu.com"));
+        String prefix = passportId.substring(0, passportId.lastIndexOf("@sohu.com"));
         //只记手机号绑定的主账号不是它自己+@sohu.com的情况
         if (!CommonConstant.AUTH_MESSAGE.equals(message) && !CommonConstant.CHECK_MESSAGE.equals(message) && PhoneUtil.verifyPhoneNumberFormat(username) && !username.equals(prefix)) {
             passportIdLog = passportId;
@@ -46,5 +45,5 @@ public class LogUtil {
         log.append("\t").append(StringUtil.defaultIfEmpty(passportIdLog, "-"));                                    //记录主账号
         log.append("\t").append(StringUtil.defaultIfEmpty(resultString, "-"));                                  //记录搜狐返回的结果
         logger.error(log.toString());                                                                           //写log
-    }*/
+    }
 }

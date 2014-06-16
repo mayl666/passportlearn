@@ -149,16 +149,17 @@
         <appender-ref ref="dBRedisMissAppender"/>
     </logger>
 
-    <appender name="shPlusTokenAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="profileErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/shPlusToken/shPlusToken.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/bothAuthUserSyncError/authusererror.log.%d{yyyy-MM-dd}</fileNamePattern>
         </rollingPolicy>
         <encoder>
-            <pattern>%d %msg %n</pattern>
+            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
+            <pattern>%msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="shPlusTokenLogger" level="info" additivity="false">
-        <appender-ref ref="shPlusTokenAppender"/>
+    <logger name="profileErrorLogger" level="info" additivity="false">
+        <appender-ref ref="profileErrorAppender"/>
     </logger>
 
     <!--start:httpClient性能log-->

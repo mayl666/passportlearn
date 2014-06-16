@@ -30,6 +30,9 @@ public class CommonConstant {
     public static final String PC_REDIRECT_AVATARURL = "avatarurl"; //跳转到修改头像页面
     public static final String PC_REDIRECT_PASSWORD = "password"; //跳转到修改密码页面
 
+    public static final String AUTH_MESSAGE = "update-pwd-bindmobile"; //用来读分离时记log时用，主账号有修改绑定手机或密码操作
+    public static final String CHECK_MESSAGE = "update-bindmobile"; //用来读分离时记log时用,检查用户名是否可用时，主账号有修改绑定手机操作
+
 
     public static final String APP_CONNECT_KEY = "100294784";  //搜狗在QQ第三方开放平台的应用id
     public static final String APP_CONNECT_SECRET = "a873ac91cd703bc037e14c2ef47d2021";  //搜狗在QQ第三方开放平台对应的应用密钥
