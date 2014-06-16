@@ -66,13 +66,13 @@ public class AccountServiceImpl implements AccountService {
         String cacheKey = null;
         try {
             cacheKey = buildAccountKey(username);
-            account = redisUtils.getObject(cacheKey, Account.class);
+            account = dbShardRedisUtils.getObject(cacheKey, Account.class);
             if (account != null) {
                 account.setFlag(AccountStatusEnum.REGULAR.getValue());
                 long id = accountDAO.insertAccount(username, account);
                 if (id != 0) {
                     //删除临时账户缓存，成为正式账户
-                    redisUtils.set(cacheKey, account);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                     //更新黑名单缓存
                     cacheKey = CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
                     redisUtils.increment(cacheKey);
@@ -84,7 +84,7 @@ public class AccountServiceImpl implements AccountService {
         } catch (Exception e) {
             throw new ServiceException(e);
         } finally {
-            //删除激活
+            //删除激活邮件的状态
             cacheKey = CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN + username;
             redisUtils.delete(cacheKey);
         }
@@ -222,7 +222,7 @@ public class AccountServiceImpl implements AccountService {
             int row = accountDAO.deleteAccountByPassportId(passportId);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
-                redisUtils.delete(cacheKey);
+                dbShardRedisUtils.delete(cacheKey);
                 return true;
             }
         } catch (Exception e) {
@@ -290,7 +290,7 @@ public class AccountServiceImpl implements AccountService {
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPassword(passwdSign);
-                redisUtils.set(cacheKey, account);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
 
                 return true;
             }
@@ -441,7 +441,7 @@ public class AccountServiceImpl implements AccountService {
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setMobile(newMobile);
-                redisUtils.set(cacheKey, account);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
         } catch (Exception e) {
@@ -458,7 +458,7 @@ public class AccountServiceImpl implements AccountService {
             if (row > 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setFlag(newState);
-                redisUtils.set(cacheKey, account);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
         } catch (Exception e) {
@@ -488,7 +488,7 @@ public class AccountServiceImpl implements AccountService {
             account.setRegIp(ip);
 
             String cacheKey = buildAccountKey(username);
-            redisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.TIME_TWODAY);
+            dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.TIME_TWODAY);
             /*redisUtils.set(cacheKey, account);
             redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);*/
 
@@ -521,11 +521,11 @@ public class AccountServiceImpl implements AccountService {
         String passportId = null;
         try {
             String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-            passportId = redisUtils.get(cacheKey);
+            passportId = dbShardRedisUtils.get(cacheKey);
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    redisUtils.set(cacheKey, passportId);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -554,7 +554,7 @@ public class AccountServiceImpl implements AccountService {
                         row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
                         if (row > 0) {
                             cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                            redisUtils.set(cacheKey, passportId);
+                            dbShardRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                         } else {
                             return false;
                         }
@@ -565,7 +565,7 @@ public class AccountServiceImpl implements AccountService {
                             row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
                             if (row > 0) {
                                 cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                                redisUtils.set(cacheKey, passportId);
+                                dbShardRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                             } else {
                                 return false;
                             }
@@ -591,7 +591,6 @@ public class AccountServiceImpl implements AccountService {
             if (row > 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setAvatar(avatar);
-//                dbShardRedisUtils.set(cacheKey, account);
                 dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
@@ -611,7 +610,7 @@ public class AccountServiceImpl implements AccountService {
                 int row = uniqNamePassportMappingDAO.deleteUniqNamePassportMapping(uniqname);
                 if (row > 0) {
                     String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                    redisUtils.delete(cacheKey);
+                    dbShardRedisUtils.delete(cacheKey);
                     return true;
                 } else if (row == 0) {
                     return true;
