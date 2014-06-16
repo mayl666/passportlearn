@@ -463,7 +463,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                     //非第三方账号
                     uniqname = getAndUpdateUniqname(passportId, account, uniqname);
                 }
-                result.setDefaultModel("uniqname", Coder.encode(uniqname, "UTF-8"));
+                result.setDefaultModel("uniqname", uniqname);
             }
             //参数包含 头像
             if (StringUtils.contains(params.getFields(), "avatarurl")) {
