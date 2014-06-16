@@ -44,7 +44,6 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     private AccountService accountService;
     @Autowired
     private AccountInfoService accountInfoService;
-
     @Autowired
     private AccountInfoManager accountInfoManager;
 
@@ -398,4 +397,3 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     }
 
 }
-

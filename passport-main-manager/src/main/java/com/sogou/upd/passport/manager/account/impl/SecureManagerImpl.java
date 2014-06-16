@@ -257,6 +257,8 @@ public class SecureManagerImpl implements SecureManager {
                 }
             }
 
+//            }
+
             Map<String, String> map = result.getModels();
             result.setModels(map);
 

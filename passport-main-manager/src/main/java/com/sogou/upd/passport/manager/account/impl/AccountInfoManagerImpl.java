@@ -60,7 +60,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     private UserInfoApiManager shPlusUserInfoApiManager;
     @Autowired
     private AccountBaseInfoDAO accountBaseInfoDAO;
-
     @Autowired
     private AccountService accountService;
 
@@ -164,8 +163,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                             baseInfo.setUniqname("");
                             accountBaseInfoDAO.insertAccountBaseInfo(passportId, baseInfo);
                         }
-
-                        //更新缓存
                         String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
                         dbRedisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
                     }
@@ -185,7 +182,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             return result;
         }
     }
-
 
     @Override
     public Result uploadDefaultImg(String webUrl, String clientId) {
@@ -288,7 +284,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         Result result = new APIResultSupport(false);
 
         UpdateUserInfoApiParams updateUserInfoApiParams = null;
-
         // 调用内部接口
         /*if (ManagerHelper.isInvokeProxyApi(infoParams.getUsername())) {
             updateUserInfoApiParams = new UpdateUserInfoApiParams();
@@ -359,9 +354,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         GetUserInfoApiparams infoApiparams = buildGetUserInfoApiparams(params);
         //TODO 非第三方账号迁移完成后，第三方账号、非第三方账号 获取用户信息走相同逻辑、开启此分支
 //        Result result = sgUserInfoApiManager.getUserInfo(infoApiparams);
-
         Result result;
-
         // 调用内部接口
         String passportId = params.getUsername();
 

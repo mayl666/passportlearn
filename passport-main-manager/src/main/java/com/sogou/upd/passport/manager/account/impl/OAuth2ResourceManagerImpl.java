@@ -85,7 +85,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     @Autowired
     private AccountInfoManager accountInfoManager;
 
-
     @Override
     public Result resource(PCOAuth2ResourceParams params) {
         Result result = new OAuthResultSupport(false);
@@ -212,7 +211,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return finalResult;
             }
             String passportId = pcAccountTokenService.getPassportIdByToken(accessToken, appConfig.getClientSecret());
-            ;
             if (Strings.isNullOrEmpty(passportId)) {
                 finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return finalResult;
