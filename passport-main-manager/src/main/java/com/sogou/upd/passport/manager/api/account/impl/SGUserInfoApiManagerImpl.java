@@ -108,48 +108,50 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     }
 
                     if ((ArrayUtils.isNotEmpty(paramArray))) {
+                        int arrayLen = paramArray.length;
                         //查询用户其他信息、查询account_info_0~32
                         AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
-                        int arrayLen = paramArray.length;
-                        for (int i = 0; i < arrayLen; i++) {
-                            try {
-                                if (!"birthday".equals(paramArray[i])) {
-                                    if ("email".equals(paramArray[i])) {
-                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                        result.setDefaultModel("sec_email", value);
-                                        continue;
-                                    }
-                                    if ("question".equals(paramArray[i])) {
-                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                        result.setDefaultModel("sec_ques", value);
-                                        continue;
-                                    }
-                                    if ("fullname".equals(paramArray[i])) {
-                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                        result.setDefaultModel("fullname", value);
-                                        continue;
-                                    }
+                        if (accountInfo != null) {
+                            for (int i = 0; i < arrayLen; i++) {
+                                try {
+                                    if (!"birthday".equals(paramArray[i])) {
+                                        if ("email".equals(paramArray[i])) {
+                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                            result.setDefaultModel("sec_email", value);
+                                            continue;
+                                        }
+                                        if ("question".equals(paramArray[i])) {
+                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                            result.setDefaultModel("sec_ques", value);
+                                            continue;
+                                        }
+                                        if ("fullname".equals(paramArray[i])) {
+                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                            result.setDefaultModel("fullname", value);
+                                            continue;
+                                        }
 
-                                    if ("gender".equals(paramArray[i])) {
-                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                        result.setDefaultModel("gender", value);
-                                        continue;
-                                    }
+                                        if ("gender".equals(paramArray[i])) {
+                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                            result.setDefaultModel("gender", value);
+                                            continue;
+                                        }
 
-                                    if ("personalid".equals(paramArray[i])) {
+                                        if ("personalid".equals(paramArray[i])) {
+                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                            result.setDefaultModel("personalid", value);
+                                            continue;
+                                        }
+                                        //TODO 此处存在异常，有paramArray[i] 不存在于 accountInfo的情况
                                         String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                        result.setDefaultModel("personalid", value);
-                                        continue;
+                                        result.setDefaultModel(paramArray[i], value);
+                                    } else {
+                                        Date birthday = accountInfo.getBirthday();
+                                        result.setDefaultModel(paramArray[i], new SimpleDateFormat("yyyy-MM-dd").format(birthday));
                                     }
-                                    //TODO 此处存在异常，有paramArray[i] 不存在于 accountInfo的情况
-                                    String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                    result.setDefaultModel(paramArray[i], value);
-                                } else {
-                                    Date birthday = accountInfo.getBirthday();
-                                    result.setDefaultModel(paramArray[i], new SimpleDateFormat("yyyy-MM-dd").format(birthday));
+                                } catch (Exception e) {
+                                    paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, paramArray[i]));
                                 }
-                            } catch (Exception e) {
-                                paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, paramArray[i]));
                             }
                         }
                     } else {
