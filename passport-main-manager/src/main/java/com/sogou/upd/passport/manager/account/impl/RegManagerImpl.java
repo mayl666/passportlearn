@@ -157,7 +157,7 @@ public class RegManagerImpl implements RegManager {
             Result mobileBindResult = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
             if (mobileBindResult.isSuccess()) {
                 if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
-                    String passportId = (String) result.getModels().get("userid");
+                    String passportId = (String) mobileBindResult.getModels().get("userid");
                     Result sessionResult = sessionServerManager.createSession(passportId);
                     if (!sessionResult.isSuccess()) {
                         result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
