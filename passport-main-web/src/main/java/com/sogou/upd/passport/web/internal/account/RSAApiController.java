@@ -81,7 +81,7 @@ public class RSAApiController {
                         return result.toString();
                     }
                     result.setCode(ErrorUtil.ERR_SIGNATURE_OR_TOKEN);
-                    return result;
+                    return result.toString();
 
                 } catch (Exception e) {
                     logger.error("ras token error fail, clear text:" + clearText, e);
