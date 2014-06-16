@@ -93,8 +93,11 @@ public class RSAApiController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
                 return result.toString();
             }
+        }else{
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            result.setMessage("加密错误！");
         }
 
-        return result;
+        return result.toString();
     }
 }
