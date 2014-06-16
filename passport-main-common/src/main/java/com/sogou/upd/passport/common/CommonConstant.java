@@ -31,6 +31,9 @@ public class CommonConstant {
     public static final String PC_REDIRECT_PASSWORD = "password"; //跳转到修改密码页面
 
     public static final String AUTH_MESSAGE = "update-pwd-bindmobile"; //用来读分离时记log时用，主账号有修改绑定手机或密码操作
+    public static final String AUTH_SGE_SHS_MESSAGE = "SoGouError-SoHuSuccess"; //用来读分离时记log时用,检查用户名密码时，SG错，SH对
+    public static final String AUTH_SGE_SHE_MESSAGE = "SoGouError-SoHuError"; //用来读分离时记log时用,检查用户名密码时，SG错，SH错
+    public static final String CHECK_SGN_SHY_MESSAGE = "SoGouNotExist-SoHuExist"; //用来读分离时记log时用,检查用户名是否可用时，SG无，SH有
     public static final String CHECK_MESSAGE = "update-bindmobile"; //用来读分离时记log时用,检查用户名是否可用时，主账号有修改绑定手机操作
 
 

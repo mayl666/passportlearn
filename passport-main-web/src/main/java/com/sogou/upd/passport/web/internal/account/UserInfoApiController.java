@@ -1,11 +1,15 @@
 package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
@@ -16,6 +20,8 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import com.sogou.upd.passport.web.converters.CustomDateEditor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -35,6 +41,8 @@ import java.util.Date;
 @Controller
 @RequestMapping("/internal/account")
 public class UserInfoApiController extends BaseController {
+
+    protected static Logger profileLogger = LoggerFactory.getLogger("profileErrorLogger");
 
     //TODO 需要改为配置的，但目前配置有问题
     @InitBinder
@@ -78,7 +86,8 @@ public class UserInfoApiController extends BaseController {
             if (!result.isSuccess()) {
                 result = proxyUserInfoApiManager.getUserInfo(params);
                 //记录Log 跟踪数据同步延时情况
-                logger.warn("Data synchronization delay. passportId {}", params.getUserid());
+                String passportId = (String) result.getModels().get("userid");
+                LogUtil.buildErrorLog(profileLogger, AccountModuleEnum.USERINFO, "/internal/account/userinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, passportId, passportId, result.toString());
             }
 //            result = proxyUserInfoApiManager.getUserInfo(params);
         }
