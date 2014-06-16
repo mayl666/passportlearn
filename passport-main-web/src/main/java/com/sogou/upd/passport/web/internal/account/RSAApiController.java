@@ -1,14 +1,12 @@
 package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Base64Coder;
 import com.sogou.upd.passport.common.math.RSA;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RSAApiParams;
 import com.sogou.upd.passport.service.account.MappTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
@@ -24,13 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.HttpServletRequest;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 /**
  * 通过rsa加密的方式来获取相关信息。
@@ -66,7 +58,7 @@ public class RSAApiController extends BaseController {
                 return result.toString();
             }
 
-            String clearText = null;
+            String clearText;
             try {
 //            System.out.println(params.getCipherText());
                 clearText = RSA.decryptByPrivateKey(Base64Coder.decode(params.getCipherText()), TokenGenerator.PRIVATE_KEY);
