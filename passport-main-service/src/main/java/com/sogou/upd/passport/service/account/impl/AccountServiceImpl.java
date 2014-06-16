@@ -579,12 +579,12 @@ public class AccountServiceImpl implements AccountService {
      * @param ip
      * @throws ServiceException
      */
-    @Override
-    public void initialMailToCache(String username, String password, String ip) throws ServiceException {
-        Account account = initialAccountToCache(username, password, ip);
-        String cacheKey = buildAccountKey(username);
-        dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.TIME_TWODAY);
-    }
+//    @Override
+//    public void initialMailToCache(String username, String password, String ip) throws ServiceException {
+//        Account account = initialAccountToCache(username, password, ip);
+//        String cacheKey = buildAccountKey(username);
+//        dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.TIME_TWODAY);
+//    }
 
     /*
      * 外域邮箱注册
