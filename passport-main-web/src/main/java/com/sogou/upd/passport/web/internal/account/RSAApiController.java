@@ -108,8 +108,8 @@ public class RSAApiController extends BaseController {
         return result.toString();
         }finally {
             //记录log
-//            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-//            UserOperationLogUtil.log(userOperationLog);
+            UserOperationLog userOperationLog = new UserOperationLog(request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
 
         }
     }
