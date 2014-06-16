@@ -111,8 +111,8 @@ public class SoHuNNMigrationTask extends RecursiveTask<List<String>> {
                         int insertUpmResult = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(nickName, passportId);
                         if (insertUpmResult > 0) {
                             //更新u_p_m缓存
-                            String cacheKey = CacheConstant.CACHE_PREFIX_NICKNAME_PASSPORTID + nickName;
-                            redisUtils.set(cacheKey, passportId);
+//                            String cacheKey = CacheConstant.CACHE_PREFIX_NICKNAME_PASSPORTID + nickName;
+//                            redisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                         } else {
                             failList.add("B:" + passportId);
                         }
