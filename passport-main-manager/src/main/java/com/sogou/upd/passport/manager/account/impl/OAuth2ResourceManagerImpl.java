@@ -273,6 +273,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             GetUserInfoApiparams params = new GetUserInfoApiparams();
             params.setClient_id(clientId);
             params.setUserid(passportId);
+            params.setFields("uniqname,avatar");
             Result getUserInfoResult = accountInfoManager.getUserNickNameAndAvatar(params);
             String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
             if (getUserInfoResult.isSuccess()) {
