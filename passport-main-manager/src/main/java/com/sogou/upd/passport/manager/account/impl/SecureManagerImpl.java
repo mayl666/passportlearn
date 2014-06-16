@@ -52,7 +52,7 @@ public class SecureManagerImpl implements SecureManager {
 
 
     //搜狗安全信息字段:密保邮箱、密保手机、密保问题
-    private static final String SOGOU_SECURE_FIELDS = "email,mobile,question,avatarurl";
+    private static final String SOGOU_SECURE_FIELDS = "email,mobile,question,uniqname,avatarurl";
 
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
@@ -87,6 +87,10 @@ public class SecureManagerImpl implements SecureManager {
 
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
+
+    @Autowired
+    private PhotoUtils photoUtils;
+
 
     /*
      * 发送短信至未绑定手机，只检测映射表，查询passportId不存在或为空即认定为未绑定
@@ -255,8 +259,13 @@ public class SecureManagerImpl implements SecureManager {
                     result.getModels().put("uniqname", defaultUniqname(userId));
                     result.getModels().put("avatarurl", StringUtils.EMPTY);
                 }
+                String uniqname = String.valueOf(result.getModels().get("uniqname"));
+                result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
+                Result photoResult = photoUtils.obtainPhoto(String.valueOf(result.getModels().get("avatarurl")), "50");
+                if (photoResult.isSuccess()) {
+                    result.getModels().put("avatarurl", photoResult.getModels());
+                }
             }
-
 //            }
 
             Map<String, String> map = result.getModels();
