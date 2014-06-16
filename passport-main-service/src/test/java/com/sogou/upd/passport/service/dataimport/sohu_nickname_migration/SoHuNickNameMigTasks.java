@@ -31,19 +31,15 @@ public class SoHuNickNameMigTasks extends RecursiveTask<List<String>> {
 
     private DBShardRedisUtils dbShardRedisUtils;
 
-    private RedisUtils redisUtils;
-
     private String filePath;
 
     private final List<RecursiveTask<List<String>>> forks = Lists.newLinkedList();
 
-
     public SoHuNickNameMigTasks(UniqNamePassportMappingDAO uniqNamePassportMappingDAO, AccountDAO accountDAO,
-                                DBShardRedisUtils dbShardRedisUtils, RedisUtils redisUtils, String filePath) {
+                                DBShardRedisUtils dbShardRedisUtils, String filePath) {
         this.uniqNamePassportMappingDAO = uniqNamePassportMappingDAO;
         this.accountDAO = accountDAO;
         this.dbShardRedisUtils = dbShardRedisUtils;
-        this.redisUtils = redisUtils;
         this.filePath = filePath;
     }
 
@@ -58,7 +54,7 @@ public class SoHuNickNameMigTasks extends RecursiveTask<List<String>> {
             for (int i = 0; i < 1; i++) {
 //                String dataFile = filePath + "sohu_nickname_userid_" + i + ".sql";
                 String dataFile = filePath + "sohu_nickname_userid_test.sql";      //sohu_nickname_userid_test.sql
-                SoHuNNMigrationTask task = new SoHuNNMigrationTask(uniqNamePassportMappingDAO, accountDAO, dbShardRedisUtils, redisUtils, dataFile);
+                SoHuNNMigrationTask task = new SoHuNNMigrationTask(uniqNamePassportMappingDAO, accountDAO, dbShardRedisUtils, dataFile);
                 task.fork();
                 forks.add(task);
             }

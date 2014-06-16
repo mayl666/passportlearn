@@ -38,9 +38,6 @@ public class SoHuNickNameMigrationApp extends BaseTest {
     @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
-    @Autowired
-    private RedisUtils redisUtils;
-
     //日志文件存储目录
     private static final String DATA_STORE_PATH = "D:\\项目\\非第三方账号迁移\\搜狐昵称迁移\\";
 
@@ -51,7 +48,7 @@ public class SoHuNickNameMigrationApp extends BaseTest {
         StopWatch watch = new StopWatch();
         watch.start();
         try {
-            SoHuNickNameMigTasks tasks = new SoHuNickNameMigTasks(uniqNamePassportMappingDAO, accountDAO, dbShardRedisUtils, redisUtils, DATA_STORE_PATH);
+            SoHuNickNameMigTasks tasks = new SoHuNickNameMigTasks(uniqNamePassportMappingDAO, accountDAO, dbShardRedisUtils, DATA_STORE_PATH);
             List<String> resultList = POOL.invoke(tasks);
             FileUtil.storeFile(DATA_STORE_PATH + "migration_sh_nickname_fail.txt", resultList);
         } catch (Exception e) {

@@ -51,16 +51,13 @@ public class SoHuNNMigrationTask extends RecursiveTask<List<String>> {
 
     private DBShardRedisUtils dbShardRedisUtils;
 
-    private RedisUtils redisUtils;
-
     private String file;
 
     public SoHuNNMigrationTask(UniqNamePassportMappingDAO uniqNamePassportMappingDAO, AccountDAO accountDAO,
-                               DBShardRedisUtils dbShardRedisUtils, RedisUtils redisUtils, String file) {
+                               DBShardRedisUtils dbShardRedisUtils, String file) {
         this.uniqNamePassportMappingDAO = uniqNamePassportMappingDAO;
         this.accountDAO = accountDAO;
         this.dbShardRedisUtils = dbShardRedisUtils;
-        this.redisUtils = redisUtils;
         this.file = file;
     }
 
