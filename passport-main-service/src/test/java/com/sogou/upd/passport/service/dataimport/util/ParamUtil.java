@@ -15,9 +15,9 @@ public class ParamUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ParamUtil.class);
 
-    private static final String appId = "1100";
+    private static final String appId = "1120";
 
-    private static final String key = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
+    private static final String key = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
 
 
     private static final String REQUEST_URL = "http://internal.passport.sohu.com/interface/getuserinfo";
