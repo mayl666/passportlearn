@@ -58,55 +58,55 @@ public class RSAApiController extends BaseController {
         try {
 
 
-        // 参数校验
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
 
-        String clearText = null;
-        try {
+            String clearText = null;
+            try {
 //            System.out.println(params.getCipherText());
-            clearText = RSA.decryptByPrivateKey(Base64Coder.decode(params.getCipherText()), TokenGenerator.PRIVATE_KEY);
-        } catch (Exception e) {
-            logger.error("decrypt error, cipherText:"+params.getCipherText(),e);
-            result.setCode(ErrorUtil.ERR_CODE_RSA_DECRYPT);
-            return result.toString();
-        }
+                clearText = RSA.decryptByPrivateKey(Base64Coder.decode(params.getCipherText()), TokenGenerator.PRIVATE_KEY);
+            } catch (Exception e) {
+                logger.error("decrypt error, cipherText:" + params.getCipherText(), e);
+                result.setCode(ErrorUtil.ERR_CODE_RSA_DECRYPT);
+                return result.toString();
+            }
 
-        if (!Strings.isNullOrEmpty(clearText)) {
-            String[] textArray = clearText.split("\\|");
-            if (textArray.length == 3) { //数据组成： userid|token|timestamp
-                try {
-                    String passportId = mappTokenService.getPassprotIdByToken(textArray[1]);
-                    if (!Strings.isNullOrEmpty(passportId) && passportId.equals(textArray[0])) { //解密后的token得到userid，需要和传入的userid一样，保证安全及toke有效性。
-                        result.setSuccess(true);
-                        result.setMessage("操作成功");
-                        result.getModels().put("userid", textArray[0]);
+            if (!Strings.isNullOrEmpty(clearText)) {
+                String[] textArray = clearText.split("\\|");
+                if (textArray.length == 3) { //数据组成： userid|token|timestamp
+                    try {
+                        String passportId = mappTokenService.getPassprotIdByToken(textArray[1]);
+                        if (!Strings.isNullOrEmpty(passportId) && passportId.equals(textArray[0])) { //解密后的token得到userid，需要和传入的userid一样，保证安全及toke有效性。
+                            result.setSuccess(true);
+                            result.setMessage("操作成功");
+                            result.getModels().put("userid", textArray[0]);
+                            return result.toString();
+                        }
+                        result.setCode(ErrorUtil.ERR_SIGNATURE_OR_TOKEN);
+                        return result.toString();
+
+                    } catch (Exception e) {
+                        logger.error("ras token error fail, clear text:" + clearText, e);
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
                         return result.toString();
                     }
-                    result.setCode(ErrorUtil.ERR_SIGNATURE_OR_TOKEN);
-                    return result.toString();
-
-                } catch (Exception e) {
-                    logger.error("ras token error fail, clear text:" + clearText, e);
+                } else {
+                    //长度不对。
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
                     return result.toString();
                 }
             } else {
-                //长度不对。
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
-                return result.toString();
+                result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                result.setMessage("加密错误！");
             }
-        }else{
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            result.setMessage("加密错误！");
-        }
 
-        return result.toString();
-        }finally {
+            return result.toString();
+        } finally {
             //记录log
             UserOperationLog userOperationLog = new UserOperationLog(request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), result.getMessage(), getIp(request));
             UserOperationLogUtil.log(userOperationLog);
