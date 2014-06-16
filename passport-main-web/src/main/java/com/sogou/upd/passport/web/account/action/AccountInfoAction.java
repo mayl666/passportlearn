@@ -254,7 +254,7 @@ public class AccountInfoAction extends BaseController {
             CommonsMultipartFile multipartFile = (CommonsMultipartFile) multipartRequest.getFile("Filedata");
 
             byte[] byteArr = multipartFile.getBytes();
-            result = accountInfoManager.uploadImg(byteArr, userId, "0");
+            result = accountInfoManager.uploadImg(byteArr, userId, "0", getIp(request));
 
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
