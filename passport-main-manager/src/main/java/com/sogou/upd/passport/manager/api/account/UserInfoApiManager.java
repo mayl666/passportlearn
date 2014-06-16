@@ -19,7 +19,7 @@ public interface UserInfoApiManager {
      * @param getUserInfoApiparams
      * @return
      */
-    Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams) ;
+    Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams);
 
     /**
      * @param updateUserInfoApiParams
@@ -34,4 +34,6 @@ public interface UserInfoApiManager {
      * @return
      */
     Result checkUniqName(UpdateUserUniqnameApiParams updateUserUniqnameApiParams);
+
+
 }

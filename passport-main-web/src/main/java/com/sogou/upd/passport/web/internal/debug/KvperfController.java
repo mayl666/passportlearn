@@ -22,6 +22,7 @@ import javax.annotation.PostConstruct;
  * Time: 上午1:16
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 @Controller
 public class KvperfController {
 

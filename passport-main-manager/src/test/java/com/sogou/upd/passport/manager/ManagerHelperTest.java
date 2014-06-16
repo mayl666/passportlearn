@@ -13,7 +13,6 @@ import org.junit.Test;
  * Time: 下午3:37
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
 public class ManagerHelperTest extends TestCase {
 
     private static final int clientId = 1100;
@@ -31,17 +30,17 @@ public class ManagerHelperTest extends TestCase {
         String code = ManagerHelper.generatorCodeGBK("9EDFD63F7E867766D2252F29141F86FF@qq.sohu.com", clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
-        /*try {
-            String pwdMD5 = Coder.encryptMD5(code);
+        try {
+            String pwdMD5 = Coder.encryptMD5("459811");
             System.out.println("pwdMD5:" + pwdMD5);
         } catch (Exception e) {
             e.printStackTrace();
-        }*/
+        }
 
     }
 
-    public static void main(String args[]) throws Exception{
-          new ManagerHelperTest().testGeneratorCode();
+    public static void main(String args[]) throws Exception {
+        new ManagerHelperTest().testGeneratorCode();
     }
 
     /**
@@ -81,7 +80,7 @@ public class ManagerHelperTest extends TestCase {
     }
 
     @Test
-    public void testMD5Pwd(){
+    public void testMD5Pwd() {
         String pwd = "123456";
         System.out.println(DigestUtils.md5Hex(pwd.getBytes()));
     }

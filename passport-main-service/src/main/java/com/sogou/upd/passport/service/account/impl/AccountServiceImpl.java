@@ -42,6 +42,11 @@ import java.util.UUID;
 public class AccountServiceImpl implements AccountService {
 
     private static final int expire = 30 * DateAndNumTimesConstant.ONE_DAY_INSECONDS;
+    private static final String CACHE_PREFIX_PASSPORT_ACCOUNT = CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNT;
+    private static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST;
+    private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN;
+    private static final String CACHE_PREFIX_UUID_CAPTCHA = CacheConstant.CACHE_PREFIX_UUID_CAPTCHA;
+    private static final String CACHE_PREFIX_PASSPORTID_RESETPWDNUM = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM;
     private static final String CACHE_PREFIX_NICKNAME_PASSPORTID = CacheConstant.CACHE_PREFIX_NICKNAME_PASSPORTID;
 
 
@@ -65,14 +70,14 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account initialWebAccount(String username, String ip) throws ServiceException {
-        Account account;
-        String cacheKey;
+        Account account = null;
+        String cacheKey = null;
         try {
             cacheKey = buildAccountKey(username);
             account = dbShardRedisUtils.getObject(cacheKey, Account.class);
             if (account != null) {
                 account.setFlag(AccountStatusEnum.REGULAR.getValue());
-                long id = accountDAO.insertOrUpdateAccount(username, account);
+                long id = accountDAO.insertAccount(username, account);
                 if (id != 0) {
                     //更新缓存，成为正式账户
                     dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
@@ -144,6 +149,31 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account initialConnectAccount(String passportId, String ip, int provider) throws ServiceException {
         return initialAccount(passportId, null, false, ip, provider);
+    }
+
+    /**
+     * 非第三方账号迁移，新写 初始化 Account 方法
+     *
+     * @param account
+     * @return
+     * @throws ServiceException
+     */
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public boolean initAccount(Account account) throws ServiceException {
+        boolean initSuccess = false;
+        try {
+            long id = accountDAO.insertOrUpdateAccount(account.getPassportId(), account);
+            if (id != 0) {
+                initSuccess = true;
+                String cacheKey = buildAccountKey(account.getPassportId());
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+                return initSuccess;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return initSuccess;
     }
 
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccountByPassportId", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
@@ -254,6 +284,21 @@ public class AccountServiceImpl implements AccountService {
     private String buildResetPwdCacheKey(String passportId) {
         return CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM + passportId + "_" +
                 DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+    }
+
+    @Override
+    public boolean deleteAccountByPassportId(String passportId) throws ServiceException {
+        try {
+            int row = accountDAO.deleteAccountByPassportId(passportId);
+            if (row != 0) {
+                String cacheKey = buildAccountKey(passportId);
+                redisUtils.delete(cacheKey);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
     }
 
     @Override
@@ -625,6 +670,7 @@ public class AccountServiceImpl implements AccountService {
                     String cacheKey = buildAccountKey(passportId);
                     account.setUniqname(uniqname);
                     dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+                    dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
 
                     //第一次直接插入
                     if (Strings.isNullOrEmpty(oldUniqName)) {
@@ -663,13 +709,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean updateAvatar(Account account, String avatar) {
         try {
-            String oldUniqName = account.getUniqname();
             String passportId = account.getPassportId();
             //更新数据库
             int row = accountDAO.updateAvatar(avatar, passportId);
             if (row > 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setAvatar(avatar);
+//                dbShardRedisUtils.set(cacheKey, account);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }

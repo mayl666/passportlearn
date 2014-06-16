@@ -19,7 +19,6 @@ import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
 import com.sogou.upd.passport.model.account.Account;
@@ -208,7 +207,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
                 return finalResult;
             }
-            String passportId =  pcAccountTokenService.getPassportIdByToken(accessToken, appConfig.getClientSecret());;
+            String passportId = pcAccountTokenService.getPassportIdByToken(accessToken, appConfig.getClientSecret());
             if (Strings.isNullOrEmpty(passportId)) {
                 finalResult.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return finalResult;
@@ -385,7 +384,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                         mid_avatar = (String) getPhotoResult.getModels().get("img_50");
                         tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
                     }
-                    result.setDefaultModel("userid",account.getPassportId());
+                    result.setDefaultModel("userid", account.getPassportId());
                 }
             } else {
                 accountBaseInfo = getBaseInfo(passportId);

@@ -53,8 +53,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Autowired
     private AccountBaseInfoDAO accountBaseInfoDAO;
     @Autowired
-    private OAuth2ResourceManager oAuth2ResourceManager;
-    @Autowired
     private AccountService accountService;
 
     public Result uploadImg(byte[] byteArr, String passportId, String type) {
@@ -267,6 +265,16 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         return result;
     }
 
+    /**
+     * 获取用户信息
+     * <p/>
+     * 非第三方账号迁移完成后
+     * 用户昵称、头像信息 读写 account_base_info 切换到 account_0~32
+     * 用户其他信息 读写调用搜狐Api 切换到 读写 account_info_0~32
+     *
+     * @param params
+     * @return
+     */
     @Override
     public Result getUserInfo(ObtainAccountInfoParams params) {
         Result result = new APIResultSupport(false);
@@ -279,7 +287,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             if (domain == AccountDomainEnum.THIRD) {
                 result = sgUserInfoApiManager.getUserInfo(infoApiparams);
             } else {
+
                 result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
+
                 //其中昵称和头像是获取的account_base_info
                 if (infoApiparams.getFields().contains("avatarurl") || infoApiparams.getFields().contains("uniqname")) {
                     AccountBaseInfo baseInfo = getBaseInfo(infoApiparams.getUserid());
@@ -341,6 +351,12 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         return updateUserUniqnameApiParams;
     }
 
+    /**
+     * 用户 昵称、头像 信息读 account_base_info
+     *
+     * @param passportId
+     * @return
+     */
     private AccountBaseInfo getBaseInfo(String passportId) {
         GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
         infoApiparams.setUserid(passportId);

@@ -121,6 +121,7 @@ public class RegAction extends BaseController {
             }
 
             ip = getIp(request);
+
             //校验用户是否允许注册
             uuidName = ServletUtil.getCookie(request, "uuidName");
             result = regManager.checkRegInBlackList(ip, uuidName);

@@ -20,6 +20,7 @@ import java.util.Random;
  * Time: 上午1:16
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 @Controller
 @RequestMapping(value = "/internal/debug")
 public class RedisperfController {
