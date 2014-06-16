@@ -52,7 +52,7 @@ public class SecureManagerImpl implements SecureManager {
 
 
     //搜狗安全信息字段:密保邮箱、密保手机、密保问题
-    private static final String SOGOU_SECURE_FIELDS = "email,mobile,question";
+    private static final String SOGOU_SECURE_FIELDS = "email,mobile,question,avatarurl";
 
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
