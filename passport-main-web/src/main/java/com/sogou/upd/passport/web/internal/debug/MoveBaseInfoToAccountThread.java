@@ -8,7 +8,6 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.FileWriter;
 import java.util.List;
@@ -83,7 +82,7 @@ public class MoveBaseInfoToAccountThread implements Runnable {
                     continue;
                 }
                 String cacheKey = buildAccountKey(passportId);
-                dbShardRedisUtils.setWithinSeconds(cacheKey, queryAccount, DateAndNumTimesConstant.THREE_MONTH);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, queryAccount, DateAndNumTimesConstant.ONE_MONTH);
             }
         } catch (Exception e) {
             logger.error("出错记录passportId为：" + logOpenId, e);
