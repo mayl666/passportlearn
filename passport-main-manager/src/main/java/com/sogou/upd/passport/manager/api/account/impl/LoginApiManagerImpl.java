@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LogUtil;
@@ -29,6 +30,8 @@ import org.springframework.stereotype.Component;
  */
 @Component("loginApiManager")
 public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoginApiManagerImpl.class);
 
     private static final Logger checkLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothCheckSyncErrorLogger");
 
@@ -61,37 +64,42 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
      * @return
      */
     private Result bothAuthUser(AuthUserApiParams authUserApiParams) {
-        Result result;
-        String userId = authUserApiParams.getUserid();
-        String passportId = commonManager.getPassportIdByUsername(userId);
-        if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
-            //主账号是sohu域账号调用sohu api校验用户名和密码
-            result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-        } else {
-            if (accountSecureService.getUpdateSuccessFlag(passportId)) {
-                //主账号有更新密码或绑定手机的操作时，调用sohu api校验用户名和密码
+        Result result = new APIResultSupport(false);
+        try {
+            String userId = authUserApiParams.getUserid();
+            String passportId = commonManager.getPassportIdByUsername(userId);
+            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+                //主账号是sohu域账号调用sohu api校验用户名和密码
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                String message = CommonConstant.AUTH_MESSAGE;
-                LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", message, userId, passportId, result.toString());
             } else {
-                //没有更新密码时，走正常的双读流程
-                result = sgLoginApiManager.webAuthUser(authUserApiParams);
-                if (!result.isSuccess()) { //读SG库，校验用户名、密码失败，此时读SH校验
+                if (accountSecureService.getUpdateSuccessFlag(passportId)) {
+                    //主账号有更新密码或绑定手机的操作时，调用sohu api校验用户名和密码
                     result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                    if (result.isSuccess()) {
-                        //读SG失败，读SH成功，记录userid，便于验证数据同步情况
-                        //日志记录可能存在的情况：新注册用户登录时，同步延迟；用户找回密码后登录；用户校验密码失败等
-                        String message = CommonConstant.AUTH_SGE_SHS_MESSAGE;
-                        LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", message, userId, passportId, result.toString());
-                    } else {
-                        //记录下来SH验证失败的情况:去除真正是用户名和密码都不匹配的情况
-                        if (!ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(result.getCode())) {
-                            String message = CommonConstant.AUTH_SGE_SHE_MESSAGE;
+                    String message = CommonConstant.AUTH_MESSAGE;
+                    LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", message, userId, passportId, result.toString());
+                } else {
+                    //没有更新密码时，走正常的双读流程
+                    result = sgLoginApiManager.webAuthUser(authUserApiParams);
+                    if (!result.isSuccess()) { //读SG库，校验用户名、密码失败，此时读SH校验
+                        result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                        if (result.isSuccess()) {
+                            //读SG失败，读SH成功，记录userid，便于验证数据同步情况
+                            //日志记录可能存在的情况：新注册用户登录时，同步延迟；用户找回密码后登录；用户校验密码失败等
+                            String message = CommonConstant.AUTH_SGE_SHS_MESSAGE;
                             LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", message, userId, passportId, result.toString());
+                        } else {
+                            //记录下来SH验证失败的情况:去除真正是用户名和密码都不匹配的情况
+                            if (!ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(result.getCode())) {
+                                String message = CommonConstant.AUTH_SGE_SHE_MESSAGE;
+                                LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", message, userId, passportId, result.toString());
+                            }
                         }
                     }
                 }
             }
+        } catch (Exception e) {
+            logger.error("bothAuthUser Exception", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
     }

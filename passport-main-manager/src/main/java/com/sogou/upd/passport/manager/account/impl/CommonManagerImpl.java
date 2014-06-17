@@ -1,8 +1,11 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
@@ -27,7 +30,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CommonManagerImpl implements CommonManager {
-    private static Logger log = LoggerFactory.getLogger(CommonManagerImpl.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(CommonManagerImpl.class);
+
+    private static final Logger checkLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothCheckSyncErrorLogger");
 
     @Autowired
     private OperateTimesService operateTimesService;
@@ -39,21 +45,28 @@ public class CommonManagerImpl implements CommonManager {
     private BindApiManager proxyBindApiManager;
 
     @Override
-    public String getPassportIdByUsername(String username) {
+    public String getPassportIdByUsername(String username) throws Exception {
         Result result;
         //根据username获取passportID
         String passportId = PassportIDGenerator.generator(username, AccountTypeEnum.getAccountType(username).getValue());
-        //如果是手机号，需要查询该手机绑定的主账号
-        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-            passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
-            if (Strings.isNullOrEmpty(passportId)) {
-                BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-                baseMoblieApiParams.setMobile(username);
-                result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-                if (result.isSuccess()) {
-                    passportId = result.getModels().get("userid").toString();
+        try {
+            //如果是手机号，需要查询该手机绑定的主账号
+            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+                passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
+                if (Strings.isNullOrEmpty(passportId)) {
+                    BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+                    baseMoblieApiParams.setMobile(username);
+                    result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+                    if (result.isSuccess()) {
+                        passportId = result.getModels().get("userid").toString();
+                        String message = CommonConstant.MOBILE_MESSAGE;
+                        LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.UNKNOWN, "getPassportIdByUsername", message, username, passportId, result.toString());
+                    }
                 }
             }
+        } catch (Exception e) {
+            logger.error("getPassportIdByUsername Exception", e);
+            throw new Exception(e);
         }
         return passportId;
     }

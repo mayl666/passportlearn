@@ -15,7 +15,7 @@ public interface CommonManager {
      * @param username
      * @return
      */
-    public String getPassportIdByUsername(String username);
+    public String getPassportIdByUsername(String username) throws Exception;
 
     /**
      * 用户注册时ip次数的累加
