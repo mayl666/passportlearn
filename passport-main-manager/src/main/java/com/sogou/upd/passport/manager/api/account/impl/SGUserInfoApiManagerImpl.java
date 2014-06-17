@@ -133,13 +133,15 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                             result.setDefaultModel("sec_ques", value);
                                             continue;
                                         }
+                                        //web接口传的是fullname
                                         if ("fullname".equals(paramArray[i])) {
                                             String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
                                             result.setDefaultModel("fullname", value);
                                             continue;
                                         }
+                                        //内部接口传的是username
                                         if ("username".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                            String value = BeanUtils.getProperty(accountInfo, "fullname");
                                             result.setDefaultModel("username", value);
                                             continue;
                                         }
