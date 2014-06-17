@@ -37,7 +37,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
+                    dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH_INSECONDS);
                 }
             }
         } catch (Exception e) {

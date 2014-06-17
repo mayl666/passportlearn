@@ -77,8 +77,8 @@ public class CommonManagerImpl implements CommonManager {
         String passportId = username;
         //如果是手机号，需要查询该手机绑定的主账号
         if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-            passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
-            if (Strings.isNullOrEmpty(passportId)) {
+//            passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
+//            if (Strings.isNullOrEmpty(passportId)) {
                 BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
                 baseMoblieApiParams.setMobile(username);
                 result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
@@ -90,7 +90,7 @@ public class CommonManagerImpl implements CommonManager {
                         LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.UNKNOWN, "getPassportIdByUsername", message, username, passportId, result.toString());
                     }
                 }
-            }
+//            }
         }
         return passportId;
     }
