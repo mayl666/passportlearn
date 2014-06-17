@@ -140,13 +140,16 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                             result.setDefaultModel("fullname", value);
                                             continue;
                                         }
-
+                                        if ("username".equals(paramArray[i])) {
+                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                            result.setDefaultModel("username", value);
+                                            continue;
+                                        }
                                         if ("gender".equals(paramArray[i])) {
                                             String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
                                             result.setDefaultModel("gender", value);
                                             continue;
                                         }
-
                                         if ("personalid".equals(paramArray[i])) {
                                             String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
                                             result.setDefaultModel("personalid", value);
