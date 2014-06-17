@@ -2,8 +2,8 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
@@ -14,7 +14,6 @@ import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
-import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,13 @@ public class CommonManagerImpl implements CommonManager {
     public String getPassportIdByUsername(String username) throws Exception {
         Result result;
         //根据username获取passportID
-        String passportId = PassportIDGenerator.generator(username, AccountTypeEnum.getAccountType(username).getValue());
+        String passportId = username;
+        if (AccountDomainEnum.isPhone(username)) {
+            passportId = username + "@sohu.com";
+        }
+        if (AccountDomainEnum.isIndivid(username)) {
+            passportId = username + "@sogou.com";
+        }
         try {
             //如果是手机号，需要查询该手机绑定的主账号
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {

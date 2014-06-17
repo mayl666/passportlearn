@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common.utils;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import org.slf4j.Logger;
 
@@ -37,8 +38,11 @@ public class LogUtil {
         log.append("\t").append(StringUtil.defaultIfEmpty(message, "-"));                                       //记录原因
         log.append("\t").append(StringUtil.defaultIfEmpty(username, "-"));                                      //记录用户名
         String passportIdLog = null;
-        String prefix = passportId.substring(0, passportId.lastIndexOf(
-                "@sohu.com"));
+        String prefix = null;
+        if (AccountDomainEnum.SOHU.equals(passportId)) {
+            prefix = passportId.substring(0, passportId.lastIndexOf(
+                    "@sohu.com"));
+        }
         //只记手机号绑定的主账号不是它自己+@sohu.com的情况
         if (!CommonConstant.AUTH_MESSAGE.equals(message) && !CommonConstant.CHECK_MESSAGE.equals(message) && PhoneUtil.verifyPhoneNumberFormat(username) && !username.equals(prefix)) {
             passportIdLog = passportId;
