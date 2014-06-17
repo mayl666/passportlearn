@@ -84,9 +84,11 @@ public class UserInfoApiController extends BaseController {
             result = sgUserInfoApiManager.getUserInfo(params);
             if (!result.isSuccess()) {
                 result = proxyUserInfoApiManager.getUserInfo(params);
-                //记录Log 跟踪数据同步延时情况
-                String passportId = (String) result.getModels().get("userid");
-                LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "/internal/account/userinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, params.getUserid(), passportId, result.toString());
+                if (result.isSuccess()) {
+                    //记录Log 跟踪数据同步延时情况
+                    String passportId = (String) result.getModels().get("userid");
+                    LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "/internal/account/userinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, params.getUserid(), passportId, result.toString());
+                }
             }
 //            result = proxyUserInfoApiManager.getUserInfo(params);
         }

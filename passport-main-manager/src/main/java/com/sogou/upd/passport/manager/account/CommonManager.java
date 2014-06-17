@@ -48,16 +48,12 @@ public interface CommonManager {
     public String getCode(String firstStr, int clientId, long ct);
 
     /**
-     * 判断时间戳（秒）是否有效
-     * @param ct
+     * 根据用户输入的username获取对应的passport
+     * 1.输入：手机号；输出：主账号userid
+     * 2.输入：手机号@sohu.com；输出：手机号@sohu.com
+     * @param username
      * @return
      */
-    public boolean isSecCtValid(long ct);
+    public String getPassportIdByUsername(String username);
 
-    /**
-     * 判断时间戳（毫秒）是否有效
-     * @param ct
-     * @return
-     */
-    public boolean isMillCtValid(long ct);
 }

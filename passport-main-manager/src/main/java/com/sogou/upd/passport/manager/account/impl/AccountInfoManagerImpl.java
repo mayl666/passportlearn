@@ -367,11 +367,13 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 //记录Log 跟踪数据同步延时情况
                 result = proxyUserInfoApiManager.getUserInfo(infoApiparams);
                 //记录Log 跟踪数据同步延时情况
-                String passportId = (String) result.getModels().get("userid");
-                LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "getuserinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, username, passportId, result.toString());
-                if (infoApiparams.getFields().contains("avatarurl") || infoApiparams.getFields().contains("uniqname")) {
-                    result.getModels().put("uniqname", defaultUniqname(username));
-                    result.getModels().put("avatarurl", StringUtils.EMPTY);
+                if (result.isSuccess()) {
+                    String passportId = (String) result.getModels().get("userid");
+                    LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "getuserinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, username, passportId, result.toString());
+                    if (infoApiparams.getFields().contains("avatarurl") || infoApiparams.getFields().contains("uniqname")) {
+                        result.getModels().put("uniqname", defaultUniqname(username));
+                        result.getModels().put("avatarurl", StringUtils.EMPTY);
+                    }
                 }
             }
         }
