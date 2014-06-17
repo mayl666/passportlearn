@@ -63,7 +63,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
             long id = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
             if (id != 0) {
                 String cacheKey = buildMobilePassportMappingKey(mobile);
-                dbShardRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
+                dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH_INSECONDS);
                 return true;
             }
         } catch (Exception e) {
@@ -79,7 +79,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
             int accountRow = mobilePassportMappingDAO.updateMobilePassportMapping(mobile, passportId);
             if (accountRow != 0) {
                 String cacheKey = buildMobilePassportMappingKey(mobile);
-                dbShardRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
+                dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH_INSECONDS);
                 return true;
             }
         } catch (Exception e) {
