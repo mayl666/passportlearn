@@ -213,10 +213,10 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
 
     private String replaceParam(String param) {
         //sec_mobile, sec_email, sec_ques,  username
-        if (param.contains("username")) {
-            //真实姓名
-            param = param.replaceAll("username", "fullname");
-        }
+//        if (param.contains("username")) {
+//            //真实姓名
+//            param = param.replaceAll("username", "fullname");
+//        }
         if (param.contains("sec_mobile")) {
             //绑定手机号
             param = param.replaceAll("sec_mobile", "mobile");
