@@ -96,6 +96,28 @@ public class CommonHelper {
         return false;
     }
 
+    /**
+     * 判断时间戳（毫秒）是否有效
+     * @param ct
+     * @return
+     */
+    public static boolean isMillCtValid(long ct){
+        long currentTime = System.currentTimeMillis();
+        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM_IN_MILLI;
+        return timeRight;
+    }
+
+    /**
+     * 判断时间戳（秒）是否有效
+     * @param ct
+     * @return
+     */
+    public static boolean isSecCtValid(long ct){
+        long currentTime = System.currentTimeMillis()/1000;
+        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
+        return timeRight;
+    }
+
     /*public static void recordTimestamp(long start, String msg) {
         long end = System.currentTimeMillis();
         long costTime = end -start;

@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
@@ -49,9 +50,10 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     private AccountService accountService;
     @Autowired
     private AccountInfoService accountInfoService;
-
     @Autowired
     private AccountInfoManager accountInfoManager;
+    @Autowired
+    private CommonManager commonManager;
 
 
     /**
@@ -67,11 +69,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     @Override
     public Result getUserInfo(GetUserInfoApiparams infoApiparams) {
         Result result = new APIResultSupport(false);
-        String passportId = infoApiparams.getUserid();
-        //传手机号，后面加上“@sohu.com”+后缀
-        if (PhoneUtil.verifyPhoneNumberFormat(passportId)) {
-            passportId += "@sohu.com";
-        }
+        String passportId = commonManager.getPassportIdByUsername(infoApiparams.getUserid());
         try {
             String params = infoApiparams.getFields();
             if (!Strings.isNullOrEmpty(params)) {
@@ -167,10 +165,12 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                         }
                     } else {
                         result.setSuccess(true);
+                        result.setMessage("操作成功");
                         return result;
                     }
                     if (!result.getModels().isEmpty()) {
                         result.setSuccess(true);
+                        result.setMessage("操作成功");
                     }
                 }
             }
@@ -241,11 +241,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     @Override
     public Result updateUserInfo(UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
-        String passportId = params.getUserid();
-        //传手机号，后面加上“@sohu.com”+后缀
-        if (PhoneUtil.verifyPhoneNumberFormat(passportId)) {
-            passportId += "@sohu.com";
-        }
+        String passportId = commonManager.getPassportIdByUsername(params.getUserid());
         try {
             //获取用户账号类型
             AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);

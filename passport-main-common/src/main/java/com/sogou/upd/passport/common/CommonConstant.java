@@ -36,7 +36,7 @@ public class CommonConstant {
     public static final String CHECK_SGN_SHY_MESSAGE = "SoGouNotExist-SoHuExist"; //用来读分离时记log时用,检查用户名是否可用时，SG无，SH有
     public static final String CHECK_MESSAGE = "update-bindmobile"; //用来读分离时记log时用,检查用户名是否可用时，主账号有修改绑定手机操作
     public static final String SG_NOT_EXIST = "SoGouNotExist"; //账号在搜狗不存在
-
+    public static final String MOBILE_MESSAGE = "mobile-SGNotExist-SHExist"; //用来读分离时记log时用,根据手机号查询主账号
 
     public static final String APP_CONNECT_KEY = "100294784";  //搜狗在QQ第三方开放平台的应用id
     public static final String APP_CONNECT_SECRET = "a873ac91cd703bc037e14c2ef47d2021";  //搜狗在QQ第三方开放平台对应的应用密钥

@@ -2,32 +2,24 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.LoginConstant;
-import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.manager.api.account.BindApiManager;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
-import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,31 +31,22 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class CommonManagerImpl implements CommonManager {
     private static Logger log = LoggerFactory.getLogger(CommonManagerImpl.class);
+    private static Logger profileErrorLogger = LoggerFactory.getLogger("profileErrorLogger");
 
     @Autowired
     private OperateTimesService operateTimesService;
     @Autowired
     private AppConfigService appConfigService;
+    @Autowired
+    private MobilePassportMappingService mobilePassportMappingService;
+    @Autowired
+    private BindApiManager proxyBindApiManager;
 
     @Override
     public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {
         String code = getCode(firstStr.toString(), clientId, ct);
         boolean isCodeEqual = code.equalsIgnoreCase(originalCode);
         return isCodeEqual;
-    }
-
-    @Override
-    public boolean isMillCtValid(long ct){
-        long currentTime = System.currentTimeMillis();
-        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM_IN_MILLI;
-        return timeRight;
-    }
-
-    @Override
-    public boolean isSecCtValid(long ct){
-        long currentTime = System.currentTimeMillis()/1000;
-        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
-        return timeRight;
     }
 
     @Override
@@ -78,12 +61,38 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public void incRegTimesForInternal(String ip,int client_id) {
-        operateTimesService.incRegTimesForInternal(ip,client_id);
+    public void incRegTimesForInternal(String ip, int client_id) {
+        operateTimesService.incRegTimesForInternal(ip, client_id);
     }
 
     @Override
     public void incRegTimes(String ip, String cookieStr) {
         operateTimesService.incRegTimes(ip, cookieStr);
     }
+
+    @Override
+    public String getPassportIdByUsername(String username) {
+        Result result;
+        //根据username获取passportID
+        String passportId = PassportIDGenerator.generator(username, AccountTypeEnum.getAccountType(username).getValue());
+        //如果是手机号，需要查询该手机绑定的主账号
+        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+            passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
+            if (Strings.isNullOrEmpty(passportId)) {
+                BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+                baseMoblieApiParams.setMobile(username);
+                result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+                if (result.isSuccess()) {
+                    passportId = result.getModels().get("userid").toString();
+                    if (result.isSuccess()) {
+                        passportId = result.getModels().get("userid").toString();
+                        String message = CommonConstant.MOBILE_MESSAGE;
+                        LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.UNKNOWN, "getPassportIdByUsername", message, username, passportId, result.toString());
+                    }
+                }
+            }
+        }
+        return passportId;
+    }
+
 }
