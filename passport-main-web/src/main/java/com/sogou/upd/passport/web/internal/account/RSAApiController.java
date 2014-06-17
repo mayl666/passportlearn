@@ -9,7 +9,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.api.account.form.RSAApiParams;
-import com.sogou.upd.passport.service.account.MappTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -78,7 +77,6 @@ public class RSAApiController extends BaseController {
             //记录log
             UserOperationLog userOperationLog = new UserOperationLog(userId,request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             UserOperationLogUtil.log(userOperationLog);
-
         }
         return result.toString();
     }
