@@ -290,7 +290,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     public Result checkUniqName(UpdateUserUniqnameApiParams updateUserUniqnameApiParams) {
 
         Result result = new APIResultSupport(false);
-        String nickname = null;
+        String nickname = updateUserUniqnameApiParams.getUniqname();
         try {
             //前端在个人资料页面填写昵称后，鼠标离开即检查昵称唯一性，这里不能编码，因为保存时没有编码
 //            nickname = new String(updateUserUniqnameApiParams.getUniqname().getBytes("ISO8859-1"), "UTF-8");
