@@ -9,7 +9,6 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LogUtil;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -70,6 +69,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     public Result getUserInfo(GetUserInfoApiparams infoApiparams) {
         Result result = new APIResultSupport(false);
         String passportId = commonManager.getPassportIdByUsername(infoApiparams.getUserid());
+        infoApiparams.setUserid(passportId);
         try {
             String params = infoApiparams.getFields();
             if (!Strings.isNullOrEmpty(params)) {
@@ -242,6 +242,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     public Result updateUserInfo(UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
         String passportId = commonManager.getPassportIdByUsername(params.getUserid());
+        params.setUserid(passportId);
         try {
             //获取用户账号类型
             AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
