@@ -117,7 +117,7 @@
     <appender name="bothReadSyncErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/bothAuthUserSyncError/authusererror.log.%d{yyyy-MM-dd}</fileNamePattern>
-            <maxHistory>14</maxHistory>
+            <!--<maxHistory>14</maxHistory>-->
         </rollingPolicy>
         <encoder>
             <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
@@ -132,7 +132,7 @@
     <appender name="bothCheckSyncErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/bothCheckUserSyncError/checkusererror.log.%d{yyyy-MM-dd}</fileNamePattern>
-            <maxHistory>14</maxHistory>
+            <!--<maxHistory>14</maxHistory>-->
         </rollingPolicy>
         <encoder>
             <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
