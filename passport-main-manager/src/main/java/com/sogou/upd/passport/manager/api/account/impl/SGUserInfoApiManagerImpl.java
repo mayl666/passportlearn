@@ -1,12 +1,16 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
@@ -39,14 +43,16 @@ import java.util.Date;
 public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserInfoApiManager {
 
     private static Logger logger = LoggerFactory.getLogger(SGUserInfoApiManagerImpl.class);
+    private static Logger profileErrorLogger = LoggerFactory.getLogger("profileErrorLogger");
 
     @Autowired
     private AccountService accountService;
     @Autowired
     private AccountInfoService accountInfoService;
-
     @Autowired
     private AccountInfoManager accountInfoManager;
+    @Autowired
+    private CommonManager commonManager;
 
 
     /**
@@ -62,7 +68,8 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     @Override
     public Result getUserInfo(GetUserInfoApiparams infoApiparams) {
         Result result = new APIResultSupport(false);
-        String passportId = infoApiparams.getUserid();
+        String passportId = commonManager.getPassportIdByUsername(infoApiparams.getUserid());
+        infoApiparams.setUserid(passportId);
         try {
             String params = infoApiparams.getFields();
             if (!Strings.isNullOrEmpty(params)) {
@@ -126,18 +133,23 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                             result.setDefaultModel("sec_ques", value);
                                             continue;
                                         }
+                                        //web接口传的是fullname
                                         if ("fullname".equals(paramArray[i])) {
                                             String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
                                             result.setDefaultModel("fullname", value);
                                             continue;
                                         }
-
+                                        //内部接口传的是username
+                                        if ("username".equals(paramArray[i])) {
+                                            String value = BeanUtils.getProperty(accountInfo, "fullname");
+                                            result.setDefaultModel("username", value);
+                                            continue;
+                                        }
                                         if ("gender".equals(paramArray[i])) {
                                             String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
                                             result.setDefaultModel("gender", value);
                                             continue;
                                         }
-
                                         if ("personalid".equals(paramArray[i])) {
                                             String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
                                             result.setDefaultModel("personalid", value);
@@ -148,7 +160,8 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                         result.setDefaultModel(paramArray[i], value);
                                     } else {
                                         Date birthday = accountInfo.getBirthday();
-                                        result.setDefaultModel(paramArray[i], new SimpleDateFormat("yyyy-MM-dd").format(birthday));
+                                        String birthdayStr = (birthday == null) ? "" : new SimpleDateFormat("yyyy-MM-dd").format(birthday);
+                                        result.setDefaultModel(paramArray[i], birthdayStr);
                                     }
                                 } catch (Exception e) {
                                     paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, paramArray[i]));
@@ -157,10 +170,12 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                         }
                     } else {
                         result.setSuccess(true);
+                        result.setMessage("操作成功");
                         return result;
                     }
                     if (!result.getModels().isEmpty()) {
                         result.setSuccess(true);
+                        result.setMessage("操作成功");
                     }
                 }
             }
@@ -194,16 +209,17 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         } else {
             result.setDefaultModel("uniqname", passportId);
         }
+        result.setDefaultModel("userid", passportId);
         result.setSuccess(true);
         return result;
     }
 
     private String replaceParam(String param) {
         //sec_mobile, sec_email, sec_ques,  username
-        if (param.contains("username")) {
-            //真实姓名
-            param = param.replaceAll("username", "fullname");
-        }
+//        if (param.contains("username")) {
+//            //真实姓名
+//            param = param.replaceAll("username", "fullname");
+//        }
         if (param.contains("sec_mobile")) {
             //绑定手机号
             param = param.replaceAll("sec_mobile", "mobile");
@@ -231,7 +247,8 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     @Override
     public Result updateUserInfo(UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
-        String passportId = params.getUserid();
+        String passportId = commonManager.getPassportIdByUsername(params.getUserid());
+        params.setUserid(passportId);
         try {
             //获取用户账号类型
             AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
@@ -258,6 +275,8 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     }
                 }
             } else {
+                //记录Log 跟踪数据同步延时情况
+                LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "updateUserInfo", CommonConstant.SG_NOT_EXIST, passportId, passportId, result.toString());
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
         } catch (Exception e) {
@@ -272,9 +291,10 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     public Result checkUniqName(UpdateUserUniqnameApiParams updateUserUniqnameApiParams) {
 
         Result result = new APIResultSupport(false);
-        String nickname = null;
+        String nickname = updateUserUniqnameApiParams.getUniqname();
         try {
-            nickname = new String(updateUserUniqnameApiParams.getUniqname().getBytes("ISO8859-1"), "UTF-8");
+            //前端在个人资料页面填写昵称后，鼠标离开即检查昵称唯一性，这里不能编码，因为保存时没有编码
+//            nickname = new String(updateUserUniqnameApiParams.getUniqname().getBytes("ISO8859-1"), "UTF-8");
 
             String passportId = accountService.checkUniqName(nickname);
             if (!Strings.isNullOrEmpty(passportId)) {
@@ -377,9 +397,13 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 if (!Strings.isNullOrEmpty(params.getPersonalid()) && !params.getPersonalid().equalsIgnoreCase(accountInfo.getPersonalid())) {
                     accountInfo.setPersonalid(params.getPersonalid());
                 }
+                //web页面修改真实姓名传的username，内部接口传的fullname
                 if (!Strings.isNullOrEmpty(params.getUsername()) && !params.getUsername().equalsIgnoreCase(accountInfo.getFullname())) {
                     accountInfo.setFullname(params.getUsername());
+                } else if (!Strings.isNullOrEmpty(params.getFullname())) {
+                    accountInfo.setFullname(params.getFullname());
                 }
+
             }
             accountInfo.setModifyip(params.getModifyip());
 
