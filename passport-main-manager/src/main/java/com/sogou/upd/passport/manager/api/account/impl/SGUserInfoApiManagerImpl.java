@@ -259,10 +259,10 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
             Account account = accountService.queryAccountByPassportId(passportId);
             if (account != null) {
                 //更新用户非昵称信息，性别、所在地、生日、真实姓名、身份证
-                result = updateAccountInfo(result, params);
+                result = updateAccountInfo(params);
                 if (!Strings.isNullOrEmpty(params.getUniqname()) && !params.getUniqname().equalsIgnoreCase(account.getUniqname())) {
                     //更新用户昵称信息
-                    result = updateAccountNickName(result, account, params.getUniqname());
+                    result = updateAccountNickName(account, params.getUniqname());
                 }
             } else if (accountDomain == AccountDomainEnum.SOHU) {
                 //如果是搜狐矩阵账号，则插入到account表一条无密码的记录,插入成功、涉及到用户信息更改的话，在继续执行更新操作
@@ -272,10 +272,10 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     return result;
                 } else {
                     //更新用户非昵称信息，性别、所在地、生日、真实姓名、身份证
-                    result = updateAccountInfo(result, params);
+                    result = updateAccountInfo(params);
                     if (!Strings.isNullOrEmpty(params.getUniqname())) {
                         //更新用户昵称信息
-                        result = updateAccountNickName(result, insertSoHuAccount, params.getUniqname());
+                        result = updateAccountNickName(insertSoHuAccount, params.getUniqname());
                     }
                 }
             } else {
@@ -321,12 +321,12 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     /**
      * 非第三方账号迁移， 新增 更新用户昵称方法
      *
-     * @param result
      * @param account
      * @param nickName
      * @return
      */
-    private Result updateAccountNickName(Result result, Account account, String nickName) {
+    private Result updateAccountNickName(Account account, String nickName) {
+        Result result = new APIResultSupport(false);
         try {
             //更新昵称
             //判断昵称是否存在
@@ -336,7 +336,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 boolean accountUpdateResult = accountService.updateUniqName(account, nickName);
                 if (accountUpdateResult) {
                     result.setSuccess(true);
-                    result.setMessage("修改个人资料成功");
+                    result.setMessage("更新昵称成功");
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
 
@@ -358,11 +358,11 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
      * 非第三方账号迁移，新增 更新用户其他信息 方法
      * <p/>
      * TODO 兼容内部接口方法
-     *
-     * @param result
      * @return
      */
-    private Result updateAccountInfo(Result result, UpdateUserInfoApiParams params) {
+    private Result updateAccountInfo(UpdateUserInfoApiParams params) {
+
+        Result result = new APIResultSupport(false);
         try {
             AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(params.getUserid());
             if (accountInfo == null) {
