@@ -209,6 +209,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         } else {
             result.setDefaultModel("uniqname", passportId);
         }
+        result.setDefaultModel("userid", passportId);
         result.setSuccess(true);
         return result;
     }
