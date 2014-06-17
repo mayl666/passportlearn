@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
  * Time: 下午8:36
  * To change this template use File | Settings | File Templates.
  */
-@Component
+@Component("commonManager")
 public class CommonManagerImpl implements CommonManager {
     private static Logger log = LoggerFactory.getLogger(CommonManagerImpl.class);
     private static Logger profileErrorLogger = LoggerFactory.getLogger("profileErrorLogger");
