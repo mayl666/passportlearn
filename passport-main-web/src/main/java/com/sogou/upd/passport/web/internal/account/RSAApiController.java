@@ -58,55 +58,86 @@ public class RSAApiController extends BaseController {
                 return result.toString();
             }
 
-            String clearText;
             try {
-//            System.out.println(params.getCipherText());
-                clearText = RSA.decryptByPrivateKey(Base64Coder.decode(params.getCipherText()), TokenGenerator.PRIVATE_KEY);
-            } catch (Exception e) {
-                logger.error("decrypt error, cipherText:" + params.getCipherText(), e);
-                result.setCode(ErrorUtil.ERR_CODE_RSA_DECRYPT);
+                String userId=getUserId(params.getCipherText());
+                if(Strings.isNullOrEmpty(userId)){
+                    result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                    result.setMessage("加密错误！");
+                }else{
+                    result.setSuccess(true);
+                    result.setMessage("操作成功");
+                    result.getModels().put("userid", userId);
+                    return result.toString();
+                }
+            } catch (ControllerException e) {
+                result.setCode(e.getCode());
                 return result.toString();
             }
 
-            if (!Strings.isNullOrEmpty(clearText)) {
-                String[] textArray = clearText.split("\\|");
-                if (textArray.length == 4) { //数据组成： userid|clientId|token|timestamp
-                    try {
-                        Result getUserIdResult = oAuth2ResourceManager.getPassportIdByToken(textArray[2], Integer.parseInt(textArray[1]));
-                        if (getUserIdResult.isSuccess()) {
-                            passportId = (String) getUserIdResult.getDefaultModel();
-                            if (!Strings.isNullOrEmpty(passportId) && passportId.equals(textArray[0])) { //解密后的token得到userid，需要和传入的userid一样，保证安全及toke有效性。
-                                result.setSuccess(true);
-                                result.setMessage("操作成功");
-                                result.getModels().put("userid", textArray[0]);
-                                return result.toString();
-                            }
-                        }else{
-                            result.setCode(getUserIdResult.getCode());
-                            return result.toString();
-                        }
-
-                    } catch (Exception e) {
-                        logger.error("ras token error fail, clear text:" + clearText, e);
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
-                        return result.toString();
-                    }
-                } else {
-                    //长度不对。
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
-                    return result.toString();
-                }
-            } else {
-                result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-                result.setMessage("加密错误！");
-            }
-
-            return result.toString();
         } finally {
             //记录log
             UserOperationLog userOperationLog = new UserOperationLog(passportId,request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             UserOperationLogUtil.log(userOperationLog);
 
         }
+        return result.toString();
+    }
+
+    /**
+     * 检查密文的正确性。
+     * @param cipherText 密文
+     * @return userId
+     */
+    public String getUserId(String cipherText) throws ControllerException{
+        String clearText;
+        try {
+            clearText = RSA.decryptByPrivateKey(Base64Coder.decode(cipherText), TokenGenerator.PRIVATE_KEY);
+        } catch (Exception e) {
+            logger.error("decrypt error, cipherText:" + cipherText, e);
+            throw new ControllerException(ErrorUtil.ERR_CODE_RSA_DECRYPT);
+        }
+//        String passportId=null;
+        if (!Strings.isNullOrEmpty(clearText)) {
+            String[] textArray = clearText.split("\\|");
+            if (textArray.length == 4) { //数据组成： userid|clientId|token|timestamp
+                try {
+                    Result getUserIdResult = oAuth2ResourceManager.getPassportIdByToken(textArray[2], Integer.parseInt(textArray[1]));
+                    if (getUserIdResult.isSuccess()) {
+                        String passportId = (String) getUserIdResult.getDefaultModel();
+                        if (!Strings.isNullOrEmpty(passportId) && passportId.equals(textArray[0])) { //解密后的token得到userid，需要和传入的userid一样，保证安全及toke有效性。
+                            return textArray[0];
+                        }
+                    }else{
+                        throw new ControllerException(getUserIdResult.getCode());
+                    }
+
+                } catch (Exception e) {
+                    logger.error("ras token error fail, clear text:" + clearText, e);
+                    throw new ControllerException(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
+                }
+            } else {
+                //长度不对。
+                throw new ControllerException(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
+            }
+        } else {
+            throw new ControllerException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return null;
+    }
+}
+
+
+class ControllerException extends Exception{
+    private String code;
+    public ControllerException(String code) {
+        this.code=code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }
