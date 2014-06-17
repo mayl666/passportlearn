@@ -36,13 +36,13 @@ public class LogUtil {
         log.append("\t").append(StringUtil.defaultIfEmpty(interfaceName, "-"));                                 //记录接口名
         log.append("\t").append(StringUtil.defaultIfEmpty(message, "-"));                                       //记录原因
         log.append("\t").append(StringUtil.defaultIfEmpty(username, "-"));                                      //记录用户名
-        String passportIdLog = null;
-        String prefix = passportId.substring(0, passportId.lastIndexOf("@sohu.com"));
-        //只记手机号绑定的主账号不是它自己+@sohu.com的情况
-        if (!CommonConstant.AUTH_MESSAGE.equals(message) && !CommonConstant.CHECK_MESSAGE.equals(message) && PhoneUtil.verifyPhoneNumberFormat(username) && !username.equals(prefix)) {
-            passportIdLog = passportId;
-        }
-        log.append("\t").append(StringUtil.defaultIfEmpty(passportIdLog, "-"));                                    //记录主账号
+//        String passportIdLog = null;
+//        String prefix = passportId.substring(0, passportId.lastIndexOf("@sohu.com"));
+//        //只记手机号绑定的主账号不是它自己+@sohu.com的情况
+//        if (!CommonConstant.AUTH_MESSAGE.equals(message) && !CommonConstant.CHECK_MESSAGE.equals(message) && PhoneUtil.verifyPhoneNumberFormat(username) && !username.equals(prefix)) {
+//            passportIdLog = passportId;
+//        }
+        log.append("\t").append(StringUtil.defaultIfEmpty(passportId, "-"));                                    //记录主账号
         log.append("\t").append(StringUtil.defaultIfEmpty(resultString, "-"));                                  //记录搜狐返回的结果
         logger.error(log.toString());                                                                           //写log
     }
