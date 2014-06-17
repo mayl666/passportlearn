@@ -1,11 +1,6 @@
 package com.sogou.upd.passport.manager.account.impl;
 
-import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
@@ -14,7 +9,6 @@ import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
-import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,20 +71,14 @@ public class CommonManagerImpl implements CommonManager {
         String passportId = username;
         //如果是手机号，需要查询该手机绑定的主账号
         if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-//            passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
-//            if (Strings.isNullOrEmpty(passportId)) {
-                BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-                baseMoblieApiParams.setMobile(username);
-                result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-                if (result.isSuccess()) {
-                    passportId = result.getModels().get("userid").toString();
-                    if (result.isSuccess()) {
-                        passportId = result.getModels().get("userid").toString();
-                        String message = CommonConstant.MOBILE_MESSAGE;
-                        LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.UNKNOWN, "getPassportIdByUsername", message, username, passportId, result.toString());
-                    }
-                }
-//            }
+            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+            baseMoblieApiParams.setMobile(username);
+            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            if (result.isSuccess()) {
+                passportId = result.getModels().get("userid").toString();
+            } else {
+                passportId = passportId + "@sohu.com";
+            }
         }
         return passportId;
     }
