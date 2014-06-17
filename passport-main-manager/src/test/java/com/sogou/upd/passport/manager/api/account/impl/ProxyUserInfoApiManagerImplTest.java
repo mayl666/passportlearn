@@ -18,7 +18,7 @@ import java.util.Map;
  * Date: 13-6-13
  * Time: 上午11:28
  */
-@Ignore
+//@Ignore
 public class ProxyUserInfoApiManagerImplTest extends BaseTest {
 
     @Autowired
@@ -26,12 +26,12 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo2() throws Exception {
         GetUserInfoApiparams getUserInfoApiParams=new GetUserInfoApiparams();
-        getUserInfoApiParams.setUserid("pqmagic20061@sohu.com");
-//        getUserInfoApiParams.setFields("usertype,createip,birthday,gender,createip,createtime,"
-//                +
-//                "personalid,personalidflag,sec_mobile,sec_email,province," +
-//                "city,createtime,sec_ques,avatarurl,regappid");
-        getUserInfoApiParams.setFields("uniqname");
+        getUserInfoApiParams.setUserid("ljyf_136615@sogou.com");
+        getUserInfoApiParams.setFields("usertype,createip,birthday,gender,createip,createtime,"
+                +
+                "personalid,personalidflag,sec_mobile,sec_email,province," +
+                "city,createtime,sec_ques,avatarurl,regappid");
+//        getUserInfoApiParams.setFields("uniqname");
         Result result= proxyUserInfoApiManager.getUserInfo(getUserInfoApiParams);
         System.out.println(result);
     }
