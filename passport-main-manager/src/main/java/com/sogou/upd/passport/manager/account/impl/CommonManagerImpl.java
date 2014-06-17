@@ -74,7 +74,7 @@ public class CommonManagerImpl implements CommonManager {
     public String getPassportIdByUsername(String username) {
         Result result;
         //根据username获取passportID
-        String passportId = PassportIDGenerator.generator(username, AccountTypeEnum.getAccountType(username).getValue());
+        String passportId = username;
         //如果是手机号，需要查询该手机绑定的主账号
         if (PhoneUtil.verifyPhoneNumberFormat(username)) {
             passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
