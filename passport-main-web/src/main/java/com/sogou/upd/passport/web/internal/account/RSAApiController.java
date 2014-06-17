@@ -81,9 +81,10 @@ public class RSAApiController extends BaseController {
                                 result.getModels().put("userid", textArray[0]);
                                 return result.toString();
                             }
+                        }else{
+                            result.setCode(getUserIdResult.getCode());
+                            return result.toString();
                         }
-                        result.setCode(ErrorUtil.ERR_SIGNATURE_OR_TOKEN);
-                        return result.toString();
 
                     } catch (Exception e) {
                         logger.error("ras token error fail, clear text:" + clearText, e);
