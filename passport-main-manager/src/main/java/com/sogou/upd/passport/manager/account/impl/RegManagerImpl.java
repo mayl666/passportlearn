@@ -116,11 +116,16 @@ public class RegManagerImpl implements RegManager {
                     }
                     RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                             clientId, ru);
-                    if (ManagerHelper.isInvokeProxyApi(username)) {
-                        result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+                    if (AccountDomainEnum.SOGOU.equals(emailType) || AccountDomainEnum.INDIVID.equals(emailType)) {
+
                     } else {
-                        result = sgRegisterApiManager.regMailUser(regEmailApiParams);
+                        result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
                     }
+//                    if (ManagerHelper.isInvokeProxyApi(username)) {
+//                        result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+//                    } else {
+//                        result = sgRegisterApiManager.regMailUser(regEmailApiParams);
+//                    }
                     break;
                 case PHONE://手机号
                     RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);

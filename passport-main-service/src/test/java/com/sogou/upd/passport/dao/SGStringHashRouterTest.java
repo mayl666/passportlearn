@@ -47,12 +47,12 @@ public class SGStringHashRouterTest extends TestCase {
     public void testMobileRoute() {
         router = new SGStringHashRouter("id", "mobile_passportid_mapping_{0}", 32);
 
-        String mobile_flag_0 = "13522010566";
-        String mobile_flag_1 = "13703211617";
+        String mobile_flag_0 = "13661512835";
+//        String mobile_flag_1 = "13703211617";
         String mobile_table_name = router.doRoute(mobile_flag_0);
-        String mobile_table_name_1 = router.doRoute(mobile_flag_1);
+//        String mobile_table_name_1 = router.doRoute(mobile_flag_1);
         System.out.println("mobile_table_name:" + mobile_table_name);
-        System.out.println("mobile_table_name_1:" + mobile_table_name_1);
+//        System.out.println("mobile_table_name_1:" + mobile_table_name_1);
 
     }
 

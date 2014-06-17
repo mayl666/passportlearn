@@ -31,7 +31,17 @@ public class ManagerHelper {
     }
 
     /**
-     * 是否需要只读SG库。当isBothReadApi方法返回false时：此方法返回true表示只读SG库；返回false表示只读SH线上，相当于回滚操作
+     * 是否需要只读SH库。
+     *
+     * @return
+     */
+    public static boolean writeSohuSwitcher() {
+//        return true;   //todo 若非上线后出故障，回滚至SOHU代码，打开此开关，即为回滚
+        return false; //todo 正常线上都应该恒为false
+    }
+
+    /**
+     * 是否需要只读SG库。
      *
      * @return
      */
