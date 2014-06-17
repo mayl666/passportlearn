@@ -37,7 +37,7 @@ public class LogUtil {
         log.append("\t").append(StringUtil.defaultIfEmpty(interfaceName, "-"));                                 //记录接口名
         log.append("\t").append(StringUtil.defaultIfEmpty(message, "-"));                                       //记录原因
         log.append("\t").append(StringUtil.defaultIfEmpty(username, "-"));                                      //记录用户名
-        String passportIdLog = null;
+        String passportIdLog = passportId;
         String prefix = null;
         if (AccountDomainEnum.SOHU.equals(passportId)) {
             prefix = passportId.substring(0, passportId.lastIndexOf(
