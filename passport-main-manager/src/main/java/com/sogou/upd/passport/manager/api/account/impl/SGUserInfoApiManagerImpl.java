@@ -395,9 +395,13 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 if (!Strings.isNullOrEmpty(params.getPersonalid()) && !params.getPersonalid().equalsIgnoreCase(accountInfo.getPersonalid())) {
                     accountInfo.setPersonalid(params.getPersonalid());
                 }
+                //web页面修改真实姓名传的username，内部接口传的fullname
                 if (!Strings.isNullOrEmpty(params.getUsername()) && !params.getUsername().equalsIgnoreCase(accountInfo.getFullname())) {
                     accountInfo.setFullname(params.getUsername());
+                } else if (!Strings.isNullOrEmpty(params.getFullname())) {
+                    accountInfo.setFullname(params.getFullname());
                 }
+
             }
             accountInfo.setModifyip(params.getModifyip());
 
