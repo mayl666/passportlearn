@@ -192,7 +192,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
      * 若获取Account为空，并且Account域为搜狐域，构建基于请求参数的、值为""、的Result
      *
      * @param result
-     * @param params 原始参数
+     * @param params     原始参数
      * @param passportId 用于初始化搜狐矩阵账号默认昵称
      * @return
      */
@@ -385,7 +385,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 accountInfo.setPersonalid(params.getPersonalid());
                 accountInfo.setCreateTime(new Date());
             } else {
-                if (!Strings.isNullOrEmpty(params.getBirthday()) && !params.getBirthday().equalsIgnoreCase(accountInfo.getBirthday().toString())) {
+                if (!Strings.isNullOrEmpty(params.getBirthday()) && !params.getBirthday().equalsIgnoreCase(String.valueOf(accountInfo.getBirthday()))) {
                     DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                     accountInfo.setBirthday(format.parse(params.getBirthday()));
                 }
