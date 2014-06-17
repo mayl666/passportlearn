@@ -105,7 +105,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                             result.setDefaultModel("userid", passportId);
                         } else if (domain == AccountDomainEnum.SOHU) {
                             //如果为"搜狐域"账号，则根据请求参数构建值为 "" 的result
-                            return buildSoHuEmptyResult(result, params, passportId);
+                            return buildSoHuEmptyResult(result, infoApiparams.getFields(), passportId);
                         } else {
                             //若 account 为空，并且账号域类型不是"搜狐域"账号，错误码返回:账号不存在、并且返回
                             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
@@ -192,7 +192,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
      * 若获取Account为空，并且Account域为搜狐域，构建基于请求参数的、值为""、的Result
      *
      * @param result
-     * @param parmas
+     * @param parmas 原始参数
      * @param passportId 用于初始化搜狐矩阵账号默认昵称
      * @return
      */
