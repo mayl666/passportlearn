@@ -2,7 +2,6 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -143,6 +142,7 @@ public class RegisterApiController extends BaseController {
             //记录log
             commonManager.incRegTimesForInternal(ip, client_id);
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), ip);
+            userOperationLog.putOtherMessage("serverip", getIp(request));
             UserOperationLogUtil.log(userOperationLog);
         }
 
