@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.api.account.form.RSAApiParams;
 import com.sogou.upd.passport.service.account.MappTokenService;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
@@ -38,7 +39,7 @@ public class RSAApiController extends BaseController {
     private static Logger logger = LoggerFactory.getLogger(RSAApiController.class);
 
     @Autowired
-    private MappTokenService mappTokenService;
+    private OAuth2ResourceManager oAuth2ResourceManager;
 
 
     @InterfaceSecurity
@@ -47,9 +48,8 @@ public class RSAApiController extends BaseController {
     public String getUserId(HttpServletRequest request, RSAApiParams params) {
 
         Result result = new APIResultSupport(false);
+        String passportId=null;
         try {
-
-
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -70,14 +70,17 @@ public class RSAApiController extends BaseController {
 
             if (!Strings.isNullOrEmpty(clearText)) {
                 String[] textArray = clearText.split("\\|");
-                if (textArray.length == 3) { //数据组成： userid|token|timestamp
+                if (textArray.length == 4) { //数据组成： userid|clientId|token|timestamp
                     try {
-                        String passportId = mappTokenService.getPassprotIdByToken(textArray[1]);
-                        if (!Strings.isNullOrEmpty(passportId) && passportId.equals(textArray[0])) { //解密后的token得到userid，需要和传入的userid一样，保证安全及toke有效性。
-                            result.setSuccess(true);
-                            result.setMessage("操作成功");
-                            result.getModels().put("userid", textArray[0]);
-                            return result.toString();
+                        Result getUserIdResult = oAuth2ResourceManager.getPassportIdByToken(textArray[2], Integer.parseInt(textArray[1]));
+                        if (getUserIdResult.isSuccess()) {
+                            passportId = (String) getUserIdResult.getDefaultModel();
+                            if (!Strings.isNullOrEmpty(passportId) && passportId.equals(textArray[0])) { //解密后的token得到userid，需要和传入的userid一样，保证安全及toke有效性。
+                                result.setSuccess(true);
+                                result.setMessage("操作成功");
+                                result.getModels().put("userid", textArray[0]);
+                                return result.toString();
+                            }
                         }
                         result.setCode(ErrorUtil.ERR_SIGNATURE_OR_TOKEN);
                         return result.toString();
@@ -100,7 +103,7 @@ public class RSAApiController extends BaseController {
             return result.toString();
         } finally {
             //记录log
-            UserOperationLog userOperationLog = new UserOperationLog(request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), result.getMessage(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(passportId,request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             UserOperationLogUtil.log(userOperationLog);
 
         }
