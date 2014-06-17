@@ -48,7 +48,7 @@ public class RSAApiController extends BaseController {
     public String getUserId(HttpServletRequest request, RSAApiParams params) {
 
         Result result = new APIResultSupport(false);
-        String passportId=null;
+        String userId=null;
         try {
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
@@ -59,7 +59,7 @@ public class RSAApiController extends BaseController {
             }
 
             try {
-                String userId=getUserId(params.getCipherText());
+                userId=getUserId(params.getCipherText());
                 if(Strings.isNullOrEmpty(userId)){
                     result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
                     result.setMessage("加密错误！");
@@ -76,7 +76,7 @@ public class RSAApiController extends BaseController {
 
         } finally {
             //记录log
-            UserOperationLog userOperationLog = new UserOperationLog(passportId,request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(userId,request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             UserOperationLogUtil.log(userOperationLog);
 
         }
