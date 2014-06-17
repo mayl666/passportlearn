@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LogUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -67,6 +68,10 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     public Result getUserInfo(GetUserInfoApiparams infoApiparams) {
         Result result = new APIResultSupport(false);
         String passportId = infoApiparams.getUserid();
+        //传手机号，后面加上“@sohu.com”+后缀
+        if (PhoneUtil.verifyPhoneNumberFormat(passportId)) {
+            passportId += "@sohu.com";
+        }
         try {
             String params = infoApiparams.getFields();
             if (!Strings.isNullOrEmpty(params)) {
@@ -236,6 +241,10 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     public Result updateUserInfo(UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
         String passportId = params.getUserid();
+        //传手机号，后面加上“@sohu.com”+后缀
+        if (PhoneUtil.verifyPhoneNumberFormat(passportId)) {
+            passportId += "@sohu.com";
+        }
         try {
             //获取用户账号类型
             AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
