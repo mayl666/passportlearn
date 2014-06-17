@@ -157,7 +157,8 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                         result.setDefaultModel(paramArray[i], value);
                                     } else {
                                         Date birthday = accountInfo.getBirthday();
-                                        result.setDefaultModel(paramArray[i], new SimpleDateFormat("yyyy-MM-dd").format(birthday));
+                                        String birthdayStr = (birthday == null) ? "" : new SimpleDateFormat("yyyy-MM-dd").format(birthday);
+                                        result.setDefaultModel(paramArray[i], birthdayStr);
                                     }
                                 } catch (Exception e) {
                                     paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, paramArray[i]));
