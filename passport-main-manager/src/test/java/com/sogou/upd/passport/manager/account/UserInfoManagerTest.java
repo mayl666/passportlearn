@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.JsonUtil;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
-import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
