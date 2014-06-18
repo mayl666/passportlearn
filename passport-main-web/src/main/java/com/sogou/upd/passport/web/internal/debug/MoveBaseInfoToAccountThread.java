@@ -82,7 +82,7 @@ public class MoveBaseInfoToAccountThread implements Runnable {
                     continue;
                 }
                 String cacheKey = buildAccountKey(passportId);
-                dbShardRedisUtils.setWithinSeconds(cacheKey, queryAccount, DateAndNumTimesConstant.ONE_MONTH);
+                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, queryAccount, DateAndNumTimesConstant.ONE_MONTH);
             }
         } catch (Exception e) {
             logger.error("出错记录passportId为：" + logOpenId, e);

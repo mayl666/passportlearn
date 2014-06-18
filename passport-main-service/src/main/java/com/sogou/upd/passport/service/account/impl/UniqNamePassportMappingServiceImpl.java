@@ -42,7 +42,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
+                    dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -70,7 +70,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
             int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
             if (row > 0) {
                 String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
+                dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
         } catch (Exception e) {
@@ -100,7 +100,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
                 int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(nickname, passportId);
                 if (row > 0) {
                     String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
-                    dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
+                    dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                     return true;
                 }
             } else {

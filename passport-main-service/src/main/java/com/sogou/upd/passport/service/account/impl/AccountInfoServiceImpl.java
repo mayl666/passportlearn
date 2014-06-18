@@ -41,7 +41,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
             if (accountInfo == null) {
                 accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 if (accountInfo != null) {
-                    dbShardRedisUtils.setWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.ONE_MONTH);
+                    dbShardRedisUtils.setObjectWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -68,7 +68,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 } else {
                     accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
-                dbShardRedisUtils.setWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.ONE_MONTH);
+                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.ONE_MONTH);
                 return accountInfo;
             }
         } catch (Exception e) {
@@ -97,7 +97,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 } else {
                     accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
-                dbShardRedisUtils.setWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.ONE_MONTH);
+                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.ONE_MONTH);
                 return accountInfo;
             }
             return null;
@@ -131,7 +131,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 } else {
                     accountInfoTmp = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
-                dbShardRedisUtils.setWithinSeconds(cacheKey, accountInfoTmp, DateAndNumTimesConstant.ONE_MONTH);
+                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, accountInfoTmp, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
         } catch (Exception e) {

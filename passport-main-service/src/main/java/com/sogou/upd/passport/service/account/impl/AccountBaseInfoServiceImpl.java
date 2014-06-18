@@ -91,7 +91,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             if (accountBaseInfo == null) {
                 accountBaseInfo = accountBaseInfoDAO.getAccountBaseInfoByPassportId(passportId);
                 if (accountBaseInfo != null) {
-                    dbShardRedisUtils.setWithinSeconds(cacheKey, accountBaseInfo, DateAndNumTimesConstant.ONE_MONTH);
+                    dbShardRedisUtils.setObjectWithinSeconds(cacheKey, accountBaseInfo, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -117,7 +117,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 if (row > 0) {
                     String cacheKey = buildAccountBaseInfoKey(passportId);
                     oldBaseInfo.setUniqname(uniqname);
-                    dbShardRedisUtils.setWithinSeconds(cacheKey, oldBaseInfo, DateAndNumTimesConstant.ONE_MONTH);
+                    dbShardRedisUtils.setObjectWithinSeconds(cacheKey, oldBaseInfo, DateAndNumTimesConstant.ONE_MONTH);
                     //移除原来映射表
                     if (uniqNamePassportMappingService.removeUniqName(oldUniqName)) {
                         boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
@@ -143,7 +143,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 if (row > 0) {
                     String cacheKey = buildAccountBaseInfoKey(passportId);
                     oldBaseInfo.setAvatar(avatar);
-                    dbShardRedisUtils.setWithinSeconds(cacheKey, oldBaseInfo, DateAndNumTimesConstant.ONE_MONTH);
+                    dbShardRedisUtils.setObjectWithinSeconds(cacheKey, oldBaseInfo, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
             return true;
@@ -176,7 +176,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
                 int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
                 if (accountBaseInfoRow > 0) {
                     String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                    dbShardRedisUtils.setWithinSeconds(cacheKey, accountBaseInfo, DateAndNumTimesConstant.ONE_MONTH);
+                    dbShardRedisUtils.setObjectWithinSeconds(cacheKey, accountBaseInfo, DateAndNumTimesConstant.ONE_MONTH);
                     return accountBaseInfo;
                 }
             }
@@ -195,7 +195,7 @@ public class AccountBaseInfoServiceImpl implements AccountBaseInfoService {
             int accountBaseInfoRow = accountBaseInfoDAO.saveAccountBaseInfo(passportId, accountBaseInfo);
             if (accountBaseInfoRow > 0) {
                 String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                dbShardRedisUtils.setWithinSeconds(cacheKey, accountBaseInfo, DateAndNumTimesConstant.ONE_MONTH);
+                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, accountBaseInfo, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
             return false;

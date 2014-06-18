@@ -7,7 +7,6 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
@@ -132,7 +131,7 @@ public class SoHuNNMigrationTask extends RecursiveTask<List<String>> {
                                 //更新缓存
                                 account.setUniqname(nickName);
                                 String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNT + passportId;
-                                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+                                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                             } else {
                                 //更新account表昵称失败记录
                                 failList.add("D:" + passportId);

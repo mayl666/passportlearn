@@ -96,7 +96,7 @@ public class AppConfigServiceImpl implements AppConfigService {
         boolean flag = true;
         try {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
-            dbShardRedisUtils.setWithinSeconds(cacheKey, appConfig, DateAndNumTimesConstant.ONE_MONTH);
+            dbShardRedisUtils.setObjectWithinSeconds(cacheKey, appConfig, DateAndNumTimesConstant.ONE_MONTH);
         } catch (Exception e) {
             flag = false;
             logger.error("[App] service method addClientIdMapAppConfig error.{}", e);

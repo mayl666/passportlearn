@@ -53,7 +53,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = snamePassportMappingDAO.getPassportIdBySname(sname);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
+                    dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -72,7 +72,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = snamePassportMappingDAO.getPassportIdBySid(sid);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
+                    dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -91,7 +91,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = snamePassportMappingDAO.getPassportIdByMobile(mobile);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
+                    dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -107,7 +107,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
             int accountRow = snamePassportMappingDAO.updateSnamePassportMapping(sname, passportId);
             if (accountRow != 0) {
                 String cacheKey = buildSnamePassportMappingKey(sname);
-                dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
+                dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
         } catch (Exception e) {
@@ -123,7 +123,7 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
             int accountRow = snamePassportMappingDAO.insertSnamePassportMapping(sid, sname, passportId, mobile);
             if (accountRow != 0) {
                 String cacheKey = buildSnamePassportMappingKey(sname);
-                dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
+                dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
         } catch (Exception e) {
