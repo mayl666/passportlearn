@@ -8,15 +8,6 @@ package com.sogou.upd.passport.manager.account;
  * To change this template use File | Settings | File Templates.
  */
 public interface CommonManager {
-
-    /**
-     * 根据用户名生成passportId
-     *
-     * @param username
-     * @return
-     */
-    public String getPassportIdByUsername(String username) throws Exception;
-
     /**
      * 用户注册时ip次数的累加
      *
@@ -30,27 +21,33 @@ public interface CommonManager {
      *
      * @param ip
      */
-    public void incRegTimesForInternal(String ip, int client_id);
+    public void incRegTimesForInternal(String ip,int client_id);
 
     /**
      * 检验code是否正确
-     *
      * @param firstStr
      * @param clientId
      * @param ct
      * @param originalCode
      * @return
      */
-    public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode);
-
+    public boolean isCodeRight(String firstStr,int clientId,long ct,String originalCode);
     /**
      * 根据字符串获取code值
-     *
      * @param firstStr
      * @param clientId
      * @param ct
      * @return
      */
     public String getCode(String firstStr, int clientId, long ct);
+
+    /**
+     * 根据用户输入的username获取对应的passport
+     * 1.输入：手机号；输出：主账号userid
+     * 2.输入：手机号@sohu.com；输出：手机号@sohu.com
+     * @param username
+     * @return
+     */
+    public String getPassportIdByUsername(String username) throws Exception;
 
 }

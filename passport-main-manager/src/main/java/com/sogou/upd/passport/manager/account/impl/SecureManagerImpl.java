@@ -26,13 +26,13 @@ import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +53,10 @@ public class SecureManagerImpl implements SecureManager {
     private static Logger logger = LoggerFactory.getLogger(SecureManagerImpl.class);
 
     private static String SECURE_FIELDS = "sec_email,sec_mobile,sec_ques";
+
+
+    //搜狗安全信息字段:密保邮箱、密保手机、密保问题
+    private static final String SOGOU_SECURE_FIELDS = "email,mobile,question,uniqname,avatarurl";
 
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
@@ -87,11 +91,14 @@ public class SecureManagerImpl implements SecureManager {
     @Autowired
     private LoginApiManager proxyLoginApiManager;
     @Autowired
-    private PhotoUtils photoUtils;
-    @Autowired
-    private UserInfoApiManager shPlusUserInfoApiManager;
-    @Autowired
     private LoginApiManager loginApiManager;
+
+    @Autowired
+    private UserInfoApiManager sgUserInfoApiManager;
+
+    @Autowired
+    private PhotoUtils photoUtils;
+
 
     private ExecutorService service = Executors.newFixedThreadPool(10);
 
@@ -153,20 +160,20 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         try {
 
-            if (ManagerHelper.readSohuSwitcher()) {
-                // SOHU接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-                getUserInfoApiparams.setUserid(userId);
-                getUserInfoApiparams.setClient_id(clientId);
-                getUserInfoApiparams.setFields(SECURE_FIELDS);
-                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                Map<String, String> mapResult = result.getModels();
-                String mobile = mapResult.get("sec_mobile");
-                result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
-
-            } else {
-                result = sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.SECURE);
-            }
+            //            if (ManagerHelper.isInvokeProxyApi(userId)) {
+//                // SOHU接口
+//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+//                getUserInfoApiparams.setUserid(userId);
+//                getUserInfoApiparams.setClient_id(clientId);
+//                getUserInfoApiparams.setFields(SECURE_FIELDS);
+//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+//                Map<String, String> mapResult = result.getModels();
+//                String mobile = mapResult.get("sec_mobile");
+//                result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
+//
+//            } else {
+            result = sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.SECURE);
+//             }
 
             if (!result.isSuccess()) {
                 return result;
@@ -209,40 +216,70 @@ public class SecureManagerImpl implements SecureManager {
             int score = 0; // 安全系数
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
 
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
-                // 代理接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-                getUserInfoApiparams.setUserid(userId);
-                getUserInfoApiparams.setClient_id(clientId);
+            //TODO 去掉开关
+//            if (ManagerHelper.isInvokeProxyApi(userId)) {
+//                // 代理接口
+//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+//                getUserInfoApiparams.setUserid(userId);
+//                getUserInfoApiparams.setClient_id(clientId);
 //                getUserInfoApiparams.setImagesize("50");
-                getUserInfoApiparams.setFields(SECURE_FIELDS /*+",uniqname,avatarurl"*/);
+//                getUserInfoApiparams.setFields(SECURE_FIELDS);
+//
+//                //调用sohu 接口取用户信息
+//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+//
+//                Result shPlusResult = shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+//                if (shPlusResult.isSuccess()) {
+//                    Object obj = shPlusResult.getModels().get("baseInfo");
+//                    if (obj != null) {
+//                        AccountBaseInfo baseInfo = (AccountBaseInfo) obj;
+//                        String uniqname = baseInfo.getUniqname();
+//                        result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
+//                        Result photoResult = photoUtils.obtainPhoto(baseInfo.getAvatar(), "50");
+//                        if (photoResult.isSuccess()) {
+//                            result.getModels().put("avatarurl", photoResult.getModels());
+//                        }
+//                    } else {
+//                        result.getModels().put("uniqname", userId);
+//                    }
+//                }
+//            } else {
 
-                //调用sohu 接口取用户信息
-                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+            //TODO 统一调用 AccountInfoManager getUserInfo 方法
+
+//                GetSecureInfoApiParams params = new GetSecureInfoApiParams();
+//                params.setUserid(userId);
+//                params.setClient_id(clientId);
+//                result = sgSecureApiManager.getUserSecureInfo(params);
 
 
-                //调 sohu+ manager 取用户信息
-                Result shPlusResult = shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                if (shPlusResult.isSuccess()) {
-                    Object obj = shPlusResult.getModels().get("baseInfo");
-                    if (obj != null) {
-                        AccountBaseInfo baseInfo = (AccountBaseInfo) obj;
-                        String uniqname = baseInfo.getUniqname();
-                        result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
-                        Result photoResult = photoUtils.obtainPhoto(baseInfo.getAvatar(), "50");
-                        if (photoResult.isSuccess()) {
-                            result.getModels().put("avatarurl", photoResult.getModels());
-                        }
-                    } else {
-                        result.getModels().put("uniqname", userId);
-                    }
-                }
+            //调用 SGUserInfoApiManagerImpl 中 getUserInfo
+
+            GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+            getUserInfoApiparams.setUserid(userId);
+            getUserInfoApiparams.setClient_id(clientId);
+            getUserInfoApiparams.setFields(SOGOU_SECURE_FIELDS);
+
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+            if (domain == AccountDomainEnum.THIRD) {
+                result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
             } else {
-                GetSecureInfoApiParams params = new GetSecureInfoApiParams();
-                params.setUserid(userId);
-                params.setClient_id(clientId);
-                result = sgSecureApiManager.getUserSecureInfo(params);
+                result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                if (!result.isSuccess()) {
+                    //记录Log 跟踪数据同步延时情况
+                    logger.warn("Data synchronization delay. passportId {}", userId);
+                    result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                    result.getModels().put("uniqname", defaultUniqname(userId));
+                    result.getModels().put("avatarurl", StringUtils.EMPTY);
+                }
+                String uniqname = String.valueOf(result.getModels().get("uniqname"));
+                result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
+                Result photoResult = photoUtils.obtainPhoto(String.valueOf(result.getModels().get("avatarurl")), "50");
+                if (photoResult.isSuccess()) {
+                    result.getModels().put("avatarurl", photoResult.getModels());
+                }
             }
+//            }
 
             Map<String, String> map = result.getModels();
             result.setModels(map);
@@ -518,19 +555,19 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
-            if (ManagerHelper.readSohuSwitcher()) {
-                // 代理接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-                getUserInfoApiparams.setUserid(userId);
-                getUserInfoApiparams.setClient_id(clientId);
-                getUserInfoApiparams.setFields(SECURE_FIELDS);
-                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                Map<String, String> mapResult = result.getModels();
-                String mobile = mapResult.get("sec_mobile");
-                result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
-            } else {
-                result = checkMobileCodeByPassportId(userId, clientId, smsCode);
-            }
+//            if (ManagerHelper.isInvokeProxyApi(userId)) {
+//                // 代理接口
+//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+//                getUserInfoApiparams.setUserid(userId);
+//                getUserInfoApiparams.setClient_id(clientId);
+//                getUserInfoApiparams.setFields(SECURE_FIELDS);
+//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+//                Map<String, String> mapResult = result.getModels();
+//                String mobile = mapResult.get("sec_mobile");
+//                result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
+//            } else {
+            result = checkMobileCodeByPassportId(userId, clientId, smsCode);
+//            }
 
             if (result.isSuccess()) {
                 result.setDefaultModel("scode", accountSecureService.getSecureCodeModSecInfo(
@@ -655,7 +692,7 @@ public class SecureManagerImpl implements SecureManager {
                 getUserInfoApiparams.setUserid(userId);
                 getUserInfoApiparams.setClient_id(clientId);
                 getUserInfoApiparams.setFields(SECURE_FIELDS);
-                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                 Map<String, String> mapResult = result.getModels();
                 String mobile = mapResult.get("sec_mobile");
 
@@ -906,4 +943,18 @@ public class SecureManagerImpl implements SecureManager {
         }
         return record;
     }
+
+    /**
+     * 获取默认昵称
+     *
+     * @param passportId
+     * @return
+     */
+    private String defaultUniqname(String passportId) {
+        if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(passportId)) {
+            return "搜狗用户";
+        }
+        return passportId.substring(0, passportId.indexOf("@"));
+    }
+
 }

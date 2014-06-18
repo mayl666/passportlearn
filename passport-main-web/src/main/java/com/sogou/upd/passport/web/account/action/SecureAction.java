@@ -9,8 +9,8 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.CheckManager;
-import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
@@ -58,9 +58,9 @@ public class SecureAction extends BaseController {
     @Autowired
     private CheckManager checkManager;
     @Autowired
-    private OAuth2ResourceManager oAuth2ResourceManager;
-    @Autowired
     private BindApiManager proxyBindApiManager;
+    @Autowired
+    private AccountInfoManager accountInfoManager;
     @Autowired
     private RegManager regManager;
 
@@ -92,11 +92,11 @@ public class SecureAction extends BaseController {
             result = secureManager.queryAccountSecureInfo(userId, clientId, true);
         }
 
-        String nickName = hostHolder.getNickName();
-        if (Strings.isNullOrEmpty(nickName)) {
-            nickName = userId;
-        }
-        result.setDefaultModel("username", nickName);
+//        String nickName = hostHolder.getNickName();
+//        if (Strings.isNullOrEmpty(nickName)) {
+//            nickName = userId;
+//        }
+        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -136,11 +136,11 @@ public class SecureAction extends BaseController {
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-        String nickName = hostHolder.getNickName();
-        if (Strings.isNullOrEmpty(nickName)) {
-            nickName = userId;
-        }
-        result.setDefaultModel("username", nickName);
+//        String nickName = hostHolder.getNickName();
+//        if (Strings.isNullOrEmpty(nickName)) {
+//            nickName = userId;
+//        }
+        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -181,11 +181,11 @@ public class SecureAction extends BaseController {
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-        String nickName = hostHolder.getNickName();
-        if (Strings.isNullOrEmpty(nickName)) {
-            nickName = userId;
-        }
-        result.setDefaultModel("username", nickName);
+//        String nickName = hostHolder.getNickName();
+//        if (Strings.isNullOrEmpty(nickName)) {
+//            nickName = userId;
+//        }
+        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -224,11 +224,11 @@ public class SecureAction extends BaseController {
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-        String nickName = hostHolder.getNickName();
-        if (Strings.isNullOrEmpty(nickName)) {
-            nickName = userId;
-        }
-        result.setDefaultModel("username", nickName);
+//        String nickName = hostHolder.getNickName();
+//        if (Strings.isNullOrEmpty(nickName)) {
+//            nickName = userId;
+//        }
+        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -265,7 +265,7 @@ public class SecureAction extends BaseController {
         }
 
         result.setSuccess(true);
-        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId, clientId));
+        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -302,7 +302,7 @@ public class SecureAction extends BaseController {
         result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
 
         result.setSuccess(true);
-        result.setDefaultModel("username", oAuth2ResourceManager.getEncodedUniqname(userId, clientId));
+        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -390,6 +390,7 @@ public class SecureAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result.toString();
         }
+
         result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail, modifyIp, ru);
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
         String referer = request.getHeader("referer");

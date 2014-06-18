@@ -14,6 +14,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -81,6 +82,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     @Autowired
     private ConnectConfigService connectConfigService;
 
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
     @Override
     public Result resource(PCOAuth2ResourceParams params) {
@@ -264,7 +267,14 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
 
-            Result getUserInfoResult = getUserInfo(passportId, clientId);
+            //取用户昵称、头像信息
+//            Result getUserInfoResult = getUserInfo(passportId, clientId);
+
+            GetUserInfoApiparams params = new GetUserInfoApiparams();
+            params.setClient_id(clientId);
+            params.setUserid(passportId);
+            params.setFields("uniqname,avatarurl");
+            Result getUserInfoResult = accountInfoManager.getUserNickNameAndAvatar(params);
             String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
             if (getUserInfoResult.isSuccess()) {
                 uniqname = (String) getUserInfoResult.getModels().get("uniqname");
@@ -349,6 +359,16 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         return passportId.substring(0, passportId.indexOf("@"));
     }
 
+    /**
+     * 其实此方法只是取用户昵称和头像
+     * <p/>
+     * TODO 非第三方账号数据迁移完成后，此方法作废
+     *
+     * @param passportId
+     * @param clientId
+     * @return
+     */
+    @Deprecated
     @Override
     public Result getUserInfo(String passportId, int clientId) {
         Result result = new APIResultSupport(false);
@@ -409,6 +429,14 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         return result;
     }
 
+    /**
+     * 从浏览器论坛取昵称
+     *
+     * @param passportId
+     * @param accountBaseInfo
+     * @param uniqname
+     * @return
+     */
     private String getAndUpdateUniqname(String passportId, AccountBaseInfo accountBaseInfo, String uniqname) {
         if (!isValidUniqname(passportId, uniqname)) {
             //从论坛获取昵称

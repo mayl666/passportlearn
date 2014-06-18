@@ -8,9 +8,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.QQClubFaceApiManager;
-import com.sogou.upd.passport.manager.api.connect.QQLightOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.qq.QQClubFaceOpenApiParams;
-import com.sogou.upd.passport.manager.api.connect.form.qq.QQLightOpenApiParams;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -110,7 +108,6 @@ public class QQClubFaceApiController extends BaseConnectController {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), String.valueOf(clientId), code, getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage("qqResult", resultString);
             UserOperationLogUtil.log(userOperationLog);
         }
         return resultString;

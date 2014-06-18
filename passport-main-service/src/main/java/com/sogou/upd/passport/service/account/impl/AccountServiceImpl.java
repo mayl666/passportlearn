@@ -292,7 +292,7 @@ public class AccountServiceImpl implements AccountService {
             int row = accountDAO.deleteAccountByPassportId(passportId);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
-                redisUtils.delete(cacheKey);
+                dbShardRedisUtils.delete(cacheKey);
                 return true;
             }
         } catch (Exception e) {
@@ -670,7 +670,6 @@ public class AccountServiceImpl implements AccountService {
                     String cacheKey = buildAccountKey(passportId);
                     account.setUniqname(uniqname);
                     dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-                    dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
 
                     //第一次直接插入
                     if (Strings.isNullOrEmpty(oldUniqName)) {
@@ -679,9 +678,9 @@ public class AccountServiceImpl implements AccountService {
                         if (row > 0) {
                             cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
                             dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
-                    } else {
-                        return false;
-                    }
+                        } else {
+                            return false;
+                        }
                     } else {
                         //移除原来映射表
                         if (removeUniqName(oldUniqName)) {
@@ -689,7 +688,7 @@ public class AccountServiceImpl implements AccountService {
                             row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
                             if (row > 0) {
                                 cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                                redisUtils.set(cacheKey, passportId);
+                                dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                             } else {
                                 return false;
                             }
@@ -715,8 +714,6 @@ public class AccountServiceImpl implements AccountService {
             if (row > 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setAvatar(avatar);
-//                dbShardRedisUtils.set(cacheKey, account);
-                dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }

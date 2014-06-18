@@ -48,16 +48,12 @@ public class MigrationTask extends RecursiveTask<List<String>> {
     private static final int LIMIT_HOLD = 150000;
 //    private static final int LIMIT_HOLD = 100;
 
-    //    @Autowired
     private AccountDAO accountDAO;
 
-    //    @Autowired
     private AccountBaseInfoDAO baseInfoDAO;
 
-    //    @Autowired
     private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
 
-    //    @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
 
@@ -124,8 +120,6 @@ public class MigrationTask extends RecursiveTask<List<String>> {
                                             LOGGER.error("update account error.", e);
                                             continue;
                                         }
-                                        //更新缓存
-                                        dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                                     } else {
                                         //更新db失败、记录Log : fail_update_account.txt
                                         updateDBFailList.add(passportId);

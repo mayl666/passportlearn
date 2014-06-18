@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -27,11 +28,9 @@ import org.springframework.stereotype.Component;
  * Time: 下午8:36
  * To change this template use File | Settings | File Templates.
  */
-@Component
+@Component("commonManager")
 public class CommonManagerImpl implements CommonManager {
-
     private static final Logger logger = LoggerFactory.getLogger(CommonManagerImpl.class);
-
     private static final Logger checkLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothCheckSyncErrorLogger");
 
     @Autowired
@@ -42,6 +41,34 @@ public class CommonManagerImpl implements CommonManager {
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private BindApiManager proxyBindApiManager;
+   
+    @Override
+    public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {
+        String code = getCode(firstStr.toString(), clientId, ct);
+        boolean isCodeEqual = code.equalsIgnoreCase(originalCode);
+        return isCodeEqual;
+    }
+
+    @Override
+    public String getCode(String firstStr, int clientId, long ct) {
+        AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+        if (appConfig == null) {
+            return null;
+        }
+        String secret = appConfig.getServerSecret();
+        String code = ManagerHelper.generatorCode(firstStr.toString(), clientId, secret, ct);
+        return code;
+    }
+
+    @Override
+    public void incRegTimesForInternal(String ip, int client_id) {
+        operateTimesService.incRegTimesForInternal(ip, client_id);
+    }
+
+    @Override
+    public void incRegTimes(String ip, String cookieStr) {
+        operateTimesService.incRegTimes(ip, cookieStr);
+    }
 
     @Override
     public String getPassportIdByUsername(String username) throws Exception {
@@ -76,31 +103,4 @@ public class CommonManagerImpl implements CommonManager {
         return passportId;
     }
 
-    @Override
-    public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {
-        String code = getCode(firstStr.toString(), clientId, ct);
-        boolean isCodeEqual = code.equalsIgnoreCase(originalCode);
-        return isCodeEqual;
-    }
-
-    @Override
-    public String getCode(String firstStr, int clientId, long ct) {
-        AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-        if (appConfig == null) {
-            return null;
-        }
-        String secret = appConfig.getServerSecret();
-        String code = ManagerHelper.generatorCode(firstStr.toString(), clientId, secret, ct);
-        return code;
-    }
-
-    @Override
-    public void incRegTimesForInternal(String ip, int client_id) {
-        operateTimesService.incRegTimesForInternal(ip, client_id);
-    }
-
-    @Override
-    public void incRegTimes(String ip, String cookieStr) {
-        operateTimesService.incRegTimes(ip, cookieStr);
-    }
 }
