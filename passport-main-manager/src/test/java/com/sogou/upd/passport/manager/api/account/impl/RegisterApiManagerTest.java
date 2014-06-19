@@ -152,6 +152,23 @@ public class RegisterApiManagerTest extends BaseTest {
         Assert.assertTrue(expectForm.equals(actualFrom));
     }
 
+
+    /**
+     * 格式错误的个性账号---检查用户是否存在:只检查@sogou.com账号和外域邮箱账号
+     */
+    @Test
+    public void testCheckUser_7() throws IOException {
+        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
+        checkUserApiParams.setUserid("sogou");
+        Result expectResult = proxyRegisterApiManager.checkUser(checkUserApiParams);
+//        String expectResult = "{\"data\":{\"userid\":\"" + wrong_format + "\"},\"statusText\":\"非法userid\",\"status\":\"20239\"}";
+        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
+        checkUserApiParams.setUserid("sogou");
+        Result actualResult = sgRegisterApiManager.checkUser(checkUserApiParams);
+        APIResultForm actualFrom = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm.equals(actualFrom));
+    }
+
     /**
      * 发送手机短信验证码
      */
