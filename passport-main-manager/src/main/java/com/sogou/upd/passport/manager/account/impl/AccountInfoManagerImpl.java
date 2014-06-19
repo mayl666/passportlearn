@@ -539,7 +539,12 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             //从论坛获取昵称
             uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
             if (isValidUniqname(passportId, uniqname)) {
-                if (account != null) {
+                String checkExist = passportId;
+                try {
+                    checkExist = accountService.checkUniqName(uniqname);
+                } catch (Exception e) {
+                }
+                if (account != null && Strings.isNullOrEmpty(checkExist)) {
                     //更新用户昵称信息到account表
                     accountService.updateUniqName(account, uniqname);
                 }
