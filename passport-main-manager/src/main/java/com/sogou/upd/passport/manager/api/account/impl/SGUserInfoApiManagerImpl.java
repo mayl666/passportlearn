@@ -328,23 +328,14 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     private Result updateAccountNickName(Account account, String nickName) {
         Result result = new APIResultSupport(false);
         try {
-            //更新昵称
-            //判断昵称是否存在
-            String checkExist = accountService.checkUniqName(nickName);
-            if (Strings.isNullOrEmpty(checkExist)) {
-                //更新昵称 Account表 u_p_m映射表
-                boolean accountUpdateResult = accountService.updateUniqName(account, nickName);
-                if (accountUpdateResult) {
-                    result.setSuccess(true);
-                    result.setMessage("更新昵称成功");
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
-
-                }
+            //更新昵称 Account表 u_p_m映射表
+            boolean accountUpdateResult = accountService.updateUniqName(account, nickName);
+            if (accountUpdateResult) {
+                result.setSuccess(true);
+                result.setMessage("更新昵称成功");
             } else {
-                result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
+                result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
             }
-
         } catch (Exception e) {
             logger.error("updateAccountNickName error. passportId:" + account.getPassportId(), e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -358,6 +349,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
      * 非第三方账号迁移，新增 更新用户其他信息 方法
      * <p/>
      * TODO 兼容内部接口方法
+     *
      * @return
      */
     private Result updateAccountInfo(UpdateUserInfoApiParams params) {
