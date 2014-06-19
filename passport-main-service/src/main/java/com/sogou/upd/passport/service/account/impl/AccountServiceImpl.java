@@ -542,9 +542,9 @@ public class AccountServiceImpl implements AccountService {
 
             if (!Strings.isNullOrEmpty(uniqname) && !uniqname.equals(oldUniqName)) {
                 //先检查 u_p_m 中是否存在，如果昵称存在则返回
-                if (!Strings.isNullOrEmpty(checkUniqName(uniqname))) {
-                    return false;
-                }
+//                if (!Strings.isNullOrEmpty(checkUniqName(uniqname))) {
+//                    return false;
+//                }
                 //更新数据库
                 int row = accountDAO.updateUniqName(uniqname, passportId);
                 if (row > 0) {
