@@ -51,9 +51,8 @@ public class SoHuNickNameMigTasks extends RecursiveTask<List<String>> {
         List<String> fullList = Lists.newLinkedList();
 
         try {
-            for (int i = 0; i < 1; i++) {
-//                String dataFile = filePath + "sohu_nickname_userid_" + i + ".sql";
-                String dataFile = filePath + "sohu_nickname_userid_test.sql";      //sohu_nickname_userid_test.sql
+            for (int i = 0; i < 4; i++) {
+                String dataFile = filePath + "sohu_nikename_migration_usrid_" + i + ".txt";
                 SoHuNNMigrationTask task = new SoHuNNMigrationTask(uniqNamePassportMappingDAO, accountDAO, dbShardRedisUtils, dataFile);
                 task.fork();
                 forks.add(task);

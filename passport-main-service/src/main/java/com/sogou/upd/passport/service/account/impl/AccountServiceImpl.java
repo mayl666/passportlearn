@@ -664,6 +664,10 @@ public class AccountServiceImpl implements AccountService {
             String passportId = account.getPassportId();
             //如果新昵称不为空且与原昵称不重复，则更新数据库及缓存
             if (!Strings.isNullOrEmpty(uniqname) && !uniqname.equals(oldUniqName)) {
+                //先检查 u_p_m 中是否存在，如果昵称存在则返回
+                if (!Strings.isNullOrEmpty(checkUniqName(uniqname))) {
+                    return false;
+                }
                 //更新数据库
                 int row = accountDAO.updateUniqName(uniqname, passportId);
                 if (row > 0) {

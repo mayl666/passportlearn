@@ -546,7 +546,11 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 }
                 if (account != null && Strings.isNullOrEmpty(checkExist)) {
                     //更新用户昵称信息到account表
-                    accountService.updateUniqName(account, uniqname);
+                    //从浏览器论坛获取昵称、更新到account以及u_p_m、先check u_p_m昵称唯一性
+                    boolean updateFlag = accountService.updateUniqName(account, uniqname);
+                    if (!updateFlag) {
+                        uniqname = defaultUniqname(passportId);
+                    }
                 }
             }
         }

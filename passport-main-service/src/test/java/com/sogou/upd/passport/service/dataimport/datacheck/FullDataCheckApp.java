@@ -256,20 +256,21 @@ public class FullDataCheckApp extends RecursiveTask<Map<String, String>> {
             String code = passportId + appId + key + ct;
             code = Coder.encryptMD5(code);
 
-            requestModelXml.addParam("question", "");
-            requestModelXml.addParam("mobile", "");
-            requestModelXml.addParam("mobileflag", "");
-            requestModelXml.addParam("createtime", "");
-            requestModelXml.addParam("createip", "");
-            requestModelXml.addParam("email", "");
-            requestModelXml.addParam("emailflag", "");
-            requestModelXml.addParam("birthday", ""); //数据验证,暂先不取生日
-            requestModelXml.addParam("gender", "");
-            requestModelXml.addParam("province", "");
-            requestModelXml.addParam("city", "");
-            requestModelXml.addParam("username", "");
-            requestModelXml.addParam("personalid", "");
+//            requestModelXml.addParam("question", "");
+//            requestModelXml.addParam("mobile", "");
+//            requestModelXml.addParam("mobileflag", "");
+//            requestModelXml.addParam("createtime", "");
+//            requestModelXml.addParam("createip", "");
+//            requestModelXml.addParam("email", "");
+//            requestModelXml.addParam("emailflag", "");
+//            requestModelXml.addParam("birthday", ""); //数据验证,暂先不取生日
+//            requestModelXml.addParam("gender", "");
+//            requestModelXml.addParam("province", "");
+//            requestModelXml.addParam("city", "");
+//            requestModelXml.addParam("username", "");
+//            requestModelXml.addParam("personalid", "");
             requestModelXml.addParam("userid", passportId);
+            requestModelXml.addParam("uniqname", "");
             requestModelXml.addParam("appid", appId);
             requestModelXml.addParam("ct", ct);
             requestModelXml.addParam("code", code);

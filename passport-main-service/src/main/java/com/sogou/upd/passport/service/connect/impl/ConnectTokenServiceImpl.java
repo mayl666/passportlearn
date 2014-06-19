@@ -110,7 +110,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
                 return false;
             }
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method insertAccountConnect error.{}", e);
+            logger.error("[ConnectToken] service method insertAccountConnect error.passportId " + connectToken.getPassportId(), e);
             throw new ServiceException(e);
         }
     }

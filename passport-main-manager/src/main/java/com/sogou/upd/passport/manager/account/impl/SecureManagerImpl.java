@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -9,6 +10,7 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
@@ -51,6 +53,8 @@ import java.util.concurrent.Executors;
 public class SecureManagerImpl implements SecureManager {
 
     private static Logger logger = LoggerFactory.getLogger(SecureManagerImpl.class);
+
+    private static Logger profileErrorLogger = LoggerFactory.getLogger("profileErrorLogger");
 
     private static String SECURE_FIELDS = "sec_email,sec_mobile,sec_ques";
 
@@ -266,9 +270,12 @@ public class SecureManagerImpl implements SecureManager {
             } else {
                 result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
                 if (!result.isSuccess()) {
-                    //记录Log 跟踪数据同步延时情况
-                    logger.warn("Data synchronization delay. passportId {}", userId);
                     result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                    if (result.isSuccess()) {
+                        //记录Log 跟踪数据同步延时情况
+                        LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "getuserinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, userId, userId, result.toString());
+                    }
+
                     result.getModels().put("uniqname", defaultUniqname(userId));
                     result.getModels().put("avatarurl", StringUtils.EMPTY);
                 }

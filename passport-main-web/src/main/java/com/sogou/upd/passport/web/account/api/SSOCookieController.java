@@ -58,7 +58,6 @@ public class SSOCookieController extends BaseController {
         //用来定义IE的跨域问题。
         response.setHeader("P3P","CP=CAO PSA OUR");
 
-
         result = cookieManager.setSSOCookie(response,ssoCookieParams);
 
         String ru = ssoCookieParams.getRu();

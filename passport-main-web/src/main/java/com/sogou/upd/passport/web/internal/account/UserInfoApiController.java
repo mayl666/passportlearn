@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LogUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
@@ -108,7 +109,7 @@ public class UserInfoApiController extends BaseController {
     @InterfaceSecurity
     @RequestMapping(value = "/updateuserinfo", method = RequestMethod.POST)
     @ResponseBody
-    public Object updateUserInfo(UpdateUserInfoApiParams params) {
+    public Object updateUserInfo(HttpServletRequest req, UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -129,6 +130,7 @@ public class UserInfoApiController extends BaseController {
         result = sgUserInfoApiManager.updateUserInfo(params);
 
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), params.getModifyip());
+        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }

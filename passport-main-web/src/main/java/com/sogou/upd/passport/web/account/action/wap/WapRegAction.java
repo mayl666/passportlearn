@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action.wap;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -12,15 +13,22 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileParams;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.manager.form.ActiveEmailParams;
+import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.account.action.RegAction;
+import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
+import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +37,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -154,6 +163,22 @@ public class WapRegAction extends BaseController {
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
+    }
+
+    /**
+     * 找回密码
+     * @param ru
+     * @param redirectAttributes
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/wap/findpwd",method = RequestMethod.GET)
+    public String findPwdView(String ru, RedirectAttributes redirectAttributes) throws Exception {
+        if (Strings.isNullOrEmpty(ru)) {
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
+        redirectAttributes.addAttribute("ru", ru);
+        return "redirect:" + SHPPUrlConstant.SOHU_FINDPWD_URL + "?ru={ru}";
     }
 
 }

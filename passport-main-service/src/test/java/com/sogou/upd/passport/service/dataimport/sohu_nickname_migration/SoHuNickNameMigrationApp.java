@@ -50,7 +50,7 @@ public class SoHuNickNameMigrationApp extends BaseTest {
         try {
             SoHuNickNameMigTasks tasks = new SoHuNickNameMigTasks(uniqNamePassportMappingDAO, accountDAO, dbShardRedisUtils, DATA_STORE_PATH);
             List<String> resultList = POOL.invoke(tasks);
-            FileUtil.storeFile(DATA_STORE_PATH + "migration_sh_nickname_fail.txt", resultList);
+            FileUtil.storeFile(DATA_STORE_PATH + "migration_sh_nickname_fail_in_600w.txt", resultList);
         } catch (Exception e) {
             LOGGER.error("SoHuNickNameMigrationApp failed." + e.getMessage(), e);
         }
