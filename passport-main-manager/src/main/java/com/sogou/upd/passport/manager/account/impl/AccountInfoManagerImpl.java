@@ -544,7 +544,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                     try {
                         checkExist = accountService.checkUniqName(uniqname);
                     } catch (Exception e) {
-                        logger.error("getAndUpdateNickName error. passportId:" + passportId, e);
+                        logger.error("check user nickname error. passportId:" + passportId, e);
                     }
                     if (account != null && Strings.isNullOrEmpty(checkExist)) {
                         //更新用户昵称信息到account表
