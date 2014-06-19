@@ -76,7 +76,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             }
 
             String redirectURI = ConnectManagerHelper.constructRedirectURI(clientId, connectLoginParams.getRu(), connectLoginParams.getType(),
-                    connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(), connectLoginParams.getDomain(),connectLoginParams.getThirdInfo());
+                    connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(), connectLoginParams.getDomain(), connectLoginParams.getThirdInfo());
             String scope = connectConfig.getScope();
             String appKey = connectConfig.getAppKey();
             String connectType = connectLoginParams.getType();
@@ -150,7 +150,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             }
             // type=pc时需要昵称字段
             String uniqName = account.getUniqname();
-            if(Strings.isNullOrEmpty(uniqName)){
+            if (Strings.isNullOrEmpty(uniqName)) {
                 uniqName = connectToken.getConnectUniqname();
             }
             result.setSuccess(true);
@@ -186,7 +186,8 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             result.setSuccess(true);
             result.setDefaultModel("connectToken", connectToken);
         } catch (Exception e) {
-            logger.error("method[obtainConnectToken] obtain connect token from sogou db error.{}", e);
+//            logger.error("method[obtainConnectToken] obtain connect token from sogou db error passportId:{}", passportId, e);
+            logger.error("obtain connect token from sogou db error.passportId [{}] clientId {}", passportId, clientId);
         }
         return result;
     }
