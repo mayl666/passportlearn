@@ -541,13 +541,16 @@ public class AccountServiceImpl implements AccountService {
             String passportId = account.getPassportId();
 
             if (!Strings.isNullOrEmpty(uniqname) && !uniqname.equals(oldUniqName)) {
+                //先检查 u_p_m 中是否存在，如果昵称存在则返回
+                if (!Strings.isNullOrEmpty(checkUniqName(uniqname))) {
+                    return false;
+                }
                 //更新数据库
                 int row = accountDAO.updateUniqName(uniqname, passportId);
                 if (row > 0) {
                     String cacheKey = buildAccountKey(passportId);
                     account.setUniqname(uniqname);
                     dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-
                     //第一次直接插入
                     if (Strings.isNullOrEmpty(oldUniqName)) {
                         //更新新的映射表
