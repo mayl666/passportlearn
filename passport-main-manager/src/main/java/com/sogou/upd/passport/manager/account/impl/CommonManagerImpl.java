@@ -2,13 +2,12 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
@@ -123,7 +122,7 @@ public class CommonManagerImpl implements CommonManager {
             }
             return true;
         } catch (Exception e) {
-            log.error("isAccessAccept error, api:" + apiName, e);
+            logger.error("isAccessAccept error, api:" + apiName, e);
             return false;
         }
     }
