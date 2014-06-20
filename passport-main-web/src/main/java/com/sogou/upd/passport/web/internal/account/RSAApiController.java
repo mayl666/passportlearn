@@ -99,9 +99,15 @@ public class RSAApiController extends BaseController {
             String[] textArray = clearText.split("\\|");
             if (textArray.length == 4) { //数据组成： userid|clientId|token|timestamp
                 try {
+                    //判断时间有效性
+                    long timeStamp=Long.parseLong(textArray[3]);
+
+
+                    //判断用户名是否和token取得的一致
                     Result getUserIdResult = oAuth2ResourceManager.getPassportIdByToken(textArray[2], Integer.parseInt(textArray[1]));
                     if (getUserIdResult.isSuccess()) {
                         String passportId = (String) getUserIdResult.getDefaultModel();
+
                         if (!Strings.isNullOrEmpty(passportId) && passportId.equals(textArray[0])) { //解密后的token得到userid，需要和传入的userid一样，保证安全及toke有效性。
                             return textArray[0];
                         }
