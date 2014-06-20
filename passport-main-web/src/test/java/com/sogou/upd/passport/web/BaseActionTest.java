@@ -141,8 +141,7 @@ public class BaseActionTest extends TestCase {
         }
     }
 
-    protected String sendPostLocal(String sendUrl, Map<String, String> params)
-            throws IOException {
+    protected String sendPostLocal(String sendUrl, Map<String, String> params){
         Result result;
         try {
             String sendUrlFull = "http://localhost/";
@@ -159,8 +158,7 @@ public class BaseActionTest extends TestCase {
         }
     }
 
-    protected String sendGetLocal(String sendUrl, Map<String, String> params)
-            throws IOException {
+    protected String sendGetLocal(String sendUrl, Map<String, String> params){
         Result result;
         try {
             String sendUrlFull = "http://localhost/";

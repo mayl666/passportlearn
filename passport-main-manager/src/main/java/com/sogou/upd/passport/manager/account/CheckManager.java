@@ -5,7 +5,7 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-3 Time: 上午10:51 To change this template use
  * File | Settings | File Templates.
- *
+ * <p/>
  * 安全限制、检查验证相关
  */
 public interface CheckManager {
@@ -18,7 +18,7 @@ public interface CheckManager {
      * @return
      * @throws Exception
      */
-    public boolean checkCaptcha(String captcha, String token) throws Exception;
+    public boolean checkCaptcha(String captcha, String token);
 
     /**
      * 检查重置密码限制
@@ -28,7 +28,7 @@ public interface CheckManager {
      * @return
      * @throws Exception
      */
-    public boolean checkLimitResetPwd(String passportId, int clientId) throws Exception;
+    public boolean checkLimitResetPwd(String passportId, int clientId);
 
     /**
      * 检查邮箱验证scode，并返回存储的邮箱名
@@ -40,8 +40,7 @@ public interface CheckManager {
      * @return
      * @throws Exception
      */
-    public String checkEmailScodeReturnStr(String passportId, int clientId, AccountModuleEnum module, String scode)
-            throws Exception;
+    public String checkEmailScodeReturnStr(String passportId, int clientId, AccountModuleEnum module, String scode);
 
     /**
      * 检查邮箱验证scode
@@ -53,8 +52,7 @@ public interface CheckManager {
      * @return
      * @throws Exception
      */
-    public boolean checkEmailScode(String passportId, int clientId, AccountModuleEnum module, String scode)
-            throws Exception;
+    public boolean checkEmailScode(String passportId, int clientId, AccountModuleEnum module, String scode);
 
     /**
      * 检查重置密码时的scode
@@ -65,7 +63,7 @@ public interface CheckManager {
      * @return
      * @throws Exception
      */
-    public boolean checkScodeResetPwd(String passportId, int clientId, String scode) throws Exception;
+    public boolean checkScodeResetPwd(String passportId, int clientId, String scode);
 
     /**
      * 检查token
@@ -75,5 +73,5 @@ public interface CheckManager {
      * @return
      * @throws Exception
      */
-    public boolean checkScode(String scode, String id) throws Exception;
+    public boolean checkScode(String scode, String id);
 }

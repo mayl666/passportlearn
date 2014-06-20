@@ -103,7 +103,7 @@ public class Coder {
      * @return
      * @throws Exception
      */
-    public static String encryptBase64URLSafeString(byte[] key) throws Exception {
+    public static String encryptBase64URLSafeString(byte[] key) {
         return Base64.encodeBase64URLSafeString(key);
     }
 
@@ -136,7 +136,7 @@ public class Coder {
      * @return
      * @throws Exception
      */
-    public static String encryptBase64(byte[] key) throws UnsupportedEncodingException {
+    public static String encryptBase64(byte[] key) {
         return Base64.encodeBase64String(key);
     }
 
