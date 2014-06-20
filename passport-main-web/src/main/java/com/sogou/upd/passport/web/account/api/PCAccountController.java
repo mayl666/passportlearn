@@ -321,6 +321,9 @@ public class PCAccountController extends BaseController {
             returnErrMsg(response, ppCookieParams.getRu(), result.getCode(), result.getMessage());
             return;
         }
+        //response 回去的时候设置一个p3p的header
+        //用来定义IE的跨域问题。
+        response.setHeader("P3P","CP=CAO PSA OUR");
 
         result = cookieManager.setPPCookie(response, ppCookieParams);
 

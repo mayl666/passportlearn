@@ -143,6 +143,7 @@ public class RegisterApiController extends BaseController {
             //记录log
             commonManager.incRegTimesForInternal(ip, client_id);
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), ip);
+            userOperationLog.putOtherMessage("serverip", getIp(request));
             UserOperationLogUtil.log(userOperationLog);
         }
 

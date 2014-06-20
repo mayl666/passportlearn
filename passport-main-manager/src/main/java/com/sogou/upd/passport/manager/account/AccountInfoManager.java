@@ -64,13 +64,10 @@ public interface AccountInfoManager {
 
     /**
      * 获取用户昵称、头像信息
-     * <p/>
-     * TODO 之后抽取至AccountInfoService中
      *
-     * @param passportId
-     * @param clientId
+     * @param infoApiparams
      * @return
      */
-    public Result getUserNickNameAndAvatar(String passportId, int clientId);
+    public Result getUserNickNameAndAvatar(GetUserInfoApiparams infoApiparams);
 
 }

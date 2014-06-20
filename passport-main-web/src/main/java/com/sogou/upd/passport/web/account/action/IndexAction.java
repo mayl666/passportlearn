@@ -7,7 +7,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
-import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -49,22 +48,15 @@ public class IndexAction extends BaseController {
             // 第三方账号、搜狐矩阵账号 不显示安全信息
             Result result = new APIResultSupport(false);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+            String uniqname = accountInfoManager.getUserUniqName(userId, clientId);
             if (domain == AccountDomainEnum.THIRD) {
-                //注释掉此方法，采用accountInfoManager 方法
-//                String uniqname = oAuth2ResourceManager.getEncodedUniqname(userId, clientId);
-                String uniqname = accountInfoManager.getUserUniqName(userId, clientId);
-                result.setDefaultModel("uniqname", uniqname);
                 result.setDefaultModel("username", uniqname);
                 result.setDefaultModel("disable", true);
                 result.setSuccess(true);
             } else {
-                //搜狐矩阵账号，不显示账号安全tab
-               /* if (domain == AccountDomainEnum.SOHU) {
-                    result.setDefaultModel("disable", true);
-                }*/
                 result = secureManager.queryAccountSecureInfo(userId, clientId, true);
             }
-
+            result.setDefaultModel("uniqname", uniqname);
             if (domain == AccountDomainEnum.PHONE) {
                 result.setDefaultModel("actype", "phone");
             }

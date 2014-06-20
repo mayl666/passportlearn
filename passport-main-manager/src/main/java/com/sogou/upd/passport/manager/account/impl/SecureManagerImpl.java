@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -9,7 +10,9 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -28,6 +31,7 @@ import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +49,12 @@ public class SecureManagerImpl implements SecureManager {
 
     private static Logger logger = LoggerFactory.getLogger(SecureManagerImpl.class);
 
+    private static Logger profileErrorLogger = LoggerFactory.getLogger("profileErrorLogger");
+
     private static String SECURE_FIELDS = "sec_email,sec_mobile,sec_ques";
 
     //搜狗安全信息字段:密保邮箱、密保手机、密保问题
-    private static final String SOGOU_SECURE_FIELDS = "email,mobile,question";
+    private static final String SOGOU_SECURE_FIELDS = "email,mobile,question,uniqname,avatarurl";
 
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
@@ -78,6 +84,9 @@ public class SecureManagerImpl implements SecureManager {
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
+
+    @Autowired
+    private PhotoUtils photoUtils;
 
     /*
      * 发送短信至未绑定手机，只检测映射表，查询passportId不存在或为空即认定为未绑定
@@ -145,7 +154,7 @@ public class SecureManagerImpl implements SecureManager {
 //                result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
 //
 //            } else {
-                result = sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.SECURE);
+            result = sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.SECURE);
 //            }
 
             if (!result.isSuccess()) {
@@ -195,7 +204,7 @@ public class SecureManagerImpl implements SecureManager {
 //                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
 //                getUserInfoApiparams.setUserid(userId);
 //                getUserInfoApiparams.setClient_id(clientId);
-////                getUserInfoApiparams.setImagesize("50");
+//                getUserInfoApiparams.setImagesize("50");
 //                getUserInfoApiparams.setFields(SECURE_FIELDS);
 //
 //                //调用sohu 接口取用户信息
@@ -218,7 +227,7 @@ public class SecureManagerImpl implements SecureManager {
 //                }
 //            } else {
 
-                //TODO 统一调用 AccountInfoManager getUserInfo 方法
+            //TODO 统一调用 AccountInfoManager getUserInfo 方法
 
 //                GetSecureInfoApiParams params = new GetSecureInfoApiParams();
 //                params.setUserid(userId);
@@ -226,14 +235,35 @@ public class SecureManagerImpl implements SecureManager {
 //                result = sgSecureApiManager.getUserSecureInfo(params);
 
 
-                //调用 SGUserInfoApiManagerImpl 中 getUserInfo
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-                getUserInfoApiparams.setUserid(userId);
-                getUserInfoApiparams.setClient_id(clientId);
-                getUserInfoApiparams.setFields(SOGOU_SECURE_FIELDS);
+            //调用 SGUserInfoApiManagerImpl 中 getUserInfo
 
+            GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+            getUserInfoApiparams.setUserid(userId);
+            getUserInfoApiparams.setClient_id(clientId);
+            getUserInfoApiparams.setFields(SOGOU_SECURE_FIELDS);
+
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+            if (domain == AccountDomainEnum.THIRD) {
                 result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+            } else {
+                result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                if (!result.isSuccess()) {
+                    result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+                    if (result.isSuccess()) {
+                        //记录Log 跟踪数据同步延时情况
+                        LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "getuserinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, userId, userId, result.toString());
+                    }
 
+                    result.getModels().put("uniqname", defaultUniqname(userId));
+                    result.getModels().put("avatarurl", StringUtils.EMPTY);
+                }
+                String uniqname = String.valueOf(result.getModels().get("uniqname"));
+                result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
+                Result photoResult = photoUtils.obtainPhoto(String.valueOf(result.getModels().get("avatarurl")), "50");
+                if (photoResult.isSuccess()) {
+                    result.getModels().put("avatarurl", photoResult.getModels());
+                }
+            }
 //            }
 
             Map<String, String> map = result.getModels();
@@ -476,7 +506,7 @@ public class SecureManagerImpl implements SecureManager {
 //                String mobile = mapResult.get("sec_mobile");
 //                result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.SECURE, smsCode);
 //            } else {
-                result = checkMobileCodeByPassportId(userId, clientId, smsCode);
+            result = checkMobileCodeByPassportId(userId, clientId, smsCode);
 //            }
 
             if (result.isSuccess()) {
@@ -846,4 +876,18 @@ public class SecureManagerImpl implements SecureManager {
         }
         return record;
     }
+
+    /**
+     * 获取默认昵称
+     *
+     * @param passportId
+     * @return
+     */
+    private String defaultUniqname(String passportId) {
+        if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(passportId)) {
+            return "搜狗用户";
+        }
+        return passportId.substring(0, passportId.indexOf("@"));
+    }
+
 }

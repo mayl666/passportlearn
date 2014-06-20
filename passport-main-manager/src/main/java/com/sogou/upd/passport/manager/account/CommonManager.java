@@ -48,6 +48,15 @@ public interface CommonManager {
     public String getCode(String firstStr, int clientId, long ct);
 
     /**
+     * 根据用户输入的username获取对应的passport
+     * 1.输入：手机号；输出：主账号userid
+     * 2.输入：手机号@sohu.com；输出：手机号@sohu.com
+     * @param username
+     * @return
+     */
+    public String getPassportIdByUsername(String username);
+
+    /**
      * 应用是否有此API访问权限
      * 1.应用服务器在appconfig配置里的server_ip白名单里；
      * 2.APIName在appconfig配置里的scope里；

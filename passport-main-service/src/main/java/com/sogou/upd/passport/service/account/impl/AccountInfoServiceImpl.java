@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountInfoDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountInfo;
@@ -31,8 +30,6 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     @Autowired
     private AccountInfoDAO accountInfoDAO;
     @Autowired
-    private RedisUtils redisUtils;
-    @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
     @Override
@@ -44,7 +41,6 @@ public class AccountInfoServiceImpl implements AccountInfoService {
             if (accountInfo == null) {
                 accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 if (accountInfo != null) {
-//                    dbShardRedisUtils.set(cacheKey, accountInfo);
                     dbShardRedisUtils.setWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
@@ -72,7 +68,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 } else {
                     accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
-                dbShardRedisUtils.set(cacheKey, accountInfo);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.ONE_MONTH);
                 return accountInfo;
             }
         } catch (Exception e) {
@@ -101,7 +97,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 } else {
                     accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
-                dbShardRedisUtils.set(cacheKey, accountInfo);
+                dbShardRedisUtils.setWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.ONE_MONTH);
                 return accountInfo;
             }
             return null;
@@ -135,7 +131,6 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 } else {
                     accountInfoTmp = accountInfoDAO.getAccountInfoByPassportId(passportId);
                 }
-//                dbShardRedisUtils.set(cacheKey, accountInfoTmp);
                 dbShardRedisUtils.setWithinSeconds(cacheKey, accountInfoTmp, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
@@ -149,7 +144,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     public boolean deleteAccountInfoCacheByPassportId(String passportId) throws ServiceException {
         try {
             String cacheKey = buildAccountInfoKey(passportId);
-            redisUtils.delete(cacheKey);
+            dbShardRedisUtils.delete(cacheKey);
             return true;
         } catch (Exception e) {
             throw new ServiceException(e);

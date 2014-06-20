@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.IpLocationUtil;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.form.TKeyParams;
@@ -61,7 +62,7 @@ public class ConnectTKeyController {
         if (!hostHolder.isLogin()) {
             //判断sgid是否存在。如果不存在，则输出未登录信息
             if (tKeyParams.getSgid() == null) {
-                result.setMessage("请重新登录");
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
                 return result.toString();
             } else {
                 //判断sgid的正确性。
@@ -69,7 +70,7 @@ public class ConnectTKeyController {
                 if (r.isSuccess()) {
                     userId = (String) r.getModels().get("passport_id");
                 } else {
-                    result.setMessage("请重新登录");
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
                     return result.toString();
                 }
             }
@@ -83,7 +84,7 @@ public class ConnectTKeyController {
         int clientId = tKeyParams.getClient_id();
         ConnectToken connectToken = getConnectToken(userId, clientId);
         if (connectToken == null) {
-            result.setMessage("请重新登录!");
+            result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
             return result.toString();
         }
         String tKey = createTKey_V01(clientId, connectToken);

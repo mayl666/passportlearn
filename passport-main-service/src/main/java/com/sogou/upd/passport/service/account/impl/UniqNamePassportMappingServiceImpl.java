@@ -2,8 +2,8 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.DBRedisUtils;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
@@ -42,7 +42,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbRedisUtils.set(cacheKey, passportId);
+                    dbRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -70,7 +70,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
             int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
             if (row > 0) {
                 String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                dbRedisUtils.set(cacheKey, passportId);
+                dbRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
         } catch (Exception e) {
@@ -100,7 +100,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
                 int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(nickname, passportId);
                 if (row > 0) {
                     String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
-                    dbRedisUtils.set(cacheKey, passportId);
+                    dbRedisUtils.setWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                     return true;
                 }
             } else {

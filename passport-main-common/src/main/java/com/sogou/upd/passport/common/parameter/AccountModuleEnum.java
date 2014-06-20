@@ -12,8 +12,8 @@ public enum AccountModuleEnum {
     REGISTER(1, "register", "注册"),
     LOGIN(2, "login", "登录"),
     RESETPWD(3, "findpwd", "找回密码"),
-    SECURE(4, "security", "安全")
-    ;
+    SECURE(4, "security", "安全"),
+    USERINFO(5, "userinfo", "用户信息");
 
     private int value;
     private String direct;
@@ -32,6 +32,7 @@ public enum AccountModuleEnum {
         subjects.put(AccountModuleEnum.SECURE, "搜狗通行证绑定邮箱服务");
         subjects.put(AccountModuleEnum.REGISTER, "搜狗通行证新用户注册服务");
         subjects.put(AccountModuleEnum.LOGIN, "搜狗通行证用户登录服务");
+        subjects.put(AccountModuleEnum.USERINFO, "搜狗通行证用户信息服务");
         subjects.put(AccountModuleEnum.UNKNOWN, "搜狗通行证其他服务");
 
         return subjects;
