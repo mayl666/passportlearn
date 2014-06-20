@@ -156,53 +156,52 @@ public class RegManagerImpl implements RegManager {
         // 检查ip安全限制
         try {
             //检测手机号是否已经注册或绑定
-//            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams(mobile);
-//            Result mobileBindResult = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-//            if (mobileBindResult.isSuccess()) {
-//                if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
-//                    String passportId = (String) mobileBindResult.getModels().get("userid");
-//                    Result sessionResult = sessionServerManager.createSession(passportId);
-//                    if (!sessionResult.isSuccess()) {
-//                        result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-//                        return result;
-//                    }
-//                    String sgid = (String) sessionResult.getModels().get("sgid");
-//                    result.getModels().put("sgid", sgid);
-//                }
-//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-//                result.setDefaultModel("userid", (String) mobileBindResult.getModels().get("userid"));
-//                return result;
-//            }
+            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams(mobile);
+            Result mobileBindResult = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            if (mobileBindResult.isSuccess()) {
+                if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
+                    String passportId = (String) mobileBindResult.getModels().get("userid");
+                    Result sessionResult = sessionServerManager.createSession(passportId);
+                    if (!sessionResult.isSuccess()) {
+                        result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                        return result;
+                    }
+                    String sgid = (String) sessionResult.getModels().get("sgid");
+                    result.getModels().put("sgid", sgid);
+                }
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                result.setDefaultModel("userid", (String) mobileBindResult.getModels().get("userid"));
+                return result;
+            }
             //生成随机数密码
             String randomPwd = RandomStringUtils.randomNumeric(6);
             //注册手机号
-//            RegMobileApiParams regApiParams = new RegMobileApiParams(mobile, randomPwd, clientId);
-//            Result regMobileResult = proxyRegisterApiManager.regMobileUser(regApiParams);
-//            if (regMobileResult.isSuccess()) {
-//                String passportId = (String) regMobileResult.getModels().get("userid");
-            String passportId = mobile+"@sohu.com";
+            RegMobileApiParams regApiParams = new RegMobileApiParams(mobile, randomPwd, clientId);
+            Result regMobileResult = proxyRegisterApiManager.regMobileUser(regApiParams);
+            if (regMobileResult.isSuccess()) {
+                String passportId = (String) regMobileResult.getModels().get("userid");
                 //发送短信验证码
                 //短信内容，TODO 目前只有小说使用，文案先写死
-                String smsText = "搜狗通行证注册成功，密码为" + randomPwd + "。";
+                String smsText = "搜狗通行证注册成功，密码为" + randomPwd + "， 请用本机号码登录。";
                 if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
-//                    if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
-//                        Result sessionResult = sessionServerManager.createSession(passportId);
-//                        if (!sessionResult.isSuccess()) {
-//                            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-//                            return result;
-//                        }
-//                        String sgid = (String) sessionResult.getModels().get("sgid");
-//                        result.getModels().put("sgid", sgid);
-//                    }
+                    if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
+                        Result sessionResult = sessionServerManager.createSession(passportId);
+                        if (!sessionResult.isSuccess()) {
+                            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                            return result;
+                        }
+                        String sgid = (String) sessionResult.getModels().get("sgid");
+                        result.getModels().put("sgid", sgid);
+                    }
                     result.setSuccess(true);
                     result.setMessage("注册成功，并发送短信至手机号：" + mobile);
                     result.setDefaultModel("userid", passportId);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                 }
-//            } else {
-//                result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
-//            }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
+            }
         } catch (Exception e) {
             logger.error("fast register mobile Fail, mobile:" + mobile, e);
             result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
