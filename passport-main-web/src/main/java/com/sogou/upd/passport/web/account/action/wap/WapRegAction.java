@@ -10,25 +10,16 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileParams;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
-import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.form.ActiveEmailParams;
-import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.account.action.RegAction;
-import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
-import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,13 +47,7 @@ public class WapRegAction extends BaseController {
     @Autowired
     private RegManager regManager;
     @Autowired
-    private ConfigureManager configureManager;
-    @Autowired
     private SecureManager secureManager;
-    @Autowired
-    private RegisterApiManager sgRegisterApiManager;
-    @Autowired
-    private CookieManager cookieManager;
     @Autowired
     private SessionServerManager sessionServerManager;
 

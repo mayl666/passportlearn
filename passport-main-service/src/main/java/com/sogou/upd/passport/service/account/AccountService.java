@@ -39,10 +39,6 @@ public interface AccountService {
      */
     public boolean initAccount(Account account) throws ServiceException;
 
-  /**
-   * 根据passportId删除Account表的缓存，增量数据迁移的内部debug接口使用
-   */
-  public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException;
 
     /**
      * 根据passportId获取Account
@@ -71,6 +67,11 @@ public interface AccountService {
      * @return 用户名或密码不匹配，则返回null
      */
     public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException;
+
+    /**
+     * 根据passportId删除Account表的缓存，增量数据迁移的内部debug接口使用
+     */
+    public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException;
 
     /**
      * 重置密码

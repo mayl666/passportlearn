@@ -3,7 +3,7 @@ package com.sogou.upd.passport.service.app.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.common.utils.DBRedisUtils;
 import com.sogou.upd.passport.dao.app.AppConfigDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.app.AppConfig;
@@ -33,7 +33,7 @@ public class AppConfigServiceImpl implements AppConfigService {
     @Autowired
     private AppConfigDAO appConfigDAO;
     @Inject
-    private RedisUtils redisUtils;
+    private DBRedisUtils dbRedisUtils;
 
     @Override
     public AppConfig queryAppConfigByClientId(int clientId) throws ServiceException {
@@ -42,7 +42,7 @@ public class AppConfigServiceImpl implements AppConfigService {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
             //缓存根据clientId读取AppConfig
 
-            appConfig = redisUtils.getObject(cacheKey, AppConfig.class);
+            appConfig = dbRedisUtils.getObject(cacheKey, AppConfig.class);
             if (appConfig == null) {
                 //读取数据库
                 appConfig = appConfigDAO.getAppConfigByClientId(clientId);
@@ -92,7 +92,7 @@ public class AppConfigServiceImpl implements AppConfigService {
         boolean flag = true;
         try {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
-            redisUtils.set(cacheKey, appConfig);
+            dbRedisUtils.set(cacheKey, appConfig);
         } catch (Exception e) {
             flag = false;
             logger.error("[App] service method addClientIdMapAppConfig error.{}", e);

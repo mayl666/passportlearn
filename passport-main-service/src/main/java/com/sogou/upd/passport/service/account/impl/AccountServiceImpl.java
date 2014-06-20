@@ -217,21 +217,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean deleteAccountByPassportId(String passportId) throws ServiceException {
-        try {
-            int row = accountDAO.deleteAccountByPassportId(passportId);
-            if (row != 0) {
-                String cacheKey = buildAccountKey(passportId);
-                dbShardRedisUtils.delete(cacheKey);
-                return true;
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        return false;
-    }
-
-    @Override
     public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException {
         try {
 //            int row = accountDAO.deleteAccountByPassportId(passportId);

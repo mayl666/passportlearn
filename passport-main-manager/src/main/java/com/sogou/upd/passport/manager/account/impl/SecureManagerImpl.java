@@ -77,6 +77,8 @@ public class SecureManagerImpl implements SecureManager {
     @Autowired
     private SecureApiManager proxySecureApiManager;
     @Autowired
+    private UserInfoApiManager proxyUserInfoApiManager;
+    @Autowired
     private BindApiManager sgBindApiManager;
     @Autowired
     private BindApiManager proxyBindApiManager;
@@ -84,7 +86,6 @@ public class SecureManagerImpl implements SecureManager {
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
-
     @Autowired
     private PhotoUtils photoUtils;
 
