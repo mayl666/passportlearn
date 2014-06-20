@@ -228,7 +228,6 @@ public class WapRegAction extends BaseController {
     @RequestMapping(value = "/wap/reg",method = RequestMethod.GET)
     public String regist(HttpServletRequest request, HttpServletResponse response, Model model, WapIndexParams wapIndexParams) throws Exception {
 
-
         if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {
             response.setHeader("Content-Type", "text/vnd.wap.wml;charset=utf-8");
             return "wap/regist_simple";
