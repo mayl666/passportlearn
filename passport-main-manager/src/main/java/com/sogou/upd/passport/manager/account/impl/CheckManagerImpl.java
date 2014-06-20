@@ -29,7 +29,7 @@ public class CheckManagerImpl implements CheckManager {
     private AccountSecureService accountSecureService;
 
     @Override
-    public boolean checkCaptcha(String captcha, String token) throws Exception {
+    public boolean checkCaptcha(String captcha, String token) {
         try {
             return accountService.checkCaptchaCodeIsVaild(token, captcha);
         } catch (ServiceException e) {
@@ -39,7 +39,7 @@ public class CheckManagerImpl implements CheckManager {
     }
 
     @Override
-    public boolean checkLimitResetPwd(String passportId, int clientId) throws Exception {
+    public boolean checkLimitResetPwd(String passportId, int clientId) {
         try {
             return accountService.checkLimitResetPwd(passportId);
         } catch (ServiceException e) {
@@ -50,7 +50,7 @@ public class CheckManagerImpl implements CheckManager {
 
     @Override
     public String checkEmailScodeReturnStr(String passportId, int clientId, AccountModuleEnum module,
-            String scode) throws Exception {
+            String scode){
         try {
             return emailSenderService.checkScodeForEmail(passportId, clientId, module, scode, true);
         } catch (ServiceException e) {
@@ -61,7 +61,7 @@ public class CheckManagerImpl implements CheckManager {
 
     @Override
     public boolean checkEmailScode(String passportId, int clientId, AccountModuleEnum module,
-                                           String scode) throws Exception {
+                                           String scode) {
         try {
             String returnStr = emailSenderService.checkScodeForEmail(passportId, clientId, module, scode, false);
             return !Strings.isNullOrEmpty(returnStr);
@@ -72,7 +72,7 @@ public class CheckManagerImpl implements CheckManager {
     }
 
     @Override
-    public boolean checkScodeResetPwd(String passportId, int clientId, String scode) throws Exception {
+    public boolean checkScodeResetPwd(String passportId, int clientId, String scode) {
         try {
             return accountSecureService.checkSecureCodeResetPwd(passportId, clientId, scode);
         } catch (ServiceException e) {
@@ -82,7 +82,7 @@ public class CheckManagerImpl implements CheckManager {
     }
 
     @Override
-    public boolean checkScode(String scode, String id) throws Exception {
+    public boolean checkScode(String scode, String id) {
         return accountSecureService.checkSecureCodeRandom(scode, id);
     }
 }

@@ -58,7 +58,6 @@ public class SecureManagerImpl implements SecureManager {
 
     private static String SECURE_FIELDS = "sec_email,sec_mobile,sec_ques";
 
-
     //搜狗安全信息字段:密保邮箱、密保手机、密保问题
     private static final String SOGOU_SECURE_FIELDS = "email,mobile,question,uniqname,avatarurl";
 
@@ -99,7 +98,6 @@ public class SecureManagerImpl implements SecureManager {
 
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
-
     @Autowired
     private PhotoUtils photoUtils;
 
@@ -135,7 +133,6 @@ public class SecureManagerImpl implements SecureManager {
             return result;
         }
     }
-
 
     private Result sendMobileCodeByPassportId(String passportId, int clientId, AccountModuleEnum module)
             throws Exception {
@@ -820,10 +817,8 @@ public class SecureManagerImpl implements SecureManager {
             //检查手机账号能否被绑定
             BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
             baseMoblieApiParams.setMobile(mobile);
-//            Result bindResult = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-            //双读，检查新手机能否被绑定
-            Result bindResult = regManager.isAccountNotExists(mobile, clientId);
-            if (!bindResult.isSuccess()) {
+            Result bindResult = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            if (bindResult.isSuccess()) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                 return result;
             }

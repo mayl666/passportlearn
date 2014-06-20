@@ -33,7 +33,7 @@ public class HttpClientUtil {
      */
     private final static int SLOW_TIME = 500;
 
-    private static final int DEFAULT_INITIAL_BUFFER_SIZE = 4*1024; // 4 kB
+    private static final int DEFAULT_INITIAL_BUFFER_SIZE = 4 * 1024; // 4 kB
 
     /**
      * http返回成功的code
@@ -49,8 +49,7 @@ public class HttpClientUtil {
         return doWget(get);
     }
 
-    public static Pair<Integer, String> post(String url, Map<String, String> postdata)
-            throws Exception {
+    public static Pair<Integer, String> post(String url, Map<String, String> postdata) {
         PostMethod post = new PostMethod(url);
         post.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
         for (Entry<String, String> entry : postdata.entrySet()) {
@@ -107,7 +106,7 @@ public class HttpClientUtil {
             shClient.executeMethod(method);
             stopWatch(stopWatch, urlArray[0], "success");
 
-            if(method.getStatusCode() != RESPONSE_SUCCESS_CODE){
+            if (method.getStatusCode() != RESPONSE_SUCCESS_CODE) {
                 return "";
             }
             //针对header.length=0 的请求使用 getResponseBodyAsStream方式处理结果
@@ -119,7 +118,7 @@ public class HttpClientUtil {
                 outstream.write(buffer, 0, len);
             }
             outstream.close();
-            byte[] responseBody= outstream.toByteArray();
+            byte[] responseBody = outstream.toByteArray();
             if (responseBody != null) {
                 return EncodingUtil.getString(responseBody, method.getResponseCharSet());
             } else {

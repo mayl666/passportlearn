@@ -12,6 +12,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
@@ -26,6 +27,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,6 +146,65 @@ public class RegManagerImpl implements RegManager {
             result.getModels().put("username", username);            //判断是否是外域邮箱注册 外域邮箱激活以后种cookie
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+        }
+        return result;
+    }
+
+    @Override
+    public Result fastRegisterPhone(String mobile, int clientId, String createip, String type) {
+        Result result = new APIResultSupport(false);
+        // 检查ip安全限制
+        try {
+            //检测手机号是否已经注册或绑定
+            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams(mobile);
+            Result mobileBindResult = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            if (mobileBindResult.isSuccess()) {
+                if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
+                    String passportId = (String) mobileBindResult.getModels().get("userid");
+                    Result sessionResult = sessionServerManager.createSession(passportId);
+                    if (!sessionResult.isSuccess()) {
+                        result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                        return result;
+                    }
+                    String sgid = (String) sessionResult.getModels().get("sgid");
+                    result.getModels().put("sgid", sgid);
+                }
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                result.setDefaultModel("userid", (String) mobileBindResult.getModels().get("userid"));
+                return result;
+            }
+            //生成随机数密码
+            String randomPwd = RandomStringUtils.randomNumeric(6);
+            //注册手机号
+            RegMobileApiParams regApiParams = new RegMobileApiParams(mobile, randomPwd, clientId);
+            Result regMobileResult = proxyRegisterApiManager.regMobileUser(regApiParams);
+            if (regMobileResult.isSuccess()) {
+                String passportId = (String) regMobileResult.getModels().get("userid");
+                //发送短信验证码
+                //短信内容，TODO 目前只有小说使用，文案先写死
+                String smsText = "【搜狗通行证】注册成功，密码为" + randomPwd + "， 请用本机号码登录。";
+                if (Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
+                    if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
+                        Result sessionResult = sessionServerManager.createSession(passportId);
+                        if (!sessionResult.isSuccess()) {
+                            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                            return result;
+                        }
+                        String sgid = (String) sessionResult.getModels().get("sgid");
+                        result.getModels().put("sgid", sgid);
+                    }
+                    result.setSuccess(true);
+                    result.setMessage("注册成功，并发送短信至手机号：" + mobile);
+                    result.setDefaultModel("userid", passportId);
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
+            }
+        } catch (Exception e) {
+            logger.error("fast register mobile Fail, mobile:" + mobile, e);
+            result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
         }
         return result;
     }

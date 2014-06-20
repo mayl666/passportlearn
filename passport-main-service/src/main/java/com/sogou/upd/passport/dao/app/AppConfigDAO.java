@@ -21,7 +21,7 @@ public interface AppConfigDAO {
     /**
      * 所有字段列表
      */
-    String ALL_FIELD = " id, client_id, sms_text, access_token_expiresin, refresh_token_expiresin, server_secret, client_secret, create_time, client_name ";
+    String ALL_FIELD = " id, client_id, sms_text, access_token_expiresin, refresh_token_expiresin, server_secret, client_secret, create_time, client_name, scope, server_ip ";
 
     /**
      * 值列表

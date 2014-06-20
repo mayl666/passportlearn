@@ -30,8 +30,8 @@ public class OAuthUtils {
 
     private static Logger log = LoggerFactory.getLogger(OAuthUtils.class);
 
-    private static final String PARAMETER_SEPARATOR = "&";
-    private static final String NAME_VALUE_SEPARATOR = "=";
+    public static final String PARAMETER_SEPARATOR = "&";
+    public static final String NAME_VALUE_SEPARATOR = "=";
 
     public static final String AUTH_SCHEME = OAuth.OAUTH_HEADER_NAME;
 

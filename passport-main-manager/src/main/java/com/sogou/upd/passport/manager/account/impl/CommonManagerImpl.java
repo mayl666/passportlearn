@@ -7,6 +7,8 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
@@ -101,6 +103,29 @@ public class CommonManagerImpl implements CommonManager {
             throw new Exception(e);
         }
         return passportId;
+    }
+
+
+    @Override
+    public boolean isAccessAccept(int clientId, String requestIp, String apiName) {
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                return false;
+            }
+            String scope = appConfig.getScope();
+            if (!Strings.isNullOrEmpty(apiName) && !StringUtil.splitStringContains(scope, ",", apiName)) {
+                return false;
+            }
+            String serverIp = appConfig.getServerIp();
+            if (!Strings.isNullOrEmpty(requestIp) && !StringUtil.splitStringContains(serverIp, ",", requestIp)) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            log.error("isAccessAccept error, api:" + apiName, e);
+            return false;
+        }
     }
 
 }

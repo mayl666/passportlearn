@@ -11,9 +11,6 @@ public class ErrorUtil {
     // 成功过
     public static final String SUCCESS = "0";
 
-    //5.31日18:00至6.6日0:00禁止修改用户信息
-    public static final String FORBID_UPDATE_USERINFO = "50000";
-
     /**
      * ************************通用的错误代码start********************************
      */
@@ -37,6 +34,8 @@ public class ErrorUtil {
     public static final String INVALID_CLIENTID = "10010";
     // 生成token失败
     public static final String CREATE_TOKEN_FAIL = "10011";
+    // 应用没有该API访问权限
+    public static final String ACCESS_DENIED_CLIENT = "10012";
 
     /* ============================================================================ */
     /*  OAuth2授权错误码                                                             */
@@ -71,11 +70,11 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_RESET_SOURCEPWD_FAILD = "20198";
     //重新发送激活邮件失败
     public static final String ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED = "20199";
-    //注册异常
+    //注册失败
     public static final String ERR_CODE_REGISTER_UNUSUAL = "20200";
     // 账号已经注册，请直接登录
     public static final String ERR_CODE_ACCOUNT_REGED = "20201";
-    // 短信发送已达今天的最高上限20条
+    // 短信发送已达今天的最高上限
     public static final String ERR_CODE_ACCOUNT_CANTSENTSMS = "20202";
     // 手机号格式错误
     public static final String ERR_CODE_ACCOUNT_PHONEERROR = "20203";
@@ -93,7 +92,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT = "20209";
     // 密码验证失败次数超过上限
     public static final String ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT = "20210";
-    // 手机验证码发送失败
+    // 手机短信发送失败
     public static final String ERR_CODE_ACCOUNT_SMSCODE_SEND = "20213";
     //创建用户失败
     public static final String ERR_CODE_ACCOUNT_REGISTER_FAILED = "20214";
@@ -341,8 +340,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_UPDATE_USERINFO = "30801";
     //获取个人资料失败
     public static final String ERR_OBTAIN_ACCOUNT_INFO = "30802";
-    //增量数据同步中,需要删除的缓存表名不存在 TODO 写分离后可删除
-    public static final String DELETE_CACHE_TABLE_ERROR = "30900";
 
     public ErrorUtil() {
         super();
@@ -361,6 +358,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_SIGNATURE_OR_TOKEN, "签名或token验证失败");
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
         ERR_CODE_MSG_MAP.put(CREATE_TOKEN_FAIL, "生成token失败");
+        ERR_CODE_MSG_MAP.put(ACCESS_DENIED_CLIENT, "应用没有该API访问权限");
 
         // oauth2授权
         ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");
@@ -386,7 +384,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码错误或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT, "今日验证码校验错误次数已超过上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT, "今日密码验证失败次数超过上限");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机验证码发送失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE_SEND, "手机短信发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_FAILED, "创建用户失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LOGIN_FAILED, "用户登录失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED, "账号未登录，请先登录");
@@ -400,7 +398,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, "验证码验证失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE, "请输入验证码");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED, "激活链接已经失效");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已绑定其他账号");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已注册或已被绑定");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "账号未激活");
@@ -516,8 +514,6 @@ public class ErrorUtil {
 
         //SSO setcookie接口
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_COOKIE, "cookie值无效");
-
-        ERR_CODE_MSG_MAP.put(FORBID_UPDATE_USERINFO,"5.31日18:00至6.6日0:00禁止修改用户信息");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

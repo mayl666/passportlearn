@@ -275,7 +275,6 @@ public class DBShardRedisUtils {
                 T object = null;
                 if (!Strings.isNullOrEmpty(cacheStr)) {
                     object = (T) jsonMapper.readValue(cacheStr, returnClass);
-                    ;
                 }
                 return object;
             }
