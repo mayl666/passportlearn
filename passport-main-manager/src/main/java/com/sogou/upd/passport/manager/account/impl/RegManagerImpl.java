@@ -182,8 +182,8 @@ public class RegManagerImpl implements RegManager {
                 String passportId = (String) regMobileResult.getModels().get("userid");
                 //发送短信验证码
                 //短信内容，TODO 目前只有小说使用，文案先写死
-                String smsText = "【搜狗通行证】注册成功，密码为" + randomPwd + "， 请用本机号码登录。";
-                if (Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
+                String smsText = "搜狗通行证注册成功，密码为" + randomPwd + "， 请用本机号码登录。";
+                if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
                     if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
                         Result sessionResult = sessionServerManager.createSession(passportId);
                         if (!sessionResult.isSuccess()) {
