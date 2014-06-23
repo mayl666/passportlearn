@@ -132,8 +132,8 @@ public class WapLoginAction extends BaseController {
         UserOperationLogUtil.log(userOperationLog);
 
         if (result.isSuccess()) {
-            String userId = result.getModels().get("userid").toString();
-            String sgid = result.getModels().get("sgid").toString();
+            String userId = (String) result.getModels().get("userid");
+            String sgid = (String) result.getModels().get("sgid");
 
             ServletUtil.setCookie(response, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
@@ -141,7 +141,7 @@ public class WapLoginAction extends BaseController {
                 //在返回的数据中导入 json格式，用来给客户端用。
                 //第三方获取个人资料
                 String fields = "uniqname,avatarurl,gender";
-                ObtainAccountInfoParams accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), loginParams.getUsername(), fields);
+                ObtainAccountInfoParams accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), userId, fields);
                 result = accountInfoManager.getUserInfo(accountInfoParams);
                 result.getModels().put("sgid",sgid);
                 writeResultToResponse(response, result);
