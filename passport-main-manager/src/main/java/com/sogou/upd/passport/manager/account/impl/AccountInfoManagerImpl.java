@@ -475,6 +475,11 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                             tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
                         }
                     }
+                } else {
+                    Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
+                    large_avatar = (String) getPhotoResult.getModels().get("img_180");
+                    mid_avatar = (String) getPhotoResult.getModels().get("img_50");
+                    tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
                 }
             } else {
                 //非第三方账号
