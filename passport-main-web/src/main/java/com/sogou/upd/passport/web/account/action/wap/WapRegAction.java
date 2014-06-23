@@ -207,10 +207,18 @@ public class WapRegAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/wap/findpwd",method = RequestMethod.GET)
-    public String findPwdView(String ru, RedirectAttributes redirectAttributes) throws Exception {
+    public String findPwdView(String ru, RedirectAttributes redirectAttributes,WapIndexParams wapIndexParams) throws Exception {
+
+        if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
+            return "wap/findpwd_touch";
+        }
+
+
         if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
+
+
         redirectAttributes.addAttribute("ru", ru);
         return "redirect:" + SHPPUrlConstant.SOHU_FINDPWD_URL + "?ru={ru}";
     }
