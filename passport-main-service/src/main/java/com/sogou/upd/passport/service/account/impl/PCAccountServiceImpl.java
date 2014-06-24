@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 /**
  * Created with IntelliJ IDEA.
  * User: chenjiameng
@@ -103,7 +105,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
             tokenRedisUtils.setWithinSeconds(redisKey, accountToken, DateAndNumTimesConstant.ONE_MONTH);
             //保存映射关系
-            coreKvUtils.pushToSet(buildMappingCoreKvKey(passportId), buildMappingCoreKvValue(clientId, instanceId));
+//            coreKvUtils.pushToSet(buildMappingCoreKvKey(passportId), buildMappingCoreKvValue(clientId, instanceId));
         } catch (Exception e) {
             logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
@@ -202,6 +204,14 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
         }
+    }
+
+    @Override
+    public boolean removeAccountToken(String passportId, boolean isAsyn) throws ServiceException {
+        String tokenMappingKey = buildMappingCoreKvKey(passportId);
+        Set tokenMappingSet = coreKvUtils.pullToSet(tokenMappingKey);
+
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /**
