@@ -19,7 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,6 +38,10 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
     //kv key 分隔符
     private static final String KEY_KV_SPLIT = "_";
+    //instanceid为空的默认赋值
+    private static final String EMPTY_INSTANCEID_SIGN = "NULL";
+    //允许pc token失效的最大数目
+    private static final int REMOVE_PCTOKEN_MAX_NUM = 50;
     //kv token key 生成规则: KEY_PREFIX + passportId + "_" + clientId + "_" + instanceId
     private static final String KEY_CORE_KV_FORMAT = "%s" + KEY_KV_SPLIT + "%s" + KEY_KV_SPLIT + "%s";
     private static final String KEY_DEFAULT_CORE_KV_FORMAT = "%s" + KEY_KV_SPLIT + "%s";
@@ -105,7 +111,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
             tokenRedisUtils.setWithinSeconds(redisKey, accountToken, DateAndNumTimesConstant.ONE_MONTH);
             //保存映射关系
-//            coreKvUtils.pushToSet(buildMappingCoreKvKey(passportId), buildMappingCoreKvValue(clientId, instanceId));
+            coreKvUtils.pushStringToLinkedHashSet(buildMappingCoreKvKey(passportId), buildMappingCoreKvValue(clientId, instanceId));
         } catch (Exception e) {
             logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
@@ -120,7 +126,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
             if (accountToken == null) {
                 accountToken = coreKvUtils.getObject(buildCoreKvKey(CORE_KV_PREFIX_PASSPROTID_TOKEN, passportId, clientId, instanceId), AccountToken.class);
                 if (accountToken != null) {
-                    tokenRedisUtils.set(tokenRedisKey, accountToken);
+                    tokenRedisUtils.setWithinSeconds(tokenRedisKey, accountToken, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
             return accountToken;
@@ -162,7 +168,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
     @Override
     public String getPassportIdByToken(String token, String clientSecret) throws ServiceException {
-        String passportId = null;
+        String passportId;
         try {
             passportId = TokenDecrypt.decryptPcToken(token, clientSecret);
             return passportId;
@@ -174,7 +180,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
     @Override
     public String getPassportIdByOldToken(String token, String clientSecret) throws ServiceException {
-        String passportId = null;
+        String passportId;
         try {
             passportId = TokenDecrypt.decryptOldPcToken(token, clientSecret);
             return passportId;
@@ -207,11 +213,48 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     }
 
     @Override
-    public boolean removeAccountToken(String passportId, boolean isAsyn) throws ServiceException {
+    public void batchRemoveAccountToken(String passportId, boolean isAsyn) {
         String tokenMappingKey = buildMappingCoreKvKey(passportId);
-        Set tokenMappingSet = coreKvUtils.pullToSet(tokenMappingKey);
+        Set<String> tokenMappingSet = coreKvUtils.pullStringFromLinkedHashSet(tokenMappingKey);
+        if (isAsyn) {
 
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        } else {
+            Stack<String> tokenStack = new Stack();
+            for (String s : tokenMappingSet) {
+                tokenStack.push(s);
+            }
+            int removeMaxNum = 0;
+            for (Iterator<String> iter = tokenStack.iterator(); iter.hasNext(); ) {
+                String secondTokenKey = tokenStack.pop();
+                String[] secondTokenKeyArray = secondTokenKey.split(KEY_KV_SPLIT);
+                if (removeMaxNum < REMOVE_PCTOKEN_MAX_NUM && secondTokenKeyArray.length >= 2) {
+                    String clientIdStr = secondTokenKeyArray[0];
+                    String instanceId = EMPTY_INSTANCEID_SIGN.equals(secondTokenKeyArray[1]) ? "" : secondTokenKeyArray[1];
+                    try {
+                        int clientId = Integer.parseInt(clientIdStr);
+                        removeAccountToken(passportId, clientId, instanceId);
+                        removeMaxNum ++;
+                    } catch (Exception e) {
+                        logger.error("client not interge, passportId:" + passportId + ", clientId:" + clientIdStr);
+                        return;
+                    }
+                } else {
+                    logger.error("Second Token Key less two, passportId:" + passportId);
+                    return;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void removeAccountToken(String passportId, int clientId, String instanceId) {
+        //重新缓存里的pc token记录
+        String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
+        tokenRedisUtils.delete(redisKey);
+
+        //清除kv里的pc token记录
+        String coreKvKey = buildCoreKvKey(CORE_KV_PREFIX_PASSPROTID_TOKEN, passportId, clientId, instanceId);
+        coreKvUtils.delete(coreKvKey);
     }
 
     /**
@@ -270,9 +313,10 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     private String buildMappingCoreKvValue(int clientId, String instanceId) {
         String value;
         if (Strings.isNullOrEmpty(instanceId)) {
-            value = String.valueOf(clientId);
+            //instanceId赋值为NULL便于以后扩展value字段
+            value = clientId + KEY_KV_SPLIT + EMPTY_INSTANCEID_SIGN;
         } else {
-            value = clientId + "_" + instanceId;
+            value = clientId + KEY_KV_SPLIT + instanceId;
         }
         return value;
     }
