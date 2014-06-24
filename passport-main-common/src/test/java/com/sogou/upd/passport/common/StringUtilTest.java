@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
 import junit.framework.TestCase;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -10,7 +11,7 @@ import java.io.UnsupportedEncodingException;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-22 Time: 下午5:34 To change this template use
  * File | Settings | File Templates.
  */
-
+@Ignore
 public class StringUtilTest extends TestCase {
     private static final String STR1 = "hello";
     private static final String STR2 = " world";
