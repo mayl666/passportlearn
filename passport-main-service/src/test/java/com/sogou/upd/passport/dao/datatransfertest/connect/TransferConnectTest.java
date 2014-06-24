@@ -7,6 +7,7 @@ import com.sogou.upd.passport.dao.connect.ConnectTokenDAO;
 import com.sogou.upd.passport.dao.connect.OpenTokenInfo;
 import com.sogou.upd.passport.dao.connect.OpenTokenInfoDAO;
 import com.sogou.upd.passport.model.connect.ConnectToken;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,6 +23,7 @@ import java.util.List;
  * Time: 下午8:32
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class TransferConnectTest extends BaseTest {
 
     @Autowired

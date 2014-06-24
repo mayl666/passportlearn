@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.sogou.upd.passport.web.JUnitActionBase;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -12,6 +13,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
  * Date: 13-6-17
  * Time: 下午2:07
  */
+@Ignore
 public class UserInfoApiControllerTest extends JUnitActionBase {
 
 

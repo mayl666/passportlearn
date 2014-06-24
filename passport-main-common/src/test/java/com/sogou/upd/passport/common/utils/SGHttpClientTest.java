@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.thoughtworks.xstream.XStream;
 import org.apache.commons.httpclient.Header;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.HashMap;
  * Date: 13-5-29
  * Time: 下午2:42
  */
+@Ignore
 public class SGHttpClientTest {
 
 

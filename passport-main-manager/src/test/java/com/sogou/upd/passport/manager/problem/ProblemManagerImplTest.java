@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.problem;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.WebAddProblemParams;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Date: 13-6-7
  * Time: 下午2:02
  */
+@Ignore
 public class ProblemManagerImplTest extends BaseTest {
 
     @Autowired

@@ -15,12 +15,14 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonProcessingException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -139,8 +141,7 @@ public class BaseActionTest extends TestCase {
         }
     }
 
-    protected String sendPostLocal(String sendUrl, Map<String, String> params)
-            throws IOException {
+    protected String sendPostLocal(String sendUrl, Map<String, String> params){
         Result result;
         try {
             String sendUrlFull = "http://localhost/";
@@ -157,8 +158,7 @@ public class BaseActionTest extends TestCase {
         }
     }
 
-    protected String sendGetLocal(String sendUrl, Map<String, String> params)
-            throws IOException {
+    protected String sendGetLocal(String sendUrl, Map<String, String> params){
         Result result;
         try {
             String sendUrlFull = "http://localhost/";
@@ -172,6 +172,18 @@ public class BaseActionTest extends TestCase {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
+        }
+    }
+
+    protected String reg_mobile_capthca = new GeneratorRandomMobile().generateRandomMobile();
+
+    class GeneratorRandomMobile {
+        //生成随机的手机号码
+        private String generateRandomMobile() {
+            String mobile = "135";
+            DecimalFormat a = new DecimalFormat("00000000");//随机到非7位数时前面加0
+            mobile = mobile + a.format((int) (Math.random() * 4720001));//随机数0-4720000
+            return mobile;
         }
     }
 
@@ -221,7 +233,6 @@ public class BaseActionTest extends TestCase {
                 + "    <uniqname>汽车驾驶模拟器1946在搜狐</uniqname>\n"
                 + "</register>");
         String result = sendPostXml(url, sb.toString());
-
         String userid = result.substring(result.indexOf("<userid>") + 8, result.lastIndexOf("</userid>"));
         System.out.println(userid);
         System.out.println(result);

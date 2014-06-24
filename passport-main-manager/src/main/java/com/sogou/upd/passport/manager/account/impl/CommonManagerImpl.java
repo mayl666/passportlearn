@@ -1,6 +1,12 @@
 package com.sogou.upd.passport.manager.account.impl;
 
+import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
@@ -15,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -24,8 +31,8 @@ import org.springframework.stereotype.Component;
  */
 @Component("commonManager")
 public class CommonManagerImpl implements CommonManager {
-    private static Logger log = LoggerFactory.getLogger(CommonManagerImpl.class);
-    private static Logger profileErrorLogger = LoggerFactory.getLogger("profileErrorLogger");
+    private static final Logger logger = LoggerFactory.getLogger(CommonManagerImpl.class);
+    private static final Logger checkLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothCheckSyncErrorLogger");
 
     @Autowired
     private OperateTimesService operateTimesService;
@@ -35,7 +42,7 @@ public class CommonManagerImpl implements CommonManager {
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private BindApiManager proxyBindApiManager;
-
+   
     @Override
     public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {
         String code = getCode(firstStr.toString(), clientId, ct);
@@ -65,22 +72,59 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public String getPassportIdByUsername(String username) {
+    public String getPassportIdByUsername(String username) throws Exception {
         Result result;
         //根据username获取passportID
         String passportId = username;
-        //如果是手机号，需要查询该手机绑定的主账号
-        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-            baseMoblieApiParams.setMobile(username);
-            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-            if (result.isSuccess()) {
-                passportId = result.getModels().get("userid").toString();
-            } else {
-                passportId = passportId + "@sohu.com";
+        if (AccountDomainEnum.isPhone(username)) {
+            passportId = username + "@sohu.com";
+        }
+        if (AccountDomainEnum.isIndivid(username)) {
+            passportId = username + "@sogou.com";
+        }
+        try {
+            //如果是手机号，需要查询该手机绑定的主账号
+            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+                passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
+                if (Strings.isNullOrEmpty(passportId)) {
+                    BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+                    baseMoblieApiParams.setMobile(username);
+                    result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+                    if (result.isSuccess()) {
+                        passportId = result.getModels().get("userid").toString();
+                        String message = CommonConstant.MOBILE_MESSAGE;
+                        LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.UNKNOWN, "getPassportIdByUsername", message, username, passportId, result.toString());
+                    }
+                }
             }
+        } catch (Exception e) {
+            logger.error("getPassportIdByUsername Exception", e);
+            throw new Exception(e);
         }
         return passportId;
+    }
+
+
+    @Override
+    public boolean isAccessAccept(int clientId, String requestIp, String apiName) {
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                return false;
+            }
+            String scope = appConfig.getScope();
+            if (!Strings.isNullOrEmpty(apiName) && !StringUtil.splitStringContains(scope, ",", apiName)) {
+                return false;
+            }
+            String serverIp = appConfig.getServerIp();
+            if (!Strings.isNullOrEmpty(requestIp) && !StringUtil.splitStringContains(serverIp, ",", requestIp)) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error("isAccessAccept error, api:" + apiName, e);
+            return false;
+        }
     }
 
 }

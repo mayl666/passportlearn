@@ -11,6 +11,7 @@ import com.sogou.upd.passport.dao.datatransfertest.shplustransfer.DO.SohuPasspor
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.SnamePassportMapping;
 import com.sogou.upd.passport.service.account.AccountBaseInfoService;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,6 +25,7 @@ import java.util.List;
  * Time: 上午12:29
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class RepairDataTest extends BaseTest {
 
     @Autowired

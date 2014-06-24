@@ -66,8 +66,7 @@ public class CacheSyncUpdateController extends BaseController {
             if (ip.equals("10.146.16.142")) {
                 result = cacheSyncUpdateManager.deleteTableCache(key);
             } else {
-                result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-                result.setMessage("不允许此IP访问该接口");
+                result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
             }
             return result.toString();
         } catch (Exception e) {

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.model.account.AccountInfo;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -11,6 +12,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-6 Time: 下午6:49 To change this template use
  * File | Settings | File Templates.
  */
+@Ignore
 public class AccountInfoServiceTest extends BaseTest {
     private static final String PASSPORT_ID = "13552848876@sohu.com";
     private static final String EMAIL = "Binding123@163.com";

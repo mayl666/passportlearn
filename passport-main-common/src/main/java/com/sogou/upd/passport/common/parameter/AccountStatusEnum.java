@@ -9,9 +9,9 @@ package com.sogou.upd.passport.common.parameter;
  */
 public enum AccountStatusEnum {
 
+    DISABLED(0), // 未激活
     REGULAR(1), // 正式用户
-    DISABLED(2), // 未激活
-    KILLED(3); // 封杀用户
+    KILLED(2); // 封杀用户
 
     public int value;
 

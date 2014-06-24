@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.SignatureUtils;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.web.BaseActionTest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.TreeMap;
  * Date: 13-6-25 Time: 下午5:33
  */
 //@ContextConfiguration(locations = "classpath:spring-config-test.xml")
+@Ignore
 public class ConnectSSOControllerTest extends BaseActionTest {
 
     @Test

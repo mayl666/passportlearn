@@ -24,9 +24,9 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.account.form.PCOAuth2BaseParams;
 import com.sogou.upd.passport.web.account.form.PCOAuth2IndexParams;
+import com.sogou.upd.passport.web.account.form.RegUserNameParams;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -129,7 +129,7 @@ public class PCOAuth2AccountController extends BaseController {
         if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {
             result.setCode("0");
         }
-        UserOperationLog userOperationLog = new UserOperationLog(oauthRequest.getUsername(), "/oauth2/token/?grant_type="+oauthRequest.getGrantType(), String.valueOf(oauthRequest.getClientId()), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(oauthRequest.getUsername(), "/oauth2/token/?grant_type=" + oauthRequest.getGrantType(), String.valueOf(oauthRequest.getClientId()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("refresh_token", oauthRequest.getRefreshToken());
         userOperationLog.putOtherMessage("instance_id", oauthRequest.getInstanceId());
         UserOperationLogUtil.log(userOperationLog);
@@ -153,7 +153,7 @@ public class PCOAuth2AccountController extends BaseController {
         if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {
             result.setCode("0");
         }
-        UserOperationLog userOperationLog = new UserOperationLog(params.getUsername(), "/oauth2/resource/?resource_type="+params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(params.getUsername(), "/oauth2/resource/?resource_type=" + params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("access_token", params.getAccess_token());
         userOperationLog.putOtherMessage("instance_id", params.getInstance_id());
         UserOperationLogUtil.log(userOperationLog);
@@ -169,21 +169,27 @@ public class PCOAuth2AccountController extends BaseController {
      */
     @RequestMapping(value = "/oauth2/checkregname")
     @ResponseBody
-    public String checkRegisterName(CheckUserNameExistParameters checkParam)
+    public String checkRegisterName(HttpServletRequest request, RegUserNameParams checkParam)
             throws Exception {
         Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(checkParam);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-
-        result = checkPCAccountNotExists(username);
-        if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED.equals(result.getCode())) {
-            result.setMessage("该手机号已注册或已绑定，请直接登录");
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(checkParam);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
+            result = checkPCAccountNotExists(username);
+            if (PhoneUtil.verifyPhoneNumberFormat(username) && ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED.equals(result.getCode())) {
+                result.setMessage("该手机号已注册或已绑定，请直接登录");
+            }
+        } catch (Exception e) {
+            logger.error("oauth2:checkRegisterName is failed,username is " + checkParam.getUsername(), e);
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(checkParam.getUsername(), request.getRequestURI(), checkParam.getClient_id(), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
     }
@@ -314,10 +320,10 @@ public class PCOAuth2AccountController extends BaseController {
             Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
             result.setDefaultModel("autologin", loginParams.getRememberMe());
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-            ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(userId,clientId), accountToken, "sogou");
+            ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(userId, clientId), accountToken, "sogou");
             loginManager.doAfterLoginSuccess(username, ip, userId, clientId);
         } else {
-            loginManager.doAfterLoginFailed(username, ip,result.getCode());
+            loginManager.doAfterLoginFailed(username, ip, result.getCode());
             //校验是否需要验证码
             boolean needCaptcha = loginManager.needCaptchaCheck(String.valueOf(clientId), username, ip);
             if (needCaptcha) {
@@ -351,12 +357,8 @@ public class PCOAuth2AccountController extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_REGISTER_EMAIL_NOT_ALLOWED);
             return result;
         }
-        //判断是否是手机号注册
-        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-            result = pcoAuth2RegManager.isPcAccountNotExists(username, true);
-        } else {
-            result = pcoAuth2RegManager.isPcAccountNotExists(username, false);
-        }
+        //检查用户是否存在
+        result = regManager.isAccountNotExists(username, CommonConstant.PC_CLIENTID);
         return result;
     }
 
@@ -379,7 +381,7 @@ public class PCOAuth2AccountController extends BaseController {
             cookieUserId = hostHolder.getPassportId();
         }
         int clientId = pcOAuth2LoginManager.getClientId(oauth2PcIndexParams.getClient_id());
-        Result queryPassportIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), clientId, oauth2PcIndexParams.getInstanceid(),"");
+        Result queryPassportIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(oauth2PcIndexParams.getAccesstoken(), clientId, oauth2PcIndexParams.getInstanceid(), "");
 
         if (StringUtils.isBlank(queryPassportIdResult.getCode()) && queryPassportIdResult.isSuccess()) {
             queryPassportIdResult.setCode("0");
@@ -395,11 +397,11 @@ public class PCOAuth2AccountController extends BaseController {
         }
         String passportId = (String) queryPassportIdResult.getDefaultModel();
         String redirectUrl;
-        if(oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_AVATARURL)){
-            redirectUrl = "/web/userinfo/avatarurl?client_id=" +  oauth2PcIndexParams.getClient_id();
-        }else if(oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_PASSWORD)){
-            redirectUrl = "/web/security/password?client_id=" +  oauth2PcIndexParams.getClient_id();
-        }else {
+        if (oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_AVATARURL)) {
+            redirectUrl = "/web/userinfo/avatarurl?client_id=" + oauth2PcIndexParams.getClient_id();
+        } else if (oauth2PcIndexParams.getType().equals(CommonConstant.PC_REDIRECT_PASSWORD)) {
+            redirectUrl = "/web/security/password?client_id=" + oauth2PcIndexParams.getClient_id();
+        } else {
             redirectUrl = "/web/userinfo/getuserinfo?client_id=" + oauth2PcIndexParams.getClient_id();
         }
 
@@ -412,7 +414,7 @@ public class PCOAuth2AccountController extends BaseController {
             response.sendRedirect(redirectUrl);
             return;
         }
-        cookieManager.setCookie(response,passportId,oauth2PcIndexParams.getClient_id(),getIp(request),CommonConstant.DEFAULT_INDEX_URL,-1);
+        cookieManager.setCookie(response, passportId, oauth2PcIndexParams.getClient_id(), getIp(request), CommonConstant.DEFAULT_INDEX_URL, -1);
         response.sendRedirect(redirectUrl);
         return;
     }

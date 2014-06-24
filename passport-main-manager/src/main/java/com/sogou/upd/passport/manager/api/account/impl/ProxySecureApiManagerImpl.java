@@ -87,4 +87,9 @@ public class ProxySecureApiManagerImpl extends BaseProxyManager implements Secur
         requestModelXml.addParams(resetPasswordBySecQuesApiParams);
         return this.executeResult(requestModelXml);
     }
+
+    @Override
+    public void resetPwd(UpdatePwdApiParams updatePwdApiParams) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

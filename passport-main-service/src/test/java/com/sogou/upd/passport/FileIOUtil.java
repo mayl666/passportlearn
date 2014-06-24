@@ -1,6 +1,7 @@
 package com.sogou.upd.passport;
 
 import com.google.common.collect.Lists;
+import org.junit.Ignore;
 
 import java.io.*;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  * Time: 上午12:47
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class FileIOUtil {
 
     /**

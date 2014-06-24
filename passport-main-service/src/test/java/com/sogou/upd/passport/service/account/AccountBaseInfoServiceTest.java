@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.account;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 下午7:55
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class AccountBaseInfoServiceTest extends BaseTest {
 
     @Autowired

@@ -136,6 +136,21 @@ public class StringUtil {
     }
 
     /**
+     * 判断一个由split分隔的字符串中是否包含targetStr
+     * @param initStr
+     * @param split
+     * @param targetStr
+     * @return
+     */
+    public static boolean splitStringContains(String initStr, String split, String targetStr) {
+        if (!Strings.isNullOrEmpty(initStr) && !Strings.isNullOrEmpty(targetStr)) {
+            String[] strArray = initStr.split(split);
+            return Arrays.asList(strArray).contains(targetStr);
+        }
+        return false;
+    }
+
+    /**
      * 输入为map 输出为：appid=xxx&openid=xxx&...
      */
     public static String formRequestParam(Map<String, String> params) {
@@ -167,7 +182,6 @@ public class StringUtil {
         }
         return map;
     }
-
 
     /**
      * 将Html和XML的转义字符解码

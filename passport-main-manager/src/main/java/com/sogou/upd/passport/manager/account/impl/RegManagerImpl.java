@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -9,9 +10,12 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
@@ -21,11 +25,9 @@ import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.MobileCodeSenderService;
-import com.sogou.upd.passport.service.account.OperateTimesService;
-import com.sogou.upd.passport.service.account.SnamePassportMappingService;
+import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +52,7 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private BindApiManager proxyBindApiManager;
     @Autowired
-    private BindApiManager sgBindApiManager;
+    private CommonManager commonManager;
     @Autowired
     private SessionServerManager sessionServerManager;
     @Autowired
@@ -59,8 +61,11 @@ public class RegManagerImpl implements RegManager {
     private OperateTimesService operateTimesService;
     @Autowired
     private SnamePassportMappingService snamePassportMappingService;
+    @Autowired
+    private AccountSecureService accountSecureService;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
+    private static final Logger checkLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothCheckSyncErrorLogger");
 
     private static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
@@ -141,6 +146,65 @@ public class RegManagerImpl implements RegManager {
             result.getModels().put("username", username);            //判断是否是外域邮箱注册 外域邮箱激活以后种cookie
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+        }
+        return result;
+    }
+
+    @Override
+    public Result fastRegisterPhone(String mobile, int clientId, String createip, String type) {
+        Result result = new APIResultSupport(false);
+        // 检查ip安全限制
+        try {
+            //检测手机号是否已经注册或绑定
+            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams(mobile);
+            Result mobileBindResult = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+            if (mobileBindResult.isSuccess()) {
+                if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
+                    String passportId = (String) mobileBindResult.getModels().get("userid");
+                    Result sessionResult = sessionServerManager.createSession(passportId);
+                    if (!sessionResult.isSuccess()) {
+                        result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                        return result;
+                    }
+                    String sgid = (String) sessionResult.getModels().get("sgid");
+                    result.getModels().put("sgid", sgid);
+                }
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                result.setDefaultModel("userid", (String) mobileBindResult.getModels().get("userid"));
+                return result;
+            }
+            //生成随机数密码
+            String randomPwd = RandomStringUtils.randomNumeric(6);
+            //注册手机号
+            RegMobileApiParams regApiParams = new RegMobileApiParams(mobile, randomPwd, clientId);
+            Result regMobileResult = proxyRegisterApiManager.regMobileUser(regApiParams);
+            if (regMobileResult.isSuccess()) {
+                String passportId = (String) regMobileResult.getModels().get("userid");
+                //发送短信验证码
+                //短信内容，TODO 目前只有小说使用，文案先写死
+                String smsText = "搜狗通行证注册成功，密码为" + randomPwd + "， 请用本机号码登录。";
+                if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
+                    if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
+                        Result sessionResult = sessionServerManager.createSession(passportId);
+                        if (!sessionResult.isSuccess()) {
+                            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                            return result;
+                        }
+                        String sgid = (String) sessionResult.getModels().get("sgid");
+                        result.getModels().put("sgid", sgid);
+                    }
+                    result.setSuccess(true);
+                    result.setMessage("注册成功，并发送短信至手机号：" + mobile);
+                    result.setDefaultModel("userid", passportId);
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
+            }
+        } catch (Exception e) {
+            logger.error("fast register mobile Fail, mobile:" + mobile, e);
+            result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
         }
         return result;
     }
@@ -252,52 +316,55 @@ public class RegManagerImpl implements RegManager {
         return accountService.getCaptchaCode(code);
     }
 
-    @Override
-    public Result isAccountNotExists(String username, boolean type, int clientId) throws Exception {
+    private Result checkUserFromSohu(String username, int clientId) throws Exception {
         Result result;
         try {
-            CheckUserApiParams checkUserApiParams = buildProxyApiParams(username);
-            BaseMoblieApiParams params = new BaseMoblieApiParams();
-            params.setMobile(username);
-            if (ManagerHelper.isInvokeProxyApi(username)) {
-                if (type) {
-                    //手机号 判断绑定账户
-                    result = proxyBindApiManager.getPassportIdByMobile(params);
-                    if (result.isSuccess()) {
-                        result = new APIResultSupport(false);
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        return result;
-                    } else if (CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username, clientId);
-                    } else {
-                        result.setSuccess(true);
-                        result.setMessage("账户未被占用");
-                    }
+            if (username.indexOf("@") == -1) {
+                //判断是否是手机号注册
+                if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
+                    username = username + "@sogou.com";
+                }
+            }
+            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+                BaseMoblieApiParams params = new BaseMoblieApiParams();
+                params.setMobile(username);
+                //手机号 判断绑定账户
+                result = proxyBindApiManager.getPassportIdByMobile(params);
+                if (result.isSuccess()) {
+                    result.setSuccess(false);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    result.setMessage("账号已注册");
+                    return result;
+                } else if (CommonHelper.isExplorerToken(clientId)) {
+                    result = isSohuplusUser(username, clientId);
                 } else {
-                    result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-                    if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username, clientId);
-                    }
+                    result.setSuccess(true);
+                    result.setMessage("账户未被占用");
                 }
             } else {
-                if (type) {
-                    result = sgBindApiManager.getPassportIdByMobile(params);
-                    if (result.isSuccess()) {
-                        result = new APIResultSupport(false);
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        return result;
-                    } else if (CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username, clientId);
-                    } else {
-                        result.setSuccess(true);
-                        result.setMessage("账户未被占用");
-                    }
-                } else {
-                    result = sgRegisterApiManager.checkUser(checkUserApiParams);
-                    if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
-                        result = isSohuplusUser(username, clientId);
-                    }
+                CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
+                result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+                if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
+                    result = isSohuplusUser(username, clientId);
                 }
+            }
+        } catch (Exception e) {
+            logger.error("check user from sohu error, username:" + username + "clientid:" + clientId, e);
+            throw new Exception(e);
+        }
+        return result;
+    }
+
+    @Override
+    public Result isAccountNotExists(String username, int clientId) throws Exception {
+        Result result;
+        try {
+            if (ManagerHelper.readSohuSwitcher()) {
+                //回滚流程
+                result = checkUserFromSohu(username, clientId);
+            } else {
+                //正常双读流程
+                result = bothCheck(username, clientId);
             }
         } catch (ServiceException e) {
             logger.error("Check account is exists Exception, username:" + username, e);
@@ -306,6 +373,31 @@ public class RegManagerImpl implements RegManager {
         return result;
     }
 
+    private Result bothCheck(String username, int clientId) throws Exception {
+        Result result;
+        String passportId = commonManager.getPassportIdByUsername(username);
+        if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(username)) &&
+                accountSecureService.getUpdateSuccessFlag(passportId)) {
+            //手机号检查用户名且主账号有更新绑定手机的操作时，调用sohu api检查账号是否可用
+            result = checkUserFromSohu(username, clientId);
+            //存在主账号更新绑定手机去sohu查的情况就记录log
+            String message = CommonConstant.CHECK_MESSAGE;
+            LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.REGISTER, "isAccountNotExists", message, username, passportId, result.toString());
+        } else {
+            //没有更新绑定手机时，走正常的双读检查账号是否可用流程
+            CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
+            result = sgRegisterApiManager.checkUser(checkUserApiParams);
+            if (result.isSuccess()) {  //SG没有，查询SH
+                result = checkUserFromSohu(username, clientId);
+                if (!result.isSuccess()) {
+                    //检查用户名是否存在时，SG不存在，SH存在，全量数据迁移有遗漏或是双读延迟;未激活外域来登录
+                    String message = CommonConstant.CHECK_SGN_SHY_MESSAGE;
+                    LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.REGISTER, "isAccountNotExists", message, username, passportId, result.toString());
+                }
+            }
+        }
+        return result;
+    }
 
     @Override
     public Result checkRegInBlackListByIpForInternal(String ip, int clientId) throws Exception {
@@ -387,6 +479,7 @@ public class RegManagerImpl implements RegManager {
      * 都有可能是sohuplus的账号，需要判断sohuplus映射表
      * 如果username包含@，则取@前面的
      */
+
     private Result isSohuplusUser(String username, int clientId) {
         Result result = new APIResultSupport(false);
         if (username.contains("@")) {
@@ -398,14 +491,15 @@ public class RegManagerImpl implements RegManager {
             return result;
         } else {
             result.setSuccess(true);
-            result.setMessage("账户未被占用");
+            result.setMessage("操作成功");
         }
         return result;
     }
 
-    private CheckUserApiParams buildProxyApiParams(String username) {
+    private CheckUserApiParams buildProxyApiParams(String username, int clientId) {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
         checkUserApiParams.setUserid(username);
+        checkUserApiParams.setClient_id(clientId);
         return checkUserApiParams;
     }
 

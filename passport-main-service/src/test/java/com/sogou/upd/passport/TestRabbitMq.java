@@ -1,5 +1,6 @@
 package com.sogou.upd.passport;
 
+import org.junit.Ignore;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
  */
 //@ContextConfiguration(locations = {"classpath:mq/rabbitConfiguration.xml"})
 
+@Ignore
 public class TestRabbitMq extends AbstractJUnit4SpringContextTests {
 
 //    @Inject

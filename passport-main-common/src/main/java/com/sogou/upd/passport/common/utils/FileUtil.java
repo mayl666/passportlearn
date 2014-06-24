@@ -62,10 +62,9 @@ public class FileUtil {
      *
      * @param path
      * @param result
-     * @throws java.io.IOException
      * @throws java.net.URISyntaxException
      */
-    public static void storeFile(String path, List<String> result) throws IOException, URISyntaxException {
+    public static void storeFile(String path, List<String> result) throws URISyntaxException {
         try {
             Path filePath = Paths.get(path);
             Files.deleteIfExists(filePath);

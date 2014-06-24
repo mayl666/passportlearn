@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common.math;
 
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.security.interfaces.RSAPrivateKey;
@@ -15,6 +16,7 @@ import java.util.Map;
  * Time: 上午2:10
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class RSATest {
 
     private String str = "shipengzhi1986@126.com|1003|1363018968121|dafasdfasdfasdfasdfasdfasdfa";

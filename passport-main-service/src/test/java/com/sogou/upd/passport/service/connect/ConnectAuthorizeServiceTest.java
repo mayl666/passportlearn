@@ -27,6 +27,7 @@ import java.io.IOException;
  * Time: 上午10:57
  * To change this template use File | Settings | File Templates.
  */
+//@Ignore
 public class ConnectAuthorizeServiceTest extends BaseTest {
 
     private static final int clientId = 1120;

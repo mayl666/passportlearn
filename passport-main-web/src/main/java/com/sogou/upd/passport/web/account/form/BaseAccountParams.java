@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.web.BaseWebParams;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -13,6 +14,8 @@ public class BaseAccountParams extends BaseWebParams {
     protected String userid;
 
     public String getUserid() {
+        String internalUsername = AccountDomainEnum.getInternalCase(userid);
+        setUserid(internalUsername);
         return userid;
     }
 

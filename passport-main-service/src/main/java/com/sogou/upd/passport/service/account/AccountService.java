@@ -30,7 +30,6 @@ public interface AccountService {
     public Account initialConnectAccount(String passportId, String ip, int provider)
             throws ServiceException;
 
-
     /**
      * 非第三方账号数据迁移，新写方法 初始化用户账号
      *
@@ -70,12 +69,6 @@ public interface AccountService {
     public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException;
 
     /**
-     * 根据passportId删除Account，内部debug接口使用
-     */
-    public boolean deleteAccountByPassportId(String passportId) throws ServiceException;
-
-
-    /**
      * 根据passportId删除Account表的缓存，增量数据迁移的内部debug接口使用
      */
     public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException;
@@ -96,14 +89,14 @@ public interface AccountService {
      *
      * @return Result格式的返回值, 成功或失败，返回提示信息
      */
-    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws Exception;
+    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException;
 
     /**
      * 激活验证邮件
      *
      * @return
      */
-    public boolean activeEmail(String username, String token, int clientId) throws Exception;
+    public boolean activeEmail(String username, String token, int clientId) throws ServiceException;
 
     /**
      * 种根域和子域下的cookie
@@ -187,6 +180,22 @@ public interface AccountService {
      * @return
      * @throws Exception
      */
-    public String checkUniqName(String nickname) throws Exception;
+    public String checkUniqName(String nickname) throws ServiceException;
+
+    /*
+    *获取激活信息
+    */
+    public Map<String, String> getActiveInfo(String username);
+
+    /**
+     * 根据passwordType验证用户密码是否正确
+     *
+     * @param password 用户需要验证的密码
+     * @param account  用户实体类
+     * @param needMD5  当passwordType=2时用到此参数
+     * @return
+     * @throws ServiceException
+     */
+    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5) throws ServiceException;
 
 }

@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Date: 13-6-18
  * Time: 上午11:26
  */
+@Ignore
 public class ProxySecureApiManagerImplTest  extends BaseTest {
 
     @Autowired

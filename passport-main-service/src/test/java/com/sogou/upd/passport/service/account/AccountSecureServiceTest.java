@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,6 +18,7 @@ import java.util.List;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-22 Time: 下午4:14 To change this template use
  * File | Settings | File Templates.
  */
+@Ignore
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class AccountSecureServiceTest extends AbstractJUnit4SpringContextTests {
     private static final String PASSPORT_ID = "test_sogou21@sogou.com";

@@ -2,8 +2,6 @@ package com.sogou.upd.passport.service.dataimport.nick_name_migration;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -17,17 +15,13 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.service.dataimport.util.FileUtil;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.RecursiveTask;
 
 /**
@@ -229,7 +223,7 @@ public class MigrationTask extends RecursiveTask<List<String>> {
         int insertSohuAccountResult = accountDAO.insertAccount(passportId, sohuAccount);
         if (insertSohuAccountResult > 0) {
             //更新缓存
-            dbShardRedisUtils.setWithinSeconds(cacheKey, sohuAccount, DateAndNumTimesConstant.ONE_MONTH);
+            dbShardRedisUtils.setObjectWithinSeconds(cacheKey, sohuAccount, DateAndNumTimesConstant.ONE_MONTH);
         } else {
             //插入db失败、记录失败账号数据
             insertSoHuAccountFailList.add("B:" + passportId);
@@ -258,7 +252,7 @@ public class MigrationTask extends RecursiveTask<List<String>> {
                 account.setAvatar(avatar);
             }
             //更新缓存
-            dbShardRedisUtils.setWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+            dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
         } else {
             //更新db失败、记录Log : fail_update_account.txt
             updateDBFailList.add("A:" + passportId);

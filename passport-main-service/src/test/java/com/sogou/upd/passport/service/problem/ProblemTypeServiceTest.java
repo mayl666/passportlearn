@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.problem;
 
 import com.sogou.upd.passport.model.problem.ProblemType;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,6 +13,7 @@ import java.util.List;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-6 Time: 下午6:49 To change this template use
  * File | Settings | File Templates.
  */
+@Ignore
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class ProblemTypeServiceTest extends AbstractJUnit4SpringContextTests {
     private static final String PASSPORT_ID = "13552848876@sohu.com";

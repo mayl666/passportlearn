@@ -58,6 +58,8 @@ public class CommonConstant {
     public static final String RESQUEST_CT = "ct";
     public static final String RESQUEST_CODE = "code";
     public static final String UNIQNAME = "uniqname";
+    public static final String MESSAGE = "message";
+    public static final String HAVE_UPDATE = "true";//用户有修改操作
 
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
     public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明
@@ -73,10 +75,14 @@ public class CommonConstant {
 
     public static final String DEFAULT_CONNECT_REDIRECT_URL = "https://account.sogou.com";
     public static final String DEFAULT_INDEX_URL = "https://account.sogou.com";
-    public static final String DEFAULT_WAP_URL="http://wap.sogou.com";
+    public static final String DEFAULT_WAP_URL = "http://wap.sogou.com";
     public static final String DEFAULT_WAP_CONNECT_REDIRECT_URL = "http://wap.sogou.com";
     public static final String SOGOU_ROOT_DOMAIN = ".sogou.com";
     public static final String SOHU_ROOT_DOMAIN = ".sohu.com";
+    public static final String PASSPORT_ACTIVE_EMAIL_URL = "https://account.sogou.com/web/activemail?";
+    public static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
+    public static final String EMAIL_FAILED_VERIFY_URL = "https://account.sogou.com/web/reg/emailfail";
+    public static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
     public static final String DEFAULT_AVATAR_URL = "http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar";
 
@@ -84,13 +90,13 @@ public class CommonConstant {
     public static final String DAOHANG_CREATE_COOKIE_URL = "http://account.daohang.qq.com/sso/setcookie";
 
     public static final String SHURUFA_CREATE_COOKIE_URL = "http://account.shurufa.qq.com/sso/setcookie";   //TODO 这个以后改成统一的！！！！！ denghua
-    public static final String PINYIN_CN_CREATE_COOKIE_URL="http://account.qq.pinyin.cn/sso/setcookie";
+    public static final String PINYIN_CN_CREATE_COOKIE_URL = "http://account.qq.pinyin.cn/sso/setcookie";
 
 
     public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 1; // 默认种cookie的有效期，1小时
     public static final long API_REQUEST_VAILD_TERM = 500000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒
     public static final long COOKIE_REQUEST_VAILD_TERM = 5 * 60; //接口请求的有效期为5分钟，单位为秒
-    public static final long COOKIE_REQUEST_VAILD_TERM_IN_MILLI = 5 * 60*1000; //接口请求的有效期为5分钟，单位为秒
+    public static final long COOKIE_REQUEST_VAILD_TERM_IN_MILLI = 5 * 60 * 1000; //接口请求的有效期为5分钟，单位为秒
 
 
     public static final String LOGIN_IN_BLACKLIST = "1"; //用户名或者ip在黑名单的标识

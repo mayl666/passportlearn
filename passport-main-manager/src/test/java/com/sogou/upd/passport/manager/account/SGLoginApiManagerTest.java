@@ -1,15 +1,14 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.math.RSA;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
-import com.sogou.upd.passport.manager.api.account.impl.SGLoginApiManagerImpl;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -21,6 +20,7 @@ import java.util.Map;
  * Created with IntelliJ IDEA. User: chenjiameng Date: 13-5-15 Time: 下午4:31 To change this template use
  * File | Settings | File Templates.
  */
+@Ignore
 @ContextConfiguration(locations = {"classpath:spring-config-test.xml"})
 public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
     @Autowired

@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
+import org.junit.Ignore;
+
 /**
  * Created with IntelliJ IDEA.
  * User: chenjiameng
@@ -7,7 +9,7 @@ package com.sogou.upd.passport.web.account.action;
  * Time: 下午1:11
  * To change this template use File | Settings | File Templates.
  */
-
+@Ignore
 public class ProblemActionTest {
     public static void main(String args[]){
         //HTML clean

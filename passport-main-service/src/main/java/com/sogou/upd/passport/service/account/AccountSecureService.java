@@ -14,6 +14,24 @@ import java.util.List;
 public interface AccountSecureService {
 
     /**
+     * 获取用户更新的状态
+     *
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean getUpdateSuccessFlag(String passportId) throws ServiceException;
+
+    /**
+     * 用户更新操作成功后，更新状态
+     *
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean updateSuccessFlag(String passportId) throws ServiceException;
+
+    /**
      * 产生secureCode，放入缓存，设置有效时间；返回secureCode——重置密码
      *
      * @param passportId

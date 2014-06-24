@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.form;
 
 import com.google.common.base.Strings;
 import org.hibernate.validator.constraints.NotBlank;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -12,6 +13,7 @@ import javax.validation.constraints.Min;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-23 Time: 下午1:35 To change this template use
  * File | Settings | File Templates.
  */
+@Ignore
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class AccountSecureParamsTest extends AbstractJUnit4SpringContextTests {
     private static final String PASSPORT_ID = "13552848876@sohu.com";

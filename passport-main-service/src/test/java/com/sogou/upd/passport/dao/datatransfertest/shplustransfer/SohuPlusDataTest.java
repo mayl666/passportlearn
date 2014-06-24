@@ -9,6 +9,7 @@ import com.sogou.upd.passport.dao.datatransfertest.shplustransfer.DO.SohuPasspor
 import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.account.SnamePassportMapping;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,6 +25,7 @@ import java.util.*;
  * Time: 下午12:37
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class SohuPlusDataTest extends BaseDAOTest {
     @Autowired
     private AccountBaseInfoDAO accountBaseInfoDAO;

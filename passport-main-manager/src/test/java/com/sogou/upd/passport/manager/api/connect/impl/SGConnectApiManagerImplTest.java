@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 上午11:57
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class SGConnectApiManagerImplTest extends BaseTest {
 
     @Autowired

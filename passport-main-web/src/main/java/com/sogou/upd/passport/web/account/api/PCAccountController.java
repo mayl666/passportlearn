@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URLEncoder;
 import java.util.Calendar;
 
 /**
@@ -119,6 +118,7 @@ public class PCAccountController extends BaseController {
         return "/pcaccount/pclogin";
     }
 
+    //输入法的客户端登录使用
     @RequestMapping(value = "/act/gettoken")
     @ResponseBody
     public Object getToken(HttpServletRequest request, PcGetTokenParams pcGetTokenParams) throws Exception {
@@ -156,6 +156,7 @@ public class PCAccountController extends BaseController {
         return resStr;
     }
 
+    //除输入法外的浏览器，游戏大厅等其它客户端的登录使用
     @RequestMapping(value = "/act/getpairtoken")
     @ResponseBody
     public Object getPairToken(HttpServletRequest request, PcPairTokenParams reqParams, @RequestParam(value = "cb", defaultValue = "") String cb) throws Exception {
@@ -318,19 +319,19 @@ public class PCAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            returnErrMsg(response, ppCookieParams.getRu(), result.getCode(), result.getMessage());
+            returnErrMsg(response, ppCookieParams.getRu(),result.getCode(), result.getMessage());
             return;
         }
         //response 回去的时候设置一个p3p的header
         //用来定义IE的跨域问题。
         response.setHeader("P3P","CP=CAO PSA OUR");
 
-        result = cookieManager.setPPCookie(response, ppCookieParams);
+        result = cookieManager.setPPCookie(response,ppCookieParams);
 
         String ru = ppCookieParams.getRu();
-        if (!result.isSuccess()) {
-            log(request, "pp_setcookie", ru, result.getCode());
-            returnErrMsg(response, ru, result.getCode(), result.getMessage());
+        if(!result.isSuccess()){
+            log(request,"pp_setcookie",ru,result.getCode());
+            returnErrMsg(response,ru,result.getCode(),result.getMessage());
             return;
         }
         if (!StringUtils.isBlank(ru)) {

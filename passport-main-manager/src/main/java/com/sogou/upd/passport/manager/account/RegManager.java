@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager.account;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
-import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 
 import java.util.Map;
@@ -24,6 +23,20 @@ public interface RegManager {
     public Result webRegister(WebRegisterParams regParams, String ip) throws Exception;
 
     /**
+     * 快速注册手机用户接口
+     * 1.判断createip是否中安全限制；
+     * 2.判断手机号是否被绑定或已被注册；
+     * 3.生成手机账号，并发送验证码；
+     * 4.如果是wap端注册，额外返回sgid
+     * @param mobile 要注册的手机号
+     * @param clientId 应用ID
+     * @param createip 用户真实ip
+     * @param type wap端注册时才用到此字段，值为wap
+     * @return Result格式的返回值，提示注册成功信息
+     */
+    public Result fastRegisterPhone(String mobile, int clientId, String createip, String type);
+
+    /**
      * 激活验证邮件
      *
      * @return Result格式的返回值, 成功或失败，返回提示信息
@@ -42,7 +55,7 @@ public interface RegManager {
      *
      * @return 验证码
      */
-    public Result isAccountNotExists(String username, boolean type, int clientId) throws Exception;
+    public Result isAccountNotExists(String username, int clientId) throws Exception;
 
     /**
      * 检查一天内某ip注册次数

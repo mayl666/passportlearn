@@ -20,6 +20,8 @@ public class AppConfig {
     private String clientSecret;
     private Date createTime;
     private String clientName;
+    private String scope;   //允许访问的API列表，多个以逗号分隔
+    private String serverIp;  //允许访问的ip列表，多个以逗号分隔
 
     public long getId() {
         return id;
@@ -91,5 +93,21 @@ public class AppConfig {
 
     public void setClientName(String clientName) {
         this.clientName = clientName;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
+    public String getServerIp() {
+        return serverIp;
+    }
+
+    public void setServerIp(String serverIp) {
+        this.serverIp = serverIp;
     }
 }

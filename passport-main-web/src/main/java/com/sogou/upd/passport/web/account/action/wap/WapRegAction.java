@@ -10,25 +10,16 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileParams;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
-import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.manager.form.ActiveEmailParams;
-import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.account.action.RegAction;
-import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
-import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,13 +47,7 @@ public class WapRegAction extends BaseController {
     @Autowired
     private RegManager regManager;
     @Autowired
-    private ConfigureManager configureManager;
-    @Autowired
     private SecureManager secureManager;
-    @Autowired
-    private RegisterApiManager sgRegisterApiManager;
-    @Autowired
-    private CookieManager cookieManager;
     @Autowired
     private SessionServerManager sessionServerManager;
 
@@ -164,38 +149,6 @@ public class WapRegAction extends BaseController {
         }
         return result.toString();
     }
-
-
-    //检查用户是否存在
-    protected Result checkAccountNotExists(String username, int clientId) throws Exception {
-        Result result = new APIResultSupport(false);
-        //校验是否是搜狐域内用户
-
-        if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
-            result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
-            return result;
-        }
-        //校验是否是搜狗用户
-        if (AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(username))) {
-            result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOGOU_REGISTER);
-            return result;
-        }
-
-        //判断是否是个性账号
-        if (username.indexOf("@") == -1) {
-            //判断是否是手机号注册
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                result = regManager.isAccountNotExists(username, true, clientId);
-            } else {
-                username = username + "@sogou.com";
-                result = regManager.isAccountNotExists(username, false, clientId);
-            }
-        } else {
-            result = regManager.isAccountNotExists(username, false, clientId);
-        }
-        return result;
-    }
-
 
     /**
      * 找回密码

@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.form;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import org.junit.Ignore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -15,6 +16,7 @@ import java.util.Set;
  *
  * 此类是为验证ControllerHelper检验params类的有效性，供包内测试单元调用，原类在web模块
  */
+@Ignore
 public class ControllerHelperForTest {
     private static Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 

@@ -1,12 +1,11 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
+import com.sogou.upd.passport.manager.api.account.form.*;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Date: 13-6-9
  * Time: 下午2:08
  */
+@Ignore
 public class ProxyRegisterApiManagerImplTest extends BaseTest {
 
     private static final String MOBILE = "13520069535";
@@ -27,7 +27,7 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
     @Test
     public void testRegMailUser() {
         RegEmailApiParams params = new RegEmailApiParams();
-        params.setUserid("23ds-afasdf@qq.com");
+        params.setUserid("23dsafasdf@qq.com");
         params.setPassword(PASSWORD);
         params.setCreateip("10.1.164.65");
         Result result = proxyRegisterApiManager.regMailUser(params);
@@ -43,9 +43,19 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
     }
 
     @Test
+    public void testRegMobileCaptchaUser() throws Exception {
+        RegMobileCaptchaApiParams regMobileCaptchaApiParams = new RegMobileCaptchaApiParams();
+        regMobileCaptchaApiParams.setMobile("13521134303");
+        regMobileCaptchaApiParams.setPassword(Coder.encryptMD5("111111"));
+        regMobileCaptchaApiParams.setCaptcha("7808");
+        Result result = proxyRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+        System.out.println(result);
+    }
+
+    @Test
     public void testCheckUser() {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid("scanre-cord@sogou.com");
+        checkUserApiParams.setUserid("scanrecord@sogou.com");
         Result result = proxyRegisterApiManager.checkUser(checkUserApiParams);
         System.out.println("result1:" + result.toString());
         checkUserApiParams = new CheckUserApiParams();

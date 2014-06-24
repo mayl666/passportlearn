@@ -1,10 +1,12 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
@@ -30,6 +32,8 @@ import java.util.Map;
 @Component("sgSecureApiManager")
 public class SGSecureApiManagerImpl implements SecureApiManager {
     private static Logger logger = LoggerFactory.getLogger(SGSecureApiManagerImpl.class);
+    private static final String PREFIX_UPDATE_PWD_SEND_MESSAGE = "您手机绑定的搜狗账号：";
+    private static final String SUFFIX_UPDATE_PWD_SEND_MESSAGE = "密码被修改，请注意账号安全!";
 
     @Autowired
     private AccountService accountService;
@@ -58,6 +62,25 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         }
         result.setSuccess(true);
         return result;
+    }
+
+    @Override
+    public void resetPwd(UpdatePwdApiParams updatePwdApiParams) {
+        Result result = new APIResultSupport(false);
+
+        String mobile = updatePwdApiParams.getUserid();
+        String userId = mobile + "@sohu.com";
+        String newPassword = updatePwdApiParams.getNewpassword();
+        int clientId = updatePwdApiParams.getClient_id();
+
+        Account account = accountService.queryAccountByPassportId(userId);
+        if (account != null && accountService.resetPassword(account, newPassword, true)) {
+            //发送短信
+            String smsText = PREFIX_UPDATE_PWD_SEND_MESSAGE + userId + SUFFIX_UPDATE_PWD_SEND_MESSAGE;
+            if (!Strings.isNullOrEmpty(mobile)) {
+                SMSUtil.sendSMS(mobile, smsText);
+            }
+        }
     }
 
     @Override

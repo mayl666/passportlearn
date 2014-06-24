@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.sogou.upd.passport.common.validation.constraints.Phone;
 import com.sogou.upd.passport.common.validation.constraints.UserName;
 import org.hibernate.validator.constraints.NotBlank;
 

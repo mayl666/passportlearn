@@ -2,10 +2,17 @@ package com.sogou.upd.passport.manager.account;
 
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.result.APIResultForm;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
+import com.sogou.upd.passport.manager.form.PCOAuth2LoginParams;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
+import com.sogou.upd.passport.model.account.AccountToken;
+import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,39 +25,104 @@ import java.util.Map;
  * Time: 上午12:21
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class OAuth2ResourceManagerTest extends BaseTest {
-
-    public static final int CLIENT_ID = 1044;
-    public static final String CLIENT_SECRET = "c1756a351db27d817225e2a4fd7b3f7d";
-    public static final String ACCESS_TOKEN_SHPLUS = "cd61a482ec2f328e63ec8408343f74cd83ed02548a635e20749a6fd27a67cbe4";
-    public static final String INSTANCEID = "323906108";
-
-    public static final String ACCESS_TOKEN_SG = "h34XqEVyxMaRphjblxAbLtocLbQOUOnbO5kJ0VMlzN5nT96JgoGLw4t6dfPTSLBr";
-
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
+    @Autowired
+    private PCOAuth2LoginManager pcOAuth2LoginManager;
+    @Autowired
+    private PCAccountManager pcAccountManager;
+
+
+    public static final int CLIENT_ID = 30000004;
+    public static final int _CLIENT_ID = 1044;
+
+    public static final String CLIENT_SECRET = "59be99d1f5e957ba5a20e8d9b4d76df6";
+    public static final String INSTANCEID = "935972396";
+
+//    public static String ACCESS_TOKEN_SG = "SGCbbIq37qU6wHZKuVGjjbra2uCjIYpYeq7EUPknicL1aFpMtbcvHibBmib5JkljkCKHo";
+//    public static String REFRESH_TOKEN_SG = "";
+
+
+    public static final String resource_type_cookie = "cookie.get";
+    public static final String resource_type_full = "full.get";
+
+    private static final String username_waiyu = "tinkame@126.com";
+    private static final String pwd_waiyu = "123456";
+
+    private static final String username_phone = "13581695053@sohu.com";
+    private static final String pwd_phone = "111111";
+
+    private static final String username_sogou = "tinkame731@sogou.com";
+    private static final String pwd_sogou = "123456";
+
 
     @Test
     public void testResource() {
+        Result result_token = pcAccountManager.createAccountToken(username_sogou,INSTANCEID,_CLIENT_ID);
+        Assert.assertTrue(result_token.isSuccess());
+        AccountToken accountToken = (AccountToken)result_token.getDefaultModel();
+        String accessToken = accountToken.getAccessToken();
+
         PCOAuth2ResourceParams params = new PCOAuth2ResourceParams();
         params.setClient_id(CLIENT_ID);
         params.setClient_secret(CLIENT_SECRET);
-        params.setAccess_token(ACCESS_TOKEN_SG);
+        params.setAccess_token(accessToken);
         params.setInstance_id(INSTANCEID);
         params.setResource_type("cookie.get");
         Result result = oAuth2ResourceManager.resource(params);
-        System.out.println("resource result:" + result);
+        Assert.assertTrue(result.isSuccess());
+
+        params.setResource_type("full.get");
+        Result result_full = oAuth2ResourceManager.resource(params);
+        Assert.assertTrue(result_full.isSuccess());
     }
 
     @Test
+    public void testAccountLogin() throws Exception{
+        PCOAuth2LoginParams loginParams_phone = getParam(username_phone,pwd_phone);
+        Result result_phone =  pcOAuth2LoginManager.accountLogin(loginParams_phone,"127.0.0.1","http");
+        APIResultForm phone_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_phone.toString(),APIResultForm.class);
+        String expire_phone_data = "{\"data\":{\"userid\":\""+username_phone+"\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expire_phone_resultForm =  JacksonJsonMapperUtil.getMapper().readValue(expire_phone_data, APIResultForm.class);
+        Assert.assertTrue(expire_phone_resultForm.equals(phone_APIResultForm));
+
+        PCOAuth2LoginParams loginParams_waiyu = getParam(username_waiyu,pwd_waiyu);
+        Result result_waiyu =  pcOAuth2LoginManager.accountLogin(loginParams_waiyu,"127.0.0.1","http");
+        APIResultForm waiyu_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_waiyu.toString(),APIResultForm.class);
+        String expire_waiyu_data = "{\"data\":{\"userid\":\""+username_waiyu+"\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expire_waiyu_resultForm =  JacksonJsonMapperUtil.getMapper().readValue(expire_waiyu_data, APIResultForm.class);
+        Assert.assertTrue(expire_waiyu_resultForm.equals(waiyu_APIResultForm));
+
+        PCOAuth2LoginParams loginParams_sogou = getParam(username_sogou,pwd_sogou);
+        Result result_sogou =  pcOAuth2LoginManager.accountLogin(loginParams_sogou,"127.0.0.1","http");
+        APIResultForm sogou_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_sogou.toString(),APIResultForm.class);
+        String expire_sogou_data = "{\"data\":{\"userid\":\""+username_sogou+"\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expire_sogou_resultForm =  JacksonJsonMapperUtil.getMapper().readValue(expire_sogou_data, APIResultForm.class);
+        Assert.assertTrue(expire_sogou_resultForm.equals(sogou_APIResultForm));
+    }
+
+
+    @Test
     public void testGetCookieValue() {
-        Result result = oAuth2ResourceManager.getCookieValue(ACCESS_TOKEN_SG,CLIENT_ID, CLIENT_SECRET, INSTANCEID,"");
+        Result result_token = pcAccountManager.createAccountToken(username_sogou,INSTANCEID,_CLIENT_ID);
+        Assert.assertTrue(result_token.isSuccess());
+        AccountToken accountToken = (AccountToken)result_token.getDefaultModel();
+        String accessToken = accountToken.getAccessToken();
+
+        Result result = oAuth2ResourceManager.getCookieValue(accessToken,CLIENT_ID, CLIENT_SECRET, INSTANCEID,"");
         System.out.println("get cookie value result" + result.toString());
     }
 
     @Test
     public void testGetFullUserInfo() {
-        Result result = oAuth2ResourceManager.getFullUserInfo( ACCESS_TOKEN_SG, CLIENT_ID,CLIENT_SECRET, INSTANCEID,"");
+        Result result_token = pcAccountManager.createAccountToken(username_sogou,INSTANCEID,_CLIENT_ID);
+        Assert.assertTrue(result_token.isSuccess());
+        AccountToken accountToken = (AccountToken)result_token.getDefaultModel();
+        String accessToken = accountToken.getAccessToken();
+
+        Result result = oAuth2ResourceManager.getFullUserInfo( accessToken, CLIENT_ID,CLIENT_SECRET, INSTANCEID,"");
         System.out.println("get userinfo result" + result.toString());
     }
 
@@ -71,5 +143,13 @@ public class OAuth2ResourceManagerTest extends BaseTest {
         resourceMap.put("resource", resource);
         result.setModels(resourceMap);
         System.out.println("success result:" + result.toString());
+    }
+
+    private PCOAuth2LoginParams getParam(String username,String password) throws Exception{
+        PCOAuth2LoginParams webLoginParams = new PCOAuth2LoginParams();
+        webLoginParams.setUsername(username);
+        webLoginParams.setPassword(Coder.encryptMD5(password));
+        webLoginParams.setInstanceid(INSTANCEID);
+        return  webLoginParams;
     }
 }

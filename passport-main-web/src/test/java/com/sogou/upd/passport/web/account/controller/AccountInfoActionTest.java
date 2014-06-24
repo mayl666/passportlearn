@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.controller;
 
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.web.BaseActionTest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.Map;
  * Date: 13-6-25 Time: 下午5:33
  */
 //@ContextConfiguration(locations = "classpath:spring-config-test.xml")
+@Ignore
 public class AccountInfoActionTest extends BaseActionTest {
 
     @Test

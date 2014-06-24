@@ -9,7 +9,6 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
@@ -53,7 +52,6 @@ public class LoginAction extends BaseController {
     private RegManager regManager;
     @Autowired
     private CookieManager cookieManager;
-
     @Autowired
     private HostHolder hostHolder;
 
@@ -68,39 +66,35 @@ public class LoginAction extends BaseController {
     public String checkNeedCaptcha(HttpServletRequest request, CheckUserNameExistParameters checkParam)
             throws Exception {
         Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(checkParam);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-
-        String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
-        int clientId = Integer.valueOf(checkParam.getClient_id());
-        //判断账号是否存在
-        if (username.indexOf("@") == -1) {
-            //判断是否是手机号注册
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                result = regManager.isAccountNotExists(username, true, clientId);
-            } else {
-                String tmpUsername = username + "@sogou.com";
-                result = regManager.isAccountNotExists(tmpUsername, false, clientId);
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(checkParam);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
             }
-        } else {
-            result = regManager.isAccountNotExists(username, false, clientId);
+            String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
+            int clientId = Integer.valueOf(checkParam.getClient_id());
+            //判断账号是否存在
+            result = regManager.isAccountNotExists(username, clientId);
+            if (!result.isSuccess()) {
+                //校验是否需要验证码
+                boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
+                result.setSuccess(true);
+                result.setDefaultModel("needCaptcha", needCaptcha);
+            } else {
+                result = new APIResultSupport(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            }
+        } catch (Exception e) {
+            logger.error("checkNeedCaptcha:check user need captcha or not is failed,username is " + checkParam.getUsername(), e);
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(checkParam.getUsername(), request.getRequestURI(), checkParam.getClient_id(), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
-        if (!result.isSuccess()) {
-            //校验是否需要验证码
-            boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
-
-            result.setSuccess(true);
-            result.setDefaultModel("needCaptcha", needCaptcha);
-        } else {
-            result = new APIResultSupport(false);
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-        }
-
         return result.toString();
     }
 
@@ -142,7 +136,7 @@ public class LoginAction extends BaseController {
             if (Strings.isNullOrEmpty(sogouRu)) {
                 sogouRu = CommonConstant.DEFAULT_INDEX_URL;
             }
-            result = cookieManager.setCookie(response, userId, clientId, ip,sogouRu,sogouMaxAge);
+            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
             if (result.isSuccess()) {
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
                 result.setDefaultModel("userid", userId);
@@ -150,7 +144,7 @@ public class LoginAction extends BaseController {
             }
 
         } else {
-            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip,result.getCode());
+            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
             //校验是否需要验证码
             boolean needCaptcha = loginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
             if (needCaptcha) {
