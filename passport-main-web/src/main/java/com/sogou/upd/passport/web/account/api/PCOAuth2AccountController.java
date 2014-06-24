@@ -63,8 +63,6 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private ConfigureManager configureManager;
     @Autowired
-    private PCOAuth2RegManager pcoAuth2RegManager;
-    @Autowired
     private LoginManager loginManager;
     @Autowired
     private PCAccountManager pcAccountManager;
