@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/internal/rsa")
 public class RSAApiController extends BaseController {
 
+    public static final int TIME_LIMIT = 60 * 60 * 24 * 1000;
     private static Logger logger = LoggerFactory.getLogger(RSAApiController.class);
 
     @Autowired
@@ -101,7 +102,10 @@ public class RSAApiController extends BaseController {
                 try {
                     //判断时间有效性
                     long timeStamp=Long.parseLong(textArray[3]);
-
+                    if(Math.abs(timeStamp - System.currentTimeMillis())> TIME_LIMIT){
+                            logger.error("time expired, text:"+clearText+ " current:"+ System.currentTimeMillis());
+                            throw new ControllerException(ErrorUtil.ERR_CODE_RSA_DECRYPT);
+                    }
 
                     //判断用户名是否和token取得的一致
                     Result getUserIdResult = oAuth2ResourceManager.getPassportIdByToken(textArray[2], Integer.parseInt(textArray[1]));
@@ -112,6 +116,7 @@ public class RSAApiController extends BaseController {
                             return textArray[0];
                         }
                     }else{
+                        logger.error("can't get token, text:"+clearText);
                         throw new ControllerException(getUserIdResult.getCode());
                     }
 
@@ -121,9 +126,11 @@ public class RSAApiController extends BaseController {
                 }
             } else {
                 //长度不对。
+                logger.error("text to array  length error, expect 4, text:"+clearText);
                 throw new ControllerException(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             }
         } else {
+            logger.error("clearText is empty cipherText:" + cipherText);
             throw new ControllerException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return null;
