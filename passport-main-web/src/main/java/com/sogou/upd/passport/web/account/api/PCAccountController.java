@@ -128,6 +128,7 @@ public class PCAccountController extends BaseController {
             return "1";
         }
         String userId = pcGetTokenParams.getUserid();
+        //不允许第三方格式的账号登录
         if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(userId))) {
             return "1";
         }
@@ -171,6 +172,7 @@ public class PCAccountController extends BaseController {
             return getReturnStr(cb, "1");
         }
         String userId = reqParams.getUserid();
+        //不允许第三方格式的账号登录
         if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(userId))) {
             return "1";
         }
