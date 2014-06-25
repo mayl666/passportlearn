@@ -10,10 +10,7 @@ import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.ProvinceAndCityUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.dao.account.*;
-import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.UserExtInfoTmp;
-import com.sogou.upd.passport.model.account.UserInfoTmp;
-import com.sogou.upd.passport.model.account.UserOtherInfoTmp;
+import com.sogou.upd.passport.model.account.*;
 import com.sogou.upd.passport.service.dataimport.util.FileUtil;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +42,8 @@ public class RepairTmpData extends BaseTest {
     private AccountInfoDAO accountInfoDAO;
     @Autowired
     private AccountDAO accountDAO;
+    @Autowired
+    private MobilePassportMappingDAO mobilePassportMappingDAO;
 
     private static List<String> errorProviceAndCityList = Lists.newArrayList();
 
@@ -481,6 +480,59 @@ public class RepairTmpData extends BaseTest {
         System.out.println("total:" + total);
         try {
             FileUtil.storeFile("D:\\repairDataList\\account_regtimeerror_0609_error.txt", failedList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 根据网安提供的手机号列表查个人资料
+     */
+    @Test
+    public void testGetFullUserInfo() {
+        List<String> mobileList = FileIOUtil.readFileByLines("D:\\phoneList");
+        int total = 0;
+        int repairNum = 0;
+        for (String mobile : mobileList) {
+            StringBuilder outputText = new StringBuilder();
+            outputText.append(mobile+"-");
+            try {
+                String passportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
+                if (!Strings.isNullOrEmpty(passportId)) {
+                    outputText.append(mobile + "用户账号:" + passportId+",");
+                    Account account = accountDAO.getAccountByPassportId(passportId);
+                    if (account != null) {
+                        outputText.append("昵称:"+account.getUniqname()+",");
+                        outputText.append("状态:"+"正式账号"+",");
+                        outputText.append("注册IP:"+account.getRegIp()+",");
+                        outputText.append("注册时间:"+account.getRegTime()+",");
+                        outputText.append("绑定手机号:"+account.getMobile()+",");
+                    }
+                    AccountInfo accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
+                    if(accountInfo != null){
+                        outputText.append("姓名:"+accountInfo.getFullname()+",");
+                        outputText.append("性别:"+accountInfo.getGender()+",");
+                        outputText.append("生日:"+accountInfo.getBirthday()+",");
+                        outputText.append("证件号码:"+accountInfo.getPersonalid()+",");
+                        outputText.append("电子邮箱地址:"+accountInfo.getEmail()+",");
+                        outputText.append("省份:"+ProvinceAndCityUtil.getProvinceByPCode(accountInfo.getProvince())+",");
+                        outputText.append("城市:"+ProvinceAndCityUtil.getCityByCityCode(accountInfo.getCity())+",");
+                        outputText.append("最后修改资料时间:"+accountInfo.getUpdateTime()+"\n");
+                    }
+                } else {
+                    outputText.append("手机号不存在\n");
+                }
+
+            } catch (Exception e) {
+                outputText.append("数据库查询失败\n");
+            }
+            total++;
+            failedList.add(outputText.toString());
+        }
+        System.out.println("repairNum:" + repairNum);
+        System.out.println("total:" + total);
+        try {
+            FileUtil.storeFile("D:\\phoneListResult", failedList);
         } catch (Exception e) {
             e.printStackTrace();
         }
