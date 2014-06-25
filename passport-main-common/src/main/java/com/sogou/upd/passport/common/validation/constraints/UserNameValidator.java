@@ -36,6 +36,16 @@ public class UserNameValidator implements ConstraintValidator<UserName, String> 
                 }
             }
         } else {
+            //搜狗账号需要检查是否包含敏感字符
+            if (value.endsWith("@sogou.com")) {
+                String prefix = value.substring(0, value.lastIndexOf(
+                        "@sogou.com"));
+                String sens = "^(?!.*搜狗)(?!.*sogou)(?!.*sougou)(?!.*help)(?!.*info)(?!.*admin)(?!.*owner)(?!.*support)(?!.*www)(?!.*master).*$";
+                boolean sensFlag = prefix.matches(sens);
+                if (!sensFlag) {
+                    return false;
+                }
+            }
             //邮箱格式,与sohu的邮箱格式相匹配了
             String reg = "^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)+$";
             boolean flag = value.matches(reg);

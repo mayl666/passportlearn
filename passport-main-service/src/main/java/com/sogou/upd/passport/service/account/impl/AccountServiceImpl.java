@@ -127,20 +127,21 @@ public class AccountServiceImpl implements AccountService {
                 mobile = username;
             }
             account.setMobile(mobile);
-            long id = 0;
+            long id;
             if (AccountTypeEnum.isConnect(provider)) { //第三方使用插入或更新，之前第三方迁移出过一次bug，修复的
                 id = accountDAO.insertOrUpdateAccount(passportId, account);
             } else {
-                id = accountDAO.insertAccount(passportId, account);
-            }
-            if (id != 0) {
-                //手机注册时，写mobile与passportId映射表
+                //手机注册时，先写mobile与passportId映射表
                 if (PhoneUtil.verifyPhoneNumberFormat(passportId.substring(0, passportId.indexOf("@")))) {
                     int row = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
                     if (row == 0) {
                         return null;
                     }
                 }
+                //正式注册到account表中
+                id = accountDAO.insertAccount(passportId, account);
+            }
+            if (id != 0) {
                 String cacheKey = buildAccountKey(passportId);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return account;

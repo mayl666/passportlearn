@@ -31,6 +31,10 @@ public class UseNameValidatorTest {
         result = unv.isValid(username, null);
         Assert.assertEquals(true, result);
 
+        username = "admisogoulpwwe@sogou.com";
+        result = unv.isValid(username, null);
+        Assert.assertFalse(result);
+
     }
 
 }

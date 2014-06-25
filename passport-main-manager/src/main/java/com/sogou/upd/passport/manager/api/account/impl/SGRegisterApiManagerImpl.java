@@ -14,7 +14,6 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
-import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.model.account.Account;
@@ -22,7 +21,6 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
-import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +36,6 @@ import org.springframework.stereotype.Component;
 public class SGRegisterApiManagerImpl extends BaseProxyManager implements RegisterApiManager {
     private static Logger logger = LoggerFactory.getLogger(SGRegisterApiManagerImpl.class);
     @Autowired
-    private BindApiManager sgBindApiManager;
-    @Autowired
     private AccountService accountService;
     @Autowired
     private SecureManager secureManager;
@@ -50,9 +46,9 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
     @Autowired
     private SnamePassportMappingService snamePassportMappingService;
     @Autowired
-    private UserNameValidator userNameValidator;
-    @Autowired
     private RegManager regManager;
+    @Autowired
+    private UserNameValidator userNameValidator;
 
     @Override
     public Result regMailUser(RegEmailApiParams params) {
@@ -64,16 +60,23 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             int clientId = params.getClient_id();
             //判断注册账号类型，外域用户还是个性用户
             AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
-            String passportId = PassportIDGenerator.generator(username, 0);
-            Account accountResult = accountService.queryNormalAccount(passportId);
-            if (accountResult != null) {
+            boolean flag = userNameValidator.isValid(username, null);
+            if (!flag) {
+                result = new APIResultSupport(false);
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                return result;
+            }
+            //正式注册时需要检测用户是否已经注册过
+            CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
+            result = checkUser(checkUserApiParams);
+            if (!result.isSuccess()) {
+                result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                 return result;
             }
             switch (emailType) {
                 case SOGOU://个性账号直接注册
                 case INDIVID:
-
                     Account account = accountService.initialAccount(username, password, true, ip, AccountTypeEnum
                             .EMAIL.getValue());
                     if (account != null) {
@@ -91,6 +94,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                     if (isSendSuccess) {
                         result.setSuccess(true);
                         result.setMessage("感谢注册，请立即激活账户！");
+                        result.setDefaultModel("userid", username);
                         result.setDefaultModel("isSetCookie", false);
                     } else {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
@@ -103,6 +107,13 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
+    }
+
+    private CheckUserApiParams buildProxyApiParams(String username, int clientId) {
+        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
+        checkUserApiParams.setUserid(username);
+        checkUserApiParams.setClient_id(clientId);
+        return checkUserApiParams;
     }
 
 
