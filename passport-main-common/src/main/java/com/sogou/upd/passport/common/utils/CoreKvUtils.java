@@ -82,7 +82,7 @@ public class CoreKvUtils {
                 return object;
             }
         } catch (Exception e) {
-            logger.error("[CoreKvCache] getObject fail, key:" + key, e);
+            logger.error("[CoreKvCache] GetObject fail, key:" + key, e);
         }
         return null;
     }
@@ -93,7 +93,7 @@ public class CoreKvUtils {
             String storeKey = key;
             coreKvTemplate.delete(storeKey);
         } catch (Exception e) {
-
+            logger.error("[CoreKvCache] Delete fail, key:" + key, e);
         }
     }
 
@@ -116,8 +116,27 @@ public class CoreKvUtils {
             }
 
         } catch (Exception e) {
-            logger.error("[CoreKvCache] lPush String To Set, key:" + key, e);
+            logger.error("[CoreKvCache] Push String To Set, key:" + key, e);
         }
+    }
+
+    /**
+     * String：Set的映射中，获取set集合
+     *
+     * @param key
+     */
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_pullStringToSet", timeThreshold = 100, normalAndSlowSuffixesEnabled = true)
+    public Set pullToSet(String key) {
+        Set set = Sets.newHashSet();
+        try {
+            set = getObject(key, Set.class);
+            if (CollectionUtils.isEmpty(set)) {
+                set = Sets.newHashSet();
+            }
+        } catch (Exception e) {
+            logger.error("[CoreKvCache] Pull To Set, key:" + key, e);
+        }
+        return set;
     }
 
     /**
@@ -150,7 +169,7 @@ public class CoreKvUtils {
             }
             set(key, jsonMapper.writeValueAsString(list));
         } catch (Exception e) {
-            logger.error("[CoreKvCache] lPush with maxLen fail, key:" + key, e);
+            logger.error("[CoreKvCache] Push with maxLen fail, key:" + key, e);
         }
     }
 
@@ -159,7 +178,7 @@ public class CoreKvUtils {
         try {
             pushWithMaxLen(key, jsonMapper.writeValueAsString(obj), maxLen);
         } catch (Exception e) {
-            logger.error("[CoreKvCache] lpush object with maxlen key: " + key, e);
+            logger.error("[CoreKvCache] Push object with maxlen key: " + key, e);
         }
     }
 
@@ -182,7 +201,7 @@ public class CoreKvUtils {
                 return object;
             }
         } catch (Exception e) {
-            logger.error("[CoreKvCache] get top value for object key: " + key, e);
+            logger.error("[CoreKvCache] Get top value for object key: " + key, e);
             return null;
         }
     }

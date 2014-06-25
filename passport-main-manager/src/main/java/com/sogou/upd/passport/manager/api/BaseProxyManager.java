@@ -101,7 +101,7 @@ public class BaseProxyManager {
     private void setDefaultParam(final RequestModel requestModel, String signVariableStr) {
         //计算默认的codeserverSecret
         if (Strings.isNullOrEmpty(signVariableStr)) {
-            signVariableStr = requestModel.getParam("userid").toString();
+            signVariableStr = (String) requestModel.getParam("userid");
         }
         if (StringUtil.isBlank(signVariableStr)) {
             throw new IllegalArgumentException("计算code时第一段的字符串不能为空");

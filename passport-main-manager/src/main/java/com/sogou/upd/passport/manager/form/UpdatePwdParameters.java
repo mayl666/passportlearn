@@ -15,7 +15,6 @@ public class UpdatePwdParameters {
     private String client_id = String.valueOf(SHPPUrlConstant.APP_ID);
     private String password;
     private String newpwd;
-    // @NotBlank(message = "passport_id不允许为空!")
     private String passport_id;
     private String captcha;//验证码
     private String token;//标识码

@@ -45,7 +45,6 @@ import javax.servlet.http.HttpServletRequest;
 public class SecureAction extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(SecureAction.class);
-
     private static final String SOHU_RESETPWD_URL = SHPPUrlConstant.SOHU_RESETPWD_URL;
     private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
     private static final String SOHU_BINDMOBILE_URL = SHPPUrlConstant.SOHU_BINDMOBILE_URL;
@@ -63,7 +62,6 @@ public class SecureAction extends BaseController {
     private AccountInfoManager accountInfoManager;
     @Autowired
     private RegManager regManager;
-
 
     /*
      * 查询安全信息
