@@ -137,7 +137,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 }
 
                 if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
-                    Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
+                    Result tokenResult = pcAccountManager.createAccountToken(userId, instanceId, clientId);
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
                         String value = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" +
@@ -201,7 +201,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                 } else if (type.equals(ConnectTypeEnum.PC.toString())) {
-                    Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
+                    Result tokenResult = pcAccountManager.createAccountToken(userId, instanceId, clientId);
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
                         uniqname = (String) connectAccountResult.getModels().get("uniqName");
@@ -338,7 +338,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         params.put("avatarLarge", avatarLarge);
         params.put("avatarMiddle", avatarMiddle);
         params.put("avatarSmall", avatarSmall);
-        params.put("userid",userId);
+        params.put("userid", userId);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }

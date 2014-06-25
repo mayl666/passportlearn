@@ -378,6 +378,7 @@ public class SecureManagerImpl implements SecureManager {
             }
             if (ManagerHelper.isInvokeProxyApi(username)) {
                 result = proxySecureApiManager.updatePwd(updatePwdApiParams);
+                // TODO 清除PC端token，后续移至accountService.resetPassword
             } else {
                 result = sgSecureApiManager.updatePwd(updatePwdApiParams);
             }

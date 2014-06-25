@@ -39,10 +39,6 @@ public class RegisterApiController extends BaseController {
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
     @Autowired
-    private BindApiManager proxyBindApiManager;
-    @Autowired
-    private BindApiManager sgBindApiManager;
-    @Autowired
     private RegManager regManager;
     @Autowired
     private CommonManager commonManager;
@@ -126,6 +122,7 @@ public class RegisterApiController extends BaseController {
         Result result = new APIResultSupport(false);
         String ip = null;
         int client_id = params.getClient_id();
+        String userid = params.getUserid();
         try {
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
@@ -144,12 +141,13 @@ public class RegisterApiController extends BaseController {
             // 调用内部接口
             result = proxyRegisterApiManager.regMailUser(params);
         } catch (Exception e) {
-            logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + params.getUserid(), e);
+            logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + userid, e);
         } finally {
             //记录log
             commonManager.incRegTimesForInternal(ip, client_id);
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), ip);
+            UserOperationLog userOperationLog = new UserOperationLog(userid, String.valueOf(params.getClient_id()), result.getCode(), ip);
             userOperationLog.putOtherMessage("serverip", getIp(request));
+            userOperationLog.putOtherMessage("userid", userid);
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
