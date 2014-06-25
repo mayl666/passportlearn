@@ -228,7 +228,7 @@ public class RegisterApiManagerTest extends BaseTest {
     }
 
     /**
-     * 两边都不存在此搜狗账号的情况下---正式注册搜狗账号和外域邮箱账号
+     * 两边都不存在此搜狗账号的情况下---正式注册搜狗账号和外域邮箱账号  done
      */
     @Test
     public void testRegMailUser_2() throws IOException {
@@ -245,7 +245,7 @@ public class RegisterApiManagerTest extends BaseTest {
 
     /**
      * 两边都存在此搜狗账号的情况下---正式注册搜狗账号和外域邮箱账号
-     * todo 当用户在两边都存在时，再注册时，搜狐会提示该用户已经注册，但搜狗则会执行更新操作,需要修改注册方法！！！
+     * 当用户在两边都存在时，再注册时，搜狐会提示该用户已经注册，但搜狗则会执行更新操作,需要修改注册方法！！！ 已经修改！  done
      */
     @Test
     public void testRegMailUser_3() throws IOException {
@@ -257,23 +257,23 @@ public class RegisterApiManagerTest extends BaseTest {
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
         Result actualResult = sgRegisterApiManager.regMailUser(regEmailApiParams);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
-        Assert.assertTrue(!expectForm.equals(actualForm)); //todo 状态码不一致
+        Assert.assertTrue(expectForm.equals(actualForm)); //
     }
 
 
     /**
-     * 账号格式有问题
+     * 账号格式有问题   done
      */
     @Test
     public void testRegMailUser_4() throws IOException {
         RegEmailApiParams regEmailApiParams = new RegEmailApiParams(wrong_format_username, password, ip,
                 clientId, LOGIN_INDEX_URL);
-//        Result expectResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
-        String expectResult = "{\"statusText\":\"非法userid\",\"data\":{},\"status\":\"20239\"}";
-        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult, APIResultForm.class);
+        Result expectResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+//        String expectResult = "{\"statusText\":\"参数错误,请输入必填的参数\",\"data\":{},\"status\":\"10002\"}";
+        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
         Result actualResult = sgRegisterApiManager.regMailUser(regEmailApiParams);
         APIResultForm acturalForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
-//        Assert.assertTrue(!expectForm.equals(acturalForm)); //todo sohu非法，sogou却通过
+        Assert.assertTrue(expectForm.equals(acturalForm));
     }
 
 
