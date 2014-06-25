@@ -101,7 +101,7 @@ public class RSAApiController extends BaseController {
             if (textArray.length == 4) { //数据组成： userid|clientId|token|timestamp
                 try {
                     //判断时间有效性
-                    long timeStamp=Long.parseLong(textArray[3]);
+                    long timeStamp=Long.parseLong(textArray[3])*1000;
                     if(Math.abs(timeStamp - System.currentTimeMillis())> TIME_LIMIT){
                             logger.error("time expired, text:"+clearText+ " current:"+ System.currentTimeMillis());
                             throw new ControllerException(ErrorUtil.ERR_CODE_RSA_DECRYPT);
