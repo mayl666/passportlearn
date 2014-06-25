@@ -100,8 +100,10 @@ public class PCAccountTokenServiceTest extends AbstractJUnit4SpringContextTests 
 
             String coreKvKey = CacheConstant.CORE_KV_PREFIX_PASSPROTID_TOKEN + "_" + PASSPORT_ID + "_" + CLIENT_ID + "_" + str;
             String kvToken = coreKvUtils.get(coreKvKey);
-//            Assert.assertTrue(Strings.isNullOrEmpty(redisToken) && Strings.isNullOrEmpty(kvToken));
+            //如果是异步批量删除则不能使用此断言
+            Assert.assertTrue(Strings.isNullOrEmpty(redisToken) && Strings.isNullOrEmpty(kvToken));
         }
+        coreKvUtils.delete(coreKvKeyStr);
     }
 
 }

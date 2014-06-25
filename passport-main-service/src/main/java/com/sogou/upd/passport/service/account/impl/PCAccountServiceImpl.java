@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.Iterator;
@@ -50,6 +51,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     private TokenRedisUtils tokenRedisUtils;
     @Autowired
     private CoreKvUtils coreKvUtils;
+    @Autowired
+    private ThreadPoolTaskExecutor batchOperateExecutor; //批量操作，并不可丢弃任务线程池
 
     @Override
     public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
@@ -213,35 +216,44 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     }
 
     @Override
-    public void batchRemoveAccountToken(String passportId, boolean isAsyn) {
+    public void batchRemoveAccountToken(final String passportId, boolean isAsyn) {
         String tokenMappingKey = buildMappingCoreKvKey(passportId);
-        Set<String> tokenMappingSet = coreKvUtils.pullStringFromLinkedHashSet(tokenMappingKey);
+        final Set<String> tokenMappingSet = coreKvUtils.pullStringFromLinkedHashSet(tokenMappingKey);
         if (isAsyn) {
-
+            batchOperateExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    batchRemoveAccountToken(tokenMappingSet, passportId);
+                }
+            });
         } else {
-            Stack<String> tokenStack = new Stack();
-            for (String s : tokenMappingSet) {
-                tokenStack.push(s);
-            }
-            int removeMaxNum = 0;
-            for (Iterator<String> iter = tokenStack.iterator(); iter.hasNext(); ) {
-                String secondTokenKey = tokenStack.pop();
-                String[] secondTokenKeyArray = secondTokenKey.split(KEY_KV_SPLIT);
-                if (removeMaxNum < REMOVE_PCTOKEN_MAX_NUM && secondTokenKeyArray.length >= 2) {
-                    String clientIdStr = secondTokenKeyArray[0];
-                    String instanceId = EMPTY_INSTANCEID_SIGN.equals(secondTokenKeyArray[1]) ? "" : secondTokenKeyArray[1];
-                    try {
-                        int clientId = Integer.parseInt(clientIdStr);
-                        removeAccountToken(passportId, clientId, instanceId);
-                        removeMaxNum ++;
-                    } catch (Exception e) {
-                        logger.error("client not interge, passportId:" + passportId + ", clientId:" + clientIdStr);
-                        return;
-                    }
-                } else {
-                    logger.error("Second Token Key less two, passportId:" + passportId);
+            batchRemoveAccountToken(tokenMappingSet, passportId);
+        }
+    }
+
+    private void batchRemoveAccountToken(Set<String> tokenMappingSet, String passportId){
+        Stack<String> tokenStack = new Stack();
+        for (String s : tokenMappingSet) {
+            tokenStack.push(s);
+        }
+        int removeMaxNum = 0;
+        for (Iterator<String> iter = tokenStack.iterator(); iter.hasNext(); ) {
+            String secondTokenKey = tokenStack.pop();
+            String[] secondTokenKeyArray = secondTokenKey.split(KEY_KV_SPLIT);
+            if (removeMaxNum < REMOVE_PCTOKEN_MAX_NUM && secondTokenKeyArray.length >= 2) {
+                String clientIdStr = secondTokenKeyArray[0];
+                String instanceId = EMPTY_INSTANCEID_SIGN.equals(secondTokenKeyArray[1]) ? "" : secondTokenKeyArray[1];
+                try {
+                    int clientId = Integer.parseInt(clientIdStr);
+                    removeAccountToken(passportId, clientId, instanceId);
+                    removeMaxNum ++;
+                } catch (Exception e) {
+                    logger.error("client not interge, passportId:" + passportId + ", clientId:" + clientIdStr);
                     return;
                 }
+            } else {
+                logger.error("Second Token Key less two, passportId:" + passportId);
+                return;
             }
         }
     }

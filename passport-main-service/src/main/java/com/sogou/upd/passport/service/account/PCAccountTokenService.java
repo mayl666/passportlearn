@@ -142,7 +142,7 @@ public interface PCAccountTokenService {
      * @return
      * @throws ServiceException
      */
-    public void batchRemoveAccountToken(String passportId, boolean isAsyn);
+    public void batchRemoveAccountToken(final String passportId, boolean isAsyn);
 
     /**
      * 清除单条失效的桌面端Token
