@@ -71,6 +71,15 @@ public class ManagerHelper {
         return false; //todo 正常线上都应该恒为false
     }
 
+    /**
+     * 是否需要只写SH。搜狗账号写分离时返回为false
+     *
+     * @return
+     */
+    public static boolean writeSohuSwitcher() {
+        return false;
+    }
+
 
     /**
      * 是否使用sohu提供的getcookiinfo接口；返回true代表调用getcookieinfo接口，false代表调用之前的从location拿的接口，为回滚做准备

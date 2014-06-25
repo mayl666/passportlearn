@@ -22,6 +22,7 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,20 +62,25 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             String password = params.getPassword();
             String ip = params.getCreateip();
             int clientId = params.getClient_id();
-
             //判断注册账号类型，外域用户还是个性用户
             AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
+            String passportId = PassportIDGenerator.generator(username, 0);
+            Account accountResult = accountService.queryNormalAccount(passportId);
+            if (accountResult != null) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                return result;
+            }
             switch (emailType) {
                 case SOGOU://个性账号直接注册
                 case INDIVID:
+
                     Account account = accountService.initialAccount(username, password, true, ip, AccountTypeEnum
                             .EMAIL.getValue());
                     if (account != null) {
                         result.setSuccess(true);
                         result.setDefaultModel("userid", account.getPassportId());
-                        result.setMessage("注册成功！");
+                        result.setMessage("注册成功");
                         result.setDefaultModel("isSetCookie", true);
-                        result.setDefaultModel(account);
                     } else {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     }
