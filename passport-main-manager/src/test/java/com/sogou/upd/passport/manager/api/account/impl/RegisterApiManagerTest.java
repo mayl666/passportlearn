@@ -262,11 +262,26 @@ public class RegisterApiManagerTest extends BaseTest {
 
 
     /**
-     * 账号格式有问题   done
+     * @sogou.com 账号格式有问题   done
      */
     @Test
     public void testRegMailUser_4() throws IOException {
         RegEmailApiParams regEmailApiParams = new RegEmailApiParams(wrong_format_username, password, ip,
+                clientId, LOGIN_INDEX_URL);
+        Result expectResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+//        String expectResult = "{\"statusText\":\"参数错误,请输入必填的参数\",\"data\":{},\"status\":\"10002\"}";
+        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
+        Result actualResult = sgRegisterApiManager.regMailUser(regEmailApiParams);
+        APIResultForm acturalForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm.equals(acturalForm));
+    }
+
+    /**
+     * 个性账号 账号格式有问题
+     */
+    @Test
+    public void testRegMailUser_5() throws IOException {
+        RegEmailApiParams regEmailApiParams = new RegEmailApiParams(wrong_format, password, ip,
                 clientId, LOGIN_INDEX_URL);
         Result expectResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
 //        String expectResult = "{\"statusText\":\"参数错误,请输入必填的参数\",\"data\":{},\"status\":\"10002\"}";

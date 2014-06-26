@@ -114,9 +114,9 @@
     </logger>
 
     <!--双读校验用户名和密码时，当SG校验失败，SH校验成功时，记录userid-->
-    <appender name="bothReadSyncErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="bothWriteSyncErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/bothAuthUserSyncError/authusererror.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <fileNamePattern>${log.path}/bothWriteUserSyncError/writeusererror.log.%d{yyyy-MM-dd}</fileNamePattern>
             <!--<maxHistory>14</maxHistory>-->
         </rollingPolicy>
         <encoder>
@@ -124,8 +124,8 @@
             <pattern>%msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="com.sogou.upd.passport.bothReadSyncErrorLogger" level="info" additivity="false">
-        <appender-ref ref="bothReadSyncErrorAppender"/>
+    <logger name="com.sogou.upd.passport.bothWriteSyncErrorLogger" level="info" additivity="false">
+        <appender-ref ref="bothWriteSyncErrorAppender"/>
     </logger>
 
     <!--双读检查用户名是否存在时，当SG不存在，SH存在时，记录userid-->
