@@ -46,6 +46,8 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private AccountService accountService;
     @Autowired
+    private RegisterApiManager registerApiManager;
+    @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
@@ -119,11 +121,12 @@ public class RegManagerImpl implements RegManager {
                     }
                     RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                             clientId, ru);
-                    if (ManagerHelper.isInvokeProxyApi(username)) {
-                        result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
-                    } else {
-                        result = sgRegisterApiManager.regMailUser(regEmailApiParams);
-                    }
+                    result = registerApiManager.regMailUser(regEmailApiParams);
+//                    if (ManagerHelper.isInvokeProxyApi(username)) {
+//                        result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+//                    } else {
+//                        result = sgRegisterApiManager.regMailUser(regEmailApiParams);
+//                    }
                     break;
                 case PHONE://手机号
                     RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);
