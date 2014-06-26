@@ -253,6 +253,7 @@ public class AccountServiceImpl implements AccountService {
                 result.setSuccess(true);
                 result.setMessage("操作成功");
                 result.setDefaultModel("userid", account.getPassportId());
+                result.setDefaultModel(account);
                 return result;
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
