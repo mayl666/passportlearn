@@ -10,3 +10,8 @@ INSERT INTO `account_29` (`id`, `passport_id`, `password`, `mobile`, `reg_time`,
 
 INSERT INTO `uniqname_passportid_mapping` (`id`, `uniqname`, `passport_id`, `update_time`) VALUES (8, '阿沐测试01', 'liulingtest01@sogou.com', '2014-3-25 11:21:13');
 INSERT INTO `mobile_passportid_mapping` (`id`, `mobile`, `passport_id`, `update_time`) VALUES (3, '13581695053', '13581695053@sohu.com', '2014-3-25 11:42:31');
+
+##密码为spz1986411
+INSERT INTO `account_18` (`passport_id`, `password`, `mobile`, `reg_time`, `reg_ip`, `flag`, `passwordtype`, `account_type`, `uniqname`, `avatar`) values('shipengzhi1986@sogou.com','5LwNaAlJ$2s6hdE9f0vsBTk50ZqXaD0','13621009174','2014-04-22 17:32:48','10.129.192.211','1','2','8','跳刀的兔子','%s/app/a/%s/8X5lsDLo9DR6R4At_1403494871616');
+INSERT INTO `mobile_passportid_mapping_14` (`mobile`, `passport_id`, `update_time`) VALUES ('13621009174', '13621009174@sogou.com', '2014-04-22 17:32:48');
+INSERT INTO `uniqname_passportid_mapping_30` (`uniqname`, `passport_id`, `update_time`) VALUES ('跳刀的兔子', 'shipengzhi1986@sogou.com', '2014-04-22 17:32:48');

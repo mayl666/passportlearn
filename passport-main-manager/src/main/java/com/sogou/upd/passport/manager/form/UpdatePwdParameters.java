@@ -36,11 +36,11 @@ public class UpdatePwdParameters {
         this.password = password;
     }
 
-    public String getNewpwd() {
+    public String getNewPwd() {
         return newpwd;
     }
 
-    public void setNewpwd(String newpwd) {
+    public void setNewPwd(String newpwd) {
         this.newpwd = newpwd;
     }
 

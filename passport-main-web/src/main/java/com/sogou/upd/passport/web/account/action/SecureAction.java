@@ -341,7 +341,7 @@ public class SecureAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
                     return result.toString();
             }
-            result = secureManager.resetWebPassword(updateParams, modifyIp);
+            result = secureManager.updateWebPwd(updateParams);
             return result.toString();
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), updateParams.getClient_id(), result.getCode(), modifyIp);

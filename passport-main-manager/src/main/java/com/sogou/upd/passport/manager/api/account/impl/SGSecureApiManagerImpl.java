@@ -43,20 +43,16 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
     private OperateTimesService operateTimesService;
 
     @Override
-    public Result updatePwd(UpdatePwdApiParams updatePwdApiParams) {
+    public Result updatePwd(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
         Result result;
-        String userId = updatePwdApiParams.getUserid();
-        String password = updatePwdApiParams.getPassword();
-        String newPassword = updatePwdApiParams.getNewpassword();
-        int clientId = updatePwdApiParams.getClient_id();
-        result = accountService.verifyUserPwdVaild(userId, password, true);
+        result = accountService.verifyUserPwdVaild(passportId, oldPwd, true);
         if (!result.isSuccess()) {
-            operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.RESETPWD);
+            operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.RESETPWD);
             return result;
         }
         Account account = (Account) result.getDefaultModel();
         result.setDefaultModel(null);
-        if (!accountService.resetPassword(account, newPassword, true)) {
+        if (!accountService.resetPassword(account, newPwd, true)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
         }
         result.setSuccess(true);

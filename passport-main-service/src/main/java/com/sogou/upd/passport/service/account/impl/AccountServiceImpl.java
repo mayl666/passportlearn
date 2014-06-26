@@ -612,7 +612,7 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public boolean checkCaptchaCode(String token, String captchaCode) throws Exception {
+    public boolean checkCaptchaCode(String token, String captchaCode) throws ServiceException {
         try {
             //校验验证码
             if (!checkCaptchaCodeIsVaild(token, captchaCode)) {

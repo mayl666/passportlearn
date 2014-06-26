@@ -38,36 +38,35 @@ public class SecureApiManagerImpl implements SecureApiManager {
     private SecureApiManager proxySecureApiManager;
 
     @Override
-    public Result updatePwd(UpdatePwdApiParams updatePwdApiParams) {
+    public Result updatePwd(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
         Result result;
         if (ManagerHelper.writeSohuSwitcher()) {
-            result = proxySecureApiManager.updatePwd(updatePwdApiParams);
+            result = proxySecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
         } else {
             //搜狗账号修改密码双写
-            if (AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(updatePwdApiParams.getUserid()))) {
-                result = bothUpdatePwd(updatePwdApiParams);
+            if (AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+                result = bothUpdatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
             } else {
                 //其它账号修改密码依然只写SH
-                result = proxySecureApiManager.updatePwd(updatePwdApiParams);
+                result = proxySecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
             }
         }
-        return result;  //To change body of implemented methods use File | Settings | File Templates.
+        return result;
     }
 
     /**
      * 修改密码双写
      *
-     * @param updatePwdApiParams
      * @return
      */
-    private Result bothUpdatePwd(UpdatePwdApiParams updatePwdApiParams) {
+    private Result bothUpdatePwd(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
         Result result = new APIResultSupport(false);
         try {
-            result = sgSecureApiManager.updatePwd(updatePwdApiParams);
-            Result shResult = proxySecureApiManager.updatePwd(updatePwdApiParams);
+            result = sgSecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
+            Result shResult = proxySecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
             if (!result.isSuccess()) {
                 String message = shResult.isSuccess() ? CommonConstant.SGERROR_SHSUCCESS : CommonConstant.SGERROR_SHERROR;
-                LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.RESETPWD, "updatePwd", message, updatePwdApiParams.getUserid(), result.getCode(), shResult.toString());
+                LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.RESETPWD, "updatePwd", message, passportId, result.getCode(), shResult.toString());
             }
         } catch (Exception e) {
             logger.error("bothUpdatePwd Exception", e);
@@ -78,7 +77,7 @@ public class SecureApiManagerImpl implements SecureApiManager {
 
     @Override
     public Result updateQues(UpdateQuesApiParams updateQuesApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override

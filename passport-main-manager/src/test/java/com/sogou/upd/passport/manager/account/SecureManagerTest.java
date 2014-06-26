@@ -1,9 +1,10 @@
 package com.sogou.upd.passport.manager.account;
 
-import com.rabbitmq.tools.json.JSONUtil;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JsonUtil;
 import junit.framework.Assert;
 import org.junit.Test;
@@ -145,8 +146,6 @@ public class SecureManagerTest extends BaseTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
 }

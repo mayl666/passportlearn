@@ -28,7 +28,8 @@ public class ProxySecureApiManagerImpl extends BaseProxyManager implements Secur
     private static Logger logger = LoggerFactory.getLogger(ProxySecureApiManagerImpl.class);
 
     @Override
-    public Result updatePwd(UpdatePwdApiParams updatePwdApiParams) {
+    public Result updatePwd(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
+        UpdatePwdApiParams updatePwdApiParams = buildProxyApiParams(passportId, clientId, oldPwd, newPwd, modifyIp);
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_PWD, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(updatePwdApiParams);
         return this.executeResult(requestModelXml);
@@ -91,5 +92,16 @@ public class ProxySecureApiManagerImpl extends BaseProxyManager implements Secur
     @Override
     public void resetPwd(UpdatePwdApiParams updatePwdApiParams) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private UpdatePwdApiParams buildProxyApiParams(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
+        UpdatePwdApiParams updatePwdApiParams = new UpdatePwdApiParams();
+        updatePwdApiParams.setUserid(passportId);
+        updatePwdApiParams.setPassword(oldPwd);
+        updatePwdApiParams.setNewpassword(newPwd);
+        updatePwdApiParams.setModifyip(modifyIp);
+        updatePwdApiParams.setClient_id(clientId);
+
+        return updatePwdApiParams;
     }
 }

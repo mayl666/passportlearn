@@ -350,48 +350,63 @@ public class SecureManagerImpl implements SecureManager {
     }
 
     @Override
-    public Result resetWebPassword(UpdatePwdParameters updatePwdParameters, String ip)
+    public Result updateWebPwd(UpdatePwdParameters updatePwdParameters)
             throws Exception {
         Result result = new APIResultSupport(false);
         String passportId = null;
         try {
             passportId = updatePwdParameters.getPassport_id();
             String captcha = updatePwdParameters.getCaptcha();
-            UpdatePwdApiParams updatePwdApiParams = buildProxyApiParams(updatePwdParameters);
-            int clientId = updatePwdApiParams.getClient_id();
+            String modifyIp = updatePwdParameters.getIp();
+            int clientId = Integer.parseInt(updatePwdParameters.getClient_id());
             String token = updatePwdParameters.getToken();
-            //判断验证码
-            if (!accountService.checkCaptchaCode(token, captcha)) {
-                logger.debug("[webRegister captchaCode wrong warn]:passportId=" + passportId + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captcha);
+            //修改密码时检查验证码、ip黑白名单、修改密码次数
+            result = checkUpdatePwdCaptchaAndSecure(passportId, clientId, token, captcha, modifyIp);
+            if (result.isSuccess()) {
+                result = secureApiManager.updatePwd(passportId, clientId, updatePwdParameters.getPassword(), updatePwdParameters.getNewPwd(), modifyIp);
+//            if (ManagerHelper.isInvokeProxyApi(passportId)) {
+//                result = proxySecureApiManager.updatePwd(updatePwdApiParams);
+//                // TODO 清除PC端token，后续移至accountService.resetPassword
+//            } else {
+//                result = sgSecureApiManager.updatePwd(updatePwdApiParams);
+//            }
+                //TODO 所有账号只写SG库时此判断即可去掉；因SG账号只写先上，所以SG账号写分离时不需要再记此标记了
+                if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
+                    accountSecureService.updateSuccessFlag(passportId);
+                }
+                if (result.isSuccess()) {
+                    operateTimesService.incLimitResetPwd(passportId, clientId);
+                    operateTimesService.incResetPwdIPTimes(modifyIp);
+                }
+            }
+        } catch (ServiceException e) {
+            logger.error("Modify Web Password Fail username:" + passportId, e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+        return result;
+    }
+
+    private Result checkUpdatePwdCaptchaAndSecure(String passportId, int clientId, String token, String captcha, String modifyIp) {
+        Result result = new APIResultSupport(true);
+        try {
+            if (!accountService.checkCaptchaCode(token, captcha)) {    //判断验证码
+                logger.debug("[webRegister captchaCode wrong warn]:passportId=" + passportId + ", modifyIp=" + modifyIp + ", token=" + token + ", captchaCode=" + captcha);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                 return result;
             }
-            //检查是否在ip黑名单里
-            if (operateTimesService.checkIPLimitResetPwd(ip)) {
+
+            if (operateTimesService.checkIPLimitResetPwd(modifyIp)) {    //检查是否在ip黑名单里
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
-            if (operateTimesService.checkLimitResetPwd(passportId, clientId)) {
+
+            if (operateTimesService.checkLimitResetPwd(passportId, clientId)) {   //检查修改密码次数是否超限
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
                 return result;
             }
-            result = secureApiManager.updatePwd(updatePwdApiParams);
-            if (ManagerHelper.isInvokeProxyApi(passportId)) {
-                result = proxySecureApiManager.updatePwd(updatePwdApiParams);
-                // TODO 清除PC端token，后续移至accountService.resetPassword
-            } else {
-                result = sgSecureApiManager.updatePwd(updatePwdApiParams);
-            }
-            //TODO 所有账号只写SG库时此判断即可去掉；因SG账号只写先上，所以SG账号写分离时不需要再记此标记了
-            if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
-                accountSecureService.updateSuccessFlag(passportId);
-            }
-            if (result.isSuccess()) {
-                operateTimesService.incLimitResetPwd(updatePwdApiParams.getUserid(), updatePwdApiParams.getClient_id());
-                operateTimesService.incResetPwdIPTimes(ip);
-            }
         } catch (ServiceException e) {
-            logger.error("resetWebPassword Fail username:" + passportId, e);
+            logger.error("UpdatePwd Captcha Or Secure Fail passportId:" + passportId, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
@@ -437,17 +452,6 @@ public class SecureManagerImpl implements SecureManager {
                 });
             }
         }
-    }
-
-    private UpdatePwdApiParams buildProxyApiParams(UpdatePwdParameters updatePwdParameters) {
-        UpdatePwdApiParams updatePwdApiParams = new UpdatePwdApiParams();
-        updatePwdApiParams.setUserid(updatePwdParameters.getPassport_id());
-        updatePwdApiParams.setPassword(updatePwdParameters.getPassword());
-        updatePwdApiParams.setNewpassword(updatePwdParameters.getNewpwd());
-        updatePwdApiParams.setModifyip(updatePwdParameters.getIp());
-        updatePwdApiParams.setClient_id(Integer.parseInt(updatePwdParameters.getClient_id()));
-
-        return updatePwdApiParams;
     }
 
     /* --------------------------------------------修改密保内容-------------------------------------------- */
