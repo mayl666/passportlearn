@@ -9,11 +9,7 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.LogUtil;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
-import com.sogou.upd.passport.common.utils.PhotoUtils;
-import com.sogou.upd.passport.common.utils.SMSUtil;
+import com.sogou.upd.passport.common.utils.*;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.RegManager;
@@ -80,7 +76,10 @@ public class SecureManagerImpl implements SecureManager {
     @Autowired
     private RegManager regManager;
 
+
     // 自动注入Manager
+    @Autowired
+    private SecureApiManager secureApiManager;
     @Autowired
     private SecureApiManager sgSecureApiManager;
     @Autowired
@@ -376,12 +375,13 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
                 return result;
             }
-            if (ManagerHelper.isInvokeProxyApi(username)) {
-                result = proxySecureApiManager.updatePwd(updatePwdApiParams);
-                // TODO 清除PC端token，后续移至accountService.resetPassword
-            } else {
-                result = sgSecureApiManager.updatePwd(updatePwdApiParams);
-            }
+            result = secureApiManager.updatePwd(updatePwdApiParams);
+//            if (ManagerHelper.isInvokeProxyApi(username)) {
+//                result = proxySecureApiManager.updatePwd(updatePwdApiParams);
+//                // TODO 清除PC端token，后续移至accountService.resetPassword
+//            } else {
+//                result = sgSecureApiManager.updatePwd(updatePwdApiParams);
+//            }
             //TODO 所有账号只写SG库时此判断即可去掉；因SG账号只写先上，所以SG账号写分离时不需要再记此标记了
             if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
                 accountSecureService.updateSuccessFlag(username);
