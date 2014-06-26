@@ -48,7 +48,6 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         String userId = updatePwdApiParams.getUserid();
         String password = updatePwdApiParams.getPassword();
         String newPassword = updatePwdApiParams.getNewpassword();
-        String modifyIp = updatePwdApiParams.getModifyip();
         int clientId = updatePwdApiParams.getClient_id();
         result = accountService.verifyUserPwdVaild(userId, password, true);
         if (!result.isSuccess()) {
@@ -57,7 +56,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         }
         Account account = (Account) result.getDefaultModel();
         result.setDefaultModel(null);
-        if (!accountService.resetPassword(account, newPassword, false)) {
+        if (!accountService.resetPassword(account, newPassword, true)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
         }
         result.setSuccess(true);
