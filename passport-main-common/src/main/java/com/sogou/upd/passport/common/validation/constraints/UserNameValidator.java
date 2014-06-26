@@ -40,7 +40,7 @@ public class UserNameValidator implements ConstraintValidator<UserName, String> 
             if (value.endsWith("@sogou.com")) {
                 String prefix = value.substring(0, value.lastIndexOf(
                         "@sogou.com"));
-                String sens = "^(?!.*搜狗)(?!.*sogou)(?!.*sougou)(?!.*help)(?!.*info)(?!.*admin)(?!.*owner)(?!.*support)(?!.*www)(?!.*master).*$";
+                String sens = "^(?!.*help)(?!.*info)(?!.*admin)(?!.*owner)(?!.*support)(?!.*www)(?!.*master).*$";
                 boolean sensFlag = prefix.matches(sens);
                 if (!sensFlag) {
                     return false;
