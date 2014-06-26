@@ -68,6 +68,7 @@ public interface SecureManager {
 
     /**
      * 重置用户密码（web验证码方式）
+     * @param updatePwdParameters 注意passport_id需从cookie里获取后赋值
      */
     public Result resetWebPassword(UpdatePwdParameters updatePwdParameters, String ip) throws Exception;
 

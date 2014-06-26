@@ -312,7 +312,7 @@ public class SecureAction extends BaseController {
     }
 
     /**
-     * 修改密码
+     * 官网修改密码
      *
      * @param updateParams 传入的参数
      */
@@ -322,37 +322,33 @@ public class SecureAction extends BaseController {
     public Object updatePwd(HttpServletRequest request, UpdatePwdParameters updateParams)
             throws Exception {
         Result result = new APIResultSupport(false);
-
-        String validateResult = ControllerHelper.validateParams(updateParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result;
-        }
-
-        String userId = hostHolder.getPassportId();
-
-        switch (AccountDomainEnum.getAccountDomain(userId)) {
-            case SOHU:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                return result.toString();
-            case THIRD:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
-                return result.toString();
-        }
-
-        updateParams.setPassport_id(userId);
+        String passportId = hostHolder.getPassportId();
+        updateParams.setPassport_id(passportId);
         String modifyIp = getIp(request);
         updateParams.setIp(modifyIp);
-
-        result = secureManager.resetWebPassword(updateParams, modifyIp);
-
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), updateParams.getClient_id(), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
-
-        return result.toString();
+        try {
+            String validateResult = ControllerHelper.validateParams(updateParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result;
+            }
+            switch (AccountDomainEnum.getAccountDomain(passportId)) {
+                case SOHU:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                    return result.toString();
+                case THIRD:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                    return result.toString();
+            }
+            result = secureManager.resetWebPassword(updateParams, modifyIp);
+            return result.toString();
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), updateParams.getClient_id(), result.getCode(), modifyIp);
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
+        }
     }
 
     /*
@@ -746,4 +742,5 @@ public class SecureAction extends BaseController {
 
         return "safe/emailsuccess";
     }
+
 }

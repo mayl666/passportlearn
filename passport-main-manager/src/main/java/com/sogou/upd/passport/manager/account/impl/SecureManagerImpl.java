@@ -353,16 +353,16 @@ public class SecureManagerImpl implements SecureManager {
     public Result resetWebPassword(UpdatePwdParameters updatePwdParameters, String ip)
             throws Exception {
         Result result = new APIResultSupport(false);
-        String username = null;
+        String passportId = null;
         try {
-            username = updatePwdParameters.getPassport_id();
+            passportId = updatePwdParameters.getPassport_id();
             String captcha = updatePwdParameters.getCaptcha();
             UpdatePwdApiParams updatePwdApiParams = buildProxyApiParams(updatePwdParameters);
             int clientId = updatePwdApiParams.getClient_id();
             String token = updatePwdParameters.getToken();
             //判断验证码
             if (!accountService.checkCaptchaCode(token, captcha)) {
-                logger.debug("[webRegister captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captcha);
+                logger.debug("[webRegister captchaCode wrong warn]:passportId=" + passportId + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captcha);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                 return result;
             }
@@ -371,27 +371,27 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
-            if (operateTimesService.checkLimitResetPwd(username, clientId)) {
+            if (operateTimesService.checkLimitResetPwd(passportId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
                 return result;
             }
             result = secureApiManager.updatePwd(updatePwdApiParams);
-//            if (ManagerHelper.isInvokeProxyApi(username)) {
-//                result = proxySecureApiManager.updatePwd(updatePwdApiParams);
-//                // TODO 清除PC端token，后续移至accountService.resetPassword
-//            } else {
-//                result = sgSecureApiManager.updatePwd(updatePwdApiParams);
-//            }
+            if (ManagerHelper.isInvokeProxyApi(passportId)) {
+                result = proxySecureApiManager.updatePwd(updatePwdApiParams);
+                // TODO 清除PC端token，后续移至accountService.resetPassword
+            } else {
+                result = sgSecureApiManager.updatePwd(updatePwdApiParams);
+            }
             //TODO 所有账号只写SG库时此判断即可去掉；因SG账号只写先上，所以SG账号写分离时不需要再记此标记了
             if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
-                accountSecureService.updateSuccessFlag(username);
+                accountSecureService.updateSuccessFlag(passportId);
             }
             if (result.isSuccess()) {
                 operateTimesService.incLimitResetPwd(updatePwdApiParams.getUserid(), updatePwdApiParams.getClient_id());
                 operateTimesService.incResetPwdIPTimes(ip);
             }
         } catch (ServiceException e) {
-            logger.error("resetWebPassword Fail username:" + username, e);
+            logger.error("resetWebPassword Fail username:" + passportId, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
