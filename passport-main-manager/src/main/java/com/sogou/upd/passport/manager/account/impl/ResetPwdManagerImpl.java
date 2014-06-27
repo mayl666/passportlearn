@@ -323,7 +323,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result;
             }
-
             result = secureManager.sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.RESETPWD);
             if (!result.isSuccess()) {
                 return result;
