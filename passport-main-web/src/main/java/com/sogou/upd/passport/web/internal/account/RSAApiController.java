@@ -99,7 +99,6 @@ public class RSAApiController extends BaseController {
         if (!Strings.isNullOrEmpty(clearText)) {
             String[] textArray = clearText.split("\\|");
             if (textArray.length == 4) { //数据组成： userid|clientId|token|timestamp
-                try {
                     //判断时间有效性
                     long timeStamp=Long.parseLong(textArray[3])*1000;
                     if(Math.abs(timeStamp - System.currentTimeMillis())> TIME_LIMIT){
@@ -120,10 +119,6 @@ public class RSAApiController extends BaseController {
                         throw new ControllerException(getUserIdResult.getCode());
                     }
 
-                } catch (Exception e) {
-                    logger.error("ras token error fail, clear text:" + clearText, e);
-                    throw new ControllerException(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
-                }
             } else {
                 //长度不对。
                 logger.error("text to array  length error, expect 4, text:"+clearText);
