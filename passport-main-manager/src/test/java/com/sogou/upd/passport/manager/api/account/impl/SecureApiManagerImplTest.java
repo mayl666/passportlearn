@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 上午11:26
  */
 @Ignore
-public class ProxySecureApiManagerImplTest extends BaseTest {
+public class SecureApiManagerImplTest extends BaseTest {
 
     @Autowired
     private SecureApiManager proxySecureApiManager;
