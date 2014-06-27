@@ -141,7 +141,7 @@ public interface AccountService {
     /*
      *检查验证码
      */
-    public boolean checkCaptchaCode(String token, String captchaCode) throws Exception;
+    public boolean checkCaptchaCode(String token, String captchaCode) throws ServiceException;
 
 
     /**
