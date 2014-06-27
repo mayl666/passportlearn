@@ -523,14 +523,9 @@ public class ErrorUtil {
 
         //SSO setcookie接口
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_COOKIE, "cookie值无效");
-<<<<<<< HEAD
-=======
-
-        ERR_CODE_MSG_MAP.put(FORBID_UPDATE_USERINFO,"5.31日18:00至6.6日0:00禁止修改用户信息");
 
         //RSA
         ERR_CODE_MSG_MAP.put(ERR_CODE_RSA_DECRYPT,"解密错误");
->>>>>>> remotes/origin/sogouInputForGamePop
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {
