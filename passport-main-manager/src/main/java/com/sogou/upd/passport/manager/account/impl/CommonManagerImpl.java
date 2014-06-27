@@ -8,11 +8,14 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -42,7 +45,9 @@ public class CommonManagerImpl implements CommonManager {
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private BindApiManager proxyBindApiManager;
-   
+    @Autowired
+    private AccountService accountService;
+
     @Override
     public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {
         String code = getCode(firstStr.toString(), clientId, ct);
@@ -102,6 +107,16 @@ public class CommonManagerImpl implements CommonManager {
             throw new Exception(e);
         }
         return passportId;
+    }
+
+    @Override
+    public Account queryNormalAccount(String passportId) throws ServiceException {
+        return accountService.queryNormalAccount(passportId);
+    }
+
+    @Override
+    public Account queryAccountByPassportId(String passportId) throws ServiceException {
+        return accountService.queryAccountByPassportId(passportId);  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 

@@ -38,7 +38,7 @@ public class RegisterApiManagerTest extends BaseTest {
     private static final String both_no_gexing = "135test94" + new Random().nextInt(1000);
     private static final String both_no_username_sogou = "test" + new Random().nextInt(2000) + "@sogou.com";
     private static final String both_hava_username_sogou = userid_sogou_1;
-    private static final String wrong_format_username = "adminhelpme@sogou.com"; //格式有误的账号
+    private static final String wrong_format_username = "soadminuhuanqitst45@sogou.com"; //格式有误的账号
     private static final String wrong_format = "testjisjf_c.com.com.com"; //格式有误的账号
     private static final String both_no_username_mail = "testmail" + new Random().nextInt(100) + "@163.com";
     private static final String username_sogou = userid_sogou_2;

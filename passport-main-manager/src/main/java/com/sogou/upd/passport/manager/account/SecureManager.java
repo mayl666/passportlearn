@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
 
@@ -18,6 +17,22 @@ public interface SecureManager {
      * 发送短信验证码（至未注册未绑定手机）
      */
     public Result sendMobileCode(String mobile, int clientId, AccountModuleEnum module) throws Exception;
+    /**
+     * 发送短信验证码（根据passportId）
+     */
+    public Result sendMobileCodeByPassportId(String passportId, int clientId, AccountModuleEnum module) throws Exception;
+
+    /**
+     * 为SOHU接口适配，发送短信验证码至待绑定手机
+     *
+     * @param userId
+     * @param clientId
+     * @param mobile
+     * @return
+     * @throws Exception
+     */
+    public Result sendMobileCodeNew(String userId, int clientId, String mobile) throws Exception;
+
     /**
      * 为SOHU接口适配，发送短信验证码至原绑定手机
      *

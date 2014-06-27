@@ -46,6 +46,8 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private AccountService accountService;
     @Autowired
+    private EmailSenderService emailSenderService;
+    @Autowired
     private RegisterApiManager registerApiManager;
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
@@ -312,6 +314,35 @@ public class RegManagerImpl implements RegManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
+    }
+
+    @Override
+    public Result resendActiveMail(ResendActiveMailParams resendActiveMailParams) {
+        Result result = new APIResultSupport(false);
+        try {
+            String username = resendActiveMailParams.getUsername();
+            int clientId = Integer.parseInt(resendActiveMailParams.getClient_id());
+            //检测重发激活邮件次数是否已达上限
+            boolean checkSendLimited = emailSenderService.checkLimitForSendEmail(null, clientId, AccountModuleEnum.REGISTER, username);
+            if (!checkSendLimited) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
+                return result;
+            }
+            boolean isSendSuccess = accountService.sendActiveEmail(username, null, clientId, null, CommonConstant.EMAIL_REG_VERIFY_URL);
+            if (isSendSuccess) {
+                if (emailSenderService.incLimitForSendEmail(null, clientId, AccountModuleEnum.REGISTER, username)) {
+                    result.setSuccess(true);
+                    result.setMessage("重新发送激活邮件成功，请立即激活您的账户！");
+                    result.setCode("0");
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED);
+            }
+        } catch (Exception e) {
+            logger.error("Resend Active Mail Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
     }
 
     @Override

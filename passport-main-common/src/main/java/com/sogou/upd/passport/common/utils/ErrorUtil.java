@@ -333,6 +333,17 @@ public class ErrorUtil {
     /* ============================================================================ */
     public static final String ERR_CODE_ERROR_ACCOUNT = "30701";
 
+    /* ============================================================================ */
+    /*  找回密码相关错误代码                                                            */
+    /* ============================================================================ */
+    //能提交找回密码请求次数超过限制
+    public static final String ERR_CODE_FINDPWD_LIMITED = "30706";
+    public static final String ERR_CODE_FINDPWD_SCODE_FAILED = "30702";
+    public static final String ERR_CODE_FINDPWD_ACCOUNT_DOMAIN_FAILED = "30703";
+    public static final String ERR_CODE_FINDPWD_TYPE_FAILED = "30704";
+    public static final String ERR_CODE_FINDPWD_EMAIL_FAILED = "30705";
+    /* ============================================================================ */
+
     //cookie值无效
     public static final String ERR_CODE_ERROR_COOKIE = "30710";
 
@@ -514,6 +525,13 @@ public class ErrorUtil {
 
         //SSO setcookie接口
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_COOKIE, "cookie值无效");
+
+        //找回密码相关
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_LIMITED, "您一天内提交的找回密码请求次数超过限制");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_SCODE_FAILED, "安全码验证失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_ACCOUNT_DOMAIN_FAILED, "账号类型不支持");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_TYPE_FAILED, "找回密码方式错误");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_EMAIL_FAILED, "找回密码邮件已失效");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

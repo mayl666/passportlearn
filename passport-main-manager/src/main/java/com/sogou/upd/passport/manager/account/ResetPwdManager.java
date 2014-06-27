@@ -91,22 +91,21 @@ public interface ResetPwdManager {
      * @param clientId
      * @param password
      * @param secureCode
+     * @param ip
      * @return
      * @throws Exception
      */
     public Result resetPasswordByScode(String passportId, int clientId, String password,
-                                       String secureCode) throws Exception;
+                                       String secureCode,String ip) throws Exception;
 
     /**
-     * 重置用户密码（检查密保答案）——暂不用！！！
-     *
-     * @param passportId
+     *找回密码，发送手机验证码
+     * @param userId
      * @param clientId
-     * @param password
-     * @param answer
+     * @return
+     * @throws Exception
      */
-    public Result resetPasswordByQues(String passportId, int clientId, String password, String answer)
-            throws Exception;
+    public Result sendFindPwdMobileCode(String userId, int clientId) throws Exception;
 
     /**
      * 重置用户密码（手机验证码方式）——暂不用！！！
@@ -114,5 +113,18 @@ public interface ResetPwdManager {
     public Result resetPasswordByMobile(String passportId, int clientId, String password, String smsCode)
             throws Exception;
 
-    /* ------------------------------------重置密码End------------------------------------ */
+    /**
+     * 统计找回密码次数
+     * @param passportId
+     * @throws Exception
+     */
+    public void incFindPwdTimes(String passportId) throws Exception;
+
+    /**
+     * 检查找回密码次数
+     * @param passportId
+     * @return
+     * @throws Exception
+     */
+    public Result checkFindPwdTimes(String passportId) throws Exception;
 }

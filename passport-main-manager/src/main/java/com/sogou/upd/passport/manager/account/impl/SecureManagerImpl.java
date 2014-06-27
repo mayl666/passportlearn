@@ -133,7 +133,9 @@ public class SecureManagerImpl implements SecureManager {
         }
     }
 
-    private Result sendMobileCodeByPassportId(String passportId, int clientId, AccountModuleEnum module)
+
+    @Override
+    public Result sendMobileCodeByPassportId(String passportId, int clientId, AccountModuleEnum module)
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
@@ -150,6 +152,36 @@ public class SecureManagerImpl implements SecureManager {
             return sendMobileCode(mobile, clientId, module);
         } catch (ServiceException e) {
             logger.error("send mobile code Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+    }
+
+    @Override
+    public Result sendMobileCodeNew(String userId, int clientId, String mobile) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+
+//            SendCaptchaApiParams sendCaptchaApiParams = new SendCaptchaApiParams();
+//            sendCaptchaApiParams.setMobile(mobile);
+//            sendCaptchaApiParams.setClient_id(clientId);
+//            sendCaptchaApiParams.setType(3); //todo 是否是搜狐接口预留字段，需要自测时验证
+//            if (ManagerHelper.isInvokeProxyApi(userId)) {
+            // SOHU接口
+//                result = proxyBindApiManager.sendCaptcha(sendCaptchaApiParams);
+//            } else {
+            result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
+            // result = sgBindApiManager.sendCaptcha(sendCaptchaApiParams);
+//            }
+
+            if (!result.isSuccess()) {
+                return result;
+            }
+
+            result.setMessage("绑定手机验证码发送成功！");
+            return result;
+        } catch (ServiceException e) {
+            logger.error("send mobile code new Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
