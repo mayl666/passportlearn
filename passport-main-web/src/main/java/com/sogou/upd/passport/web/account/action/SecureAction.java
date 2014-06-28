@@ -14,7 +14,6 @@ import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.web.BaseController;
@@ -56,8 +55,6 @@ public class SecureAction extends BaseController {
     private HostHolder hostHolder;
     @Autowired
     private CheckManager checkManager;
-    @Autowired
-    private BindApiManager proxyBindApiManager;
     @Autowired
     private AccountInfoManager accountInfoManager;
     @Autowired

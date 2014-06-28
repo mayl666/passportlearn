@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Date: 13-6-18
  * Time: 上午11:26
  */
-@Ignore
+//@Ignore
 public class SecureApiManagerImplTest extends BaseTest {
 
     @Autowired
@@ -36,12 +36,12 @@ public class SecureApiManagerImplTest extends BaseTest {
         String successStr = "{\"statusText\":\"操作成功\",\"status\":\"0\",\"data\":{}}";
         Result successExpectedResult = new APIResultSupport(true, "0", "操作成功");
         Result successActualResult = sgSecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
-        Assert.assertEquals(successExpectedResult, successActualResult);
+        Assert.assertEquals(successExpectedResult.toString(), successActualResult.toString());
 
         String pwdErrorStr = "{\"statusText\":\"密码错误\",\"status\":\"20206\",\"data\":{}}";
         Result pwdErrorExpectedResult = new APIResultSupport(false, ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
         Result pwdErrorActualResult = sgSecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
-        Assert.assertEquals(pwdErrorExpectedResult, pwdErrorActualResult);
+        Assert.assertEquals(pwdErrorExpectedResult.toString(), pwdErrorActualResult.toString());
 
         Result recoveryResult = sgSecureApiManager.updatePwd(passportId, clientId, newPwd, oldPwd, modifyIp);
         Result endResult = accountService.verifyUserPwdVaild(passportId, oldPwd, true);
