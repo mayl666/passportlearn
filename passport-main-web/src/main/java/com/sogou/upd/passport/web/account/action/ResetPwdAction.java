@@ -239,7 +239,7 @@ public class ResetPwdAction extends BaseController {
             AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
             //记录找回密码次数
             resetPwdManager.incFindPwdTimes(username);
-            //如果所填账号为手机账号，则返回模糊处理的手机号及完整手机号加密后的md5串
+            //如果用户的密保手机和密保邮箱存在，则返回模糊处理的手机号/密保邮箱及完整手机号/邮箱加密后的md5串
             if (accountSecureInfoVO != null) {
                 String sec_mobile = (String) result.getModels().get("sec_mobile");
                 String sec_email = (String) result.getModels().get("sec_email");
