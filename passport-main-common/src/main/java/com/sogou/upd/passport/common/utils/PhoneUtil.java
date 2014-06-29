@@ -15,12 +15,12 @@ public class PhoneUtil {
 	 * 新电信 （中国电信 <http://baike.baidu.com/view/3214.htm>+中国卫通）手机号码开头数字 133、153、189、180、181
 	 */
 	public static boolean verifyPhoneNumberFormat(String phone) {
-        return !Strings.isNullOrEmpty(phone) && phone.matches(PHONE_FORMAT);
+        return !Strings.isNullOrEmpty(phone) && phone.matches(PHONE_FORMAT) && (phone.length() == PHONE_LENTH);
     }
 
 	public static void main(String[] args) {
 		String[] phones = new String[] { "1523620111", "11011363254", "15811363254", "15811364216", "15811364216",
-				"13011111111", "15811364216", "022-6232903-22", "022-6232903", "+8615811364216", "8615811224181" ,"17043123221"};
+				"13011111111", "15811364216", "022-6232903-22", "022-6232903", "+8615811364216", "8615811224181" ,"17043123221", "007-007972"};
 		for (String phone : phones) {
 			System.out.print(phone + "  ");
 			System.out.println(PhoneUtil.verifyPhoneNumberFormat(phone));
