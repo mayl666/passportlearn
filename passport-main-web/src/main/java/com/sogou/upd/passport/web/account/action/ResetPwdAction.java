@@ -365,21 +365,30 @@ public class ResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/reset", method = RequestMethod.POST)
-    @ResponseBody
-    public String resetPwd(HttpServletRequest request, ResetPwdParams params) throws Exception {
+    public String resetPwd(HttpServletRequest request, ResetPwdParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                model.addAttribute("data", result.toString());
+                return "/recover/end";
+            }
+            String passportId = params.getUsername();
+            int clientId = Integer.parseInt(params.getClient_id());
+            String password = params.getPassword();
+            result = resetPwdManager.resetPasswordByScode(passportId, clientId, password, params.getScode(), getIp(request));
+            if (!result.isSuccess()) {
+                model.addAttribute("data", result.toString());
+                return "/recover/end";
+            }
+        } catch (Exception e) {
+            logger.error("resetPwd Is Failed,Username is " + params.getUsername(), e);
+        } finally {
+            log(request, params.getUsername(), result.getCode());
         }
-        String passportId = params.getUsername();
-        int clientId = Integer.parseInt(params.getClient_id());
-        String password = params.getPassword();
-        result = resetPwdManager.resetPasswordByScode(passportId, clientId, password, params.getScode(), getIp(request));
-        log(request, passportId, result.getCode());
-        return result.toString();
+        return "/recover/end";
     }
 
     /**
