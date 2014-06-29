@@ -15,7 +15,7 @@ public class PhoneUtil {
 	 * 新电信 （中国电信 <http://baike.baidu.com/view/3214.htm>+中国卫通）手机号码开头数字 133、153、189、180、181
 	 */
 	public static boolean verifyPhoneNumberFormat(String phone) {
-        return !Strings.isNullOrEmpty(phone) && phone.matches(PHONE_FORMAT) && (phone.length() == PHONE_LENTH);
+        return !Strings.isNullOrEmpty(phone) && phone.matches(PHONE_FORMAT);
     }
 
 	public static void main(String[] args) {

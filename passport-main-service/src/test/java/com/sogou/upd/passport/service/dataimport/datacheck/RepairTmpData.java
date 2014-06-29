@@ -97,7 +97,7 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testCheckIsSyncSogouDB() {
-        List<String> passportIdList = FileIOUtil.readFileByLines("D:\\checkIsSyncSogou_0628_total");
+        List<String> passportIdList = FileIOUtil.readFileByLines("D:\\checkIsSyncSogou_0627_total");
         String content = null;
         int count = 0;
         for (String passportId : passportIdList) {
@@ -109,7 +109,7 @@ public class RepairTmpData extends BaseTest {
         }
         System.out.println("count:" + count);
         try {
-            FileUtil.storeFile("D:\\not_in_sogoudb_0628_total", failedList);
+            FileUtil.storeFile("D:\\not_in_sogoudb_0627_total", failedList);
         } catch (Exception e) {
             e.printStackTrace();
         }

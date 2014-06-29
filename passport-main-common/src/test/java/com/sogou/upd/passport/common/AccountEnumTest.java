@@ -46,6 +46,6 @@ public class AccountEnumTest extends TestCase {
     public void testGetAccountDomain() {
         assertTrue(AccountDomainEnum.PHONE == AccountDomainEnum.getAccountDomain("007-007972@sohu.com"));
         assertTrue(AccountDomainEnum.SOHU == AccountDomainEnum.getAccountDomain("lsj1776348140@sohu.com"));
-        assertTrue(AccountDomainEnum.SOHU == AccountDomainEnum.getAccountDomain("a18732992000@sohu.com"));
+        assertTrue(AccountDomainEnum.SOHU == AccountDomainEnum.getAccountDomain("13512724012@wap.sohu.com"));
     }
 }
