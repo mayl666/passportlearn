@@ -14,7 +14,6 @@ import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
@@ -131,10 +130,6 @@ public class SecureAction extends BaseController {
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-//        String nickName = hostHolder.getNickName();
-//        if (Strings.isNullOrEmpty(nickName)) {
-//            nickName = userId;
-//        }
         result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
@@ -176,17 +171,12 @@ public class SecureAction extends BaseController {
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
 
         result.setSuccess(true);
-//        String nickName = hostHolder.getNickName();
-//        if (Strings.isNullOrEmpty(nickName)) {
-//            nickName = userId;
-//        }
         result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
 
         ControllerHelper.process(result, clientId, null);
-
         model.addAttribute("data", result.toString());
         return "safe/tel";
     }
@@ -477,8 +467,9 @@ public class SecureAction extends BaseController {
     @LoginRequired
     public Object sendSmsNewMobile(WebMobileParams params, HttpServletRequest request) throws Exception {
         Result result = new APIResultSupport(false);
-        String finalCode = null;
         String ip = getIp(request);
+        int clientId = Integer.parseInt(params.getClient_id());
+        String newMobile = params.getNew_mobile();
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -486,12 +477,8 @@ public class SecureAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-
             // TODO:要不要在检验smscode时，验证userId
             String userId = hostHolder.getPassportId();
-            int clientId = Integer.parseInt(params.getClient_id());
-            String newMobile = params.getNew_mobile();
-
             switch (AccountDomainEnum.getAccountDomain(userId)) {
                 case SOHU:
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
@@ -503,8 +490,6 @@ public class SecureAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
                     return result.toString();
             }
-            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-            baseMoblieApiParams.setMobile(newMobile);
             //检测手机号是否已经注册或绑定
 //            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
             //双读，检查新手机是否允许绑定
@@ -519,14 +504,8 @@ public class SecureAction extends BaseController {
         } catch (Exception e) {
             logger.error("method[sendSmsNewMobile] send mobile sms to new mobile error.{}", e);
         } finally {
-            String logCode;
-            if (!Strings.isNullOrEmpty(finalCode)) {
-                logCode = finalCode;
-            } else {
-                logCode = result.getCode();
-            }
             //web页面手机注册时，发送手机验证码
-            UserOperationLog userOperationLog = new UserOperationLog(params.getNew_mobile(), request.getRequestURI(), params.getClient_id(), logCode, ip);
+            UserOperationLog userOperationLog = new UserOperationLog(newMobile, request.getRequestURI(), params.getClient_id(), result.getCode(), ip);
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
@@ -544,39 +523,40 @@ public class SecureAction extends BaseController {
     public Object bindMobile(WebBindMobileParams params, HttpServletRequest request, Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        String userId = hostHolder.getPassportId();
+        String passportId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
         String smsCode = params.getSmscode();
         String newMobile = params.getNew_mobile();
         String password = params.getPassword();
         String modifyIp = getIp(request);
 
-        switch (AccountDomainEnum.getAccountDomain(userId)) {
-            case PHONE:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
                 return result.toString();
-            case SOHU:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                return result.toString();
-            case THIRD:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
-                return result.toString();
+            }
+            switch (AccountDomainEnum.getAccountDomain(passportId)) {
+                case PHONE:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
+                    return result.toString();
+                case SOHU:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                    return result.toString();
+                case THIRD:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                    return result.toString();
+            }
+
+            result = secureManager.bindMobileByPassportId(passportId, clientId, newMobile, smsCode, password, modifyIp);
+            return result.toString();
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
-
-        result = secureManager.bindMobileByPassportId(userId, clientId, newMobile, smsCode, password, modifyIp);
-
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
-
-        return result.toString();
     }
 
     /*
@@ -712,7 +692,8 @@ public class SecureAction extends BaseController {
     public String emailVerifySuccess(String token, String id, HttpServletRequest request, Model model) throws Exception {
         // TODO:状态码参数或token
         Result result = new APIResultSupport(false);
-        String username = hostHolder.getNickName();
+//        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
+        String username = hostHolder.getNickName();  // TODO 不能使用此方法
         if (!Strings.isNullOrEmpty(username)) {
             result.setDefaultModel("username", username);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);

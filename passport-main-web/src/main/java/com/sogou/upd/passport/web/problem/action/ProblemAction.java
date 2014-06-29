@@ -1,9 +1,11 @@
 package com.sogou.upd.passport.web.problem.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.form.WebAddProblemParams;
 import com.sogou.upd.passport.manager.problem.ProblemManager;
 import com.sogou.upd.passport.manager.problem.ProblemTypeManager;
@@ -41,7 +43,8 @@ public class ProblemAction extends BaseController {
     private ProblemTypeManager problemTypeManager;
     @Autowired
     private HostHolder hostHolder;
-
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
     @RequestMapping(value = "/problem/addProblem", method = RequestMethod.GET)
     public String addProblem(HttpServletRequest request, Model model)
@@ -50,11 +53,7 @@ public class ProblemAction extends BaseController {
         //检测是否登录
         if (hostHolder.isLogin()) {
             String userId = hostHolder.getPassportId();
-            String nickName = hostHolder.getNickName();
-            if (Strings.isNullOrEmpty(nickName)) {
-                nickName = userId;
-            }
-            result.setDefaultModel("username", nickName);
+            result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, CommonConstant.SGPP_DEFAULT_CLIENTID));
         }
         //获取问题类型列表
         List<ProblemType> typeList = problemTypeManager.getProblemTypeList();

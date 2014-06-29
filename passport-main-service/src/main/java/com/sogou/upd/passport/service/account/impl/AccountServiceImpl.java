@@ -546,6 +546,28 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public boolean bindOrModifyMobile(Account account, String newMobile) throws ServiceException {
+        try {
+            String passportId = account.getPassportId();
+            String oldMobile = account.getMobile();
+            if(Strings.isNullOrEmpty(oldMobile)){ //首次绑定手机
+
+            }
+
+            int row = accountDAO.updateMobile(newMobile, passportId);
+            if (row != 0) {
+                String cacheKey = buildAccountKey(passportId);
+                account.setMobile(newMobile);
+                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Override
     public boolean updateState(Account account, int newState) throws ServiceException {
         try {
             String passportId = account.getPassportId();

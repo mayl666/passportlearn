@@ -17,6 +17,7 @@ public interface SecureManager {
      * 发送短信验证码（至未注册未绑定手机）
      */
     public Result sendMobileCode(String mobile, int clientId, AccountModuleEnum module) throws Exception;
+
     /**
      * 发送短信验证码（根据passportId）
      */
@@ -75,7 +76,7 @@ public interface SecureManager {
      *
      * @param passportId
      * @param clientId
-     * @param doProcess 是否模糊处理，如abcde@sogou.com转换为ab*****e@sogou.com
+     * @param doProcess  是否模糊处理，如abcde@sogou.com转换为ab*****e@sogou.com
      * @return result.getData().get("data") // 账户安全信息
      * @throws Exception
      */
@@ -83,6 +84,7 @@ public interface SecureManager {
 
     /**
      * 修改用户密码（web验证码方式）
+     *
      * @param updatePwdParameters 注意passport_id需从cookie里获取后赋值、ip需赋值
      */
     public Result updateWebPwd(UpdatePwdParameters updatePwdParameters) throws Exception;
@@ -146,7 +148,7 @@ public interface SecureManager {
      * @param clientId
      * @param newMobile 新绑定手机号
      * @param smsCode   新绑定手机号短信验证码
-     * @param scode 验证安全码
+     * @param scode     验证安全码
      * @return
      * @throws Exception
      */
@@ -178,7 +180,7 @@ public interface SecureManager {
      * @return
      * @throws Exception
      */
-    public Result checkMobileCodeByNewMobile(String mobile, int clientId, String smsCode) throws Exception;
+    public Result checkMobileCodeByNewMobile(String mobile, int clientId, String smsCode);
 
     /**
      * 验证手机短信随机码——用于原绑定手机验证，不分业务功能
@@ -196,9 +198,9 @@ public interface SecureManager {
      *
      * @param userId
      * @param clientId
-     * @param action 记录的动作
+     * @param action   记录的动作
      * @param ip
-     * @param note 记录说明
+     * @param note     记录说明
      * @return
      * @throws Exception
      */
@@ -209,7 +211,7 @@ public interface SecureManager {
      *
      * @param userId
      * @param clientId
-     * @param action 查询的动作
+     * @param action   查询的动作
      * @return
      * @throws Exception
      */

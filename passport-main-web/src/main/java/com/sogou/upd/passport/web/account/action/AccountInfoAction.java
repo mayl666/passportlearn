@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -306,7 +307,7 @@ public class AccountInfoAction extends BaseController {
                 //非第三方账号迁移，获取用户昵称信息，统一调用 accountInfoManager 的 getUserUniqName方法
 //                result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(userId, 1120));
 
-                result.getModels().put("uniqname", accountInfoManager.getUserUniqName(userId, 1120));
+                result.getModels().put("uniqname", accountInfoManager.getUserUniqName(userId, CommonConstant.SGPP_DEFAULT_CLIENTID));
                 //TODO disable 作用是对于第三方账号，不显示安全信息tab
                 result.setDefaultModel("disable", true);
             }

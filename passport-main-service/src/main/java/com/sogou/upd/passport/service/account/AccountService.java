@@ -128,6 +128,15 @@ public interface AccountService {
     public boolean modifyMobile(Account account, String newMobile);
 
     /**
+     * 首次绑定或修改绑定手机
+     *
+     * @param account
+     * @param newMobile
+     * @return
+     */
+    public boolean bindOrModifyMobile(Account account, String newMobile) throws ServiceException;
+
+    /**
      * 解禁或封禁用户
      *
      * @param account
