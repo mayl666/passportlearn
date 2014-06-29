@@ -221,7 +221,7 @@ public class ResetPwdAction extends BaseController {
             }
 
             result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
-            if (!result.isSuccess()) {
+            if (result.isSuccess()) {
                 result.setMessage("账号不存在");
                 model.addAttribute("data", result.toString());
                 return "/recover/index";
