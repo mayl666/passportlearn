@@ -246,12 +246,15 @@ public class ResetPwdAction extends BaseController {
                 if (!Strings.isNullOrEmpty(sec_mobile)) {
                     result.setDefaultModel("sec_process_mobile", accountSecureInfoVO.getSec_mobile());
                     result.setDefaultModel("sec_mobile_md5", DigestUtils.md5Hex(sec_mobile.getBytes()));
+                    result.getModels().remove("sec_mobile"); //为了账号安全，不返回完整的手机号
                 }
                 if (!Strings.isNullOrEmpty(sec_email)) {
                     result.setDefaultModel("sec_process_email", accountSecureInfoVO.getSec_email());
                     result.setDefaultModel("sec_email_md5", DigestUtils.md5Hex(sec_email.getBytes()));
+                    result.getModels().remove("sec_email"); //为了账号安全，不返回完整的密保邮箱
                 }
             }
+            //todo 外域邮箱找回时也需要模糊处理，目前只是搜狗账号阶段，暂未添加注册邮箱找回
 //        result.setDefaultModel("userid", passportId);    //用户输入账号的主账号
             model.addAttribute("data", result.toString());   //返回的信息包含密保手机、密保邮箱、及密保问题（找回密码不会用到此返回结果）
             passportIdLog = passportId;
