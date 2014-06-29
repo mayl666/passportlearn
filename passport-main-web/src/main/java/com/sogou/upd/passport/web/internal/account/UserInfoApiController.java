@@ -91,10 +91,10 @@ public class UserInfoApiController extends BaseController {
                     LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "/internal/account/userinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, params.getUserid(), passportId, result.toString());
                 }
             }
-//            result = proxyUserInfoApiManager.getUserInfo(params);
         }
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("fields", params.getFields());
+        userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
