@@ -452,9 +452,9 @@ public class ResetPwdAction extends BaseController {
             int clientId = Integer.parseInt(params.getClient_id());
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
+                result = getSecureInfo(passportId, clientId);
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
-                result = getSecureInfo(passportId, clientId);
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
@@ -466,8 +466,8 @@ public class ResetPwdAction extends BaseController {
             }
             result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
             if (result.isSuccess()) {
-                result.setMessage("账号不存在");
                 result = getSecureInfo(passportId, clientId);
+                result.setMessage("账号不存在");
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
