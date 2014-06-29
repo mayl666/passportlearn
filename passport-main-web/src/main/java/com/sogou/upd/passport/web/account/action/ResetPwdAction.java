@@ -213,12 +213,12 @@ public class ResetPwdAction extends BaseController {
                 return "/recover/index";
             }
 
-            boolean checkTimes = resetPwdManager.checkFindPwdTimes(username).isSuccess();
-            if (!checkTimes) {
-                result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
-                model.addAttribute("data", result.toString());
-                return "/recover/index";
-            }
+//            boolean checkTimes = resetPwdManager.checkFindPwdTimes(username).isSuccess();
+//            if (!checkTimes) {
+//                result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
+//                model.addAttribute("data", result.toString());
+//                return "/recover/index";
+//            }
 
             result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
             if (result.isSuccess()) {
@@ -238,7 +238,7 @@ public class ResetPwdAction extends BaseController {
             }
             AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
             //记录找回密码次数
-            resetPwdManager.incFindPwdTimes(username);
+//            resetPwdManager.incFindPwdTimes(username);
             //如果用户的密保手机和密保邮箱存在，则返回模糊处理的手机号/密保邮箱及完整手机号/邮箱加密后的md5串
             if (accountSecureInfoVO != null) {
                 String sec_mobile = (String) result.getModels().get("sec_mobile");
