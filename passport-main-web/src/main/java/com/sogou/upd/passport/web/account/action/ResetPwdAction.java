@@ -440,40 +440,49 @@ public class ResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/check", method = RequestMethod.POST)
-    @ResponseBody
-    public Object checkPwdView(HttpServletRequest request, CheckSmsCodeAndGetSecInfoParams params, Model model) throws Exception {
+    public String checkPwdView(HttpServletRequest request, CheckSmsCodeAndGetSecInfoParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
-            }
-            int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
-            if (result.isSuccess()) {
-                result.setDefaultModel("userid", params.getUsername());
-                model.addAttribute("data", result.toString());
-                return "/recover/reset";
-            }
             String username = params.getUsername();
             String passportId = username;
             if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(username))) {
                 passportId += "@sogou.com";
             }
             passportId = commonManager.getPassportIdByUsername(username);
+            int clientId = Integer.parseInt(params.getClient_id());
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                result = getSecureInfo(passportId, clientId);
+                model.addAttribute("data", result.toString());
+                return "/recover/type";
+            }
+            result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
+            if (result.isSuccess()) {
+                result.setDefaultModel("userid", params.getUsername());
+                result = getSecureInfo(passportId, clientId);
+                model.addAttribute("data", result.toString());
+            }
             result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
             if (result.isSuccess()) {
                 result.setMessage("账号不存在");
+                result = getSecureInfo(passportId, clientId);
                 model.addAttribute("data", result.toString());
-                return "/recover/index";
+                return "/recover/type";
             }
-            result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
-            if (!result.isSuccess()) {
-                model.addAttribute("data", result.toString());
-                return "/recover/index";
-            }
+        } catch (Exception e) {
+            logger.error("checkPwdView Is Failed,Username is " + params.getUsername(), e);
+        } finally {
+            log(request, params.getUsername(), result.getCode());
+        }
+        return "/recover/reset";
+    }
+
+    private Result getSecureInfo(String passportId, int clientId) throws Exception {
+        Result result;
+        result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
+        if (result.isSuccess()) {
             AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
             //记录找回密码次数
 //            resetPwdManager.incFindPwdTimes(username);
@@ -492,15 +501,8 @@ public class ResetPwdAction extends BaseController {
                     result.getModels().remove("sec_email"); //为了账号安全，不返回完整的密保邮箱
                 }
             }
-            //todo 外域邮箱找回时也需要模糊处理，目前只是搜狗账号阶段，暂未添加注册邮箱找回
-//        result.setDefaultModel("userid", passportId);    //用户输入账号的主账号
-
-        } catch (Exception e) {
-            logger.error("checkPwdView Is Failed,Username is " + params.getUsername(), e);
-        } finally {
-            log(request, params.getUsername(), result.getCode());
         }
-        model.addAttribute("data", result.toString());
-        return "/recover/type";
+        //todo 外域邮箱找回时也需要模糊处理，目前只是搜狗账号阶段，暂未添加注册邮箱找回
+        return result;
     }
 }
