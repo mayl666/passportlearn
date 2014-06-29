@@ -43,8 +43,9 @@ public class SecureApiManagerImpl implements SecureApiManager {
         if (ManagerHelper.writeSohuSwitcher()) {
             result = proxySecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
         } else {
+            AccountDomainEnum domainType = AccountDomainEnum.getAccountDomain(passportId);
             //搜狗账号修改密码双写
-            if (AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+            if (AccountDomainEnum.SOGOU.equals(domainType) || AccountDomainEnum.INDIVID.equals(domainType)) {
                 result = bothUpdatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
             } else {
                 //其它账号修改密码依然只写SH
@@ -77,7 +78,46 @@ public class SecureApiManagerImpl implements SecureApiManager {
 
     @Override
     public Result updateQues(UpdateQuesApiParams updateQuesApiParams) {
-        return null;
+        Result result = new APIResultSupport(false);
+        try {
+            if (ManagerHelper.writeSohuSwitcher()) {
+                result = proxySecureApiManager.updateQues(updateQuesApiParams);
+            } else {
+                AccountDomainEnum domainType = AccountDomainEnum.getAccountDomain(updateQuesApiParams.getUserid());
+                //搜狗账号修改密保问题双写
+                if (AccountDomainEnum.SOGOU.equals(domainType) || AccountDomainEnum.INDIVID.equals(domainType)) {
+                    result = bothUpdateQues(updateQuesApiParams);
+                } else {
+                    //其它账号修改密保问题依然只写SH
+                    result = sgSecureApiManager.updateQues(updateQuesApiParams);
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return result;
+    }
+
+    /**
+     * 修改密保问题双写
+     *
+     * @param updateQuesApiParams
+     * @return
+     */
+    private Result bothUpdateQues(UpdateQuesApiParams updateQuesApiParams) {
+        Result result = new APIResultSupport(false);
+        try {
+            result = sgSecureApiManager.updateQues(updateQuesApiParams);
+            Result shResult = proxySecureApiManager.updateQues(updateQuesApiParams);
+            if (!result.isSuccess()) {
+                String message = shResult.isSuccess() ? CommonConstant.SGERROR_SHSUCCESS : CommonConstant.SGERROR_SHERROR;
+                LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.SECURE, "updateQues", message, updateQuesApiParams.getUserid(), result.getCode(), shResult.toString());
+            }
+        } catch (Exception e) {
+            logger.error("bothUpdateQues Exception", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
     }
 
     @Override

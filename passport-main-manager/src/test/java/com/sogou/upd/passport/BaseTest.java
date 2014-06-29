@@ -76,7 +76,7 @@ public class BaseTest extends AbstractJUnit4SpringContextTests {
 
     protected static final String serverSecret = "Hpi%#ZT<u@hR.6F)HtfvUKf5ERYR1b";
 
-    protected static final String modifyIp = "10.1.164.160";
+    protected static final String modifyIp = "127.0.0.1";
 
     protected static final String ip = "172.165.0.32";
 

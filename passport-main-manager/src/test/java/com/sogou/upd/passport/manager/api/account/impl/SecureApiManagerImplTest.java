@@ -1,9 +1,11 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.result.APIResultForm;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -48,25 +50,44 @@ public class SecureApiManagerImplTest extends BaseTest {
         Assert.assertTrue(endResult.isSuccess());
     }
 
+    /**
+     * 用户存在且密码正确
+     *
+     * @throws Exception
+     */
     @Test
-    public void testUpdateQues() throws Exception {
+    public void testUpdateQues_0() throws Exception {
         UpdateQuesApiParams updateQuesApiParams = new UpdateQuesApiParams();
-        updateQuesApiParams.setPassword("testtest1");
+        updateQuesApiParams.setPassword("111111");
+        updateQuesApiParams.setModifyip(modifyIp);
+        updateQuesApiParams.setNewanswer("测试答案1");
+        updateQuesApiParams.setNewquestion("测试问题1");
+        updateQuesApiParams.setUserid("test255@sogou.com");
+        Result actualResult = proxySecureApiManager.updateQues(updateQuesApiParams);
+        APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
+        Result expectResult = sgSecureApiManager.updateQues(updateQuesApiParams);
+        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm.equals(actualForm));
+    }
+
+    /**
+     * 用户存在,密码错误
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testUpdateQues_20206() throws Exception {
+        UpdateQuesApiParams updateQuesApiParams = new UpdateQuesApiParams();
+        updateQuesApiParams.setPassword("123456");
         updateQuesApiParams.setModifyip(modifyIp);
         updateQuesApiParams.setNewanswer("测试答案");
         updateQuesApiParams.setNewquestion("测试问题");
-        updateQuesApiParams.setUserid(userid);
-        Result result = proxySecureApiManager.updateQues(updateQuesApiParams);
-        System.out.println(result.toString());
-
-    }
-
-    public void testGetUserSecureInfo() throws Exception {
-
-    }
-
-    public void testResetPasswordByQues() throws Exception {
-
+        updateQuesApiParams.setUserid("test255@sogou.com");
+        Result actualResult = proxySecureApiManager.updateQues(updateQuesApiParams);
+        APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
+        Result expectResult = sgSecureApiManager.updateQues(updateQuesApiParams);
+        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm.equals(actualForm));
     }
 
 }

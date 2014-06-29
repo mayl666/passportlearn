@@ -37,6 +37,7 @@ public class ProxySecureApiManagerImpl extends BaseProxyManager implements Secur
 
     @Override
     public Result updateQues(UpdateQuesApiParams updateQuesApiParams) {
+        //todo 修改成调用sohu的修改密保问题接口而不是修改密码接口
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_PWD, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(updateQuesApiParams);
         return this.executeResult(requestModelXml);

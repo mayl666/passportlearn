@@ -42,8 +42,8 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
             //回滚操作时，都走写SH流程
             result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
         } else {
-            String userId = regEmailApiParams.getUserid();
-            if (AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(userId))) {
+            AccountDomainEnum domainType = AccountDomainEnum.getAccountDomain(regEmailApiParams.getUserid());
+            if (AccountDomainEnum.SOGOU.equals(domainType) || AccountDomainEnum.INDIVID.equals(domainType)) {
                 //搜狗账号走双写流程
                 result = bothWriteUser(regEmailApiParams);
             } else {

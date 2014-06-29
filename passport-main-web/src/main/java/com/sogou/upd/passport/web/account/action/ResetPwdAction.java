@@ -213,15 +213,15 @@ public class ResetPwdAction extends BaseController {
                 return "/recover/index";
             }
 
-            boolean checkTimes = resetPwdManager.checkFindPwdTimes(username).isSuccess();
-            if (!checkTimes) {
-                result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
-                model.addAttribute("data", result.toString());
-                return "/recover/index";
-            }
+//            boolean checkTimes = resetPwdManager.checkFindPwdTimes(username).isSuccess();
+//            if (!checkTimes) {
+//                result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
+//                model.addAttribute("data", result.toString());
+//                return "/recover/index";
+//            }
 
             result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
-            if (!result.isSuccess()) {
+            if (result.isSuccess()) {
                 result.setMessage("账号不存在");
                 model.addAttribute("data", result.toString());
                 return "/recover/index";
@@ -236,18 +236,25 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/index";
             }
+            AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
             //记录找回密码次数
-            resetPwdManager.incFindPwdTimes(username);
-            //如果所填账号为手机账号，则返回模糊处理的手机号及完整手机号加密后的md5串
-            if (AccountDomainEnum.getAccountDomain(username).equals(AccountDomainEnum.PHONE)) {
-                AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
+//            resetPwdManager.incFindPwdTimes(username);
+            //如果用户的密保手机和密保邮箱存在，则返回模糊处理的手机号/密保邮箱及完整手机号/邮箱加密后的md5串
+            if (accountSecureInfoVO != null) {
                 String sec_mobile = (String) result.getModels().get("sec_mobile");
-                result.setDefaultModel("sec_process_mobile", accountSecureInfoVO.getSec_mobile());
-                result.setDefaultModel("sec_mobile_md5", DigestUtils.md5Hex(sec_mobile.getBytes()));
+                String sec_email = (String) result.getModels().get("sec_email");
+                if (!Strings.isNullOrEmpty(sec_mobile)) {
+                    result.setDefaultModel("sec_process_mobile", accountSecureInfoVO.getSec_mobile());
+                    result.setDefaultModel("sec_mobile_md5", DigestUtils.md5Hex(sec_mobile.getBytes()));
+                    result.getModels().remove("sec_mobile"); //为了账号安全，不返回完整的手机号
+                }
+                if (!Strings.isNullOrEmpty(sec_email)) {
+                    result.setDefaultModel("sec_process_email", accountSecureInfoVO.getSec_email());
+                    result.setDefaultModel("sec_email_md5", DigestUtils.md5Hex(sec_email.getBytes()));
+                    result.getModels().remove("sec_email"); //为了账号安全，不返回完整的密保邮箱
+                }
             }
-            if (AccountDomainEnum.getAccountDomain(username).equals(AccountDomainEnum.OTHER)) {
-                result.setDefaultModel("reg_email", username);
-            }
+            //todo 外域邮箱找回时也需要模糊处理，目前只是搜狗账号阶段，暂未添加注册邮箱找回
 //        result.setDefaultModel("userid", passportId);    //用户输入账号的主账号
             model.addAttribute("data", result.toString());   //返回的信息包含密保手机、密保邮箱、及密保问题（找回密码不会用到此返回结果）
             passportIdLog = passportId;
