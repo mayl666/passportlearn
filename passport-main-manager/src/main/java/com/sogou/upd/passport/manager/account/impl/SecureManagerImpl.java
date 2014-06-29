@@ -396,12 +396,6 @@ public class SecureManagerImpl implements SecureManager {
             result = checkUpdatePwdCaptchaAndSecure(passportId, clientId, token, captcha, modifyIp);
             if (result.isSuccess()) {
                 result = secureApiManager.updatePwd(passportId, clientId, updatePwdParameters.getPassword(), updatePwdParameters.getNewPwd(), modifyIp);
-//            if (ManagerHelper.isInvokeProxyApi(passportId)) {
-//                result = proxySecureApiManager.updatePwd(updatePwdApiParams);
-//                // TODO 清除PC端token，后续移至accountService.resetPassword
-//            } else {
-//                result = sgSecureApiManager.updatePwd(updatePwdApiParams);
-//            }
                 //TODO 所有账号只写SG库时此判断即可去掉；因SG账号只写先上，所以SG账号写分离时不需要再记此标记了
                 if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
                     accountSecureService.updateSuccessFlag(passportId);

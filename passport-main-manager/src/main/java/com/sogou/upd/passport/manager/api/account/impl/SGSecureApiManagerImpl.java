@@ -51,7 +51,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
             return result;
         }
         Account account = (Account) result.getDefaultModel();
-        result.setDefaultModel(null);
+        result.setModels(Maps.newHashMap());
         if (!accountService.resetPassword(account, newPwd, true)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
         }

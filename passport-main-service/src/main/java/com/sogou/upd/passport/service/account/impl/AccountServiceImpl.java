@@ -350,7 +350,7 @@ public class AccountServiceImpl implements AccountService {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPassword(passwdSign);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-
+                // TODO 清除PC端token，后续移至accountService.resetPassword
                 return true;
             }
         } catch (Exception e) {
