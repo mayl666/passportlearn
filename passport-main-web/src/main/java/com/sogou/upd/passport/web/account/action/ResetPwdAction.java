@@ -84,33 +84,33 @@ public class ResetPwdAction extends BaseController {
 
         switch (params.getType()) {
             case "bind_email":
-                result = secureManager.queryAccountSecureInfo(params.getUserid(), Integer.parseInt(params.getClient_id()), true);
+                result = secureManager.queryAccountSecureInfo(params.getUsername(), Integer.parseInt(params.getClient_id()), true);
                 String email = (String) (result.getModels().get("sec_email"));
                 result = new APIResultSupport(true);
                 result.setDefaultModel("bind_email", email);
-                result.setDefaultModel("userid", params.getUserid());
+                result.setDefaultModel("userid", params.getUsername());
                 model.addAttribute("data", result.toString());
-                log(request, params.getUserid(), result.getCode());
+                log(request, params.getUsername(), result.getCode());
                 return "/recover/email";
             case "reg_email":
-                result.setDefaultModel("reg_email", params.getUserid());
-                result.setDefaultModel("userid", params.getUserid());
+                result.setDefaultModel("reg_email", params.getUsername());
+                result.setDefaultModel("userid", params.getUsername());
                 model.addAttribute("data", result.toString());
                 return "/recover/email";
             case "bind_mobile":
-                result = secureManager.queryAccountSecureInfo(params.getUserid(), Integer.parseInt(params.getClient_id()), true);
+                result = secureManager.queryAccountSecureInfo(params.getUsername(), Integer.parseInt(params.getClient_id()), true);
                 String mobile = (String) (result.getModels().get("sec_mobile"));
                 result = new APIResultSupport(true);
                 result.setDefaultModel("bind_mobile", mobile);
-                result.setDefaultModel("userid", params.getUserid());
+                result.setDefaultModel("userid", params.getUsername());
                 model.addAttribute("data", result.toString());
-                log(request, params.getUserid(), result.getCode());
+                log(request, params.getUsername(), result.getCode());
                 return "/recover/mobile";
             case "reg_mobile":
-                result.setDefaultModel("reg_mobile", getMobile(params.getUserid()));
-                result.setDefaultModel("userid", params.getUserid());
+                result.setDefaultModel("reg_mobile", getMobile(params.getUsername()));
+                result.setDefaultModel("userid", params.getUsername());
                 model.addAttribute("data", result.toString());
-                log(request, params.getUserid(), result.getCode());
+                log(request, params.getUsername(), result.getCode());
                 return "/recover/mobile";
         }
 
@@ -290,7 +290,7 @@ public class ResetPwdAction extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getUserid();
+        String passportId = params.getUsername();
         int clientId = Integer.parseInt(params.getClient_id());
         result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true);
         result.setDefaultModel("userid", passportId);
@@ -316,7 +316,7 @@ public class ResetPwdAction extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getUserid();
+        String passportId = params.getUsername();
         int clientId = Integer.parseInt(params.getClient_id());
         result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false);
         result.setDefaultModel("userid", passportId);
@@ -341,7 +341,7 @@ public class ResetPwdAction extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getUserid();
+        String passportId = params.getUsername();
         int clientId = Integer.parseInt(params.getClient_id());
         result = resetPwdManager.checkEmailResetPwd(passportId, clientId, params.getScode());
         if (result.isSuccess()) {
@@ -374,7 +374,7 @@ public class ResetPwdAction extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        String passportId = params.getUserid();
+        String passportId = params.getUsername();
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
         result = resetPwdManager.resetPasswordByScode(passportId, clientId, password, params.getScode(), getIp(request));
@@ -400,8 +400,8 @@ public class ResetPwdAction extends BaseController {
             return result.toString();
         }
         int clientId = Integer.parseInt(params.getClient_id());
-        result = resetPwdManager.sendFindPwdMobileCode(params.getUserid(), clientId);
-        log(request, params.getUserid(), result.getCode());
+        result = resetPwdManager.sendFindPwdMobileCode(params.getUsername(), clientId);
+        log(request, params.getUsername(), result.getCode());
         return result.toString();
     }
 
@@ -424,9 +424,9 @@ public class ResetPwdAction extends BaseController {
             return result.toString();
         }
         int clientId = Integer.parseInt(params.getClient_id());
-        result = resetPwdManager.checkMobileCodeResetPwd(params.getUserid(), clientId, params.getSmscode());
-        result.setDefaultModel("userid", params.getUserid());
-        log(request, params.getUserid(), result.getCode());
+        result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
+        result.setDefaultModel("userid", params.getUsername());
+        log(request, params.getUsername(), result.getCode());
         return result.toString();
     }
 
@@ -439,11 +439,68 @@ public class ResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/resetview", method = RequestMethod.POST)
+    @RequestMapping(value = "/findpwd/check", method = RequestMethod.POST)
     @ResponseBody
-    public Object resetPwdView(HttpServletRequest request, FindPwdCheckSmscodeParams params, Model model) throws Exception {
+    public Object checkPwdView(HttpServletRequest request, CheckSmsCodeAndGetSecInfoParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
-        //需要根据用户名生成token，返回至reset页面
-        return result;
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            int clientId = Integer.parseInt(params.getClient_id());
+            result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
+            if (result.isSuccess()) {
+                result.setDefaultModel("userid", params.getUsername());
+                model.addAttribute("data", result.toString());
+                return "/recover/reset";
+            }
+            String username = params.getUsername();
+            String passportId = username;
+            if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(username))) {
+                passportId += "@sogou.com";
+            }
+            passportId = commonManager.getPassportIdByUsername(username);
+            result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
+            if (result.isSuccess()) {
+                result.setMessage("账号不存在");
+                model.addAttribute("data", result.toString());
+                return "/recover/index";
+            }
+            result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
+            if (!result.isSuccess()) {
+                model.addAttribute("data", result.toString());
+                return "/recover/index";
+            }
+            AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
+            //记录找回密码次数
+//            resetPwdManager.incFindPwdTimes(username);
+            //如果用户的密保手机和密保邮箱存在，则返回模糊处理的手机号/密保邮箱及完整手机号/邮箱加密后的md5串
+            if (accountSecureInfoVO != null) {
+                String sec_mobile = (String) result.getModels().get("sec_mobile");
+                String sec_email = (String) result.getModels().get("sec_email");
+                if (!Strings.isNullOrEmpty(sec_mobile)) {
+                    result.setDefaultModel("sec_process_mobile", accountSecureInfoVO.getSec_mobile());
+                    result.setDefaultModel("sec_mobile_md5", DigestUtils.md5Hex(sec_mobile.getBytes()));
+                    result.getModels().remove("sec_mobile"); //为了账号安全，不返回完整的手机号
+                }
+                if (!Strings.isNullOrEmpty(sec_email)) {
+                    result.setDefaultModel("sec_process_email", accountSecureInfoVO.getSec_email());
+                    result.setDefaultModel("sec_email_md5", DigestUtils.md5Hex(sec_email.getBytes()));
+                    result.getModels().remove("sec_email"); //为了账号安全，不返回完整的密保邮箱
+                }
+            }
+            //todo 外域邮箱找回时也需要模糊处理，目前只是搜狗账号阶段，暂未添加注册邮箱找回
+//        result.setDefaultModel("userid", passportId);    //用户输入账号的主账号
+
+        } catch (Exception e) {
+            logger.error("checkPwdView Is Failed,Username is " + params.getUsername(), e);
+        } finally {
+            log(request, params.getUsername(), result.getCode());
+        }
+        model.addAttribute("data", result.toString());
+        return "/recover/type";
     }
 }

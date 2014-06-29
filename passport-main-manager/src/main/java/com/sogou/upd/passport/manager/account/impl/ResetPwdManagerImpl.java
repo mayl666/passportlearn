@@ -381,9 +381,14 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     public Result checkMobileCodeResetPwd(String passportId, int clientId, String smsCode)
             throws Exception {
         Result result = new APIResultSupport(false);
-        // TODO:与checkMobileCodeOldForBinding整合
         try {
-            // result = checkMobileCodeByPassportId(passportId, clientId, smsCode);
+            Account account = accountService.queryNormalAccount(passportId);
+            if (account == null) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                return result;
+            }
+            String mobile = account.getMobile();
+            result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.RESETPWD, smsCode);
             if (result.isSuccess()) {
                 result.setDefaultModel("scode", accountSecureService.getSecureCodeResetPwd(passportId, clientId));
             }
