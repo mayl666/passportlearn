@@ -236,17 +236,21 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/index";
             }
+            AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
             //记录找回密码次数
             resetPwdManager.incFindPwdTimes(username);
             //如果所填账号为手机账号，则返回模糊处理的手机号及完整手机号加密后的md5串
-            if (AccountDomainEnum.getAccountDomain(username).equals(AccountDomainEnum.PHONE)) {
-                AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
+            if (accountSecureInfoVO != null) {
                 String sec_mobile = (String) result.getModels().get("sec_mobile");
-                result.setDefaultModel("sec_process_mobile", accountSecureInfoVO.getSec_mobile());
-                result.setDefaultModel("sec_mobile_md5", DigestUtils.md5Hex(sec_mobile.getBytes()));
-            }
-            if (AccountDomainEnum.getAccountDomain(username).equals(AccountDomainEnum.OTHER)) {
-                result.setDefaultModel("reg_email", username);
+                String sec_email = (String) result.getModels().get("sec_email");
+                if (!Strings.isNullOrEmpty(sec_mobile)) {
+                    result.setDefaultModel("sec_process_mobile", accountSecureInfoVO.getSec_mobile());
+                    result.setDefaultModel("sec_mobile_md5", DigestUtils.md5Hex(sec_mobile.getBytes()));
+                }
+                if (!Strings.isNullOrEmpty(sec_email)) {
+                    result.setDefaultModel("sec_process_email", accountSecureInfoVO.getSec_email());
+                    result.setDefaultModel("sec_email_md5", DigestUtils.md5Hex(sec_email.getBytes()));
+                }
             }
 //        result.setDefaultModel("userid", passportId);    //用户输入账号的主账号
             model.addAttribute("data", result.toString());   //返回的信息包含密保手机、密保邮箱、及密保问题（找回密码不会用到此返回结果）
