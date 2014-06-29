@@ -89,7 +89,7 @@ public class OpenApiV3 {
             logger.error("api:Transfer Map To Json Is Failed :", ioe);
             throw new IOException("Transfer Map To Json Is Failed:", ioe);
         } catch (Exception e) {
-            logger.error("api:Execute Api Is Failed :", e);
+            logger.warn("api:Execute Api Is Failed :", e);
             throw new Exception("Execute Api Is Failed:", e);
         }
         return resp;
