@@ -58,7 +58,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
             return result;
         }
 
-        if (!accountService.modifyMobile(account, mobile)) {
+        if (!accountService.modifyMobileByAccount(account, mobile)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
             return result;
         }
@@ -89,7 +89,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
             return result;
         }
 
-        if (!accountService.modifyMobile(account, null)) {
+        if (!accountService.modifyMobileByAccount(account, null)) {
             result.setCode(ErrorUtil.ERR_CODE_PHONE_UNBIND_FAILED);
             return result;
         }
@@ -169,7 +169,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result bindMobile(String userid,String mobile){
+    public Result bindMobile(String passportId,String newMobile){
         return null;
     }
 

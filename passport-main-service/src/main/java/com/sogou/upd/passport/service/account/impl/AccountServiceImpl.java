@@ -20,6 +20,7 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -67,6 +68,8 @@ public class AccountServiceImpl implements AccountService {
     private CaptchaUtils captchaUtils;
     @Autowired
     private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
+    @Autowired
+    private MobilePassportMappingService mobilePassportMappingService;
 
     @Override
     public Account initialWebAccount(String username, String ip) throws ServiceException {
@@ -296,12 +299,24 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException {
         try {
-//            int row = accountDAO.deleteAccountByPassportId(passportId);
-//            if (row != 0) {
             String cacheKey = buildAccountKey(passportId);
             dbShardRedisUtils.delete(cacheKey);
             return true;
-//            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean deleteAccountByPassportId(String passportId) throws ServiceException {
+        try {
+            int row = accountDAO.deleteAccountByPassportId(passportId);
+            if (row != 0) {
+                String cacheKey = buildAccountKey(passportId);
+                long redisRow = dbShardRedisUtils.delete(cacheKey);
+                return redisRow == 1;
+            }
+            return false;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -529,7 +544,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean modifyMobile(Account account, String newMobile) throws ServiceException {
+    public boolean modifyMobileByAccount(Account account, String newMobile) throws ServiceException {
         try {
             String passportId = account.getPassportId();
             int row = accountDAO.updateMobile(newMobile, passportId);
@@ -546,25 +561,53 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean bindOrModifyMobile(Account account, String newMobile) throws ServiceException {
+    public boolean bindOrModifyBindMobile(Account account, String newMobile) throws ServiceException {
         try {
             String passportId = account.getPassportId();
             String oldMobile = account.getMobile();
-            if(Strings.isNullOrEmpty(oldMobile)){ //首次绑定手机
-
+            String newMobilePassportId = mobilePassportMappingService.queryPassportIdByMobile(newMobile);
+            if (!Strings.isNullOrEmpty(newMobilePassportId)) { //该手机号不允许绑定
+                return false;
+            } else if (!Strings.isNullOrEmpty(oldMobile) && Strings.isNullOrEmpty(newMobilePassportId)) {  //修改绑定手机
+                String oldMobilePassportId = mobilePassportMappingService.queryPassportIdByMobile(oldMobile);
+                if (!Strings.isNullOrEmpty(oldMobilePassportId)) {
+                    boolean isDeleteMapping = mobilePassportMappingService.deleteMobilePassportMapping(oldMobile);
+                    if (!isDeleteMapping) return false;
+                } else { //上一次绑定失败，写account成功，写mapping失败
+                    logger.error("before bind account success but mapping fail, passportId:" + passportId + ", newMobile:" + newMobile);
+                    return false;
+                }
             }
-
-            int row = accountDAO.updateMobile(newMobile, passportId);
-            if (row != 0) {
-                String cacheKey = buildAccountKey(passportId);
-                account.setMobile(newMobile);
-                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-                return true;
-            }
+            //这里要先写account再写mapping，因为根据account的mobile判断是否已绑定手机
+            boolean isModifyAccount = modifyMobileByAccount(account, newMobile);
+            boolean isInitMapping = mobilePassportMappingService.initialMobilePassportMapping(newMobile, passportId);
+            return isInitMapping && isModifyAccount;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        return false;
+    }
+
+    @Override
+    public boolean deleteOrUnbindMobile(String mobile) throws ServiceException {
+        String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
+        try {
+            if (!Strings.isNullOrEmpty(passportId)) {
+                Account account = queryAccountByPassportId(passportId);
+                if (account != null) {
+                    boolean isAccount;
+                    if (passportId.equals(mobile + "@sohu.com")) { //删除注册手机号
+                        isAccount = deleteAccountByPassportId(passportId);
+                    } else { //删除手机号绑定关系
+                        isAccount = modifyMobileByAccount(account, null);
+                    }
+                    boolean isDeleteMapping = mobilePassportMappingService.deleteMobilePassportMapping(mobile);
+                    return isAccount && isDeleteMapping;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override

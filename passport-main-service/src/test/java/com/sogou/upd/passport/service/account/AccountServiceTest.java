@@ -26,6 +26,9 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
     private static final String NEW_MOBILE = "13800000000";
     private static final String PASSWORD = "liuling8";
     private static final String PASSPORT_ID1 = "13552848876@sohu.com";
+    private static final String SPZ_MOBILE = "13621009174";
+    private static final String SPZ_NEW_MOBILE = "18978941658";
+    private static final String SPZ_PASSPORTID = "shipengzhi1986@sogou.com";
     private static final
     String PASSPORT_ID = PassportIDGenerator.generator(MOBILE, AccountTypeEnum.PHONE.getValue());
     private static final String IP = "127.0.0.1";
@@ -102,15 +105,30 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      * 测试修改绑定手机
      */
     @Test
-    public void testModifyMobile() {
-        Account account = accountService.queryAccountByPassportId(PASSPORT_ID1);
-        boolean flag = accountService.modifyMobile(account, NEW_MOBILE);
-        if (flag == true) {
-            System.out.println("修改成功：" + accountService.queryAccountByPassportId(PASSPORT_ID1).getMobile());
-        } else {
-            System.out.println("修改失败");
-        }
-        accountService.modifyMobile(account, account.getMobile());
+    public void testBindOrModifyBindMobile() {
+        //初始值shipengzhi1986@sogou.com绑定13621009174
+        Account account = accountService.queryAccountByPassportId(SPZ_PASSPORTID);
+        //已注册手机无法绑定
+        boolean isBinded = accountService.bindOrModifyBindMobile(account, "18910873093");
+        Assert.assertTrue(!isBinded);
+        //修改绑定手机
+        boolean isModifyBind = accountService.bindOrModifyBindMobile(account, SPZ_NEW_MOBILE);
+        Assert.assertTrue(isModifyBind);
+        //删除绑定
+        boolean isUnbind = accountService.deleteOrUnbindMobile(SPZ_NEW_MOBILE);
+        Assert.assertTrue(isUnbind);
+        //异常情况，account写成功，mobile_passportId_mapping写失败
+        boolean isAbnormalBind = accountService.bindOrModifyBindMobile(account, SPZ_MOBILE);
+        Assert.assertTrue(!isAbnormalBind);
+        //首次绑定
+        account.setMobile(null);
+        boolean isBind = accountService.bindOrModifyBindMobile(account, SPZ_MOBILE);
+        Assert.assertTrue(isBind);
+    }
+
+    @Test
+    public void testDeleteMoible() {
+        boolean isDelete = accountService.deleteOrUnbindMobile(SPZ_MOBILE);
     }
 
 

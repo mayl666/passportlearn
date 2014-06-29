@@ -74,9 +74,9 @@ public class SecureManagerImpl implements SecureManager {
     @Autowired
     private AppConfigService appConfigService;
     @Autowired
-    private RegManager regManager;
-
-
+    private BindApiManager bindApiManager;
+    @Autowired
+    private LoginApiManager loginApiManager;
     // 自动注入Manager
     @Autowired
     private SecureApiManager secureApiManager;
@@ -90,10 +90,6 @@ public class SecureManagerImpl implements SecureManager {
     private BindApiManager sgBindApiManager;
     @Autowired
     private BindApiManager proxyBindApiManager;
-    @Autowired
-    private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private LoginApiManager loginApiManager;
 
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
@@ -630,44 +626,20 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT);
                 return result;
             }
+            //TODO 暂时先采用双读，因为外域、手机账号需要双读，后续改成只读，减少一次account查询
             AuthUserApiParams authParams = new AuthUserApiParams(clientId, passportId, Coder.encryptMD5(password));
-            if (!ManagerHelper.writeSohuSwitcher()) {
-                // 代理接口
-                result = loginApiManager.webAuthUser(authParams);
-                if (!result.isSuccess()) {
-                    operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.SECURE);
-                    return result;
-                }
-                result = proxyBindApiManager.bindMobile(passportId, newMobile);
-            } else {
-                // 直接写实现方法，不调用sgBindApiManager，因不能分拆为两个对应方法同时避免读两次Account
-//                result = loginApiManager.webAuthUser(authParams);    //TODO 如果切换到搜狐接口，则不会返回account
-                result = accountService.verifyUserPwdVaild(passportId, password, true);
-                if (!result.isSuccess()) {
-                    operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.SECURE);
-                    return result;
-                }
-                account = (Account) result.getDefaultModel();
-                // result.setDefaultModel(null);
-
-                String oldMobile = account.getMobile();
-                if (!Strings.isNullOrEmpty(oldMobile)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
-                    return result;
-                }
-
-                if (!accountService.modifyMobile(account, newMobile)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
-                    return result;
-                }
-
-                if (!mobilePassportMappingService.initialMobilePassportMapping(newMobile, passportId)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
-                    return result;
-                }
-                // TODO:事务安全问题，暂不解决
-                result.setSuccess(true);
+            result = loginApiManager.webAuthUser(authParams);
+//            result = accountService.verifyUserPwdVaild(passportId, password, true);
+            if (!result.isSuccess()) {
+                operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.SECURE);
+                return result;
             }
+//            account = (Account) result.getDefaultModel();
+//            if(account == null || Strings.isNullOrEmpty(account.getMobile())){
+//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
+//                return result;
+//            }
+            result = bindApiManager.bindMobile(passportId, newMobile);
             //TODO 所有账号只写SG库时此判断即可去掉
             if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
                 accountSecureService.updateSuccessFlag(passportId);
@@ -675,10 +647,8 @@ public class SecureManagerImpl implements SecureManager {
             if (!result.isSuccess()) {
                 return result;
             }
-
             operateTimesService.incLimitBind(passportId, clientId);
             operateTimesService.incIPBindTimes(modifyIp);
-
             result.setMessage("绑定手机成功！");
             return result;
         } catch (ServiceException e) {
@@ -752,7 +722,7 @@ public class SecureManagerImpl implements SecureManager {
                     return result;
                 }
 
-                if (!accountService.modifyMobile(account, newMobile)) {
+                if (!accountService.modifyMobileByAccount(account, newMobile)) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
                     return result;
                 }

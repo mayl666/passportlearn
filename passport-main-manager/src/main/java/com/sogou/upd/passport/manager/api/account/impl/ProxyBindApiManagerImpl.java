@@ -241,17 +241,11 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
         return executeResult(requestModelXml);
     }
 
-    /**
-     * 直接绑定手机号
-     * @param userid
-     * @param mobile
-     * @return
-     */
     @Override
-    public Result bindMobile(String userid,String mobile){
+    public Result bindMobile(String passportId,String newMobile){
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParam("mobile",mobile);
-        requestModelXml.addParam("userid",userid);
+        requestModelXml.addParam("mobile",newMobile);
+        requestModelXml.addParam("userid",passportId);
         return executeResult(requestModelXml);
     }
 
