@@ -11,15 +11,15 @@ import org.hibernate.validator.constraints.NotBlank;
 public class BaseAccountParams extends BaseWebParams {
 
     @NotBlank(message = "账号不允许为空!")
-    protected String userid;
+    protected String username;
 
-    public String getUserid() {
-        String internalUsername = AccountDomainEnum.getInternalCase(userid);
-        setUserid(internalUsername);
-        return userid;
+    public String getUsername() {
+        String internalUsername = AccountDomainEnum.getInternalCase(username);
+        setUsername(internalUsername);
+        return username;
     }
 
-    public void setUserid(String userid) {
-        this.userid = userid;
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

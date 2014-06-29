@@ -391,7 +391,7 @@ public class SecureAction extends BaseController {
             model.addAttribute("data", result.toString());
             return ""; // TODO:错误页面
         }
-        String userId = params.getUserid();
+        String userId = params.getUsername();
         int clientId = Integer.parseInt(params.getClient_id());
         String scode = params.getScode();
 
