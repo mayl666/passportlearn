@@ -84,7 +84,6 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         String password = updateQuesApiParams.getPassword();
         String newQues = updateQuesApiParams.getNewquestion();
         String newAnswer = updateQuesApiParams.getNewanswer();
-        String modifyIp = updateQuesApiParams.getModifyip();
         int clientId = updateQuesApiParams.getClient_id();
 
         Result result = accountService.verifyUserPwdVaild(userId, password, true);
@@ -93,14 +92,13 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
             operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
             return result;
         }
-
         AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(userId, newQues, newAnswer);
         if (accountInfo == null) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);
             return result;
         }
-        result.setSuccess(true);
-        result.setMessage("绑定密保问题成功！");
+        result = new APIResultSupport(true);
+        result.setMessage("操作成功");
         return result;
     }
 

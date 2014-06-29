@@ -2,8 +2,6 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.result.APIResultSupport;
-import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.dao.account.AccountInfoDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -80,7 +78,6 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     @Override
     public AccountInfo modifyQuesByPassportId(String passportId, String question, String answer)
             throws ServiceException {
-        Result result = new APIResultSupport(false);
         AccountInfo accountInfo;
         try {
             accountInfo = new AccountInfo(passportId);
