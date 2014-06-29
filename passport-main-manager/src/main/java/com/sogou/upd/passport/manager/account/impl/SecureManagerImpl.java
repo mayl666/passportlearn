@@ -432,7 +432,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
         } catch (ServiceException e) {
-            logger.error("UpdatePwd Captcha Or Secure Fail passportId:" + passportId, e);
+            logger.error("UpdatePwd Captcha Or Secure Fail, passportId:" + passportId, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
@@ -617,46 +617,34 @@ public class SecureManagerImpl implements SecureManager {
     }
 
     @Override
-    public Result bindMobileByPassportId(String userId, int clientId, String newMobile,
+    public Result bindMobileByPassportId(String passportId, int clientId, String newMobile,
                                          String smsCode, String password, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             Account account;
-
-            //检查是否在ip黑名单里
-            if (operateTimesService.checkIPBindLimit(modifyIp)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-                return result;
+            Result smsCodeAndSecureResult = checkBindMobileSmsCodeAndSecure(passportId, clientId, newMobile, smsCode, modifyIp);
+            if(!smsCodeAndSecureResult.isSuccess()){
+                return smsCodeAndSecureResult;
             }
-
-            if (!operateTimesService.checkLimitBind(userId, clientId)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
-                return result;
-            }
-            if (!operateTimesService.checkLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE)) {
+            if (!operateTimesService.checkLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.SECURE)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT);
                 return result;
             }
-            result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
-            if (!result.isSuccess()) {
-                return result;
-            }
-            AuthUserApiParams authParams = new AuthUserApiParams(clientId, userId, Coder.encryptMD5(password));
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
+            AuthUserApiParams authParams = new AuthUserApiParams(clientId, passportId, Coder.encryptMD5(password));
+            if (!ManagerHelper.writeSohuSwitcher()) {
                 // 代理接口
                 result = loginApiManager.webAuthUser(authParams);
-                //                result = proxyLoginApiManager.webAuthUser(authParams);
                 if (!result.isSuccess()) {
-                    operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
+                    operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.SECURE);
                     return result;
                 }
-                result = proxyBindApiManager.bindMobile(userId, newMobile);
+                result = proxyBindApiManager.bindMobile(passportId, newMobile);
             } else {
                 // 直接写实现方法，不调用sgBindApiManager，因不能分拆为两个对应方法同时避免读两次Account
-                result = loginApiManager.webAuthUser(authParams);
-//                result = accountService.verifyUserPwdVaild(userId, password, true);
+//                result = loginApiManager.webAuthUser(authParams);    //TODO 如果切换到搜狐接口，则不会返回account
+                result = accountService.verifyUserPwdVaild(passportId, password, true);
                 if (!result.isSuccess()) {
-                    operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
+                    operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.SECURE);
                     return result;
                 }
                 account = (Account) result.getDefaultModel();
@@ -673,7 +661,7 @@ public class SecureManagerImpl implements SecureManager {
                     return result;
                 }
 
-                if (!mobilePassportMappingService.initialMobilePassportMapping(newMobile, userId)) {
+                if (!mobilePassportMappingService.initialMobilePassportMapping(newMobile, passportId)) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
                     return result;
                 }
@@ -682,13 +670,13 @@ public class SecureManagerImpl implements SecureManager {
             }
             //TODO 所有账号只写SG库时此判断即可去掉
             if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
-                accountSecureService.updateSuccessFlag(userId);
+                accountSecureService.updateSuccessFlag(passportId);
             }
             if (!result.isSuccess()) {
                 return result;
             }
 
-            operateTimesService.incLimitBind(userId, clientId);
+            operateTimesService.incLimitBind(passportId, clientId);
             operateTimesService.incIPBindTimes(modifyIp);
 
             result.setMessage("绑定手机成功！");
@@ -700,31 +688,43 @@ public class SecureManagerImpl implements SecureManager {
         }
     }
 
-    /*
-     * 修改密保手机——2.验证密码或secureCode、新绑定手机短信码，绑定新手机号
-     */
-    // TODO:等proxyManager修改好之后修改
-    @Override
-    public Result modifyMobileByPassportId(String userId, int clientId, String newMobile,
-                                           String smsCode, String scode, String modifyIp) throws Exception {
+    private Result checkBindMobileSmsCodeAndSecure(String passportId, int clientId, String newMobile, String smsCode, String modifyIp) {
         Result result = new APIResultSupport(false);
         try {
             if (operateTimesService.checkIPBindLimit(modifyIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
-            if (!operateTimesService.checkLimitBind(userId, clientId)) {
+            if (!operateTimesService.checkLimitBind(passportId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
             result = checkMobileCodeByNewMobile(newMobile, clientId, smsCode);
-            if (!result.isSuccess()) {
-                return result;
+        } catch (ServiceException e) {
+            logger.error("Check BindMobileSmsCode Or Secure Fail, passportId:" + passportId, e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+        return result;
+    }
+
+    /*
+     * 修改密保手机——2.验证密码或secureCode、新绑定手机短信码，绑定新手机号
+     */
+    // TODO:等proxyManager修改好之后修改
+    @Override
+    public Result modifyMobileByPassportId(String passportId, int clientId, String newMobile,
+                                           String smsCode, String scode, String modifyIp) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            Result smsCodeAndSecureResult = checkBindMobileSmsCodeAndSecure(passportId, clientId, newMobile, smsCode, modifyIp);
+            if(!smsCodeAndSecureResult.isSuccess()){
+                return smsCodeAndSecureResult;
             }
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
+            if (ManagerHelper.isInvokeProxyApi(passportId)) {
                 // 代理接口
                 GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-                getUserInfoApiparams.setUserid(userId);
+                getUserInfoApiparams.setUserid(passportId);
                 getUserInfoApiparams.setClient_id(clientId);
                 getUserInfoApiparams.setFields(SECURE_FIELDS);
                 result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
@@ -737,16 +737,16 @@ public class SecureManagerImpl implements SecureManager {
                     return result;
                 }
                 //绑定新手机
-                result = proxyBindApiManager.bindMobile(userId, newMobile);
+                result = proxyBindApiManager.bindMobile(passportId, newMobile);
             } else {
                 Account account;
                 // 修改绑定手机，checkCode为secureCode
-                if (!accountSecureService.checkSecureCodeModSecInfo(userId, clientId, scode)) {
+                if (!accountSecureService.checkSecureCodeModSecInfo(passportId, clientId, scode)) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BIND_FAILED);
                     return result;
                 }
 
-                account = accountService.queryNormalAccount(userId);
+                account = accountService.queryNormalAccount(passportId);
                 if (account == null) {
                     result.setCode(ErrorUtil.INVALID_ACCOUNT);
                     return result;
@@ -758,7 +758,7 @@ public class SecureManagerImpl implements SecureManager {
                 }
                 String oldMobile = account.getMobile();
                 mobilePassportMappingService.deleteMobilePassportMapping(oldMobile);
-                if (!mobilePassportMappingService.initialMobilePassportMapping(newMobile, userId)) {
+                if (!mobilePassportMappingService.initialMobilePassportMapping(newMobile, passportId)) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
                     return result;
                 }
@@ -767,12 +767,12 @@ public class SecureManagerImpl implements SecureManager {
             }
             //TODO 所有账号只写SG库时此判断即可去掉
             if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
-                accountSecureService.updateSuccessFlag(userId);
+                accountSecureService.updateSuccessFlag(passportId);
             }
             if (!result.isSuccess()) {
                 return result;
             }
-            operateTimesService.incLimitBind(userId, clientId);
+            operateTimesService.incLimitBind(passportId, clientId);
             operateTimesService.incIPBindTimes(modifyIp);
             result.setMessage("修改绑定手机成功！");
             return result;
@@ -841,8 +841,7 @@ public class SecureManagerImpl implements SecureManager {
      * 验证手机短信随机码——用于新手机验证
      */
     @Override
-    public Result checkMobileCodeByNewMobile(String mobile, int clientId, String smsCode)
-            throws Exception {
+    public Result checkMobileCodeByNewMobile(String mobile, int clientId, String smsCode) {
         Result result = new APIResultSupport(false);
         try {
             //检查手机账号能否被绑定
