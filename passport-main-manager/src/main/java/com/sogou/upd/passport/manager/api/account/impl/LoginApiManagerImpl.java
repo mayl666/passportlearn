@@ -77,6 +77,8 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                     result = proxyLoginApiManager.webAuthUser(authUserApiParams);
                     String message = CommonConstant.AUTH_MESSAGE;
                     LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", message, userId, passportId, result.toString());
+                } else if (AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+
                 } else {
                     //没有更新密码时，走正常的双读流程
                     result = sgLoginApiManager.webAuthUser(authUserApiParams);
