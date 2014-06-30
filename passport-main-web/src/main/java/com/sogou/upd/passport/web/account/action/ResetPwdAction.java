@@ -472,7 +472,6 @@ public class ResetPwdAction extends BaseController {
             result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
             if (result.isSuccess()) {
                 result.setDefaultModel("userid", params.getUsername());
-                result = getSecureInfo(passportId, clientId);
                 model.addAttribute("data", result.toString());
             }
             result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
