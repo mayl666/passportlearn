@@ -43,12 +43,12 @@ public class BindApiManagerImpl implements BindApiManager {
      */
     @Override
     public Result bindMobile(BindMobileApiParams bindMobileApiParams) {
-       return null;
+        return null;
     }
 
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
-         return null;
+        return null;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class BindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result bindMobile(String passportId,String newMobile){
+    public Result bindMobile(String passportId, String newMobile) {
         Result result;
         if (ManagerHelper.writeSohuSwitcher()) {
             result = proxyBindApiManager.bindMobile(passportId, newMobile);
@@ -89,22 +89,21 @@ public class BindApiManagerImpl implements BindApiManager {
         return result;
     }
 
-    private Result bothBindMobile(String passportId, String newMobile){
+    private Result bothBindMobile(String passportId, String newMobile) {
         Result result = new APIResultSupport(false);
         try {
             Account account = accountService.queryAccountByPassportId(passportId);
-            if(account == null || Strings.isNullOrEmpty(account.getMobile())){
+            if (account == null || Strings.isNullOrEmpty(account.getMobile())) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
                 return result;
             }
             boolean isSgBind = accountService.bindOrModifyBindMobile(account, newMobile);
-            Result shResult = proxyBindApiManager.bindMobile(passportId, newMobile);
-            if (isSgBind){
+            if (isSgBind) {
                 result.setSuccess(true);
-            } else {
-                String message = shResult.isSuccess() ? CommonConstant.SGERROR_SHSUCCESS : CommonConstant.SGERROR_SHERROR;
-                LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.RESETPWD, "updatePwd", message, passportId, result.getCode(), shResult.toString());
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
+                Result shResult = proxyBindApiManager.bindMobile(passportId, newMobile);
+                if (!shResult.isSuccess()) {
+                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.SECURE, "BindMobile", CommonConstant.SGSUCCESS_SHERROR, passportId, result.getCode(), shResult.toString());
+                }
             }
         } catch (Exception e) {
             logger.error("bothBindMobile Exception", e);
@@ -114,7 +113,7 @@ public class BindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result unBindMobile(String mobile){
+    public Result unBindMobile(String mobile) {
         return null;
     }
 

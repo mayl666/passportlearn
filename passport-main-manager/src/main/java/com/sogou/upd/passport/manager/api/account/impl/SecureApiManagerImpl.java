@@ -64,10 +64,11 @@ public class SecureApiManagerImpl implements SecureApiManager {
         Result result = new APIResultSupport(false);
         try {
             result = sgSecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
-            Result shResult = proxySecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
-            if (!result.isSuccess()) {
-                String message = shResult.isSuccess() ? CommonConstant.SGERROR_SHSUCCESS : CommonConstant.SGERROR_SHERROR;
-                LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.RESETPWD, "updatePwd", message, passportId, result.getCode(), shResult.toString());
+            if (result.isSuccess()) {
+                Result shResult = proxySecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
+                if (!shResult.isSuccess()) {
+                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.RESETPWD, "updatePwd", CommonConstant.SGSUCCESS_SHERROR, passportId, result.getCode(), shResult.toString());
+                }
             }
         } catch (Exception e) {
             logger.error("bothUpdatePwd Exception", e);
