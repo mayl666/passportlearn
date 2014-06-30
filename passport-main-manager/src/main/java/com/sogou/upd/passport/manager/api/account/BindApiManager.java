@@ -62,11 +62,11 @@ public interface BindApiManager {
 
     /**
      * 直接绑定手机号
-     * @param userid
-     * @param mobile
+     * @param passportId
+     * @param newMobile
      * @return
      */
-    public Result bindMobile(String userid,String mobile);
+    public Result bindMobile(String passportId,String newMobile);
 
     /**
      * 直接解除手机绑定

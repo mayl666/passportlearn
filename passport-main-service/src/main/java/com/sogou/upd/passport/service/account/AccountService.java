@@ -74,6 +74,14 @@ public interface AccountService {
     public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException;
 
     /**
+     * 根据passportId删除Account表缓存和数据库
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean deleteAccountByPassportId(String passportId) throws ServiceException;
+
+    /**
      * 重置密码
      */
     public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException;
@@ -119,22 +127,32 @@ public interface AccountService {
 
     /**
      * 修改绑定手机
-     *
+     * 只修改account表
      * @param account
      * @param newMobile
      * @return
      * @throws ServiceException
      */
-    public boolean modifyMobile(Account account, String newMobile);
+    public boolean modifyMobileByAccount(Account account, String newMobile);
 
     /**
      * 首次绑定或修改绑定手机
+     * 修改account和mobile_passportId_mapping
      *
      * @param account
      * @param newMobile
      * @return
      */
-    public boolean bindOrModifyMobile(Account account, String newMobile) throws ServiceException;
+    public boolean bindOrModifyBindMobile(Account account, String newMobile) throws ServiceException;
+
+    /**
+     * 删除或解绑手机
+     * 修改account和mobile_passportId_mapping
+     * @param mobile
+     * @return
+     * @throws ServiceException
+     */
+    public boolean deleteOrUnbindMobile(String mobile) throws ServiceException;
 
     /**
      * 解禁或封禁用户
@@ -152,7 +170,6 @@ public interface AccountService {
      */
     public boolean checkCaptchaCode(String token, String captchaCode) throws ServiceException;
 
-
     /**
      * 更新昵称
      *
@@ -162,7 +179,6 @@ public interface AccountService {
      */
     public boolean updateUniqName(Account account, String nickname);
 
-
     /**
      * 更新头像
      *
@@ -171,7 +187,6 @@ public interface AccountService {
      * @return
      */
     public boolean updateAvatar(Account account, String avatar);
-
 
     /**
      * 删除昵称
