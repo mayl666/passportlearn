@@ -250,7 +250,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result;
             }
-
             AccountModuleEnum module = AccountModuleEnum.RESETPWD;
             if (useRegEmail) {
                 // 使用注册邮箱
@@ -442,7 +441,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     public Result resetPasswordByScode(String passportId, int clientId, String password,
                                        String scode, String ip) throws Exception {
         Result result = new APIResultSupport(false);
-        // TODO:启用后，删除ByMobile和ByQues
         try {
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
             if (appConfig == null) {
@@ -467,6 +465,10 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             if (!accountService.resetPassword(account, password, true)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
                 return result;
+            }
+            //找回密码时，如果重置密码成功，记录标志位，双读时只读SG了，因为sohu无重置密码接口
+            if (!ManagerHelper.writeSohuSwitcher()) {
+                accountSecureService.updateResetPwdFlag(passportId);
             }
             operateTimesService.incLimitFindPwdResetPwd(passportId, clientId, ip);
             result.setSuccess(true);

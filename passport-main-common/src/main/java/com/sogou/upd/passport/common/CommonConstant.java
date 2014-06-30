@@ -37,6 +37,7 @@ public class CommonConstant {
     public static final String CHECK_MESSAGE = "update-bindmobile"; //用来读分离时记log时用,检查用户名是否可用时，主账号有修改绑定手机操作
     public static final String SG_NOT_EXIST = "SoGouNotExist"; //账号在搜狗不存在
     public static final String MOBILE_MESSAGE = "mobile-SGNotExist-SHExist"; //用来读分离时记log时用,根据手机号查询主账号
+    public static final String SOGOU_RESETPWD_MESSAGE = "resetpwd-checksg"; //搜狗账号找回密码后，记录log
     //双写异常原因
     public static final String SGERROR_SHSUCCESS = "write_SGError_SHSuccess";//SG写失败，SH写成功
     public static final String SGERROR_SHERROR = "write_SGError_SHError";//SG写失败，SH写失败

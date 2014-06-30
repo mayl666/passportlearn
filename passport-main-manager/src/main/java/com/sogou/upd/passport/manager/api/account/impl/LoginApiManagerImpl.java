@@ -77,6 +77,11 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                     result = proxyLoginApiManager.webAuthUser(authUserApiParams);
                     String message = CommonConstant.AUTH_MESSAGE;
                     LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", message, userId, passportId, result.toString());
+                } else if (AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId)) && accountSecureService.getResetPwdFlag(passportId)) {
+                    //主账号是搜狗域时且有找回密码操作时，只验证sg库，因为找回密码无法双写
+                    result = sgLoginApiManager.webAuthUser(authUserApiParams);
+                    String message = CommonConstant.SOGOU_RESETPWD_MESSAGE;
+                    LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", message, userId, passportId, result.toString());
                 } else {
                     //没有更新密码时，走正常的双读流程
                     result = sgLoginApiManager.webAuthUser(authUserApiParams);

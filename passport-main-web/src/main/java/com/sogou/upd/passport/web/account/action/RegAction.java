@@ -231,12 +231,14 @@ public class RegAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
         } catch (Exception e) {
-
+            logger.error("method[resendActiveMail] send mobile sms error.{}", e);
         } finally {
-
+            //web页面手机注册时，发送手机验证码
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUsername(), request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
-
-
         return result.toString();
     }
 

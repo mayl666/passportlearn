@@ -77,6 +77,7 @@ public class ManagerHelper {
      * @return
      */
     public static boolean writeSohuSwitcher() {
+//        return true;
         return false;
     }
 

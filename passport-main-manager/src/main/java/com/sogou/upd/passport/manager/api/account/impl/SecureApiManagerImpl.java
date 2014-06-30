@@ -79,22 +79,18 @@ public class SecureApiManagerImpl implements SecureApiManager {
 
     @Override
     public Result updateQues(UpdateQuesApiParams updateQuesApiParams) {
-        Result result = new APIResultSupport(false);
-        try {
-            if (ManagerHelper.writeSohuSwitcher()) {
-                result = proxySecureApiManager.updateQues(updateQuesApiParams);
+        Result result;
+        if (ManagerHelper.writeSohuSwitcher()) {
+            result = proxySecureApiManager.updateQues(updateQuesApiParams);
+        } else {
+            AccountDomainEnum domainType = AccountDomainEnum.getAccountDomain(updateQuesApiParams.getUserid());
+            //搜狗账号修改密保问题双写
+            if (AccountDomainEnum.SOGOU.equals(domainType) || AccountDomainEnum.INDIVID.equals(domainType)) {
+                result = bothUpdateQues(updateQuesApiParams);
             } else {
-                AccountDomainEnum domainType = AccountDomainEnum.getAccountDomain(updateQuesApiParams.getUserid());
-                //搜狗账号修改密保问题双写
-                if (AccountDomainEnum.SOGOU.equals(domainType) || AccountDomainEnum.INDIVID.equals(domainType)) {
-                    result = bothUpdateQues(updateQuesApiParams);
-                } else {
-                    //其它账号修改密保问题依然只写SH
-                    result = sgSecureApiManager.updateQues(updateQuesApiParams);
-                }
+                //其它账号修改密保问题依然只写SH
+                result = proxySecureApiManager.updateQues(updateQuesApiParams);
             }
-        } catch (Exception e) {
-
         }
         return result;
     }
@@ -109,11 +105,16 @@ public class SecureApiManagerImpl implements SecureApiManager {
         Result result = new APIResultSupport(false);
         try {
             result = sgSecureApiManager.updateQues(updateQuesApiParams);
-            Result shResult = proxySecureApiManager.updateQues(updateQuesApiParams);
-            if (!result.isSuccess()) {
-                String message = shResult.isSuccess() ? CommonConstant.SGERROR_SHSUCCESS : CommonConstant.SGERROR_SHERROR;
-                LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.SECURE, "updateQues", message, updateQuesApiParams.getUserid(), result.getCode(), shResult.toString());
+            //sg成功，要写sh，为了回滚做准备
+            if (result.isSuccess()) {
+                Result shResult = proxySecureApiManager.updateQues(updateQuesApiParams);
+                //sg写成功，sh写失败要记录log，因为这会导致线上回滚出问题
+                if (!shResult.isSuccess()) {
+                    String message = CommonConstant.SGSUCCESS_SHERROR;
+                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.SECURE, "updateQues", message, updateQuesApiParams.getUserid(), shResult.getCode(), shResult.toString());
+                }
             }
+
         } catch (Exception e) {
             logger.error("bothUpdateQues Exception", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);

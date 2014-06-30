@@ -50,7 +50,6 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                 //其它账号走写SH流程
                 result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
             }
-
         }
         return result;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -65,12 +64,15 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
         Result result = new APIResultSupport(false);
         try {
             result = sgRegisterApiManager.regMailUser(regEmailApiParams);
-            Result shResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
-            if (!result.isSuccess()) {
-                String message = shResult.isSuccess() ? CommonConstant.SGERROR_SHSUCCESS : CommonConstant.SGERROR_SHERROR;
-                LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.REGISTER, "regMailUser", message, regEmailApiParams.getUserid(), result.getCode(), shResult.toString());
+            //sg成功，要写sh，为了回滚做准备
+            if (result.isSuccess()) {
+                Result shResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+                //sg写成功，sh写失败要记录log，因为这会导致线上回滚出问题
+                if (!shResult.isSuccess()) {
+                    String message = CommonConstant.SGSUCCESS_SHERROR;
+                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.REGISTER, "regMailUser", message, regEmailApiParams.getUserid(), shResult.getCode(), shResult.toString());
+                }
             }
-
         } catch (Exception e) {
             logger.error("bothWriteUser Exception", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
