@@ -39,9 +39,8 @@ public class CommonConstant {
     public static final String MOBILE_MESSAGE = "mobile-SGNotExist-SHExist"; //用来读分离时记log时用,根据手机号查询主账号
     public static final String SOGOU_RESETPWD_MESSAGE = "resetpwd-checksg"; //搜狗账号找回密码后，记录log
     //双写异常原因
-    public static final String SGERROR_SHSUCCESS = "write_SGError_SHSuccess";//SG写失败，SH写成功
-    public static final String SGERROR_SHERROR = "write_SGError_SHError";//SG写失败，SH写失败
-    public static final String SGSUCCESS_SHERROR = "write_SGSuccess_SHError";//SG写失败，SH写失败
+    public static final String SGSUCCESS_SHERROR = "write_SGSuccess_SHError";//SG写失败，SH写失败 \
+    public static final String SGSUCCESS_SHUNBINDERROR = "write_SGSuccess_SHUnBindError";//SG写失败，SH解除绑定失败
 
     public static final String APP_CONNECT_KEY = "100294784";  //搜狗在QQ第三方开放平台的应用id
     public static final String APP_CONNECT_SECRET = "a873ac91cd703bc037e14c2ef47d2021";  //搜狗在QQ第三方开放平台对应的应用密钥

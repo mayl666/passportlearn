@@ -37,37 +37,6 @@ public class SGBindApiManagerImpl implements BindApiManager {
     @Autowired
     private OperateTimesService operateTimesService;
 
-//    @Override
-    public Result updateBindMobile(UpdateBindMobileApiParams updateBindMobileApiParams) {
-        Result result = new APIResultSupport(false);
-        String userId = updateBindMobileApiParams.getUserid();
-        String newMobile = updateBindMobileApiParams.getNewMobile();
-        String oldMobile = updateBindMobileApiParams.getOldMobile();
-        int clientId = updateBindMobileApiParams.getClient_id();
-
-        // String userId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
-
-        Account account = accountService.queryNormalAccount(userId);
-        if (account == null) {
-            result.setCode(ErrorUtil.INVALID_ACCOUNT);
-            return result;
-        }
-
-        if (!mobilePassportMappingService.deleteMobilePassportMapping(oldMobile)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-            return result;
-        }
-
-        if (!accountService.modifyMobileByAccount(account, null)) {
-            result.setCode(ErrorUtil.ERR_CODE_PHONE_UNBIND_FAILED);
-            return result;
-        }
-
-        result.setSuccess(true);
-        result.setMessage("解绑手机成功！");
-        return result;
-    }
-
     // TODO:验证邮件的Manager
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
@@ -118,28 +87,13 @@ public class SGBindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result sendCaptcha(SendCaptchaApiParams sendCaptchaApiParams) {
-        String mobile = sendCaptchaApiParams.getMobile();
-        int clientId = sendCaptchaApiParams.getClient_id();
-        int type = sendCaptchaApiParams.getType();
-
-
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public boolean cacheOldCaptcha(String mobile, int clientId, String captcha) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public String getOldCaptcha(String mobile, int clientId) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public Result bindMobile(String passportId,String newMobile){
         return null;
+    }
+
+    @Override
+    public Result modifyBindMobile(String passportId, String newMobile) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

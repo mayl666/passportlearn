@@ -165,15 +165,12 @@ public class SecureAction extends BaseController {
             case PHONE:
                 return "redirect:/web/security";
         }
-
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
-
         result.setSuccess(true);
         result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
-
         ControllerHelper.process(result, clientId, null);
         model.addAttribute("data", result.toString());
         return "safe/tel";

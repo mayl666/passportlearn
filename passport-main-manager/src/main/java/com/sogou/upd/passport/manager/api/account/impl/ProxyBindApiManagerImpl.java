@@ -29,47 +29,6 @@ import org.springframework.stereotype.Component;
 @Component("proxyBindApiManager")
 public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApiManager {
 
-    private static Logger logger = LoggerFactory.getLogger(ProxyBindApiManagerImpl.class);
-
-    @Qualifier("redisUtils")
-    @Autowired
-    private RedisUtils redisUtils;
-
-    private static String CACHE_PREFIX_MOBILE_SMSCODE_PROXY = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE_PROXY;
-
-    /**
-     * 检查用户是否绑定了mobile
-     * @param userid
-     * @param mobile
-     * @return
-     */
-    private boolean checkBind(String userid, String mobile) {
-        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-        baseMoblieApiParams.setMobile(mobile);
-        Result result = this.getPassportIdByMobile(baseMoblieApiParams);
-        if (result.isSuccess() && result.getModels().containsKey("userid")) {
-            String bindUserId = result.getModels().get("userid").toString();
-            if (bindUserId.trim().equals(userid.trim())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-//    /**
-//     * 解除绑定
-//     *
-//     * @param mobile 手机号
-//     * @return
-//     */
-//    private Result unBindMobile(String mobile) {
-//        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UNBING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-//        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-//        baseMoblieApiParams.setMobile(mobile);
-//        requestModelXml.addParams(baseMoblieApiParams);
-//        return this.executeResult(requestModelXml, baseMoblieApiParams.getMobile());
-////    }
-
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BIND_EMAIL, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
@@ -87,72 +46,16 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
     }
 
     @Override
-    public Result sendCaptcha(SendCaptchaApiParams sendCaptchaApiParams) {
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.SEND_CAPTCHA, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParams(sendCaptchaApiParams);
-        return executeResult(requestModelXml, sendCaptchaApiParams.getMobile());
-    }
-
-    @Override
-    public boolean cacheOldCaptcha(String mobile, int clientId, String captcha) throws ServiceException{
-        String cacheKey = buildOldCaptchaKey(mobile, clientId);
-        try {
-            redisUtils.setWithinSeconds(cacheKey, captcha, SMSUtil.SMS_VALID);
-            return true;
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    @Override
-    public String getOldCaptcha(String mobile, int clientId) throws ServiceException {
-        String cacheKey = buildOldCaptchaKey(mobile, clientId);
-        try {
-            String captcha = redisUtils.get(cacheKey);
-            return captcha;
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    private String buildOldCaptchaKey(String mobile, int clientId) {
-        return CACHE_PREFIX_MOBILE_SMSCODE_PROXY + mobile + "_" + clientId;
-    }
-
-    /**
-     * 通过验证码解绑手机号
-     * @param mobile
-     * @param captcha
-     * @return
-     */
-    private Result unbindMobileByCaptcha(String mobile,String captcha){
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UNBIND_MOBILE_CAPTCHA, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParam("mobile",mobile);
-        requestModelXml.addParam("captcha",captcha);
-        return executeResult(requestModelXml, mobile);
-    }
-
-    /**
-     * 通过验证码绑定手机号
-     * @param userid
-     * @param mobile
-     * @param captcha
-     * @return
-     */
-    private Result bindMobileByCaptcha(String userid,String mobile,String captcha){
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BIND_MOBILE_CAPTCHA, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParam("mobile",mobile);
-        requestModelXml.addParam("captcha",captcha);
-        requestModelXml.addParam("userid",userid);
-        return executeResult(requestModelXml);
-    }
-
-    @Override
     public Result bindMobile(String passportId,String newMobile){
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParam("mobile",newMobile);
         requestModelXml.addParam("userid",passportId);
         return executeResult(requestModelXml);
+    }
+
+    @Override
+    public Result modifyBindMobile(String passportId, String newMobile) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /**

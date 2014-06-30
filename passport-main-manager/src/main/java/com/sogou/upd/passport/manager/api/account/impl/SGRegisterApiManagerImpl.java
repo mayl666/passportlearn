@@ -176,7 +176,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                 }
             } else {
                 //如果是外域或个性账号注册
-                Account account = accountService.queryAccountByPassportId(username.toLowerCase());
+                Account account = accountService.queryNormalAccount(username.toLowerCase());
                 if (account != null) {
                     result.setCode(ErrorUtil.ERR_CODE_USER_ID_EXIST);
                     result.setDefaultModel("flag", String.valueOf(account.getFlag()));

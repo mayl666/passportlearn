@@ -16,7 +16,7 @@ public interface SecureManager {
     /**
      * 发送短信验证码（至未注册未绑定手机）
      */
-    public Result sendMobileCode(String mobile, int clientId, AccountModuleEnum module) throws Exception;
+    public Result sendMobileCode(String mobile, int clientId, AccountModuleEnum module);
 
     /**
      * 发送短信验证码（根据passportId）
@@ -42,7 +42,7 @@ public interface SecureManager {
      * @return
      * @throws Exception
      */
-    public Result sendMobileCodeOld(String userId, int clientId) throws Exception;
+    public Result sendMobileCodeOld(String userId, int clientId);
 
     /**
      * 发送手机验证码，不检测是否已注册或绑定，暂时供sendMobileCode*方法内部调用

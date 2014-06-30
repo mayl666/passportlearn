@@ -5,6 +5,7 @@ import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.SendCaptchaApiParams;
+import com.sogou.upd.passport.model.account.Account;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -28,33 +29,7 @@ public interface BindApiManager {
     Result getPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams);
 
     /**
-     * 发送验证码相关接口
-     * @param sendCaptchaApiParams
-     * @return
-     */
-    Result sendCaptcha(SendCaptchaApiParams sendCaptchaApiParams);
-
-    /**
-     * 缓存旧手机号验证码
-     *
-     * @param mobile
-     * @param clientId
-     * @param captcha
-     * @return
-     */
-    public boolean cacheOldCaptcha(String mobile, int clientId, String captcha);
-
-    /**
-     * 提取旧手机号验证码
-     *
-     * @param mobile
-     * @param clientId
-     * @return
-     */
-    public String getOldCaptcha(String mobile, int clientId);
-
-    /**
-     * 首次绑定手机号
+     * 首次绑定密保手机
      * @param passportId
      * @param newMobile
      * @return
@@ -62,7 +37,15 @@ public interface BindApiManager {
     public Result bindMobile(String passportId,String newMobile);
 
     /**
-     * 直接解除手机绑定
+     * 修改绑定密保手机
+     * @param passportId
+     * @param newMobile
+     * @return
+     */
+    public Result modifyBindMobile(String passportId, String newMobile);
+
+    /**
+     * 直接解除密保手机绑定
      * @param mobile
      * @return
      */

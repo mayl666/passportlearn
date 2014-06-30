@@ -7,10 +7,9 @@ import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import junit.framework.Assert;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-
-import javax.inject.Inject;
 
 /**
  * Created with IntelliJ IDEA. User: liuling Date: 13-4-7 Time: 下午4:09 To change this template use
@@ -19,16 +18,17 @@ import javax.inject.Inject;
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
 
-    @Inject
+    @Autowired
     private AccountService accountService;
+    @Autowired
+    private MobilePassportMappingService mobilePassportMappingService;
 
     private static final String MOBILE = "13545210241";
-    private static final String NEW_MOBILE = "13800000000";
     private static final String PASSWORD = "liuling8";
-    private static final String PASSPORT_ID1 = "13552848876@sohu.com";
-    private static final String SPZ_MOBILE = "13621009174";
-    private static final String SPZ_NEW_MOBILE = "18978941658";
     private static final String SPZ_PASSPORTID = "shipengzhi1986@sogou.com";
+    private static final String exist_mobile = "18978941658";
+    private static final String new_bind_mobile = "15986484867";
+    private static final String binded_mobile = "13621009174";
     private static final
     String PASSPORT_ID = PassportIDGenerator.generator(MOBILE, AccountTypeEnum.PHONE.getValue());
     private static final String IP = "127.0.0.1";
@@ -109,29 +109,51 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
         //初始值shipengzhi1986@sogou.com绑定13621009174
         Account account = accountService.queryAccountByPassportId(SPZ_PASSPORTID);
         //已注册手机无法绑定
-        boolean isBinded = accountService.bindMobile(account, "18910873093");
+        boolean isBinded = accountService.bindMobile(account, exist_mobile);
         Assert.assertTrue(!isBinded);
         //账号已绑定手机，无法再绑
-        boolean isModifyBind = accountService.bindMobile(account, SPZ_NEW_MOBILE);
+        boolean isModifyBind = accountService.bindMobile(account, new_bind_mobile);
         Assert.assertTrue(!isModifyBind);
         //删除绑定
-        boolean isUnbind = accountService.deleteOrUnbindMobile(SPZ_MOBILE);
+        boolean isUnbind = accountService.deleteOrUnbindMobile(binded_mobile);
         Assert.assertTrue(isUnbind);
         //异常情况，account写成功，但mapping没写成功
-        account.setMobile(SPZ_MOBILE);
-        boolean isAbnormalBind = accountService.bindMobile(account, SPZ_MOBILE);
+        account.setMobile(binded_mobile);
+        boolean isAbnormalBind = accountService.bindMobile(account, binded_mobile);
         Assert.assertTrue(!isAbnormalBind);
         //首次绑定
         account.setMobile(null);
-        boolean isBind = accountService.bindMobile(account, SPZ_MOBILE);
+        boolean isBind = accountService.bindMobile(account, binded_mobile);
         Assert.assertTrue(isBind);
     }
 
+    /**
+     * 测试修改绑定手机
+     */
     @Test
-    public void testDeleteMoible() {
-        boolean isDelete = accountService.deleteOrUnbindMobile(SPZ_MOBILE);
+    public void testModifyBindMobile() {
+        //初始值shipengzhi1986@sogou.com绑定13621009174
+        Account account = accountService.queryAccountByPassportId(SPZ_PASSPORTID);
+        //已注册手机无法修改绑定
+        boolean isBinded = accountService.modifyBindMobile(account, exist_mobile);
+        Assert.assertTrue(!isBinded);
+        //账号未绑定手机，无法修改绑定
+        account.setMobile(null);
+        boolean isModifyBind = accountService.modifyBindMobile(account, new_bind_mobile);
+        Assert.assertTrue(!isModifyBind);
+        account.setMobile(binded_mobile);
+        //修改绑定
+        boolean isBind = accountService.modifyBindMobile(account, new_bind_mobile);
+        Assert.assertTrue(isBind);
+        //异常情况，上一次绑定失败，写account成功，写mapping失败
+        mobilePassportMappingService.deleteMobilePassportMapping(new_bind_mobile);
+        boolean isAbnormalBind = accountService.modifyBindMobile(account, binded_mobile);
+        Assert.assertTrue(!isAbnormalBind);
+        //恢复初始值
+        mobilePassportMappingService.initialMobilePassportMapping(new_bind_mobile, SPZ_PASSPORTID);
+        boolean isRenewBind = accountService.modifyBindMobile(account, binded_mobile);
+        Assert.assertTrue(isRenewBind);
     }
-
 
     @Test
     public void testCheckNickName() throws Exception {
