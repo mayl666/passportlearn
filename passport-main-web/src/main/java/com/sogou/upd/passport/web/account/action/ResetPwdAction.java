@@ -388,6 +388,8 @@ public class ResetPwdAction extends BaseController {
         } finally {
             log(request, params.getUsername(), result.getCode());
         }
+        result.setCode(ErrorUtil.SUCCESS);
+        model.addAttribute("data", result.toString());
         return "/recover/end";
     }
 
