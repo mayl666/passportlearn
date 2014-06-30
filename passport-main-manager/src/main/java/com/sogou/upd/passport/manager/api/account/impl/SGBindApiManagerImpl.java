@@ -37,37 +37,6 @@ public class SGBindApiManagerImpl implements BindApiManager {
     @Autowired
     private OperateTimesService operateTimesService;
 
-    /*
-     * 首次绑定手机，需要检测是否已绑定手机
-     */
-    @Override
-    public Result bindMobile(BindMobileApiParams bindMobileApiParams) {
-        Result result = new APIResultSupport(false);
-        String userid = bindMobileApiParams.getUserid();
-        String mobile = bindMobileApiParams.getNewMobile();
-        int clientId = bindMobileApiParams.getClient_id();
-
-        Account account = accountService.queryNormalAccount(userid);
-        if (account == null) {
-            result.setCode(ErrorUtil.INVALID_ACCOUNT);
-            return result;
-        }
-
-        if (!mobilePassportMappingService.initialMobilePassportMapping(mobile, userid)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-            return result;
-        }
-
-        if (!accountService.modifyMobileByAccount(account, mobile)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
-            return result;
-        }
-
-        result.setSuccess(true);
-        result.setMessage("绑定手机成功！");
-        return result;
-    }
-
 //    @Override
     public Result updateBindMobile(UpdateBindMobileApiParams updateBindMobileApiParams) {
         Result result = new APIResultSupport(false);

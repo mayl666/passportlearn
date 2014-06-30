@@ -187,7 +187,6 @@ public class MobileSecureAction extends BaseController{
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                     return result.toString();
             }
-
             result = secureManager.bindMobileByPassportId(passportId, clientId, newMobile, smsCode, password, modifyIp);
             return result.toString();
         } finally {

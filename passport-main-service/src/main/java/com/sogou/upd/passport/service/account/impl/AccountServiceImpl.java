@@ -561,22 +561,46 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean bindOrModifyBindMobile(Account account, String newMobile) throws ServiceException {
+    public boolean bindMobile(Account account, String newMobile) throws ServiceException {
         try {
             String passportId = account.getPassportId();
             String oldMobile = account.getMobile();
             String newMobilePassportId = mobilePassportMappingService.queryPassportIdByMobile(newMobile);
             if (!Strings.isNullOrEmpty(newMobilePassportId)) { //该手机号不允许绑定
                 return false;
-            } else if (!Strings.isNullOrEmpty(oldMobile) && Strings.isNullOrEmpty(newMobilePassportId)) {  //修改绑定手机
-                String oldMobilePassportId = mobilePassportMappingService.queryPassportIdByMobile(oldMobile);
-                if (!Strings.isNullOrEmpty(oldMobilePassportId)) {
-                    boolean isDeleteMapping = mobilePassportMappingService.deleteMobilePassportMapping(oldMobile);
-                    if (!isDeleteMapping) return false;
-                } else { //上一次绑定失败，写account成功，写mapping失败
-                    logger.error("before bind account success but mapping fail, passportId:" + passportId + ", newMobile:" + newMobile);
-                    return false;
-                }
+            }
+            if (!Strings.isNullOrEmpty(oldMobile)) { //已绑定过手机的账号不允许再次绑定
+                return false;
+            }
+            //这里要先写account再写mapping，因为根据account的mobile判断是否已绑定手机
+            boolean isModifyAccount = modifyMobileByAccount(account, newMobile);
+            boolean isInitMapping = mobilePassportMappingService.initialMobilePassportMapping(newMobile, passportId);
+            return isInitMapping && isModifyAccount;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean modifyBindMobile(Account account, String newMobile) throws ServiceException {
+        try {
+            String passportId = account.getPassportId();
+            String oldMobile = account.getMobile();
+            String newMobilePassportId = mobilePassportMappingService.queryPassportIdByMobile(newMobile);
+            if (!Strings.isNullOrEmpty(newMobilePassportId)) { //该手机号不允许绑定
+                return false;
+            }
+            if (Strings.isNullOrEmpty(oldMobile)) { //未绑定过手机的账号不允许修改绑定
+                return false;
+            }
+            //修改绑定手机
+            String oldMobilePassportId = mobilePassportMappingService.queryPassportIdByMobile(oldMobile);
+            if (!Strings.isNullOrEmpty(oldMobilePassportId)) {
+                boolean isDeleteMapping = mobilePassportMappingService.deleteMobilePassportMapping(oldMobile);
+                if (!isDeleteMapping) return false;
+            } else { //上一次绑定失败，写account成功，写mapping失败
+                logger.error("before bind account success but mapping fail, passportId:" + passportId + ", newMobile:" + newMobile);
+                return false;
             }
             //这里要先写account再写mapping，因为根据account的mobile判断是否已绑定手机
             boolean isModifyAccount = modifyMobileByAccount(account, newMobile);

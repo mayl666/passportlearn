@@ -14,13 +14,6 @@ import com.sogou.upd.passport.manager.api.account.form.SendCaptchaApiParams;
 public interface BindApiManager {
 
     /**
-     * 绑定手机接口代理
-     * @param bindMobileApiParams
-     * @return
-     */
-    Result bindMobile(BindMobileApiParams bindMobileApiParams);
-
-    /**
      * 绑定邮箱接口
      * @param bindEmailApiParams
      * @return
@@ -61,7 +54,7 @@ public interface BindApiManager {
     public String getOldCaptcha(String mobile, int clientId);
 
     /**
-     * 直接绑定手机号
+     * 首次绑定手机号
      * @param passportId
      * @param newMobile
      * @return

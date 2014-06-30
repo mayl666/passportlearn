@@ -136,14 +136,24 @@ public interface AccountService {
     public boolean modifyMobileByAccount(Account account, String newMobile);
 
     /**
-     * 首次绑定或修改绑定手机
+     * 首次绑定
      * 修改account和mobile_passportId_mapping
      *
      * @param account
      * @param newMobile
      * @return
      */
-    public boolean bindOrModifyBindMobile(Account account, String newMobile) throws ServiceException;
+    public boolean bindMobile(Account account, String newMobile) throws ServiceException;
+
+    /**
+     * 修改绑定手机
+     * 修改account和mobile_passportId_mapping
+     *
+     * @param account
+     * @param newMobile
+     * @return
+     */
+    public boolean modifyBindMobile(Account account, String newMobile) throws ServiceException;
 
     /**
      * 删除或解绑手机

@@ -186,22 +186,7 @@ public class SecureManagerImpl implements SecureManager {
     public Result sendMobileCodeOld(String userId, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-
-            //            if (ManagerHelper.isInvokeProxyApi(userId)) {
-//                // SOHU接口
-//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-//                getUserInfoApiparams.setUserid(userId);
-//                getUserInfoApiparams.setClient_id(clientId);
-//                getUserInfoApiparams.setFields(SECURE_FIELDS);
-//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-//                Map<String, String> mapResult = result.getModels();
-//                String mobile = mapResult.get("sec_mobile");
-//                result = sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
-//
-//            } else {
             result = sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.SECURE);
-//             }
-
             if (!result.isSuccess()) {
                 return result;
             }

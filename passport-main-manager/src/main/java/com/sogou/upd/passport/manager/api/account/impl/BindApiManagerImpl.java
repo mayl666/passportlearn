@@ -38,14 +38,6 @@ public class BindApiManagerImpl implements BindApiManager {
     @Autowired
     private AccountService accountService;
 
-    /*
-     * 首次绑定手机，需要检测是否已绑定手机
-     */
-    @Override
-    public Result bindMobile(BindMobileApiParams bindMobileApiParams) {
-        return null;
-    }
-
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
         return null;
@@ -93,17 +85,20 @@ public class BindApiManagerImpl implements BindApiManager {
         Result result = new APIResultSupport(false);
         try {
             Account account = accountService.queryAccountByPassportId(passportId);
-            if (account == null || Strings.isNullOrEmpty(account.getMobile())) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
+            if (account == null ) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 return result;
             }
-            boolean isSgBind = accountService.bindOrModifyBindMobile(account, newMobile);
+            boolean isSgBind = accountService.bindMobile(account, newMobile);
             if (isSgBind) {
                 result.setSuccess(true);
+                result.setMessage("操作成功");
                 Result shResult = proxyBindApiManager.bindMobile(passportId, newMobile);
                 if (!shResult.isSuccess()) {
                     LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.SECURE, "BindMobile", CommonConstant.SGSUCCESS_SHERROR, passportId, result.getCode(), shResult.toString());
                 }
+            }else{
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
             }
         } catch (Exception e) {
             logger.error("bothBindMobile Exception", e);

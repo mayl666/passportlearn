@@ -102,27 +102,28 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
     }
 
     /**
-     * 测试修改绑定手机
+     * 测试首次绑定手机
      */
     @Test
-    public void testBindOrModifyBindMobile() {
+    public void testBindMobile() {
         //初始值shipengzhi1986@sogou.com绑定13621009174
         Account account = accountService.queryAccountByPassportId(SPZ_PASSPORTID);
         //已注册手机无法绑定
-        boolean isBinded = accountService.bindOrModifyBindMobile(account, "18910873093");
+        boolean isBinded = accountService.bindMobile(account, "18910873093");
         Assert.assertTrue(!isBinded);
-        //修改绑定手机
-        boolean isModifyBind = accountService.bindOrModifyBindMobile(account, SPZ_NEW_MOBILE);
-        Assert.assertTrue(isModifyBind);
+        //账号已绑定手机，无法再绑
+        boolean isModifyBind = accountService.bindMobile(account, SPZ_NEW_MOBILE);
+        Assert.assertTrue(!isModifyBind);
         //删除绑定
-        boolean isUnbind = accountService.deleteOrUnbindMobile(SPZ_NEW_MOBILE);
+        boolean isUnbind = accountService.deleteOrUnbindMobile(SPZ_MOBILE);
         Assert.assertTrue(isUnbind);
-        //异常情况，account写成功，mobile_passportId_mapping写失败
-        boolean isAbnormalBind = accountService.bindOrModifyBindMobile(account, SPZ_MOBILE);
+        //异常情况，account写成功，但mapping没写成功
+        account.setMobile(SPZ_MOBILE);
+        boolean isAbnormalBind = accountService.bindMobile(account, SPZ_MOBILE);
         Assert.assertTrue(!isAbnormalBind);
         //首次绑定
         account.setMobile(null);
-        boolean isBind = accountService.bindOrModifyBindMobile(account, SPZ_MOBILE);
+        boolean isBind = accountService.bindMobile(account, SPZ_MOBILE);
         Assert.assertTrue(isBind);
     }
 
