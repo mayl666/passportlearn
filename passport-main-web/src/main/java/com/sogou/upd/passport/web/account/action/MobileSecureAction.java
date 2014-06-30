@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * 密保手机相关的安全页面
+ * 密保手机相关的安全操作
  * User: shipengzhi
  * Date: 14-6-30
  * Time: 上午2:48
