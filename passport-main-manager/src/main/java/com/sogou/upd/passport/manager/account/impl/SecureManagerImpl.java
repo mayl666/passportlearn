@@ -12,7 +12,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
-import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.account.vo.ActionRecordVO;
@@ -619,7 +618,7 @@ public class SecureManagerImpl implements SecureManager {
         try {
             Account account;
             Result smsCodeAndSecureResult = checkBindMobileSmsCodeAndSecure(passportId, clientId, newMobile, smsCode, modifyIp);
-            if(!smsCodeAndSecureResult.isSuccess()){
+            if (!smsCodeAndSecureResult.isSuccess()) {
                 return smsCodeAndSecureResult;
             }
             if (!operateTimesService.checkLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.SECURE)) {
@@ -688,7 +687,7 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         try {
             Result smsCodeAndSecureResult = checkBindMobileSmsCodeAndSecure(passportId, clientId, newMobile, smsCode, modifyIp);
-            if(!smsCodeAndSecureResult.isSuccess()){
+            if (!smsCodeAndSecureResult.isSuccess()) {
                 return smsCodeAndSecureResult;
             }
             if (ManagerHelper.isInvokeProxyApi(passportId)) {
@@ -781,19 +780,17 @@ public class SecureManagerImpl implements SecureManager {
             updateQuesApiParams.setNewquestion(newQues);
             updateQuesApiParams.setNewanswer(newAnswer);
             updateQuesApiParams.setModifyip(modifyIp);
-
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
-                // 代理接口
-                result = proxySecureApiManager.updateQues(updateQuesApiParams);
-            } else {
-                // SOGOU接口
-                result = sgSecureApiManager.updateQues(updateQuesApiParams);
-            }
-
+            result = secureApiManager.updateQues(updateQuesApiParams);
+//            if (ManagerHelper.isInvokeProxyApi(userId)) {
+//                // 代理接口
+//                result = proxySecureApiManager.updateQues(updateQuesApiParams);
+//            } else {
+//                // SOGOU接口
+//                result = sgSecureApiManager.updateQues(updateQuesApiParams);
+//            }
             if (!result.isSuccess()) {
                 return result;
             }
-
             operateTimesService.incLimitBind(userId, clientId);
             operateTimesService.incIPBindTimes(modifyIp);
             result.setMessage("绑定密保问题成功！");

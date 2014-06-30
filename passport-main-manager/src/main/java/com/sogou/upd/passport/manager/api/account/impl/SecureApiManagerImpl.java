@@ -89,7 +89,7 @@ public class SecureApiManagerImpl implements SecureApiManager {
                     result = bothUpdateQues(updateQuesApiParams);
                 } else {
                     //其它账号修改密保问题依然只写SH
-                    result = sgSecureApiManager.updateQues(updateQuesApiParams);
+                    result = proxySecureApiManager.updateQues(updateQuesApiParams);
                 }
             }
         } catch (Exception e) {

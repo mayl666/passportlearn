@@ -250,7 +250,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result;
             }
-
             AccountModuleEnum module = AccountModuleEnum.RESETPWD;
             if (useRegEmail) {
                 // 使用注册邮箱
@@ -442,7 +441,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     public Result resetPasswordByScode(String passportId, int clientId, String password,
                                        String scode, String ip) throws Exception {
         Result result = new APIResultSupport(false);
-        // TODO:启用后，删除ByMobile和ByQues
         try {
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
             if (appConfig == null) {
