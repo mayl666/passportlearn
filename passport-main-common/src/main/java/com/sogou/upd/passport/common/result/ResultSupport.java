@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common.result;
 
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.lang.ClassUtil;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Iterator;
@@ -63,6 +64,7 @@ public class ResultSupport implements Result {
     @Override
     public void setCode(String code) {
         this.code = code;
+        setMessage(ErrorUtil.ERR_CODE_MSG_MAP.get(code));
     }
 
     @Override

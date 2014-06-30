@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common;
 
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.junit.Ignore;
@@ -11,7 +12,7 @@ import org.junit.Test;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-3 Time: 下午4:40 To change this template use
  * File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 public class AccountEnumTest extends TestCase {
 
     @Test
@@ -39,5 +40,12 @@ public class AccountEnumTest extends TestCase {
         assertTrue(domain.equals(AccountDomainEnum.INDIVID));
         assertTrue(domain != AccountDomainEnum.SOGOU);
         assertTrue(!domain.equals(AccountDomainEnum.SOGOU));
+    }
+
+    @Test
+    public void testGetAccountDomain() {
+        assertTrue(AccountDomainEnum.PHONE == AccountDomainEnum.getAccountDomain("007-007972@sohu.com"));
+        assertTrue(AccountDomainEnum.SOHU == AccountDomainEnum.getAccountDomain("lsj1776348140@sohu.com"));
+        assertTrue(AccountDomainEnum.SOHU == AccountDomainEnum.getAccountDomain("13512724012@wap.sohu.com"));
     }
 }

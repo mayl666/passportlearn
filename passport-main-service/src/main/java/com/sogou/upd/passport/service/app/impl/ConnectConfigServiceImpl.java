@@ -4,7 +4,6 @@ import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.app.ConnectConfigDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -34,8 +33,6 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
     private ConnectConfigDAO connectConfigDAO;
     @Inject
     private RedisUtils redisUtils;
-    @Autowired
-    private DBShardRedisUtils dbShardRedisUtils;
 
     @Override
     public ConnectConfig queryConnectConfig(int clientId, int provider) throws ServiceException {
@@ -54,8 +51,7 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
         try {
             String cacheKey = buildConnectConfigCacheKey(clientId, provider);
             //缓存根据clientId读取ConnectConfig
-
-            connectConfig = dbShardRedisUtils.getObject(cacheKey, ConnectConfig.class);
+            connectConfig = redisUtils.getObject(cacheKey, ConnectConfig.class);
             if (connectConfig == null) {
                 //读取数据库
                 connectConfig = connectConfigDAO.getConnectConfigByClientIdAndProvider(clientId, provider);
@@ -85,7 +81,7 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
             int row = connectConfigDAO.updateConnectConfig(connectConfig);
             if (row > 0) {
                 String cacheKey = buildConnectConfigCacheKey(connectConfig.getClientId(), connectConfig.getProvider());
-                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, connectConfig, DateAndNumTimesConstant.ONE_MONTH);
+                redisUtils.setWithinSeconds(cacheKey, connectConfig, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
         } catch (Exception e) {
@@ -97,7 +93,7 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
     private boolean addClientIdMapConnectConfigToCache(String cacheKey, ConnectConfig connectConfig) {
         boolean flag = true;
         try {
-            dbShardRedisUtils.setObjectWithinSeconds(cacheKey, connectConfig, DateAndNumTimesConstant.ONE_MONTH);
+            redisUtils.setWithinSeconds(cacheKey, connectConfig, DateAndNumTimesConstant.ONE_MONTH);
         } catch (Exception e) {
             flag = false;
             logger.error("[App] service method addClientIdMapAppConfig error.{}", e);
