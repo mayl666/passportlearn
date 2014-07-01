@@ -31,12 +31,4 @@ public interface HostHolder {
      * @param nickName
      */
     void setNickName(String nickName);
-
-
-    /**
-     * 获取昵称
-     * @return
-     */
-    String getNickName();
-
 }

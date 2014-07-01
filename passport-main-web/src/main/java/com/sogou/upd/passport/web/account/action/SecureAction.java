@@ -73,11 +73,6 @@ public class SecureAction extends BaseController {
         } else {
             result = secureManager.queryAccountSecureInfo(userId, clientId, true);
         }
-
-//        String nickName = hostHolder.getNickName();
-//        if (Strings.isNullOrEmpty(nickName)) {
-//            nickName = userId;
-//        }
         result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
@@ -114,17 +109,13 @@ public class SecureAction extends BaseController {
             case THIRD:
                 return "redirect:/";
         }
-
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
-
         result.setSuccess(true);
         result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
-
         ControllerHelper.process(result, clientId, null);
-
         model.addAttribute("data", result.toString());
         return "safe/email";
     }
@@ -190,21 +181,13 @@ public class SecureAction extends BaseController {
             case THIRD:
                 return "redirect:/";
         }
-
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
-
         result.setSuccess(true);
-//        String nickName = hostHolder.getNickName();
-//        if (Strings.isNullOrEmpty(nickName)) {
-//            nickName = userId;
-//        }
         result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
-
         ControllerHelper.process(result, clientId, null);
-
         model.addAttribute("data", result.toString());
         return "safe/question";
     }
@@ -233,15 +216,12 @@ public class SecureAction extends BaseController {
             case THIRD:
                 return "redirect:/";
         }
-
         result.setSuccess(true);
         result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
-
         ControllerHelper.process(result, clientId, null);
-
         model.addAttribute("data", result.toString());
         return "safe/password";
     }
@@ -268,17 +248,13 @@ public class SecureAction extends BaseController {
             case THIRD:
                 return "redirect:/";
         }
-
         result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
-
         result.setSuccess(true);
         result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
-
         ControllerHelper.process(result, clientId, null);
-
         model.addAttribute("data", result.toString());
         return "safe/history";
     }
@@ -329,7 +305,7 @@ public class SecureAction extends BaseController {
     @RequestMapping(value = "/bindques", method = RequestMethod.POST)
     @LoginRequired
     @ResponseBody
-    public Object bindQues(WebBindQuesParams params, HttpServletRequest request, Model model)
+    public Object bindQues(HttpServletRequest request, WebBindQuesParams params)
             throws Exception {
         Result result = new APIResultSupport(false);
         String validateResult = ControllerHelper.validateParams(params);
@@ -354,14 +330,11 @@ public class SecureAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result.toString();
         }
-
         result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
-
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), modifyIp);
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
-
         return result.toString();
     }
 

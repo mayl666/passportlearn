@@ -648,13 +648,6 @@ public class SecureManagerImpl implements SecureManager {
             updateQuesApiParams.setNewanswer(newAnswer);
             updateQuesApiParams.setModifyip(modifyIp);
             result = secureApiManager.updateQues(updateQuesApiParams);
-//            if (ManagerHelper.isInvokeProxyApi(userId)) {
-//                // 代理接口
-//                result = proxySecureApiManager.updateQues(updateQuesApiParams);
-//            } else {
-//                // SOGOU接口
-//                result = sgSecureApiManager.updateQues(updateQuesApiParams);
-//            }
             if (!result.isSuccess()) {
                 return result;
             }

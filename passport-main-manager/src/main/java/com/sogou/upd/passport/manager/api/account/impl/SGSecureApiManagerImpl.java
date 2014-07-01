@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -86,22 +87,28 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         String newQues = updateQuesApiParams.getNewquestion();
         String newAnswer = updateQuesApiParams.getNewanswer();
         int clientId = updateQuesApiParams.getClient_id();
-
-        Result result = accountService.verifyUserPwdVaild(userId, password, true);
-        result.setDefaultModel(null);
-        if (!result.isSuccess()) {
-            operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
+        Result result = new APIResultSupport(false);
+        try {
+            result = accountService.verifyUserPwdVaild(userId, password, true);
+            result.setDefaultModel(null);
+            if (!result.isSuccess()) {
+                operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
+                return result;
+            }
+            newAnswer = DigestUtils.md5Hex(newAnswer.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+            AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(userId, newQues, newAnswer);
+            if (accountInfo == null) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);
+                return result;
+            }
+            result = new APIResultSupport(true);
+            result.setMessage("操作成功");
+            return result;
+        } catch (Exception e) {
+            logger.error("Update Question fail! passportId:" + userId, e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
-        newAnswer = DigestUtils.md5Hex(newAnswer.getBytes());
-        AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(userId, newQues, newAnswer);
-        if (accountInfo == null) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);
-            return result;
-        }
-        result = new APIResultSupport(true);
-        result.setMessage("操作成功");
-        return result;
     }
 
     @Override

@@ -62,25 +62,6 @@ public class SnamePassportMappingServiceImpl implements SnamePassportMappingServ
         return passportId;
     }
 
-    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryPassportIdBySid", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
-    @Override
-    public String queryPassportIdBySid(String sid) throws ServiceException {
-        String passportId;
-        try {
-            String cacheKey = buildSnamePassportMappingKey(sid);
-            passportId = dbShardRedisUtils.get(cacheKey);
-            if (Strings.isNullOrEmpty(passportId)) {
-                passportId = snamePassportMappingDAO.getPassportIdBySid(sid);
-                if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
-                }
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        return passportId;
-    }
-
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryPassportIdByMobile", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public String queryPassportIdByMobile(String mobile) throws ServiceException {
