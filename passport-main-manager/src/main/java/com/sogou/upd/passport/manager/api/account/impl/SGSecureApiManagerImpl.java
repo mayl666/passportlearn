@@ -93,7 +93,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
             operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
             return result;
         }
-        newQues = DigestUtils.md5Hex(newQues.getBytes());
+        newAnswer = DigestUtils.md5Hex(newAnswer.getBytes());
         AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(userId, newQues, newAnswer);
         if (accountInfo == null) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);

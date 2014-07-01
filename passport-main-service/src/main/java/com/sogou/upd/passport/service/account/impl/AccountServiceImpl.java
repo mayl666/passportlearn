@@ -23,6 +23,7 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
@@ -406,16 +407,15 @@ public class AccountServiceImpl implements AccountService {
     public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException {
         boolean flag = true;
         try {
-            String code = UUID.randomUUID().toString().replaceAll("-", "");
-            String token = Coder.encryptMD5(username + clientId + code);
-            String params =
+            String token = SecureCodeGenerator.generatorSecureCode(username, clientId);
+            String activeUrl =
                     PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
                             "&client_id=" + clientId +
                             "&token=" + token;
-            if (!Strings.isNullOrEmpty(ru)) {
-                params = params + "&ru=" + Coder.encodeUTF8(ru);
+            if (Strings.isNullOrEmpty(ru)) {
+                ru = CommonConstant.DEFAULT_INDEX_URL;
+                activeUrl += "&ru=" + Coder.encodeUTF8(ru);
             }
-            String activeUrl = CommonConstant.PASSPORT_ACTIVE_EMAIL_URL + params;
 
             String cacheKey = buildCacheKey(username);
             Map<String, String> mapParam = new HashMap<>();

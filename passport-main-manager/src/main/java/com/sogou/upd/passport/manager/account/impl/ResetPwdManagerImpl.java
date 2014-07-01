@@ -162,15 +162,16 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
         }
     }
 
-    private Result sendEmailResetPwd(String passportId, int clientId, AccountModuleEnum module,
-                                     String email) throws Exception {
+    @Override
+    public Result sendEmailResetPwd(String passportId, int clientId, AccountModuleEnum module,
+                                    String email, String ru) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             if (!emailSenderService.checkLimitForSendEmail(passportId, clientId, module, email)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
                 return result;
             }
-            if (!emailSenderService.sendEmail(passportId, clientId, module, email, false)) {
+            if (!emailSenderService.sendEmail(passportId, clientId, module, email, false, ru)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
                 return result;
             }
@@ -241,7 +242,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
      * 重置密码（邮件方式）——1.发送重置密码申请验证邮件
      */
     @Override
-    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail)
+    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail, String ru)
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
@@ -257,7 +258,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                         AccountDomainEnum.OTHER);
                 if (isOtherDomain) {
                     // 外域用户无绑定邮箱
-                    return sendEmailResetPwd(passportId, clientId, module, passportId);
+                    return sendEmailResetPwd(passportId, clientId, module, passportId, ru);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_EMAIL_FAILED);
                     return result;
@@ -270,7 +271,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                     return result;
                 } else {
                     String emailBind = accountInfo.getEmail();
-                    return sendEmailResetPwd(passportId, clientId, module, emailBind);
+                    return sendEmailResetPwd(passportId, clientId, module, emailBind, ru);
                 }
             }
         } catch (ServiceException e) {

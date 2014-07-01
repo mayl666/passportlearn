@@ -69,8 +69,7 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                 Result shResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
                 //sg写成功，sh写失败要记录log，因为这会导致线上回滚出问题
                 if (!shResult.isSuccess()) {
-                    String message = CommonConstant.SGSUCCESS_SHERROR;
-                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.REGISTER, "regMailUser", message, regEmailApiParams.getUserid(), shResult.getCode(), shResult.toString());
+                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.REGISTER, "regMailUser", CommonConstant.SGSUCCESS_SHERROR, regEmailApiParams.getUserid(), shResult.getCode(), shResult.toString());
                 }
             }
         } catch (Exception e) {

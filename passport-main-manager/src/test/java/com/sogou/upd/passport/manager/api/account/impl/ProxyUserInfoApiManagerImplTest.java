@@ -24,7 +24,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo2() throws Exception {
         GetUserInfoApiparams getUserInfoApiParams=new GetUserInfoApiparams();
-        getUserInfoApiParams.setUserid("ling47yang@sogou.com");
+        getUserInfoApiParams.setUserid("ksmees@sogou.com");
         getUserInfoApiParams.setFields("usertype,createip,birthday,gender,createip,createtime,"
                 +
                 "personalid,personalidflag,sec_mobile,sec_email,province," +

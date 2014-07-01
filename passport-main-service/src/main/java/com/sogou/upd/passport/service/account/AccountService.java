@@ -75,6 +75,7 @@ public interface AccountService {
 
     /**
      * 根据passportId删除Account表缓存和数据库
+     *
      * @param passportId
      * @return
      * @throws ServiceException
@@ -128,6 +129,7 @@ public interface AccountService {
     /**
      * 修改绑定手机
      * 只修改account表
+     *
      * @param account
      * @param newMobile
      * @return
@@ -158,6 +160,7 @@ public interface AccountService {
     /**
      * 删除或解绑手机
      * 修改account和mobile_passportId_mapping
+     *
      * @param mobile
      * @return
      * @throws ServiceException

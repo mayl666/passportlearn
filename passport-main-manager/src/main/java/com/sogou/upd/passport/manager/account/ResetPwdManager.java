@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 
 /**
@@ -38,15 +39,30 @@ public interface ResetPwdManager {
      * @param passportId
      * @param clientId
      * @param useRegEmail 邮件选择方式，true为注册邮箱，false为绑定邮箱
+     * @param ru          用户传递的ru参数
      * @throws Exception
      */
-    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail) throws Exception;
+    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail, String ru) throws Exception;
+
+    /**
+     * 重置密码时发送验证邮件
+     *
+     * @param passportId
+     * @param clientId
+     * @param module
+     * @param email
+     * @param ru
+     * @return
+     * @throws Exception
+     */
+    public Result sendEmailResetPwd(String passportId, int clientId, AccountModuleEnum module,
+                                    String email, String ru) throws Exception;
 
 
     /**
      * 重置密码（邮件方式）——2.验证重置密码申请链接
      *
-     * @param uid 目前为passportId
+     * @param uid   目前为passportId
      * @param token
      */
     public Result checkEmailResetPwd(String uid, int clientId, String token) throws Exception;
@@ -60,7 +76,7 @@ public interface ResetPwdManager {
 
     /**
      * 重置密码（手机方式）——2.检查手机短信码，成功则返回secureCode记录成功标志
-     *                      （1.发送见sendMobileCodeByPassportId）
+     * （1.发送见sendMobileCodeByPassportId）
      *
      * @param passportId
      * @param clientId
@@ -96,10 +112,11 @@ public interface ResetPwdManager {
      * @throws Exception
      */
     public Result resetPasswordByScode(String passportId, int clientId, String password,
-                                       String secureCode,String ip) throws Exception;
+                                       String secureCode, String ip) throws Exception;
 
     /**
-     *找回密码，发送手机验证码
+     * 找回密码，发送手机验证码
+     *
      * @param userId
      * @param clientId
      * @return
@@ -115,6 +132,7 @@ public interface ResetPwdManager {
 
     /**
      * 统计找回密码次数
+     *
      * @param passportId
      * @throws Exception
      */
@@ -122,6 +140,7 @@ public interface ResetPwdManager {
 
     /**
      * 检查找回密码次数
+     *
      * @param passportId
      * @return
      * @throws Exception

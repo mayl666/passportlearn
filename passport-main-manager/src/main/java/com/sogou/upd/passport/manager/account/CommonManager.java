@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountInfo;
 
 /**
  * Created with IntelliJ IDEA.
@@ -56,6 +57,15 @@ public interface CommonManager {
      * @return
      */
     public String getPassportIdByUsername(String username) throws Exception;
+
+    /**
+     * 根据passportId查询正常用户accountInfo信息
+     *
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public AccountInfo queryAccountInfoByPassportId(String passportId) throws ServiceException;
 
     /**
      * 根据passportId查询account
