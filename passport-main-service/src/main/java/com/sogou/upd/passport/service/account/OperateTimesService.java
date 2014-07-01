@@ -170,7 +170,7 @@ public interface OperateTimesService {
      * @return
      * @throws ServiceException
      */
-    public boolean checkLimitBind(String userId, int clientId) throws ServiceException;
+    public boolean checkBindLimit(String userId, int clientId) throws ServiceException;
 
     /**
      * 修改密码次数

@@ -507,13 +507,13 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public boolean checkLimitBind(String userId, int clientId) throws ServiceException {
+    public boolean checkBindLimit(String passportId, int clientId) throws ServiceException {
         try {
-            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDNUM + userId +
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDNUM + passportId +
                     "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
         } catch (Exception e) {
-            logger.error("checkLimitBind:passportId" + userId, e);
+            logger.error("checkBindLimit:passportId" + passportId, e);
             return true;
         }
     }

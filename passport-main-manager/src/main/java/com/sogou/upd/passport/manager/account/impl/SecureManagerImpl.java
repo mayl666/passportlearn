@@ -425,7 +425,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            if (!operateTimesService.checkLimitBind(passportId, clientId)) {
+            if (!operateTimesService.checkBindLimit(passportId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -480,7 +480,7 @@ public class SecureManagerImpl implements SecureManager {
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBind(userId, clientId)) {
+            if (!operateTimesService.checkBindLimit(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -517,7 +517,7 @@ public class SecureManagerImpl implements SecureManager {
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            if (!operateTimesService.checkLimitBind(userId, clientId)) {
+            if (!operateTimesService.checkBindLimit(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -587,7 +587,7 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result;
             }
-            if (!operateTimesService.checkLimitBind(passportId, clientId)) {
+            if (!operateTimesService.checkBindLimit(passportId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
@@ -645,7 +645,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            if (!operateTimesService.checkLimitBind(userId, clientId)) {
+            if (!operateTimesService.checkBindLimit(userId, clientId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
