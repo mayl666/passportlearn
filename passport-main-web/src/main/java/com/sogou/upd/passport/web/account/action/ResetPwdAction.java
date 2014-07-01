@@ -122,7 +122,7 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/index";
             }
-            boolean checkTimes = resetPwdManager.checkFindPwdTimes(username).isSuccess();
+            boolean checkTimes = resetPwdManager.checkFindPwdTimes(passportId).isSuccess();
             if (!checkTimes) {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
                 model.addAttribute("data", result.toString());
@@ -144,7 +144,7 @@ public class ResetPwdAction extends BaseController {
             }
             AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
             //记录找回密码次数
-            resetPwdManager.incFindPwdTimes(username);
+            resetPwdManager.incFindPwdTimes(passportId);
             //如果用户的密保手机和密保邮箱存在，则返回模糊处理的手机号/密保邮箱及完整手机号/邮箱加密后的md5串
             //todo 外域邮箱找回时也需要模糊处理，目前只是搜狗账号阶段，暂未添加注册邮箱找回
             if (accountSecureInfoVO != null) {
@@ -269,20 +269,7 @@ public class ResetPwdAction extends BaseController {
                 account = (Account) map.get("account");
             }
             if (account != null) {
-                switch (account.getFlag()) {
-                    case 0:
-                        //未激活，发送激活邮件
-                        result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountModuleEnum.RESETPWD, email, params.getRu());
-                        break;
-                    case 1:
-                        //正式用户，可直接登录
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        break;
-                    case 2:
-                        //用户已经被封杀
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
-                        break;
-                }
+                result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountModuleEnum.RESETPWD, email, params.getRu());
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
