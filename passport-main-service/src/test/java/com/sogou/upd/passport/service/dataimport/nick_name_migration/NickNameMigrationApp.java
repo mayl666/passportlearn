@@ -8,6 +8,7 @@ import com.sogou.upd.passport.dao.account.AccountBaseInfoDAO;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.service.dataimport.util.FileUtil;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.perf4j.StopWatch;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ import java.util.concurrent.ForkJoinPool;
  * Date: 14-5-6
  * Time: 下午2:57
  */
+@Ignore
 public class NickNameMigrationApp extends BaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NickNameMigrationApp.class);

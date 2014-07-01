@@ -12,6 +12,7 @@ import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.dao.account.*;
 import com.sogou.upd.passport.model.account.*;
 import com.sogou.upd.passport.service.dataimport.util.FileUtil;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,6 +28,7 @@ import java.util.Map;
  * Time: 上午12:17
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class RepairTmpData extends BaseTest {
 
     //从搜狐获取数据失败记录
