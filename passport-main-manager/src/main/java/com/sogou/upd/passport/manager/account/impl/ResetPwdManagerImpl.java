@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -160,6 +161,29 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
+    }
+
+    @Override
+    public Map<String, Object> getEmailAndStatus(String username) throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        //如果账号存在并且状态为未激活，则重新发送激活邮件
+        Account account = accountService.queryAccountByPassportId(username);
+        String email = null;
+        //发送激活邮件时，如果账号本身是外域，就往注册邮箱发
+        if (AccountDomainEnum.OTHER.equals(AccountDomainEnum.getAccountDomain(username))) {
+            email = username;
+        } else {
+            //如果不是外域账号，则往绑定邮箱发送
+            AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(username);
+            if (accountInfo != null && !Strings.isNullOrEmpty(accountInfo.getEmail())) {
+                email = accountInfo.getEmail();
+            }
+        }
+        if (account != null) {
+            map.put("account", account);
+        }
+        map.put("email", email);
+        return map;
     }
 
     @Override
