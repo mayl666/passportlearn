@@ -17,7 +17,7 @@
 </style>
 </head>
 <body>
-<img src="/static/img/logo.png" border="0"/>
+<img src="/./static/img/logo.png" border="0"/>
 <br><br>亲爱的用户：<br><br>
 &nbsp;&nbsp;&nbsp;&nbsp;您好，欢迎您使用搜狗通行证服务!<br><br>
 我们收到您的绑定邮箱申请,请单击以下链接进行绑定邮箱:<br><br>
