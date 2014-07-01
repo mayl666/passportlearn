@@ -17,6 +17,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.AccountScodeParams;
 import com.sogou.upd.passport.web.account.form.security.WebBindEmailParams;
+import com.sogou.upd.passport.web.account.form.security.WebBindEmailVerifyParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,33 +133,34 @@ public class EmailSecureAction extends BaseController {
     * 绑定外域邮箱成功的页面
     */
     @RequestMapping(value = "/emailverify", method = RequestMethod.GET)
-    public String emailVerifySuccess(String token, String id, HttpServletRequest request, Model model) throws Exception {
+    public String emailVerifySuccess(HttpServletRequest request, Model model, WebBindEmailVerifyParams params) throws Exception {
         // TODO:状态码参数或token
         Result result = new APIResultSupport(false);
-        String username = hostHolder.getNickName();  // TODO 不能使用此方法
+        String username = params.getUsername();
+        String token = params.getToken();
+        String id = params.getId();
         try {
-//            result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
-            if (!Strings.isNullOrEmpty(username)) {
-                result.setDefaultModel("username", username);
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+            } else {
                 AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
                 if (domain == AccountDomainEnum.PHONE) {
                     result.setDefaultModel("actype", "phone");
                 }
+                if (StringUtil.checkExistNullOrEmpty(token, id) || !checkManager.checkScode(token, id)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED);
+                    result.setMessage("绑定密保邮箱申请链接失效，请尝试重新绑定！");
+                } else {
+                    result.setSuccess(true);
+                    result.setCode(ErrorUtil.SUCCESS);
+                    result.setMessage("绑定密保邮箱成功！");
+                }
             }
-            if (StringUtil.checkExistNullOrEmpty(token, id) || !checkManager.checkScode(token, id)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED);
-                result.setMessage("绑定密保邮箱申请链接失效，请尝试重新绑定！");
-            } else {
-                result.setSuccess(true);
-                result.setCode(ErrorUtil.SUCCESS);
-                result.setMessage("绑定密保邮箱成功！");
-            }
+            result.setDefaultModel("username", accountInfoManager.getUserUniqName(username, CommonConstant.SGPP_DEFAULT_CLIENTID));
             result.setDefaultModel("status", result.getCode());
             result.setDefaultModel("statusText", result.getMessage());
-
-        /*result.setDefaultModel("status", ErrorUtil.SUCCESS);
-        result.setDefaultModel("statusText", "绑定密保邮箱成功！");*/
-
             model.addAttribute("data", result.toString());
             return "safe/emailsuccess";
         } finally {
