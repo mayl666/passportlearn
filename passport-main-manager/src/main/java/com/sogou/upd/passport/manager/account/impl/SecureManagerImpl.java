@@ -490,9 +490,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
             emailSenderService.deleteScodeCacheForEmail(userId, clientId, module);
-
             operateTimesService.incLimitBind(userId, clientId);
-
             result.setSuccess(true);
             result.setMessage("修改绑定邮箱成功！");
             return result;
