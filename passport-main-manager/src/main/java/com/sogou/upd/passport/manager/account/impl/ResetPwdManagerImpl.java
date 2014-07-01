@@ -192,7 +192,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                                         String smsCode) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            Account account = accountService.queryAccountByPassportId(passportId);
+            Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 return result;
@@ -458,7 +458,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
                 return result;
             }
-            Account account = accountService.queryAccountByPassportId(passportId);
+            Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 return result;

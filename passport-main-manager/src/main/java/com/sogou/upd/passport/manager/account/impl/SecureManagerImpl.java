@@ -449,13 +449,7 @@ public class SecureManagerImpl implements SecureManager {
             ru = URLEncoder.encode(ru, "UTF-8");
             params.setRu(ru);
 
-            if (ManagerHelper.isInvokeProxyApi(passportId)) {
-                // 代理接口,SOHU接口需要传MD5加密后的密码
-                params.setPassword(Coder.encryptMD5(password));
-                result = proxyBindApiManager.bindEmail(params);
-            } else {
-                result = sgBindApiManager.bindEmail(params);
-            }
+            result = bindApiManager.bindEmail(params);
             if (result.isSuccess()) {
                 emailSenderService.incLimitForSendEmail(passportId, clientId, AccountModuleEnum.SECURE, newEmail);
                 operateTimesService.incIPBindTimes(modifyIp);
@@ -491,7 +485,7 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);
                 return result;
             }
-            if (accountInfoService.modifyEmailByPassportId(userId, newEmail) == null) {
+            if (accountInfoService.modifyBindEmailByPassportId(userId, newEmail) == null) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);
                 return result;
             }

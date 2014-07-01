@@ -5,8 +5,6 @@ import com.sogou.upd.passport.model.account.AccountInfo;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-6 Time: 下午6:49 To change this template use
@@ -44,14 +42,14 @@ public class AccountInfoServiceTest extends BaseTest {
     @Test
     public void testModifyEmailByPassportId() {
         AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(PASSPORT_ID);
-        accountInfoService.modifyEmailByPassportId(PASSPORT_ID, NEW_EMAIL);
+        accountInfoService.modifyBindEmailByPassportId(PASSPORT_ID, NEW_EMAIL);
         AccountInfo accountInfo1 = accountInfoService.queryAccountInfoByPassportId(PASSPORT_ID);
         if (NEW_EMAIL.equals(accountInfo1.getEmail())) {
             System.out.println("修改成功:"+NEW_EMAIL);
         } else {
             System.out.println("修改失败");
         }
-        accountInfoService.modifyEmailByPassportId(PASSPORT_ID, accountInfo.getEmail());
+        accountInfoService.modifyBindEmailByPassportId(PASSPORT_ID, accountInfo.getEmail());
     }
 
     @Test

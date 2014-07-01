@@ -15,9 +15,14 @@ public interface AccountInfoService {
     public AccountInfo queryAccountInfoByPassportId(String passportId) throws ServiceException;
 
     /**
+     * 根据passportId获取绑定密保邮箱
+     */
+    public String queryBindEmailByPassportId(String passportId) throws ServiceException;
+
+    /**
      * 修改绑定邮箱
      */
-    public AccountInfo modifyEmailByPassportId(String passportId, String email) throws ServiceException;
+    public AccountInfo modifyBindEmailByPassportId(String passportId, String email) throws ServiceException;
 
     /**
      * 修改密保问题和答案
