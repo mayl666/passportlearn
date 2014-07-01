@@ -45,15 +45,14 @@ public class SGBindApiManagerImpl implements BindApiManager {
         String password = bindEmailApiParams.getPassword();
         String oldEmail = bindEmailApiParams.getOldbindemail();
         String newEmail = bindEmailApiParams.getNewbindemail();
-
-        String emailBind = accountInfoService.queryBindEmailByPassportId(passportId);
-        if (!Strings.isNullOrEmpty(emailBind) && !emailBind.equals(oldEmail)) {   // 验证用户输入原绑定邮箱
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
-            return result;
-        }
         AuthUserApiParams authParams = new AuthUserApiParams(clientId, passportId, password);
         result = loginApiManager.webAuthUser(authParams);    //验证密码
         if (!result.isSuccess()) {
+            return result;
+        }
+        String emailBind = accountInfoService.queryBindEmailByPassportId(passportId);
+        if (!Strings.isNullOrEmpty(emailBind) && !emailBind.equals(oldEmail)) {   // 验证用户输入原绑定邮箱
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
             return result;
         }
         if (!emailSenderService.sendEmail(passportId, clientId, AccountModuleEnum.SECURE, newEmail, false, bindEmailApiParams.getRu())) {
