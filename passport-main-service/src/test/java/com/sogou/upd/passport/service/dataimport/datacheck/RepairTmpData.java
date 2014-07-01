@@ -93,6 +93,29 @@ public class RepairTmpData extends BaseTest {
     }
 
     /**
+     * 检验异常log中passportId是否都存在搜狗数据库
+     */
+    @Test
+    public void testCheckIsSyncSogouDB() {
+        List<String> passportIdList = FileIOUtil.readFileByLines("D:\\checkIsSyncSogou_0627_total");
+        String content = null;
+        int count = 0;
+        for (String passportId : passportIdList) {
+            Account account = accountDAO.getAccountByPassportId(passportId);
+            if (account == null) {
+                count++;
+                failedList.add(passportId);
+            }
+        }
+        System.out.println("count:" + count);
+        try {
+            FileUtil.storeFile("D:\\not_in_sogoudb_0627_total", failedList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 修复user_other_info_tmp表里Province、city为中文的情况
      * 输入：userid列表
      * 输出：更新user_other_info_tmp表
@@ -495,29 +518,29 @@ public class RepairTmpData extends BaseTest {
         int repairNum = 0;
         for (String mobile : mobileList) {
             StringBuilder outputText = new StringBuilder();
-            outputText.append(mobile+"-");
+            outputText.append(mobile + "-");
             try {
                 String passportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    outputText.append(mobile + "用户账号:" + passportId+",");
+                    outputText.append(mobile + "用户账号:" + passportId + ",");
                     Account account = accountDAO.getAccountByPassportId(passportId);
                     if (account != null) {
-                        outputText.append("昵称:"+account.getUniqname()+",");
-                        outputText.append("状态:"+"正式账号"+",");
-                        outputText.append("注册IP:"+account.getRegIp()+",");
-                        outputText.append("注册时间:"+account.getRegTime()+",");
-                        outputText.append("绑定手机号:"+account.getMobile()+",");
+                        outputText.append("昵称:" + account.getUniqname() + ",");
+                        outputText.append("状态:" + "正式账号" + ",");
+                        outputText.append("注册IP:" + account.getRegIp() + ",");
+                        outputText.append("注册时间:" + account.getRegTime() + ",");
+                        outputText.append("绑定手机号:" + account.getMobile() + ",");
                     }
                     AccountInfo accountInfo = accountInfoDAO.getAccountInfoByPassportId(passportId);
-                    if(accountInfo != null){
-                        outputText.append("姓名:"+accountInfo.getFullname()+",");
-                        outputText.append("性别:"+accountInfo.getGender()+",");
-                        outputText.append("生日:"+accountInfo.getBirthday()+",");
-                        outputText.append("证件号码:"+accountInfo.getPersonalid()+",");
-                        outputText.append("电子邮箱地址:"+accountInfo.getEmail()+",");
-                        outputText.append("省份:"+ProvinceAndCityUtil.getProvinceByPCode(accountInfo.getProvince())+",");
-                        outputText.append("城市:"+ProvinceAndCityUtil.getCityByCityCode(accountInfo.getCity())+",");
-                        outputText.append("最后修改资料时间:"+accountInfo.getUpdateTime()+"\n");
+                    if (accountInfo != null) {
+                        outputText.append("姓名:" + accountInfo.getFullname() + ",");
+                        outputText.append("性别:" + accountInfo.getGender() + ",");
+                        outputText.append("生日:" + accountInfo.getBirthday() + ",");
+                        outputText.append("证件号码:" + accountInfo.getPersonalid() + ",");
+                        outputText.append("电子邮箱地址:" + accountInfo.getEmail() + ",");
+                        outputText.append("省份:" + ProvinceAndCityUtil.getProvinceByPCode(accountInfo.getProvince()) + ",");
+                        outputText.append("城市:" + ProvinceAndCityUtil.getCityByCityCode(accountInfo.getCity()) + ",");
+                        outputText.append("最后修改资料时间:" + accountInfo.getUpdateTime() + "\n");
                     }
                 } else {
                     outputText.append("手机号不存在\n");

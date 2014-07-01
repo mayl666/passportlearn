@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.action.wap;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -20,6 +21,10 @@ import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.account.action.RegAction;
+import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
+import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
+import com.sogou.upd.passport.web.account.form.WapIndexParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,12 +163,42 @@ public class WapRegAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/wap/findpwd",method = RequestMethod.GET)
-    public String findPwdView(String ru, RedirectAttributes redirectAttributes) throws Exception {
+    public String findPwdView(String ru, RedirectAttributes redirectAttributes,WapIndexParams wapIndexParams) throws Exception {
+
+        if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
+            return "wap/findpwd_touch";
+        }
+
+
         if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
+
+
         redirectAttributes.addAttribute("ru", ru);
         return "redirect:" + SHPPUrlConstant.SOHU_FINDPWD_URL + "?ru={ru}";
     }
 
+
+    /**
+     * wap注册首页
+     * @param request
+     * @param response
+     * @param model
+     * @param wapIndexParams
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/wap/reg",method = RequestMethod.GET)
+    public String regist(HttpServletRequest request, HttpServletResponse response, Model model, WapIndexParams wapIndexParams) throws Exception {
+
+        if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {
+            response.setHeader("Content-Type", "text/vnd.wap.wml;charset=utf-8");
+            return "wap/regist_simple";
+        } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
+            return "wap/regist_touch";
+        } else {
+            return "wap/regist_color";
+        }
+    }
 }

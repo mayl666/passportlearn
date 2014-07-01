@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.app.AppConfigDAO;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -36,8 +35,6 @@ public class AppConfigServiceImpl implements AppConfigService {
     private AppConfigDAO appConfigDAO;
     @Inject
     private RedisUtils redisUtils;
-    @Autowired
-    private DBShardRedisUtils dbShardRedisUtils;
 
     @Override
     public AppConfig queryAppConfigByClientId(int clientId) throws ServiceException {
@@ -45,8 +42,7 @@ public class AppConfigServiceImpl implements AppConfigService {
         try {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
             //缓存根据clientId读取AppConfig
-
-            appConfig = dbShardRedisUtils.getObject(cacheKey, AppConfig.class);
+            appConfig = redisUtils.getObject(cacheKey, AppConfig.class);
             if (appConfig == null) {
                 //读取数据库
                 appConfig = appConfigDAO.getAppConfigByClientId(clientId);
@@ -96,7 +92,7 @@ public class AppConfigServiceImpl implements AppConfigService {
         boolean flag = true;
         try {
             String cacheKey = CACHE_PREFIX_CLIENTID + clientId;
-            dbShardRedisUtils.setObjectWithinSeconds(cacheKey, appConfig, DateAndNumTimesConstant.ONE_MONTH);
+            redisUtils.setWithinSeconds(cacheKey, appConfig, DateAndNumTimesConstant.ONE_MONTH);
         } catch (Exception e) {
             flag = false;
             logger.error("[App] service method addClientIdMapAppConfig error.{}", e);
@@ -119,5 +115,4 @@ public class AppConfigServiceImpl implements AppConfigService {
             return null;
         }
     }
-
 }

@@ -68,6 +68,7 @@ public interface SecureManager {
 
     /**
      * 重置用户密码（web验证码方式）
+     * 注意：这里的username一定要在调用前重新赋值为数据库里的passportId
      */
     public Result resetWebPassword(UpdatePwdParameters updatePwdParameters, String ip) throws Exception;
 
