@@ -118,12 +118,14 @@ public class ResetPwdAction extends BaseController {
             result.setDefaultModel("userid", passportId);
             //校验验证码
             if (!checkManager.checkCaptcha(params.getCaptcha(), params.getToken())) {
+                result.setDefaultModel("userid", username);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                 model.addAttribute("data", result.toString());
                 return "/recover/index";
             }
             boolean checkTimes = resetPwdManager.checkFindPwdTimes(passportId).isSuccess();
             if (!checkTimes) {
+                result.setDefaultModel("userid", username);
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
                 model.addAttribute("data", result.toString());
                 return "/recover/index";
@@ -131,6 +133,7 @@ public class ResetPwdAction extends BaseController {
             result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
             if (result.isSuccess()) {
                 result.setSuccess(false);
+                result.setDefaultModel("userid", username);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 model.addAttribute("data", result.toString());
