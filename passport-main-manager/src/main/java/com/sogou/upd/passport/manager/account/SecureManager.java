@@ -24,17 +24,6 @@ public interface SecureManager {
     public Result sendMobileCodeByPassportId(String passportId, int clientId, AccountModuleEnum module) throws Exception;
 
     /**
-     * 为SOHU接口适配，发送短信验证码至待绑定手机
-     *
-     * @param userId
-     * @param clientId
-     * @param mobile
-     * @return
-     * @throws Exception
-     */
-    public Result sendMobileCodeNew(String userId, int clientId, String mobile) throws Exception;
-
-    /**
      * 为SOHU接口适配，发送短信验证码至原绑定手机
      *
      * @param userId
@@ -43,26 +32,6 @@ public interface SecureManager {
      * @throws Exception
      */
     public Result sendMobileCodeOld(String userId, int clientId);
-
-    /**
-     * 发送手机验证码，不检测是否已注册或绑定，暂时供sendMobileCode*方法内部调用
-     *
-     * @param mobile
-     * @param clientId
-     * @return
-     * @throws Exception
-     */
-    // public Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception;
-
-
-    /**
-     * 手机用户找回密码
-     *
-     * @param mobile   手机号码
-     * @param clientId 客户端ID
-     * @return Result格式的返回值，成功则发送验证码；失败，提示失败信息
-     */
-    public Result findPassword(String mobile, int clientId);
 
     /**
      * 手机用户发短信重置密码

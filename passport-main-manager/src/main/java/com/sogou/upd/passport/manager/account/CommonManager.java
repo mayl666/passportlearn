@@ -58,15 +58,6 @@ public interface CommonManager {
     public String getPassportIdByUsername(String username) throws Exception;
 
     /**
-     * 根据passportId查询正常用户account
-     *
-     * @param passportId
-     * @return
-     * @throws ServiceException
-     */
-    public Account queryNormalAccount(String passportId) throws ServiceException;
-
-    /**
      * 根据passportId查询account
      *
      * @param passportId

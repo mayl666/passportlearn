@@ -110,11 +110,6 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public Account queryNormalAccount(String passportId) throws ServiceException {
-        return accountService.queryNormalAccount(passportId);
-    }
-
-    @Override
     public Account queryAccountByPassportId(String passportId) throws ServiceException {
         return accountService.queryAccountByPassportId(passportId);  //To change body of implemented methods use File | Settings | File Templates.
     }

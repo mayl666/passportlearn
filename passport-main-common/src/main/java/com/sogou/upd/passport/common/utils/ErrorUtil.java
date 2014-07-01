@@ -114,7 +114,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED = "20223";
     // 当日注册次数已达上限
     public static final String ERR_CODE_ACCOUNT_REGISTER_LIMITED = "20224";
-    // 手机号已绑定其他账号
+    // 手机号已注册或已被绑定
     public static final String ERR_CODE_ACCOUNT_PHONE_BINDED = "20225";
     // 登录失败
     public static final String ERR_CODE_ACCOUNT_LOGIN_FAILED = "20226";

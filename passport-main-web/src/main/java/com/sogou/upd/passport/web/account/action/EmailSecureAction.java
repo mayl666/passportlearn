@@ -40,11 +40,6 @@ public class EmailSecureAction extends BaseController {
 
     private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
 
-    @Override
-    protected boolean isServerSig(String client_signature, String signature) {
-        return super.isServerSig(client_signature, signature);    //To change body of overridden methods use File | Settings | File Templates.
-    }
-
     @Autowired
     private SecureManager secureManager;
     @Autowired
@@ -53,45 +48,47 @@ public class EmailSecureAction extends BaseController {
     private CheckManager checkManager;
 
     /*
-   * 发送绑定邮箱申请邮件
+   * 发送修改绑定邮箱申请邮件
    */
     @RequestMapping(value = "/sendemail", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
     public Object sendEmailForBind(HttpServletRequest request, WebBindEmailParams params) throws Exception {
         Result result = new APIResultSupport(false);
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        String userId = hostHolder.getPassportId();
+        String passportId = hostHolder.getPassportId();
         int clientId = Integer.parseInt(params.getClient_id());
         String password = params.getPassword();
         String newEmail = params.getNew_email();
         String oldEmail = params.getOld_email();
-        String ru = params.getRu();
         String modifyIp = getIp(request);
+        String ru = params.getRu();
         if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            switch (AccountDomainEnum.getAccountDomain(passportId)) {
+                case SOHU:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                    return result.toString();
+                case THIRD:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                    return result.toString();
+            }
 
-        switch (AccountDomainEnum.getAccountDomain(userId)) {
-            case SOHU:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                return result.toString();
-            case THIRD:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
-                return result.toString();
+            result = secureManager.sendEmailForBinding(passportId, clientId, password, newEmail, oldEmail, modifyIp, ru);
+            return result.toString();
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), params.getClient_id(), result.getCode(), modifyIp);
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
-
-        result = secureManager.sendEmailForBinding(userId, clientId, password, newEmail, oldEmail, modifyIp, ru);
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
-        return result.toString();
     }
 
     /*

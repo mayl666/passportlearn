@@ -160,12 +160,9 @@ public class RegManagerImpl implements RegManager {
         Result result = new APIResultSupport(false);
         // 检查ip安全限制
         try {
-            //检测手机号是否已经注册或绑定
-            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams(mobile);
-            Result mobileBindResult = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-            if (mobileBindResult.isSuccess()) {
+            String passportId = commonManager.getPassportIdByUsername(mobile);
+            if (!Strings.isNullOrEmpty(passportId)) { //手机号已经注册或绑定
                 if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
-                    String passportId = (String) mobileBindResult.getModels().get("userid");
                     Result sessionResult = sessionServerManager.createSession(passportId);
                     if (!sessionResult.isSuccess()) {
                         result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -175,7 +172,7 @@ public class RegManagerImpl implements RegManager {
                     result.getModels().put("sgid", sgid);
                 }
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                result.setDefaultModel("userid", (String) mobileBindResult.getModels().get("userid"));
+                result.setDefaultModel("userid", passportId);
                 return result;
             }
             //生成随机数密码
@@ -184,7 +181,7 @@ public class RegManagerImpl implements RegManager {
             RegMobileApiParams regApiParams = new RegMobileApiParams(mobile, randomPwd, clientId);
             Result regMobileResult = proxyRegisterApiManager.regMobileUser(regApiParams);
             if (regMobileResult.isSuccess()) {
-                String passportId = (String) regMobileResult.getModels().get("userid");
+                passportId = (String) regMobileResult.getModels().get("userid");
                 //发送短信验证码
                 //短信内容，TODO 目前只有小说使用，文案先写死
                 String smsText = "搜狗通行证注册成功，密码为" + randomPwd + "， 请用本机号码登录。";
