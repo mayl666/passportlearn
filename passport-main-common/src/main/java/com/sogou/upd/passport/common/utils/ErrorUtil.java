@@ -341,6 +341,10 @@ public class ErrorUtil {
     //获取个人资料失败
     public static final String ERR_OBTAIN_ACCOUNT_INFO = "30802";
 
+
+    //解除绑定邮箱失败 错误码定义需要有一些跨度 方便扩展！！！
+    public static final String ERR_CODE_EMAIL_UNBIND_FAIL = "40001";
+
     public ErrorUtil() {
         super();
     }
@@ -433,6 +437,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED, "申请邮件发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED, "当前密保邮箱错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED, "绑定密保邮箱失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_EMAIL_UNBIND_FAIL, "解除密保邮箱失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED, "绑定密保邮箱申请链接失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_EMAIL_FAILED, "重置密码申请邮箱不可用");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED, "绑定密保手机失败");
