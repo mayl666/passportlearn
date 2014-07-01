@@ -60,8 +60,8 @@ public class SecureApiManagerImplTest extends BaseTest {
         UpdateQuesApiParams updateQuesApiParams = new UpdateQuesApiParams();
         updateQuesApiParams.setPassword("111111");
         updateQuesApiParams.setModifyip(modifyIp);
-        updateQuesApiParams.setNewanswer("测试答案1");
-        updateQuesApiParams.setNewquestion("测试问题1");
+        updateQuesApiParams.setNewanswer("测试答案2");
+        updateQuesApiParams.setNewquestion("测试问题2");
         updateQuesApiParams.setUserid("test255@sogou.com");
         Result actualResult = proxySecureApiManager.updateQues(updateQuesApiParams);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
