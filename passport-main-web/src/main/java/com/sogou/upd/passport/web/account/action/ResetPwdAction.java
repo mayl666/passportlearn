@@ -269,20 +269,7 @@ public class ResetPwdAction extends BaseController {
                 account = (Account) map.get("account");
             }
             if (account != null) {
-                switch (account.getFlag()) {
-                    case 0:
-                        //未激活，发送激活邮件
-                        result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountModuleEnum.RESETPWD, email, params.getRu());
-                        break;
-                    case 1:
-                        //正式用户，可直接登录
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                        break;
-                    case 2:
-                        //用户已经被封杀
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
-                        break;
-                }
+                result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountModuleEnum.RESETPWD, email, params.getRu());
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
