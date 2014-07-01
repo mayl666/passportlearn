@@ -37,6 +37,11 @@ public interface AccountInfoService {
      */
     public boolean deleteAccountInfoCacheByPassportId(String passportId) throws ServiceException;
 
+    /**
+     * 解除绑定的密保邮箱
+     */
+    public boolean deleteBindEmailByPassportId(String passportId) throws ServiceException;
+
 
 
 }

@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
@@ -154,5 +155,15 @@ public class AccountInfoServiceImpl implements AccountInfoService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
+
+    @Override
+    public boolean deleteBindEmailByPassportId(String passportId) throws ServiceException {
+        String email = queryBindEmailByPassportId(passportId);
+        if (!Strings.isNullOrEmpty(email)) {
+            AccountInfo modifyAccountInfo = modifyBindEmailByPassportId(passportId, null);
+            return modifyAccountInfo != null;
+        }
+        return false;
     }
 }
