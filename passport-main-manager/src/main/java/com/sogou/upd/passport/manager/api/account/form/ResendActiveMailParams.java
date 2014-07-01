@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
+import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
@@ -15,9 +16,9 @@ import javax.validation.constraints.Min;
 public class ResendActiveMailParams {
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
-    private String client_id;
+    private String client_id = String.valueOf(SHPPUrlConstant.APP_ID);
 
-    @NotBlank(message = "注册账号不允许为空!")
+    @NotBlank(message = "账号不允许为空!")
     private String username;
 
     public String getClient_id() {

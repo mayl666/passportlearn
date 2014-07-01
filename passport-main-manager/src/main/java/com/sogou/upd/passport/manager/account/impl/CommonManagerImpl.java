@@ -14,7 +14,9 @@ import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
@@ -47,6 +49,8 @@ public class CommonManagerImpl implements CommonManager {
     private BindApiManager proxyBindApiManager;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private AccountInfoService accountInfoService;
 
     @Override
     public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {
@@ -110,8 +114,8 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public Account queryNormalAccount(String passportId) throws ServiceException {
-        return accountService.queryNormalAccount(passportId);
+    public AccountInfo queryAccountInfoByPassportId(String passportId) throws ServiceException {
+        return accountInfoService.queryAccountInfoByPassportId(passportId);
     }
 
     @Override

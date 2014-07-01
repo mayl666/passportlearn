@@ -1,16 +1,17 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.APIResultForm;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
+import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.service.account.AccountService;
 import junit.framework.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -88,6 +89,19 @@ public class SecureApiManagerImplTest extends BaseTest {
         Result expectResult = sgSecureApiManager.updateQues(updateQuesApiParams);
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualForm));
+    }
+
+    /**
+     * result会被重新赋值，不能在最开始赋初值，会被覆盖掉
+     */
+    @Test
+    public void testResult() {
+        Result result;
+        GetSecureInfoApiParams getSecureInfoApiParams = new GetSecureInfoApiParams();
+        getSecureInfoApiParams.setUserid("test255@sogou.com");
+        result = proxySecureApiManager.getUserSecureInfo(getSecureInfoApiParams);
+        result.setDefaultModel("ru", CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
+        System.out.println(result.toString());
     }
 
 }

@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.URL;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,6 +16,9 @@ public class UserCaptchaParams extends BaseUserParams {
     private String token;
     @NotBlank(message = "验证码不允许为空!")
     private String captcha;
+    @URL
+    @Ru
+    private String ru;
 
     public String getToken() {
         return token;
@@ -29,5 +34,13 @@ public class UserCaptchaParams extends BaseUserParams {
 
     public void setCaptcha(String captcha) {
         this.captcha = captcha;
+    }
+
+    public String getRu() {
+        return ru;
+    }
+
+    public void setRu(String ru) {
+        this.ru = ru;
     }
 }
