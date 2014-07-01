@@ -380,20 +380,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         return result;
     }
 
-
-    /**
-     * 非第三方全量数据迁移完成后，采用此方法
-     * 获取用户信息，用户昵称、头像 信息读取account_0~32、用户其他信息读 account_info_0~32
-     *
-     * @param params
-     * @return
-     */
-    @Override
-    public Result getUserInfoFromSGAfterDataMigration(ObtainAccountInfoParams params) {
-        GetUserInfoApiparams infoApiparams = buildGetUserInfoApiparams(params);
-        return sgUserInfoApiManager.getUserInfo(infoApiparams);
-    }
-
     /**
      * 非第三方账号迁移，数据迁移完成后，统一获取用户昵称方法
      * <p/>

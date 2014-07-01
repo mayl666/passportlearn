@@ -51,14 +51,4 @@ public interface LoginManager {
      */
     public Result authUser(String username, String ip, String pwdMD5);
 
-    /**
-     * 验证校验码是否正确
-     * @param username
-     * @param ip
-     * @param clientId
-     * @param captcha
-     * @param token
-     * @return
-     */
-    public Result checkCaptchaVaild(String username, String ip, String clientId,String captcha,String token );
 }

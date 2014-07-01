@@ -54,19 +54,6 @@ public interface OAuth2ResourceManager {
     public String defaultUniqname(String passportId);
 
     /**
-     * 获取urlencode之后的昵称
-     * @param passportId
-     * @return
-     */
-    public String getEncodedUniqname(String passportId,int clientId);
-    /**
-     * 获取用户个人信息
-     * @param passportId
-     * @return
-     */
-    public Result getUserInfo(String passportId,int clientId);
-
-    /**
      * 通过token获取passportId
      * @param accessToken
      * @param clientId
