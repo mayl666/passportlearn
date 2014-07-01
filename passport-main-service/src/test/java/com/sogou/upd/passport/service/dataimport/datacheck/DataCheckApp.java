@@ -9,6 +9,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.MobilePassportMapping;
 import com.sogou.upd.passport.service.dataimport.util.FileUtil;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.perf4j.StopWatch;
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ import java.util.concurrent.ForkJoinPool;
  * Date: 14-5-20
  * Time: 下午7:07
  */
+@Ignore
 public class DataCheckApp extends BaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataCheckApp.class);

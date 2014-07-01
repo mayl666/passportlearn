@@ -70,6 +70,10 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         Result result = new APIResultSupport(false);
         String passportIdLog = infoApiparams.getUserid();
         try {
+            if (Strings.isNullOrEmpty(passportIdLog)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                return result;
+            }
             String passportId = commonManager.getPassportIdByUsername(infoApiparams.getUserid());
             infoApiparams.setUserid(passportId);
             passportIdLog = passportId;
