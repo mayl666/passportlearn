@@ -56,7 +56,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         try {
             String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
             String activeUrl = PASSPORT_EMAIL_URL_PREFIX + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
-            activeUrl += "username=" + passportId + "&client_id=" + clientId + "&scode=" + scode;
+            activeUrl += "username=" + passportId + "&client_id=" + clientId + "&scode=" + scode + "&ru=";
             ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
             activeUrl += Coder.encodeUTF8(ru);
             //发送邮件
