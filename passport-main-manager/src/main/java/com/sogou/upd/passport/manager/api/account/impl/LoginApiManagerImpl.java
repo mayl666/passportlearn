@@ -67,6 +67,11 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
         Result result = new APIResultSupport(false);
         try {
             String userId = authUserApiParams.getUserid();
+            //第三方账号不允许此操作
+            if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(authUserApiParams.getUserid()))) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                return result;
+            }
             String passportId = commonManager.getPassportIdByUsername(userId);
             if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
                 //主账号是sohu域账号调用sohu api校验用户名和密码

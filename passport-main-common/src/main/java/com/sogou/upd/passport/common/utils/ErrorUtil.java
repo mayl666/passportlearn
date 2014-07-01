@@ -353,6 +353,15 @@ public class ErrorUtil {
     //获取个人资料失败
     public static final String ERR_OBTAIN_ACCOUNT_INFO = "30802";
 
+    /**
+     * RAS加解密错误
+     */
+    //解密错误
+    public static final String ERR_CODE_RSA_DECRYPT = "31000";
+
+
+
+
     public ErrorUtil() {
         super();
     }
@@ -533,6 +542,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_ACCOUNT_DOMAIN_FAILED, "账号类型不支持");
         ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_TYPE_FAILED, "找回密码方式错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_EMAIL_FAILED, "找回密码邮件已失效");
+
+        //RSA
+        ERR_CODE_MSG_MAP.put(ERR_CODE_RSA_DECRYPT,"解密错误");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.JsonUtil;
 import com.sogou.upd.passport.model.account.Account;
@@ -52,7 +53,18 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
      */
     @Test
     public void testQueryAccountByPassportId() {
-        Account account = accountService.queryAccountByPassportId(PASSPORT_ID);
+
+        String passportId = "null";
+
+
+        System.out.println("============strip2Empty:" + StringUtils.stripToEmpty(passportId));
+        System.out.println("============strip2NUll:" + StringUtils.stripToNull(passportId));
+
+        if (Strings.isNullOrEmpty(passportId)) {
+            System.out.println("check passportId is null");
+        }
+
+        Account account = accountService.queryAccountByPassportId(passportId);
         if (account == null) {
             System.out.println("获取不成功!!!");
         } else {
