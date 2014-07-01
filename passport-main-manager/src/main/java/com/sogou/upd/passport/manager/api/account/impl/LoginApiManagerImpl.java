@@ -74,37 +74,72 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
             } else {
                 if (accountSecureService.getUpdateSuccessFlag(passportId)) {
                     //主账号有更新密码或绑定手机的操作时，调用sohu api校验用户名和密码
-                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                    String message = CommonConstant.AUTH_MESSAGE;
-                    LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", message, userId, passportId, result.toString());
-                } else if (AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId)) && accountSecureService.getResetPwdFlag(passportId)) {
-                    //主账号是搜狗域时且有找回密码操作时，只验证sg库，因为找回密码无法双写
-                    result = sgLoginApiManager.webAuthUser(authUserApiParams);
-                    String message = CommonConstant.SOGOU_RESETPWD_MESSAGE;
-                    LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", message, userId, passportId, result.toString());
+                    result = updatePwdOrBindMobile(authUserApiParams, userId, passportId);
+                } else if (!ManagerHelper.writeSohuSwitcher() && accountSecureService.getResetPwdFlag(passportId)) {
+                    //写分离阶段，主账号是搜狗域且有找回密码操作时，只验证sg库，因为找回密码无法双写，只写了SG库
+                    result = findPwdForSogouAccount(authUserApiParams, userId, passportId);
                 } else {
                     //没有更新密码时，走正常的双读流程
-                    result = sgLoginApiManager.webAuthUser(authUserApiParams);
-                    if (!result.isSuccess()) { //读SG库，校验用户名、密码失败，此时读SH校验
-                        result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                        if (result.isSuccess()) {
-                            //读SG失败，读SH成功，记录userid，便于验证数据同步情况
-                            //日志记录可能存在的情况：新注册用户登录时，同步延迟；用户找回密码后登录；用户校验密码失败等
-                            String message = CommonConstant.AUTH_SGE_SHS_MESSAGE;
-                            LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", message, userId, passportId, result.toString());
-                        } else {
-                            //记录下来SH验证失败的情况:去除真正是用户名和密码都不匹配的情况
-                            if (!ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(result.getCode())) {
-                                String message = CommonConstant.AUTH_SGE_SHE_MESSAGE;
-                                LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", message, userId, passportId, result.toString());
-                            }
-                        }
-                    }
+                    result = authUser(authUserApiParams, userId, passportId);
                 }
             }
         } catch (Exception e) {
             logger.error("bothAuthUser Exception", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
+    }
+
+    /**
+     * 为了解决主账号有修改密码，修改绑定手机操作的情况
+     *
+     * @param authUserApiParams
+     * @param userId
+     * @param passportId
+     * @return
+     */
+    private Result updatePwdOrBindMobile(AuthUserApiParams authUserApiParams, String userId, String passportId) {
+        Result result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+        LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", CommonConstant.AUTH_MESSAGE, userId, passportId, result.toString());
+        return result;
+    }
+
+    /**
+     * 为了解决写分离阶段搜狗账号找回密码写SG库，线上回滚后，找回密码也需跳去sohu找回
+     *
+     * @param authUserApiParams
+     * @param userId
+     * @param passportId
+     * @return
+     */
+    private Result findPwdForSogouAccount(AuthUserApiParams authUserApiParams, String userId, String passportId) {
+        Result result = sgLoginApiManager.webAuthUser(authUserApiParams);
+        LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", CommonConstant.SOGOU_RESETPWD_MESSAGE, userId, passportId, result.toString());
+        return result;
+    }
+
+    /**
+     * 走正常的双读校验用户名和密码流程
+     *
+     * @param authUserApiParams
+     * @param userId
+     * @param passportId
+     * @return
+     */
+    private Result authUser(AuthUserApiParams authUserApiParams, String userId, String passportId) {
+        Result result = sgLoginApiManager.webAuthUser(authUserApiParams);
+        if (!result.isSuccess()) { //读SG库，校验用户名、密码失败，此时读SH校验
+            result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+            if (result.isSuccess()) {
+                //读SG失败，读SH成功，记录userid，便于验证数据同步情况
+                //日志记录可能存在的情况：新注册用户登录时，同步延迟；用户找回密码后登录；用户校验密码失败等
+                LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", CommonConstant.AUTH_SGE_SHS_MESSAGE, userId, passportId, result.toString());
+            } else {
+                //记录下来SH验证失败的情况:去除真正是用户名和密码都不匹配的情况
+                if (!ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR.equals(result.getCode())) {
+                    LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.LOGIN, "webAuthUser", CommonConstant.AUTH_SGE_SHE_MESSAGE, userId, passportId, result.toString());
+                }
+            }
         }
         return result;
     }
