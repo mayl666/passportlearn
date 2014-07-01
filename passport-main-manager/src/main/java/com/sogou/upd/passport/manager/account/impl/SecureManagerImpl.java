@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -445,7 +444,7 @@ public class SecureManagerImpl implements SecureManager {
             params.setOldbindemail(oldEmail);
 
             String flag = String.valueOf(System.currentTimeMillis());
-            ru = ru + "?token=" + accountSecureService.getSecureCodeRandom(flag) + "&id=" + flag;
+            ru = ru + "?token=" + accountSecureService.getSecureCodeRandom(flag) + "&id=" + flag + "&usernmae=" + passportId;
             params.setRu(ru);
 
             result = bindApiManager.bindEmail(params);
@@ -561,7 +560,8 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
             operateTimesService.incLimitBind(passportId, clientId);
-            operateTimesService.incIPBindTimes(modifyIp);            result.setMessage("绑定手机成功！");
+            operateTimesService.incIPBindTimes(modifyIp);
+            result.setMessage("绑定手机成功！");
             return result;
         } catch (ServiceException e) {
             logger.error("bind mobile fail:", e);
