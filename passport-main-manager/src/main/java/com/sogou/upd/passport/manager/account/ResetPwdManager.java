@@ -3,6 +3,8 @@ package com.sogou.upd.passport.manager.account;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-8 Time: 上午10:46 To change this template use
  * File | Settings | File Templates.
@@ -19,6 +21,15 @@ public interface ResetPwdManager {
      * @throws Exception
      */
     public Result queryAccountSecureInfo(String username, int clientId, boolean doProcess) throws Exception;
+
+    /**
+     * 为了获取用户绑定邮箱及用户的激活状态
+     *
+     * @param username
+     * @return
+     * @throws Exception
+     */
+    public Map<String, Object> getEmailAndStatus(String username) throws Exception;
 
     /**
      * 修改密码，包括检查修改次数

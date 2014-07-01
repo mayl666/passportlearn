@@ -564,8 +564,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
             operateTimesService.incLimitBind(passportId, clientId);
-            operateTimesService.incIPBindTimes(modifyIp);
-            result.setMessage("绑定手机成功！");
+            operateTimesService.incIPBindTimes(modifyIp);            result.setMessage("绑定手机成功！");
             return result;
         } catch (ServiceException e) {
             logger.error("bind mobile fail:", e);
@@ -595,8 +594,8 @@ public class SecureManagerImpl implements SecureManager {
     }
 
     /*
-     * 修改密保手机——2.验证密码或secureCode、新绑定手机短信码，绑定新手机号
-     */
+      * 修改密保手机——2.验证密码或secureCode、新绑定手机短信码，绑定新手机号
+      */
     // TODO:等proxyManager修改好之后修改
     @Override
     public Result modifyMobileByPassportId(String passportId, int clientId, String newMobile,

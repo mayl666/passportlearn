@@ -135,13 +135,24 @@ public interface PCAccountTokenService {
     public String getPassportIdByOldToken(String token, String clientSecret) throws ServiceException;
 
     /**
-     * 清除失效的桌面端Token
+     * 批量清除失效的桌面端Token
      * 场景：修改密码、封禁账号
      * @param passportId
      * @param isAsyn 是否为异步操作
      * @return
      * @throws ServiceException
      */
-    public boolean removeAccountToken(String passportId, boolean isAsyn) throws ServiceException;
+    public void batchRemoveAccountToken(final String passportId, boolean isAsyn);
+
+    /**
+     * 清除单条失效的桌面端Token
+     * 场景：修改密码、封禁账号
+     * @param passportId
+     * @param clientId 应用ID
+     * @param instanceId 客户端实例ID
+     * @return
+     * @throws ServiceException
+     */
+    public void removeAccountToken(String passportId, int clientId, String instanceId);
 
 }

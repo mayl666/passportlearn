@@ -12,7 +12,6 @@ import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -23,11 +22,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * User: mayan
@@ -260,18 +261,12 @@ public class ResetPwdAction extends BaseController {
                 return result.toString();
             }
             String username = params.getUsername();
-            //如果账号存在并且状态为未激活，则重新发送激活邮件
-            Account account = commonManager.queryAccountByPassportId(username);
+            Map<String, Object> map = resetPwdManager.getEmailAndStatus(username);
             String email = null;
-            //发送激活邮件时，如果账号本身是外域，就往注册邮箱发
-            if (AccountDomainEnum.OTHER.equals(AccountDomainEnum.getAccountDomain(username))) {
-                email = username;
-            } else {
-                //如果不是外域账号，则往绑定邮箱发送
-                AccountInfo accountInfo = commonManager.queryAccountInfoByPassportId(username);
-                if (accountInfo != null && !Strings.isNullOrEmpty(accountInfo.getEmail())) {
-                    email = accountInfo.getEmail();
-                }
+            Account account = null;
+            if (!CollectionUtils.isEmpty(map) && map.size() > 0) {
+                email = (String) map.get("email");
+                account = (Account) map.get("account");
             }
             if (account != null) {
                 switch (account.getFlag()) {

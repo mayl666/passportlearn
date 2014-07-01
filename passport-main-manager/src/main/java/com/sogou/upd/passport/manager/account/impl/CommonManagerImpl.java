@@ -14,7 +14,6 @@ import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -111,11 +110,6 @@ public class CommonManagerImpl implements CommonManager {
             throw new Exception(e);
         }
         return passportId;
-    }
-
-    @Override
-    public AccountInfo queryAccountInfoByPassportId(String passportId) throws ServiceException {
-        return accountInfoService.queryAccountInfoByPassportId(passportId);
     }
 
     @Override

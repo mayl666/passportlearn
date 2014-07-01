@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.Result;
@@ -77,8 +78,8 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute("result", result.getModels().get("result"));
                 return viewUrl;
             } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
-                String sgid = (String) result.getModels().get("sgid");
-                ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+                String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
+                ServletUtil.setCookie(res, LoginConstant.COOKIE_SGID, sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
                 res.sendRedirect(viewUrl);
                 return "empty";

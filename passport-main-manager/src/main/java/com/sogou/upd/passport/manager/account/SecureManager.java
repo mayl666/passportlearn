@@ -33,6 +33,7 @@ public interface SecureManager {
      */
     public Result sendMobileCodeOld(String userId, int clientId);
 
+
     /**
      * 手机用户发短信重置密码
      *
