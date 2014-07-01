@@ -446,7 +446,6 @@ public class SecureManagerImpl implements SecureManager {
 
             String flag = String.valueOf(System.currentTimeMillis());
             ru = ru + "?token=" + accountSecureService.getSecureCodeRandom(flag) + "&id=" + flag;
-            ru = Coder.encodeUTF8(ru);
             params.setRu(ru);
 
             result = bindApiManager.bindEmail(params);
