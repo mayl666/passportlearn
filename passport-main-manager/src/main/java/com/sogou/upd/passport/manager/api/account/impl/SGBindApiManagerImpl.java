@@ -6,9 +6,9 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
-import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountInfo;
+import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.service.account.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,32 +36,31 @@ public class SGBindApiManagerImpl implements BindApiManager {
     private EmailSenderService emailSenderService;
     @Autowired
     private OperateTimesService operateTimesService;
+    @Autowired
+    private LoginApiManagerImpl loginApiManager;
 
-    // TODO:验证邮件的Manager
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
         Result result = new APIResultSupport(false);
-        String userId = bindEmailApiParams.getUserid();
+        String passportId = bindEmailApiParams.getUserid();
         int clientId = bindEmailApiParams.getClient_id();
         String password = bindEmailApiParams.getPassword();
         String oldEmail = bindEmailApiParams.getOldbindemail();
         String newEmail = bindEmailApiParams.getNewbindemail();
 
-        AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(userId);
-        if (accountInfo != null) {
-            String emailBind = accountInfo.getEmail();
-            if (!Strings.isNullOrEmpty(emailBind) && !emailBind.equals(oldEmail)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
-                return result;
-            }
-        }
-
-        result = accountService.verifyUserPwdVaild(userId, password, true);
-        if(!result.isSuccess()){
+        String emailBind = accountInfoService.queryBindEmailByPassportId(passportId);
+        if (!Strings.isNullOrEmpty(emailBind) && !emailBind.equals(oldEmail)) {   // 验证用户输入原绑定邮箱
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
             return result;
         }
 
-        if (!emailSenderService.sendBindEmail(userId, clientId, AccountModuleEnum.SECURE, newEmail, bindEmailApiParams.getRu())) {
+        AuthUserApiParams authParams = new AuthUserApiParams(clientId, passportId, password);
+        result = loginApiManager.webAuthUser(authParams);    //验证密码
+        if (!result.isSuccess()) {
+            return result;
+        }
+
+        if (!emailSenderService.sendBindEmail(passportId, clientId, AccountModuleEnum.SECURE, newEmail, bindEmailApiParams.getRu())) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
             return result;
         }
@@ -87,7 +86,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result bindMobile(String passportId,String newMobile){
+    public Result bindMobile(String passportId, String newMobile) {
         return null;
     }
 
@@ -97,7 +96,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result unBindMobile(String mobile){
+    public Result unBindMobile(String mobile) {
         return null;
     }
 

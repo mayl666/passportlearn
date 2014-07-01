@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -34,11 +35,34 @@ public class BindApiManagerImpl implements BindApiManager {
     @Autowired
     private BindApiManager proxyBindApiManager;
     @Autowired
+    private BindApiManager sgBindApiManager;
+    @Autowired
     private AccountService accountService;
 
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
-        return null;
+        Result result;
+        String passportId = bindEmailApiParams.getUserid();
+        String password = bindEmailApiParams.getPassword();
+        String pwdMD5 = password;
+        try {
+            pwdMD5 = Coder.encryptMD5(password);
+        } catch (Exception e) {
+        }
+        bindEmailApiParams.setPassword(pwdMD5);   //需要传MD5加密后的密码
+        if (ManagerHelper.writeSohuSwitcher()) {
+            result = proxyBindApiManager.bindEmail(bindEmailApiParams);
+        } else {
+            AccountDomainEnum domainType = AccountDomainEnum.getAccountDomain(passportId);
+            //搜狗账号修改密保邮箱只写搜狗
+            if (AccountDomainEnum.SOGOU.equals(domainType) || AccountDomainEnum.INDIVID.equals(domainType)) {
+                result = sgBindApiManager.bindEmail(bindEmailApiParams);
+            } else {
+                //其它账号修改密保邮箱依然只写SH
+                result = proxyBindApiManager.bindEmail(bindEmailApiParams);
+            }
+        }
+        return result;
     }
 
     @Override

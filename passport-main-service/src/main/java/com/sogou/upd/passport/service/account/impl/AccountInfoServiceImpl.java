@@ -49,7 +49,17 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     }
 
     @Override
-    public AccountInfo modifyEmailByPassportId(String passportId, String email)
+    public String queryBindEmailByPassportId(String passportId) throws ServiceException {
+        AccountInfo accountInfo = queryAccountInfoByPassportId(passportId);
+        String bindEmail = null;
+        if (accountInfo != null) {
+            bindEmail = accountInfo.getEmail();
+        }
+        return bindEmail;
+    }
+
+    @Override
+    public AccountInfo modifyBindEmailByPassportId(String passportId, String email)
             throws ServiceException {
         AccountInfo accountInfo;
         try {

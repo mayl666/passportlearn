@@ -192,7 +192,6 @@ public class AccountServiceImpl implements AccountService {
         Account account;
         try {
             String cacheKey = buildAccountKey(passportId);
-
             account = dbShardRedisUtils.getObject(cacheKey, Account.class);
             if (account == null) {
                 account = accountDAO.getAccountByPassportId(passportId);
@@ -211,7 +210,7 @@ public class AccountServiceImpl implements AccountService {
         Result result = new APIResultSupport(false);
         Account userAccount;
         try {
-            userAccount = queryAccountByPassportId(passportId);
+            userAccount = queryNormalAccount(passportId);
         } catch (ServiceException e) {
             throw e;
         }
