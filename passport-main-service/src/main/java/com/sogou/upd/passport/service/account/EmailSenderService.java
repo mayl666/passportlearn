@@ -16,7 +16,7 @@ public interface EmailSenderService {
      * @param clientId
      * @param module
      * @param email
-     * @param saveEmail  是否在缓存中存储email，如绑定新邮箱需要存储新邮箱地址
+     * @param saveEmail  是否在缓存中存储email，绑定新邮箱需要存储新邮箱地址，找回密码不需要
      * @return
      * @throws ServiceException
      */
@@ -43,7 +43,8 @@ public interface EmailSenderService {
      * @param module
      * @param scode
      * @param saveEmail
-     * @return <p>若saveEmail为true，成功则返回存储的email；若saveEmail为false，成功则返回passportId。
+     * @return <p>绑定邮箱时saveEmail为true，成功则返回存储的email；
+     *          找回密码时saveEmail为false，成功则返回passportId。
      *         <br/>失败返回null</p>
      * @throws ServiceException
      */

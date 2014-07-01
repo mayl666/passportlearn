@@ -476,7 +476,7 @@ public class SecureManagerImpl implements SecureManager {
             }
             AccountModuleEnum module = AccountModuleEnum.SECURE;
             // 注意saveEmail参数需要和bindEmail()里保持一致
-            String newEmail = emailSenderService.checkScodeForEmail(userId, clientId, module, scode, false);
+            String newEmail = emailSenderService.checkScodeForEmail(userId, clientId, module, scode, true);
             if (StringUtil.isEmpty(newEmail)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);
                 return result;
