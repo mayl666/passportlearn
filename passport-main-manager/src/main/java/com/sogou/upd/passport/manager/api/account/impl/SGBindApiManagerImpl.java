@@ -39,7 +39,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
 
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
-        Result result = new APIResultSupport(false);
+        Result result;
         String passportId = bindEmailApiParams.getUserid();
         int clientId = bindEmailApiParams.getClient_id();
         String password = bindEmailApiParams.getPassword();

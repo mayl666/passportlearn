@@ -178,7 +178,6 @@ public class SecureManagerImpl implements SecureManager {
             int score = 0; // 安全系数
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
 
-            //TODO 去掉开关
 //            if (ManagerHelper.isInvokeProxyApi(userId)) {
 //                // 代理接口
 //                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
@@ -465,7 +464,6 @@ public class SecureManagerImpl implements SecureManager {
 
     /*
      * 修改密保邮箱——2.根据验证链接修改绑定邮箱
-     * TODO:
      */
     @Override
     public Result modifyEmailByPassportId(String userId, int clientId, String scode)
@@ -476,9 +474,9 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED);
                 return result;
             }
-            boolean saveEmail = true;
             AccountModuleEnum module = AccountModuleEnum.SECURE;
-            String newEmail = emailSenderService.checkScodeForEmail(userId, clientId, module, scode, saveEmail);
+            // 注意saveEmail参数需要和bindEmail()里保持一致
+            String newEmail = emailSenderService.checkScodeForEmail(userId, clientId, module, scode, false);
             if (StringUtil.isEmpty(newEmail)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);
                 return result;
@@ -593,7 +591,6 @@ public class SecureManagerImpl implements SecureManager {
     /*
       * 修改密保手机——2.验证密码或secureCode、新绑定手机短信码，绑定新手机号
       */
-    // TODO:等proxyManager修改好之后修改
     @Override
     public Result modifyMobileByPassportId(String passportId, int clientId, String newMobile,
                                            String smsCode, String scode, String modifyIp) throws Exception {
