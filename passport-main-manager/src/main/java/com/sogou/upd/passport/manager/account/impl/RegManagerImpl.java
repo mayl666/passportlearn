@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
@@ -166,8 +167,8 @@ public class RegManagerImpl implements RegManager {
                         result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
                         return result;
                     }
-                    String sgid = (String) sessionResult.getModels().get("sgid");
-                    result.getModels().put("sgid", sgid);
+                    String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+                    result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                 }
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                 result.setDefaultModel("userid", (String) mobileBindResult.getModels().get("userid"));
@@ -190,8 +191,8 @@ public class RegManagerImpl implements RegManager {
                             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
                             return result;
                         }
-                        String sgid = (String) sessionResult.getModels().get("sgid");
-                        result.getModels().put("sgid", sgid);
+                        String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                     }
                     result.setSuccess(true);
                     result.setMessage("注册成功，并发送短信至手机号：" + mobile);
@@ -234,9 +235,9 @@ public class RegManagerImpl implements RegManager {
                         result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
                         return result;
                     }
-                    sgid = (String) sessionResult.getModels().get("sgid");
+                    sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                     result.setSuccess(true);
-                    result.getModels().put("sgid", sgid);
+                    result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                     result.setMessage("type参数有误！");
