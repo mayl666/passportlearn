@@ -130,6 +130,7 @@ public class ResetPwdAction extends BaseController {
             }
             result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
             if (result.isSuccess()) {
+                result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 model.addAttribute("data", result.toString());
