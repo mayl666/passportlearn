@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
@@ -46,6 +47,8 @@ public class EmailSecureAction extends BaseController {
     private HostHolder hostHolder;
     @Autowired
     private CheckManager checkManager;
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
     /*
    * 发送修改绑定邮箱申请邮件
@@ -94,29 +97,35 @@ public class EmailSecureAction extends BaseController {
     /*
      * 验证绑定邮件
      */
-    @RequestMapping(value = "checkemail", method = RequestMethod.GET)
-    public String checkEmailForBind(AccountScodeParams params, Model model) throws Exception {
+    @RequestMapping(value = "/checkemail", method = RequestMethod.GET)
+    public String checkEmailForBind(HttpServletRequest request, AccountScodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            model.addAttribute("data", result.toString());
-            return ""; // TODO:错误页面
-        }
-        String userId = params.getUsername();
+        String passportId = params.getUsername();
         int clientId = Integer.parseInt(params.getClient_id());
         String scode = params.getScode();
-
-        switch (AccountDomainEnum.getAccountDomain(userId)) {
-            case SOHU:
-                return "redirect:" + SOHU_BINDEMAIL_URL;
-            case THIRD:
-                return "redirect:/web/security";
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                model.addAttribute("data", result.toString());
+                return "/404";
+            }
+            switch (AccountDomainEnum.getAccountDomain(passportId)) {
+                case SOHU:
+                    return "redirect:" + SOHU_BINDEMAIL_URL;
+                case THIRD:
+                    return "redirect:/web/security";
+            }
+            result = secureManager.modifyEmailByPassportId(passportId, clientId, scode);
+            model.addAttribute("data", result.toString());
+            return "redirect:" + params.getRu();
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
-        result = secureManager.modifyEmailByPassportId(userId, clientId, scode);
-        model.addAttribute("data", result.toString());
-        return "redirect:" + params.getRu();
     }
 
     /*
@@ -126,51 +135,38 @@ public class EmailSecureAction extends BaseController {
     public String emailVerifySuccess(String token, String id, HttpServletRequest request, Model model) throws Exception {
         // TODO:状态码参数或token
         Result result = new APIResultSupport(false);
-//        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
         String username = hostHolder.getNickName();  // TODO 不能使用此方法
-        if (!Strings.isNullOrEmpty(username)) {
-            result.setDefaultModel("username", username);
-            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
-            if (domain == AccountDomainEnum.PHONE) {
-                result.setDefaultModel("actype", "phone");
+        try {
+//            result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
+            if (!Strings.isNullOrEmpty(username)) {
+                result.setDefaultModel("username", username);
+                AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
+                if (domain == AccountDomainEnum.PHONE) {
+                    result.setDefaultModel("actype", "phone");
+                }
             }
-        }
-
-        if (StringUtil.checkExistNullOrEmpty(token, id) || !checkManager.checkScode(token, id)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED);
-            result.setMessage("绑定密保邮箱申请链接失效，请尝试重新绑定！");
-        } else {
-            result.setSuccess(true);
-            result.setCode(ErrorUtil.SUCCESS);
-            result.setMessage("绑定密保邮箱成功！");
-        }
-        result.setDefaultModel("status", result.getCode());
-        result.setDefaultModel("statusText", result.getMessage());
+            if (StringUtil.checkExistNullOrEmpty(token, id) || !checkManager.checkScode(token, id)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED);
+                result.setMessage("绑定密保邮箱申请链接失效，请尝试重新绑定！");
+            } else {
+                result.setSuccess(true);
+                result.setCode(ErrorUtil.SUCCESS);
+                result.setMessage("绑定密保邮箱成功！");
+            }
+            result.setDefaultModel("status", result.getCode());
+            result.setDefaultModel("statusText", result.getMessage());
 
         /*result.setDefaultModel("status", ErrorUtil.SUCCESS);
         result.setDefaultModel("statusText", "绑定密保邮箱成功！");*/
 
-        model.addAttribute("data", result.toString());
-
-        return "safe/emailsuccess";
-    }
-
-    /*
-     * 搜狐域、手机、第三方账号不允许绑定或修改密保手机
-     */
-    private static Result verifyMobileSecureIsAllowed(Result result, String passportId) {
-        switch (AccountDomainEnum.getAccountDomain(passportId)) {
-            case PHONE:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
-                return result;
-            case SOHU:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                return result;
-            case THIRD:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
-                return result;
+            model.addAttribute("data", result.toString());
+            return "safe/emailsuccess";
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(token, request.getRequestURI(), "1120", result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
-        result.setSuccess(true);
-        return result;
     }
+
 }

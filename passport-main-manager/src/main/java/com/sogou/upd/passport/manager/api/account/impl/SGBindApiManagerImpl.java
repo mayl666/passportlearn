@@ -9,7 +9,9 @@ import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
-import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.account.AccountInfoService;
+import com.sogou.upd.passport.service.account.EmailSenderService;
+import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +29,11 @@ public class SGBindApiManagerImpl implements BindApiManager {
     private static Logger logger = LoggerFactory.getLogger(SGBindApiManagerImpl.class);
 
     @Autowired
-    private AccountService accountService;
-    @Autowired
     private AccountInfoService accountInfoService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private EmailSenderService emailSenderService;
-    @Autowired
-    private OperateTimesService operateTimesService;
     @Autowired
     private LoginApiManagerImpl loginApiManager;
 
@@ -53,14 +51,12 @@ public class SGBindApiManagerImpl implements BindApiManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
             return result;
         }
-
         AuthUserApiParams authParams = new AuthUserApiParams(clientId, passportId, password);
         result = loginApiManager.webAuthUser(authParams);    //验证密码
         if (!result.isSuccess()) {
             return result;
         }
-
-        if (!emailSenderService.sendBindEmail(passportId, clientId, AccountModuleEnum.SECURE, newEmail, bindEmailApiParams.getRu())) {
+        if (!emailSenderService.sendEmail(passportId, clientId, AccountModuleEnum.SECURE, newEmail, false, bindEmailApiParams.getRu())) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
             return result;
         }
@@ -92,7 +88,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
 
     @Override
     public Result modifyBindMobile(String passportId, String newMobile) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
