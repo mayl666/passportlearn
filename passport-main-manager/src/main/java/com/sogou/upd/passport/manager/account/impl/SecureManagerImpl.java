@@ -444,7 +444,7 @@ public class SecureManagerImpl implements SecureManager {
             params.setOldbindemail(oldEmail);
 
             String flag = String.valueOf(System.currentTimeMillis());
-            ru = ru + "?token=" + accountSecureService.getSecureCodeRandom(flag) + "&id=" + flag + "&usernmae=" + passportId;
+            ru = ru + "?token=" + accountSecureService.getSecureCodeRandom(flag) + "&id=" + flag + "&username=" + passportId;
             params.setRu(ru);
 
             result = bindApiManager.bindEmail(params);
