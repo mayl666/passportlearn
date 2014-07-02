@@ -324,7 +324,7 @@ public class SecureManagerImpl implements SecureManager {
             //修改密码时检查验证码、ip黑白名单、修改密码次数
             result = checkUpdatePwdCaptchaAndSecure(passportId, clientId, token, captcha, modifyIp);
             if (result.isSuccess()) {
-                result = secureApiManager.updatePwd(passportId, clientId, updatePwdParameters.getPassword(), updatePwdParameters.getNewPwd(), modifyIp);
+                result = secureApiManager.updatePwd(passportId, clientId, updatePwdParameters.getPassword(), updatePwdParameters.getNewpwd(), modifyIp);
                 //TODO 所有账号只写SG库时此判断即可去掉；因SG账号只写先上，所以SG账号写分离时不需要再记此标记了
                 if (!ManagerHelper.readSohuSwitcher() && result.isSuccess()) {
                     accountSecureService.updateSuccessFlag(passportId);
