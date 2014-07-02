@@ -482,25 +482,29 @@ public class ResetPwdAction extends BaseController {
     }
 
     private Result getSecureInfo(String passportId, int clientId) throws Exception {
-        Result result;
-        result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
-        if (result.isSuccess()) {
-            AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
+        Result result = new APIResultSupport(false);
+        Result queryResult = secureManager.queryAccountSecureInfo(passportId, clientId, true);
+        if (queryResult.isSuccess()) {
+            AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) queryResult.getDefaultModel();
             //如果用户的密保手机和密保邮箱存在，则返回模糊处理的手机号/密保邮箱及完整手机号/邮箱加密后的md5串
             if (accountSecureInfoVO != null) {
-                String sec_mobile = (String) result.getModels().get("sec_mobile");
-                String sec_email = (String) result.getModels().get("sec_email");
+                result = new APIResultSupport(true);
+                String sec_mobile = (String) queryResult.getModels().get("sec_mobile");
+                String sec_email = (String) queryResult.getModels().get("sec_email");
                 if (!Strings.isNullOrEmpty(sec_mobile)) {
                     result.setDefaultModel("sec_process_mobile", accountSecureInfoVO.getSec_mobile());
                     result.setDefaultModel("sec_mobile_md5", DigestUtils.md5Hex(sec_mobile.getBytes()));
-                    result.getModels().remove("sec_mobile"); //为了账号安全，不返回完整的手机号
+//                    result.getModels().remove("sec_mobile"); //为了账号安全，不返回完整的手机号
                 }
                 if (!Strings.isNullOrEmpty(sec_email)) {
                     result.setDefaultModel("sec_process_email", accountSecureInfoVO.getSec_email());
                     result.setDefaultModel("sec_email_md5", DigestUtils.md5Hex(sec_email.getBytes()));
-                    result.getModels().remove("sec_email"); //为了账号安全，不返回完整的密保邮箱
+//                    result.getModels().remove("sec_email"); //为了账号安全，不返回完整的密保邮箱
                 }
             }
+        } else {
+            result.setCode(queryResult.getCode());
+            result.setMessage(queryResult.getMessage());
         }
         //todo 外域邮箱找回时也需要模糊处理，目前只是搜狗账号阶段，暂未添加注册邮箱找回
         return result;
