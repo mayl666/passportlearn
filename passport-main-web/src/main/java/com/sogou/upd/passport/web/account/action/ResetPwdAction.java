@@ -455,10 +455,11 @@ public class ResetPwdAction extends BaseController {
                 return "/recover/type";
             }
             result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
-            if (result.isSuccess()) {
+            if (!result.isSuccess()) {
                 result.setDefaultModel("userid", params.getUsername());
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 model.addAttribute("data", result.toString());
+                return "/recover/type";
             }
             result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
             if (result.isSuccess()) {
@@ -468,6 +469,9 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
+            result.setDefaultModel("userid", params.getUsername());
+            result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+            model.addAttribute("data", result.toString());
         } catch (Exception e) {
             logger.error("checkPwdView Is Failed,Username is " + params.getUsername(), e);
         } finally {
