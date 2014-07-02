@@ -396,37 +396,6 @@ public class ResetPwdAction extends BaseController {
     }
 
     /**
-     * 验证找回密码发送的手机验证码
-     *
-     * @param params
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
-    @ResponseBody
-    public Object checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, Model model) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
-            }
-            int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
-            result.setDefaultModel("userid", params.getUsername());
-        } catch (Exception e) {
-            logger.error("checkSmsSecMobile Is Failed,Username is " + params.getUsername(), e);
-        } finally {
-            log(request, params.getUsername(), result.getCode());
-        }
-        return result.toString();
-    }
-
-
-    /**
      * 验证手机号与验证码是否匹配
      *
      * @param params
@@ -447,10 +416,7 @@ public class ResetPwdAction extends BaseController {
             int clientId = Integer.parseInt(params.getClient_id());
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                result = getSecureInfo(passportId, clientId);
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+                result = buildErrorResult(result, params, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
@@ -460,19 +426,14 @@ public class ResetPwdAction extends BaseController {
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 model.addAttribute("data", result.toString());
             } else {
-                result = getSecureInfo(passportId, clientId);
-                result.setSuccess(false);
-                result.setDefaultModel("userid", params.getUsername());
-                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+                String message = result.getMessage();
+                result = buildErrorResult(result, params, null, message);
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
             result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
-            if (result.isSuccess()) {
-                result = getSecureInfo(passportId, clientId);
-                result.setSuccess(false);
-                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-                result.setMessage("账号不存在");
+            if (result.isSuccess()) {  //账号不存在
+                result = buildErrorResult(result, params, null, ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
@@ -482,6 +443,18 @@ public class ResetPwdAction extends BaseController {
             log(request, params.getUsername(), result.getCode());
         }
         return "/recover/reset";
+    }
+
+    //构建错误的返回结果
+    private Result buildErrorResult(Result result, CheckSmsCodeAndGetSecInfoParams params, String code, String message) throws Exception {
+        code = Strings.isNullOrEmpty(code) ? result.getCode() : code;
+        result = getSecureInfo(params.getUsername(), Integer.parseInt(params.getClient_id()));
+        result.setSuccess(false);
+        result.setCode(code);
+        result.setMessage(message);
+        result.setDefaultModel("userid", params.getUsername());
+        result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+        return result;
     }
 
     private Result getSecureInfo(String passportId, int clientId) throws Exception {

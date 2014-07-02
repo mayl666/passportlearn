@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.manager;
 
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
 import junit.framework.TestCase;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
@@ -36,6 +38,15 @@ public class ManagerHelperTest extends TestCase {
 //            e.printStackTrace();
 //        }
 
+    }
+
+    /**
+     * 值输出为空
+     */
+    @Test
+    public void testResult() {
+        Result result = new APIResultSupport(false);
+        System.out.println(result.getCode());
     }
 
     public static void main(String args[]) throws Exception {
