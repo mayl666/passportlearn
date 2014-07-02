@@ -455,7 +455,11 @@ public class ResetPwdAction extends BaseController {
                 return "/recover/type";
             }
             result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
-            if (!result.isSuccess()) {
+            if (result.isSuccess()) {
+                result.setDefaultModel("userid", params.getUsername());
+                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+                model.addAttribute("data", result.toString());
+            } else {
                 result = getSecureInfo(passportId, clientId);
                 result.setSuccess(false);
                 result.setDefaultModel("userid", params.getUsername());
@@ -466,14 +470,12 @@ public class ResetPwdAction extends BaseController {
             result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
             if (result.isSuccess()) {
                 result = getSecureInfo(passportId, clientId);
+                result.setSuccess(false);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 result.setMessage("账号不存在");
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
-            result.setDefaultModel("userid", params.getUsername());
-            result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-            model.addAttribute("data", result.toString());
         } catch (Exception e) {
             logger.error("checkPwdView Is Failed,Username is " + params.getUsername(), e);
         } finally {
