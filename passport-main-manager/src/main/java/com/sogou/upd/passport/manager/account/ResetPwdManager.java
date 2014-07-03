@@ -135,7 +135,7 @@ public interface ResetPwdManager {
      * @return
      * @throws Exception
      */
-    public Result sendFindPwdMobileCode(String userId, int clientId, String scode) throws Exception;
+    public Result sendFindPwdMobileCode(String userId, int clientId) throws Exception;
 
     /**
      * 重置用户密码（手机验证码方式）——暂不用！！！

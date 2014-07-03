@@ -15,10 +15,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.account.form.AccountPwdParams;
-import com.sogou.upd.passport.web.account.form.BaseAccountParams;
-import com.sogou.upd.passport.web.account.form.CheckSmsCodeAndGetSecInfoParams;
-import com.sogou.upd.passport.web.account.form.UserCaptchaParams;
+import com.sogou.upd.passport.web.account.form.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -347,7 +344,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/sendsms", method = RequestMethod.GET)
     @ResponseBody
-    public Object sendSmsSecMobile(HttpServletRequest request, BaseAccountParams params) throws Exception {
+    public Object sendSmsSecMobile(HttpServletRequest request, CheckMobileSmsParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -357,7 +354,7 @@ public class ResetPwdAction extends BaseController {
                 return result.toString();
             }
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendFindPwdMobileCode(params.getUsername(), clientId, params.getScode());
+            result = resetPwdManager.sendFindPwdMobileCode(params.getUsername(), clientId);
         } catch (Exception e) {
             logger.error("sendSmsSecMobile Is Failed,Username is " + params.getUsername(), e);
         } finally {

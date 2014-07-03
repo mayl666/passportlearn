@@ -349,7 +349,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     }
 
     @Override
-    public Result sendFindPwdMobileCode(String userId, int clientId, String scode) throws Exception {
+    public Result sendFindPwdMobileCode(String userId, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
@@ -357,16 +357,11 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result;
             }
-            //校验安全码
-            if (!accountSecureService.checkSecureCodeResetPwd(userId, clientId, scode)) {
-                result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
-                return result;
-            }
             result = secureManager.sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.RESETPWD);
             if (!result.isSuccess()) {
                 return result;
             }
-            result.setDefaultModel("scode", accountSecureService.getSecureCodeResetPwd(userId, clientId));
+//            result.setDefaultModel("scode", accountSecureService.getSecureCodeResetPwd(userId, clientId));
             result.setMessage("找回密码，手机验证码发送成功！");
             return result;
         } catch (ServiceException e) {
