@@ -377,9 +377,9 @@ public class ResetPwdAction extends BaseController {
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                result = buildErrorResult(result, params, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-                model.addAttribute("data", result.toString());
-                return "/recover/type";
+//                result = buildErrorResult(result, params, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+//                model.addAttribute("data", result.toString());
+                return "/404";
             }
             String username = params.getUsername();
             String passportId = username;
