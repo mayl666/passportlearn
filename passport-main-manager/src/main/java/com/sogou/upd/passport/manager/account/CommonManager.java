@@ -58,6 +58,16 @@ public interface CommonManager {
     public String getPassportIdByUsername(String username) throws Exception;
 
     /**
+     * 获取重置密码时的安全码
+     *
+     * @param passportId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public String getSecureCodeResetPwd(String passportId, int clientId) throws ServiceException;
+
+    /**
      * 根据passportId查询account
      *
      * @param passportId

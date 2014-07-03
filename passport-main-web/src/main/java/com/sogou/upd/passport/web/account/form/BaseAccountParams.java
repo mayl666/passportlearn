@@ -17,6 +17,17 @@ public class BaseAccountParams extends BaseWebParams {
     @URL
     @Ru
     protected String ru;
+    @NotBlank(message = "安全码不能为空")
+    protected String scode;
+
+    public String getScode() {
+        return scode;
+    }
+
+    public void setScode(String scode) {
+        this.scode = scode;
+    }
+
 
     public String getUsername() {
         String internalUsername = AccountDomainEnum.getInternalCase(username);
