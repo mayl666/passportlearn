@@ -114,7 +114,7 @@ public class SecureApiManagerImplTest extends BaseTest {
     @Test
     public void testAnswer() throws Exception {
         //中文4个字符，英文2个，特殊字符1个
-        String new_answer = "我是一只小白~!@<>兔，住在海边的，山上";
+        String new_answer = "我是一只小白┰┱┡┏兔，住在海边的，山上";
         boolean flag = true;
         int length = new_answer.getBytes(Charset.forName("GBK")).length;
         if (length < 5 || length > 48) {
