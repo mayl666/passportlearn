@@ -344,7 +344,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/sendsms", method = RequestMethod.GET)
     @ResponseBody
-    public Object sendSmsSecMobile(HttpServletRequest request, CheckMobileSmsParams params) throws Exception {
+    public Object sendSmsSecMobile(HttpServletRequest request, CheckSecMobileParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -354,7 +354,7 @@ public class ResetPwdAction extends BaseController {
                 return result.toString();
             }
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendFindPwdMobileCode(params.getUsername(), clientId);
+            result = resetPwdManager.sendFindPwdMobileCode(params.getUsername(), clientId, params.getSec_mobile());
         } catch (Exception e) {
             logger.error("sendSmsSecMobile Is Failed,Username is " + params.getUsername(), e);
         } finally {
@@ -375,6 +375,12 @@ public class ResetPwdAction extends BaseController {
     public String checkPwdView(HttpServletRequest request, CheckSmsCodeAndGetSecInfoParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+//                result = buildErrorResult(result, params, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
+//                model.addAttribute("data", result.toString());
+                return "/404";
+            }
             String username = params.getUsername();
             String passportId = username;
             if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(username))) {
@@ -382,12 +388,6 @@ public class ResetPwdAction extends BaseController {
             }
             passportId = commonManager.getPassportIdByUsername(username);
             int clientId = Integer.parseInt(params.getClient_id());
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result = buildErrorResult(result, params, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-                model.addAttribute("data", result.toString());
-                return "/recover/type";
-            }
             result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
             if (result.isSuccess()) {
                 result.setDefaultModel("userid", params.getUsername());

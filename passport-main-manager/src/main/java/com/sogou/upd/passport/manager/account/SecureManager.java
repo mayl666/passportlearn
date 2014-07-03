@@ -24,6 +24,18 @@ public interface SecureManager {
     public Result sendMobileCodeByPassportId(String passportId, int clientId, AccountModuleEnum module) throws Exception;
 
     /**
+     * 无验证原手机号再发送短信验证码
+     *
+     * @param passportId
+     * @param clientId
+     * @param module
+     * @param sec_mobile
+     * @return
+     * @throws Exception
+     */
+    public Result sendMobileCodeAndCheckOldMobile(String passportId, int clientId, AccountModuleEnum module, String sec_mobile) throws Exception;
+
+    /**
      * 为SOHU接口适配，发送短信验证码至原绑定手机
      *
      * @param userId
