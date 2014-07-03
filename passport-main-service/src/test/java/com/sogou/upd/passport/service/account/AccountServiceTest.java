@@ -1,12 +1,14 @@
 package com.sogou.upd.passport.service.account;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.JsonUtil;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import junit.framework.Assert;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,8 +18,8 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
  * Created with IntelliJ IDEA. User: liuling Date: 13-4-7 Time: 下午4:09 To change this template use
  * File | Settings | File Templates.
  */
-@ContextConfiguration(locations = "classpath:spring-config-test.xml")
-public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
+@Ignore
+public class AccountServiceTest extends BaseTest {
 
     @Autowired
     private AccountService accountService;
@@ -166,15 +168,6 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
         boolean isRenewBind = accountService.modifyBindMobile(account, binded_mobile);
         Assert.assertTrue(isRenewBind);
     }
-
-    @Test
-    public void testCheckNickName() throws Exception {
-        String nickName = "KeSyren1234";
-        Assert.assertTrue(StringUtils.isNotEmpty(accountService.checkUniqName(nickName)));
-        System.out.println("================= testCheckNickName:" + accountService.checkUniqName(nickName));
-
-    }
-
 
     @Test
     public void testFixData() {
