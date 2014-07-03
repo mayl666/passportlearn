@@ -172,6 +172,8 @@ public class ErrorUtil {
     /*  密保方式相关的错误代码                                                       */
     /* ============================================================================ */
     // 未绑定邮箱
+    public static final String ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH = "20279";
+    // 未绑定邮箱
     public static final String NOTHAS_BINDINGEMAIL = "20280";
     // 未设置密保问题及答案
     public static final String NOTHAS_BINDINGQUESTION = "20281";
@@ -360,8 +362,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_RSA_DECRYPT = "31000";
 
 
-
-
     public ErrorUtil() {
         super();
     }
@@ -447,6 +447,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTALLOWED, "账号不允许做此操作");
 
         // acount secure info
+        ERR_CODE_MSG_MAP.put(ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH, "原手机号与密保手机不匹配");
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGEMAIL, "未绑定邮箱");
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGQUESTION, "未设置密保问题及答案");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED, "密保答案错误");
@@ -544,7 +545,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_EMAIL_FAILED, "找回密码邮件已失效");
 
         //RSA
-        ERR_CODE_MSG_MAP.put(ERR_CODE_RSA_DECRYPT,"解密错误");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_RSA_DECRYPT, "解密错误");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

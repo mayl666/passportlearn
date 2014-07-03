@@ -149,6 +149,31 @@ public class SecureManagerImpl implements SecureManager {
     }
 
     @Override
+    public Result sendMobileCodeAndCheckOldMobile(String passportId, int clientId, AccountModuleEnum module, String sec_mobile) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            Account account = accountService.queryNormalAccount(passportId);
+            if (account == null) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                return result;
+            }
+            String mobile = account.getMobile();
+            if (Strings.isNullOrEmpty(mobile)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS);
+                return result;
+            }
+            if (!Strings.isNullOrEmpty(sec_mobile) && !mobile.equals(sec_mobile)) {
+                result.setCode(ErrorUtil.ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH);
+            }
+            return sendMobileCode(mobile, clientId, module);
+        } catch (ServiceException e) {
+            logger.error("send mobile code Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+    }
+
+    @Override
     public Result sendMobileCodeOld(String userId, int clientId) {
         Result result = new APIResultSupport(false);
         try {

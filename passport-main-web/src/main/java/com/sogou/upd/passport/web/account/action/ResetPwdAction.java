@@ -344,7 +344,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/sendsms", method = RequestMethod.GET)
     @ResponseBody
-    public Object sendSmsSecMobile(HttpServletRequest request, CheckMobileSmsParams params) throws Exception {
+    public Object sendSmsSecMobile(HttpServletRequest request, CheckSecMobileParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -354,7 +354,7 @@ public class ResetPwdAction extends BaseController {
                 return result.toString();
             }
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendFindPwdMobileCode(params.getUsername(), clientId);
+            result = resetPwdManager.sendFindPwdMobileCode(params.getUsername(), clientId, params.getSec_mobile());
         } catch (Exception e) {
             logger.error("sendSmsSecMobile Is Failed,Username is " + params.getUsername(), e);
         } finally {
