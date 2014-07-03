@@ -55,9 +55,6 @@ public class UserInfoApiController extends BaseController {
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
 
-    @Autowired
-    private AccountInfoManager accountInfoManager;
-
     /**
      * 获取用户基本信息
      *
@@ -118,15 +115,6 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(params.getUserid());
-
-        // 调用内部接口
-//        if (domain == AccountDomainEnum.THIRD) {
-//            result = sgUserInfoApiManager.updateUserInfo(params);
-//        } else {
-//            result = proxyUserInfoApiManager.updateUserInfo(params);
-//        }
-        //更新用户信息走搜狗
         result = sgUserInfoApiManager.updateUserInfo(params);
 
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), params.getModifyip());
@@ -154,9 +142,6 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        //调用检查昵称是否唯一的内部接口
-//        result = proxyUserInfoApiManager.checkUniqName(params);
-
         //调用搜狗接口check用户昵称
         result = sgUserInfoApiManager.checkUniqName(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUniqname(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
