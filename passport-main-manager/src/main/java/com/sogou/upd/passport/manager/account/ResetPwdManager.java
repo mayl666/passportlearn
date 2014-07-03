@@ -97,7 +97,7 @@ public interface ResetPwdManager {
      * @return
      * @throws Exception
      */
-    public Result checkMobileCodeResetPwd(String passportId, int clientId, String smsCode) throws Exception;
+    public Result checkMobileCodeResetPwd(String passportId, int clientId, String smsCode, String scode) throws Exception;
 
     /**
      * 重置密码（密保方式）——1.验证密保答案及captcha，成功则返回secureCode记录成功标志。(可用于其他功能模块)
@@ -135,7 +135,7 @@ public interface ResetPwdManager {
      * @return
      * @throws Exception
      */
-    public Result sendFindPwdMobileCode(String userId, int clientId) throws Exception;
+    public Result sendFindPwdMobileCode(String userId, int clientId, String scode) throws Exception;
 
     /**
      * 重置用户密码（手机验证码方式）——暂不用！！！

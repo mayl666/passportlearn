@@ -357,7 +357,7 @@ public class ResetPwdAction extends BaseController {
                 return result.toString();
             }
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendFindPwdMobileCode(params.getUsername(), clientId);
+            result = resetPwdManager.sendFindPwdMobileCode(params.getUsername(), clientId, params.getScode());
         } catch (Exception e) {
             logger.error("sendSmsSecMobile Is Failed,Username is " + params.getUsername(), e);
         } finally {
@@ -391,7 +391,7 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
-            result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
+            result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode(), params.getScode());
             if (result.isSuccess()) {
                 result.setDefaultModel("userid", params.getUsername());
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
