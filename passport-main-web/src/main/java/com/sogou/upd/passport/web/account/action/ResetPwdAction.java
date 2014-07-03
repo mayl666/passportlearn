@@ -15,7 +15,10 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.account.form.*;
+import com.sogou.upd.passport.web.account.form.AccountPwdParams;
+import com.sogou.upd.passport.web.account.form.BaseAccountParams;
+import com.sogou.upd.passport.web.account.form.CheckSmsCodeAndGetSecInfoParams;
+import com.sogou.upd.passport.web.account.form.UserCaptchaParams;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,6 +207,7 @@ public class ResetPwdAction extends BaseController {
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
             result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false, params.getRu(), params.getScode());
+            result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
             result.setDefaultModel("userid", passportId);
         } catch (Exception e) {
             logger.error("sendEmailBindResetPwd Is Failed,Username is " + params.getUsername(), e);
@@ -240,7 +244,7 @@ public class ResetPwdAction extends BaseController {
                 account = (Account) map.get("account");
             }
             if (account != null) {
-                result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountModuleEnum.RESETPWD, email, params.getRu());
+                result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountModuleEnum.RESETPWD, email, params.getRu(), params.getScode());
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
@@ -303,7 +307,7 @@ public class ResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/reset", method = RequestMethod.POST)
-    public String resetPwd(HttpServletRequest request, ResetPwdParams params, Model model) throws Exception {
+    public String resetPwd(HttpServletRequest request, AccountPwdParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);

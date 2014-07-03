@@ -64,11 +64,12 @@ public interface ResetPwdManager {
      * @param module
      * @param email
      * @param ru
+     * @param scode
      * @return
      * @throws Exception
      */
     public Result sendEmailResetPwd(String passportId, int clientId, AccountModuleEnum module,
-                                    String email, String ru) throws Exception;
+                                    String email, String ru, String scode) throws Exception;
 
 
     /**

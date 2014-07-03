@@ -188,11 +188,16 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
 
     @Override
     public Result sendEmailResetPwd(String passportId, int clientId, AccountModuleEnum module,
-                                    String email, String ru) throws Exception {
+                                    String email, String ru, String scode) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             if (!emailSenderService.checkLimitForSendEmail(passportId, clientId, module, email)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
+                return result;
+            }
+            //校验安全码
+            if (!accountSecureService.checkSecureCodeResetPwd(passportId, clientId, scode)) {
+                result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
                 return result;
             }
             if (!emailSenderService.sendEmail(passportId, clientId, module, email, false, ru)) {
@@ -287,7 +292,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                         AccountDomainEnum.OTHER);
                 if (isOtherDomain) {
                     // 外域用户无绑定邮箱
-                    return sendEmailResetPwd(passportId, clientId, module, passportId, ru);
+                    return sendEmailResetPwd(passportId, clientId, module, passportId, ru, scode);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_EMAIL_FAILED);
                     return result;
@@ -300,7 +305,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                     return result;
                 } else {
                     String emailBind = accountInfo.getEmail();
-                    return sendEmailResetPwd(passportId, clientId, module, emailBind, ru);
+                    return sendEmailResetPwd(passportId, clientId, module, emailBind, ru, scode);
                 }
             }
         } catch (ServiceException e) {
