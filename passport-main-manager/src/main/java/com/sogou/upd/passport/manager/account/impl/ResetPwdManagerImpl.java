@@ -361,7 +361,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             if (!result.isSuccess()) {
                 return result;
             }
-//            result.setDefaultModel("scode", accountSecureService.getSecureCodeResetPwd(userId, clientId));
             result.setMessage("找回密码，手机验证码发送成功！");
             return result;
         } catch (ServiceException e) {
