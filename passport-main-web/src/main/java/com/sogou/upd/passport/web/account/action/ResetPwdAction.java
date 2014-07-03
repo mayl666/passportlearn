@@ -388,7 +388,7 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
-            result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode(), params.getScode());
+            result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
             if (result.isSuccess()) {
                 result.setDefaultModel("userid", params.getUsername());
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
