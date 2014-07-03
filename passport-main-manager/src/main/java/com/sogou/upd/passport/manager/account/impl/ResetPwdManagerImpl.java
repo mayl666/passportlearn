@@ -413,15 +413,10 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
      *                      （1.发送见sendMobileCode***）
      */
     @Override
-    public Result checkMobileCodeResetPwd(String passportId, int clientId, String smsCode,String scode)
+    public Result checkMobileCodeResetPwd(String passportId, int clientId, String smsCode)
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            //校验安全码
-            if (!accountSecureService.checkSecureCodeResetPwd(passportId, clientId, scode)) {
-                result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
-                return result;
-            }
             Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
