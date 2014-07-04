@@ -8,6 +8,7 @@ import com.sogou.upd.passport.dao.account.AccountInfoDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
+import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccountInfo", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public AccountInfo queryAccountInfoByPassportId(String passportId) throws ServiceException {
         AccountInfo accountInfo;
@@ -59,6 +61,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
         return bindEmail;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_modifyBindEmail", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public AccountInfo modifyBindEmailByPassportId(String passportId, String email)
             throws ServiceException {
@@ -84,6 +87,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
         return null;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_modifyQues", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public AccountInfo modifyQuesByPassportId(String passportId, String question, String answer)
             throws ServiceException {
@@ -112,10 +116,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
         }
     }
 
-    private String buildAccountInfoKey(String passportId) {
-        return CACHE_PREFIX_PASSPORTID_ACCOUNT_INFO + passportId;
-    }
-
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updateAccountInfo", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean updateAccountInfo(AccountInfo accountInfo) throws ServiceException {
         try {
@@ -165,5 +166,9 @@ public class AccountInfoServiceImpl implements AccountInfoService {
             return modifyAccountInfo != null;
         }
         return false;
+    }
+
+    private String buildAccountInfoKey(String passportId) {
+        return CACHE_PREFIX_PASSPORTID_ACCOUNT_INFO + passportId;
     }
 }
