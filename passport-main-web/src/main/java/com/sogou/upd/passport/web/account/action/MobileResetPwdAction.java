@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
+import com.sogou.upd.passport.manager.account.WapResetPwdManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -43,7 +44,8 @@ public class MobileResetPwdAction extends BaseController {
 
     @Autowired
     private RegManager regManager;
-
+    @Autowired
+    private WapResetPwdManager wapRestPwdManager;
     @Autowired
     private ResetPwdManager resetPwdManager;
 
@@ -103,8 +105,7 @@ public class MobileResetPwdAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendFindPwdMobileCode(params.getMobile(), clientId);
+            result = wapRestPwdManager.sendFindPwdMobileCode(params.getMobile(), params.getClient_id());
         } catch (Exception e) {
             logger.error("sendSmsSecMobile Is Failed,mobile is " + params.getMobile(), e);
         } finally {
