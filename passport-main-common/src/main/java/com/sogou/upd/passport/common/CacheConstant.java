@@ -102,9 +102,6 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_MOBILE_SMSCODE_PROXY = "SP.MOBILE:PROXY_SMSCODE_";
 
     /*-----------------------------------------   KV系统   -----------------------------------------*/
-    /*==================动作记录相关缓存常量=====================*/
-    public static final String KV_PREFIX_PASSPORTID_ACTIONRECORD = "20002/action_records/SP.PASSPORTID:ACTIONRECORD_LIST_"; // passportId与操作列表的映射
-
     /*==================核心kv 动作记录相关缓存常量=====================*/
     public static final String CORE_KV_PREFIX_PASSPORTID_ACTIONRECORD = "13008/action_records/SP.PASSPORTID:ACTIONRECORD_LIST_";
     /*==================核心kv token相关缓存常量========================*/

@@ -25,12 +25,6 @@ public interface AccountService {
             throws ServiceException;
 
     /**
-     * 初始化第三方用户账号
-     */
-    public Account initialConnectAccount(String passportId, String ip, int provider)
-            throws ServiceException;
-
-    /**
      * 非第三方账号数据迁移，新写方法 初始化用户账号
      *
      * @param account
@@ -200,24 +194,6 @@ public interface AccountService {
      * @return
      */
     public boolean updateAvatar(Account account, String avatar);
-
-    /**
-     * 删除昵称
-     *
-     * @param nickname
-     * @return
-     * @throws ServiceException
-     */
-    public boolean removeUniqName(String nickname) throws ServiceException;
-
-    /**
-     * 检查昵称是否存在
-     *
-     * @param nickname
-     * @return
-     * @throws Exception
-     */
-    public String checkUniqName(String nickname) throws ServiceException;
 
     /*
     *获取激活信息

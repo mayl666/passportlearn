@@ -349,7 +349,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     }
 
     @Override
-    public Result sendFindPwdMobileCode(String userId, int clientId) throws Exception {
+    public Result sendFindPwdMobileCode(String userId, int clientId, String sec_mobile) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
@@ -357,7 +357,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result;
             }
-            result = secureManager.sendMobileCodeByPassportId(userId, clientId, AccountModuleEnum.RESETPWD);
+            result = secureManager.sendMobileCodeAndCheckOldMobile(userId, clientId, AccountModuleEnum.RESETPWD, sec_mobile);
             if (!result.isSuccess()) {
                 return result;
             }
