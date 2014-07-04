@@ -379,8 +379,6 @@ public class ResetPwdAction extends BaseController {
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
-//                result = buildErrorResult(result, params, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
-//                model.addAttribute("data", result.toString());
                 return "/404";
             }
             String username = params.getUsername();
@@ -424,6 +422,7 @@ public class ResetPwdAction extends BaseController {
         result.setMessage(message);
         result.setDefaultModel("userid", params.getUsername());
         result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+        result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id())));
         return result;
     }
 
