@@ -11,5 +11,14 @@ import com.sogou.upd.passport.common.result.Result;
  */
 public interface WapResetPwdManager {
 
-    public Result sendFindPwdMobileCode(String mobile, String clientId) throws Exception;
+    /**
+     * 验证手机号与验证码是否匹配
+     *
+     * @param mobile
+     * @param clientId
+     * @param smsCode
+     * @return
+     * @throws Exception
+     */
+    public Result checkMobileCodeResetPwd(String mobile, int clientId, String smsCode) throws Exception;
 }

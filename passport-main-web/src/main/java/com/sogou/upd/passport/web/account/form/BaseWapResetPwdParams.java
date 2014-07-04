@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
+import com.sogou.upd.passport.common.validation.constraints.V;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
@@ -22,6 +24,9 @@ public class BaseWapResetPwdParams {
     @URL
     @Ru
     protected String ru;
+    @NotBlank(message = "v参数不可为空")
+    @V
+    protected String v = WapConstant.WAP_TOUCH;
 
     public String getRu() {
         return ru;
@@ -37,5 +42,13 @@ public class BaseWapResetPwdParams {
 
     public void setClient_id(String client_id) {
         this.client_id = client_id;
+    }
+
+    public String getV() {
+        return v;
+    }
+
+    public void setV(String v) {
+        this.v = v;
     }
 }
