@@ -206,6 +206,7 @@ public class ResetPwdAction extends BaseController {
             result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false, params.getRu(), params.getScode());
             result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
             result.setDefaultModel("userid", passportId);
+            result = setRuAndClientId(result, params.getRu(), params.getClient_id());
         } catch (Exception e) {
             logger.error("sendEmailBindResetPwd Is Failed,Username is " + params.getUsername(), e);
         } finally {
@@ -246,6 +247,7 @@ public class ResetPwdAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
             result.setDefaultModel("userid", params.getUsername());
+            result = setRuAndClientId(result, params.getRu(), params.getClient_id());
         } catch (Exception e) {
             logger.error("method[resendActiveMail] send mobile sms error.{}", e);
         } finally {
