@@ -22,4 +22,13 @@ public interface WapResetPwdManager {
      */
     public Result checkMobileCodeResetPwd(String mobile, int clientId, String smsCode) throws Exception;
 
+    /**
+     * 给密保手机发送短信验证码。
+     *
+     * @param mobile
+     * @param client_id
+     * @return
+     */
+    public Result sendMobileCaptcha(String mobile, String client_id);
+
 }

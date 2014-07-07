@@ -122,6 +122,33 @@ public class WapResetPwdAction extends BaseController {
     }
 
     /**
+     * 找回密码，发送短信验证码至原绑定手机
+     *
+     * @param params
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/findpwd/sendsms", method = RequestMethod.GET)
+    @ResponseBody
+    public Object sendSmsSecMobile(HttpServletRequest request, MoblieCodeParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            result = wapRestPwdManager.sendMobileCaptcha(params.getMobile(), params.getClient_id());
+        } catch (Exception e) {
+            logger.error("sendSmsSecMobile Is Failed,mobile is " + params.getMobile(), e);
+        } finally {
+            log(request, params.getMobile(), result.getCode());
+        }
+        return result.toString();
+    }
+
+    /**
      * 验证找回密码发送的手机验证码
      *
      * @param params
