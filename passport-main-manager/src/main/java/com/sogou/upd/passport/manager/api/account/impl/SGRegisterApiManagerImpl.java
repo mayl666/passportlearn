@@ -81,17 +81,21 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                 case INDIVID:
                     Account account = accountService.initialAccount(username, password, true, ip, AccountTypeEnum
                             .SOGOU.getValue());
-                    AccountInfo accountInfo = new AccountInfo();
-                    accountInfo.setPassportId(username);
-                    accountInfo.setCreateTime(new Date());
-                    accountInfo.setUpdateTime(new Date());
-                    accountInfo.setModifyip(ip);
-                    accountInfoService.updateAccountInfo(accountInfo);
                     if (account != null) {
-                        result.setSuccess(true);
-                        result.setDefaultModel("userid", account.getPassportId());
-                        result.setMessage("注册成功");
-                        result.setDefaultModel("isSetCookie", true);
+                        AccountInfo accountInfo = new AccountInfo();
+                        accountInfo.setPassportId(username);
+                        accountInfo.setCreateTime(new Date());
+                        accountInfo.setUpdateTime(new Date());
+                        accountInfo.setModifyip(ip);
+                        boolean isUpdateSuccess = accountInfoService.updateAccountInfo(accountInfo);
+                        if (!isUpdateSuccess) {
+                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                        } else {
+                            result.setSuccess(true);
+                            result.setDefaultModel("userid", account.getPassportId());
+                            result.setMessage("注册成功");
+                            result.setDefaultModel("isSetCookie", true);
+                        }
                     } else {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     }
