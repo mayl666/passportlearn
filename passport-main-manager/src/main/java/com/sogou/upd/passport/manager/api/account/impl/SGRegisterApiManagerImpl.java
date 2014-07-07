@@ -83,7 +83,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                             .SOGOU.getValue());
                     if (account != null) {
                         AccountInfo accountInfo = new AccountInfo();
-                        accountInfo.setPassportId(username);
+                        accountInfo.setPassportId(account.getPassportId());
                         accountInfo.setCreateTime(new Date());
                         accountInfo.setUpdateTime(new Date());
                         accountInfo.setModifyip(ip);
