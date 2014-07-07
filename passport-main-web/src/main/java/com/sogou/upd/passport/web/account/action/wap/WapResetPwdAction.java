@@ -69,7 +69,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/wap/findpwd", method = RequestMethod.GET)
+    @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
     public String findPwdView(String ru, Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams) throws Exception {
         ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
         if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
