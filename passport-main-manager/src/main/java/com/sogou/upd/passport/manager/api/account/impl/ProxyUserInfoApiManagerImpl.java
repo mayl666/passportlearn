@@ -56,6 +56,9 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         SUPPORT_FIELDS_MAP.add("avatarurl"); //用户头像
         SUPPORT_FIELDS_MAP.add("createtime");//创建时间
         SUPPORT_FIELDS_MAP.add("createip");//创建ip
+        SUPPORT_FIELDS_MAP.add("mobile");//todo 兼容搜狗流程获取安全信息的参数，密保手机
+        SUPPORT_FIELDS_MAP.add("email");//todo 兼容搜狗流程获取安全信息的参数，密保邮箱
+        SUPPORT_FIELDS_MAP.add("question");//todo 兼容搜狗流程获取安全信息的参数，密保问题
     }
 
     @Override
