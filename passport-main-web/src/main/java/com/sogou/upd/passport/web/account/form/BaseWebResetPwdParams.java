@@ -7,16 +7,30 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
 /**
- * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-23 Time: 下午2:57 To change this template use
- * File | Settings | File Templates.
+ * Created with IntelliJ IDEA.
+ * User: liuling
+ * Date: 14-7-7
+ * Time: 下午5:24
+ * To change this template use File | Settings | File Templates.
  */
-public class BaseAccountParams extends BaseWebParams {
+public class BaseWebResetPwdParams extends BaseWebParams {
 
     @NotBlank(message = "账号不允许为空!")
     protected String username;
     @URL
     @Ru
     protected String ru;
+    @NotBlank(message = "安全码不能为空")
+    protected String scode;
+
+    public String getScode() {
+        return scode;
+    }
+
+    public void setScode(String scode) {
+        this.scode = scode;
+    }
+
 
     public String getUsername() {
         String internalUsername = AccountDomainEnum.getInternalCase(username);

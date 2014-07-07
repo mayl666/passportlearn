@@ -8,4 +8,23 @@
 .recover .type-list .btn{ display: block;position: absolute;right: 0;top: 0;width:69px; height:27px; background:url(/./static/img/btn-short.png?t=624000) no-repeat 0 0;display:inline-block; *display:inline; *zoom:1; margin-left:9px;text-align:center; color:#fff;text-decoration:none; }
 .recover .center{text-align:center;color:#000;padding-bottom:40px;}
 .recover .ctitle{ font-size:16px; padding:35px 0; }
-.recover .warn{ position:relative;top:-26px;color:red; }
+.recover .warn{ position:relative;top:-26px;color:red;}
+.form-item .form-el-fuck{background: none;width: 400px;}
+.form-item .form-el-fuck span{height: 26px;line-height: 26px;padding: 1px;}
+.form-item .form-el-fuck .head, .form-item .form-el-fuck .tail{float: left;padding: 1px;}
+.form-item .form-el-fuck input{float: left;height: 26px;width: 90px;background: #fff url(/./static/img/input-s.png?t=280018) no-repeat 0 0;line-height: 26px;}
+.hide{display: none;}
+.other-msg{padding-top: 1em;}
+.other-msg p{line-height: 2;}
+.other-msg p .red{color: red;}
+
+.email-success .line{text-align: center;padding: 1em;}
+.email-success .linet{font-size: 16px;}
+.email-success .line img{vertical-align: middle;margin-right: 1em;}
+.email-success .line a{color:#7F9E1E;text-decoration: none;}
+
+.recover-end .caption{font-weight: 900;color: #7F9E1E;font-size: 26px;text-align: center;vertical-align: middle;margin-top: 50px;height: 55px;line-height: 55px;}
+.recover-end .caption img{vertical-align: middle;}
+.recover-end .desc{text-align: center;font-size: 14px;padding-bottom: 30px;}
+.recover-end .desc a{color: #7F9E1E;}
+.recover-end .caption.red{color: red;}
