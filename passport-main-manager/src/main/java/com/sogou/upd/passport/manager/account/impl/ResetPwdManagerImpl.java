@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -187,7 +188,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     }
 
     @Override
-    public Result sendEmailResetPwd(String passportId, int clientId, AccountModuleEnum module,
+    public Result sendEmailResetPwd(String passportId, int clientId, AccountClientEnum clientModule, AccountModuleEnum module,
                                     String email, String ru, String scode) throws Exception {
         Result result = new APIResultSupport(false);
         try {
@@ -200,7 +201,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
                 return result;
             }
-            if (!emailSenderService.sendEmail(passportId, clientId, module, email, false, ru)) {
+            if (!emailSenderService.sendEmail(passportId, clientId, clientModule, module, email, false, ru)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
                 return result;
             }
@@ -271,7 +272,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
      * 重置密码（邮件方式）——1.发送重置密码申请验证邮件
      */
     @Override
-    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail, String ru, String scode)
+    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, AccountClientEnum clientEnum, boolean useRegEmail, String ru, String scode)
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
@@ -292,7 +293,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                         AccountDomainEnum.OTHER);
                 if (isOtherDomain) {
                     // 外域用户无绑定邮箱
-                    return sendEmailResetPwd(passportId, clientId, module, passportId, ru, scode);
+                    return sendEmailResetPwd(passportId, clientId, clientEnum, module, passportId, ru, scode);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_EMAIL_FAILED);
                     return result;
@@ -305,7 +306,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                     return result;
                 } else {
                     String emailBind = accountInfo.getEmail();
-                    return sendEmailResetPwd(passportId, clientId, module, emailBind, ru, scode);
+                    return sendEmailResetPwd(passportId, clientId, clientEnum, module, emailBind, ru, scode);
                 }
             }
         } catch (ServiceException e) {

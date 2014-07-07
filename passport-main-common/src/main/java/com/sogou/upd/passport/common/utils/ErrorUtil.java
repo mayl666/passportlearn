@@ -171,6 +171,10 @@ public class ErrorUtil {
     /* ============================================================================ */
     /*  密保方式相关的错误代码                                                       */
     /* ============================================================================ */
+    //用户有密保手机，请使用密保手机找回密码
+    public static final String ERR_CODE_USER_HAVA_BIND_MOBILE = "20277";
+    //请联系客服找回密码
+    public static final String ERR_CODE_FIND_KEFU = "20278";
     // 未绑定邮箱
     public static final String ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH = "20279";
     // 未绑定邮箱
@@ -447,6 +451,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTALLOWED, "账号不允许做此操作");
 
         // acount secure info
+        ERR_CODE_MSG_MAP.put(ERR_CODE_USER_HAVA_BIND_MOBILE, "您的帐号已绑定手机，请使用手机找回或联系客服");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FIND_KEFU, "无绑定关系，请联系客服找回您的的密码");
         ERR_CODE_MSG_MAP.put(ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH, "原手机号与密保手机不匹配");
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGEMAIL, "未绑定邮箱");
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGQUESTION, "未设置密保问题及答案");

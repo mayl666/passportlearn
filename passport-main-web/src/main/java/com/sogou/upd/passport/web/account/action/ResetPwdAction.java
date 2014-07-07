@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.action;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -192,7 +193,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/sendbemail", method = RequestMethod.POST)
     @ResponseBody
-    public String sendEmailBindResetPwd(HttpServletRequest request, BaseAccountParams params, Model model) throws Exception {
+    public String sendEmailBindResetPwd(HttpServletRequest request, BaseWebResetPwdParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -203,7 +204,7 @@ public class ResetPwdAction extends BaseController {
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false, params.getRu(), params.getScode());
+            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, AccountClientEnum.WEB, false, params.getRu(), params.getScode());
             result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
             result.setDefaultModel("userid", passportId);
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());
@@ -223,7 +224,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/resendmail", method = RequestMethod.POST)
     @ResponseBody
-    public Object resendActiveMail(HttpServletRequest request, BaseAccountParams params) throws Exception {
+    public Object resendActiveMail(HttpServletRequest request, BaseWebResetPwdParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             //参数验证
@@ -242,7 +243,7 @@ public class ResetPwdAction extends BaseController {
                 account = (Account) map.get("account");
             }
             if (account != null) {
-                result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountModuleEnum.RESETPWD, email, params.getRu(), params.getScode());
+                result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountClientEnum.WEB, AccountModuleEnum.RESETPWD, email, params.getRu(), params.getScode());
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
@@ -265,7 +266,7 @@ public class ResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.GET)
-    public String checkEmailResetPwd(HttpServletRequest request, BaseAccountParams params, Model model) throws Exception {
+    public String checkEmailResetPwd(HttpServletRequest request, BaseWebResetPwdParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -471,7 +472,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/sendremail", method = RequestMethod.POST)
     @ResponseBody
-    public String sendEmailRegResetPwd(HttpServletRequest request, BaseAccountParams params) throws Exception {
+    public String sendEmailRegResetPwd(HttpServletRequest request, BaseWebResetPwdParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
 
@@ -483,7 +484,7 @@ public class ResetPwdAction extends BaseController {
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true, params.getRu(), params.getScode());
+            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, AccountClientEnum.WEB, true, params.getRu(), params.getScode());
             result.setDefaultModel("userid", passportId);
         } catch (Exception e) {
             logger.error("sendEmailRegResetPwd Is Failed,Username is " + params.getUsername(), e);

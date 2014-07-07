@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.exception.MailException;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
+import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.MailUtils;
@@ -39,7 +40,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     // TODO:以下PASSPORT_RESETPWD_EMAIL_URL值仅供本机测试用
     // TODO:绑定验证URL待修改，考虑以后其他验证EMAIL的URL
     private static final String PASSPORT_HOST = "https://account.sogou.com";
-    private static final String PASSPORT_EMAIL_URL_PREFIX = PASSPORT_HOST + "/web/";
+    private static final String PASSPORT_EMAIL_URL_PREFIX = PASSPORT_HOST + "/";
     private static final String PASSPORT_EMAIL_URL_SUFFIX = "/checkemail?";
     private static final Map<AccountModuleEnum, String> subjects = AccountModuleEnum.buildEmailSubjects();
 
@@ -51,14 +52,23 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     @Autowired
     private MailUtils mailUtils;
 
+
     @Override
-    public boolean sendEmail(String passportId, int clientId, AccountModuleEnum module, String address, boolean saveEmail, String ru)
+    public boolean sendEmail(String passportId, int clientId, AccountClientEnum clientEnum, AccountModuleEnum module, String address, boolean saveEmail, String ru)
             throws ServiceException {
         try {
             String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
-            String activeUrl = PASSPORT_EMAIL_URL_PREFIX + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
+            String activeUrl = PASSPORT_EMAIL_URL_PREFIX + clientEnum.toString() + "/" + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
             activeUrl += "username=" + passportId + "&client_id=" + clientId + "&scode=" + scode + "&ru=";
-            ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
+            switch (clientEnum) {
+                case WEB:
+                    ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
+                    break;
+                case WAP:
+                    ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
+                    break;
+            }
+
             activeUrl += Coder.encodeUTF8(ru);
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();

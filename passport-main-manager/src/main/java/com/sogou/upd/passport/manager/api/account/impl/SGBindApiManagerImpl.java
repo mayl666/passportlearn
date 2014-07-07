@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -55,7 +56,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
             return result;
         }
-        if (!emailSenderService.sendEmail(passportId, clientId, AccountModuleEnum.SECURE, newEmail, true, bindEmailApiParams.getRu())) {
+        if (!emailSenderService.sendEmail(passportId, clientId, AccountClientEnum.WEB, AccountModuleEnum.SECURE, newEmail, true, bindEmailApiParams.getRu())) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
             return result;
         }

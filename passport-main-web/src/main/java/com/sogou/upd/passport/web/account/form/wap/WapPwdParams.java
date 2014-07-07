@@ -1,13 +1,16 @@
-package com.sogou.upd.passport.web.account.form;
+package com.sogou.upd.passport.web.account.form.wap;
 
 import com.sogou.upd.passport.common.validation.constraints.Password;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-23 Time: 下午6:45 To change this template use
- * File | Settings | File Templates.
+ * Created with IntelliJ IDEA.
+ * User: liuling
+ * Date: 14-7-7
+ * Time: 下午5:02
+ * To change this template use File | Settings | File Templates.
  */
-public class AccountPwdParams extends BaseWebResetPwdParams {
+public class WapPwdParams extends WapCheckEmailParams {
     @NotBlank(message = "密码不允许为空!")
     @Password(message = "密码必须为字母、数字、字符且长度为6~16位!")
     protected String password;
@@ -19,4 +22,5 @@ public class AccountPwdParams extends BaseWebResetPwdParams {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }

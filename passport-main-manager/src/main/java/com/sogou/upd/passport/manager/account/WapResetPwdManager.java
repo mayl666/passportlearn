@@ -21,4 +21,5 @@ public interface WapResetPwdManager {
      * @throws Exception
      */
     public Result checkMobileCodeResetPwd(String mobile, int clientId, String smsCode) throws Exception;
+
 }
