@@ -129,7 +129,8 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
-    public String checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, Model model) throws Exception {
+    @ResponseBody
+    public Object checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -137,15 +138,17 @@ public class WapResetPwdAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-                model.addAttribute("data", result.toString());
-                return "/wap/findpwd_touch";
+//                model.addAttribute("data", result.toString());
+//                return "/wap/findpwd_touch";
+                return result.toString();
             }
             int clientId = Integer.parseInt(params.getClient_id());
             result = wapRestPwdManager.checkMobileCodeResetPwd(params.getMobile(), clientId, params.getSmscode());
             if (result.isSuccess()) {
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-                model.addAttribute("data", result.toString());
-                return "/wap/resetpwd_touch";
+//                model.addAttribute("data", result.toString());
+//                return "/wap/resetpwd_touch";
+                return result.toString();
             }
         } catch (Exception e) {
             logger.error("checksms is failed,mobile is " + params.getMobile(), e);
@@ -153,8 +156,9 @@ public class WapResetPwdAction extends BaseController {
             log(request, params.getMobile(), result.getCode());
         }
         result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-        model.addAttribute("data", result.toString());
-        return "/wap/findpwd_touch";
+//        model.addAttribute("data", result.toString());
+//        return "/wap/findpwd_touch";
+        return result.toString();
     }
 
 
