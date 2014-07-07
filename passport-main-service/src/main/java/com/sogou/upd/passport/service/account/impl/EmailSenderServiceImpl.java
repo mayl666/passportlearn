@@ -139,7 +139,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             String cacheKey = buildCacheKeyForScode(passportId, clientId, module);
             if (saveEmail) {
                 Map<String, String> mapScode = redisUtils.getObject(cacheKey, Map.class);
-                if (!mapScode.isEmpty()) {
+                if (mapScode != null && !mapScode.isEmpty()) {
                     String scodeCache = mapScode.get("scode");
                     if (!Strings.isNullOrEmpty(scodeCache) && scodeCache.equals(scode)) {
                         return mapScode.get("email");
