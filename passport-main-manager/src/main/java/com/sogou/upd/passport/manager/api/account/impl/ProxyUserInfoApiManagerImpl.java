@@ -165,17 +165,18 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
      * @return
      */
     private RequestModelXml replaceGetUserInfoParams(final RequestModelXml requestModelXml) {
-        if (requestModelXml.containsKey("sec_email")) {
+        //todo email、mobile、question兼容搜狗流程获取安全信息的参数
+        if (requestModelXml.containsKey("sec_email") || requestModelXml.containsKey("email")) {
             requestModelXml.addParam("email", "");
             requestModelXml.addParam("emailflag", "");
             requestModelXml.deleteParams("sec_email");
         }
-        if (requestModelXml.containsKey("sec_mobile")) {
+        if (requestModelXml.containsKey("sec_mobile") || requestModelXml.containsKey("mobile")) {
             requestModelXml.addParam("mobile", "");
             requestModelXml.addParam("mobileflag", "");
             requestModelXml.deleteParams("sec_mobile");
         }
-        if (requestModelXml.containsKey("sec_ques")) {
+        if (requestModelXml.containsKey("sec_ques") || requestModelXml.containsKey("question")) {
             requestModelXml.addParam("question", "");
             requestModelXml.deleteParams("sec_ques");
         }
