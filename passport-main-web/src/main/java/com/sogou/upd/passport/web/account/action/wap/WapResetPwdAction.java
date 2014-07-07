@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.action.wap;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountClientEnum;
@@ -12,13 +13,11 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
+import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.account.form.AccountPwdParams;
-import com.sogou.upd.passport.web.account.form.FindPwdCheckSmscodeParams;
-import com.sogou.upd.passport.web.account.form.OtherResetPwdParams;
-import com.sogou.upd.passport.web.account.form.WapSendEmailParams;
+import com.sogou.upd.passport.web.account.form.*;
 import com.sogou.upd.passport.web.account.form.wap.WapCheckEmailParams;
 import com.sogou.upd.passport.web.account.form.wap.WapPwdParams;
 import org.slf4j.Logger;
@@ -29,6 +28,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -61,21 +61,27 @@ public class WapResetPwdAction extends BaseController {
 
 
     /**
-     * 找回密码默认跳转到手机找回
+     * 找回密码
      *
      * @param ru
+     * @param model
+     * @param redirectAttributes
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
-    public String findPwdView(String ru, Model model, String client_id) throws Exception {
-        Result result = new APIResultSupport(false);
+    @RequestMapping(value = "/wap/findpwd", method = RequestMethod.GET)
+    public String findPwdView(String ru, Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams) throws Exception {
         ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
-        client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
-        result.setDefaultModel("ru", ru);
-        result.setDefaultModel("client_id", client_id);
-        model.addAttribute("data", result.toString());
-        return "/wap/findpwd_touch";
+        if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
+            Result result = new APIResultSupport(false);
+            String client_id = Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : wapIndexParams.getClient_id();
+            result.setDefaultModel("ru", ru);
+            result.setDefaultModel("client_id", client_id);
+            model.addAttribute("data", result.toString());
+            return "wap/findpwd_touch";
+        }
+        redirectAttributes.addAttribute("ru", ru);
+        return "redirect:" + SHPPUrlConstant.SOHU_WAP_FINDPWD_URL + "?ru={ru}";
     }
 
     /**

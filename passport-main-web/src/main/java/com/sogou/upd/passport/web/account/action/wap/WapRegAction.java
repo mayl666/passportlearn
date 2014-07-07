@@ -165,32 +165,8 @@ public class WapRegAction extends BaseController {
     }
 
     /**
-     * 找回密码
-     * @param ru
-     * @param redirectAttributes
-     * @return
-     * @throws Exception
-     */
-//    @RequestMapping(value = "/wap/findpwd",method = RequestMethod.GET)
-//    public String findPwdView(String ru, RedirectAttributes redirectAttributes,WapIndexParams wapIndexParams) throws Exception {
-//
-//        if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
-//            return "wap/findpwd_touch";
-//        }
-//
-//
-//        if (Strings.isNullOrEmpty(ru)) {
-//            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-//        }
-//
-//
-//        redirectAttributes.addAttribute("ru", ru);
-//        return "redirect:" + SHPPUrlConstant.SOHU_FINDPWD_URL + "?ru={ru}";
-//    }
-
-
-    /**
      * wap注册首页
+     *
      * @param request
      * @param response
      * @param model
@@ -198,7 +174,7 @@ public class WapRegAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/wap/reg",method = RequestMethod.GET)
+    @RequestMapping(value = "/wap/reg", method = RequestMethod.GET)
     public String regist(HttpServletRequest request, HttpServletResponse response, Model model, WapIndexParams wapIndexParams) throws Exception {
 
         if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {
