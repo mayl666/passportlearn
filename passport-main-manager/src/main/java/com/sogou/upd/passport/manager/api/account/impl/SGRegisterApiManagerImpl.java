@@ -80,7 +80,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                 case SOGOU://个性账号直接注册
                 case INDIVID:
                     Account account = accountService.initialAccount(username, password, true, ip, AccountTypeEnum
-                            .EMAIL.getValue());
+                            .SOGOU.getValue());
                     AccountInfo accountInfo = new AccountInfo();
                     accountInfo.setPassportId(username);
                     accountInfo.setCreateTime(new Date());
