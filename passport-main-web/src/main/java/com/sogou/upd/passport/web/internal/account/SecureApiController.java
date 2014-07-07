@@ -27,19 +27,13 @@ import java.util.List;
 @RequestMapping("/internal/security")
 public class SecureApiController extends BaseController {
 
-//    @Autowired
-//    private ConfigureManager configureManager;
-//
-//    @Autowired
-//    private SecureApiManager proxySecureApiManager;
-
     @Autowired
     private SecureManager secureManager;
 
     /**
      * 手机发送短信重置密码
      */
-    @RequestMapping(value = "/resetpwd", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/resetpwd_batch", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     @InterfaceSecurity
     public String resetpwd(BaseResetPwdApiParams params) throws Exception {
