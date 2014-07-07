@@ -28,7 +28,7 @@ var splus = {
                     <legend>登录搜狗浏览器</legend>
                     <div class="control-group">
                         <div class="controls user-id">
-                            <input type="text" placeholder="搜狗账号/手机/邮箱" name="account" autocomplete="off" disableautocomplete acceessKey='a' tabindex="1"/>
+                            <input type="text" placeholder="搜狗帐号/手机/邮箱" name="account" autocomplete="off" disableautocomplete acceessKey='a' tabindex="1"/>
                             <span class="position-tips"></span>
                             <span class="select-btn"></span>
                             <div class="ppselecter" style="display:none">
@@ -98,7 +98,7 @@ var splus = {
                     </div>
                     <div class="controls position-bottom" style="display:">
                         <div class="fr">
-                            <span style='vertical-align:baseline'>还没有账号?</span>
+                            <span style='vertical-align:baseline'>还没有帐号?</span>
                             <a href="/sogou/fastreg?instanceid=${instanceid}" class="blue">快速注册</a>
                         </div>
                     </div>

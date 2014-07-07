@@ -67,7 +67,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
             //检验是否需要验证码
             .on('blur', 'input[name=account]', function(e) {
                 var $account = $(e.target);
-                //如果用户未输入账号,不进行校验
+                //如果用户未输入帐号,不进行校验
                 if (!$account.val()||$('.ppselecter').is(':visible')) return;
                 if (!self.check($account, self.validObj.account)) {
                     self.submited = false;
