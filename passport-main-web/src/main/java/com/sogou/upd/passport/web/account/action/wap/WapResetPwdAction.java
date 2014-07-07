@@ -149,7 +149,7 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/check", method = RequestMethod.POST)
-    public String findpwdother(HttpServletRequest request, OtherResetPwdParams params, Model model)
+    public String findpwdother(HttpServletRequest request, RedirectAttributes redirectAttributes, OtherResetPwdParams params, Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
@@ -167,10 +167,9 @@ public class WapResetPwdAction extends BaseController {
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             //主账号是搜狐域用户和第三方用户时不支持此操作
             if (AccountDomainEnum.SOHU.equals(domain) || AccountDomainEnum.THIRD.equals(domain)) {
-                result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
-                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-                model.addAttribute("data", result.toString());
-                return "/wap/findpwd_other_touch";
+                String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
+                redirectAttributes.addAttribute("ru", ru);
+                return "redirect:" + SHPPUrlConstant.SOHU_WAP_FINDPWD_URL + "?ru={ru}";
             }
             //校验验证码
             if (!checkManager.checkCaptcha(params.getCaptcha(), params.getToken())) {
@@ -226,17 +225,15 @@ public class WapResetPwdAction extends BaseController {
                             model.addAttribute("data", result.toString());
                             return "/wap/findpwd_other_touch";   //跳转至其它方式找回首页
                         } else {
-                            if (AccountDomainEnum.OTHER.equals(domain)) { //主账号是外域，则返回注册邮箱
-                                result.setDefaultModel("sec_email", passportId);
-                                result.setDefaultModel("sec_process_email", StringUtil.processEmail(passportId));
-                            } else {                                      //主账号非外域，则返回密保邮箱
-                                result.setDefaultModel("sec_email", sec_email);
-                                result.setDefaultModel("sec_process_email", StringUtil.processEmail(sec_email));
-                            }
+                            //主账号是外域，则返回注册邮箱 ;主账号非外域，则返回密保邮箱
+                            result.setDefaultModel("sec_email", AccountDomainEnum.OTHER.equals(domain) ? passportId : sec_email);
+                            result.setDefaultModel("sec_process_email", AccountDomainEnum.OTHER.equals(domain) ? StringUtil.processEmail(passportId) : StringUtil.processEmail(sec_email));
                             result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, client_id));      //安全验证码
                         }
                     }
             }
+            //记录找回密码次数
+            resetPwdManager.incFindPwdTimes(passportId);
         } catch (Exception e) {
             logger.error("checksms is failed,mobile is " + params.getUsername(), e);
         } finally {
@@ -331,7 +328,7 @@ public class WapResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/reset", method = RequestMethod.POST)
     @ResponseBody
-    public String resetPwd(HttpServletRequest request, WapPwdParams params, Model model) throws Exception {
+    public String resetPwd(HttpServletRequest request, WapPwdParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
