@@ -89,11 +89,11 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         int clientId = updateQuesApiParams.getClient_id();
         Result result = new APIResultSupport(false);
         try {
-            result = accountService.verifyUserPwdVaild(userId, password, true);
-            result.setDefaultModel(null);
-            if (!result.isSuccess()) {
+            Result authUserResult = accountService.verifyUserPwdVaild(userId, password, true);
+            authUserResult.setDefaultModel(null);
+            if (!authUserResult.isSuccess()) {
                 operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
-                return result;
+                return authUserResult;
             }
             newAnswer = DigestUtils.md5Hex(newAnswer.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
             AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(userId, newQues, newAnswer);
@@ -101,7 +101,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);
                 return result;
             }
-            result = new APIResultSupport(true);
+            result.setSuccess(true);
             result.setMessage("操作成功");
             return result;
         } catch (Exception e) {
