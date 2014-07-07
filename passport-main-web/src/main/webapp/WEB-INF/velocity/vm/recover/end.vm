@@ -30,60 +30,28 @@
             
             <li ><a href="/">首页</a></li>
             
-            <li ><a href="/web/userinfo/getuserinfo">个人资料</a></li>
-            
-            <li class="current"><a href="/web/security">帐号安全</a></li>
+            <li class="current"><a href="/web/findpwd">找回密码</a></li>
             
         </ul>
     </div>
     <span class="underline"></span>
 </div>
 
-<div class="main-content two-col-r">
-    <div class="col-l">
-        
-        <ul class="nav">
-    
-    <li style="border:none;" class="index   ">
-        <a href="/web/security">帐号安全</a>
-    </li>
-    
-    <li  class="password   small">
-        <a href="/web/security/password">修改密码</a>
-    </li>
-    
-    <li  class="email current  small">
-        <a href="/web/security/email">密保邮箱</a>
-    </li>
-    
-    <li  class="tel   small">
-        <a href="/web/security/mobile">密保手机</a>
-    </li>
-    
-    <li  class="question   small">
-        <a href="/web/security/question">密保问题</a>
-    </li>
-    
-    <li  class="history   small">
-        <a href="/web/security/history">登录记录</a>
-    </li>
-    
-</ul>
-    </div>
-    <div class="col-r">
-        <div class="inner safe-form">
-            <div class="title">
-                &nbsp;
-            </div>
-            <div  class="form">
-                <div class="binded">
-                    <p class="result"></p>
-                    <p style="font-size:12px;color:#999;display:none;" class="timing"><span id="time">5</span>秒后返回首页</p>
-                    <a style="display:none;" href="/" class="long-btn">返回首页</a>
-                    <script type="text/javascript">
-                    </script>
-                </div>
-            </div>
+<div class="main-content one-col">
+    <div class="inner recover recover-end" >
+        <div class="result">
+            <script type="text/tpl" id="Tpl">
+                <%if success%>
+                <div class="caption"><img src="/./static/img/success.jpg" border="0"/>恭喜您，密码重置成功</div>
+                <div class="desc">请牢记您新设置的密码，<a href="/">立即登录</a></div>
+                    <%if ru%>
+                    <div class="desc"><span class="count">60</span>s后跳转至<a href="<{ru}>"><{ru}></a></div>
+                    <%endif%>
+                <%else%>
+                <div class="caption red">密码重置失败</div>
+                 <div class="desc">请您重新<a href="/web/findpwd/">找回</a></div>
+                 <%endif%>
+             </script>
         </div>
     </div>
 </div>
@@ -99,7 +67,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/safe.js?t=2014070722"></script>
+    <script type="text/javascript" src="/./static/js/recover.js?t=2014070722"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
@@ -107,7 +75,7 @@
 var spb_vars = {
     productid:"passport",
     ptype:"web",
-    pcode:"safe_emailsuccess".split('/').join('_')
+    pcode:"recover_end".split('/').join('_')
 };
 
 (function() {
@@ -127,8 +95,8 @@ require.config({
 });
 
 
-require(['safe'] , function(module){
-    module.init('emailsuccess');
+require(['recover'] , function(module){
+    module.init('end');
 });
 
 

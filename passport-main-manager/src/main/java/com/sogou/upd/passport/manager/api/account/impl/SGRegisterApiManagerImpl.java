@@ -17,14 +17,14 @@ import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.MobileCodeSenderService;
-import com.sogou.upd.passport.service.account.MobilePassportMappingService;
-import com.sogou.upd.passport.service.account.SnamePassportMappingService;
+import com.sogou.upd.passport.model.account.AccountInfo;
+import com.sogou.upd.passport.service.account.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 /**
  * 注册
@@ -37,6 +37,8 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
     private static Logger logger = LoggerFactory.getLogger(SGRegisterApiManagerImpl.class);
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private AccountInfoService accountInfoService;
     @Autowired
     private SecureManager secureManager;
     @Autowired
@@ -78,7 +80,13 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                 case SOGOU://个性账号直接注册
                 case INDIVID:
                     Account account = accountService.initialAccount(username, password, true, ip, AccountTypeEnum
-                            .EMAIL.getValue());
+                            .SOGOU.getValue());
+                    AccountInfo accountInfo = new AccountInfo();
+                    accountInfo.setPassportId(username);
+                    accountInfo.setCreateTime(new Date());
+                    accountInfo.setUpdateTime(new Date());
+                    accountInfo.setModifyip(ip);
+                    accountInfoService.updateAccountInfo(accountInfo);
                     if (account != null) {
                         result.setSuccess(true);
                         result.setDefaultModel("userid", account.getPassportId());

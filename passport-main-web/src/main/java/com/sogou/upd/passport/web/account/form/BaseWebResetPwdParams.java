@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.URL;
  * Created with IntelliJ IDEA.
  * User: liuling
  * Date: 14-7-7
- * Time: 下午4:44
+ * Time: 下午5:24
  * To change this template use File | Settings | File Templates.
  */
 public class BaseWebResetPwdParams extends BaseWebParams {
