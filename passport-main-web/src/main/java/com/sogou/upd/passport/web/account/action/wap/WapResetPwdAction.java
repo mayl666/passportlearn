@@ -102,6 +102,25 @@ public class WapResetPwdAction extends BaseController {
         return "/wap/findpwd_other_touch";
     }
 
+
+    /**
+     * 其它方式找回时跳转到其它页面
+     *
+     * @param ru
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/findpwd/kefu", method = RequestMethod.GET)
+    public String findPwdKefuView(String ru, Model model, String client_id) throws Exception {
+        Result result = new APIResultSupport(false);
+        ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
+        client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
+        result.setDefaultModel("ru", ru);
+        result.setDefaultModel("client_id", client_id);
+        model.addAttribute("data", result.toString());
+        return "/wap/findpwd_contact_touch";
+    }
+
     /**
      * 验证找回密码发送的手机验证码
      *
