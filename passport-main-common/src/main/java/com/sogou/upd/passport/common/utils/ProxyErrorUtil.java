@@ -111,7 +111,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.3", ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户名不存在
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.4", ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);//原密码校验失败
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.5", ERR_CODE_ACCOUNT_BIND_NOTEXIST);//手机号绑定的账号不存在
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.6", ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);//修改密码失败
+        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.6", SYSTEM_UNKNOWN_EXCEPTION);//系统异常
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.7", ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT);//原密码错误次数超限
 
         //wapgetuserid 查询手机号绑定的账号
