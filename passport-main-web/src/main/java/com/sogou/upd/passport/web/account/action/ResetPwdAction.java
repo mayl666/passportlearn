@@ -192,7 +192,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/sendbemail", method = RequestMethod.POST)
     @ResponseBody
-    public String sendEmailBindResetPwd(HttpServletRequest request, BaseAccountParams params, Model model) throws Exception {
+    public String sendEmailBindResetPwd(HttpServletRequest request, BaseWebResetPwdParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -223,7 +223,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/resendmail", method = RequestMethod.POST)
     @ResponseBody
-    public Object resendActiveMail(HttpServletRequest request, BaseAccountParams params) throws Exception {
+    public Object resendActiveMail(HttpServletRequest request, BaseWebResetPwdParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             //参数验证
@@ -265,7 +265,7 @@ public class ResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.GET)
-    public String checkEmailResetPwd(HttpServletRequest request, BaseAccountParams params, Model model) throws Exception {
+    public String checkEmailResetPwd(HttpServletRequest request, BaseWebResetPwdParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -471,7 +471,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/sendremail", method = RequestMethod.POST)
     @ResponseBody
-    public String sendEmailRegResetPwd(HttpServletRequest request, BaseAccountParams params) throws Exception {
+    public String sendEmailRegResetPwd(HttpServletRequest request, BaseWebResetPwdParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
 
