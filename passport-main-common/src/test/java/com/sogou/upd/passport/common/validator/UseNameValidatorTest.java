@@ -21,19 +21,26 @@ public class UseNameValidatorTest {
 
         String username = "dfdfd-fdf@qq.com";
         result = unv.isValid(username, null);
-        Assert.assertEquals(true, result);
+        Assert.assertTrue(result);
 
         username = "dfdfd.fdf@163.com";
         result = unv.isValid(username, null);
-        Assert.assertEquals(true, result);
+        Assert.assertTrue(result);
 
         username = "dfdfd_fdf@sina.com";
         result = unv.isValid(username, null);
-        Assert.assertEquals(true, result);
+        Assert.assertTrue(result);
 
         username = "admisogoulpwwe@sogou.com";
         result = unv.isValid(username, null);
-        Assert.assertFalse(result);
+        Assert.assertTrue(result);
+
+        Assert.assertFalse(unv.isValid("%^@CFD@sogou.com", null));
+        Assert.assertFalse(unv.isValid("DAEW13251XZcSDF24R23@sogou.com", null));
+        Assert.assertFalse(unv.isValid("13560148744@sogou.com", null));
+        Assert.assertTrue(unv.isValid("13560148744",null));
+        Assert.assertTrue(unv.isValid("dafsdsfaasdfasd@qq.sohu.com",null));
+        Assert.assertTrue(unv.isValid("dasfdsfas@sohu.com", null));
 
     }
 
