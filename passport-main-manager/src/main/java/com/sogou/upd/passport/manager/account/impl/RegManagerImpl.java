@@ -378,7 +378,7 @@ public class RegManagerImpl implements RegManager {
         Result result = new APIResultSupport(false);
         String passportId = commonManager.getPassportIdByUsername(username);
         if (Strings.isNullOrEmpty(passportId)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_BIND_NOTEXIST);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS);
             return result;
         }
         if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(username)) &&

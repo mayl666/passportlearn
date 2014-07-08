@@ -70,7 +70,7 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
             String userId = authUserApiParams.getUserid();
             //第三方账号不允许此操作
             if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(authUserApiParams.getUserid()))) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS);
                 return result;
             }
             String passportId = commonManager.getPassportIdByUsername(userId);

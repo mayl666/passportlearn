@@ -90,7 +90,7 @@ public class CommonManagerImpl implements CommonManager {
                     baseMoblieApiParams.setMobile(username);
                     Result result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
                     if (result.isSuccess()) {
-                        passportId = result.getModels().get("userid").toString();
+                        passportId = (String) result.getModels().get("userid");
                         String message = CommonConstant.MOBILE_MESSAGE;
                         LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.UNKNOWN, "getPassportIdByUsername", message, username, passportId, result.toString());
                     }
