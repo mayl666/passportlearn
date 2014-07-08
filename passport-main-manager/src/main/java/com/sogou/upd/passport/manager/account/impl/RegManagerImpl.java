@@ -375,8 +375,12 @@ public class RegManagerImpl implements RegManager {
     }
 
     private Result bothCheck(String username, int clientId) throws Exception {
-        Result result;
+        Result result = new APIResultSupport(false);
         String passportId = commonManager.getPassportIdByUsername(username);
+        if (Strings.isNullOrEmpty(passportId)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_BIND_NOTEXIST);
+            return result;
+        }
         if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(username)) &&
                 accountSecureService.getUpdateSuccessFlag(passportId)) {
             //手机号检查用户名且主账号有更新绑定手机的操作时，调用sohu api检查账号是否可用

@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -73,6 +74,10 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                 return result;
             }
             String passportId = commonManager.getPassportIdByUsername(userId);
+            if (Strings.isNullOrEmpty(passportId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_BIND_NOTEXIST);
+                return result;
+            }
             if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
                 //主账号是sohu域账号调用sohu api校验用户名和密码
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);

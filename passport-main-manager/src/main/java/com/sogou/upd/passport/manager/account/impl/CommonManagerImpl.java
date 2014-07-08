@@ -73,10 +73,6 @@ public class CommonManagerImpl implements CommonManager {
 
     @Override
     public String getPassportIdByUsername(String username) throws Exception {
-        Result result;
-        if (Strings.isNullOrEmpty(username)) {
-            return null;
-        }
         //根据username获取passportID
         String passportId = username;
         if (AccountDomainEnum.isPhone(username)) {
@@ -92,7 +88,7 @@ public class CommonManagerImpl implements CommonManager {
                 if (Strings.isNullOrEmpty(passportId)) {
                     BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
                     baseMoblieApiParams.setMobile(username);
-                    result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
+                    Result result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
                     if (result.isSuccess()) {
                         passportId = result.getModels().get("userid").toString();
                         String message = CommonConstant.MOBILE_MESSAGE;
