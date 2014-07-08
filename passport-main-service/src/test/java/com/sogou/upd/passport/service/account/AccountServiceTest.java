@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.utils.JsonUtil;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import junit.framework.Assert;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -98,6 +99,17 @@ public class AccountServiceTest extends BaseTest {
 //        } else {
 //            System.out.println("不正确!!!");
 //        }
+    }
+
+    @Test
+    public void testCheckResetPassport() {
+        String storedPwd = "GdIRFYky$tjgErloRiudSgGv4Jw1wh1";
+        String pwd = "e0be6aca";
+        String pwdMD5 = DigestUtils.md5Hex(pwd.getBytes());
+        if (storedPwd.equals(pwdMD5)) {
+            System.out.println(" pwd equals ");
+        }
+        System.out.println(" pwd not equals ");
     }
 
 
