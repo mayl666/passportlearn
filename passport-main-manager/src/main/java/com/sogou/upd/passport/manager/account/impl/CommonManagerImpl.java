@@ -76,7 +76,7 @@ public class CommonManagerImpl implements CommonManager {
      * 个性账号：username=xxx,passportId=xxx@sogou.com;
      * 手机未绑定主账号时：username=132xxxx1234,passportId=132xxxx1234@sohu.com；
      * 外域邮箱：usename=xxxx@163.com,passportId=xxxx@163.com;
-     * 及返回手机号绑定的主账号
+     * 及其返回手机号绑定的主账号
      */
     @Override
     public String getPassportIdByUsername(String username) throws Exception {
