@@ -19,12 +19,15 @@ import org.springframework.stereotype.Component;
 /**
  * Created with IntelliJ IDEA.
  * User: liuling
+ * Date: 14-6-16
+ * Time: 下午10:09
  * Date: 14-6-24
  * Time: 下午8:01
  * To change this template use File | Settings | File Templates.
  */
 @Component("registerApiManager")
 public class RegisterApiManagerImpl extends BaseProxyManager implements RegisterApiManager {
+
 
     private static final Logger logger = LoggerFactory.getLogger(RegisterApiManagerImpl.class);
 
