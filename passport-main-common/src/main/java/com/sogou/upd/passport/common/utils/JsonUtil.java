@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
+import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectReader;
@@ -29,6 +30,7 @@ public class JsonUtil {
      */
     public static <T> T jsonToBean(String value, java.lang.Class<T> type) {
         ObjectMapper mapper = JacksonJsonMapperUtil.getMapper();
+        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
         ObjectReader reader = mapper.reader(type);
         try {
             return reader.readValue(value);

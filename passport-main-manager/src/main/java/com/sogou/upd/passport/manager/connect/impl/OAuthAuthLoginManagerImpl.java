@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.connect.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -162,9 +163,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
                             return result;
                         }
-                        sgid = (String) sessionResult.getModels().get("sgid");
+                        sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                         result.setSuccess(true);
-                        result.getModels().put("sgid", sgid);
+                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
 
                         if (!Strings.isNullOrEmpty(thirdInfo) && "0".equals(thirdInfo)) {
                             //获取搜狗用户信息
@@ -217,10 +218,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     Result sessionResult = sessionServerManager.createSession(userId);
                     String sgid = null;
                     if (sessionResult.isSuccess()) {
-                        sgid = (String) sessionResult.getModels().get("sgid");
+                        sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                         if (!Strings.isNullOrEmpty(sgid)) {
                             result.setSuccess(true);
-                            result.getModels().put("sgid", sgid);
+                            result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                             ru = buildWapSuccessRu(ru, sgid);
                         }
                     } else {
@@ -318,7 +319,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             ru = CommonConstant.DEFAULT_WAP_URL;
         }
         //ru后缀一个sgid
-        params.put("sgid", sgid);
+        params.put(LoginConstant.COOKIE_SGID, sgid);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }
@@ -332,7 +333,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             ru = CommonConstant.DEFAULT_WAP_URL;
         }
         //ru后缀一个sgid
-        params.put("sgid", sgid);
+        params.put(LoginConstant.COOKIE_SGID, sgid);
         params.put("uniqname", uniqname);
         params.put("gender", sex);
         params.put("avatarLarge", avatarLarge);
