@@ -511,7 +511,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             result.setDefaultModel("userid", passportId);
             result.setSuccess(true);
         } catch (Exception e) {
-            logger.error("getUserNickNameAndAvatar error. passportId:" + passportId);
+            logger.error("getUserNickNameAndAvatar error. passportId:" + passportId, e);
         }
         return result;
     }
