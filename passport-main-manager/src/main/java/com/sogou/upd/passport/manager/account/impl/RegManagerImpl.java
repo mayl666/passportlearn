@@ -376,9 +376,11 @@ public class RegManagerImpl implements RegManager {
 
     private Result bothCheck(String username, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
+        //主要是为了查询手机号绑定的主账号是否有修改绑定手机的操作，读写彻底分离后，使用passportId的逻辑可去除
         String passportId = commonManager.getPassportIdByUsername(username);
         if (Strings.isNullOrEmpty(passportId)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS);
+            result.setSuccess(true);
+            result.setMessage("账户未被占用");
             return result;
         }
         if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(username)) &&

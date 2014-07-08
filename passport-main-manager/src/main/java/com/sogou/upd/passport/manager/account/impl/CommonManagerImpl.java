@@ -71,6 +71,7 @@ public class CommonManagerImpl implements CommonManager {
         operateTimesService.incRegTimes(ip, cookieStr);
     }
 
+    //根据username获取主账号，形如：username=xxx,passportId=xxx@sogou.com;username=132xxxx1234,passportId=132xxxx1234@sohu.com；及返回手机号绑定的主账号
     @Override
     public String getPassportIdByUsername(String username) throws Exception {
         //根据username获取passportID
