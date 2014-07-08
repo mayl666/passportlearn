@@ -42,7 +42,7 @@ public class CommonManagerImpl implements CommonManager {
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private BindApiManager proxyBindApiManager;
-   
+
     @Override
     public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {
         String code = getCode(firstStr.toString(), clientId, ct);
@@ -74,6 +74,9 @@ public class CommonManagerImpl implements CommonManager {
     @Override
     public String getPassportIdByUsername(String username) throws Exception {
         Result result;
+        if (Strings.isNullOrEmpty(username)) {
+            return null;
+        }
         //根据username获取passportID
         String passportId = username;
         if (AccountDomainEnum.isPhone(username)) {

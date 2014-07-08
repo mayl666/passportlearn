@@ -70,11 +70,11 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         Result result = new APIResultSupport(false);
         String passportIdLog = infoApiparams.getUserid();
         try {
-            if (Strings.isNullOrEmpty(passportIdLog)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            String passportId = commonManager.getPassportIdByUsername(infoApiparams.getUserid());
+            if (Strings.isNullOrEmpty(passportId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 return result;
             }
-            String passportId = commonManager.getPassportIdByUsername(infoApiparams.getUserid());
             infoApiparams.setUserid(passportId);
             passportIdLog = passportId;
             String fields = infoApiparams.getFields();
@@ -260,9 +260,12 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         String passportIdLog = params.getUserid();
         try {
             String passportId = commonManager.getPassportIdByUsername(params.getUserid());
+            if (Strings.isNullOrEmpty(passportId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                return result;
+            }
             params.setUserid(passportId);
             passportIdLog = passportId;
-
             //获取用户账号类型
             AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
             Account account = accountService.queryAccountByPassportId(passportId);
