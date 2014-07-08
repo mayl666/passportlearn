@@ -28,7 +28,7 @@ var splus = {
                     <legend>快速注册</legend>
                     <div class="control-group">
                         <div class="controls user-id">
-                            <input type="text" class="" placeholder="设置账号" name="sname" autocomplete="off" disableautocomplete>
+                            <input type="text" class="" placeholder="设置帐号" name="sname" autocomplete="off" disableautocomplete>
                             <span class="position-tips"></span>
 
                         </div>
@@ -66,7 +66,7 @@ var splus = {
                     </div>
                     <div class="controls position-bottom">
                         <div class="fr"> <i class="left-arrow"></i>
-                            <span style="vertical-align:baseline">已有账号</span>
+                            <span style="vertical-align:baseline">已有帐号</span>
                             <a href="/sogou/flogon?instanceid=${instanceid}" class="blue"> 直接登录</a>
                         </div>
                     </div>

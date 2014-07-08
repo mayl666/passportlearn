@@ -63,16 +63,6 @@ public interface PCAccountManager {
     public String getSig(String passportId, int clientId, String refresh_token, String timestamp) throws Exception;
 
     /**
-     * 只生成token，不需要校验密码或者sig
-     *
-     * @param clientId
-     * @param passportId
-     * @param instanceId
-     * @return
-     */
-    public Result createConnectToken(int clientId, String passportId, String instanceId);
-
-    /**
      * 从浏览器论坛获取用户昵称
      * 如果为空，则返回用户名@前面一段
      *

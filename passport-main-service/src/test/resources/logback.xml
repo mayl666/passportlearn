@@ -148,18 +148,6 @@
         <appender-ref ref="dBRedisMissAppender"/>
     </logger>
 
-    <appender name="shPlusTokenAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/shPlusToken/shPlusToken.log.%d{yyyy-MM-dd}</fileNamePattern>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d %msg %n</pattern>
-        </encoder>
-    </appender>
-    <logger name="shPlusTokenLogger" level="info" additivity="false">
-        <appender-ref ref="shPlusTokenAppender"/>
-    </logger>
-
     <!--start:httpClient性能log-->
     <appender name="httpclientFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

@@ -1,5 +1,8 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.model.account.Account;
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -8,15 +11,6 @@ package com.sogou.upd.passport.manager.account;
  * To change this template use File | Settings | File Templates.
  */
 public interface CommonManager {
-
-    /**
-     * 根据用户名生成passportId
-     *
-     * @param username
-     * @return
-     */
-    public String getPassportIdByUsername(String username);
-
     /**
      * 用户注册时ip次数的累加
      *
@@ -52,5 +46,46 @@ public interface CommonManager {
      * @return
      */
     public String getCode(String firstStr, int clientId, long ct);
+
+    /**
+     * 根据用户输入的username获取对应的passport
+     * 1.输入：手机号；输出：主账号userid
+     * 2.输入：手机号@sohu.com；输出：手机号@sohu.com
+     *
+     * @param username
+     * @return
+     */
+    public String getPassportIdByUsername(String username) throws Exception;
+
+    /**
+     * 获取重置密码时的安全码
+     *
+     * @param passportId
+     * @param clientId
+     * @return
+     * @throws ServiceException
+     */
+    public String getSecureCodeResetPwd(String passportId, int clientId) throws ServiceException;
+
+    /**
+     * 根据passportId查询account
+     *
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public Account queryAccountByPassportId(String passportId) throws ServiceException;
+
+    /**
+     * 应用是否有此API访问权限
+     * 1.应用服务器在appconfig配置里的server_ip白名单里；
+     * 2.APIName在appconfig配置里的scope里；
+     *
+     * @param clientId
+     * @param requestIp 服务器ip
+     * @param apiName   如果此API有访问限制则传API名称，否则传null
+     * @return
+     */
+    public boolean isAccessAccept(int clientId, String requestIp, String apiName);
 
 }

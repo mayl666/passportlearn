@@ -6,9 +6,9 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
-import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.web.BaseController;
@@ -38,13 +38,11 @@ public class RegisterApiController extends BaseController {
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
     @Autowired
-    private BindApiManager proxyBindApiManager;
-    @Autowired
-    private BindApiManager sgBindApiManager;
-    @Autowired
     private RegManager regManager;
     @Autowired
     private CommonManager commonManager;
+    @Autowired
+    private RegisterApiManager registerApiManager;
 
     /**
      * 注册手机账号时，发送手机验证码
@@ -125,6 +123,7 @@ public class RegisterApiController extends BaseController {
         Result result = new APIResultSupport(false);
         String ip = null;
         int client_id = params.getClient_id();
+        String userid = params.getUserid();
         try {
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
@@ -141,13 +140,16 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = proxyRegisterApiManager.regMailUser(params);
+            result = registerApiManager.regMailUser(params);
+//            result = proxyRegisterApiManager.regMailUser(params);
         } catch (Exception e) {
-            logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + params.getUserid(), e);
+            logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + userid, e);
         } finally {
             //记录log
             commonManager.incRegTimesForInternal(ip, client_id);
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), ip);
+            UserOperationLog userOperationLog = new UserOperationLog(userid, String.valueOf(params.getClient_id()), result.getCode(), ip);
+            userOperationLog.putOtherMessage("serverip", getIp(request));
+            userOperationLog.putOtherMessage("userid", userid);
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
@@ -184,6 +186,51 @@ public class RegisterApiController extends BaseController {
             UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
+        }
+        return result.toString();
+    }
+
+    /**
+     * passport生成该手机号对应的“手机号@sohu.com”账号，并给用户下发随机密码，用户使用手机号和随机密码即可登录。
+     * 供搜狗小说使用
+     *
+     * @param req
+     * @param params
+     * @return
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/regmobilefast", method = RequestMethod.POST)
+    @ResponseBody
+    public Object regMobileFast(HttpServletRequest req, RegMobileFastApiParams params) {
+        Result result = new APIResultSupport(false);
+        String createIp = params.getCreateip();
+        String mobile = params.getMobile();
+
+        try {
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            int clientId = Integer.valueOf(params.getClient_id());
+            //判断访问者是否有权限
+            if (!commonManager.isAccessAccept(clientId, getIp(req), "regmobilefast")) {
+                result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
+                return result.toString();
+            }
+            // 调用内部接口
+            result = regManager.fastRegisterPhone(mobile, clientId, createIp, params.getType());
+        } catch (Exception e) {
+            logger.error("regMobileFast:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
+        } finally {
+            //记录log
+            String passportId = (String) result.getModels().get("userid");
+            passportId = Strings.isNullOrEmpty(passportId) ? mobile : passportId;
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, String.valueOf(params.getClient_id()), result.getCode(), createIp);
+            userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();

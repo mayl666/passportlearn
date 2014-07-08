@@ -1,11 +1,9 @@
 package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.model.account.AccountInfo;
-
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
-
 import net.paoding.rose.jade.annotation.ShardBy;
 import org.springframework.dao.DataAccessException;
 
@@ -46,6 +44,19 @@ public interface AccountInfoDAO {
             " where passport_id=:passport_id")
     public AccountInfo getAccountInfoByPassportId(@ShardBy @SQLParam("passport_id") String passport_id) throws
             DataAccessException;
+
+
+    /**
+     * 非第三方账号迁移，特别提示，仅供数据验证使用，根据passportId获取AccountInfo
+     */
+    @SQL("select " +
+            " email,question, gender, province, birthday, city, fullname, personalid" +
+            " from " +
+            TABLE_NAME +
+            " where passport_id=:passport_id")
+    public AccountInfo getAccountInfoByPid4DataCheck(@ShardBy @SQLParam("passport_id") String passport_id) throws
+            DataAccessException;
+
 
     /**
      * 根据passportId删除用户的AccountInfo信息，
@@ -108,5 +119,15 @@ public interface AccountInfoDAO {
                                  @SQLParam("accountInfo") AccountInfo account_info)
             throws DataAccessException;
 
-
+    /**
+     * 数据迁移过程中，修复数据使用，以后可删除
+     * @param passport_id
+     * @param birthday
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("update " + TABLE_NAME + "set birthday=:birthday where passport_id=:passport_id")
+    public int updateBirthday(@ShardBy @SQLParam("passport_id") String passport_id,
+                              @SQLParam("birthday") String birthday)
+            throws DataAccessException;
 }

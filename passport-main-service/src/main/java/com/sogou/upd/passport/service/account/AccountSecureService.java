@@ -23,6 +23,15 @@ public interface AccountSecureService {
     public boolean getUpdateSuccessFlag(String passportId) throws ServiceException;
 
     /**
+     * 获取用户重置密码的标志位
+     *
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean getResetPwdFlag(String passportId) throws ServiceException;
+
+    /**
      * 用户更新操作成功后，更新状态
      *
      * @param passportId
@@ -30,6 +39,15 @@ public interface AccountSecureService {
      * @throws ServiceException
      */
     public boolean updateSuccessFlag(String passportId) throws ServiceException;
+
+    /**
+     * 搜狗账号重置密码，更新标志位
+     *
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean updateResetPwdFlag(String passportId) throws ServiceException;
 
     /**
      * 产生secureCode，放入缓存，设置有效时间；返回secureCode——重置密码

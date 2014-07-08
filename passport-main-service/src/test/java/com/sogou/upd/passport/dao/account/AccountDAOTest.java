@@ -75,7 +75,27 @@ public class AccountDAOTest extends BaseDAOTest {
 //
 //    @After
 //    public void end() {
-//        int row = accountDAO.deleteAccountByPassportId(PASSPORT_ID);
+//        int row = accountDAO.deleteAccountCacheByPassportId(PASSPORT_ID);
 //        Assert.assertTrue(row == 1);
 //    }
+
+    @Test
+    public void testupdateNickNameAndAvatar() {
+        String nickName = "dinghuilong";
+        String avatr = "";
+        String passportId = "dinghuilong@sogou.com";
+        try {
+            int updateResult = accountDAO.updateNickNameAndAvatar(nickName, avatr, passportId);
+
+            int updateNickName = accountDAO.updateUniqName(nickName, passportId);
+
+            System.out.println("============updateNickName" + updateNickName);
+
+            System.out.println("============updateResult" + updateResult);
+//            Assert.assertTrue(updateResult > 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 }

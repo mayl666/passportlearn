@@ -127,9 +127,12 @@ public class PCAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return "1";
         }
-        String ip = getIp(request);
         String userId = pcGetTokenParams.getUserid();
-
+        //不允许第三方格式的账号登录
+        if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(userId))) {
+            return "1";
+        }
+        String ip = getIp(request);
         String appId = pcGetTokenParams.getAppid();
         String ts = pcGetTokenParams.getTs();
         PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
@@ -169,6 +172,10 @@ public class PCAccountController extends BaseController {
             return getReturnStr(cb, "1");
         }
         String userId = reqParams.getUserid();
+        //不允许第三方格式的账号登录
+        if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(userId))) {
+            return "1";
+        }
         //getpairtoken允许个性账号、手机号登陆；gettoken不允许
         userId = loginManager.getIndividPassportIdByUsername(userId);
         reqParams.setUserid(userId);
@@ -319,16 +326,19 @@ public class PCAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            returnErrMsg(response, ppCookieParams.getRu(),result.getCode(), result.getMessage());
+            returnErrMsg(response, ppCookieParams.getRu(), result.getCode(), result.getMessage());
             return;
         }
+        //response 回去的时候设置一个p3p的header
+        //用来定义IE的跨域问题。
+        response.setHeader("P3P", "CP=CAO PSA OUR");
 
-        result = cookieManager.setPPCookie(response,ppCookieParams);
+        result = cookieManager.setPPCookie(response, ppCookieParams);
 
         String ru = ppCookieParams.getRu();
-        if(!result.isSuccess()){
-            log(request,"pp_setcookie",ru,result.getCode());
-            returnErrMsg(response,ru,result.getCode(),result.getMessage());
+        if (!result.isSuccess()) {
+            log(request, "pp_setcookie", ru, result.getCode());
+            returnErrMsg(response, ru, result.getCode(), result.getMessage());
             return;
         }
         if (!StringUtils.isBlank(ru)) {

@@ -6,12 +6,10 @@ import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Calendar;
-import java.util.Map;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -26,7 +24,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo2() throws Exception {
         GetUserInfoApiparams getUserInfoApiParams=new GetUserInfoApiparams();
-        getUserInfoApiParams.setUserid("ljyf_136615@sogou.com");
+        getUserInfoApiParams.setUserid("ksmees@sogou.com");
         getUserInfoApiParams.setFields("usertype,createip,birthday,gender,createip,createtime,"
                 +
                 "personalid,personalidflag,sec_mobile,sec_email,province," +

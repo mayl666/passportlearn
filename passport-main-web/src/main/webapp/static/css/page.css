@@ -61,7 +61,7 @@ a:hover{ text-decoration:underline; }
 .form-item .form-el-none{ padding:0;background:none; }
 .form-item .form-el-s{ width:89px;background:#fff url(/./static/img/input-s.png?t=280018) no-repeat 0 0;}
 .form-item .form-el-focus{ background-position:0 -32px; }
-.form-item input{ width:172px;border:none;outline:none; }
+.form-item input{ width:172px;border:0;outline:none; }
 .form-item .form-el-s input{ width:81px;border:none;outline:none; }
 .form .desc,
 .form .error{ float:left;margin-left:11px; width:258px;height:26px;line-height:26px; position:relative; top:10px;padding-left:20px;font-size:12px; }

@@ -25,12 +25,12 @@
                                 
                             <p class="username">
                                 <b class="focusbg"></b>
-                                <span>邮箱/手机号/搜狗帐号</span>
+                                <span>用户名/手机号/邮箱</span>
                                 <input autocomplete="off" type="text" name="username" value="" />
                             </p>
                             <p class="password">
                                 <b class="focusbg"></b>
-                                <span>请输入密码</span>
+                                <span>密码</span>
                                 <input autocomplete="off" type="password" name="password" value="" />
                             </p>
                             <p class="vcode">
@@ -44,9 +44,9 @@
                                 <span class="checkbox checkbox-checked" id="RemChbSpan" ></span>
                                 <input type="checkbox" name="autoLogin" value="1" id="RemChb" checked data-target="RemChbSpan"/>
                                 <label for="RemChb">
-                                    记住登录状态
+                                    自动登录
                                 </label>
-                                <a href="/web/findpwd">找回密码</a>
+                                <a href="/web/findpwd">忘记密码？</a>
                             </p>
                             <button type="submit">
                                 &nbsp;

@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -76,13 +77,14 @@ public class WapLoginManagerImpl implements WapLoginManager {
             result = loginManager.authUser(username, ip, password);
             if (result.isSuccess()) {
                 //写session 数据库
+                passportId = (String) result.getModels().get("userid");
                 Result sessionResult = sessionServerManager.createSession(passportId);
                 String sgid = null;
                 if (sessionResult.isSuccess()) {
-                    sgid = (String) sessionResult.getModels().get("sgid");
+                    sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                     result.getModels().put("userid", result.getModels().get("userid").toString());
                     if (!Strings.isNullOrEmpty(sgid)) {
-                        result.getModels().put("sgid", sgid);
+                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                     }
                 }
             }
@@ -157,7 +159,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
                         result = bulidSgid(connectConfig.getAppKey(), accessToken, shPassportId, nickname, expires_in);
                     } else if (passportId.equals(shPassportId)) {
                         result.setSuccess(true);
-                        result.getModels().put("sgid", sgid);
+                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                     } else {
                         result = bulidSgid(connectConfig.getAppKey(), accessToken, shPassportId, nickname, expires_in);
                     }
@@ -183,9 +185,9 @@ public class WapLoginManagerImpl implements WapLoginManager {
             Result sessionResult = sessionServerManager.createSession(openId);
             String sgid = null;
             if (sessionResult.isSuccess()) {
-                sgid = (String) sessionResult.getModels().get("sgid");
+                sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                 if (!Strings.isNullOrEmpty(sgid)) {
-                    sessionResult.setDefaultModel("sgid", sgid);
+                    sessionResult.setDefaultModel(LoginConstant.COOKIE_SGID, sgid);
                 }
             }
             return sessionResult;

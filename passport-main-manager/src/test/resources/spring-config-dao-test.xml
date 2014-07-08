@@ -12,6 +12,7 @@
     <bean id="masterDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
+            <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/test?characterEncoding=utf-8</value>-->
             <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
@@ -59,6 +60,7 @@
     <bean id="slaveDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
+            <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/test?characterEncoding=utf-8</value>-->
             <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
@@ -115,7 +117,7 @@
 
     <!-- 分表设置 -->
     <bean id="jade.routerInterpreter" class="com.xiaomi.common.service.dal.routing.RewriteSQLInterpreter">
-        <property name="routingConfigurator" ref="jade.routingConfigurator" />
+        <property name="routingConfigurator" ref="jade.routingConfigurator"/>
     </bean>
     <bean id="jade.routingConfigurator" class="com.sogou.upd.passport.dao.dal.routing.SGRoutingConfigurator">
         <property name="partitions">
@@ -124,8 +126,10 @@
                 <value>sg-str-hash:connect_token:passport_id:connect_token_{0}:32</value>
                 <value>sg-str-hash:connect_relation:passport_id:connect_relation_{0}:32</value>
                 <value>sg-str-hash:account_info:passport_id:account_info_{0}:32</value>
-                <!-- 昵称映射表分32张子表 -->
-                <value>sg-str-hash:uniqname_passportid_mapping:passport_id:uniqname_passportid_mapping_{0}:32</value>
+                <!-- 昵称映射表 分32张子表 -->
+                <value>sg-str-hash:uniqname_passportid_mapping:uniqname:uniqname_passportid_mapping_{0}:32</value>
+                <!-- 手机映射表 分32张子表-->
+                <value>sg-str-hash:mobile_passportid_mapping:mobile:mobile_passportid_mapping_{0}:32</value>
             </list>
         </property>
     </bean>

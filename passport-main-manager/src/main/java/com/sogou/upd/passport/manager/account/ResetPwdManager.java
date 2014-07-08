@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-8 Time: 上午10:46 To change this template use
@@ -18,6 +21,15 @@ public interface ResetPwdManager {
      * @throws Exception
      */
     public Result queryAccountSecureInfo(String username, int clientId, boolean doProcess) throws Exception;
+
+    /**
+     * 为了获取用户绑定邮箱及用户的激活状态
+     *
+     * @param username
+     * @return
+     * @throws Exception
+     */
+    public Map<String, Object> getEmailAndStatus(String username) throws Exception;
 
     /**
      * 修改密码，包括检查修改次数
@@ -38,15 +50,32 @@ public interface ResetPwdManager {
      * @param passportId
      * @param clientId
      * @param useRegEmail 邮件选择方式，true为注册邮箱，false为绑定邮箱
+     * @param ru          用户传递的ru参数
+     * @param scode       安全码
      * @throws Exception
      */
-    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail) throws Exception;
+    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail, String ru, String scode) throws Exception;
+
+    /**
+     * 重置密码时发送验证邮件
+     *
+     * @param passportId
+     * @param clientId
+     * @param module
+     * @param email
+     * @param ru
+     * @param scode
+     * @return
+     * @throws Exception
+     */
+    public Result sendEmailResetPwd(String passportId, int clientId, AccountModuleEnum module,
+                                    String email, String ru, String scode) throws Exception;
 
 
     /**
      * 重置密码（邮件方式）——2.验证重置密码申请链接
      *
-     * @param uid 目前为passportId
+     * @param uid   目前为passportId
      * @param token
      */
     public Result checkEmailResetPwd(String uid, int clientId, String token) throws Exception;
@@ -60,11 +89,10 @@ public interface ResetPwdManager {
 
     /**
      * 重置密码（手机方式）——2.检查手机短信码，成功则返回secureCode记录成功标志
-     *                      （1.发送见sendMobileCodeByPassportId）
+     * （1.发送见sendMobileCodeByPassportId）
      *
      * @param passportId
      * @param clientId
-     * @param smsCode
      * @return
      * @throws Exception
      */
@@ -91,22 +119,22 @@ public interface ResetPwdManager {
      * @param clientId
      * @param password
      * @param secureCode
+     * @param ip
      * @return
      * @throws Exception
      */
     public Result resetPasswordByScode(String passportId, int clientId, String password,
-                                       String secureCode) throws Exception;
+                                       String secureCode, String ip) throws Exception;
 
     /**
-     * 重置用户密码（检查密保答案）——暂不用！！！
+     * 找回密码，发送手机验证码
      *
-     * @param passportId
+     * @param userId
      * @param clientId
-     * @param password
-     * @param answer
+     * @return
+     * @throws Exception
      */
-    public Result resetPasswordByQues(String passportId, int clientId, String password, String answer)
-            throws Exception;
+    public Result sendFindPwdMobileCode(String userId, int clientId,String sec_mobile) throws Exception;
 
     /**
      * 重置用户密码（手机验证码方式）——暂不用！！！
@@ -114,5 +142,20 @@ public interface ResetPwdManager {
     public Result resetPasswordByMobile(String passportId, int clientId, String password, String smsCode)
             throws Exception;
 
-    /* ------------------------------------重置密码End------------------------------------ */
+    /**
+     * 统计找回密码次数
+     *
+     * @param passportId
+     * @throws Exception
+     */
+    public void incFindPwdTimes(String passportId) throws Exception;
+
+    /**
+     * 检查找回密码次数
+     *
+     * @param passportId
+     * @return
+     * @throws Exception
+     */
+    public Result checkFindPwdTimes(String passportId) throws Exception;
 }

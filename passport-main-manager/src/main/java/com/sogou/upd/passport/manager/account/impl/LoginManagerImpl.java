@@ -87,21 +87,6 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Override
-    public Result checkCaptchaVaild(String username, String ip, String clientId, String captchaCode, String token) {
-        Result result = new APIResultSupport(true);
-        //校验验证码
-        if (needCaptchaCheck(clientId, username, ip)) {
-            if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
-                logger.info("[accountLogin captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captchaCode);
-                result.setSuccess(false);
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                return result;
-            }
-        }
-        return result;
-    }
-
-    @Override
     public Result authUser(String username, String ip, String pwdMD5) {
         //校验username是否在账户黑名单中
         Result result = new APIResultSupport(false);

@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
@@ -9,7 +11,9 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
@@ -24,12 +28,12 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -42,6 +46,10 @@ public class RegManagerImpl implements RegManager {
 
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private EmailSenderService emailSenderService;
+    @Autowired
+    private RegisterApiManager registerApiManager;
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
@@ -116,11 +124,15 @@ public class RegManagerImpl implements RegManager {
                     }
                     RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                             clientId, ru);
-                    if (AccountDomainEnum.SOGOU.equals(emailType) || AccountDomainEnum.INDIVID.equals(emailType)) {
-
-                    } else {
-                        result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
-                    }
+//<<<<<<< HEAD
+//                    if (AccountDomainEnum.SOGOU.equals(emailType) || AccountDomainEnum.INDIVID.equals(emailType)) {
+//
+//                    } else {
+//                        result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+//                    }
+//=======
+                    result = registerApiManager.regMailUser(regEmailApiParams);
+//>>>>>>> ba0074b94507d816d180c39eec420d02ab412901
 //                    if (ManagerHelper.isInvokeProxyApi(username)) {
 //                        result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
 //                    } else {
@@ -153,6 +165,62 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
+    public Result fastRegisterPhone(String mobile, int clientId, String createip, String type) {
+        Result result = new APIResultSupport(false);
+        // 检查ip安全限制
+        try {
+            String passportId = commonManager.getPassportIdByUsername(mobile);
+            if (!Strings.isNullOrEmpty(passportId)) { //手机号已经注册或绑定
+                if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
+                    Result sessionResult = sessionServerManager.createSession(passportId);
+                    if (!sessionResult.isSuccess()) {
+                        result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                        return result;
+                    }
+                    String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+                    result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                }
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                result.setDefaultModel("userid", passportId);
+                return result;
+            }
+            //生成随机数密码
+            String randomPwd = RandomStringUtils.randomNumeric(6);
+            //注册手机号
+            RegMobileApiParams regApiParams = new RegMobileApiParams(mobile, randomPwd, clientId);
+            Result regMobileResult = proxyRegisterApiManager.regMobileUser(regApiParams);
+            if (regMobileResult.isSuccess()) {
+                passportId = (String) regMobileResult.getModels().get("userid");
+                //发送短信验证码
+                //短信内容，TODO 目前只有小说使用，文案先写死
+                String smsText = "搜狗通行证注册成功，密码为" + randomPwd + "， 请用本机号码登录。";
+                if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
+                    if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
+                        Result sessionResult = sessionServerManager.createSession(passportId);
+                        if (!sessionResult.isSuccess()) {
+                            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                            return result;
+                        }
+                        String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                    }
+                    result.setSuccess(true);
+                    result.setMessage("注册成功，并发送短信至手机号：" + mobile);
+                    result.setDefaultModel("userid", passportId);
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
+            }
+        } catch (Exception e) {
+            logger.error("fast register mobile Fail, mobile:" + mobile, e);
+            result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
+        }
+        return result;
+    }
+
+    @Override
     public Result registerMobile(String username, String password, int clientId, String captcha, String type) throws Exception {
         Result result = new APIResultSupport(false);
         if (!Strings.isNullOrEmpty(type) && !ConnectTypeEnum.WAP.toString().equals(type)) {
@@ -177,9 +245,9 @@ public class RegManagerImpl implements RegManager {
                         result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
                         return result;
                     }
-                    sgid = (String) sessionResult.getModels().get("sgid");
+                    sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                     result.setSuccess(true);
-                    result.getModels().put("sgid", sgid);
+                    result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                     result.setMessage("type参数有误！");
@@ -255,6 +323,35 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
+    public Result resendActiveMail(ResendActiveMailParams resendActiveMailParams) {
+        Result result = new APIResultSupport(false);
+        try {
+            String username = resendActiveMailParams.getUsername();
+            int clientId = Integer.parseInt(resendActiveMailParams.getClient_id());
+            //检测重发激活邮件次数是否已达上限
+            boolean checkSendLimited = emailSenderService.checkLimitForSendEmail(null, clientId, AccountModuleEnum.REGISTER, username);
+            if (!checkSendLimited) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
+                return result;
+            }
+            boolean isSendSuccess = accountService.sendActiveEmail(username, null, clientId, null, CommonConstant.EMAIL_REG_VERIFY_URL);
+            if (isSendSuccess) {
+                if (emailSenderService.incLimitForSendEmail(null, clientId, AccountModuleEnum.REGISTER, username)) {
+                    result.setSuccess(true);
+                    result.setMessage("重新发送激活邮件成功，请立即激活您的账户！");
+                    result.setCode("0");
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED);
+            }
+        } catch (Exception e) {
+            logger.error("Resend Active Mail Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
+    }
+
+    @Override
     public Map<String, Object> getCaptchaCode(String code) {
         return accountService.getCaptchaCode(code);
     }
@@ -323,6 +420,9 @@ public class RegManagerImpl implements RegManager {
                 accountSecureService.getUpdateSuccessFlag(passportId)) {
             //手机号检查用户名且主账号有更新绑定手机的操作时，调用sohu api检查账号是否可用
             result = checkUserFromSohu(username, clientId);
+            //存在主账号更新绑定手机去sohu查的情况就记录log
+            String message = CommonConstant.CHECK_MESSAGE;
+            LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.REGISTER, "isAccountNotExists", message, username, passportId, result.toString());
         } else {
             //没有更新绑定手机时，走正常的双读检查账号是否可用流程
             CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
@@ -331,13 +431,13 @@ public class RegManagerImpl implements RegManager {
                 result = checkUserFromSohu(username, clientId);
                 if (!result.isSuccess()) {
                     //检查用户名是否存在时，SG不存在，SH存在，全量数据迁移有遗漏或是双读延迟;未激活外域来登录
-                    checkLogger.error("SoGouNotExist-SoHuExist,username:{};time:{}", username, new Date());
+                    String message = CommonConstant.CHECK_SGN_SHY_MESSAGE;
+                    LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.REGISTER, "isAccountNotExists", message, username, passportId, result.toString());
                 }
             }
         }
         return result;
     }
-
 
     @Override
     public Result checkRegInBlackListByIpForInternal(String ip, int clientId) throws Exception {

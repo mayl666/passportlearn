@@ -15,11 +15,12 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
-import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.manager.form.WapLogoutParams;
 import com.sogou.upd.passport.manager.form.WapPassThroughParams;
@@ -59,16 +60,12 @@ public class WapLoginAction extends BaseController {
     private LoginManager loginManager;
     @Autowired
     private WapLoginManager wapLoginManager;
-
-    @Autowired
-    private SecureManager secureManager;
-
-
     @Autowired
     private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
-
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
     private static final Logger logger = LoggerFactory.getLogger(WapLoginAction.class);
     private static final String SECRETKEY="afE0WZf345@werdm";
@@ -135,32 +132,22 @@ public class WapLoginAction extends BaseController {
         UserOperationLogUtil.log(userOperationLog);
 
         if (result.isSuccess()) {
-            String userId = result.getModels().get("userid").toString();
-            String sgid = result.getModels().get("sgid").toString();
+            String userId = (String) result.getModels().get("userid");
+            String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
 
-            ServletUtil.setCookie(response, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+            WapRegAction.setSgidCookie(response,sgid);
 
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
                 //在返回的数据中导入 json格式，用来给客户端用。
                 //第三方获取个人资料
-                AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(result.getModels().get("userid").toString());
-                // 调用内部接口
-                GetUserInfoApiparams userInfoApiparams=new GetUserInfoApiparams(result.getModels().get("userid").toString(),"uniqname,avatarurl,gender");
-                if (domain == AccountDomainEnum.THIRD) {
-                    result = sgUserInfoApiManager.getUserInfo(userInfoApiparams);
-                }else {
-                    result = proxyUserInfoApiManager.getUserInfo(userInfoApiparams);
-                }
-
-                //result = secureManager.queryAccountSecureInfo(userId, Integer.parseInt(loginParams.getClient_id()), true);
-                result.getModels().put("sgid",sgid);
+                String fields = "uniqname,avatarurl,gender";
+                ObtainAccountInfoParams accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), userId, fields);
+                result = accountInfoManager.getUserInfo(accountInfoParams);
+                result.getModels().put(LoginConstant.COOKIE_SGID,sgid);
                 writeResultToResponse(response, result);
                 wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
-
                 return "empty";
-
             }
-
             wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
             response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
             return "empty";
@@ -254,8 +241,8 @@ public class WapLoginAction extends BaseController {
             int clientId=CommonConstant.XIAOSHUO_CLIENTID;
             Result result = wapLoginManager.passThroughQQ(clientId,sgid, accessToken, openId, ip, expires_in);
             if (result.isSuccess()) {
-                sgid = (String) result.getModels().get("sgid");
-                ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+                sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
+                ServletUtil.setCookie(res, LoginConstant.COOKIE_SGID, sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
                 ru = buildSuccessRu(ru, sgid);
                 res.sendRedirect(ru);
@@ -289,7 +276,7 @@ public class WapLoginAction extends BaseController {
             ru = CommonConstant.DEFAULT_WAP_URL;
         }
         //ru后缀一个sgid
-        params.put("sgid", sgid);
+        params.put(LoginConstant.COOKIE_SGID, sgid);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }
@@ -328,6 +315,11 @@ public class WapLoginAction extends BaseController {
             if (result.isSuccess()) {
                 //清除cookie
                 ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGID);
+                ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
+                ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
+                ServletUtil.clearCookie(response, LoginConstant.COOKIE_PASSPORT);
+                ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINFO);
+
                 response.sendRedirect(ru);
                 return;
             }

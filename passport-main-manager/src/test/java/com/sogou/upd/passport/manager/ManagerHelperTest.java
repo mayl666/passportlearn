@@ -1,9 +1,10 @@
 package com.sogou.upd.passport.manager;
 
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
 import junit.framework.TestCase;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -13,12 +14,11 @@ import org.junit.Test;
  * Time: 下午3:37
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
 public class ManagerHelperTest extends TestCase {
 
-    private static final int clientId = 1100;
+    private static final int clientId = 1115;
 
-    private static final String serverSecret = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
+    private static final String serverSecret = "RBCqf6a448Wj5a8#KF&POL75*5GBQ5";
 
     /**
      * 测试生成内部接口code参数
@@ -28,20 +28,29 @@ public class ManagerHelperTest extends TestCase {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
 //        String ct =  "1381915491000";
-        String code = ManagerHelper.generatorCodeGBK("9EDFD63F7E867766D2252F29141F86FF@qq.sohu.com", clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCodeGBK("8E49F8822F8D81FB57ED2F9099AEB626@qq.sohu.com", clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
-        /*try {
-            String pwdMD5 = Coder.encryptMD5(code);
-            System.out.println("pwdMD5:" + pwdMD5);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
+//        try {
+//            String pwdMD5 = Coder.encryptMD5("459811");
+//            System.out.println("pwdMD5:" + pwdMD5);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
     }
 
-    public static void main(String args[]) throws Exception{
-          new ManagerHelperTest().testGeneratorCode();
+    /**
+     * 值输出为空
+     */
+    @Test
+    public void testResult() {
+        Result result = new APIResultSupport(false);
+        System.out.println(result.getCode());
+    }
+
+    public static void main(String args[]) throws Exception {
+        new ManagerHelperTest().testGeneratorCode();
     }
 
     /**
@@ -81,7 +90,7 @@ public class ManagerHelperTest extends TestCase {
     }
 
     @Test
-    public void testMD5Pwd(){
+    public void testMD5Pwd() {
         String pwd = "123456";
         System.out.println(DigestUtils.md5Hex(pwd.getBytes()));
     }

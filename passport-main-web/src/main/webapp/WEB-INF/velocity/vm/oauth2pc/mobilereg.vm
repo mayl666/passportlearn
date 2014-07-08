@@ -58,7 +58,7 @@ var splus = {
             </div>
             <div class="controls position-bottom">
                 <div class="fr"> <i class="left-arrow"></i>
-                    <span style="vertical-align:baseline">已有账号</span>
+                    <span style="vertical-align:baseline">已有帐号</span>
                     <a href="/sogou/flogon?instanceid=${instanceid}" class="blue"> 直接登录</a>
                 </div>
             </div>

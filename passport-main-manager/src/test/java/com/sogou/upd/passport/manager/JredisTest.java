@@ -23,13 +23,8 @@ public class JredisTest extends AbstractJUnit4SpringContextTests {
     private static final String TEST_KEY = "TEST_REDIS_KEY";
     private static final String TEST_SUB_KEY = "TEST_REDIS_SUB_KEY";
 
-
     @Inject
     private RedisUtils redisUtils;
-
-    @Before
-    public void init() {
-    }
 
     @Test
     public void test() {

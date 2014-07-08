@@ -18,6 +18,13 @@ public class BaseMoblieApiParams extends BaseApiParams {
     @NotBlank(message = "手机号不允许为空")
     protected String mobile;
 
+    public BaseMoblieApiParams() {
+    }
+
+    public BaseMoblieApiParams(String mobile) {
+        this.mobile = mobile;
+    }
+
     public String getMobile() {
         return mobile;
     }

@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -55,7 +56,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
         params.put("client_id", String.valueOf(clientId));
         params.put("code", code);
         params.put("ct", String.valueOf(ct));
-        params.put("sgid", sgid);
+        params.put(LoginConstant.COOKIE_SGID, sgid);
         return params;
     }
 
@@ -91,7 +92,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
                 if (result != null) {
                     if ("0".equals(sessionResult.getStatus())) {
                         result.setSuccess(true);
-                        result.getModels().put("sgid", sgid);
+                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                         return result;
                     }
                 }

@@ -36,9 +36,9 @@ public class RegisterApiManagerTest extends BaseTest {
 
     private static final String both_no_username = "testliuling" + new Random().nextInt(1000) + "@sogou.com";
     private static final String both_no_gexing = "135test94" + new Random().nextInt(1000);
-    private static final String both_no_username_sogou = "test" + new Random().nextInt(1000) + "@sogou.com";
+    private static final String both_no_username_sogou = "test" + new Random().nextInt(2000) + "@sogou.com";
     private static final String both_hava_username_sogou = userid_sogou_1;
-    private static final String wrong_format_username = "adminhelpme@sogou.com"; //格式有误的账号
+    private static final String wrong_format_username = "soadminuhuanqitst45@sogou.com"; //格式有误的账号
     private static final String wrong_format = "testjisjf_c.com.com.com"; //格式有误的账号
     private static final String both_no_username_mail = "testmail" + new Random().nextInt(100) + "@163.com";
     private static final String username_sogou = userid_sogou_2;
@@ -152,6 +152,23 @@ public class RegisterApiManagerTest extends BaseTest {
         Assert.assertTrue(expectForm.equals(actualFrom));
     }
 
+
+    /**
+     * 格式错误的个性账号---检查用户是否存在:只检查@sogou.com账号和外域邮箱账号
+     */
+    @Test
+    public void testCheckUser_7() throws IOException {
+        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
+        checkUserApiParams.setUserid("sogou");
+        Result expectResult = proxyRegisterApiManager.checkUser(checkUserApiParams);
+//        String expectResult = "{\"data\":{\"userid\":\"" + wrong_format + "\"},\"statusText\":\"非法userid\",\"status\":\"20239\"}";
+        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
+        checkUserApiParams.setUserid("sogou");
+        Result actualResult = sgRegisterApiManager.checkUser(checkUserApiParams);
+        APIResultForm actualFrom = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm.equals(actualFrom));
+    }
+
     /**
      * 发送手机短信验证码
      */
@@ -211,7 +228,7 @@ public class RegisterApiManagerTest extends BaseTest {
     }
 
     /**
-     * 两边都不存在此搜狗账号的情况下---正式注册搜狗账号和外域邮箱账号
+     * 两边都不存在此搜狗账号的情况下---正式注册搜狗账号和外域邮箱账号  done
      */
     @Test
     public void testRegMailUser_2() throws IOException {
@@ -228,35 +245,50 @@ public class RegisterApiManagerTest extends BaseTest {
 
     /**
      * 两边都存在此搜狗账号的情况下---正式注册搜狗账号和外域邮箱账号
-     * todo 当用户在两边都存在时，再注册时，搜狐会提示该用户已经注册，但搜狗则会执行更新操作,需要修改注册方法！！！
+     * 当用户在两边都存在时，再注册时，搜狐会提示该用户已经注册，但搜狗则会执行更新操作,需要修改注册方法！！！ 已经修改！  done
      */
     @Test
     public void testRegMailUser_3() throws IOException {
         RegEmailApiParams regEmailApiParams = new RegEmailApiParams(both_hava_username_sogou, password, ip,
                 clientId, LOGIN_INDEX_URL);
-//        Result expectResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+        Result expectResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
 //        System.out.println(expectResult.toString());
-        String expectResult = "{\"statusText\":\"账号已注册\",\"data\":{},\"status\":\"20201\"}";
+//        String expectResult = "{\"statusText\":\"账号已注册\",\"data\":{},\"status\":\"20201\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
         Result actualResult = sgRegisterApiManager.regMailUser(regEmailApiParams);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
-//        Assert.assertTrue(!expectForm.equals(actualForm)); //todo 状态码不一致
+        Assert.assertTrue(expectForm.equals(actualForm)); //
     }
 
 
     /**
-     * 账号格式有问题
+     * @sogou.com 账号格式有问题   done
      */
     @Test
     public void testRegMailUser_4() throws IOException {
         RegEmailApiParams regEmailApiParams = new RegEmailApiParams(wrong_format_username, password, ip,
                 clientId, LOGIN_INDEX_URL);
-//        Result expectResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
-        String expectResult = "{\"statusText\":\"非法userid\",\"data\":{},\"status\":\"20239\"}";
-        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult, APIResultForm.class);
+        Result expectResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+//        String expectResult = "{\"statusText\":\"参数错误,请输入必填的参数\",\"data\":{},\"status\":\"10002\"}";
+        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
         Result actualResult = sgRegisterApiManager.regMailUser(regEmailApiParams);
         APIResultForm acturalForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
-//        Assert.assertTrue(!expectForm.equals(acturalForm)); //todo sohu非法，sogou却通过
+        Assert.assertTrue(expectForm.equals(acturalForm));
+    }
+
+    /**
+     * 个性账号 账号格式有问题
+     */
+    @Test
+    public void testRegMailUser_5() throws IOException {
+        RegEmailApiParams regEmailApiParams = new RegEmailApiParams(wrong_format, password, ip,
+                clientId, LOGIN_INDEX_URL);
+        Result expectResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+//        String expectResult = "{\"statusText\":\"参数错误,请输入必填的参数\",\"data\":{},\"status\":\"10002\"}";
+        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
+        Result actualResult = sgRegisterApiManager.regMailUser(regEmailApiParams);
+        APIResultForm acturalForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm.equals(acturalForm));
     }
 
 

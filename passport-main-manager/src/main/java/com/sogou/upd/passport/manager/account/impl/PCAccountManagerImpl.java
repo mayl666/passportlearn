@@ -190,23 +190,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
     }
 
     @Override
-    public Result createConnectToken(int clientId, String passportId, String instanceId) {
-        Result finalResult = new APIResultSupport(false);
-        try {
-            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-            if (appConfig == null) {
-                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
-                return finalResult;
-            }
-            return initialAccountToken(passportId, instanceId, appConfig);
-        } catch (ServiceException e) {
-            logger.error("createConnectToken fail", e);
-            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return finalResult;
-        }
-    }
-
-    @Override
     public Result createAccountToken(String passportId, String instanceId, int clientId) {
         Result finalResult = new APIResultSupport(false);
         try {
@@ -217,7 +200,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
             }
             return initialAccountToken(passportId, instanceId, appConfig);
         } catch (ServiceException e) {
-            logger.error("createToken fail", e);
+            logger.error("createAccountToken fail", e);
             finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return finalResult;
         }

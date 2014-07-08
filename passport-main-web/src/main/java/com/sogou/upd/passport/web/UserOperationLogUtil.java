@@ -63,11 +63,11 @@ public class UserOperationLogUtil {
      * @param userOperationLog
      */
     public static void log(UserOperationLog userOperationLog) {
-        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap(),userLogger);
+        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap(), userLogger);
     }
 
     public static void log(UserOperationLog userOperationLog, Logger authEmailUserLogger) {
-        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap(),authEmailUserLogger);
+        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap(), authEmailUserLogger);
     }
 
     /**
@@ -80,7 +80,7 @@ public class UserOperationLogUtil {
      * @param resultCode   执行结果码
      * @param otherMessage 其它信息
      */
-    public static void log(String passportId, String operation, String clientId, String ip, String resultCode, Map<String, String> otherMessage,Logger operationLogger) {
+    public static void log(String passportId, String operation, String clientId, String ip, String resultCode, Map<String, String> otherMessage, Logger operationLogger) {
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                     .getRequest();
@@ -133,7 +133,7 @@ public class UserOperationLogUtil {
 
                 String otherMsgJson = null;
                 if (MapUtils.isNotEmpty(otherMessage)) {
-                    otherMsgJson= JacksonJsonMapperUtil.getMapper().writeValueAsString(otherMessage).replace("\t", TAB).replace("\n", NEXTLINE);
+                    otherMsgJson = JacksonJsonMapperUtil.getMapper().writeValueAsString(otherMessage).replace("\t", TAB).replace("\n", NEXTLINE);
                 }
                 log.append("\t").append(StringUtil.defaultIfEmpty(otherMsgJson, "-"));
             }
@@ -142,8 +142,6 @@ public class UserOperationLogUtil {
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
-
-
     }
 
     private static String getLocalIp(HttpServletRequest request) {

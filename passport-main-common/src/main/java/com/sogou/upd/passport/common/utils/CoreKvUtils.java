@@ -57,7 +57,7 @@ public class CoreKvUtils {
         }
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_setObject", timeThreshold = 100, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_setObject", timeThreshold = 50, normalAndSlowSuffixesEnabled = true)
     public void set(String key, Object obj) throws IOException {
         set(key, JacksonJsonMapperUtil.getMapper().writeValueAsString(obj));
     }
@@ -73,7 +73,7 @@ public class CoreKvUtils {
         return null;
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_getObject", timeThreshold = 100, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_getObject", timeThreshold = 50, normalAndSlowSuffixesEnabled = true)
     public <T> T getObject(String key, Class<T> returnClass) {
         try {
             String strValue = get(key);
@@ -82,18 +82,18 @@ public class CoreKvUtils {
                 return object;
             }
         } catch (Exception e) {
-            logger.error("[CoreKvCache] getObject fail, key:" + key, e);
+            logger.error("[CoreKvCache] GetObject fail, key:" + key, e);
         }
         return null;
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_delete", timeThreshold = 100, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_delete", timeThreshold = 50, normalAndSlowSuffixesEnabled = true)
     public void delete(String key) {
         try {
             String storeKey = key;
             coreKvTemplate.delete(storeKey);
         } catch (Exception e) {
-
+            logger.error("[CoreKvCache] Delete fail, key:" + key, e);
         }
     }
 
@@ -103,12 +103,12 @@ public class CoreKvUtils {
      * @param key
      * @param value
      */
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_pushStringToSet", timeThreshold = 100, normalAndSlowSuffixesEnabled = true)
-    public void pushToSet(String key, String value) {
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_pushStringToLinkedHashSet", timeThreshold = 50, normalAndSlowSuffixesEnabled = true)
+    public void pushStringToLinkedHashSet(String key, String value) {
         try {
-            Set set = getObject(key, Set.class);
+            Set<String> set = getObject(key, Set.class);
             if (CollectionUtils.isEmpty(set)) {
-                set = Sets.newHashSet();
+                set = Sets.newLinkedHashSet();
             }
             if (!set.contains(value)) {
                 set.add(value);
@@ -116,8 +116,27 @@ public class CoreKvUtils {
             }
 
         } catch (Exception e) {
-            logger.error("[CoreKvCache] lPush String To Set, key:" + key, e);
+            logger.error("[CoreKvCache] Push String To LinkedHashSet, key:" + key, e);
         }
+    }
+
+    /**
+     * String：Set的映射中，获取set集合
+     *
+     * @param key
+     */
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_pullStringFromLinkedHashSet", timeThreshold = 50, normalAndSlowSuffixesEnabled = true)
+    public Set<String> pullStringFromLinkedHashSet(String key) {
+        Set<String> set = Sets.newLinkedHashSet();
+        try {
+            set = getObject(key, Set.class);
+            if (CollectionUtils.isEmpty(set)) {
+                set = Sets.newLinkedHashSet();
+            }
+        } catch (Exception e) {
+            logger.error("[CoreKvCache] Pull String From LinkedHashSet, key:" + key, e);
+        }
+        return set;
     }
 
     /**
@@ -128,7 +147,7 @@ public class CoreKvUtils {
      * @param value
      * @param maxLen 如果maxLen为-1，则不限制列表长度
      */
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_pushStringToList", timeThreshold = 100, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_pushStringToList", timeThreshold = 50, normalAndSlowSuffixesEnabled = true)
     public void pushWithMaxLen(String key, String value, int maxLen) {
         try {
             LinkedList<String> list;
@@ -150,23 +169,23 @@ public class CoreKvUtils {
             }
             set(key, jsonMapper.writeValueAsString(list));
         } catch (Exception e) {
-            logger.error("[CoreKvCache] lPush with maxLen fail, key:" + key, e);
+            logger.error("[CoreKvCache] Push with maxLen fail, key:" + key, e);
         }
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_pushObjectToList", timeThreshold = 100, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_pushObjectToList", timeThreshold = 50, normalAndSlowSuffixesEnabled = true)
     public void pushObjectWithMaxLen(String key, Object obj, int maxLen) {
         try {
             pushWithMaxLen(key, jsonMapper.writeValueAsString(obj), maxLen);
         } catch (Exception e) {
-            logger.error("[CoreKvCache] lpush object with maxlen key: " + key, e);
+            logger.error("[CoreKvCache] Push object with maxlen key: " + key, e);
         }
     }
 
     /*
      * 获取list中的第一个成员
      */
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_getFirstStringFromList", timeThreshold = 100, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_getFirstStringFromList", timeThreshold = 50, normalAndSlowSuffixesEnabled = true)
     public <T> T top(String key, Class<T> returnClass) {
         try {
             String strValue = get(key);
@@ -182,18 +201,18 @@ public class CoreKvUtils {
                 return object;
             }
         } catch (Exception e) {
-            logger.error("[CoreKvCache] get top value for object key: " + key, e);
+            logger.error("[CoreKvCache] Get top value for object key: " + key, e);
             return null;
         }
     }
 
     // 查询键key的列表
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_getList<String>", timeThreshold = 100, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_getList<String>", timeThreshold = 50, normalAndSlowSuffixesEnabled = true)
     public LinkedList<String> getList(String key) {
         return getObject(key, LinkedList.class);
     }
 
-    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_getList<Object>", timeThreshold = 100, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = KV_PERF4J_LOGGER, tag = "coreKv_getList<Object>", timeThreshold = 50, normalAndSlowSuffixesEnabled = true)
     public <T> LinkedList<T> getList(String key, Class returnClass) {
         try {
             LinkedList<T> listObj = new LinkedList<>();

@@ -14,7 +14,6 @@ public class DateAndNumTimesConstant {
     public static final long ONE_MONTH = 1 * 30 * 24 * 60 * 60; // 时间 1个月 ,单位s
     public static final long TIME_TWODAY = 2 * 24 * 60 * 60; // 时间 两天 2880分钟 ,单位s
     public static final long IP_LIMITED = 20; // ip一天限制次数
-    public static final int RESETPWD_NUM = 10; // 密码修改一天限制次数
     public static final int CHECKPWD_NUM = 10; // 密码检测一天限制次数
     public static final long CAPTCHA_INTERVAL = 120; // 注册验证码1分钟，单位s
     public static final long SECURECODE_VALID = 15 * 60;
@@ -28,6 +27,11 @@ public class DateAndNumTimesConstant {
     public static final int THREE_DAY_INSECONDS = 60 * 60 * 24 * 3; // 3天,单位,s
 
     public static final long TIME_FIVEMINUTES = 5 * 60; // 时间 5分钟,单位s
+
+    public static final int FINDPWD_LIMIT = 5;   // 1天内找回密码的次数
+    public static final int IP_RESETPWD_NUM = 100; // 密码修改一天限制次数
+    public static final int RESETPWD_NUM = 5; // 密码修改一天限制次数
+
 
 
 }

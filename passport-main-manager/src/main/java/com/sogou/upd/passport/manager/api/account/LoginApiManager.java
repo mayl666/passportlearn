@@ -13,7 +13,7 @@ public interface LoginApiManager {
 
     /**
      * web端校验用户名和密码是否正确
-     *
+     * 密码必须为MD5
      * @param authUserApiParams
      * @return
      */

@@ -25,7 +25,7 @@ import java.util.Random;
  * Time: 下午9:20
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 public class UserInfoApiManagerImplTest extends BaseTest {
 
     @Autowired
@@ -48,7 +48,7 @@ public class UserInfoApiManagerImplTest extends BaseTest {
     private static final String birthday = "1985-12-09";
     private String username = fullname;
     //获取用户信息
-    private static final String fields = "province,city,gender,birthday,fullname,personalid,uniqname";
+    private static final String fields = "province,city,gender,birthday,fullname,personalid,uniqname,mobile,email,question";
 
     private static final int clientId = CommonConstant.SGPP_DEFAULT_CLIENTID;
     private static final String serverSecret = CommonConstant.SGPP_DEFAULT_SERVER_SECRET;
@@ -139,12 +139,12 @@ public class UserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo() throws Exception {
         GetUserInfoApiparams params = getUserInfoApiParams(fields, userid_sogou_1);
-        Result expectResult3 = proxyUserInfoApiManager.getUserInfo(params);
-        System.out.println(expectResult3);
+//        Result expectResult3 = proxyUserInfoApiManager.getUserInfo(params);
+//        System.out.println(expectResult3);
 //        String expectResult3 = "{\"statusText\":\"操作成功\",\"data\":{\"birthday\":\"" + birthday + "\",\"flag\":\"1\",\"province\":\"" + province + "\",\"userid_chinese\":\"" + userid_sogou_1 + "\",\"gender\":\"" + gender + "\",\"fullname\":\"" + fullname + "\",\"avatarurl\":null,\"city\":\"" + city + "\"},\"status\":\"0\"}";
 //            APIResultForm expectForm3 = JacksonJsonMapperUtil.getMapper().readValue(expectResult3.toString(), APIResultForm.class);
-//            Result actualResult3 = sgUserInfoApiManager.getUserInfo(params);
-//            System.out.println(actualResult3.toString());
+        Result actualResult3 = sgUserInfoApiManager.getUserInfo(params);
+        System.out.println(actualResult3.toString());
 //            APIResultForm actualForm3 = JacksonJsonMapperUtil.getMapper().readValue(actualResult3.toString(), APIResultForm.class);
 //            Assert.assertTrue(expectForm3.equals(actualForm3));
 

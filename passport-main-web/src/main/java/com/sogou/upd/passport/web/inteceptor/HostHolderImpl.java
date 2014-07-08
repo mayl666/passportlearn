@@ -41,12 +41,6 @@ public class HostHolderImpl implements HostHolder {
         this.setAttribute(NICKNAME,nickName);
     }
 
-    @Override
-    public String getNickName() {
-        return this.getAttribute(NICKNAME);
-    }
-
-
     private void setAttribute(String name,String value){
         HttpServletRequest request =((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                 .getRequest();
