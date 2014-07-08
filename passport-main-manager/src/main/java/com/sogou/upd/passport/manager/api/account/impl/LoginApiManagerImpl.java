@@ -76,7 +76,7 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
             //主要是为了查询手机号绑定的主账号是否是sohu域的及主账号是否有修改密码或绑定手机的操作，读写彻底分离后，查主账号的逻辑可去除
             String passportId = commonManager.getPassportIdByUsername(userId);
             if (Strings.isNullOrEmpty(passportId)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND);
                 return result;
             }
             if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {

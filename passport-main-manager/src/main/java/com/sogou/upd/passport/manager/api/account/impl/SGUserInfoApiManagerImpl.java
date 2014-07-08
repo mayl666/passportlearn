@@ -72,7 +72,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         try {
             String passportId = commonManager.getPassportIdByUsername(infoApiparams.getUserid());
             if (Strings.isNullOrEmpty(passportId)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND);
                 return result;
             }
             infoApiparams.setUserid(passportId);
@@ -261,7 +261,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         try {
             String passportId = commonManager.getPassportIdByUsername(params.getUserid());
             if (Strings.isNullOrEmpty(passportId)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND);
                 return result;
             }
             params.setUserid(passportId);
