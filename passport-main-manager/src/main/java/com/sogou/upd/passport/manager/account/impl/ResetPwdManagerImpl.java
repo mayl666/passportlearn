@@ -503,7 +503,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             }
             //找回密码时，如果重置密码成功，记录标志位，双读时只读SG了，因为sohu无重置密码接口
             if (!ManagerHelper.writeSohuSwitcher()) {
-                accountSecureService.updateResetPwdFlag(passportId);
+                accountSecureService.updateSuccessFlag(passportId);
             }
             operateTimesService.incLimitFindPwdResetPwd(passportId, clientId, ip);
             result.setSuccess(true);

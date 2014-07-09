@@ -87,8 +87,9 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                 if (!AccountDomainEnum.SOGOU.equals(domain) && accountSecureService.getUpdateSuccessFlag(passportId)) {
                     //搜狗账号写分离阶段，主账号有更新密码或绑定手机的操作时，非搜狗账号调用sohu api校验用户名和密码；搜狗账号走双读
                     result = updatePwdOrBindMobile(authUserApiParams, userId, passportId);
-                } else if (!ManagerHelper.writeSohuSwitcher() && accountSecureService.getResetPwdFlag(passportId)) {
-                    //写分离阶段，主账号是搜狗域且有找回密码操作时，只验证sg库，因为找回密码无法双写，只写了SG库;加开关是为了线上回滚
+                } else if (AccountDomainEnum.SOGOU.equals(domain) && accountSecureService.getUpdateSuccessFlag(passportId)) {
+                    //写分离阶段，1.主账号是搜狗域且有找回密码操作时，只验证sg库，因为找回密码无法双写，只写了SG库;
+                    // 2.搜狗账号修改密码只读SG校验用户名和密码
                     result = findPwdForSogouAccount(authUserApiParams, userId, passportId);
                 } else {
                     //没有更新密码时，走正常的双读流程

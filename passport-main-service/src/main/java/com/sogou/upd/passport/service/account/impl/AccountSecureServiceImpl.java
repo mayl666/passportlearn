@@ -53,20 +53,6 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         }
     }
 
-    @Override
-    public boolean getResetPwdFlag(String passportId) throws ServiceException {
-        String cacheKey = buildResetPwdCacheKey(passportId);
-        try {
-            String flag = redisUtils.get(cacheKey);
-            if (CommonConstant.HAVE_UPDATE.equals(flag)) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
 
     @Override
     public boolean updateSuccessFlag(String passportId) throws ServiceException {
@@ -77,21 +63,6 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-    }
-
-    @Override
-    public boolean updateResetPwdFlag(String passportId) throws ServiceException {
-        try {
-            String cachePassportIdKey = buildResetPwdCacheKey(passportId); //主账号
-            redisUtils.setWithinSeconds(cachePassportIdKey, CommonConstant.HAVE_UPDATE, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
-            return true;
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    private String buildResetPwdCacheKey(String passportId) throws ServiceException {
-        return CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWD + passportId;
     }
 
     private String buildCacheKey(String passportId) {
