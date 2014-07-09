@@ -62,25 +62,6 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
     }
 
     @Override
-    public void resetPwd(UpdatePwdApiParams updatePwdApiParams) {
-        Result result = new APIResultSupport(false);
-
-        String mobile = updatePwdApiParams.getUserid();
-        String userId = mobile + "@sohu.com";
-        String newPassword = updatePwdApiParams.getNewpassword();
-        int clientId = updatePwdApiParams.getClient_id();
-
-        Account account = accountService.queryAccountByPassportId(userId);
-        if (account != null && accountService.resetPassword(account, newPassword, true)) {
-            //发送短信
-            String smsText = PREFIX_UPDATE_PWD_SEND_MESSAGE + userId + SUFFIX_UPDATE_PWD_SEND_MESSAGE;
-            if (!Strings.isNullOrEmpty(mobile)) {
-                SMSUtil.sendSMS(mobile, smsText);
-            }
-        }
-    }
-
-    @Override
     public Result updateQues(UpdateQuesApiParams updateQuesApiParams) throws ServiceException {
         String userId = updateQuesApiParams.getUserid();
         String password = updateQuesApiParams.getPassword();

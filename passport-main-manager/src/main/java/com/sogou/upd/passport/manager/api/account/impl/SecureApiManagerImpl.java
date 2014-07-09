@@ -132,8 +132,4 @@ public class SecureApiManagerImpl implements SecureApiManager {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
-    public void resetPwd(UpdatePwdApiParams updatePwdApiParams) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
 }
