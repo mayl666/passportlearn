@@ -19,7 +19,10 @@ import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
 import com.sogou.upd.passport.model.account.Account;
@@ -78,13 +81,7 @@ public class SecureManagerImpl implements SecureManager {
     @Autowired
     private SecureApiManager secureApiManager;
     @Autowired
-    private SecureApiManager sgSecureApiManager;
-    @Autowired
     private UserInfoApiManager proxyUserInfoApiManager;
-    @Autowired
-    private BindApiManager sgBindApiManager;
-    @Autowired
-    private BindApiManager proxyBindApiManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
@@ -93,9 +90,6 @@ public class SecureManagerImpl implements SecureManager {
     private PhotoUtils photoUtils;
 
     private ExecutorService service = Executors.newFixedThreadPool(10);
-
-    private static final String PREFIX_UPDATE_PWD_SEND_MESSAGE = "搜狗通行证提醒您：您的账号没有注册或绑定手机号：";
-    private static final String SUFFIX_UPDATE_PWD_SEND_MESSAGE = "重置密码失败!";
 
     /*
      * 发送短信至未绑定手机，只检测映射表，查询passportId不存在或为空即认定为未绑定
@@ -394,7 +388,7 @@ public class SecureManagerImpl implements SecureManager {
     }
 
     @Override
-    public void resetPwd(List<UserNamePwdMappingParams> list) throws Exception {
+    public void resetPwd(List<UserNamePwdMappingParams> list, final int clientId) throws Exception {
 
         if (CollectionUtils.isNotEmpty(list)) {
             for (final UserNamePwdMappingParams params : list) {
@@ -402,34 +396,47 @@ public class SecureManagerImpl implements SecureManager {
                     @Override
                     public void run() {
                         String username = params.getUsername();
+                        String newPwd = params.getPwd();
+                        String smsText = "搜狗通行证提醒您：" + username;
                         try {
                             //查是否是手机号码
                             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
                                 //查是否进黑名单
-                                if (operateTimesService.checkLimitResetPwd(username + "@sohu.com", 0)) {
-                                    //查sogou是否注册或绑定此手机号
-                                    String passportId = mobilePassportMappingService.queryPassportIdByUsername(username);
-                                    if (!Strings.isNullOrEmpty(passportId)) {
-                                        UpdatePwdApiParams updatePwdApiParams = new UpdatePwdApiParams();
-                                        updatePwdApiParams.setUserid(username);
-                                        updatePwdApiParams.setNewpassword(params.getPwd());
-                                        //校验是否是搜狗用户
-                                        sgSecureApiManager.resetPwd(updatePwdApiParams);
-                                    } else {
-                                        //短信通知没有注册或绑定过此账号
-                                        String smsText = PREFIX_UPDATE_PWD_SEND_MESSAGE + username + SUFFIX_UPDATE_PWD_SEND_MESSAGE;
-                                        if (!Strings.isNullOrEmpty(username)) {
-                                            SMSUtil.sendSMS(username, smsText);
+                                String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
+                                if (!Strings.isNullOrEmpty(passportId)) {
+                                    if (!operateTimesService.checkLimitResetPwd(passportId, clientId)) {
+                                        //校验account是否存在
+                                        Account account = accountService.queryNormalAccount(passportId);
+                                        if (account != null) {
+                                            if (accountService.resetPassword(account, newPwd, true)) {
+                                                operateTimesService.incLimitResetPwd(passportId, clientId);
+                                                smsText = smsText + "重置密码成功，请使用新密码登录。";
+                                            } else {
+                                                smsText = smsText + "重置密码失败，请再次尝试。";
+                                            }
+                                        } else {
+                                            smsText = smsText + "账号不存在，重置密码失败。";
                                         }
+                                    } else {
+                                        smsText = smsText + "重置密码次数超限，请24小时后尝试。";
                                     }
-                                    operateTimesService.incLimitResetPwd(username + "@sogou.com", 0);
+                                } else {
+                                    smsText = smsText + "未绑定账号或未注册，重置密码失败。";
                                 }
+                            } else {
+                                smsText = smsText + "手机号格式不正确。";
+                            }
+                            //短信通知没有注册或绑定过此账号
+                            if (!Strings.isNullOrEmpty(username)) {
+                                SMSUtil.sendSMS(username, smsText);
                             }
                         } catch (Exception e) {
                             logger.error("resetPwd Fail username:" + username, e);
                         }
                     }
-                });
+                }
+
+                );
             }
         }
     }
