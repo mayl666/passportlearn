@@ -15,7 +15,7 @@ import javax.validation.constraints.Min;
  */
 public class BaseResetPwdApiParams extends BaseApiParams {
     @Min(0)
-    @NotBlank(message = "code不允许为空")
+    @NotBlank(message = "mobile不允许为空")
     private String mobile;
 
     private String lists;
