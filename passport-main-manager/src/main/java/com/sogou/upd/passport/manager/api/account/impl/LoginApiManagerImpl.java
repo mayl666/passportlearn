@@ -79,15 +79,16 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND);
                 return result;
             }
-            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+            if (AccountDomainEnum.SOHU.equals(domain)) {
                 //主账号是sohu域账号调用sohu api校验用户名和密码
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
             } else {
-                if (accountSecureService.getUpdateSuccessFlag(passportId)) {
-                    //主账号有更新密码或绑定手机的操作时，调用sohu api校验用户名和密码
+                if (!AccountDomainEnum.SOGOU.equals(domain) && accountSecureService.getUpdateSuccessFlag(passportId)) {
+                    //搜狗账号写分离阶段，主账号有更新密码或绑定手机的操作时，非搜狗账号调用sohu api校验用户名和密码；搜狗账号走双读
                     result = updatePwdOrBindMobile(authUserApiParams, userId, passportId);
                 } else if (!ManagerHelper.writeSohuSwitcher() && accountSecureService.getResetPwdFlag(passportId)) {
-                    //写分离阶段，主账号是搜狗域且有找回密码操作时，只验证sg库，因为找回密码无法双写，只写了SG库
+                    //写分离阶段，主账号是搜狗域且有找回密码操作时，只验证sg库，因为找回密码无法双写，只写了SG库;加开关是为了线上回滚
                     result = findPwdForSogouAccount(authUserApiParams, userId, passportId);
                 } else {
                     //没有更新密码时，走正常的双读流程
