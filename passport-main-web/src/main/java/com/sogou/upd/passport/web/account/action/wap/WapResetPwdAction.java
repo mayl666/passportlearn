@@ -357,21 +357,48 @@ public class WapResetPwdAction extends BaseController {
                 result.setMessage(validateResult);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 model.addAttribute("data", result.toString());
-                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/resetpwd_touch";
+                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/findpwd/error/reset?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&errorMsg=" + validateResult;
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
             result = resetPwdManager.checkEmailResetPwd(passportId, clientId, params.getScode());
             //邮箱连接校验成功跳转到修改密码页面
-            result.setDefaultModel("userid", passportId);
-            result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-            model.addAttribute("data", result.toString());
         } catch (Exception e) {
             logger.error("checkEmailResetPwd Is Failed,Username is " + params.getUsername(), e);
         } finally {
             log(request, params.getUsername(), result.getCode());
         }
-        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/resetpwd_touch";
+        if (result.isSuccess()) {
+            String scode = (String) result.getModels().get("scode");
+            String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
+            String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
+            String param = params.getUsername() + "&scode=" + scode + "&client_id=" + client_id + "&ru=" + ru + "&code=0&message=";
+            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/findpwd/vm/reset?uesrname=" + param;
+        }
+        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/findpwd/error/reset?code=" + result.getCode() + "&errorMsg=" + result.getMessage();
+
+    }
+
+    /**
+     * 通过接口跳转到reset页面
+     *
+     * @param ru
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/findpwd/vm/reset", method = RequestMethod.GET)
+    public String findResetView(String ru, Model model, String client_id, String scode, String username, String code, String message) throws Exception {
+        Result result = new APIResultSupport(false);
+        ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
+        client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
+        result.setCode(code);
+        result.setMessage(message);
+        result.setDefaultModel("ru", ru);
+        result.setDefaultModel("client_id", client_id);
+        result.setDefaultModel("userid", username);
+        result.setDefaultModel("scode", scode);
+        model.addAttribute("data", result.toString());
+        return "/wap/findpwd_contact_touch";
     }
 
     /**
