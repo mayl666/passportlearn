@@ -10,7 +10,6 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
-import com.sogou.upd.passport.common.validation.constraints.PasswordValidator;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -89,8 +88,6 @@ public class SecureManagerImpl implements SecureManager {
     private CommonManagerImpl commonManager;
     @Autowired
     private PhotoUtils photoUtils;
-    @Autowired
-    private PasswordValidator passwordValidator;
 
     private ExecutorService service = Executors.newFixedThreadPool(10);
 
