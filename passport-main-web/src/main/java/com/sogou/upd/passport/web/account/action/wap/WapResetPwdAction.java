@@ -347,7 +347,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.POST)
+    @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.GET)
     public String checkEmailResetPwd(HttpServletRequest request, WapCheckEmailParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         try {
