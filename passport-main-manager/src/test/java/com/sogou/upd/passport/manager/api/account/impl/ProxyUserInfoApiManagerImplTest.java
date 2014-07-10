@@ -69,7 +69,7 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testUpdateUserInfo() {
         UpdateUserInfoApiParams updateUserInfoApiParams = new UpdateUserInfoApiParams();
-        updateUserInfoApiParams.setUserid(userid);
+        updateUserInfoApiParams.setUserid(userid_connect);
         updateUserInfoApiParams.setGender("2");
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 1988);

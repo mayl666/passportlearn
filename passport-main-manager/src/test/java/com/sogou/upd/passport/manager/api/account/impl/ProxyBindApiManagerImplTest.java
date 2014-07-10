@@ -108,7 +108,7 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
         bindEmailApiParams.setOldbindemail("34310327@qq.com");
         bindEmailApiParams.setPassword(Coder.encryptMD5(password));
         bindEmailApiParams.setClient_id(clientId);
-        bindEmailApiParams.setUserid(userid);
+        bindEmailApiParams.setUserid(userid_connect);
         bindEmailApiParams.setPwdtype(1);
         Result result = proxyBindApiManager.bindEmail(bindEmailApiParams);
         System.out.println(result.toString());

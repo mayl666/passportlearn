@@ -13,6 +13,7 @@ import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
+import com.sogou.upd.passport.manager.account.vo.NickNameAndAvatarVO;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
@@ -211,55 +212,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     }
 
     @Override
-    public Result obtainPhoto(String imageUrl, String size) {
-        Result result = new APIResultSupport(false);
-        try {
-            String[] sizeArry = null;
-            //获取size对应的appId
-            if (!Strings.isNullOrEmpty(size)) {
-                //检测是否是支持的尺寸
-                sizeArry = size.split(",");
-
-                if (ArrayUtils.isNotEmpty(sizeArry)) {
-                    for (int i = 0; i < sizeArry.length; i++) {
-                        if (Strings.isNullOrEmpty(photoUtils.getAppIdBySize(sizeArry[i]))) {
-                            result.setCode(ErrorUtil.ERR_CODE_ERROR_IMAGE_SIZE);
-                            return result;
-                        }
-                    }
-                } else {
-                    //为空获取所有的尺寸
-                    sizeArry = photoUtils.getAllImageSize();
-                }
-
-                if (!Strings.isNullOrEmpty(imageUrl) && ArrayUtils.isNotEmpty(sizeArry)) {
-                    result.setSuccess(true);
-                    for (int i = 0; i < sizeArry.length; i++) {
-                        //随机获取cdn域名
-                        String cdnUrl = photoUtils.getCdnURL();
-                        //获取图片尺寸
-                        String clientId = photoUtils.getAppIdBySize(sizeArry[i]);
-
-                        String photoURL = String.format(imageUrl, cdnUrl, clientId);
-                        if (!Strings.isNullOrEmpty(photoURL)) {
-                            result.setDefaultModel("img_" + sizeArry[i], photoURL);
-                        }
-                    }
-                    return result;
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
-                    return result;
-                }
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
-            return result;
-        }
-        return result;
-    }
-
-    @Override
     public Result checkNickName(CheckNickNameParams params) {
 
         UpdateUserUniqnameApiParams updateUserUniqnameApiParams = buildUpdateUserUniqnameApiParams(params);
@@ -380,20 +332,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         return result;
     }
 
-
-    /**
-     * 非第三方全量数据迁移完成后，采用此方法
-     * 获取用户信息，用户昵称、头像 信息读取account_0~32、用户其他信息读 account_info_0~32
-     *
-     * @param params
-     * @return
-     */
-    @Override
-    public Result getUserInfoFromSGAfterDataMigration(ObtainAccountInfoParams params) {
-        GetUserInfoApiparams infoApiparams = buildGetUserInfoApiparams(params);
-        return sgUserInfoApiManager.getUserInfo(infoApiparams);
-    }
-
     /**
      * 非第三方账号迁移，数据迁移完成后，统一获取用户昵称方法
      * <p/>
@@ -441,6 +379,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Override
     public Result getUserNickNameAndAvatar(GetUserInfoApiparams params) {
         Result result = new APIResultSupport(false);
+        NickNameAndAvatarVO nameAndAvatarVO = new NickNameAndAvatarVO();
         String large_avatar = "";
         String mid_avatar = "";
         String tiny_avatar = "";
@@ -469,6 +408,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                                 mid_avatar = connectToken.getAvatarMiddle();
                                 tiny_avatar = connectToken.getAvatarSmall();
                             } else {
+//                                obtainPhotoSizeUrl(nameAndAvatarVO, avatarurl);
                                 Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
                                 large_avatar = (String) getPhotoResult.getModels().get("img_180");
                                 mid_avatar = (String) getPhotoResult.getModels().get("img_50");
@@ -476,6 +416,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                             }
                         }
                     } else {
+//                        obtainPhotoSizeUrl(nameAndAvatarVO, avatarurl);
                         Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
                         large_avatar = (String) getPhotoResult.getModels().get("img_180");
                         mid_avatar = (String) getPhotoResult.getModels().get("img_50");
@@ -485,6 +426,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                     //非第三方账号
                     uniqname = getAndUpdateUniqname(passportId, account, uniqname);
                     if (!Strings.isNullOrEmpty(avatarurl)) {
+//                        obtainPhotoSizeUrl(nameAndAvatarVO, avatarurl);
                         Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
                         large_avatar = (String) getPhotoResult.getModels().get("img_180");
                         mid_avatar = (String) getPhotoResult.getModels().get("img_50");
@@ -514,6 +456,19 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             logger.error("getUserNickNameAndAvatar error. passportId:" + passportId, e);
         }
         return result;
+    }
+
+    /*
+     * 根据基础url获取三种尺寸的头像url
+     */
+    private void obtainPhotoSizeUrl(NickNameAndAvatarVO nameAndAvatarVO, String avatarurl) {
+        Result getPhotoResult = photoUtils.obtainPhoto(avatarurl, "30,50,180");
+        String large_avatar = (String) getPhotoResult.getModels().get("img_180");
+        String mid_avatar = (String) getPhotoResult.getModels().get("img_50");
+        String tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
+        nameAndAvatarVO.setLarge_avatar(large_avatar);
+        nameAndAvatarVO.setMid_avatar(mid_avatar);
+        nameAndAvatarVO.setTiny_avatar(tiny_avatar);
     }
 
     /**

@@ -30,9 +30,6 @@ public interface AccountInfoManager {
      */
     public Result uploadDefaultImg(String webUrl, String clientId);
 
-    //获取头像
-    public Result obtainPhoto(String username, String size);
-
     //检查昵称是否重复
     public Result checkNickName(CheckNickNameParams params);
 
@@ -41,16 +38,6 @@ public interface AccountInfoManager {
 
     //获取个人资料
     public Result getUserInfo(ObtainAccountInfoParams params);
-
-
-    /**
-     * 非第三方数据迁移后，获取用户信息，用户昵称、头像 信息读取account_0~32、用户其他信息读 account_info_0~32
-     *
-     * @param params
-     * @return
-     */
-    Result getUserInfoFromSGAfterDataMigration(ObtainAccountInfoParams params);
-
 
     /**
      * 非第三方数据迁移后，获取用户昵称信息采用此方法
@@ -61,7 +48,6 @@ public interface AccountInfoManager {
      */
     public String getUserUniqName(String passportId, int clientId);
 
-
     /**
      * 获取用户昵称、头像信息
      *
@@ -69,5 +55,4 @@ public interface AccountInfoManager {
      * @return
      */
     public Result getUserNickNameAndAvatar(GetUserInfoApiparams infoApiparams);
-
 }

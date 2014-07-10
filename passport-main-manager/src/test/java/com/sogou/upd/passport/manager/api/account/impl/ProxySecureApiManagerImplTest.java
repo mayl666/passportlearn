@@ -38,7 +38,7 @@ public class ProxySecureApiManagerImplTest  extends BaseTest {
         updateQuesApiParams.setModifyip(modifyIp);
         updateQuesApiParams.setNewanswer("测试答案");
         updateQuesApiParams.setNewquestion("测试问题");
-        updateQuesApiParams.setUserid(userid);
+        updateQuesApiParams.setUserid(userid_connect);
         Result result= proxySecureApiManager.updateQues(updateQuesApiParams);
         System.out.println(result.toString());
 

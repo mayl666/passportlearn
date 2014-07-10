@@ -6,8 +6,8 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
-import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -61,7 +61,7 @@ public class AccountInfoAction extends BaseController {
     @Autowired
     private SecureManager secureManager;
     @Autowired
-    private OAuth2ResourceManager oAuth2ResourceManager;
+    private PhotoUtils photoUtils;
 
     @RequestMapping(value = "/userinfo/checknickname", method = RequestMethod.GET)
     @ResponseBody
@@ -274,7 +274,7 @@ public class AccountInfoAction extends BaseController {
         String size = params.getImgsize();
         result = accountInfoManager.uploadDefaultImg(params.getImgurl(), String.valueOf(clientId));
         if (result.isSuccess()) {
-            result = accountInfoManager.obtainPhoto(String.valueOf(clientId), size);
+            result = photoUtils.obtainPhoto(String.valueOf(clientId), size);
         }
         return result.toString();
     }

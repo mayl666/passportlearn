@@ -34,8 +34,8 @@ public class CommonManagerImplTest extends BaseTest {
         String actual3 = commonManager.getPassportIdByUsername(userid_sogou_1);
         Assert.assertEquals(actual3, userid_sogou_1);
         //qq账号
-        String actual4 = commonManager.getPassportIdByUsername(userid);
-        Assert.assertEquals(actual4, userid);
+        String actual4 = commonManager.getPassportIdByUsername(userid_connect);
+        Assert.assertEquals(actual4, userid_connect);
         //手机账号
         String expect5 = "loveerin@sogou.com";
         String actual5 = commonManager.getPassportIdByUsername(mobile_1);
