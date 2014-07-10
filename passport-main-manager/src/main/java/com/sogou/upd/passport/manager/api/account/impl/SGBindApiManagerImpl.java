@@ -56,7 +56,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
             return result;
         }
-        if (!emailSenderService.sendEmail(passportId, clientId, AccountClientEnum.WEB, AccountModuleEnum.SECURE, newEmail, true, bindEmailApiParams.getRu())) {
+        if (!emailSenderService.sendEmail(passportId, clientId, AccountClientEnum.web, AccountModuleEnum.SECURE, newEmail, true, bindEmailApiParams.getRu())) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
             return result;
         }

@@ -204,7 +204,7 @@ public class ResetPwdAction extends BaseController {
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, AccountClientEnum.WEB, false, params.getRu(), params.getScode());
+            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, AccountClientEnum.web, false, params.getRu(), params.getScode());
             result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
             result.setDefaultModel("userid", passportId);
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());
@@ -243,7 +243,7 @@ public class ResetPwdAction extends BaseController {
                 account = (Account) map.get("account");
             }
             if (account != null) {
-                result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountClientEnum.WEB, AccountModuleEnum.RESETPWD, email, params.getRu(), params.getScode());
+                result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountClientEnum.web, AccountModuleEnum.RESETPWD, email, params.getRu(), params.getScode());
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
@@ -484,7 +484,7 @@ public class ResetPwdAction extends BaseController {
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, AccountClientEnum.WEB, true, params.getRu(), params.getScode());
+            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, AccountClientEnum.web, true, params.getRu(), params.getScode());
             result.setDefaultModel("userid", passportId);
         } catch (Exception e) {
             logger.error("sendEmailRegResetPwd Is Failed,Username is " + params.getUsername(), e);

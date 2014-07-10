@@ -8,6 +8,6 @@ package com.sogou.upd.passport.common.parameter;
  * To change this template use File | Settings | File Templates.
  */
 public enum AccountClientEnum {
-    WEB,
-    WAP
+    web,
+    wap
 }

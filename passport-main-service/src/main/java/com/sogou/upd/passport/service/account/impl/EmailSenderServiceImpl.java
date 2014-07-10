@@ -40,6 +40,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     // TODO:以下PASSPORT_RESETPWD_EMAIL_URL值仅供本机测试用
     // TODO:绑定验证URL待修改，考虑以后其他验证EMAIL的URL
     private static final String PASSPORT_HOST = "https://account.sogou.com";
+    private static final String PASSPORT_WAP_HOST = "https://m.account.sogou.com";
     private static final String PASSPORT_EMAIL_URL_PREFIX = PASSPORT_HOST + "/";
     private static final String PASSPORT_EMAIL_URL_SUFFIX = "/checkemail?";
     private static final Map<AccountModuleEnum, String> subjects = AccountModuleEnum.buildEmailSubjects();
@@ -57,17 +58,21 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     public boolean sendEmail(String passportId, int clientId, AccountClientEnum clientEnum, AccountModuleEnum module, String address, boolean saveEmail, String ru)
             throws ServiceException {
         try {
+            String prefix = PASSPORT_HOST;
             String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
-            String activeUrl = PASSPORT_EMAIL_URL_PREFIX + clientEnum.toString() + "/" + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
-            activeUrl += "username=" + passportId + "&client_id=" + clientId + "&scode=" + scode + "&ru=";
             switch (clientEnum) {
-                case WEB:
+                case web:
+                    prefix = PASSPORT_HOST;
                     ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
                     break;
-                case WAP:
+                case wap:
+                    prefix = PASSPORT_WAP_HOST;
                     ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
                     break;
             }
+            String activeUrl = prefix + clientEnum.toString() + "/" + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
+            activeUrl += "username=" + passportId + "&client_id=" + clientId + "&scode=" + scode + "&ru=";
+
 
             activeUrl += Coder.encodeUTF8(ru);
             //发送邮件
