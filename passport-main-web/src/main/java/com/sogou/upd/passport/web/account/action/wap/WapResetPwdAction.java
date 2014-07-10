@@ -158,36 +158,28 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
-    @ResponseBody
-    public Object checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, Model model) throws Exception {
+    public String checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-//                model.addAttribute("data", result.toString());
-//                return "/wap/findpwd_touch";
-                return result.toString();
+                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&message=" + validateResult;
             }
             int clientId = Integer.parseInt(params.getClient_id());
             result = wapRestPwdManager.checkMobileCodeResetPwd(params.getMobile(), clientId, params.getSmscode());
-            if (result.isSuccess()) {
-                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-//                model.addAttribute("data", result.toString());
-//                return "/wap/resetpwd_touch";
-                return result.toString();
-            }
         } catch (Exception e) {
             logger.error("checksms is failed,mobile is " + params.getMobile(), e);
         } finally {
             log(request, params.getMobile(), result.getCode());
         }
-        result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-//        model.addAttribute("data", result.toString());
-//        return "/wap/findpwd_touch";
-        return result.toString();
+        if (result.isSuccess()) {
+            String scode = (String) result.getModels().get("scode");
+            String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
+            String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
+            String param = params.getMobile() + "&scode=" + scode + "&client_id=" + client_id + "&ru=" + ru + "&code=0&message=";
+            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username=" + param;
+        }
+        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code=" + result.getCode() + "&message=" + result.getMessage();
     }
 
 
@@ -373,7 +365,7 @@ public class WapResetPwdAction extends BaseController {
             String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
             String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
             String param = params.getUsername() + "&scode=" + scode + "&client_id=" + client_id + "&ru=" + ru + "&code=0&message=";
-            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?uesrname=" + param;
+            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username=" + param;
         }
         return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code=" + result.getCode() + "&message=" + result.getMessage();
 
