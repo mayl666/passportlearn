@@ -157,7 +157,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
+    @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.GET)
     public String checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, RedirectAttributes redirectAttributes) throws Exception {
         Result result = new APIResultSupport(false);
         try {
@@ -174,7 +174,6 @@ public class WapResetPwdAction extends BaseController {
         } finally {
             log(request, params.getMobile(), result.getCode());
         }
-
         String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         redirectAttributes.addAttribute("ru", ru);
@@ -188,7 +187,6 @@ public class WapResetPwdAction extends BaseController {
             return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&scode={scode}&client_id={client_id}&ru={ru}&code={code}&message={message}";
         }
         redirectAttributes.addAttribute("code", result.getCode());
-        redirectAttributes.addAttribute("message", result.getMessage());
         return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&client_id={client_id}&ru={ru}&code={code}&message={message}";
     }
 
