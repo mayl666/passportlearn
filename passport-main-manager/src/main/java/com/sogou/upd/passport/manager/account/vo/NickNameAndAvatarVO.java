@@ -1,18 +1,18 @@
 package com.sogou.upd.passport.manager.account.vo;
 
 /**
- * 昵称和头像VO，用于获取用户信息接口
+ * 昵称和头像VO，用于AccountInfoManager的getUserNickNameAndAvatar
  * User: shipengzhi
  * Date: 14-7-10
- * Time: 上午11:23
+ * Time: 上午11:25
  * To change this template use File | Settings | File Templates.
  */
 public class NickNameAndAvatarVO {
 
-    private String large_avatar;
-    private String mid_avatar;
-    private String tiny_avatar;
-    private String uniqname;
+    private String large_avatar = "";  // 返回结果的json要求空字符串，不是null
+    private String mid_avatar = "";
+    private String tiny_avatar = "";
+    private String uniqname = "";
 
     public String getLarge_avatar() {
         return large_avatar;

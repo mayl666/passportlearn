@@ -30,9 +30,6 @@ public interface AccountInfoManager {
      */
     public Result uploadDefaultImg(String webUrl, String clientId);
 
-    //获取头像
-    public Result obtainPhoto(String username, String size);
-
     //检查昵称是否重复
     public Result checkNickName(CheckNickNameParams params);
 
@@ -58,5 +55,4 @@ public interface AccountInfoManager {
      * @return
      */
     public Result getUserNickNameAndAvatar(GetUserInfoApiparams infoApiparams);
-
 }
