@@ -357,7 +357,7 @@ public class WapResetPwdAction extends BaseController {
                 result.setMessage(validateResult);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 model.addAttribute("data", result.toString());
-                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/findpwd/vm/reset?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&message=" + validateResult;
+                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&message=" + validateResult;
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
@@ -373,9 +373,9 @@ public class WapResetPwdAction extends BaseController {
             String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
             String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
             String param = params.getUsername() + "&scode=" + scode + "&client_id=" + client_id + "&ru=" + ru + "&code=0&message=";
-            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/findpwd/vm/reset?uesrname=" + param;
+            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?uesrname=" + param;
         }
-        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/findpwd/vm/reset?code=" + result.getCode() + "&message=" + result.getMessage();
+        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code=" + result.getCode() + "&message=" + result.getMessage();
 
     }
 
