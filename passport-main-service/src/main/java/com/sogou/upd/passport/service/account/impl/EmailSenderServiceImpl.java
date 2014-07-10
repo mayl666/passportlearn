@@ -67,7 +67,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
                     break;
                 case wap:
                     prefix = PASSPORT_WAP_HOST;
-                    ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
+                    ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
                     break;
             }
             String activeUrl = prefix + clientEnum.toString() + "/" + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
