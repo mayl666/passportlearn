@@ -362,14 +362,8 @@ public class WapResetPwdAction extends BaseController {
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
             result = resetPwdManager.checkEmailResetPwd(passportId, clientId, params.getScode());
-            if (result.isSuccess()) {
-                //邮箱连接校验成功跳转到修改密码页面
-                result.setDefaultModel("userid", passportId);
-                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-                model.addAttribute("data", result.toString());
-                return "/wap/resetpwd_touch";
-            }
-            result.setCode(ErrorUtil.ERR_CODE_FINDPWD_EMAIL_FAILED);
+            //邮箱连接校验成功跳转到修改密码页面
+            result.setDefaultModel("userid", passportId);
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());
             model.addAttribute("data", result.toString());
         } catch (Exception e) {
