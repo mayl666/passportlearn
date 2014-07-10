@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
+import com.sogou.upd.passport.common.validation.constraints.PasswordValidator;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -88,6 +89,8 @@ public class SecureManagerImpl implements SecureManager {
     private CommonManagerImpl commonManager;
     @Autowired
     private PhotoUtils photoUtils;
+    @Autowired
+    private PasswordValidator passwordValidator;
 
     private ExecutorService service = Executors.newFixedThreadPool(10);
 
@@ -402,28 +405,32 @@ public class SecureManagerImpl implements SecureManager {
                         try {
                             //查是否是手机号码
                             if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
-                                //查是否进黑名单
-                                String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
-                                if (!Strings.isNullOrEmpty(passportId)) {
-                                    if (!operateTimesService.checkLimitResetPwd(passportId, clientId)) {
-                                        //校验account是否存在
-                                        Account account = accountService.queryNormalAccount(passportId);
-                                        if (account != null) {
-                                            if (accountService.resetPassword(account, newPwd, true)) {
-                                                operateTimesService.incLimitResetPwd(passportId, clientId);
-                                                smsText = smsText + "重置密码成功，请使用新密码登录。";
-                                                isSuccess = true;
+                                if (!Strings.isNullOrEmpty(newPwd) && StringUtils.isAsciiPrintable(newPwd) && newPwd.length() >= 6 && newPwd.length() <= 16) {
+                                    String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
+                                    if (!Strings.isNullOrEmpty(passportId)) {
+                                        //查是否进黑名单
+                                        if (!operateTimesService.checkLimitResetPwd(passportId, clientId)) {
+                                            //校验account是否存在
+                                            Account account = accountService.queryNormalAccount(passportId);
+                                            if (account != null) {
+                                                if (accountService.resetPassword(account, newPwd, true)) {
+                                                    operateTimesService.incLimitResetPwd(passportId, clientId);
+                                                    smsText = smsText + "重置密码成功，请使用新密码登录。";
+                                                    isSuccess = true;
+                                                } else {
+                                                    smsText = smsText + "重置密码失败，请再次尝试。";
+                                                }
                                             } else {
-                                                smsText = smsText + "重置密码失败，请再次尝试。";
+                                                smsText = smsText + "账号不存在，重置密码失败。";
                                             }
                                         } else {
-                                            smsText = smsText + "账号不存在，重置密码失败。";
+                                            smsText = smsText + "重置密码次数超限，请24小时后尝试。";
                                         }
                                     } else {
-                                        smsText = smsText + "重置密码次数超限，请24小时后尝试。";
+                                        smsText = smsText + "未绑定账号或未注册，重置密码失败。";
                                     }
                                 } else {
-                                    smsText = smsText + "未绑定账号或未注册，重置密码失败。";
+                                    smsText = smsText + "重置密码格式不正确，必须为字母、数字、字符且长度为6~16位!";
                                 }
                                 //短信通知结果
                                 if (!Strings.isNullOrEmpty(mobile)) {
