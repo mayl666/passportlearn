@@ -308,34 +308,35 @@ public class SecureAction extends BaseController {
     public Object bindQues(HttpServletRequest request, WebBindQuesParams params)
             throws Exception {
         Result result = new APIResultSupport(false);
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            int sep = validateResult.indexOf("|");
-            result.setMessage(sep == -1 ? validateResult : validateResult.substring(0, sep));
-            return result.toString();
-        }
         String userId = hostHolder.getPassportId();
-        int clientId = Integer.parseInt(params.getClient_id());
-        String password = params.getPassword();
-        String newQues = params.getNew_ques();
-        String newAnswer = params.getNew_answer();
-        String modifyIp = getIp(request);
-
-        switch (AccountDomainEnum.getAccountDomain(userId)) {
-            case SOHU:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                int sep = validateResult.indexOf("|");
+                result.setMessage(sep == -1 ? validateResult : validateResult.substring(0, sep));
                 return result.toString();
-            case THIRD:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
-                return result.toString();
+            }
+            int clientId = Integer.parseInt(params.getClient_id());
+            String password = params.getPassword();
+            String newQues = params.getNew_ques();
+            String newAnswer = params.getNew_answer();
+            String modifyIp = getIp(request);
+            switch (AccountDomainEnum.getAccountDomain(userId)) {
+                case SOHU:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+                    return result.toString();
+                case THIRD:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                    return result.toString();
+            }
+            result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
+            return result.toString();
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
-        result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), String.valueOf(clientId), result.getCode(), modifyIp);
-        String referer = request.getHeader("referer");
-        userOperationLog.putOtherMessage("ref", referer);
-        UserOperationLogUtil.log(userOperationLog);
-        return result.toString();
     }
-
 }
