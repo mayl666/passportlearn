@@ -15,6 +15,8 @@ import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/internal/security")
 public class SecureApiController extends BaseController {
+
+    private static final Logger log = LoggerFactory.getLogger(SecureApiController.class);
 
     @Autowired
     private SecureManager secureManager;
@@ -68,6 +72,10 @@ public class SecureApiController extends BaseController {
             }
             result.setSuccess(true);
             result.setMessage("重置成功");
+            return result.toString();
+        } catch (Exception e) {
+            log.error("Batch resetpwd fail!", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result.toString();
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), String.valueOf(clientId), result.getCode(), ip);

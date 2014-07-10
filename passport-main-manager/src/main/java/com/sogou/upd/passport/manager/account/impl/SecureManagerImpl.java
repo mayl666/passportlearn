@@ -395,15 +395,15 @@ public class SecureManagerImpl implements SecureManager {
                 service.execute(new Runnable() {
                     @Override
                     public void run() {
-                        String username = params.getUsername();
+                        String mobile = params.getMobile();
                         String newPwd = params.getPwd();
-                        String smsText = "搜狗通行证提醒您：" + username;
+                        String smsText = "搜狗通行证提醒您：" + mobile;
                         boolean isSuccess = false;
                         try {
                             //查是否是手机号码
-                            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+                            if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
                                 //查是否进黑名单
-                                String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
+                                String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
                                 if (!Strings.isNullOrEmpty(passportId)) {
                                     if (!operateTimesService.checkLimitResetPwd(passportId, clientId)) {
                                         //校验account是否存在
@@ -426,15 +426,15 @@ public class SecureManagerImpl implements SecureManager {
                                     smsText = smsText + "未绑定账号或未注册，重置密码失败。";
                                 }
                                 //短信通知结果
-                                if (!Strings.isNullOrEmpty(username)) {
-                                    SMSUtil.sendSMS(username, smsText);
+                                if (!Strings.isNullOrEmpty(mobile)) {
+                                    SMSUtil.sendSMS(mobile, smsText);
                                 }
                             }
                             if (!isSuccess) {
                                 logger.info("BatchResetPwd is fail, smsText:" + smsText);
                             }
                         } catch (Exception e) {
-                            logger.error("resetPwd Fail username:" + username, e);
+                            logger.error("resetPwd Fail username:" + mobile, e);
                         }
                     }
                 });

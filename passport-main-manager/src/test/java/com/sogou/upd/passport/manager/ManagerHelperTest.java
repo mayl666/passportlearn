@@ -16,9 +16,9 @@ import org.junit.Test;
  */
 public class ManagerHelperTest extends TestCase {
 
-    private static final int clientId = 1115;
+    private static final int clientId = 2013;
 
-    private static final String serverSecret = "RBCqf6a448Wj5a8#KF&POL75*5GBQ5";
+    private static final String serverSecret = "ezr8DRjSn%*[mqa>,$^m6_+r~qSwN3";
 
     /**
      * 测试生成内部接口code参数
@@ -28,7 +28,7 @@ public class ManagerHelperTest extends TestCase {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
 //        String ct =  "1381915491000";
-        String code = ManagerHelper.generatorCodeGBK("8E49F8822F8D81FB57ED2F9099AEB626@qq.sohu.com", clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCodeGBK("13366039778", clientId, serverSecret, 1404993840000l);
         System.out.println("code:" + code);
 
 //        try {
