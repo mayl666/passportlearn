@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseResetPwdApiParams;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
@@ -34,6 +35,8 @@ public class SecureApiController extends BaseController {
 
     @Autowired
     private SecureManager secureManager;
+    @Autowired
+    private CommonManager commonManager;
 
     /**
      * 手机发送短信重置密码
@@ -45,11 +48,17 @@ public class SecureApiController extends BaseController {
         Result result = new APIResultSupport(false);
         String lists = params.getLists();
         int clientId = params.getClient_id();
+        String ip = getIp(request);
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
+                return result.toString();
+            }
+            //判断访问者是否有权限
+            if (!commonManager.isAccessAccept(clientId, ip, "resetpwd_batch")) {
+                result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
                 return result.toString();
             }
             if (!Strings.isNullOrEmpty(lists)) {
@@ -61,7 +70,7 @@ public class SecureApiController extends BaseController {
             result.setMessage("重置成功");
             return result.toString();
         } finally {
-            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), String.valueOf(clientId), result.getCode(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), String.valueOf(clientId), result.getCode(), ip);
             userOperationLog.putOtherMessage("lists", lists);
             UserOperationLogUtil.log(userOperationLog);
         }
