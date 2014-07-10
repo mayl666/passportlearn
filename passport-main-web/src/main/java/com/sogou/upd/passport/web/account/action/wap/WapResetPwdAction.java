@@ -157,7 +157,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.GET)
+    @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
     public String checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, RedirectAttributes redirectAttributes) throws Exception {
         Result result = new APIResultSupport(false);
         try {
