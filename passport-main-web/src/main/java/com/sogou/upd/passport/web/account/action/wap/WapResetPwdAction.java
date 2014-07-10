@@ -20,6 +20,7 @@ import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.*;
 import com.sogou.upd.passport.web.account.form.wap.WapCheckEmailParams;
 import com.sogou.upd.passport.web.account.form.wap.WapPwdParams;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +99,7 @@ public class WapResetPwdAction extends BaseController {
         client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
+        result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48)); //生成验证码所需的token
         model.addAttribute("data", result.toString());
         return "/wap/findpwd_other_touch";
     }
