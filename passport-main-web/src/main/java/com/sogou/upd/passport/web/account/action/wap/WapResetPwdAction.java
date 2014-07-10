@@ -348,8 +348,7 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.POST)
-    @ResponseBody
-    public Object checkEmailResetPwd(HttpServletRequest request, WapCheckEmailParams params, Model model) throws Exception {
+    public String checkEmailResetPwd(HttpServletRequest request, WapCheckEmailParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -357,9 +356,8 @@ public class WapResetPwdAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-//                model.addAttribute("data", result.toString());
-//                return "/wap/findpwd_other_touch";
-                return result.toString();
+                model.addAttribute("data", result.toString());
+                return "/wap/findpwd_other_touch";
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
@@ -368,20 +366,18 @@ public class WapResetPwdAction extends BaseController {
                 //邮箱连接校验成功跳转到修改密码页面
                 result.setDefaultModel("userid", passportId);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-//                model.addAttribute("data", result.toString());
-//                return "/wap/resetpwd_touch";
-                return result.toString();
+                model.addAttribute("data", result.toString());
+                return "/wap/resetpwd_touch";
             }
             result.setCode(ErrorUtil.ERR_CODE_FINDPWD_EMAIL_FAILED);
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-//            model.addAttribute("data", result.toString());
+            model.addAttribute("data", result.toString());
         } catch (Exception e) {
             logger.error("checkEmailResetPwd Is Failed,Username is " + params.getUsername(), e);
         } finally {
             log(request, params.getUsername(), result.getCode());
         }
-//        return "/wap/findpwd_other_touch";
-        return result.toString();
+        return "/wap/findpwd_other_touch";
     }
 
     /**
