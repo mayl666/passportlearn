@@ -404,7 +404,7 @@ public class WapResetPwdAction extends BaseController {
         result.setDefaultModel("userid", username);
         result.setDefaultModel("scode", scode);
         model.addAttribute("data", result.toString());
-        return "/wap/findpwd_contact_touch";
+        return "/wap/resetpwd_touch";
     }
 
     /**
