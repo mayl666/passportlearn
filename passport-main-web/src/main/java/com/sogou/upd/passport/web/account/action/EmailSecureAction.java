@@ -60,21 +60,21 @@ public class EmailSecureAction extends BaseController {
     public Object sendEmailForBind(HttpServletRequest request, WebBindEmailParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String passportId = hostHolder.getPassportId();
-        int clientId = Integer.parseInt(params.getClient_id());
-        String password = params.getPassword();
-        String newEmail = params.getNew_email();
-        String oldEmail = params.getOld_email();
-        String modifyIp = getIp(request);
-        String ru = params.getRu();
-        if (Strings.isNullOrEmpty(ru)) {
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-        }
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
                 return result.toString();
+            }
+            int clientId = Integer.parseInt(params.getClient_id());
+            String password = params.getPassword();
+            String newEmail = params.getNew_email();
+            String oldEmail = params.getOld_email();
+            String modifyIp = getIp(request);
+            String ru = params.getRu();
+            if (Strings.isNullOrEmpty(ru)) {
+                ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
             switch (AccountDomainEnum.getAccountDomain(passportId)) {
                 case SOHU:
@@ -84,11 +84,10 @@ public class EmailSecureAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                     return result.toString();
             }
-
             result = secureManager.sendEmailForBinding(passportId, clientId, password, newEmail, oldEmail, modifyIp, ru);
             return result.toString();
         } finally {
-            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), params.getClient_id(), result.getCode(), modifyIp);
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
@@ -101,9 +100,6 @@ public class EmailSecureAction extends BaseController {
     @RequestMapping(value = "/checkemail", method = RequestMethod.GET)
     public String checkEmailForBind(HttpServletRequest request, AccountScodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
-        String passportId = params.getUsername();
-        int clientId = Integer.parseInt(params.getClient_id());
-        String scode = params.getScode();
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -112,6 +108,9 @@ public class EmailSecureAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/404";
             }
+            String passportId = params.getUsername();
+            int clientId = Integer.parseInt(params.getClient_id());
+            String scode = params.getScode();
             switch (AccountDomainEnum.getAccountDomain(passportId)) {
                 case SOHU:
                     return "redirect:" + SOHU_BINDEMAIL_URL;
@@ -122,7 +121,7 @@ public class EmailSecureAction extends BaseController {
             model.addAttribute("data", result.toString());
             return "redirect:" + params.getRu();
         } finally {
-            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUsername(), request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
