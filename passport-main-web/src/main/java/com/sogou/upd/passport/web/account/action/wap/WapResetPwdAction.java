@@ -179,7 +179,7 @@ public class WapResetPwdAction extends BaseController {
         redirectAttributes.addAttribute("ru", ru);
         redirectAttributes.addAttribute("client_id", client_id);
         redirectAttributes.addAttribute("message", result.getMessage());
-        redirectAttributes.addAttribute("username", params.getMobile());
+        redirectAttributes.addAttribute("username", result.getModels().get("userid"));
         if (result.isSuccess()) {
             String scode = (String) result.getModels().get("scode");
             redirectAttributes.addAttribute("scode", scode);

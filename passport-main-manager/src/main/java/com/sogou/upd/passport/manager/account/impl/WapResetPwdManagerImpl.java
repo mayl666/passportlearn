@@ -47,9 +47,13 @@ public class WapResetPwdManagerImpl implements WapResetPwdManager {
                 return result;
             }
             result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.RESETPWD, smsCode);
-            if (result.isSuccess()) {
-                result.setDefaultModel("scode", accountSecureService.getSecureCodeResetPwd(passportId, clientId));
+            if (!result.isSuccess()) {
+                result.setDefaultModel("userid", passportId);
+                return result;
             }
+            result.setSuccess(true);
+            result.setMessage("手机号与验证码匹配成功");
+            result.setDefaultModel("scode", accountSecureService.getSecureCodeResetPwd(passportId, clientId));
             result.setDefaultModel("userid", passportId);
             return result;
         } catch (ServiceException e) {
