@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta id="viewport" name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="MobileOptimized" content="320"/>
+<meta name="format-detection" content="telephone=no"/>
+<title>找回密码-搜狗通行证</title>
+<link rel="stylesheet" href="/./static/css/wap/main.css?t=934819"/>
+</head>
+<body>
+
+<nav class="f-f f-vc">
+    <a href="#" class="backlink f-f f-hc f-vc">〈</a>
+    <div class="f-1 f-f f-hc f-vc">找回密码</div>
+    <div class="reglink"></div>
+</nav>
+<div class="findpwd-content">
+<h4 class="p18" style="padding:1em 0;">手机注册用户</h4>
+<p class="w-haf findpwd-info">移动手机号请发送短信新密码（如：woshixinmima）至</p>
+<a href="sms:1069008168728" class="block tc submit">1069 0081 68728</a>
+<p class="w-haf findpwd-info">联通手机号请发送短信新密码（如：woshixinmima）至</p>
+<a href="sms:10690296294908" class="block tc submit">1069 0296 294908</a>
+<p class="w-haf findpwd-info">电信手机号请发送短信新密码（如：woshixinmima）至</p>
+<a href="sms:1065980530024438" class="block tc submit">1065 9805 3002 4438</a>
+<p class="findpwd-info">即可重置密码，并可以使用新密码登录。</p>
+<p class="findpwd-info">其它问题请咨询客服，联系电话：010-58511234</p>
+</div>
+
+</body>
+<script src="/static/js/lib/mursa.js?t=140248"></script>
+<script src="/./static/js/wap.js?t=271647" charset="utf-8"></script>
+<script>
+    require.config({
+    baseUrl:"/./static/js"
+});
+
+require(['wap'] , function(module){
+    module['findpwd_touch']();
+});
+</script>
+</html>

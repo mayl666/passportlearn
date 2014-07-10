@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.connect.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -162,9 +163,9 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                     Result sessionResult = sessionServerManager.createSession(passportId);
                     String sgid;
                     if (sessionResult.isSuccess()) {
-                        sgid = (String) sessionResult.getModels().get("sgid");
+                        sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                         if (!Strings.isNullOrEmpty(sgid)) {
-                            result.getModels().put("sgid", sgid);
+                            result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                             result.setSuccess(true);
                             result.setMessage("success");
                             removeParam(result);

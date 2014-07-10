@@ -133,9 +133,9 @@ public class WapLoginAction extends BaseController {
 
         if (result.isSuccess()) {
             String userId = (String) result.getModels().get("userid");
-            String sgid = (String) result.getModels().get("sgid");
+            String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
 
-            ServletUtil.setCookie(response, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+            WapRegAction.setSgidCookie(response,sgid);
 
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
                 //在返回的数据中导入 json格式，用来给客户端用。
@@ -143,7 +143,7 @@ public class WapLoginAction extends BaseController {
                 String fields = "uniqname,avatarurl,gender";
                 ObtainAccountInfoParams accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), userId, fields);
                 result = accountInfoManager.getUserInfo(accountInfoParams);
-                result.getModels().put("sgid",sgid);
+                result.getModels().put(LoginConstant.COOKIE_SGID,sgid);
                 writeResultToResponse(response, result);
                 wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
                 return "empty";
@@ -241,8 +241,8 @@ public class WapLoginAction extends BaseController {
             int clientId=CommonConstant.XIAOSHUO_CLIENTID;
             Result result = wapLoginManager.passThroughQQ(clientId,sgid, accessToken, openId, ip, expires_in);
             if (result.isSuccess()) {
-                sgid = (String) result.getModels().get("sgid");
-                ServletUtil.setCookie(res, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+                sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
+                ServletUtil.setCookie(res, LoginConstant.COOKIE_SGID, sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
                 ru = buildSuccessRu(ru, sgid);
                 res.sendRedirect(ru);
@@ -276,7 +276,7 @@ public class WapLoginAction extends BaseController {
             ru = CommonConstant.DEFAULT_WAP_URL;
         }
         //ru后缀一个sgid
-        params.put("sgid", sgid);
+        params.put(LoginConstant.COOKIE_SGID, sgid);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }
@@ -315,6 +315,11 @@ public class WapLoginAction extends BaseController {
             if (result.isSuccess()) {
                 //清除cookie
                 ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGID);
+                ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
+                ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
+                ServletUtil.clearCookie(response, LoginConstant.COOKIE_PASSPORT);
+                ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINFO);
+
                 response.sendRedirect(ru);
                 return;
             }

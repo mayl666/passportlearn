@@ -20,7 +20,7 @@ public class PhoneUtil {
 
 	public static void main(String[] args) {
 		String[] phones = new String[] { "1523620111", "11011363254", "15811363254", "15811364216", "15811364216",
-				"13011111111", "15811364216", "022-6232903-22", "022-6232903", "+8615811364216", "8615811224181" ,"17043123221"};
+				"13011111111", "15811364216", "022-6232903-22", "022-6232903", "+8615811364216", "8615811224181" ,"17043123221", "007-007972"};
 		for (String phone : phones) {
 			System.out.print(phone + "  ");
 			System.out.println(PhoneUtil.verifyPhoneNumberFormat(phone));

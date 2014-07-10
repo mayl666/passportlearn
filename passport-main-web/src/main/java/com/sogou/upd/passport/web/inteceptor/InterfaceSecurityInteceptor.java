@@ -94,7 +94,7 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
             }
             requestInfo.append("}");
 
-            log.error("InterfaceSecurityInteceptor verify code or ct error! " + requestInfo.toString(), e);
+            log.warn("InterfaceSecurityInteceptor verify code or ct error! " + requestInfo.toString(), e);
             result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
         }
 

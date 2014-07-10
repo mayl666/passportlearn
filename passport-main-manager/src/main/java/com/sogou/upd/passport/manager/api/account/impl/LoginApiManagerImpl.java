@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -67,7 +68,17 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
         Result result = new APIResultSupport(false);
         try {
             String userId = authUserApiParams.getUserid();
+            //第三方账号不允许此操作
+            if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(authUserApiParams.getUserid()))) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                return result;
+            }
+            //主要是为了查询手机号绑定的主账号是否是sohu域的及主账号是否有修改密码或绑定手机的操作，读写彻底分离后，查主账号的逻辑可去除
             String passportId = commonManager.getPassportIdByUsername(userId);
+            if (Strings.isNullOrEmpty(passportId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND);
+                return result;
+            }
             if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
                 //主账号是sohu域账号调用sohu api校验用户名和密码
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);

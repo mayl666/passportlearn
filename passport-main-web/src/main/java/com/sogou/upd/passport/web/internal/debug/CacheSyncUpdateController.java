@@ -63,7 +63,7 @@ public class CacheSyncUpdateController extends BaseController {
                 return result.toString();
             }
             //IP白名单
-            if (ip.equals("10.146.16.142")) {
+            if (ip.equals("10.146.16.142") || ip.equals("10.13.215.224")) {
                 result = cacheSyncUpdateManager.deleteTableCache(key);
             } else {
                 result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);

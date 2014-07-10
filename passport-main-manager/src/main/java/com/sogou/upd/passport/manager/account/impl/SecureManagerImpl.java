@@ -92,10 +92,9 @@ public class SecureManagerImpl implements SecureManager {
     @Autowired
     private BindApiManager proxyBindApiManager;
     @Autowired
-    private LoginApiManager proxyLoginApiManager;
-    @Autowired
     private LoginApiManager loginApiManager;
-
+    @Autowired
+    private PCAccountTokenService pcAccountTokenService;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
@@ -356,7 +355,7 @@ public class SecureManagerImpl implements SecureManager {
         Result result = new APIResultSupport(false);
         String username = null;
         try {
-            username = updatePwdParameters.getPassport_id();
+            username = updatePwdParameters.getPassport_id(); //注意：这里的username一定要在调用前重新赋值为数据库里的passportId
             String captcha = updatePwdParameters.getCaptcha();
             UpdatePwdApiParams updatePwdApiParams = buildProxyApiParams(updatePwdParameters);
             int clientId = updatePwdApiParams.getClient_id();
@@ -379,6 +378,7 @@ public class SecureManagerImpl implements SecureManager {
             if (ManagerHelper.isInvokeProxyApi(username)) {
                 result = proxySecureApiManager.updatePwd(updatePwdApiParams);
                 // TODO 清除PC端token，后续移至accountService.resetPassword
+                pcAccountTokenService.batchRemoveAccountToken(username,true);
             } else {
                 result = sgSecureApiManager.updatePwd(updatePwdApiParams);
             }

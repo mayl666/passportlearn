@@ -2,6 +2,9 @@ package com.sogou.upd.passport.web.account.action.wap;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.LoginConstant;
+import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -20,6 +23,10 @@ import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.account.action.RegAction;
+import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
+import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
+import com.sogou.upd.passport.web.account.form.WapIndexParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,14 +117,16 @@ public class WapRegAction extends BaseController {
                 } else {
                     result = proxyUserInfoApiManager.getUserInfo(userInfoApiparams);
                 }
-                System.out.println("wap reg userinfo result:" + result);
+                logger.info("wap reg userinfo result:" + result);
                 Result sessionResult = sessionServerManager.createSession(userid);
                 String sgid = null;
                 if (sessionResult.isSuccess()) {
-                    sgid = (String) sessionResult.getModels().get("sgid");
+                    sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                     result.getModels().put("userid", userid);
                     if (!Strings.isNullOrEmpty(sgid)) {
-                        result.getModels().put("sgid", sgid);
+                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                        setSgidCookie(response, sgid);
+
                     }
                 } else {
                     logger.warn("can't get session result, userid:" + result.getModels().get("userid"));
@@ -150,6 +159,16 @@ public class WapRegAction extends BaseController {
         return result.toString();
     }
 
+    public static void setSgidCookie(HttpServletResponse response, String sgid) {
+        //种cookie
+        ServletUtil.setCookie(response, LoginConstant.COOKIE_SGID, sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+        //防止wap登录时，同时有ppinf存在的时候，会导致双重登录问题。 所以生成sgid的时候，就把ppinf去掉
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PASSPORT);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINFO);
+    }
+
     /**
      * 找回密码
      * @param ru
@@ -158,12 +177,42 @@ public class WapRegAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/wap/findpwd",method = RequestMethod.GET)
-    public String findPwdView(String ru, RedirectAttributes redirectAttributes) throws Exception {
+    public String findPwdView(String ru, RedirectAttributes redirectAttributes,WapIndexParams wapIndexParams) throws Exception {
+
+        if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
+            return "wap/findpwd_touch";
+        }
+
+
         if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
+
+
         redirectAttributes.addAttribute("ru", ru);
         return "redirect:" + SHPPUrlConstant.SOHU_FINDPWD_URL + "?ru={ru}";
     }
 
+
+    /**
+     * wap注册首页
+     * @param request
+     * @param response
+     * @param model
+     * @param wapIndexParams
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/wap/reg",method = RequestMethod.GET)
+    public String regist(HttpServletRequest request, HttpServletResponse response, Model model, WapIndexParams wapIndexParams) throws Exception {
+
+        if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {
+            response.setHeader("Content-Type", "text/vnd.wap.wml;charset=utf-8");
+            return "wap/regist_simple";
+        } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
+            return "wap/regist_touch";
+        } else {
+            return "wap/regist_color";
+        }
+    }
 }

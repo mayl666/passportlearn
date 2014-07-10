@@ -91,6 +91,17 @@ public class UserInfoApiManagerImplTest extends BaseTest {
 //        System.out.println(actualResult.toString());
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
 //        Assert.assertTrue(!expectForm2.equals(actualForm2)); //todo 提示信息不一致，但状态码需要修改一致
+
+        //用户信息不存在时只更新用户昵称
+        UpdateUserInfoApiParams noAccountParams = getUpdateUserInfoApiParams("13569877456", uniqname_update, null, null, null, null, null, null, null);
+//        Result expectResult = proxyUserInfoApiManager.updateUserInfo(params);
+//        System.out.println(expectResult);
+        String noAccountExpectResult = "{\"statusText\":\"操作成功\",\"data\":{},\"status\":\"0\"}";
+        APIResultForm noAccountExpectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
+        Result noAccountActualResult = sgUserInfoApiManager.updateUserInfo(noAccountParams);
+        System.out.println(actualResult.toString());
+//        APIResultForm noAccountActualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
+//        Assert.assertTrue(!expectForm2.equals(actualForm2)); //todo 提示信息不一致，但状态码需要修改一致
     }
 
     /**
