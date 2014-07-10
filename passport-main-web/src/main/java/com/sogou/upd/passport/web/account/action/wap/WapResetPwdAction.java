@@ -158,12 +158,14 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
-    public String checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, Model model) throws Exception {
+    public String checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, RedirectAttributes redirectAttributes) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&message=" + validateResult;
+                redirectAttributes.addAttribute("code", ErrorUtil.ERR_CODE_COM_REQURIE);
+                redirectAttributes.addAttribute("message", validateResult);
+                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code={code}&message={message}";
             }
             int clientId = Integer.parseInt(params.getClient_id());
             result = wapRestPwdManager.checkMobileCodeResetPwd(params.getMobile(), clientId, params.getSmscode());
@@ -176,10 +178,18 @@ public class WapResetPwdAction extends BaseController {
             String scode = (String) result.getModels().get("scode");
             String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
             String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
-            String param = params.getMobile() + "&scode=" + scode + "&client_id=" + client_id + "&ru=" + ru + "&code=0&message=";
-            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username=" + param;
+            redirectAttributes.addAttribute("scode", scode);
+            redirectAttributes.addAttribute("ru", ru);
+            redirectAttributes.addAttribute("client_id", client_id);
+            redirectAttributes.addAttribute("code", "0");
+            redirectAttributes.addAttribute("message", result.getMessage());
+            redirectAttributes.addAttribute("username", params.getMobile());
+            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&scode={scode}&client_id={client_id}&ru={ru}&code={code}&message={message}";
         }
-        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code=" + result.getCode() + "&message=" + result.getMessage();
+
+        redirectAttributes.addAttribute("code", result.getCode());
+        redirectAttributes.addAttribute("message", result.getMessage());
+        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code={code}&message={message}";
     }
 
 
@@ -340,16 +350,14 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.GET)
-    public String checkEmailResetPwd(HttpServletRequest request, WapCheckEmailParams params, Model model) throws Exception {
+    public String checkEmailResetPwd(HttpServletRequest request, WapCheckEmailParams params, Model model, RedirectAttributes redirectAttributes) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-                model.addAttribute("data", result.toString());
-                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&message=" + validateResult;
+                redirectAttributes.addAttribute("code", ErrorUtil.ERR_CODE_COM_REQURIE);
+                redirectAttributes.addAttribute("message", validateResult);
+                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code={code}&message={message}";
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
@@ -364,10 +372,17 @@ public class WapResetPwdAction extends BaseController {
             String scode = (String) result.getModels().get("scode");
             String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
             String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
-            String param = params.getUsername() + "&scode=" + scode + "&client_id=" + client_id + "&ru=" + ru + "&code=0&message=";
-            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username=" + param;
+            redirectAttributes.addAttribute("scode", scode);
+            redirectAttributes.addAttribute("ru", ru);
+            redirectAttributes.addAttribute("client_id", client_id);
+            redirectAttributes.addAttribute("code", "0");
+            redirectAttributes.addAttribute("message", result.getMessage());
+            redirectAttributes.addAttribute("username", params.getUsername());
+            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&scode={scode}&client_id={client_id}&ru={ru}&code={code}&message={message}";
         }
-        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code=" + result.getCode() + "&message=" + result.getMessage();
+        redirectAttributes.addAttribute("code", result.getCode());
+        redirectAttributes.addAttribute("message", result.getMessage());
+        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code={code}&message={message}";
 
     }
 
