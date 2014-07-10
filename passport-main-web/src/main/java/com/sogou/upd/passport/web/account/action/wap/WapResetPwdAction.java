@@ -357,7 +357,7 @@ public class WapResetPwdAction extends BaseController {
                 result.setMessage(validateResult);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 model.addAttribute("data", result.toString());
-                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/findpwd/error/reset?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&errorMsg=" + validateResult;
+                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/findpwd/vm/reset?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&message=" + validateResult;
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
@@ -375,7 +375,7 @@ public class WapResetPwdAction extends BaseController {
             String param = params.getUsername() + "&scode=" + scode + "&client_id=" + client_id + "&ru=" + ru + "&code=0&message=";
             return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/findpwd/vm/reset?uesrname=" + param;
         }
-        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/findpwd/error/reset?code=" + result.getCode() + "&errorMsg=" + result.getMessage();
+        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/findpwd/vm/reset?code=" + result.getCode() + "&message=" + result.getMessage();
 
     }
 
