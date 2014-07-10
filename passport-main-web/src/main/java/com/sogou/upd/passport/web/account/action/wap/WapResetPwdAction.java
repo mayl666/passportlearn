@@ -202,7 +202,7 @@ public class WapResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/check", method = RequestMethod.POST)
     @ResponseBody
-    public Object findpwdother(HttpServletRequest request, RedirectAttributes redirectAttributes, OtherResetPwdParams params, Model model)
+    public String findpwdother(HttpServletRequest request, RedirectAttributes redirectAttributes, OtherResetPwdParams params, Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
@@ -212,8 +212,6 @@ public class WapResetPwdAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-//                model.addAttribute("data", result.toString());
-//                return "/wap/findpwd_other_touch";
                 return result.toString();
             }
             String username = params.getUsername();
@@ -230,8 +228,6 @@ public class WapResetPwdAction extends BaseController {
                 result.setDefaultModel("userid", passportId);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-//                model.addAttribute("data", result.toString());
-//                return "/wap/findpwd_other_touch";
                 return result.toString();
             }
             //校验找回密码次数是否超限
@@ -240,8 +236,6 @@ public class WapResetPwdAction extends BaseController {
                 result.setDefaultModel("userid", passportId);
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-//                model.addAttribute("data", result.toString());
-//                return "/wap/findpwd_other_touch";
                 return result.toString();
             }
             int client_id = Integer.parseInt(params.getClient_id());
@@ -250,8 +244,6 @@ public class WapResetPwdAction extends BaseController {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-//                model.addAttribute("data", result.toString());
-//                return "/wap/findpwd_other_touch";
                 return result.toString();
             }
             switch (domain) {
@@ -260,8 +252,6 @@ public class WapResetPwdAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_USER_HAVA_BIND_MOBILE);
                     result.setDefaultModel("userid", passportId);
                     result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-//                    model.addAttribute("data", result.toString());
-//                    return "/wap/findpwd_other_touch";   //跳转至其它方式找回首页
                     return result.toString();    //跳转至其它方式找回首页
                 case OTHER:
                 case SOGOU:
@@ -271,8 +261,6 @@ public class WapResetPwdAction extends BaseController {
                     result.setDefaultModel("userid", passportId);
                     if (!result.isSuccess()) {
                         result.setCode(ErrorUtil.ERR_CODE_FIND_KEFU);
-//                        model.addAttribute("data", result.toString());
-//                        return "/wap/findpwd_other_touch";
                         return result.toString();//跳转至其它方式找回首页
 
                     } else {
@@ -282,14 +270,20 @@ public class WapResetPwdAction extends BaseController {
                         if (!Strings.isNullOrEmpty(sec_mobile) && Strings.isNullOrEmpty(sec_email)) {
                             result.setSuccess(false);
                             result.setCode(ErrorUtil.ERR_CODE_USER_HAVA_BIND_MOBILE);
-//                            model.addAttribute("data", result.toString());
-//                            return "/wap/findpwd_other_touch";
                             return result.toString(); //跳转至其它方式找回首页
                         } else {
                             //主账号是外域，则返回注册邮箱 ;主账号非外域，则返回密保邮箱
-                            result.setDefaultModel("sec_email", AccountDomainEnum.OTHER.equals(domain) ? passportId : sec_email);
-                            result.setDefaultModel("sec_process_email", AccountDomainEnum.OTHER.equals(domain) ? StringUtil.processEmail(passportId) : StringUtil.processEmail(sec_email));
-                            result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, client_id));      //安全验证码
+                            String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
+                            client_id = Strings.isNullOrEmpty(params.getClient_id()) ? CommonConstant.SGPP_DEFAULT_CLIENTID : Integer.parseInt(params.getClient_id());
+                            redirectAttributes.addAttribute("ru", ru);
+                            redirectAttributes.addAttribute("client_id", client_id);
+                            redirectAttributes.addAttribute("sec_email", AccountDomainEnum.OTHER.equals(domain) ? passportId : sec_email);
+                            redirectAttributes.addAttribute("sec_process_email", AccountDomainEnum.OTHER.equals(domain) ? StringUtil.processEmail(passportId) : StringUtil.processEmail(sec_email));
+                            redirectAttributes.addAttribute("username", result.getModels().get("userid"));
+                            if (result.isSuccess()) {
+                                redirectAttributes.addAttribute("scode", commonManager.getSecureCodeResetPwd(passportId, client_id));
+                                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/confirm?username={username}&scode={scode}&client_id={client_id}&ru={ru}&sec_email={sec_email}&sec_process_email={sec_process_email}";
+                            }
                         }
                     }
             }
@@ -300,9 +294,29 @@ public class WapResetPwdAction extends BaseController {
         } finally {
             log(request, params.getUsername(), result.getCode());
         }
-//        model.addAttribute("data", result.toString());
-//        return "wap/findpwd_confirm_touch";
         return result.toString();//跳转至邮箱确认页面
+    }
+
+
+    /**
+     * 通过接口跳转到发送激活邮件页面
+     *
+     * @param ru
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/findpwd/vm/confirm", method = RequestMethod.GET)
+    public String findCheckView(String ru, String client_id, String scode, String username, String sec_email, String sec_process_email, RedirectAttributes redirectAttributes) throws Exception {
+        ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
+        client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
+        redirectAttributes.addAttribute("ru", ru);
+        redirectAttributes.addAttribute("client_id", client_id);
+        redirectAttributes.addAttribute("userid", username);
+        redirectAttributes.addAttribute("scode", scode);
+        redirectAttributes.addAttribute("sec_email", sec_email);
+        redirectAttributes.addAttribute("sec_process_email", sec_process_email);
+        redirectAttributes.addAttribute("v", "5");
+        return "/wap/findpwd_confirm_touch";
     }
 
     /**
