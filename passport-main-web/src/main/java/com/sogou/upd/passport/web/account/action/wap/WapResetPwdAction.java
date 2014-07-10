@@ -99,7 +99,7 @@ public class WapResetPwdAction extends BaseController {
         client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
-        result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48)); //生成验证码所需的token
+        model.addAttribute("token", RandomStringUtils.randomAlphanumeric(48));
         model.addAttribute("data", result.toString());
         return "/wap/findpwd_other_touch";
     }
