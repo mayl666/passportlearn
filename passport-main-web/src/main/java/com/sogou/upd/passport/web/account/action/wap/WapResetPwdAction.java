@@ -201,7 +201,6 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/check", method = RequestMethod.POST)
-    @ResponseBody
     public String findpwdother(HttpServletRequest request, RedirectAttributes redirectAttributes, OtherResetPwdParams params, Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
@@ -306,16 +305,18 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/vm/confirm", method = RequestMethod.GET)
-    public String findCheckView(String ru, String client_id, String scode, String username, String sec_email, String sec_process_email, RedirectAttributes redirectAttributes) throws Exception {
+    public String findConfirmView(String ru, String client_id, String scode, String username, String sec_email, String sec_process_email, Model model) throws Exception {
         ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
         client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
-        redirectAttributes.addAttribute("ru", ru);
-        redirectAttributes.addAttribute("client_id", client_id);
-        redirectAttributes.addAttribute("userid", username);
-        redirectAttributes.addAttribute("scode", scode);
-        redirectAttributes.addAttribute("sec_email", sec_email);
-        redirectAttributes.addAttribute("sec_process_email", sec_process_email);
-        redirectAttributes.addAttribute("v", "5");
+        Result result = new APIResultSupport(false);
+        result.setDefaultModel("ru", ru);
+        result.setDefaultModel("client_id", client_id);
+        result.setDefaultModel("userid", username);
+        result.setDefaultModel("scode", scode);
+        result.setDefaultModel("sec_email", sec_email);
+        result.setDefaultModel("sec_process_email", sec_process_email);
+        result.setDefaultModel("v", "5");
+        model.addAttribute("data", result.toString());
         return "/wap/findpwd_confirm_touch";
     }
 
