@@ -174,22 +174,22 @@ public class WapResetPwdAction extends BaseController {
         } finally {
             log(request, params.getMobile(), result.getCode());
         }
+
+        String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
+        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
+        redirectAttributes.addAttribute("ru", ru);
+        redirectAttributes.addAttribute("client_id", client_id);
+        redirectAttributes.addAttribute("message", result.getMessage());
+        redirectAttributes.addAttribute("username", params.getMobile());
         if (result.isSuccess()) {
             String scode = (String) result.getModels().get("scode");
-            String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
-            String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
             redirectAttributes.addAttribute("scode", scode);
-            redirectAttributes.addAttribute("ru", ru);
-            redirectAttributes.addAttribute("client_id", client_id);
             redirectAttributes.addAttribute("code", "0");
-            redirectAttributes.addAttribute("message", result.getMessage());
-            redirectAttributes.addAttribute("username", params.getMobile());
             return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&scode={scode}&client_id={client_id}&ru={ru}&code={code}&message={message}";
         }
-
         redirectAttributes.addAttribute("code", result.getCode());
         redirectAttributes.addAttribute("message", result.getMessage());
-        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code={code}&message={message}";
+        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&client_id={client_id}&ru={ru}&code={code}&message={message}";
     }
 
 
@@ -368,21 +368,20 @@ public class WapResetPwdAction extends BaseController {
         } finally {
             log(request, params.getUsername(), result.getCode());
         }
+        String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
+        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
+        redirectAttributes.addAttribute("ru", ru);
+        redirectAttributes.addAttribute("client_id", client_id);
+        redirectAttributes.addAttribute("message", result.getMessage());
+        redirectAttributes.addAttribute("username", params.getUsername());
         if (result.isSuccess()) {
             String scode = (String) result.getModels().get("scode");
-            String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
-            String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
             redirectAttributes.addAttribute("scode", scode);
-            redirectAttributes.addAttribute("ru", ru);
-            redirectAttributes.addAttribute("client_id", client_id);
             redirectAttributes.addAttribute("code", "0");
-            redirectAttributes.addAttribute("message", result.getMessage());
-            redirectAttributes.addAttribute("username", params.getUsername());
             return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&scode={scode}&client_id={client_id}&ru={ru}&code={code}&message={message}";
         }
         redirectAttributes.addAttribute("code", result.getCode());
-        redirectAttributes.addAttribute("message", result.getMessage());
-        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code={code}&message={message}";
+        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&client_id={client_id}&ru={ru}&code={code}&message={message}";
 
     }
 
