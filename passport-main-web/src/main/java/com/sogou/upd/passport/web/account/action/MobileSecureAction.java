@@ -54,7 +54,6 @@ public class MobileSecureAction extends BaseController {
     public Object sendSmsSecMobile(BaseWebParams params, HttpServletRequest request) throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
-        int clientId = Integer.parseInt(params.getClient_id());
         String passportId = hostHolder.getPassportId();
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -63,6 +62,7 @@ public class MobileSecureAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
+            int clientId = Integer.parseInt(params.getClient_id());
             result = verifyMobileSecureIsAllowed(result, passportId);
             if (!result.isSuccess()) {
                 return result.toString();
@@ -85,8 +85,6 @@ public class MobileSecureAction extends BaseController {
     public Object sendSmsNewMobile(WebMobileParams params, HttpServletRequest request) throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
-        int clientId = Integer.parseInt(params.getClient_id());
-        String newMobile = params.getNew_mobile();
         String passportId = hostHolder.getPassportId();
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -95,6 +93,8 @@ public class MobileSecureAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
+            int clientId = Integer.parseInt(params.getClient_id());
+            String newMobile = params.getNew_mobile();
             result = verifyMobileSecureIsAllowed(result, passportId);
             if (!result.isSuccess()) {
                 return result.toString();
@@ -127,8 +127,6 @@ public class MobileSecureAction extends BaseController {
     public Object checkSmsSecMobile(WebSmsParams params, HttpServletRequest request) throws Exception {
         Result result = new APIResultSupport(false);
         String passportId = hostHolder.getPassportId();
-        String smsCode = params.getSmscode();
-        int clientId = Integer.parseInt(params.getClient_id());
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -136,6 +134,8 @@ public class MobileSecureAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
+            String smsCode = params.getSmscode();
+            int clientId = Integer.parseInt(params.getClient_id());
             result = verifyMobileSecureIsAllowed(result, passportId);
             if (!result.isSuccess()) {
                 return result.toString();
@@ -143,7 +143,7 @@ public class MobileSecureAction extends BaseController {
             result = secureManager.checkMobileCodeOldForBinding(passportId, clientId, smsCode);
             return result.toString();
         } finally {
-            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
@@ -159,10 +159,6 @@ public class MobileSecureAction extends BaseController {
     public Object bindMobile(WebBindMobileParams params, HttpServletRequest request) throws Exception {
         Result result = new APIResultSupport(false);
         String passportId = hostHolder.getPassportId();
-        int clientId = Integer.parseInt(params.getClient_id());
-        String smsCode = params.getSmscode();
-        String newMobile = params.getNew_mobile();
-        String password = params.getPassword();
         String modifyIp = getIp(request);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -171,6 +167,10 @@ public class MobileSecureAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
+            int clientId = Integer.parseInt(params.getClient_id());
+            String smsCode = params.getSmscode();
+            String newMobile = params.getNew_mobile();
+            String password = params.getPassword();
             result = verifyMobileSecureIsAllowed(result, passportId);
             if (!result.isSuccess()) {
                 return result.toString();
@@ -195,10 +195,6 @@ public class MobileSecureAction extends BaseController {
         Result result = new APIResultSupport(false);
         String passportId = hostHolder.getPassportId();
         String ip = getIp(request);
-        String smsCode = params.getSmscode();
-        String newMobile = params.getNew_mobile();
-        String scode = params.getScode();
-        int clientId = Integer.parseInt(params.getClient_id());
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -206,6 +202,10 @@ public class MobileSecureAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
+            String smsCode = params.getSmscode();
+            String newMobile = params.getNew_mobile();
+            String scode = params.getScode();
+            int clientId = Integer.parseInt(params.getClient_id());
             result = verifyMobileSecureIsAllowed(result, passportId);
             if (!result.isSuccess()) {
                 return result.toString();
@@ -213,7 +213,7 @@ public class MobileSecureAction extends BaseController {
             result = secureManager.modifyMobileByPassportId(passportId, clientId, newMobile, smsCode, scode, ip);
             return result.toString();
         } finally {
-            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), ip);
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), params.getClient_id(), result.getCode(), ip);
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
