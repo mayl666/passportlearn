@@ -357,7 +357,7 @@ public class WapResetPwdAction extends BaseController {
                 result.setMessage(validateResult);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 model.addAttribute("data", result.toString());
-                return "/wap/findpwd_other_touch";
+                return "/wap/resetpwd_touch";
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
@@ -377,7 +377,7 @@ public class WapResetPwdAction extends BaseController {
         } finally {
             log(request, params.getUsername(), result.getCode());
         }
-        return "/wap/findpwd_other_touch";
+        return "/wap/resetpwd_touch";
     }
 
     /**
