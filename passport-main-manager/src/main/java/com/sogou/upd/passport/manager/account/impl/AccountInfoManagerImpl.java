@@ -489,7 +489,15 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                     result.setDefaultModel("img_180", large_avatar);
                     result.setDefaultModel("avatarurl", mid_avatar);
                 }
-            } else if (domain != AccountDomainEnum.SOHU) {
+            }else if(domain == AccountDomainEnum.SOHU){
+                // TODO
+                uniqname = defaultUniqname(passportId);
+                result.setDefaultModel("uniqname", uniqname);
+                result.setDefaultModel("img_30", tiny_avatar);
+                result.setDefaultModel("img_50", mid_avatar);
+                result.setDefaultModel("img_180", large_avatar);
+                result.setDefaultModel("avatarurl", mid_avatar);
+            }else if (domain != AccountDomainEnum.SOHU) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 return result;
             }
