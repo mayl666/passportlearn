@@ -175,7 +175,7 @@ public class WapResetPwdAction extends BaseController {
             if (result.isSuccess()) {
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 String param = buildRedirectUrl(result);
-                String url = CommonConstant.DEFAULT_WAP_INDEX_URL + param;
+                String url = CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?" + param;
                 result.setDefaultModel("url", url);
                 return result.toString();
             }
