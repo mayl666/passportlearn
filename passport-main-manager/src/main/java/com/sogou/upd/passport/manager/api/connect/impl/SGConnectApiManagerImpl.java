@@ -212,7 +212,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         connectToken.setUpdateTime(new Date());
         ConnectUserInfoVO connectUserInfoVO = oAuthTokenVO.getConnectUserInfoVO();
         if (connectUserInfoVO != null) {
-            connectToken.setConnectUniqname(StringUtil.filterConnectUniqname(connectUserInfoVO.getNickname()));
+            connectToken.setConnectUniqname(StringUtil.filterSpecialChar(connectUserInfoVO.getNickname()));
             connectToken.setGender(String.valueOf(connectUserInfoVO.getGender()));
             connectToken.setAvatarSmall(connectUserInfoVO.getAvatarSmall());
             connectToken.setAvatarMiddle(connectUserInfoVO.getAvatarMiddle());

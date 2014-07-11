@@ -210,22 +210,6 @@ public class StringUtil {
     }
 
     /**
-     * 过滤第三方用户昵称，包含：
-     * strToUTF8 & filterEmoji
-     *
-     * @param str
-     * @return
-     */
-    public static String filterConnectUniqname(String str) {
-        try {
-            str = filterEmoji(strToUTF8(str));
-        } catch (UnsupportedEncodingException e) {
-            return "";
-        }
-        return str;
-    }
-
-    /**
      * 是否包含emoji表情
      *
      * @param source
@@ -281,17 +265,15 @@ public class StringUtil {
     }
 
     /**
-     * 过滤特殊字符，只保留 中文、英文大小写字母、空格、-、_
+     * 过滤特殊字符，只保留 中文、英文大小写字母、字符
      */
     public static String filterSpecialChar(String str) {
         StringBuilder sb = new StringBuilder();
         if (StringUtils.isNotBlank(str)) {
             str = str.trim();
-
             for (int i = 0; i < str.length(); i++) {
                 String ch = String.valueOf(str.charAt(i));
-
-                boolean isDigest = Pattern.matches("[a-zA-Z0-9_\\-\\s]", ch);
+                boolean isDigest = StringUtils.isAsciiPrintable(ch);
                 if (!isDigest) {
                     boolean isChinese = Pattern.matches("[\\u4e00-\\u9fa5]", ch);
                     if (isChinese) {
@@ -302,7 +284,6 @@ public class StringUtil {
                 }
             }
         }
-
         return sb.toString();
     }
 
