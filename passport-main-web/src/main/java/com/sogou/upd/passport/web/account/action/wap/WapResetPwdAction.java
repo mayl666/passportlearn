@@ -174,7 +174,8 @@ public class WapResetPwdAction extends BaseController {
             result = wapRestPwdManager.checkMobileCodeResetPwd(params.getMobile(), clientId, params.getSmscode());
             if (result.isSuccess()) {
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-                String url = buildRedirectUrl(result);
+                String param = buildRedirectUrl(result);
+                String url = CommonConstant.DEFAULT_WAP_INDEX_URL + param;
                 result.setDefaultModel("url", url);
                 return result.toString();
             }
@@ -190,7 +191,6 @@ public class WapResetPwdAction extends BaseController {
     //手机与短信验证码验证成功后，给前端生成下一步跳转的url
     private String buildRedirectUrl(Result result) {
         StringBuilder urlStr = new StringBuilder();
-        urlStr.append(CommonConstant.DEFAULT_WAP_INDEX_URL);
         String userid = (String) result.getModels().get("userid");
         urlStr.append("?username=" + userid);
         String scode = (String) result.getModels().get("scode");
