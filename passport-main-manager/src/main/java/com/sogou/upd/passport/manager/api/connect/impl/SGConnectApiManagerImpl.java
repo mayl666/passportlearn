@@ -244,7 +244,12 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             String refreshToken = connectToken.getRefreshToken();
             //refreshToken不为空，则刷新token
             if (!Strings.isNullOrEmpty(refreshToken)) {
-                OAuthTokenVO oAuthTokenVO = connectAuthService.refreshAccessToken(refreshToken, connectConfig);
+                OAuthTokenVO oAuthTokenVO = null;
+                try {
+                    oAuthTokenVO = connectAuthService.refreshAccessToken(refreshToken, connectConfig);
+                } catch (OAuthProblemException e) {
+                    logger.warn("Refresh connect refreshtoken fail, errorCode:" + e.getError() + " ,errorDesc:" + e.getDescription());
+                }
                 if (oAuthTokenVO == null) {
                     return false;
                 }
