@@ -430,9 +430,9 @@ public class SecureManagerImpl implements SecureManager {
                                     smsText = smsText + "重置密码格式不正确，必须为字母、数字、字符且长度为6~16位!";
                                 }
                                 //短信通知结果
-                                if (!Strings.isNullOrEmpty(mobile)) {
-                                    SMSUtil.sendSMS(mobile, smsText);
-                                }
+//                                if (!Strings.isNullOrEmpty(mobile)) {
+//                                    SMSUtil.sendSMS(mobile, smsText);
+//                                }
                             }
                             if (!isSuccess) {
                                 logger.info("BatchResetPwd is fail, smsText:" + smsText);
