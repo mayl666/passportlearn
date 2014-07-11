@@ -192,7 +192,7 @@ public class WapResetPwdAction extends BaseController {
         StringBuilder urlStr = new StringBuilder();
         urlStr.append(CommonConstant.DEFAULT_WAP_INDEX_URL);
         String userid = (String) result.getModels().get("userid");
-        urlStr.append("username=" + userid);
+        urlStr.append("?username=" + userid);
         String scode = (String) result.getModels().get("scode");
         urlStr.append("&scode=" + scode);
         String client_id = (String) result.getModels().get("client_id");
