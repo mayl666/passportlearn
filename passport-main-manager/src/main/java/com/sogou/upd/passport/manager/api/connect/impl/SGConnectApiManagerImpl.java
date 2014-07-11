@@ -187,7 +187,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             result.setDefaultModel("connectToken", connectToken);
         } catch (Exception e) {
 //            logger.error("method[obtainConnectToken] obtain connect token from sogou db error passportId:{}", passportId, e);
-            logger.error("obtain connect token from sogou db error.passportId [{}] clientId {}", passportId, clientId);
+            logger.error("obtain connect token from sogou db error.passportId [{}] clientId {}", passportId, clientId, e);
         }
         return result;
     }
