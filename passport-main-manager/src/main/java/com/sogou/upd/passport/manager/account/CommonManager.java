@@ -48,9 +48,11 @@ public interface CommonManager {
     public String getCode(String firstStr, int clientId, long ct);
 
     /**
-     * 根据用户输入的username获取对应的passport
-     * 1.输入：手机号；输出：主账号userid
+     * 根据用户输入的username获取主账号的passportId
+     * 1.输入：手机号；输出：主账号userid，注意：如果手机号未注册或未绑定，则返回null
      * 2.输入：手机号@sohu.com；输出：手机号@sohu.com
+     * 3.输入：个性名；输出：个性名@sogou.com
+     * 4.输入：搜狐域、外域邮箱账号；输出：保持不变
      *
      * @param username
      * @return

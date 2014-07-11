@@ -102,7 +102,7 @@ public class BindApiManagerImpl implements BindApiManager {
                 result.setMessage("操作成功");
                 Result shResult = proxyBindApiManager.bindMobile(passportId, newMobile);
                 if (!shResult.isSuccess()) {
-                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.SECURE, "bindMobile", CommonConstant.SGSUCCESS_SHERROR, passportId, result.getCode(), shResult.toString());
+                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.SECURE, "bindMobile", CommonConstant.SGSUCCESS_SHERROR, passportId, shResult.getCode(), shResult.toString());
                 }
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
@@ -169,12 +169,12 @@ public class BindApiManagerImpl implements BindApiManager {
                 String passportId = account.getPassportId();
                 Result shUnBindResult = proxyBindApiManager.unBindMobile(oldModify);
                 if (!shUnBindResult.isSuccess()) {
-                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.SECURE, "modifyBindMobile", CommonConstant.SGSUCCESS_SHUNBINDERROR, passportId, result.getCode(), shUnBindResult.toString());
+                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.SECURE, "modifyBindMobile", CommonConstant.SGSUCCESS_SHUNBINDERROR, passportId, shUnBindResult.getCode(), shUnBindResult.toString());
                     return result;
                 }
                 Result shModifyBindResult = proxyBindApiManager.bindMobile(account.getPassportId(), newMobile);
                 if (!shModifyBindResult.isSuccess()) {
-                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.SECURE, "modifyBindMobile", CommonConstant.SGSUCCESS_SHERROR, passportId, result.getCode(), shModifyBindResult.toString());
+                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.SECURE, "modifyBindMobile", CommonConstant.SGSUCCESS_SHERROR, passportId, shUnBindResult.getCode(), shModifyBindResult.toString());
                 }
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);

@@ -67,7 +67,7 @@ public class SecureApiManagerImpl implements SecureApiManager {
             if (result.isSuccess()) {
                 Result shResult = proxySecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
                 if (!shResult.isSuccess()) {
-                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.RESETPWD, "updatePwd", CommonConstant.SGSUCCESS_SHERROR, passportId, result.getCode(), shResult.toString());
+                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.RESETPWD, "updatePwd", CommonConstant.SGSUCCESS_SHERROR, passportId, shResult.getCode(), shResult.toString());
                 }
             }
         } catch (Exception e) {
@@ -132,8 +132,4 @@ public class SecureApiManagerImpl implements SecureApiManager {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    @Override
-    public void resetPwd(UpdatePwdApiParams updatePwdApiParams) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
 }

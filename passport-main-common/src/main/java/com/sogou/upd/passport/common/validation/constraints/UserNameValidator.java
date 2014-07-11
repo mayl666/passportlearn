@@ -16,6 +16,9 @@ import javax.validation.ConstraintValidatorContext;
  */
 @Component
 public class UserNameValidator implements ConstraintValidator<UserName, String> {
+
+    private static final String SOGOU_REGX = "[a-zA-Z]([a-zA-Z0-9_.-]{3,15})";
+
     @Override
     public void initialize(UserName constraintAnnotation) {
         //To change body of implemented methods use File | Settings | File Templates.
@@ -29,8 +32,7 @@ public class UserNameValidator implements ConstraintValidator<UserName, String> 
         if (value.indexOf("@") == -1) {
             if (!PhoneUtil.verifyPhoneNumberFormat(value)) {
                 //个性账号格式是否拼配，{3，15}就表示4--16位，必须字母开头，不作大小写限制
-                String regx = "[a-zA-Z]([a-zA-Z0-9_.-]{3,15})";
-                boolean flag = value.matches(regx);
+                boolean flag = value.matches(SOGOU_REGX);
                 if (!flag) {
                     return false;
                 }
@@ -43,6 +45,11 @@ public class UserNameValidator implements ConstraintValidator<UserName, String> 
                 String sens = "^(?!.*help)(?!.*info)(?!.*admin)(?!.*owner)(?!.*support)(?!.*www)(?!.*master).*$";
                 boolean sensFlag = prefix.matches(sens);
                 if (!sensFlag) {
+                    return false;
+                }
+                //校验是否符合搜狗账号格式
+                boolean flag = prefix.matches(SOGOU_REGX);
+                if (!flag) {
                     return false;
                 }
             }

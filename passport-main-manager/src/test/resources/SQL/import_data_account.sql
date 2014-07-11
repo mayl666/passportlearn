@@ -17,3 +17,4 @@ INSERT INTO `uniqname_passportid_mapping_30` (`uniqname`, `passport_id`, `update
 
 INSERT INTO `account_02` (`passport_id`, `password`, `mobile`, `reg_time`, `reg_ip`, `flag`, `passwordtype`, `account_type`, `uniqname`, `avatar`) values('18978941658@sohu.com','5LwNaAlJ$2s6hdE9f0vsBTk50ZqXaD0','18978941658','2014-04-22 17:32:48','10.129.192.211',1,2,2,NULL,'%s/app/a/%s/8X5lsDLo9DR6R4At_1403494871616');
 INSERT INTO `mobile_passportid_mapping_28` (`mobile`, `passport_id`, `update_time`) VALUES ('18978941658', '18978941658@sohu.com', '2014-04-22 17:32:48');
+

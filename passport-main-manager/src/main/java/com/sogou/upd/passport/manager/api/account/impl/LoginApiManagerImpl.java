@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -72,16 +73,23 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result;
             }
+            //主要是为了查询手机号绑定的主账号是否是sohu域的及主账号是否有修改密码或绑定手机的操作，读写彻底分离后，查主账号的逻辑可去除
             String passportId = commonManager.getPassportIdByUsername(userId);
-            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+            if (Strings.isNullOrEmpty(passportId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND);
+                return result;
+            }
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+            if (AccountDomainEnum.SOHU.equals(domain)) {
                 //主账号是sohu域账号调用sohu api校验用户名和密码
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
             } else {
-                if (accountSecureService.getUpdateSuccessFlag(passportId)) {
-                    //主账号有更新密码或绑定手机的操作时，调用sohu api校验用户名和密码
+                if (!AccountDomainEnum.SOGOU.equals(domain) && accountSecureService.getUpdateSuccessFlag(passportId)) {
+                    //搜狗账号写分离阶段，主账号有更新密码或绑定手机的操作时，非搜狗账号调用sohu api校验用户名和密码；搜狗账号走双读
                     result = updatePwdOrBindMobile(authUserApiParams, userId, passportId);
-                } else if (!ManagerHelper.writeSohuSwitcher() && accountSecureService.getResetPwdFlag(passportId)) {
-                    //写分离阶段，主账号是搜狗域且有找回密码操作时，只验证sg库，因为找回密码无法双写，只写了SG库
+                } else if (AccountDomainEnum.SOGOU.equals(domain) && accountSecureService.getUpdateSuccessFlag(passportId)) {
+                    //写分离阶段，1.主账号是搜狗域且有找回密码操作时，只验证sg库，因为找回密码无法双写，只写了SG库;
+                    // 2.搜狗账号修改密码只读SG校验用户名和密码
                     result = findPwdForSogouAccount(authUserApiParams, userId, passportId);
                 } else {
                     //没有更新密码时，走正常的双读流程

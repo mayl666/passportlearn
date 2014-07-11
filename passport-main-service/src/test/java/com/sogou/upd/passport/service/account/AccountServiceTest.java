@@ -7,18 +7,16 @@ import com.sogou.upd.passport.common.utils.JsonUtil;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import junit.framework.Assert;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 /**
  * Created with IntelliJ IDEA. User: liuling Date: 13-4-7 Time: 下午4:09 To change this template use
  * File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 public class AccountServiceTest extends BaseTest {
 
     @Autowired
@@ -100,6 +98,17 @@ public class AccountServiceTest extends BaseTest {
 //        }
     }
 
+    @Test
+    public void testCheckResetPassport() {
+        String storedPwd = "GdIRFYky$tjgErloRiudSgGv4Jw1wh1";
+        String pwd = "e0be6aca";
+        String pwdMD5 = DigestUtils.md5Hex(pwd.getBytes());
+        if (storedPwd.equals(pwdMD5)) {
+            System.out.println(" pwd equals ");
+        }
+        System.out.println(" pwd not equals ");
+    }
+
 
     /**
      * 测试重置密码
@@ -168,6 +177,47 @@ public class AccountServiceTest extends BaseTest {
         boolean isRenewBind = accountService.modifyBindMobile(account, binded_mobile);
         Assert.assertTrue(isRenewBind);
     }
+
+    /*
+     * 测试删除
+     */
+//    @Test
+//    public void testDeleteMobile() {
+//        String[] mobileArray = {"13071155730",
+//                "18910872640",
+//                "18311315433",
+//                "18910872640",
+//                "18910872642",
+//                "13071155730",
+//                "18501378736",
+//                "13810236336",
+//                "18910873265",
+//                "13621009174",
+//                "18600548420",
+//                "18811417719",
+//                "13381178392",
+//                "18810549604",
+//                "18500225373",
+//                "13552254068",
+//                "18001350996",
+//                "18601667692",
+//                "13141395126",
+//                "18010065818",
+//                "13764021515",
+//                "13842313090",
+//                "18101355191",
+//                "15801100788",
+//                "13301195093",
+//                "18511531063",
+//                "18822487748",
+//                "18628991105",
+//                "13260261403",
+//                "13552422514"};
+//        for (String mobile : mobileArray) {
+//            boolean isSuccess = accountService.deleteOrUnbindMobile(mobile);
+//            System.out.println("mobile:" + mobile + " delete " + isSuccess);
+//        }
+//    }
 
     @Test
     public void testFixData() {

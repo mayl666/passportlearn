@@ -89,11 +89,6 @@ public class ProxySecureApiManagerImpl extends BaseProxyManager implements Secur
         return this.executeResult(requestModelXml);
     }
 
-    @Override
-    public void resetPwd(UpdatePwdApiParams updatePwdApiParams) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
     private UpdatePwdApiParams buildProxyApiParams(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
         UpdatePwdApiParams updatePwdApiParams = new UpdatePwdApiParams();
         updatePwdApiParams.setUserid(passportId);

@@ -113,6 +113,10 @@ public class ResetPwdAction extends BaseController {
                     return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
                 case THIRD:
                     return "redirect:/web/findpwd";
+                case UNKNOWN:
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                    model.addAttribute("data", result.toString());
+                    return "/recover/index";
             }
             result.setDefaultModel("userid", passportId);
             //校验验证码
@@ -388,6 +392,11 @@ public class ResetPwdAction extends BaseController {
                 passportId += "@sogou.com";
             }
             passportId = commonManager.getPassportIdByUsername(username);
+            if (Strings.isNullOrEmpty(passportId)) {
+                result = buildErrorResult(result, params, ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND, ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND));
+                model.addAttribute("data", result.toString());
+                return "/recover/type";
+            }
             int clientId = Integer.parseInt(params.getClient_id());
             result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
             if (result.isSuccess()) {

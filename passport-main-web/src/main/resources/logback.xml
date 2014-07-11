@@ -2,6 +2,7 @@
 <!-- Reference Manual http://logback.qos.ch/manual/index.html -->
 <configuration>
     <property name="log.path" value="/search/passport/log"/>
+    <property resource="deploy_config.properties" />
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -65,9 +66,9 @@
 
     <appender name="kafkaAsyncAppender" class="com.sogou.upd.passport.logback.api.kafka.MultiKafkaAppender"
               additivity="false">
-        <zkList>10.136.24.124:2181,10.136.24.125:2181,10.136.24.126:2181,10.11.211.4:2181,10.11.211.8:2181</zkList>
-        <brokerList>10.136.24.124:9092,10.136.24.125:9092,10.136.24.126:9092</brokerList>
-        <topic>useroperation</topic>
+        <zkList>${zkList}</zkList>
+        <brokerList>${brokerList}</brokerList>
+        <topic>${topic.userlog}</topic>
         <poolSize>10</poolSize>
         <async>true</async>
         <encoder>
@@ -76,8 +77,8 @@
     </appender>
 
     <appender name="rabbitMQAppender" class="com.sogou.upd.passport.mq.RabbitMQAppender">
-        <host>10.146.32.57</host>
-        <port>5672</port>
+        <host>${rabbitmq.host}</host>
+        <port>${rabbitmq.port}</port>
         <virtualHost>/storm_host</virtualHost>
         <username>davion</username>
         <password>davion</password>

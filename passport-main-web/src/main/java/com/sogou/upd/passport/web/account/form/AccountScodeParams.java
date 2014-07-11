@@ -11,10 +11,6 @@ import org.hibernate.validator.constraints.URL;
 public class AccountScodeParams extends BaseAccountParams {
     @NotBlank(message = "scode不允许为空!")
     protected String scode;
-    @NotBlank(message = "ru不允许为空!")
-    @URL
-    @Ru
-    private String ru;     //验证邮箱成功后的回调地址
 
     public String getScode() {
         return scode;
@@ -24,11 +20,4 @@ public class AccountScodeParams extends BaseAccountParams {
         this.scode = scode;
     }
 
-    public String getRu() {
-        return ru;
-    }
-
-    public void setRu(String ru) {
-        this.ru = ru;
-    }
 }

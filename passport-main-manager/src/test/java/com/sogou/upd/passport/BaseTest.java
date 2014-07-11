@@ -24,7 +24,7 @@ import java.text.DecimalFormat;
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class BaseTest extends AbstractJUnit4SpringContextTests {
     //主账号
-    protected static final String userid = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
+    protected static final String userid_connect = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
     protected static final String userid_sohu = "13581695053@sohu.com";
     protected static final String userid_email = "loveerin9460@163.com";
     protected static final String userid_sogou_1 = "liulingtest01@sogou.com";

@@ -62,25 +62,6 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
     }
 
     @Override
-    public void resetPwd(UpdatePwdApiParams updatePwdApiParams) {
-        Result result = new APIResultSupport(false);
-
-        String mobile = updatePwdApiParams.getUserid();
-        String userId = mobile + "@sohu.com";
-        String newPassword = updatePwdApiParams.getNewpassword();
-        int clientId = updatePwdApiParams.getClient_id();
-
-        Account account = accountService.queryAccountByPassportId(userId);
-        if (account != null && accountService.resetPassword(account, newPassword, true)) {
-            //发送短信
-            String smsText = PREFIX_UPDATE_PWD_SEND_MESSAGE + userId + SUFFIX_UPDATE_PWD_SEND_MESSAGE;
-            if (!Strings.isNullOrEmpty(mobile)) {
-                SMSUtil.sendSMS(mobile, smsText);
-            }
-        }
-    }
-
-    @Override
     public Result updateQues(UpdateQuesApiParams updateQuesApiParams) throws ServiceException {
         String userId = updateQuesApiParams.getUserid();
         String password = updateQuesApiParams.getPassword();
@@ -89,11 +70,11 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         int clientId = updateQuesApiParams.getClient_id();
         Result result = new APIResultSupport(false);
         try {
-            result = accountService.verifyUserPwdVaild(userId, password, true);
-            result.setDefaultModel(null);
-            if (!result.isSuccess()) {
+            Result authUserResult = accountService.verifyUserPwdVaild(userId, password, true);
+            authUserResult.setDefaultModel(null);
+            if (!authUserResult.isSuccess()) {
                 operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
-                return result;
+                return authUserResult;
             }
             newAnswer = DigestUtils.md5Hex(newAnswer.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
             AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(userId, newQues, newAnswer);
@@ -101,7 +82,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);
                 return result;
             }
-            result = new APIResultSupport(true);
+            result.setSuccess(true);
             result.setMessage("操作成功");
             return result;
         } catch (Exception e) {

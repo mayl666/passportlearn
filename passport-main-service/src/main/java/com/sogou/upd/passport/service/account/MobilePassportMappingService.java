@@ -21,14 +21,6 @@ public interface MobilePassportMappingService {
     public String queryPassportIdByMobile(String mobile) throws ServiceException;
 
     /**
-     * 根据username获取passport，手机号则查映射表，邮箱账号直接返回
-     * @param username
-     * @return passportId
-     * @throws com.sogou.upd.passport.exception.ServiceException
-     */
-    public String queryPassportIdByUsername(String username) throws ServiceException;
-
-    /**
      * 插入一条mobile和passportId的映射关系
      *
      * @param mobile
