@@ -160,7 +160,7 @@ public class WapResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
     @ResponseBody
-    public Object checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, Model model) throws Exception {
+    public Object checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -174,13 +174,7 @@ public class WapResetPwdAction extends BaseController {
             result = wapRestPwdManager.checkMobileCodeResetPwd(params.getMobile(), clientId, params.getSmscode());
             if (result.isSuccess()) {
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-                String userid = (String) result.getModels().get("userid");
-                String scode = (String) result.getModels().get("scode");
-                String client_id = (String) result.getModels().get("client_id");
-                String ru = (String) result.getModels().get("ru");
-                String code = result.getCode();
-                String message = result.getMessage();
-                String url = CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username=" + userid + "&scode=" + scode + "&client_id=" + client_id + "&ru=" + ru + "&code=" + code + "&message=" + message;
+                String url = buildRedirectUrl(result);
                 result.setDefaultModel("url", url);
                 return result.toString();
             }
@@ -193,6 +187,22 @@ public class WapResetPwdAction extends BaseController {
         return result.toString();
     }
 
+    //手机与短信验证码验证成功后，给前端生成下一步跳转的url
+    private String buildRedirectUrl(Result result) {
+        StringBuilder urlStr = new StringBuilder();
+        urlStr.append(CommonConstant.DEFAULT_WAP_INDEX_URL);
+        String userid = (String) result.getModels().get("userid");
+        urlStr.append("username=" + userid);
+        String scode = (String) result.getModels().get("scode");
+        urlStr.append("&scode=" + scode);
+        String client_id = (String) result.getModels().get("client_id");
+        urlStr.append("&client_id=" + client_id);
+        String ru = (String) result.getModels().get("ru");
+        urlStr.append("&ru=" + ru);
+        urlStr.append("&code=" + result.getCode());
+        urlStr.append("&message=" + result.getMessage());
+        return urlStr.toString();
+    }
 
     /**
      * 用户选择其它方式找回时
