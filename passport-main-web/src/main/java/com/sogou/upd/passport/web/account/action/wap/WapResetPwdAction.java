@@ -180,7 +180,7 @@ public class WapResetPwdAction extends BaseController {
                 String ru = (String) result.getModels().get("ru");
                 String code = result.getCode();
                 String message = result.getMessage();
-                String url = CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username=" + userid + "&scode=" + scode + "&client_id= " + client_id + "&ru=" + ru + "&code=" + code + "&message=" + message;
+                String url = CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username=" + userid + "&scode=" + scode + "&client_id=" + client_id + "&ru=" + ru + "&code=" + code + "&message=" + message;
                 result.setDefaultModel("url", url);
                 return result.toString();
             }
@@ -506,7 +506,7 @@ public class WapResetPwdAction extends BaseController {
 
     private Result setRuAndClientId(Result result, String ru, String client_id) {
         result.setDefaultModel("ru", Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru);
-        result.setDefaultModel("client_id", client_id);
+        result.setDefaultModel("client_id", Strings.isNullOrEmpty(client_id) ? CommonConstant.SGPP_DEFAULT_CLIENTID : client_id);
         return result;
     }
 
