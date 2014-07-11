@@ -159,36 +159,30 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
-    public String checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, RedirectAttributes redirectAttributes) throws Exception {
+    @ResponseBody
+    public Object checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                redirectAttributes.addAttribute("code", ErrorUtil.ERR_CODE_COM_REQURIE);
-                redirectAttributes.addAttribute("message", Coder.encodeUTF8(validateResult));
-                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code={code}&message={message}";
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+                return result.toString();
             }
             int clientId = Integer.parseInt(params.getClient_id());
             result = wapRestPwdManager.checkMobileCodeResetPwd(params.getMobile(), clientId, params.getSmscode());
+            if (result.isSuccess()) {
+                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+                return result.toString();
+            }
         } catch (Exception e) {
             logger.error("checksms is failed,mobile is " + params.getMobile(), e);
         } finally {
             log(request, params.getMobile(), result.getCode());
         }
-        String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
-        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
-        redirectAttributes.addAttribute("ru", ru);
-        redirectAttributes.addAttribute("client_id", client_id);
-        redirectAttributes.addAttribute("message", Coder.encodeUTF8(result.getMessage()));
-        redirectAttributes.addAttribute("username", result.getModels().get("userid"));
-        if (result.isSuccess()) {
-            String scode = (String) result.getModels().get("scode");
-            redirectAttributes.addAttribute("scode", scode);
-            redirectAttributes.addAttribute("code", "0");
-            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&scode={scode}&client_id={client_id}&ru={ru}&code={code}&message={message}";
-        }
-        redirectAttributes.addAttribute("code", result.getCode());
-        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&client_id={client_id}&ru={ru}&code={code}&message={message}";
+        result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+        return result.toString();
     }
 
 
