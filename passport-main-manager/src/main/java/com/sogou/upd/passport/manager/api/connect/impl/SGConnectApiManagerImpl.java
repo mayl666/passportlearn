@@ -187,7 +187,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             result.setDefaultModel("connectToken", connectToken);
         } catch (Exception e) {
 //            logger.error("method[obtainConnectToken] obtain connect token from sogou db error passportId:{}", passportId, e);
-            logger.error("obtain connect token from sogou db error.passportId [{}] clientId {}", passportId, clientId);
+            logger.error("obtain connect token from sogou db error.passportId [{}] clientId {}", passportId, clientId, e);
         }
         return result;
     }
@@ -244,7 +244,12 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             String refreshToken = connectToken.getRefreshToken();
             //refreshToken不为空，则刷新token
             if (!Strings.isNullOrEmpty(refreshToken)) {
-                OAuthTokenVO oAuthTokenVO = connectAuthService.refreshAccessToken(refreshToken, connectConfig);
+                OAuthTokenVO oAuthTokenVO = null;
+                try {
+                    oAuthTokenVO = connectAuthService.refreshAccessToken(refreshToken, connectConfig);
+                } catch (OAuthProblemException e) {
+                    logger.warn("Refresh connect refreshtoken fail, errorCode:" + e.getError() + " ,errorDesc:" + e.getDescription());
+                }
                 if (oAuthTokenVO == null) {
                     return false;
                 }
