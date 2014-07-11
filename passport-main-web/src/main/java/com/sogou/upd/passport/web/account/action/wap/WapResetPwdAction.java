@@ -174,6 +174,14 @@ public class WapResetPwdAction extends BaseController {
             result = wapRestPwdManager.checkMobileCodeResetPwd(params.getMobile(), clientId, params.getSmscode());
             if (result.isSuccess()) {
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+                String userid = (String) result.getModels().get("userid");
+                String scode = (String) result.getModels().get("scode");
+                String client_id = (String) result.getModels().get("client_id");
+                String ru = (String) result.getModels().get("ru");
+                String code = result.getCode();
+                String message = result.getMessage();
+                String url = CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username=" + userid + "&scode=" + scode + "&client_id= " + client_id + "&ru=" + ru + "&code=" + code + "&message=" + message;
+                result.setDefaultModel("url", url);
                 return result.toString();
             }
         } catch (Exception e) {
