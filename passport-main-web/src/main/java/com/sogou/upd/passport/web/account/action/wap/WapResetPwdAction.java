@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -164,7 +165,7 @@ public class WapResetPwdAction extends BaseController {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
                 redirectAttributes.addAttribute("code", ErrorUtil.ERR_CODE_COM_REQURIE);
-                redirectAttributes.addAttribute("message", validateResult);
+                redirectAttributes.addAttribute("message", Coder.encodeUTF8(validateResult));
                 return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code={code}&message={message}";
             }
             int clientId = Integer.parseInt(params.getClient_id());
@@ -178,7 +179,7 @@ public class WapResetPwdAction extends BaseController {
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         redirectAttributes.addAttribute("ru", ru);
         redirectAttributes.addAttribute("client_id", client_id);
-        redirectAttributes.addAttribute("message", result.getMessage());
+        redirectAttributes.addAttribute("message", Coder.encodeUTF8(result.getMessage()));
         redirectAttributes.addAttribute("username", result.getModels().get("userid"));
         if (result.isSuccess()) {
             String scode = (String) result.getModels().get("scode");
@@ -338,7 +339,7 @@ public class WapResetPwdAction extends BaseController {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
                 redirectAttributes.addAttribute("code", ErrorUtil.ERR_CODE_COM_REQURIE);
-                redirectAttributes.addAttribute("message", validateResult);
+                redirectAttributes.addAttribute("message", Coder.encodeUTF8(validateResult));
                 return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code={code}&message={message}";
             }
             String passportId = params.getUsername();
@@ -354,7 +355,7 @@ public class WapResetPwdAction extends BaseController {
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         redirectAttributes.addAttribute("ru", ru);
         redirectAttributes.addAttribute("client_id", client_id);
-        redirectAttributes.addAttribute("message", result.getMessage());
+        redirectAttributes.addAttribute("message", Coder.encodeUTF8(result.getMessage()));
         redirectAttributes.addAttribute("username", params.getUsername());
         if (result.isSuccess()) {
             String scode = (String) result.getModels().get("scode");
