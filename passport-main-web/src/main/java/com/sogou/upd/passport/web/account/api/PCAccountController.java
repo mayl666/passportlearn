@@ -432,7 +432,7 @@ public class PCAccountController extends BaseController {
     }
 
     private String buildRedirectUrl(String ru, int status) {
-        if (Strings.isNullOrEmpty(ru)) {
+        if(Strings.isNullOrEmpty(ru)){
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
         if (ru.contains("?")) {
