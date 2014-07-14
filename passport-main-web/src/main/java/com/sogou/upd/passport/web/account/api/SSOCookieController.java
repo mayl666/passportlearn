@@ -48,10 +48,10 @@ public class SSOCookieController extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             returnErrMsg(response,ssoCookieParams.getRu(),result.getCode(),result.getMessage());
+            return;
         }
 
-        //response 回去的时候设置一个p3p的header
-        //用来定义IE的跨域问题。
+        //response 回去的时候设置一个p3p的header,用来定义IE的跨域问题。
         response.setHeader("P3P","CP=CAO PSA OUR");
 
         result = cookieManager.setSSOCookie(response,ssoCookieParams);
@@ -60,11 +60,41 @@ public class SSOCookieController extends BaseController {
         if(!result.isSuccess()){
             log(request,"sso_setcookie",ru,result.getCode());
             returnErrMsg(response,ru,result.getCode(),result.getMessage());
+            return;
         }
         if (!StringUtils.isBlank(ru)) {
             response.sendRedirect(ru);
         }
         log(request,"sso_setcookie",ru,"0");
+        return;
+    }
+
+    @RequestMapping(value = "/sso/logout_redirect", method = RequestMethod.GET)
+    public void logoutWithRu(HttpServletRequest request, HttpServletResponse response, SSOClearCookieParams ssoClearCookieParams)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(ssoClearCookieParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            returnErrMsg(response, ssoClearCookieParams.getRu(),result.getCode(), result.getMessage());
+            return;
+        }
+        String domain = ssoClearCookieParams.getDomain();
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGINF, domain);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGRDIG, domain);
+
+        //记录log
+        String ru = ssoClearCookieParams.getRu();
+        UserOperationLog userOperationLog = new UserOperationLog("sso_logout", "", "0", getIp(request));
+        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+        userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
+        UserOperationLogUtil.log(userOperationLog);
+
+        if (!StringUtils.isBlank(ru)) {
+            response.sendRedirect(ru);
+        }
         return;
     }
 
@@ -84,34 +114,6 @@ public class SSOCookieController extends BaseController {
         userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
         userOperationLog.putOtherMessage("ru", ru);
         UserOperationLogUtil.log(userOperationLog);
-    }
-
-    @RequestMapping(value = "/sso/logout_redirect", method = RequestMethod.GET)
-    public void logoutWithRu(HttpServletRequest request, HttpServletResponse response, SSOClearCookieParams ssoClearCookieParams)
-            throws Exception {
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(ssoClearCookieParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            returnErrMsg(response, ssoClearCookieParams.getRu(),result.getCode(), result.getMessage());
-        }
-        String domain = ssoClearCookieParams.getDomain();
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGINF, domain);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGRDIG, domain);
-
-        //记录log
-        String ru = ssoClearCookieParams.getRu();
-        UserOperationLog userOperationLog = new UserOperationLog("sso_logout", "", "0", getIp(request));
-        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
-        userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
-        UserOperationLogUtil.log(userOperationLog);
-
-        if (!StringUtils.isBlank(ru)) {
-            response.sendRedirect(ru);
-        }
-        return;
     }
 
 }
