@@ -252,7 +252,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
                     return;
                 }
             } else {
-                logger.error("Second Token Key less two, passportId:" + passportId);
+                logger.error("Second Token Key less two, passportId:" + passportId + ", secondTokenKey:" + secondTokenKey);
                 return;
             }
         }
