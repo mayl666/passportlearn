@@ -92,7 +92,7 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
         } catch (OpensnsException oe) {
             logger.error(String.format("Request Failed.code:{}, msg:{}", oe.getErrorCode(), oe.getMessage()), oe);
         } catch (Exception e) {
-            logger.error("Execute Api Is Failed :", e);
+            logger.warn("Execute Api Is Failed :", e);
         }
         return resp;
     }
