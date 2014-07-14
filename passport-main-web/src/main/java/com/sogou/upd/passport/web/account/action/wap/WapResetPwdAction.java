@@ -239,10 +239,9 @@ public class WapResetPwdAction extends BaseController {
             //主账号是搜狐域用户跳转到sohu的wap页面
             if (AccountDomainEnum.SOHU.equals(domain)) {
                 result.setSuccess(true);
-                String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
-                String url = SHPPUrlConstant.SOHU_WAP_FINDPWD_URL + "?ru=" + ru;
+                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+                String url = SHPPUrlConstant.SOHU_WAP_FINDPWD_URL + "?client_id=" + result.getModels().get("client_id") + "&ru=" + result.getModels().get("ru");
                 result.setDefaultModel("url", url);
-                result = setRuAndClientId(result, ru, params.getClient_id());
                 return result.toString();
             }
             //校验验证码
