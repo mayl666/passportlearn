@@ -231,7 +231,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         }
     }
 
-    private void batchRemoveAccountToken(Set<String> tokenMappingSet, String passportId){
+    private void batchRemoveAccountToken(Set<String> tokenMappingSet, String passportId) {
         Stack<String> tokenStack = new Stack();
         for (String s : tokenMappingSet) {
             tokenStack.push(s);
@@ -240,13 +240,13 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         for (Iterator<String> iter = tokenStack.iterator(); iter.hasNext(); ) {
             String secondTokenKey = tokenStack.pop();
             String[] secondTokenKeyArray = secondTokenKey.split(KEY_KV_SPLIT);
-            if (removeMaxNum < REMOVE_PCTOKEN_MAX_NUM && secondTokenKeyArray.length < 2) {
+            if (removeMaxNum < REMOVE_PCTOKEN_MAX_NUM && secondTokenKeyArray.length >= 2) {
                 String clientIdStr = secondTokenKeyArray[0];
                 String instanceId = EMPTY_INSTANCEID_SIGN.equals(secondTokenKeyArray[1]) ? "" : secondTokenKeyArray[1];
                 try {
                     int clientId = Integer.parseInt(clientIdStr);
                     removeAccountToken(passportId, clientId, instanceId);
-                    removeMaxNum ++;
+                    removeMaxNum++;
                 } catch (Exception e) {
                     logger.error("client not interge, passportId:" + passportId + ", clientId:" + clientIdStr);
                     return;
