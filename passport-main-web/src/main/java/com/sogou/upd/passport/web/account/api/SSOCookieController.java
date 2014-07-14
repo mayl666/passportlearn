@@ -39,6 +39,9 @@ public class SSOCookieController extends BaseController {
 
     private static final String DEFAULT_URL = "https://account.sogou.com";
 
+    /*
+     * 非搜狗域下种跨域cookie接口，目前使用产品：导航daohang.qq.com/hao.qq.com、输入法pinyin.qq.com
+     */
     @RequestMapping(value = "/sso/setcookie", method = RequestMethod.GET)
     public void setcookie(HttpServletRequest request, HttpServletResponse response, SSOCookieParams ssoCookieParams) throws Exception {
         Result result = new APIResultSupport(false);
