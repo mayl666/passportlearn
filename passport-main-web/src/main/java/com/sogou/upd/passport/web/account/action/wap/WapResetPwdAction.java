@@ -468,53 +468,6 @@ public class WapResetPwdAction extends BaseController {
         return result;
     }
 
-    /**
-     * 重置密码
-     *
-     * @param request
-     * @param params
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/findpwd/resetpwd", method = RequestMethod.POST)
-    public Object updatePwd(HttpServletRequest request, AccountPwdParams params, Model model)
-            throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-                model.addAttribute("data", result.toString());
-                return "/wap/end";
-            }
-            String passportId = params.getUsername();
-            int clientId = Integer.parseInt(params.getClient_id());
-            String password = params.getPassword();
-            result = resetPwdManager.resetPasswordByScode(passportId, clientId, password, params.getScode(), getIp(request));
-            if (!result.isSuccess()) {
-                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-                model.addAttribute("data", result.toString());
-                return "/wap/end";
-            }
-        } catch (Exception e) {
-            logger.error("resetPwd Is Failed,Username is " + params.getUsername(), e);
-        } finally {
-            log(request, params.getUsername(), result.getCode());
-        }
-        result.setCode(ErrorUtil.SUCCESS);
-        result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-        model.addAttribute("data", result.toString());
-        return "/wap/end";
-    }
-
-//    private Result buildModel(Model model, Result result, String ru, String client_id, String code, String message) {
-//
-//    }
-
-
     private Result setRuAndClientId(Result result, String ru, String client_id) {
         result.setDefaultModel("ru", Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru);
         result.setDefaultModel("client_id", Strings.isNullOrEmpty(client_id) ? CommonConstant.SGPP_DEFAULT_CLIENTID : client_id);
