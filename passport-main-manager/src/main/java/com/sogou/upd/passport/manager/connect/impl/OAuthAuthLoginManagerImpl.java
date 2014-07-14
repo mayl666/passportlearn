@@ -137,7 +137,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     connectAuthService.initialOrUpdateConnectUserInfo(userId, connectUserInfoVO);
                 }
 
-                if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+                if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                     Result tokenResult = pcAccountManager.createAccountToken(userId, instanceId, clientId);
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
@@ -155,7 +155,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
-                } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
+                } else if (ConnectTypeEnum.MAPP.toString().equals(type)) {
                     if (!Strings.isNullOrEmpty(from) && "sso".equals(from)) {
                         String sgid = "", avatarSmall = "", avatarMiddle = "", avatarLarge = "", sex = "";
                         Result sessionResult = sessionServerManager.createSession(userId);
@@ -196,12 +196,12 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result.setSuccess(true);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                     }
-                } else if (type.equals(ConnectTypeEnum.MOBILE.toString())) {
+                } else if (ConnectTypeEnum.MOBILE.toString().equals(type)) {
                     String s_m_u = getSMU(userId);
                     String url = buildMOBILESuccessRu(ru, userId, s_m_u, uniqname);
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
-                } else if (type.equals(ConnectTypeEnum.PC.toString())) {
+                } else if (ConnectTypeEnum.PC.toString().equals(type)) {
                     Result tokenResult = pcAccountManager.createAccountToken(userId, instanceId, clientId);
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
@@ -213,7 +213,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
-                } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
+                } else if (ConnectTypeEnum.WAP.toString().equals(type)) {
                     //写session 数据库
                     Result sessionResult = sessionServerManager.createSession(userId);
                     String sgid = null;
@@ -359,9 +359,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             }
             params.put(CommonConstant.RESPONSE_STATUS_TEXT, errorText);
             ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
-        } else if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+        } else if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
             ru = "/pcaccount/connecterr";
-        } else if (type.equals(ConnectTypeEnum.PC.toString())) {
+        } else if (ConnectTypeEnum.PC.toString().equals(type)) {
             ru = "/oauth2pc/pclogin";
         }
         return ru;
@@ -373,7 +373,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         result.setMessage(errorText);
         result.setDefaultModel(CommonConstant.RESPONSE_RU, buildErrorRu(type, ru, errorCode, errorText));
         // type=token返回的错误信息
-        if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+        if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
             String error = errorCode + "|" + errorText;
             result.setDefaultModel(CommonConstant.RESPONSE_ERROR, error);
         }
