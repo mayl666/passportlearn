@@ -231,11 +231,17 @@ public class WapResetPwdAction extends BaseController {
             String username = params.getUsername();
             String passportId = commonManager.getPassportIdByUsername(username);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+            if (AccountDomainEnum.THIRD.equals(domain)) {   //第三方用户不允许此操作
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                return result.toString();
+            }
             //主账号是搜狐域用户和第三方用户时不支持此操作
-            if (AccountDomainEnum.SOHU.equals(domain) || AccountDomainEnum.THIRD.equals(domain)) {
+            if (AccountDomainEnum.SOHU.equals(domain)) {
                 String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
-                redirectAttributes.addAttribute("ru", ru);
-                return "redirect:" + SHPPUrlConstant.SOHU_WAP_FINDPWD_URL + "?ru={ru}";
+                String url = SHPPUrlConstant.SOHU_WAP_FINDPWD_URL + "?ru=" + ru;
+                result.setDefaultModel("url", url);
+                result = setRuAndClientId(result, ru, params.getClient_id());
+                return result.toString();
             }
             //校验验证码
             if (!checkManager.checkCaptcha(params.getCaptcha(), params.getToken())) {
