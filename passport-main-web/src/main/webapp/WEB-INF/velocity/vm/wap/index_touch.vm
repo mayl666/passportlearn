@@ -7,7 +7,7 @@
 <meta name="MobileOptimized" content="320"/>
 <meta name="format-detection" content="telephone=no"/>
 <title>登录-搜狗通行证</title>
-<link rel="stylesheet" href="/./static/css/wap/main.css?t=934819"/>
+<link rel="stylesheet" href="/./static/css/wap/main.css?t=549844"/>
 </head>
 <body>
 
@@ -81,7 +81,7 @@
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=502737" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=894414" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"

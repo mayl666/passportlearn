@@ -6,11 +6,21 @@
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="MobileOptimized" content="320"/>
 <meta name="format-detection" content="telephone=no"/>
-<title>-搜狗通行证</title>
+<title>找回密码-搜狗通行证</title>
 <link rel="stylesheet" href="/./static/css/wap/main.css?t=549844"/>
 </head>
 <body>
 
+<nav class="f-f f-vc">
+    <a href="#" class="backlink f-f f-hc f-vc">〈</a>
+    <div class="f-1 f-f f-hc f-vc">找回密码</div>
+    <a href="/wap/reg" class="f-f f-vc f-hc reglink">注册</a>
+</nav>
+
+
+<form action="＃" method="post" class="block findpwd">
+</form>
+    
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
@@ -21,7 +31,7 @@
 });
 
 require(['wap'] , function(module){
-    module['wap_parent']();
+    module['findpwd_confirm_touch']();
 });
 </script>
 </html>

@@ -139,6 +139,166 @@ define([], function() {
         });
     }
 
+
+    function checksms(params, callback) {
+        var options = {
+            client_id: client_id,
+            v: 0,
+            ru: 'http://wap.sogou.com'
+        };
+        callback = callback || noop;
+        $.extend(options, params);
+        $.ajax({
+            url: '/wap/findpwd/checksms',
+            type: 'post',
+            data: options,
+            dataType: 'json',
+            success: function(data) {
+
+                if ('string' === typeof data) {
+                    try {
+                        data = JSON.parse(data);
+                    } catch (e) {data = {status:1,statusText:'格式错误'};}
+                }
+                if (data && !+data.status) {
+                    return callback(true, data.data);
+                } else {
+                    return callback(false,data);
+                }
+            },
+            error: function() {
+                return callback(false,{'statusText':'提交失败'});
+            }
+        });
+    }
+
+    function findpwdSendsms(mobile, callback) {
+        callback = callback || noop;
+
+        return $.ajax({
+            url: '/wap/findpwd/sendsms',
+            data: {
+                client_id: client_id,
+                mobile: mobile
+            },
+            dataType: 'json',
+            success: function(data) {
+
+                if ('string' === typeof data) {
+                    try {
+                        data = JSON.parse(data);
+                    } catch (e) {data = {status:1,statusText:'格式错误'};}
+                }
+
+                if (data && !+data.status) {
+                    return callback(true);
+                } else {
+                    return callback(false,data);
+                }
+            },
+            error: function() {
+                return callback(false,{'statusText':'发送失败'});
+            }
+        });
+    }
+
+
+    function findpwdCheck(params, callback) {
+        var options = {
+            client_id: client_id,
+            v: 0,
+            ru: 'http://wap.sogou.com'
+        };
+        callback = callback || noop;
+        $.extend(options, params);
+        $.ajax({
+            url: '/wap/findpwd/check',
+            type: 'post',
+            data: options,
+            dataType: 'json',
+            success: function(data) {
+
+                if ('string' === typeof data) {
+                    try {
+                        data = JSON.parse(data);
+                    } catch (e) {data = {status:1,statusText:'格式错误'};}
+                }
+                if (data && !+data.status) {
+                    return callback(true, data.data);
+                } else {
+                    return callback(false,data);
+                }
+            },
+            error: function() {
+                return callback(false,{'statusText':'提交失败'});
+            }
+        });
+    }
+
+    function findpwdSendmail(params, callback) {
+        var options = {
+            client_id: client_id,
+            v: 0,
+            ru: 'http://wap.sogou.com'
+        };
+        callback = callback || noop;
+        $.extend(options, params);
+        $.ajax({
+            url: '/wap/findpwd/sendemail',
+            type: 'post',
+            data: options,
+            dataType: 'json',
+            success: function(data) {
+
+                if ('string' === typeof data) {
+                    try {
+                        data = JSON.parse(data);
+                    } catch (e) {data = {status:1,statusText:'格式错误'};}
+                }
+                if (data && !+data.status) {
+                    return callback(true, data.data);
+                } else {
+                    return callback(false,data);
+                }
+            },
+            error: function() {
+                return callback(false,{'statusText':'提交失败'});
+            }
+        });
+    }
+
+    function reset(params, callback) {
+        var options = {
+            client_id: client_id,
+            v: 0,
+            ru: 'http://wap.sogou.com'
+        };
+        callback = callback || noop;
+        $.extend(options, params);
+        $.ajax({
+            url: '/wap/findpwd/reset',
+            type: 'post',
+            data: options,
+            dataType: 'json',
+            success: function(data) {
+
+                if ('string' === typeof data) {
+                    try {
+                        data = JSON.parse(data);
+                    } catch (e) {data = {status:1,statusText:'格式错误'};}
+                }
+                if (data && !+data.status) {
+                    return callback(true, data.data);
+                } else {
+                    return callback(false,data);
+                }
+            },
+            error: function() {
+                return callback(false,{'statusText':'提交失败'});
+            }
+        });
+    }
+
     function register(params, callback) {
         var options = {
             client_id: client_id,
@@ -179,6 +339,11 @@ define([], function() {
         login: login,
         checkusername: checkusername,
         sendsms: sendsms,
-        register:register
+        checksms: checksms,
+        findpwdCheck: findpwdCheck,
+        findpwdSendmail: findpwdSendmail,
+        register:register,
+        reset: reset,
+        findpwdSendsms: findpwdSendsms
     };
 });
