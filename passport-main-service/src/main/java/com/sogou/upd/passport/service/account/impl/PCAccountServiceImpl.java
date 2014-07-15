@@ -40,7 +40,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     //kv key 分隔符
     private static final String KEY_KV_SPLIT = "_";
     //instanceid为空的默认赋值
-    private static final String EMPTY_INSTANCEID_SIGN = "NULL";
+    private static final String EMPTY_INSTANCEID_SIGN = "invalid";
     //允许pc token失效的最大数目
     private static final int REMOVE_PCTOKEN_MAX_NUM = 50;
     //kv token key 生成规则: KEY_PREFIX + passportId + "_" + clientId + "_" + instanceId
@@ -240,20 +240,23 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         for (Iterator<String> iter = tokenStack.iterator(); iter.hasNext(); ) {
             String secondTokenKey = tokenStack.pop();
             String[] secondTokenKeyArray = secondTokenKey.split(KEY_KV_SPLIT);
-            if (removeMaxNum < REMOVE_PCTOKEN_MAX_NUM && secondTokenKeyArray.length >= 2) {
+            if (removeMaxNum < REMOVE_PCTOKEN_MAX_NUM && secondTokenKeyArray.length >= 1) {
                 String clientIdStr = secondTokenKeyArray[0];
-                String instanceId = EMPTY_INSTANCEID_SIGN.equals(secondTokenKeyArray[1]) ? "" : secondTokenKeyArray[1];
+                String instanceId = "";
+                if (secondTokenKeyArray.length >= 2) {  //可能存在secondTokenKey:1044_ 情况
+                    instanceId = EMPTY_INSTANCEID_SIGN.equals(secondTokenKeyArray[1]) ? "" : secondTokenKeyArray[1];
+                }
                 try {
                     int clientId = Integer.parseInt(clientIdStr);
                     removeAccountToken(passportId, clientId, instanceId);
                     removeMaxNum++;
                 } catch (Exception e) {
                     logger.error("client not interge, passportId:" + passportId + ", clientId:" + clientIdStr);
-                    return;
+                    continue;
                 }
             } else {
-                logger.error("Second Token Key less two, passportId:" + passportId + ", secondTokenKey:" + secondTokenKey);
-                return;
+                logger.error("Second Token Key less one, passportId:" + passportId + ", secondTokenKey:" + secondTokenKey);
+                continue;
             }
         }
     }

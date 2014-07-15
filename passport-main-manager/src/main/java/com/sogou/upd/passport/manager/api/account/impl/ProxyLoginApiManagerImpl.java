@@ -212,6 +212,9 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     private String buildRedirectUrl(String ru, int status) {
+        if (Strings.isNullOrEmpty(ru)){
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
         if (ru.contains("?")) {
             return ru + "&status=" + status;
         } else {
