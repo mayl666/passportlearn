@@ -143,6 +143,7 @@ public class EmailSecureAction extends BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
+                return "/404";
             } else {
                 AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
                 if (domain == AccountDomainEnum.PHONE) {
