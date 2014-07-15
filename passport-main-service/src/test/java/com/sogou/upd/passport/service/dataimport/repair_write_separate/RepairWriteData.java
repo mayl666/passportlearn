@@ -54,6 +54,39 @@ public class RepairWriteData extends BaseTest {
     @Autowired
     private AccountInfoDAO accountInfoDAO;
 
+    @Test
+    public void checkRegDate() {
+        List<String> regList = FileIOUtil.readFileByLines("D:\\userid_time_2310.txt");
+        String content = null;
+        int count = 0;
+        for (String str : regList) {
+            String[] array = str.split(",");
+            String passportId = array[0];
+            if (!passportId.contains("@")) {
+                passportId = passportId + "@sogou.com";
+            }
+            try {
+                String regTime = array[1];
+                Account account = accounDao.getAccountByPassportId(passportId);
+                if (account != null) {
+                    content = passportId + "," + regTime + "," + account.getRegTime();
+                } else {
+                    content = passportId + "," + regTime + "," + "账号不存在";
+                }
+            } catch (Exception e) {
+                content = passportId + "日志没有访问时间";
+
+            }
+            failedList.add(content);
+            count++;
+        }
+        System.out.println("count:" + count);
+        try {
+            FileUtil.storeFile("D:\\userid_time_2310_check.txt", failedList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     public void fillRegisterData() {
@@ -61,18 +94,18 @@ public class RepairWriteData extends BaseTest {
         String content = null;
         int count = 0;
         for (String passportId : passportIdList) {
-            try{
-            IncUserInfo incUserInfo = incUserInfoDAO.getIncUserInfo(passportId);
-            IncUserOtherInfo incUserOtherInfo = incUserOtherInfoDAO.getIncUserOtherInfo(passportId);
-            IncUserExtInfo incUserExtInfo = incUserExtInfoDAO.getIncUserExtInfo(passportId);
-            Account account = buildAccount(incUserInfo, incUserOtherInfo, incUserExtInfo);
-            if (account != null) {
-                accounDao.insertAccount(passportId, account);
-                AccountInfo accountInfo = buildAccountInfo(passportId, incUserOtherInfo, incUserExtInfo);
-                accountInfoDAO.insertAccountInfo(passportId, accountInfo);
-            }
-            }catch (Exception e){
-                 content = "";
+            try {
+                IncUserInfo incUserInfo = incUserInfoDAO.getIncUserInfo(passportId);
+                IncUserOtherInfo incUserOtherInfo = incUserOtherInfoDAO.getIncUserOtherInfo(passportId);
+                IncUserExtInfo incUserExtInfo = incUserExtInfoDAO.getIncUserExtInfo(passportId);
+                Account account = buildAccount(incUserInfo, incUserOtherInfo, incUserExtInfo);
+                if (account != null) {
+                    accounDao.insertAccount(passportId, account);
+                    AccountInfo accountInfo = buildAccountInfo(passportId, incUserOtherInfo, incUserExtInfo);
+                    accountInfoDAO.insertAccountInfo(passportId, accountInfo);
+                }
+            } catch (Exception e) {
+                content = "";
                 count++;
                 failedList.add(content);
             }
@@ -86,7 +119,7 @@ public class RepairWriteData extends BaseTest {
         }
     }
 
-    private Account buildAccount(IncUserInfo incUserInfo, IncUserOtherInfo incUserOtherInfo, IncUserExtInfo incUserExtInfo) throws Exception{
+    private Account buildAccount(IncUserInfo incUserInfo, IncUserOtherInfo incUserOtherInfo, IncUserExtInfo incUserExtInfo) throws Exception {
         Account account = new Account();
         if (incUserInfo != null) {
             if (!"1".equals(incUserInfo.getFlag())) {
@@ -124,7 +157,7 @@ public class RepairWriteData extends BaseTest {
         }
     }
 
-    private AccountInfo buildAccountInfo(String passportId, IncUserOtherInfo incUserOtherInfo, IncUserExtInfo incUserExtInfo){
+    private AccountInfo buildAccountInfo(String passportId, IncUserOtherInfo incUserOtherInfo, IncUserExtInfo incUserExtInfo) {
         AccountInfo accountInfo = new AccountInfo();
         accountInfo.setPassportId(passportId);
         accountInfo.setModifyip(null);
