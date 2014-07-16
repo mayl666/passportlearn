@@ -191,15 +191,16 @@ public class BaseActionTest extends TestCase {
 
     private static final String key = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
 
+    @Test
     public void testPostXml() throws Exception {
         long ct = System.currentTimeMillis();
-        String code = "shipengzhi1986@sogou.com" + appId + key + ct;
+        String code = "alva396@sohu.com" + appId + key + ct;
         code = Coder.encryptMD5(code);
         String url = "http://internal.passport.sohu.com/interface/getuserinfo";
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         sb.append("<register>\n"
-                + "    <userid>shipengzhi1986@sogou.com</userid>\n"
+                + "    <userid>alva396@sohu.com</userid>\n"
                 + "    <appid>1100</appid>\n"
                 + "    <ct>" + ct + "</ct>\n"
                 + "    <code>" + code + "</code>\n"
