@@ -22,6 +22,7 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = "SP.PASSPORTID:ACTIVEMAILTOKEN_"; //passportId 与第三方邮件注册token有效期验证
     public static final String CACHE_PREFIX_NICKNAME_PASSPORTID = "SP.NICKNAME:PASSPORTID_"; //昵称与passportId映射
     public static final String CACHE_PREFIX_PASSPORTID_UPDATE_PWD_OR_BIND = "SP.UPDATE:PASSPORTID_"; //passportId与该用户是否修改了密码或绑定手机映射
+    public static final String CACHE_PREFIX_PASSPORTID_RESETPWD = "SP.RESETPWD:PASSPORTID_"; //passportId与该用户是否找回密码了
 
     // public static final String CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN = "SP.PASSPORTID:RESETPWDEMAILTOKEN_"; //passportId与邮件重置密码token有效期验证
     public static final String CACHE_PREFIX_PASSPORTID_ACCOUNTINFO = "SP.PASSPORTID:ACCOUNTINFO_"; // passportId与accountInfo映射
@@ -101,9 +102,6 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_MOBILE_SMSCODE_PROXY = "SP.MOBILE:PROXY_SMSCODE_";
 
     /*-----------------------------------------   KV系统   -----------------------------------------*/
-    /*==================动作记录相关缓存常量=====================*/
-    public static final String KV_PREFIX_PASSPORTID_ACTIONRECORD = "20002/action_records/SP.PASSPORTID:ACTIONRECORD_LIST_"; // passportId与操作列表的映射
-
     /*==================核心kv 动作记录相关缓存常量=====================*/
     public static final String CORE_KV_PREFIX_PASSPORTID_ACTIONRECORD = "13008/action_records/SP.PASSPORTID:ACTIONRECORD_LIST_";
     /*==================核心kv token相关缓存常量========================*/
@@ -136,5 +134,8 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_CLIENTID = "SP.CLIENTID_SET"; //client_id列表
     /*==================接口列表=====================================*/
     public static final String CACHE_PREFIX_INTERFACE = "SP.INTERFACE_SET";  //接口列表
+
+    /*==================找回密码相关缓存常量========================*/
+    public static final String CACHE_PREFIX_PASSPORTID_FINDPWDTIMES = "SP.PASSPORTID:FINDPWDTIMES_"; // passportId与找回密码次数之间的映射
 
 }

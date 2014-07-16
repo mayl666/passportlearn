@@ -10,7 +10,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
@@ -55,9 +54,6 @@ public class UserInfoApiController extends BaseController {
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
 
-    @Autowired
-    private AccountInfoManager accountInfoManager;
-
     /**
      * 获取用户基本信息
      *
@@ -67,7 +63,7 @@ public class UserInfoApiController extends BaseController {
     @InterfaceSecurity
     @RequestMapping(value = "/userinfo", method = RequestMethod.POST)
     @ResponseBody
-    public Object getUserInfo(GetUserInfoApiparams params, HttpServletRequest request) {
+    public Object getUserInfo(HttpServletRequest request, GetUserInfoApiparams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -118,15 +114,6 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(params.getUserid());
-
-        // 调用内部接口
-//        if (domain == AccountDomainEnum.THIRD) {
-//            result = sgUserInfoApiManager.updateUserInfo(params);
-//        } else {
-//            result = proxyUserInfoApiManager.updateUserInfo(params);
-//        }
-        //更新用户信息走搜狗
         result = sgUserInfoApiManager.updateUserInfo(params);
 
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), params.getModifyip());
@@ -154,9 +141,6 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        //调用检查昵称是否唯一的内部接口
-//        result = proxyUserInfoApiManager.checkUniqName(params);
-
         //调用搜狗接口check用户昵称
         result = sgUserInfoApiManager.checkUniqName(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUniqname(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));

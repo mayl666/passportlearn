@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.service.account;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.JsonUtil;
 import com.sogou.upd.passport.model.account.Account;
@@ -9,25 +10,26 @@ import junit.framework.Assert;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-
-import javax.inject.Inject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created with IntelliJ IDEA. User: liuling Date: 13-4-7 Time: 下午4:09 To change this template use
  * File | Settings | File Templates.
  */
-@ContextConfiguration(locations = "classpath:spring-config-test.xml")
-public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
+//@Ignore
+public class AccountServiceTest extends BaseTest {
 
-    @Inject
+    @Autowired
     private AccountService accountService;
+    @Autowired
+    private MobilePassportMappingService mobilePassportMappingService;
 
     private static final String MOBILE = "13545210241";
-    private static final String NEW_MOBILE = "13800000000";
     private static final String PASSWORD = "liuling8";
-    private static final String PASSPORT_ID1 = "13552848876@sohu.com";
+    private static final String SPZ_PASSPORTID = "shipengzhi1986@sogou.com";
+    private static final String exist_mobile = "18978941658";
+    private static final String new_bind_mobile = "15986484867";
+    private static final String binded_mobile = "13621009174";
     private static final
     String PASSPORT_ID = PassportIDGenerator.generator(MOBILE, AccountTypeEnum.PHONE.getValue());
     private static final String IP = "127.0.0.1";
@@ -123,29 +125,99 @@ public class AccountServiceTest extends AbstractJUnit4SpringContextTests {
     }
 
     /**
+     * 测试首次绑定手机
+     */
+    @Test
+    public void testBindMobile() {
+        //初始值shipengzhi1986@sogou.com绑定13621009174
+        Account account = accountService.queryAccountByPassportId(SPZ_PASSPORTID);
+        //已注册手机无法绑定
+        boolean isBinded = accountService.bindMobile(account, exist_mobile);
+        Assert.assertTrue(!isBinded);
+        //账号已绑定手机，无法再绑
+        boolean isModifyBind = accountService.bindMobile(account, new_bind_mobile);
+        Assert.assertTrue(!isModifyBind);
+        //删除绑定
+        boolean isUnbind = accountService.deleteOrUnbindMobile(binded_mobile);
+        Assert.assertTrue(isUnbind);
+        //异常情况，account写成功，但mapping没写成功
+        account.setMobile(binded_mobile);
+        boolean isAbnormalBind = accountService.bindMobile(account, binded_mobile);
+        Assert.assertTrue(!isAbnormalBind);
+        //首次绑定
+        account.setMobile(null);
+        boolean isBind = accountService.bindMobile(account, binded_mobile);
+        Assert.assertTrue(isBind);
+    }
+
+    /**
      * 测试修改绑定手机
      */
     @Test
-    public void testModifyMobile() {
-        Account account = accountService.queryAccountByPassportId(PASSPORT_ID1);
-        boolean flag = accountService.modifyMobile(account, NEW_MOBILE);
-        if (flag == true) {
-            System.out.println("修改成功：" + accountService.queryAccountByPassportId(PASSPORT_ID1).getMobile());
-        } else {
-            System.out.println("修改失败");
-        }
-        accountService.modifyMobile(account, account.getMobile());
+    public void testModifyBindMobile() {
+        //初始值shipengzhi1986@sogou.com绑定13621009174
+        Account account = accountService.queryAccountByPassportId(SPZ_PASSPORTID);
+        //已注册手机无法修改绑定
+        boolean isBinded = accountService.modifyBindMobile(account, exist_mobile);
+        Assert.assertTrue(!isBinded);
+        //账号未绑定手机，无法修改绑定
+        account.setMobile(null);
+        boolean isModifyBind = accountService.modifyBindMobile(account, new_bind_mobile);
+        Assert.assertTrue(!isModifyBind);
+        account.setMobile(binded_mobile);
+        //修改绑定
+        boolean isBind = accountService.modifyBindMobile(account, new_bind_mobile);
+        Assert.assertTrue(isBind);
+        //异常情况，上一次绑定失败，写account成功，写mapping失败
+        mobilePassportMappingService.deleteMobilePassportMapping(new_bind_mobile);
+        boolean isAbnormalBind = accountService.modifyBindMobile(account, binded_mobile);
+        Assert.assertTrue(!isAbnormalBind);
+        //恢复初始值
+        mobilePassportMappingService.initialMobilePassportMapping(new_bind_mobile, SPZ_PASSPORTID);
+        boolean isRenewBind = accountService.modifyBindMobile(account, binded_mobile);
+        Assert.assertTrue(isRenewBind);
     }
 
-
-    @Test
-    public void testCheckNickName() throws Exception {
-        String nickName = "KeSyren1234";
-        Assert.assertTrue(StringUtils.isNotEmpty(accountService.checkUniqName(nickName)));
-        System.out.println("================= testCheckNickName:" + accountService.checkUniqName(nickName));
-
-    }
-
+    /*
+     * 测试删除
+     */
+//    @Test
+//    public void testDeleteMobile() {
+//        String[] mobileArray = {"13071155730",
+//                "18910872640",
+//                "18311315433",
+//                "18910872640",
+//                "18910872642",
+//                "13071155730",
+//                "18501378736",
+//                "13810236336",
+//                "18910873265",
+//                "13621009174",
+//                "18600548420",
+//                "18811417719",
+//                "13381178392",
+//                "18810549604",
+//                "18500225373",
+//                "13552254068",
+//                "18001350996",
+//                "18601667692",
+//                "13141395126",
+//                "18010065818",
+//                "13764021515",
+//                "13842313090",
+//                "18101355191",
+//                "15801100788",
+//                "13301195093",
+//                "18511531063",
+//                "18822487748",
+//                "18628991105",
+//                "13260261403",
+//                "13552422514"};
+//        for (String mobile : mobileArray) {
+//            boolean isSuccess = accountService.deleteOrUnbindMobile(mobile);
+//            System.out.println("mobile:" + mobile + " delete " + isSuccess);
+//        }
+//    }
 
     @Test
     public void testFixData() {

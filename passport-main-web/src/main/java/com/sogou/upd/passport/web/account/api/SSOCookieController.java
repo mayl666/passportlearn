@@ -9,8 +9,8 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.common.validation.constraints.RuValidator;
 import com.sogou.upd.passport.manager.account.CookieManager;
+import com.sogou.upd.passport.manager.form.PPCookieParams;
 import com.sogou.upd.passport.manager.form.SSOCookieParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -39,6 +39,9 @@ public class SSOCookieController extends BaseController {
 
     private static final String DEFAULT_URL = "https://account.sogou.com";
 
+    /*
+     * 非搜狗域下种跨域cookie接口，目前使用产品：导航daohang.qq.com/hao.qq.com、输入法pinyin.qq.com
+     */
     @RequestMapping(value = "/sso/setcookie", method = RequestMethod.GET)
     public void setcookie(HttpServletRequest request, HttpServletResponse response, SSOCookieParams ssoCookieParams) throws Exception {
         Result result = new APIResultSupport(false);
@@ -47,43 +50,26 @@ public class SSOCookieController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            returnErrMsg(response,ssoCookieParams.getRu(),result.getCode(),result.getMessage());
+            returnErrMsg(response, ssoCookieParams.getRu(), result.getCode(), result.getMessage());
+            return;
         }
 
-        //response 回去的时候设置一个p3p的header
-        //用来定义IE的跨域问题。
-        response.setHeader("P3P","CP=CAO PSA OUR");
+        //response 回去的时候设置一个p3p的header,用来定义IE的跨域问题。
+        response.setHeader("P3P", "CP=CAO PSA OUR");
 
-        result = cookieManager.setSSOCookie(response,ssoCookieParams);
+        result = cookieManager.setSSOCookie(response, ssoCookieParams);
 
         String ru = ssoCookieParams.getRu();
-        if(!result.isSuccess()){
-            log(request,"sso_setcookie",ru,result.getCode());
-            returnErrMsg(response,ru,result.getCode(),result.getMessage());
+        if (!result.isSuccess()) {
+            log(request, "sso_setcookie", ru, result.getCode());
+            returnErrMsg(response, ru, result.getCode(), result.getMessage());
+            return;
         }
         if (!StringUtils.isBlank(ru)) {
             response.sendRedirect(ru);
         }
-        log(request,"sso_setcookie",ru,"0");
+        log(request, "sso_setcookie", ru, "0");
         return;
-    }
-
-    private void returnErrMsg(HttpServletResponse response, String ru,String errorCode,String errorMsg)throws Exception{
-        RuValidator ruValidator=new RuValidator();
-        boolean isValid = ruValidator.isValid(ru,null);
-        if (Strings.isNullOrEmpty(ru) || !isValid){
-            ru = DEFAULT_URL;
-        }
-        response.sendRedirect(ru + "?errorCode="+errorCode+"&errorMsg="+ Coder.encodeUTF8(errorMsg));
-        return;
-    }
-
-    private void log(HttpServletRequest request,String passportId,String ru,String resultCode){
-        //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), "", resultCode, getIp(request));
-        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
-        userOperationLog.putOtherMessage("ru", ru);
-        UserOperationLogUtil.log(userOperationLog);
     }
 
     @RequestMapping(value = "/sso/logout_redirect", method = RequestMethod.GET)
@@ -95,7 +81,8 @@ public class SSOCookieController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            returnErrMsg(response, ssoClearCookieParams.getRu(),result.getCode(), result.getMessage());
+            returnErrMsg(response, ssoClearCookieParams.getRu(), result.getCode(), result.getMessage());
+            return;
         }
         String domain = ssoClearCookieParams.getDomain();
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGINF, domain);
@@ -112,6 +99,56 @@ public class SSOCookieController extends BaseController {
             response.sendRedirect(ru);
         }
         return;
+    }
+
+    /*
+     * 桌面端产品种搜狗域cookie接口，由于客户端已写死，所以需要一直保持种ppinf、pprdig
+     */
+    @RequestMapping(value = "/act/setppcookie", method = RequestMethod.GET)
+    public void setPPCookie(HttpServletRequest request, HttpServletResponse response, PPCookieParams ppCookieParams)
+            throws Exception {
+        Result result = new APIResultSupport(false);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(ppCookieParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            returnErrMsg(response, ppCookieParams.getRu(), result.getCode(), result.getMessage());
+            return;
+        }
+        //response 回去的时候设置一个p3p的header
+        //用来定义IE的跨域问题。
+        response.setHeader("P3P", "CP=CAO PSA OUR");
+
+        result = cookieManager.setPPCookie(response, ppCookieParams);
+
+        String ru = ppCookieParams.getRu();
+        if (!result.isSuccess()) {
+            log(request, "pp_setcookie", ru, result.getCode());
+            returnErrMsg(response, ru, result.getCode(), result.getMessage());
+            return;
+        }
+        if (!StringUtils.isBlank(ru)) {
+            response.sendRedirect(ru);
+        }
+        log(request, "pp_setcookie", ru, "0");
+        return;
+    }
+
+    private void returnErrMsg(HttpServletResponse response, String ru, String errorCode, String errorMsg) throws Exception {
+        if (Strings.isNullOrEmpty(ru)) {
+            ru = DEFAULT_URL;
+        }
+        response.sendRedirect(ru + "?errorCode=" + errorCode + "&errorMsg=" + Coder.encodeUTF8(errorMsg));
+        return;
+    }
+
+    private void log(HttpServletRequest request, String passportId, String ru, String resultCode) {
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), "", resultCode, getIp(request));
+        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+        userOperationLog.putOtherMessage("ru", ru);
+        UserOperationLogUtil.log(userOperationLog);
     }
 
 }

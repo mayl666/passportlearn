@@ -56,6 +56,9 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         SUPPORT_FIELDS_MAP.add("avatarurl"); //用户头像
         SUPPORT_FIELDS_MAP.add("createtime");//创建时间
         SUPPORT_FIELDS_MAP.add("createip");//创建ip
+        SUPPORT_FIELDS_MAP.add("mobile");//todo 兼容搜狗流程获取安全信息的参数，密保手机
+        SUPPORT_FIELDS_MAP.add("email");//todo 兼容搜狗流程获取安全信息的参数，密保邮箱
+        SUPPORT_FIELDS_MAP.add("question");//todo 兼容搜狗流程获取安全信息的参数，密保问题
     }
 
     @Override
@@ -162,17 +165,18 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
      * @return
      */
     private RequestModelXml replaceGetUserInfoParams(final RequestModelXml requestModelXml) {
-        if (requestModelXml.containsKey("sec_email")) {
+        //todo email、mobile、question兼容搜狗流程获取安全信息的参数
+        if (requestModelXml.containsKey("sec_email") || requestModelXml.containsKey("email")) {
             requestModelXml.addParam("email", "");
             requestModelXml.addParam("emailflag", "");
             requestModelXml.deleteParams("sec_email");
         }
-        if (requestModelXml.containsKey("sec_mobile")) {
+        if (requestModelXml.containsKey("sec_mobile") || requestModelXml.containsKey("mobile")) {
             requestModelXml.addParam("mobile", "");
             requestModelXml.addParam("mobileflag", "");
             requestModelXml.deleteParams("sec_mobile");
         }
-        if (requestModelXml.containsKey("sec_ques")) {
+        if (requestModelXml.containsKey("sec_ques") || requestModelXml.containsKey("question")) {
             requestModelXml.addParam("question", "");
             requestModelXml.deleteParams("sec_ques");
         }

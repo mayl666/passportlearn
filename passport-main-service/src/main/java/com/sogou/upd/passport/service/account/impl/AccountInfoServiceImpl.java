@@ -1,14 +1,14 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.result.APIResultSupport;
-import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.dao.account.AccountInfoDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
+import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +32,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccountInfo", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public AccountInfo queryAccountInfoByPassportId(String passportId) throws ServiceException {
         AccountInfo accountInfo;
@@ -51,18 +52,27 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     }
 
     @Override
-    public AccountInfo modifyEmailByPassportId(String passportId, String email)
+    public String queryBindEmailByPassportId(String passportId) throws ServiceException {
+        AccountInfo accountInfo = queryAccountInfoByPassportId(passportId);
+        String bindEmail = null;
+        if (accountInfo != null) {
+            bindEmail = accountInfo.getEmail();
+        }
+        return bindEmail;
+    }
+
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_modifyBindEmail", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public AccountInfo modifyBindEmailByPassportId(String passportId, String email)
             throws ServiceException {
         AccountInfo accountInfo;
         try {
             accountInfo = new AccountInfo(passportId);
-
             accountInfo.setEmail(email);
             int row = accountInfoDAO.saveEmailOrInsert(passportId, accountInfo);
             if (row != 0) {
                 // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
                 String cacheKey = buildAccountInfoKey(passportId);
-
                 if ((accountInfo = dbShardRedisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
                     accountInfo.setEmail(email);
                 } else {
@@ -77,10 +87,10 @@ public class AccountInfoServiceImpl implements AccountInfoService {
         return null;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_modifyQues", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public AccountInfo modifyQuesByPassportId(String passportId, String question, String answer)
             throws ServiceException {
-        Result result = new APIResultSupport(false);
         AccountInfo accountInfo;
         try {
             accountInfo = new AccountInfo(passportId);
@@ -106,10 +116,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
         }
     }
 
-    private String buildAccountInfoKey(String passportId) {
-        return CACHE_PREFIX_PASSPORTID_ACCOUNT_INFO + passportId;
-    }
-
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updateAccountInfo", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean updateAccountInfo(AccountInfo accountInfo) throws ServiceException {
         try {
@@ -149,5 +156,19 @@ public class AccountInfoServiceImpl implements AccountInfoService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
+
+    @Override
+    public boolean deleteBindEmailByPassportId(String passportId) throws ServiceException {
+        String email = queryBindEmailByPassportId(passportId);
+        if (!Strings.isNullOrEmpty(email)) {
+            AccountInfo modifyAccountInfo = modifyBindEmailByPassportId(passportId, null);
+            return modifyAccountInfo != null;
+        }
+        return false;
+    }
+
+    private String buildAccountInfoKey(String passportId) {
+        return CACHE_PREFIX_PASSPORTID_ACCOUNT_INFO + passportId;
     }
 }

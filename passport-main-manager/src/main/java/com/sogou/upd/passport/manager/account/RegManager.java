@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.api.account.form.ResendActiveMailParams;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 
@@ -70,6 +71,14 @@ public interface RegManager {
      * @throws ServiceException
      */
     public void incRegTimes(String ip, String cookieStr) throws Exception;
+
+    /**
+     * 邮箱注册后，用户没有激活邮件，直接登录时，提示重新发送激活邮件接口
+     *
+     * @param resendActiveMailParams
+     * @return
+     */
+    public Result resendActiveMail(ResendActiveMailParams resendActiveMailParams);
 
     /**
      * 注册内部接口ip安全限制

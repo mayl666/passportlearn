@@ -30,7 +30,6 @@ public class UserOperationLog {
     //其它信息
     private Map<String,String> otherMessageMap;
 
-
     /**
      * 用户操作行为记录
      * @param passportId

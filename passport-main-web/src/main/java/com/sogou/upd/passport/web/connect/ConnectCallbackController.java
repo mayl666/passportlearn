@@ -2,18 +2,14 @@ package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
-import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -22,16 +18,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 
 /**
  * 第三方账号授权回调接口
@@ -54,14 +46,21 @@ public class ConnectCallbackController extends BaseConnectController {
                                          @PathVariable("providerStr") String providerStr, Model model) throws IOException {
         String viewUrl;
         String ru = req.getParameter(CommonConstant.RESPONSE_RU);
+        String type = Strings.isNullOrEmpty(req.getParameter("type")) ? "web" : req.getParameter("type");
+        String clientIdStr = req.getParameter(CommonConstant.CLIENT_ID);
+        if (Strings.isNullOrEmpty(clientIdStr)) {
+            res.sendRedirect(ru);
+            return "empty";
+        }
+
         String httpOrHttps = getProtocol(req);
         try {
+            ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_CONNECT_REDIRECT_URL : ru;
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
         } catch (UnsupportedEncodingException e) {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
-        String type = req.getParameter("type");
 
         Result result = oAuthAuthLoginManager.handleConnectCallback(req, providerStr, ru, type, httpOrHttps);
         viewUrl = (String) result.getModels().get(CommonConstant.RESPONSE_RU);
@@ -77,7 +76,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute("uniqname", Coder.encode((String) result.getModels().get("uniqname"), "UTF-8"));  //qq的昵称会出现特殊字符需url编码
                 model.addAttribute("result", result.getModels().get("result"));
                 return viewUrl;
-            } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
+            } else if (ConnectTypeEnum.WAP.toString().equals(type)) {
                 String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
                 ServletUtil.setCookie(res, LoginConstant.COOKIE_SGID, sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
@@ -93,14 +92,14 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute("logintype", result.getModels().get("logintype"));
                 return viewUrl;
             } else if (ConnectTypeEnum.WEB.toString().equals(type)) {
-                int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
-                cookieManager.setCookie(res, passportId, clientId, getIp(req),ru,(int) DateAndNumTimesConstant.TWO_WEEKS);
+                int clientId = Integer.valueOf(clientIdStr);
+                cookieManager.setCookie(res, passportId, clientId, getIp(req), ru, (int) DateAndNumTimesConstant.TWO_WEEKS);
                 String domain = req.getParameter("domain");
                 if (!Strings.isNullOrEmpty(domain)) {
-                    String refnick =  (String)result.getModels().get("refnick");
+                    String refnick = (String) result.getModels().get("refnick");
                     //uniqname： 对qq导航应用，传qq昵称
-                    String creeateSSOCookieUrl = cookieManager.buildCreateSSOCookieUrl(domain, clientId,passportId,refnick,refnick,ru, getIp(req));
-                    logger.debug("create sso cookie url:"+creeateSSOCookieUrl);
+                    String creeateSSOCookieUrl = cookieManager.buildCreateSSOCookieUrl(domain, clientId, passportId, refnick, refnick, ru, getIp(req));
+                    logger.debug("create sso cookie url:" + creeateSSOCookieUrl);
                     res.sendRedirect(creeateSSOCookieUrl);
                 } else {
                     res.sendRedirect(ru);
@@ -117,7 +116,7 @@ public class ConnectCallbackController extends BaseConnectController {
             } else if (ConnectTypeEnum.PC.toString().equals(type)) {
                 return viewUrl;
             } else {
-                res.sendRedirect(viewUrl+"?errorCode="+result.getCode()+"&errorMsg="+ Coder.encodeUTF8(result.getMessage()));
+                res.sendRedirect(viewUrl + "?errorCode=" + result.getCode() + "&errorMsg=" + Coder.encodeUTF8(result.getMessage()));
                 return "empty";
             }
         }

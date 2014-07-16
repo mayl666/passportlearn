@@ -8,11 +8,15 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.account.AccountSecureService;
+import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -42,6 +46,10 @@ public class CommonManagerImpl implements CommonManager {
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private BindApiManager proxyBindApiManager;
+    @Autowired
+    private AccountService accountService;
+    @Autowired
+    private AccountSecureService accountSecureService;
 
     @Override
     public boolean isCodeRight(String firstStr, int clientId, long ct, String originalCode) {
@@ -71,13 +79,6 @@ public class CommonManagerImpl implements CommonManager {
         operateTimesService.incRegTimes(ip, cookieStr);
     }
 
-    /**
-     * 根据username获取主账号，形如：
-     * 个性账号：username=xxx,passportId=xxx@sogou.com;
-     * 手机未绑定主账号时：username=132xxxx1234,passportId=132xxxx1234@sohu.com；
-     * 外域邮箱：usename=xxxx@163.com,passportId=xxxx@163.com;
-     * 及其返回手机号绑定的主账号
-     */
     @Override
     public String getPassportIdByUsername(String username) throws Exception {
         //根据username获取passportID
@@ -108,6 +109,16 @@ public class CommonManagerImpl implements CommonManager {
             throw new Exception(e);
         }
         return passportId;
+    }
+
+    @Override
+    public String getSecureCodeResetPwd(String passportId, int clientId) throws ServiceException {
+        return accountSecureService.getSecureCodeResetPwd(passportId, clientId);  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Account queryAccountByPassportId(String passportId) throws ServiceException {
+        return accountService.queryAccountByPassportId(passportId);  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 

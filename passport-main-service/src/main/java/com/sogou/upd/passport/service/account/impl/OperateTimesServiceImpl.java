@@ -507,13 +507,13 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public boolean checkLimitBind(String userId, int clientId) throws ServiceException {
+    public boolean checkBindLimit(String passportId, int clientId) throws ServiceException {
         try {
-            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDNUM + userId +
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_BINDNUM + passportId +
                     "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
             return !checkTimesByKey(cacheKey, DateAndNumTimesConstant.BIND_LIMIT);
         } catch (Exception e) {
-            logger.error("checkLimitBind:passportId" + userId, e);
+            logger.error("checkBindLimit:passportId" + passportId, e);
             return true;
         }
     }
@@ -635,6 +635,74 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         //ip与发短信验证码次数映射
         String ipCacheKey = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE_IPBLACKLIST + ip;
         recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+    }
+
+    @Override
+    public boolean incFindPwdTimes(String passportId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_FINDPWDTIMES + passportId;
+            recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            return true;
+        } catch (Exception e) {
+            logger.error("incFindPwdTimes:passportId" + passportId, e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean checkFindPwdTimes(String passportId) throws ServiceException {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_FINDPWDTIMES + passportId;
+            return checkTimesByKey(cacheKey, DateAndNumTimesConstant.FINDPWD_LIMIT);
+        } catch (Exception e) {
+            logger.error("checkFindPwdTimes:passportId" + passportId, e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean incLimitFindPwdResetPwd(String userId, int clientId, String ip) throws ServiceException {
+        try {
+            String userIdCacheKey = buildFindPwdResetPwdKey(userId,clientId);
+            recordTimes(userIdCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+
+            String ipCacheKey = buildFindPwdResetPwdKey(ip,clientId);
+            recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            return true;
+        } catch (Exception e) {
+            logger.error("incLimitResetPwd: passportId" + userId, e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isOverLimitFindPwdResetPwd(String userId, int clientId, String ip) throws ServiceException {
+        try {
+            String userIdCacheKey = buildFindPwdResetPwdKey(userId,clientId);
+            if(checkTimesByKey(userIdCacheKey, DateAndNumTimesConstant.RESETPWD_NUM)){
+                return true;
+            }
+            String ipCacheKey = buildFindPwdResetPwdKey(ip,clientId);
+            if(checkTimesByKey(ipCacheKey, DateAndNumTimesConstant.IP_RESETPWD_NUM)){
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("checkLimitResetPwd:passportId" + userId, e);
+            return false;
+        }
+    }
+
+    private String buildFindPwdResetPwdKey(String userIdOrIp, int clientId){
+        String cacheKey = null;
+        if (clientId == 0) {
+            cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM + userIdOrIp +
+                    "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+        } else {
+            cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM + userIdOrIp +
+                    "_" + clientId + "_" + DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+        }
+        return cacheKey;
     }
 
     public static boolean isIPAdress( String str )

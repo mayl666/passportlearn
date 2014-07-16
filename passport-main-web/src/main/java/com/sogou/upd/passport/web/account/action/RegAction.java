@@ -10,14 +10,17 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.ResendActiveMailParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -55,6 +58,8 @@ public class RegAction extends BaseController {
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private CookieManager cookieManager;
+    @Autowired
+    private CommonManager commonManager;
 
 
     /**
@@ -133,15 +138,7 @@ public class RegAction extends BaseController {
                 }
                 return result.toString();
             }
-
-            //检验用户名是否存在
-            String username = regParams.getUsername();
             int clientId = Integer.valueOf(regParams.getClient_id());
-            result = checkAccountNotExists(username, clientId);
-            if (!result.isSuccess()) {
-                return result.toString();
-            }
-
             result = regManager.webRegister(regParams, ip);
             if (result.isSuccess()) {
                 //设置来源
@@ -173,6 +170,62 @@ public class RegAction extends BaseController {
             }
             //用户注册log
             UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id(), logCode, getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
+        }
+        return result.toString();
+    }
+
+    /**
+     * 重新发送激活邮件
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/resendActiveMail", method = RequestMethod.POST)
+    @ResponseBody
+    public Object resendActiveMail(HttpServletRequest request, ResendActiveMailParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            //检查client_id是否存在
+            int clientId = Integer.parseInt(params.getClient_id());
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result;
+            }
+            String username = params.getUsername();
+            //如果账号存在并且状态为未激活，则重新发送激活邮件
+            Account account = commonManager.queryAccountByPassportId(username);
+            if (account != null) {
+                switch (account.getFlag()) {
+                    case 0:
+                        //未激活，发送激活邮件
+                        result = regManager.resendActiveMail(params);
+                        break;
+                    case 1:
+                        //正式用户，可直接登录
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                        break;
+                    case 2:
+                        //用户已经被封杀
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+                        break;
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            }
+        } catch (Exception e) {
+            logger.error("method[resendActiveMail] send mobile sms error.{}", e);
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUsername(), request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);

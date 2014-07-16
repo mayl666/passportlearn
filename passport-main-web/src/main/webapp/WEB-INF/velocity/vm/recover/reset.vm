@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=837973" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=237098" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -39,11 +39,9 @@
 
 <div class="main-content one-col">
     <div class="inner recover" >
-        <div class="title">
-            设置新密码
-        </div>
+        <img src="/./static/img/findpwd/step3.png" border="0"/>
         <div  class="form">
-            <form method="post" id="" action="/web/findpwd/reset">
+            <form method="post" action="/web/findpwd/reset">
                 <p class="ptitle">请输入新密码</p>
                 
                 <div class="form-item">
@@ -59,7 +57,8 @@
     </span>
 </div>
                 <input type="hidden" name="scode"/>
-                <input type="hidden" name="userid"/>
+                <input type="hidden" name="username"/>
+                <input type="hidden" name="ru"/>
                 <div class="form-btn">
     <button type="submit">确定</button>
 </div>
@@ -79,7 +78,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/recover.js?t=2014070238"></script>
+    <script type="text/javascript" src="/./static/js/recover.js?t=2014070722"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

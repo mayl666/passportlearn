@@ -30,6 +30,7 @@ public class BaseTest extends AbstractJUnit4SpringContextTests {
     protected static final String userid_sogou_1 = "liulingtest01@sogou.com";
     protected static final String userid_sogou_2 = "osadnfdf@sogou.com";
     protected static final String userid_invild = "osadnfdf4r";
+    protected static final String mobile_userid_sogou = "shipengzhi1986@sogou.com";
     //随机生成手机号码
     protected String new_mobile = new GeneratorRandomMobile().generateRandomMobile();
     protected static final String mobile_1 = "15737126381";    //已经绑定了某主账号的手机号
@@ -76,7 +77,7 @@ public class BaseTest extends AbstractJUnit4SpringContextTests {
 
     protected static final String serverSecret = "Hpi%#ZT<u@hR.6F)HtfvUKf5ERYR1b";
 
-    protected static final String modifyIp = "10.1.164.160";
+    protected static final String modifyIp = "127.0.0.1";
 
     protected static final String ip = "172.165.0.32";
 

@@ -96,7 +96,7 @@ public class BaseConnectController extends BaseController {
                 }
                 params.put(CommonConstant.RESPONSE_STATUS_TEXT, errorText);
                 ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
-            } else if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+            } else if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 ru = "/pcaccount/connectlogin";
             }
         } catch (Exception e) {

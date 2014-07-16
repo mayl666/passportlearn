@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.account;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.APIResultForm;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
@@ -44,6 +45,14 @@ public class RegManagerTest extends BaseTest {
     private static final String ru = "http://account.sogou.com";
     private static final String email_capthca = "grtyr";
     private static final String sogou_capthca = "g78se";
+
+    @Test
+    public void testResult() {
+        Result result = new APIResultSupport(false);
+        result.setDefaultModel("userid", "11111");
+        result.setDefaultModel("userid", "22222");
+        System.out.println(result.toString());
+    }
 
     /**
      * 检查账号是否存在

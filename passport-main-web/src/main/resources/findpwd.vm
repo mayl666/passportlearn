@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>搜狗通行证</title>
+    <base target="_blank"/>
+    <style type="text/css">
+        body {
+            font: 14px/1.666 arial, verdana, sans-serif;
+            padding: 0;
+            margin: 0;
+            white-space: normal;
+            word-wrap: break-word;
+            min-height: 100px
+        }
+        a{color: #003399}
+    </style>
+</head>
+<body>
+<img src="http://account.sogou.com/static/img/index/logo.png" border="0"/>
+<br><br>亲爱的用户：<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;您好，欢迎您使用搜狗通行证服务!
+<br><br>我们收到您的找回密码邮箱验证申请,请单击以下链接进行重置密码:<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="$activeUrl">$activeUrl</a><br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;如果您的邮箱不支持链接点击，请将以上链接地址拷贝到您的浏览器地址栏中。如果该邮件误发给了您，您无需执行任何操作。<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;此邮件由系统自动产生，请勿回复。<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;搜狗通行证<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;$date
+</body>
+</html>

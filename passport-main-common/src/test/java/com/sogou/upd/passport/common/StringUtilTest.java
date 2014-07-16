@@ -2,7 +2,6 @@ package com.sogou.upd.passport.common;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
 import junit.framework.TestCase;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -11,7 +10,6 @@ import java.io.UnsupportedEncodingException;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-22 Time: 下午5:34 To change this template use
  * File | Settings | File Templates.
  */
-@Ignore
 public class StringUtilTest extends TestCase {
     private static final String STR1 = "hello";
     private static final String STR2 = " world";
@@ -67,5 +65,18 @@ public class StringUtilTest extends TestCase {
         assertSame(expected, "<body>213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)" +
                 "!(@*$&@(&#!)@*)!&$!)@^%@(!&#. ], ");
     }
+
+    public void testFilterSpecialChar() {
+        //包含emoji标签
+        String s1 = "<body>😄213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)!" +
+                "(@*$&@(&#!)@*)!&$!)@^%@(!&#. 😄👩👨], ";
+        String actual1 = StringUtil.filterSpecialChar(s1);
+        assertEquals("<body>213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)!(@*$&@(&#!)@*)!&$!)@^%@(!&#. ],",actual1);
+        //包含字符，unicode字符转成utf8编码长度大于3的，写入数据库会失败
+        String s2 = "test string=\" + \"walmart öbama 👽💔";
+        String actual2 = StringUtil.filterSpecialChar(s2);
+        assertEquals("test string=\" + \"walmart bama ", actual2);
+    }
+
 
 }

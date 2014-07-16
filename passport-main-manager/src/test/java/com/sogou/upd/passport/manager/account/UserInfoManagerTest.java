@@ -61,7 +61,7 @@ public class UserInfoManagerTest extends BaseTest {
     public void testCheckGetUserInfo() {
 
 //        GetUserInfoApiparams params = initParams();
-        GetUserInfoApiparams params = getUserInfoApiParams(fileds1, "13562478978");
+        GetUserInfoApiparams params = getUserInfoApiParams(fileds1, userid);
 
         //通过 调用sohu api 获取
         Result resultSH = proxyUserInfoApiManager.getUserInfo(params);

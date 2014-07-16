@@ -16,8 +16,6 @@ import java.util.Map;
  */
 public class APIResultSupport extends ResultSupport {
 
-    private Logger log = LoggerFactory.getLogger(APIResultSupport.class);
-
     /**
      * 创建一个result。
      */
@@ -85,51 +83,4 @@ public class APIResultSupport extends ResultSupport {
         return form.toString();
     }
 
-    class APIResultForm {
-
-        private Map<String, Object> data = Maps.newHashMap();
-        private String status;
-        private String statusText;
-
-        public APIResultForm(String status, String statusText, Map<String, Object> data) {
-            this.status = status;
-            this.statusText = statusText;
-            this.data = data;
-        }
-
-        public Map<String, Object> getData() {
-            return data;
-        }
-
-        public void setData(Map<String, Object> data) {
-            this.data = data;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public void setStatus(String status) {
-            this.status = status;
-        }
-
-        public String getStatusText() {
-            return statusText;
-        }
-
-        public void setStatusText(String statusText) {
-            this.statusText = statusText;
-        }
-
-        @Override
-        public String toString() {
-            String str = "";
-            try {
-                str = JacksonJsonMapperUtil.getMapper().writeValueAsString(this);
-            } catch (IOException e) {
-                log.error("ResultObject As String is error!");
-            }
-            return str;
-        }
-    }
 }

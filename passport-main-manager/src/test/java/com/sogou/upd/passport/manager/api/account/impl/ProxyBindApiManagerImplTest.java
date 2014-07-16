@@ -99,11 +99,10 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 //    }
 
 
-
     @Ignore
     @Test
     public void testBindEmail() throws Exception {
-        BindEmailApiParams bindEmailApiParams=new BindEmailApiParams();
+        BindEmailApiParams bindEmailApiParams = new BindEmailApiParams();
         bindEmailApiParams.setNewbindemail("411541129@qq.com");
         bindEmailApiParams.setOldbindemail("34310327@qq.com");
         bindEmailApiParams.setPassword(Coder.encryptMD5(password));
@@ -116,10 +115,12 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
     }
 
     @Test
-    public void testGetPassportIdFromMobile(){
-        BaseMoblieApiParams baseMoblieApiParams=new BaseMoblieApiParams();
-        baseMoblieApiParams.setMobile("13621050796");
+    public void testGetPassportIdFromMobile() {
+        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+        baseMoblieApiParams.setMobile("15335176629");
         Result result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-        System.out.println("result:"+result.toString());
+//        result.getModels().put("userid", "");
+        System.out.println("userid:" + result.getModels().get("userid").toString());
+        System.out.println("result:" + result.toString());
     }
 }

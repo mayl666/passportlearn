@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.dao.account.MobilePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import org.perf4j.aop.Profiled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
     @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryPassportIdByMobile", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public String queryPassportIdByMobile(String mobile) throws ServiceException {
         String passportId;
@@ -46,17 +48,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
         return passportId;
     }
 
-    @Override
-    public String queryPassportIdByUsername(String username) throws ServiceException {
-        String passportId;
-        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-            passportId = queryPassportIdByMobile(username);
-        } else {
-            passportId = username;
-        }
-        return passportId;
-    }
-
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initMobileMapping", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean initialMobilePassportMapping(String mobile, String passportId) throws ServiceException {
         try {
@@ -72,28 +64,11 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
         return false;
     }
 
-
-    @Override
-    public boolean updateMobilePassportMapping(String mobile, String passportId) throws ServiceException {
-        try {
-            int accountRow = mobilePassportMappingDAO.updateMobilePassportMapping(mobile, passportId);
-            if (accountRow != 0) {
-                String cacheKey = buildMobilePassportMappingKey(mobile);
-                dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
-                return true;
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        return false;
-    }
-
-
     protected String buildMobilePassportMappingKey(String mobile) {
         return CACHE_PREFIX_MOBILE_PASSPORT + mobile;
     }
 
-
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_deleteMobileMapping", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean deleteMobilePassportMapping(String mobile) throws ServiceException {
         try {

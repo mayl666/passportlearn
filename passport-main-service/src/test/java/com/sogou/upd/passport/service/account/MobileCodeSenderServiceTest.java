@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 import org.junit.Ignore;
@@ -18,8 +19,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 @Ignore
-@ContextConfiguration(locations = "classpath:spring-config-test.xml")
-public class MobileCodeSenderServiceTest extends AbstractJUnit4SpringContextTests {
+public class MobileCodeSenderServiceTest extends BaseTest {
 
     private static final String MOBILE = "13545210241";
     private static final String SMSCODE = "13267";

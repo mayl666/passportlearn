@@ -59,16 +59,6 @@ public interface AccountBaseInfoService {
     public AccountBaseInfo insertAccountBaseInfo(String passportId, String uniqname, String avatar);
 
     /**
-     * 插入昵称和头像
-     * 不做任何昵称和头像逻辑判断，只是存在则更新，不存在则插入
-     *
-     * @param accountBaseInfo
-     * @return
-     * @throws ServiceException
-     */
-    public boolean simpleSaveAccountBaseInfo(AccountBaseInfo accountBaseInfo);
-
-    /**
      * 检查昵称是否才能在
      * @param uniqname
      * @return

@@ -50,12 +50,6 @@ public class SHPPUrlConstant {
     public static final String BING_MOBILE = BASE_INTERNAL_URL + "wapbindmobile";
     //解绑手机号
     public static final String UNBING_MOBILE = BASE_INTERNAL_URL + "wapunbindmobile";
-    //发送手机验证码
-    public static final String SEND_CAPTCHA = BASE_INTERNAL_URL + "sendcaptcha";
-    //通过验证码绑定手机号
-    public static final String BIND_MOBILE_CAPTCHA = BASE_INTERNAL_URL + "bindmobile";
-    //通过验证码解绑手机号
-    public static final String UNBIND_MOBILE_CAPTCHA = BASE_INTERNAL_URL + "unbindmobile";
     //查询手机号绑定的账号
     public static final String MOBILE_GET_USERID = BASE_INTERNAL_URL + "wapgetuserid";
 

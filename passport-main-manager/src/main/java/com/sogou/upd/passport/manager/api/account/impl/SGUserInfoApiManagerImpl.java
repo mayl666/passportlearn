@@ -20,6 +20,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +54,8 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     private AccountInfoManager accountInfoManager;
     @Autowired
     private CommonManager commonManager;
+    @Autowired
+    private UniqNamePassportMappingService uniqNamePassportMappingService;
 
 
     /**
@@ -312,7 +315,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
             //前端在个人资料页面填写昵称后，鼠标离开即检查昵称唯一性，这里不能编码，因为保存时没有编码
 //            nickname = new String(updateUserUniqnameApiParams.getUniqname().getBytes("ISO8859-1"), "UTF-8");
 
-            String passportId = accountService.checkUniqName(nickname);
+            String passportId = uniqNamePassportMappingService.checkUniqName(nickname);
             if (!Strings.isNullOrEmpty(passportId)) {
                 result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
                 result.setDefaultModel("userid", passportId);

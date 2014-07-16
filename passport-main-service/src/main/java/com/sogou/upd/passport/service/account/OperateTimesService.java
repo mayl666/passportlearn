@@ -170,7 +170,7 @@ public interface OperateTimesService {
      * @return
      * @throws ServiceException
      */
-    public boolean checkLimitBind(String userId, int clientId) throws ServiceException;
+    public boolean checkBindLimit(String userId, int clientId) throws ServiceException;
 
     /**
      * 修改密码次数
@@ -255,6 +255,42 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public void incSendTimesForMobile(final String ip) throws ServiceException;
+
+    /**
+     * 找回密码计数
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean incFindPwdTimes(String passportId) throws ServiceException;
+
+    /**
+     * 找回密码计数
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkFindPwdTimes(String passportId) throws ServiceException;
+
+    /**
+     * 找回密码，重置密码次数限制--记录
+     * @param userId
+     * @param clientId
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean incLimitFindPwdResetPwd(String userId, int clientId,String ip) throws ServiceException;
+
+    /**
+     * 找回密码，重置密码次数限制--检查是否超出限制
+     * @param userId
+     * @param clientId
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean isOverLimitFindPwdResetPwd(String userId, int clientId,String ip) throws ServiceException;
 
     public boolean isUserInExistBlackList(String username, String ip) throws ServiceException;
 

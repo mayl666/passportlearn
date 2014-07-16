@@ -16,10 +16,9 @@ public interface SecureApiManager {
 
     /**
      * 修改密码接口
-     * @param updatePwdApiParams
      * @return
      */
-    Result updatePwd(UpdatePwdApiParams updatePwdApiParams);
+    Result updatePwd(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp);
 
     /**
      * 修改密保问题和答案
@@ -45,10 +44,4 @@ public interface SecureApiManager {
      */
     Result resetPasswordByQues(ResetPasswordBySecQuesApiParams resetPasswordBySecQuesApiParams);
 
-    /**
-     * 修改密码接口
-     * @param updatePwdApiParams
-     * @return
-     */
-    void resetPwd(UpdatePwdApiParams updatePwdApiParams);
 }

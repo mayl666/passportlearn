@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.manager;
 
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
 import junit.framework.TestCase;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
@@ -14,9 +16,9 @@ import org.junit.Test;
  */
 public class ManagerHelperTest extends TestCase {
 
-    private static final int clientId = 1115;
+    private static final int clientId = 2013;
 
-    private static final String serverSecret = "RBCqf6a448Wj5a8#KF&POL75*5GBQ5";
+    private static final String serverSecret = "ezr8DRjSn%*[mqa>,$^m6_+r~qSwN3";
 
     /**
      * 测试生成内部接口code参数
@@ -26,7 +28,7 @@ public class ManagerHelperTest extends TestCase {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
 //        String ct =  "1381915491000";
-        String code = ManagerHelper.generatorCodeGBK("a18732992000@sohu.com", clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCodeGBK("13366039778", clientId, serverSecret, 1404993840000l);
         System.out.println("code:" + code);
 
 //        try {
@@ -36,6 +38,15 @@ public class ManagerHelperTest extends TestCase {
 //            e.printStackTrace();
 //        }
 
+    }
+
+    /**
+     * 值输出为空
+     */
+    @Test
+    public void testResult() {
+        Result result = new APIResultSupport(false);
+        System.out.println(result.getCode());
     }
 
     public static void main(String args[]) throws Exception {

@@ -9,7 +9,6 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
-import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.web.BaseController;
@@ -42,6 +41,8 @@ public class RegisterApiController extends BaseController {
     private RegManager regManager;
     @Autowired
     private CommonManager commonManager;
+    @Autowired
+    private RegisterApiManager registerApiManager;
 
     /**
      * 注册手机账号时，发送手机验证码
@@ -139,7 +140,8 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = proxyRegisterApiManager.regMailUser(params);
+            result = registerApiManager.regMailUser(params);
+//            result = proxyRegisterApiManager.regMailUser(params);
         } catch (Exception e) {
             logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + userid, e);
         } finally {

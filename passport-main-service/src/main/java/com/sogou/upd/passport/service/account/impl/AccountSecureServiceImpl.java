@@ -12,14 +12,13 @@ import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.service.account.AccountSecureService;
 import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-21 Time: 上午11:52 To change this template
@@ -31,10 +30,6 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     private static final String CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE;
     private static final String CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE = CacheConstant.CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE;
     private static final String CACHE_PREFIX_SECURECODE = CacheConstant.CACHE_PREFIX_SECURECODE;
-
-    private static final String KV_PREFIX_PASSPORTID_ACTIONRECORD = CacheConstant.KV_PREFIX_PASSPORTID_ACTIONRECORD;
-
-    private static final Logger logger = LoggerFactory.getLogger(AccountSecureServiceImpl.class);
 
     @Autowired
     private RedisUtils redisUtils;
@@ -57,6 +52,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
             throw new ServiceException(e);
         }
     }
+
 
     @Override
     public boolean updateSuccessFlag(String passportId) throws ServiceException {
@@ -211,6 +207,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     }
 
     /*-------------------------------采用K-V系统-------------------------------*/
+
     /**
      * 保存用户操作行为到核心kv集群
      *
@@ -230,10 +227,6 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
     private <T> T queryLastRecord(String key, Class<T> clazz) {
         return coreKvUtils.top(key, clazz);
-    }
-
-    private String buildCacheKeyForActionRecord(String userId, int clientId, AccountModuleEnum action) {
-        return KV_PREFIX_PASSPORTID_ACTIONRECORD + action + "_" + userId;
     }
 
     /**

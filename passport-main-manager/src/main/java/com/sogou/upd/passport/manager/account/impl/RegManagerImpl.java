@@ -47,6 +47,10 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private AccountService accountService;
     @Autowired
+    private EmailSenderService emailSenderService;
+    @Autowired
+    private RegisterApiManager registerApiManager;
+    @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
@@ -120,11 +124,12 @@ public class RegManagerImpl implements RegManager {
                     }
                     RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                             clientId, ru);
-                    if (ManagerHelper.isInvokeProxyApi(username)) {
-                        result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
-                    } else {
-                        result = sgRegisterApiManager.regMailUser(regEmailApiParams);
-                    }
+                    result = registerApiManager.regMailUser(regEmailApiParams);
+//                    if (ManagerHelper.isInvokeProxyApi(username)) {
+//                        result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+//                    } else {
+//                        result = sgRegisterApiManager.regMailUser(regEmailApiParams);
+//                    }
                     break;
                 case PHONE://手机号
                     RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);
@@ -156,12 +161,9 @@ public class RegManagerImpl implements RegManager {
         Result result = new APIResultSupport(false);
         // 检查ip安全限制
         try {
-            //检测手机号是否已经注册或绑定
-            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams(mobile);
-            Result mobileBindResult = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-            if (mobileBindResult.isSuccess()) {
+            String passportId = commonManager.getPassportIdByUsername(mobile);
+            if (!Strings.isNullOrEmpty(passportId)) { //手机号已经注册或绑定
                 if (!Strings.isNullOrEmpty(type) && ConnectTypeEnum.WAP.toString().equals(type)) {
-                    String passportId = (String) mobileBindResult.getModels().get("userid");
                     Result sessionResult = sessionServerManager.createSession(passportId);
                     if (!sessionResult.isSuccess()) {
                         result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
@@ -171,7 +173,7 @@ public class RegManagerImpl implements RegManager {
                     result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                 }
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                result.setDefaultModel("userid", (String) mobileBindResult.getModels().get("userid"));
+                result.setDefaultModel("userid", passportId);
                 return result;
             }
             //生成随机数密码
@@ -180,7 +182,7 @@ public class RegManagerImpl implements RegManager {
             RegMobileApiParams regApiParams = new RegMobileApiParams(mobile, randomPwd, clientId);
             Result regMobileResult = proxyRegisterApiManager.regMobileUser(regApiParams);
             if (regMobileResult.isSuccess()) {
-                String passportId = (String) regMobileResult.getModels().get("userid");
+                passportId = (String) regMobileResult.getModels().get("userid");
                 //发送短信验证码
                 //短信内容，TODO 目前只有小说使用，文案先写死
                 String smsText = "搜狗通行证注册成功，密码为" + randomPwd + "， 请用本机号码登录。";
@@ -310,6 +312,35 @@ public class RegManagerImpl implements RegManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
+    }
+
+    @Override
+    public Result resendActiveMail(ResendActiveMailParams resendActiveMailParams) {
+        Result result = new APIResultSupport(false);
+        try {
+            String username = resendActiveMailParams.getUsername();
+            int clientId = Integer.parseInt(resendActiveMailParams.getClient_id());
+            //检测重发激活邮件次数是否已达上限
+            boolean checkSendLimited = emailSenderService.checkLimitForSendEmail(null, clientId, AccountModuleEnum.REGISTER, username);
+            if (!checkSendLimited) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
+                return result;
+            }
+            boolean isSendSuccess = accountService.sendActiveEmail(username, null, clientId, null, CommonConstant.EMAIL_REG_VERIFY_URL);
+            if (isSendSuccess) {
+                if (emailSenderService.incLimitForSendEmail(null, clientId, AccountModuleEnum.REGISTER, username)) {
+                    result.setSuccess(true);
+                    result.setMessage("重新发送激活邮件成功，请立即激活您的账户！");
+                    result.setCode("0");
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESEND_ACTIVED_FAILED);
+            }
+        } catch (Exception e) {
+            logger.error("Resend Active Mail Fail:", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
     }
 
     @Override

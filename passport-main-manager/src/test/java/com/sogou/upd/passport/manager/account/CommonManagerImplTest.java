@@ -44,9 +44,6 @@ public class CommonManagerImplTest extends BaseTest {
         String expect6 = userid_invild + "@sogou.com";
         String actual6 = commonManager.getPassportIdByUsername(userid_invild);
         Assert.assertEquals(expect6, actual6);
-        //手机号未注册或未绑定
-        String actual7 = commonManager.getPassportIdByUsername("13625478968");
-        Assert.assertEquals(null, actual7);
     }
 
 }

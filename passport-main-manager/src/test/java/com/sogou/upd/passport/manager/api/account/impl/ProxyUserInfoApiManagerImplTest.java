@@ -6,19 +6,17 @@ import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Calendar;
-import java.util.Map;
 
 /**
  * User: ligang201716@sogou-inc.com
  * Date: 13-6-13
  * Time: 上午11:28
  */
-@Ignore
+//@Ignore
 public class ProxyUserInfoApiManagerImplTest extends BaseTest {
 
     @Autowired
@@ -26,12 +24,12 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     @Test
     public void testGetUserInfo2() throws Exception {
         GetUserInfoApiparams getUserInfoApiParams=new GetUserInfoApiparams();
-        getUserInfoApiParams.setUserid("pqmagic20061@sohu.com");
-//        getUserInfoApiParams.setFields("usertype,createip,birthday,gender,createip,createtime,"
-//                +
-//                "personalid,personalidflag,sec_mobile,sec_email,province," +
-//                "city,createtime,sec_ques,avatarurl,regappid");
-        getUserInfoApiParams.setFields("uniqname");
+        getUserInfoApiParams.setUserid("ksmees@sogou.com");
+        getUserInfoApiParams.setFields("usertype,createip,birthday,gender,createip,createtime,"
+                +
+                "personalid,personalidflag,sec_mobile,sec_email,province," +
+                "city,createtime,sec_ques,avatarurl,regappid");
+//        getUserInfoApiParams.setFields("uniqname");
         Result result= proxyUserInfoApiManager.getUserInfo(getUserInfoApiParams);
         System.out.println(result);
     }
