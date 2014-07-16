@@ -16,10 +16,7 @@ import com.sogou.upd.passport.common.utils.*;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.service.account.AccountHelper;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.MobilePassportMappingService;
-import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
+import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
@@ -61,6 +58,8 @@ public class AccountServiceImpl implements AccountService {
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private UniqNamePassportMappingService uniqNamePassportMappingService;
+    @Autowired
+    private PCAccountTokenService pcAccountTokenService;
 
     @Override
     public Account initialWebAccount(String username, String ip) throws ServiceException {
@@ -335,11 +334,11 @@ public class AccountServiceImpl implements AccountService {
             String passportId = account.getPassportId();
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMD5);
             int row = accountDAO.updatePassword(passwdSign, passportId);
+            pcAccountTokenService.batchRemoveAccountToken(passportId, true);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPassword(passwdSign);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-                // TODO 清除PC端token，后续移至accountService.resetPassword
                 return true;
             }
         } catch (Exception e) {
