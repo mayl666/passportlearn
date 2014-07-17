@@ -161,7 +161,7 @@ define(['./interface', './utils', './local', './skin'], function(Form, Utils, Lo
 				return Form.register({
 					captcha: c,
 					username: u,
-					password: hex_md5(p)
+					password: p
 				}, function(result, data) {
 					self.__mReging = false;
 					if (result) {

@@ -78,8 +78,10 @@ public class SHPPUrlConstant {
     public static final String SOHU_BINDMOBILE_URL = BASE_URL + "web/requestBindMobileAction.action";
     // 修改密保问题
     public static final String SOHU_BINDQUES_URL = BASE_URL + "web/updateInfo.action?modifyType=question";
-    // 找回密码
+    // 搜狐web版找回密码
     public static final String SOHU_FINDPWD_URL = BASE_URL + "web/RecoverPwdInput.action";
+    // 搜狐wap版找回密码
+    public static final String SOHU_WAP_FINDPWD_URL = "http://m.passport.sohu.com/f";
 
     /*================================第三方开放平台相关url=======================================*/
     //第三方发图片微博或分享

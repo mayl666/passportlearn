@@ -79,6 +79,7 @@ public class CommonConstant {
 
     public static final String DEFAULT_CONNECT_REDIRECT_URL = "https://account.sogou.com";
     public static final String DEFAULT_INDEX_URL = "https://account.sogou.com";
+    public static final String DEFAULT_WAP_INDEX_URL = "https://m.account.sogou.com";
     public static final String DEFAULT_WAP_URL = "http://wap.sogou.com";
     public static final String DEFAULT_WAP_CONNECT_REDIRECT_URL = "http://wap.sogou.com";
     public static final String SOGOU_ROOT_DOMAIN = ".sogou.com";

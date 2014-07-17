@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -52,10 +53,12 @@ public class SGBindApiManagerImpl implements BindApiManager {
         }
         String bindEmail = accountInfoService.queryBindEmailByPassportId(passportId);
         if (!Strings.isNullOrEmpty(bindEmail) && !bindEmail.equals(oldEmail)) {   // 验证用户输入原绑定邮箱
-            return new APIResultSupport(false, ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
+            return result;
         }
-        if (!emailSenderService.sendEmail(passportId, clientId, AccountModuleEnum.SECURE, newEmail, true, bindEmailApiParams.getRu())) {
-            return new APIResultSupport(false, ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
+        if (!emailSenderService.sendEmail(passportId, clientId, AccountClientEnum.web, AccountModuleEnum.SECURE, newEmail, true, bindEmailApiParams.getRu())) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
+            return result;
         }
         result.setSuccess(true);
         result.setMessage("绑定邮箱验证邮件发送成功！");

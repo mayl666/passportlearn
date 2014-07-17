@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.WapConstant;
-import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
@@ -20,7 +20,7 @@ public class WapIndexParams {
 
     @NotBlank(message = "client_id is null")
     @Min(0)
-    private String client_id;
+    private String client_id = String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID);
 
     @NotBlank(message = "ru is null")
     @URL

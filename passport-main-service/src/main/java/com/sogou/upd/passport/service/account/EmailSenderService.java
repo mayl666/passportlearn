@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.exception.ServiceException;
 
@@ -20,7 +21,7 @@ public interface EmailSenderService {
      * @return
      * @throws ServiceException
      */
-    public boolean sendEmail(String passportId, int clientId, AccountModuleEnum module, String email, boolean saveEmail, String ru)
+    public boolean sendEmail(String passportId, int clientId, AccountClientEnum clientEnum, AccountModuleEnum module, String email, boolean saveEmail, String ru)
             throws ServiceException;
 
     /**
@@ -44,7 +45,7 @@ public interface EmailSenderService {
      * @param scode
      * @param saveEmail
      * @return <p>绑定邮箱时saveEmail为true，成功则返回存储的email；
-     *          找回密码时saveEmail为false，成功则返回passportId。
+     *         找回密码时saveEmail为false，成功则返回passportId。
      *         <br/>失败返回null</p>
      * @throws ServiceException
      */
