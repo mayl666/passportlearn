@@ -68,10 +68,11 @@ public class SecureApiController extends BaseController {
             if (!Strings.isNullOrEmpty(lists)) {
                 List<UserNamePwdMappingParams> list = new ObjectMapper().readValue(lists, new TypeReference<List<UserNamePwdMappingParams>>() {
                 });
-                secureManager.resetPwd(list, clientId);
+                result = secureManager.resetPwd(list, clientId);
+            } else {
+                result.setSuccess(true);
+                result.setMessage("lists为空");
             }
-            result.setSuccess(true);
-            result.setMessage("重置成功");
             return result.toString();
         } catch (Exception e) {
             log.error("Batch resetpwd fail!", e);

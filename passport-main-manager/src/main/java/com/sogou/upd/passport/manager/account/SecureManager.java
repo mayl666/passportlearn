@@ -51,7 +51,7 @@ public interface SecureManager {
      *
      * @return Result格式的返回值, 成功或失败，返回提示信息
      */
-    public void resetPwd(List<UserNamePwdMappingParams> list, int clientId) throws Exception;
+    public Result resetPwd(List<UserNamePwdMappingParams> list, int clientId) throws Exception;
 
     /**
      * 查询账户安全信息，包括邮箱、手机、密保问题，并模糊处理
