@@ -255,7 +255,35 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
 
     @Override
     public Result regMobileUser(RegMobileApiParams regMobileApiParams) {
-
-        return null;
+        Result result = new APIResultSupport(false);
+        String mobile = regMobileApiParams.getMobile();
+        String password = regMobileApiParams.getPassword();
+        try {
+            if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
+                String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
+                if (!Strings.isNullOrEmpty(passportId)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    return result;
+                }
+                Account account = accountService.initialAccount(mobile, password, true, null, AccountTypeEnum
+                        .PHONE.getValue());
+                if (account != null) {
+                    result.setSuccess(true);
+                    result.setDefaultModel("userid", account.getPassportId());
+                    result.setMessage("注册成功！");
+                    result.setDefaultModel("isSetCookie", true);
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                    return result;
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                return result;
+            }
+        } catch (Exception e) {
+            logger.error("mobile reg without captcha failed,mobile is {} ", mobile, e);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+        }
+        return result;
     }
 }

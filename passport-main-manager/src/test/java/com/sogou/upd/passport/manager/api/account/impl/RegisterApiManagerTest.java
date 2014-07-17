@@ -366,5 +366,42 @@ public class RegisterApiManagerTest extends BaseTest {
 //        Assert.assertTrue(expectForm.getStatus().equals(formSG.getStatus()));
     }
 
+    @Test
+    public void testRegMobileUser() throws IOException {
+        RegMobileApiParams params = new RegMobileApiParams();
+        params.setMobile(new_mobile);
+        params.setPassword(password);
+        long ct = System.currentTimeMillis();
+        params.setCt(ct);
+        params.setClient_id(clientId);
+        String code = ManagerHelper.generatorCodeGBK(new_mobile, clientId, serverSecret, ct);
+        params.setCode(code);
+        //可以正常注册
+//        Result expectResult = proxyRegisterApiManager.regMobileUser(params);
+        String expectResult = "{\"statusText\":\"注册成功\",\"data\":{\"userid\":\"" + new_mobile + "@sohu.com\",\"isSetCookie\":false},\"status\":\"0\"}";
+        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
+        Result resultSG = sgRegisterApiManager.regMobileUser(params);
+        APIResultForm formSG = JacksonJsonMapperUtil.getMapper().readValue(resultSG.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm.equals(formSG));
+        //手机号格式有误
+        params.setMobile("135xxx3xxx41");
+        Result expectResult_format = proxyRegisterApiManager.regMobileUser(params);
+        System.out.println(expectResult_format.toString());
+        APIResultForm expectForm_format = JacksonJsonMapperUtil.getMapper().readValue(expectResult_format.toString(), APIResultForm.class);
+        Result resultSG_format = sgRegisterApiManager.regMobileUser(params);
+        APIResultForm formSG_format = JacksonJsonMapperUtil.getMapper().readValue(resultSG_format.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm_format.equals(formSG_format));
+        //手机号已注册或绑定
+        params.setMobile("13545210241");
+//        Result expectResult_exist = proxyRegisterApiManager.regMobileUser(params);
+        String expectResult_exist = "{\"data\":{},\"status\":\"20201\",\"statusText\":\"账号已注册\"}";
+//        System.out.println(expectResult_exist.toString());     //{"data":{},"status":"20201","statusText":"账号已注册"}
+        APIResultForm expectForm_exist = JacksonJsonMapperUtil.getMapper().readValue(expectResult_exist.toString(), APIResultForm.class);
+        Result resultSG_exist = sgRegisterApiManager.regMobileUser(params);
+        System.out.println(resultSG_exist.toString());
+        APIResultForm formSG_exist = JacksonJsonMapperUtil.getMapper().readValue(resultSG_exist.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm_exist.equals(formSG_exist));
+    }
+
 }
 
