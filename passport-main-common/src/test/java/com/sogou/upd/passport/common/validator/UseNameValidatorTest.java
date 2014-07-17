@@ -35,13 +35,29 @@ public class UseNameValidatorTest {
         result = unv.isValid(username, null);
         Assert.assertTrue(result);
 
-        Assert.assertFalse(unv.isValid("%^@CFD@sogou.com", null));
-        Assert.assertFalse(unv.isValid("DAEW13251XZcSDF24R23@sogou.com", null));
-        Assert.assertFalse(unv.isValid("13560148744@sogou.com", null));
-        Assert.assertTrue(unv.isValid("13560148744",null));
-        Assert.assertTrue(unv.isValid("dafsdsfaasdfasd@qq.sohu.com",null));
-        Assert.assertTrue(unv.isValid("dasfdsfas@sohu.com", null));
+        username = "&lt;/title&gt;&lt;ScRiPt%20&gt;";
+        result = unv.isValid(username, null);
+        Assert.assertFalse(result);
 
+//        Assert.assertFalse(unv.isValid("%^@CFD@sogou.com", null));
+//        Assert.assertFalse(unv.isValid("DAEW13251XZcSDF24R23@sogou.com", null));
+//        Assert.assertFalse(unv.isValid("13560148744@sogou.com", null));
+//        Assert.assertTrue(unv.isValid("13560148744", null));
+//        Assert.assertTrue(unv.isValid("dafsdsfaasdfasd@qq.sohu.com", null));
+//        Assert.assertTrue(unv.isValid("dasfdsfas@sohu.com", null));
+
+    }
+
+    @Test
+    public void testXSS() {
+        String value = "</title><ScRiPt%20>";
+        value = value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+        value = value.replaceAll("\\(", "&#40;").replaceAll("\\)", "&#41;");
+        value = value.replaceAll("'", "&#39;");
+        value = value.replaceAll("eval\\((.*)\\)", "");
+        value = value.replaceAll("[\\\"\\\'][\\s]*javascript:(.*)[\\\"\\\']", "\"\"");
+        value = value.replaceAll("script", "");
+        System.out.println(value);
     }
 
 }
