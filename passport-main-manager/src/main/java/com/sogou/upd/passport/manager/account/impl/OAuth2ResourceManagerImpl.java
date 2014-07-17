@@ -150,18 +150,20 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
                 cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
                 cookieApiParams.setPersistentcookie(String.valueOf(1));
-                cookieResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+//                cookieResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
 
             }
-            if (!cookieResult.isSuccess()) {
-                result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-                return result;
-            }
+//            if (!cookieResult.isSuccess()) {
+//                result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+//                return result;
+//            }
             Date expires = DateUtils.addDays(new Date(), 7);
 //            String suffix = ";path=/;domain=.sogou.com;expires=Tuesday, 15-Sep-15 19:02:21 GMT";   // TODO 这里不能写死有效期，要改
             String suffix = ";path=/;domain=.sogou.com;expires=" + expires;
-            String ppinf = cookieResult.getModels().get("ppinf") + suffix;
-            String pprdig = cookieResult.getModels().get("pprdig") + suffix;
+//            String ppinf = cookieResult.getModels().get("ppinf") + suffix;
+//            String pprdig = cookieResult.getModels().get("pprdig") + suffix;
+            String ppinf = "";
+            String pprdig = "";
             String[] cookieArray = new String[]{"ppinf=" + ppinf, "pprdig=" + pprdig};
             resourceMap.put("msg", "get cookie success");
             resourceMap.put("code", 0);
