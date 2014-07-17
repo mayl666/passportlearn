@@ -81,6 +81,7 @@ public class SecureApiController extends BaseController {
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), String.valueOf(clientId), result.getCode(), ip);
             userOperationLog.putOtherMessage("lists", lists);
+            userOperationLog.putOtherMessage("result", result.toString());
             UserOperationLogUtil.log(userOperationLog);
         }
     }
