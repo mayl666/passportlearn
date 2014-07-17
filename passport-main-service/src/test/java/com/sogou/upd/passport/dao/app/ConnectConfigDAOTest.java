@@ -3,6 +3,7 @@ package com.sogou.upd.passport.dao.app;
 import com.sogou.upd.passport.dao.BaseDAOTest;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 上午3:50
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class ConnectConfigDAOTest extends BaseDAOTest {
 
     @Autowired

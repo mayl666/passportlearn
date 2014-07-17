@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.common;
 
+import org.junit.Ignore;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,6 +12,7 @@ import java.util.regex.Pattern;
  * Time: 下午7:45
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class InterceptRootPathTest {
 
     private static String getRootPath(String url) {

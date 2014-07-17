@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.common.theadsecure;
 
+import org.junit.Ignore;
+
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,6 +14,7 @@ import java.util.concurrent.Executors;
  * Time: 下午9:04
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class ArrayListTest {
     public static ExecutorService pool = Executors.newFixedThreadPool(200);
 

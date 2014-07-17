@@ -2,11 +2,13 @@ package com.sogou.upd.passport.common.validator;
 
 import com.sogou.upd.passport.common.validation.constraints.RuValidator;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * Created by denghua on 14-2-24.
  */
+@Ignore
 public class RuValidatorTest {
 
     @Test

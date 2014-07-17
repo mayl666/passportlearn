@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.connect.ConnectProxyOpenApiManager;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,6 +18,7 @@ import java.util.Map;
  * Time: 下午5:40
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class ConnectProxyOpenApiManagerImplTest extends BaseTest {
     @Autowired

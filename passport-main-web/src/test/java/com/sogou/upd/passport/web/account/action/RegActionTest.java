@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.sogou.upd.passport.web.BaseActionTest;
-
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -13,6 +13,7 @@ import java.util.Map;
  * File | Settings | File Templates.
  */
 //@ContextConfiguration(locations = "classpath:spring-config-test.xml")
+@Ignore
 public class RegActionTest extends BaseActionTest {
 
     @Test

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account;
 
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,6 +17,7 @@ import java.util.Map;
  * Time: 下午4:47
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class MobileCodeSenderServiceTest extends AbstractJUnit4SpringContextTests {
 

@@ -1,6 +1,6 @@
 package com.sogou.upd.passport.manager;
 
-import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -62,6 +62,17 @@ public class ManagerHelper {
     }
 
     /**
+     * 是否需要只读SG库。当isBothReadApi方法返回false时：此方法返回true表示只读SG库；返回false表示只读SH线上，相当于回滚操作
+     *
+     * @return
+     */
+    public static boolean readSohuSwitcher() {
+//        return true;   //todo 若非上线后出故障，回滚至SOHU代码，打开此开关，即为回滚
+        return false; //todo 正常线上都应该恒为false
+    }
+
+
+    /**
      * 是否使用sohu提供的getcookiinfo接口；返回true代表调用getcookieinfo接口，false代表调用之前的从location拿的接口，为回滚做准备
      *
      * @return
@@ -90,6 +101,7 @@ public class ManagerHelper {
         return code;
     }
 
+
     /**
      * 内部接口方法签名生成
      *
@@ -117,5 +129,17 @@ public class ManagerHelper {
         result.setDefaultModel("sid", accountToken.getPassportId());
         result.setDefaultModel("logintype", loginType);
         return result;
+    }
+
+    public static boolean isMillCtValid(long ct) {
+        long currentTime = System.currentTimeMillis();
+        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM_IN_MILLI;
+        return timeRight;
+    }
+
+    public static boolean isSecCtValid(long ct) {
+        long currentTime = System.currentTimeMillis() / 1000;
+        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
+        return timeRight;
     }
 }

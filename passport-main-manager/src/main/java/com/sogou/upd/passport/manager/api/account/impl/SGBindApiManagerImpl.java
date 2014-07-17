@@ -143,7 +143,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
             return result;
         }
         result.setSuccess(true);
-        result.setMessage("查询手机绑定账号成功！");
+        result.setMessage("操作成功");
         result.setDefaultModel("userid", userId);
         return result;
     }

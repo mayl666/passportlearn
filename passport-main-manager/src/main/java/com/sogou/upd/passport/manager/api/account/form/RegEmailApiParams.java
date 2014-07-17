@@ -1,8 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
 import com.sogou.upd.passport.common.validation.constraints.Ru;
-import com.sogou.upd.passport.manager.api.BaseApiParams;
-import org.hibernate.validator.constraints.Email;
+import com.sogou.upd.passport.manager.api.account.BaseRegUserApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
@@ -13,7 +12,7 @@ import org.hibernate.validator.constraints.URL;
  * Time: 下午2:59
  * To change this template use File | Settings | File Templates.
  */
-public class RegEmailApiParams extends BaseUserApiParams {
+public class RegEmailApiParams extends BaseRegUserApiParams {
     @NotBlank(message = "密码不允许为空")
     private String password;  //明文密码，需要对格式校验
     @NotBlank(message = "注册IP不允许为空")

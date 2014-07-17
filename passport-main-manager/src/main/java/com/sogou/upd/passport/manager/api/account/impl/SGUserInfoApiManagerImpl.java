@@ -68,9 +68,11 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     @Override
     public Result getUserInfo(GetUserInfoApiparams infoApiparams) {
         Result result = new APIResultSupport(false);
-        String passportId = commonManager.getPassportIdByUsername(infoApiparams.getUserid());
-        infoApiparams.setUserid(passportId);
+        String passportIdLog = infoApiparams.getUserid();
         try {
+            String passportId = commonManager.getPassportIdByUsername(infoApiparams.getUserid());
+            infoApiparams.setUserid(passportId);
+            passportIdLog = passportId;
             String fields = infoApiparams.getFields();
             if (!Strings.isNullOrEmpty(fields)) {
                 //替换sogou相关字段
@@ -180,7 +182,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 }
             }
         } catch (Exception e) {
-            logger.error("getUserInfo Fail,passportId:" + passportId, e);
+            logger.error("getUserInfo Fail,passportId:" + passportIdLog, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
@@ -251,9 +253,12 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     @Override
     public Result updateUserInfo(UpdateUserInfoApiParams params) {
         Result result = new APIResultSupport(false);
-        String passportId = commonManager.getPassportIdByUsername(params.getUserid());
-        params.setUserid(passportId);
+        String passportIdLog = params.getUserid();
         try {
+            String passportId = commonManager.getPassportIdByUsername(params.getUserid());
+            params.setUserid(passportId);
+            passportIdLog = passportId;
+
             //获取用户账号类型
             AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
             Account account = accountService.queryAccountByPassportId(passportId);
@@ -284,7 +289,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
         } catch (Exception e) {
-            logger.error("updateUserInfo Fail,passportId:" + passportId, e);
+            logger.error("updateUserInfo Fail,passportId:" + passportIdLog, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }

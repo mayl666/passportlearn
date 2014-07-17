@@ -1,11 +1,5 @@
 package com.sogou.upd.passport.manager.account;
 
-import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.model.account.Account;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -54,7 +48,7 @@ public interface CommonManager {
      * @param username
      * @return
      */
-    public String getPassportIdByUsername(String username);
+    public String getPassportIdByUsername(String username) throws Exception;
 
     /**
      * 应用是否有此API访问权限

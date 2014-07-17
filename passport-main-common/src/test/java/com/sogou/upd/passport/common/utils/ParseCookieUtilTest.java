@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common.utils;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -14,6 +15,7 @@ import java.util.Map;
  * Date: 13-6-18
  * Time: 下午3:07
  */
+@Ignore
 public class ParseCookieUtilTest {
     @Test
     public void testParsePpinf() throws Exception {

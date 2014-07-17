@@ -6,6 +6,7 @@ import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,6 +16,7 @@ import java.util.Date;
  * Created with IntelliJ IDEA. User: shipengzhi Date: 13-4-17 Time: 下午4:32 To change this template
  * use File | Settings | File Templates.
  */
+@Ignore
 public class AccountDAOTest extends BaseDAOTest {
 
     @Autowired

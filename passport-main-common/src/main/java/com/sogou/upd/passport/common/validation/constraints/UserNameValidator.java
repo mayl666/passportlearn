@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common.validation.constraints;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -13,6 +14,7 @@ import javax.validation.ConstraintValidatorContext;
  * Time: 下午2:03
  * To change this template use File | Settings | File Templates.
  */
+@Component
 public class UserNameValidator implements ConstraintValidator<UserName, String> {
     @Override
     public void initialize(UserName constraintAnnotation) {

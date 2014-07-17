@@ -1,27 +1,16 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.PCOAuth2RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.RegMobileCaptchaApiParams;
-import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
-import com.sogou.upd.passport.manager.form.PcPairTokenParams;
-import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
-import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

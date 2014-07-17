@@ -39,8 +39,6 @@ public class RegisterApiController extends BaseController {
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
     @Autowired
-    private BindApiManager proxyBindApiManager;
-    @Autowired
     private RegManager regManager;
     @Autowired
     private CommonManager commonManager;
@@ -57,18 +55,23 @@ public class RegisterApiController extends BaseController {
     @ResponseBody
     public Object sendRegCaptcha(HttpServletRequest request, BaseMoblieApiParams params) {
         Result result = new APIResultSupport(false);
-        // 参数校验
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
+        try {
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            // 调用内部接口
+            result = sgRegisterApiManager.sendMobileRegCaptcha(params);
+        } catch (Exception e) {
+            logger.error("sendregcaptcha:send reg captcha is failed,mobile is " + params.getMobile(), e);
+        } finally {
+            //记录log
+            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
         }
-        // 调用内部接口
-        result = sgRegisterApiManager.sendMobileRegCaptcha(params);
-        //记录log
-        UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
 
@@ -102,7 +105,6 @@ public class RegisterApiController extends BaseController {
             UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), params.getIp());
             UserOperationLogUtil.log(userOperationLog);
         }
-
         return result.toString();
     }
 
@@ -120,6 +122,7 @@ public class RegisterApiController extends BaseController {
         Result result = new APIResultSupport(false);
         String ip = null;
         int client_id = params.getClient_id();
+        String userid = params.getUserid();
         try {
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
@@ -138,15 +141,15 @@ public class RegisterApiController extends BaseController {
             // 调用内部接口
             result = proxyRegisterApiManager.regMailUser(params);
         } catch (Exception e) {
-            logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + params.getUserid(), e);
+            logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + userid, e);
         } finally {
             //记录log
             commonManager.incRegTimesForInternal(ip, client_id);
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), ip);
+            UserOperationLog userOperationLog = new UserOperationLog(userid, String.valueOf(params.getClient_id()), result.getCode(), ip);
             userOperationLog.putOtherMessage("serverip", getIp(request));
+            userOperationLog.putOtherMessage("userid", userid);
             UserOperationLogUtil.log(userOperationLog);
         }
-
         return result.toString();
     }
 
@@ -174,7 +177,6 @@ public class RegisterApiController extends BaseController {
             }
             // 调用内部接口
             result = proxyRegisterApiManager.regMobileUser(params);
-
         } catch (Exception e) {
             logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
         } finally {
@@ -246,35 +248,34 @@ public class RegisterApiController extends BaseController {
     @ResponseBody
     public Object checkUser(HttpServletRequest request, CheckUserApiParams params) {
         Result result = new APIResultSupport(false);
-        // 参数校验
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        // 调用内部接口
-        String userid = params.getUserid();
-        if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
-            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-            baseMoblieApiParams.setMobile(userid);
-            result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-            //如果手机号已经被注册或被绑定其它账号，返回错误信息
-            if (result.isSuccess()) {
-                result.setSuccess(false);
-                result.setDefaultModel("flag", "1");
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED));
-            } else if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND)) {
-                //如果手机号没有被注册或绑定其它账号，返回正确
-                result = new APIResultSupport(true);
+        try {
+            // 参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
             }
-        } else {
-            result = proxyRegisterApiManager.checkUser(params);
+            // 调用内部接口
+            String userid = params.getUserid();
+            result = regManager.isAccountNotExists(userid, params.getClient_id());
+            if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
+                if (!result.isSuccess()) {
+                    result.setDefaultModel("flag", "1");
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                    result.setMessage("手机号已绑定其他账号");
+                }
+            }
+        } catch (Exception e) {
+            logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getUserid(), e);
+        } finally {
+            //记录log
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
-
         return result.toString();
     }
-
-
 }
+

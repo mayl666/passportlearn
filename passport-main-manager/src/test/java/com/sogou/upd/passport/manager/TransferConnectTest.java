@@ -16,6 +16,7 @@ import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,6 +30,7 @@ import java.util.List;
  * Time: 下午8:32
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class TransferConnectTest extends BaseTest {
 
     @Autowired

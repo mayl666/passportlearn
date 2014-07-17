@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager;
 import com.sogou.upd.passport.common.math.Coder;
 import junit.framework.TestCase;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -27,15 +26,15 @@ public class ManagerHelperTest extends TestCase {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
 //        String ct =  "1381915491000";
-        String code = ManagerHelper.generatorCodeGBK("18952461329", clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCodeGBK("13621009174", clientId, serverSecret, ct);
         System.out.println("code:" + code);
 
-        try {
-            String pwdMD5 = Coder.encryptMD5("459811");
-            System.out.println("pwdMD5:" + pwdMD5);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            String pwdMD5 = Coder.encryptMD5("459811");
+//            System.out.println("pwdMD5:" + pwdMD5);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
     }
 

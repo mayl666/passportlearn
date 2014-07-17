@@ -37,7 +37,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
             if (Strings.isNullOrEmpty(passportId)) {
                 passportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
                 if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH_INSECONDS);
+                    dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
         } catch (Exception e) {
@@ -63,7 +63,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
             long id = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
             if (id != 0) {
                 String cacheKey = buildMobilePassportMappingKey(mobile);
-                dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH_INSECONDS);
+                dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
         } catch (Exception e) {
@@ -79,7 +79,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
             int accountRow = mobilePassportMappingDAO.updateMobilePassportMapping(mobile, passportId);
             if (accountRow != 0) {
                 String cacheKey = buildMobilePassportMappingKey(mobile);
-                dbShardRedisUtils.set(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH_INSECONDS);
+                dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }
         } catch (Exception e) {
@@ -87,6 +87,12 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
         }
         return false;
     }
+
+
+    protected String buildMobilePassportMappingKey(String mobile) {
+        return CACHE_PREFIX_MOBILE_PASSPORT + mobile;
+    }
+
 
     @Override
     public boolean deleteMobilePassportMapping(String mobile) throws ServiceException {
@@ -114,8 +120,5 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
         }
     }
 
-    private String buildMobilePassportMappingKey(String mobile) {
-        return CACHE_PREFIX_MOBILE_PASSPORT + mobile;
-    }
 
 }

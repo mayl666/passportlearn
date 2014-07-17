@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.dao.datatransfertest.shplustransfer.DO.SohuPassportSidMapping;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Ignore;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -18,6 +19,7 @@ import java.util.*;
  * Time: 上午12:33
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class SohuPlusUtil {
 
     public static String secret = "59be99d1f5e957ba5a20e8d9b4d76df6";

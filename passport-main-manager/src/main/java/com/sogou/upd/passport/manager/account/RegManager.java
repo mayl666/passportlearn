@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager.account;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
-import com.sogou.upd.passport.manager.form.MobileRegParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 
 import java.util.Map;
@@ -56,7 +55,7 @@ public interface RegManager {
      *
      * @return 验证码
      */
-    public Result isAccountNotExists(String username, boolean type, int clientId) throws Exception;
+    public Result isAccountNotExists(String username, int clientId) throws Exception;
 
     /**
      * 检查一天内某ip注册次数

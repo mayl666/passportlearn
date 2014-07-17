@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account.generator;
 
 import com.sogou.upd.passport.service.account.dataobject.SecureSignDO;
 import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -11,6 +12,7 @@ import org.junit.Test;
  * Time: 下午5:30
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class SecureSignatureGeneratorTest extends BaseGeneratorTest {
 
     @Test

@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,6 +24,7 @@ import java.util.Map;
  * Time: 下午6:54
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class VerifySgrdigCookieTest extends BaseTest {
 
     @Autowired

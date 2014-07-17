@@ -2,17 +2,13 @@ package com.sogou.upd.passport.common.utils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.BoundHashOperations;
 import redis.clients.jedis.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +50,7 @@ public class DBShardRedisUtils {
     * 设置缓存内容
     */
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "dbShardRedis_set")
-    public String set(final String key, final String value) {
+    public String setString(final String key, final String value) {
         return new Executor<String>(shardedJedisPool) {
 
             @Override
@@ -68,7 +64,7 @@ public class DBShardRedisUtils {
 * 设置缓存内容
 */
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "dbShardRedis_setObject")
-    public String set(final String key, final Object obj) {
+    public String setObject(final String key, final Object obj) {
         return new Executor<String>(shardedJedisPool) {
 
             @Override
@@ -79,18 +75,19 @@ public class DBShardRedisUtils {
     }
 
 
-    public String set(final String key, final String value, final int expire) {
+    public String setStringWithinSeconds(final String key, final String value, final long expire) {
         return new Executor<String>(shardedJedisPool) {
 
             @Override
             String execute() {
-                return jedis.setex(key, expire, value);
+                return jedis.setex(key, (int) expire, value);
             }
         }.getResult();
     }
 
+
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "dbShardRedis_setWithinSeconds", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    public String setWithinSeconds(final String key, final Object obj, final long timeout) {
+    public String setObjectWithinSeconds(final String key, final Object obj, final long timeout) {
         return new Executor<String>(shardedJedisPool) {
             ShardedJedisPipeline pipeline = null;
 

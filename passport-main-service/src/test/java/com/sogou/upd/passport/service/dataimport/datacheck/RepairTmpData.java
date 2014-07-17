@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.ProvinceAndCityUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.dao.account.*;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.UserExtInfoTmp;
 import com.sogou.upd.passport.model.account.UserInfoTmp;
 import com.sogou.upd.passport.model.account.UserOtherInfoTmp;
@@ -17,6 +18,7 @@ import com.sogou.upd.passport.service.dataimport.util.FileUtil;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +63,34 @@ public class RepairTmpData extends BaseTest {
         RequestModelXml requestModelXml = FullDataCheckApp.buildRequestModelXml(userid);
         Map<String, Object> shApiResult = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
         System.out.println("result:" + shApiResult);
+    }
+
+    /**
+     * 检验异常log中登录失败的用户是否是新注册的用户
+     */
+    @Test
+    public void testCheckDataIsNewRegister() {
+        List<String> accountList = FileIOUtil.readFileByLines("D:\\db\\checkusererror.log.new.2014-06-23");
+        String content = null;
+        int count = 0;
+        for (String accountString : accountList) {
+            String[] rowString = accountString.split("\t");
+            String passportId = rowString[5];
+            if (!Strings.isNullOrEmpty(passportId) && passportId.contains("@")) {
+                Account account = accountDAO.getAccountByPassportId(passportId);
+                if (account != null) {
+                    content = passportId + "," + new SimpleDateFormat("yyy-MM-dd_HH:mm:ss").format(account.getRegTime());
+                    count++;
+                    failedList.add(content);
+                }
+            }
+        }
+        System.out.println("count:" + count);
+        try {
+            FileUtil.storeFile("D:\\db\\result.txt", failedList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

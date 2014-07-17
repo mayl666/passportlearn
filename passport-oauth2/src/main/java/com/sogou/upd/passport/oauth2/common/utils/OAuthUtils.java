@@ -175,6 +175,7 @@ public class OAuthUtils {
      * QQ OAuth授权根据code换取access_token时，
      * 返回的格式为(callback：{json})
      * 特殊的解析json方法
+     *
      * @param body
      * @return Map
      * @throws OAuthProblemException
@@ -200,7 +201,7 @@ public class OAuthUtils {
         return parameters;
     }
 
-    private static boolean isJsonBodyBlank(int index, int lastIndex){
+    private static boolean isJsonBodyBlank(int index, int lastIndex) {
         return index != -2 && lastIndex != 0;
     }
 
@@ -380,7 +381,6 @@ public class OAuthUtils {
             throw new RuntimeException(wow.getMessage(), wow);
         }
     }
-
 
 
 }

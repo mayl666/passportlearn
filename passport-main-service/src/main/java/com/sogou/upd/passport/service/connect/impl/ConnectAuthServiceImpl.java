@@ -169,7 +169,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     public boolean initialOrUpdateConnectUserInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) throws ServiceException {
         try {
             String cacheKey = buildConnectUserInfoCacheKey(passportId);
-            dbShardRedisUtils.setWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
+            dbShardRedisUtils.setObjectWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
             return true;
         } catch (Exception e) {
             logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error.{}", e);

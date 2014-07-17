@@ -150,38 +150,6 @@ public class WapRegAction extends BaseController {
         return result.toString();
     }
 
-
-    //检查用户是否存在
-    protected Result checkAccountNotExists(String username, int clientId) throws Exception {
-        Result result = new APIResultSupport(false);
-        //校验是否是搜狐域内用户
-
-        if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
-            result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
-            return result;
-        }
-        //校验是否是搜狗用户
-        if (AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(username))) {
-            result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOGOU_REGISTER);
-            return result;
-        }
-
-        //判断是否是个性账号
-        if (username.indexOf("@") == -1) {
-            //判断是否是手机号注册
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                result = regManager.isAccountNotExists(username, true, clientId);
-            } else {
-                username = username + "@sogou.com";
-                result = regManager.isAccountNotExists(username, false, clientId);
-            }
-        } else {
-            result = regManager.isAccountNotExists(username, false, clientId);
-        }
-        return result;
-    }
-
-
     /**
      * 找回密码
      * @param ru

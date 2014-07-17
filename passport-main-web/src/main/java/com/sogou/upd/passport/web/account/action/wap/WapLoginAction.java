@@ -15,10 +15,12 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.manager.form.WapLogoutParams;
 import com.sogou.upd.passport.manager.form.WapPassThroughParams;
@@ -62,6 +64,8 @@ public class WapLoginAction extends BaseController {
     private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
     private static final Logger logger = LoggerFactory.getLogger(WapLoginAction.class);
     private static final String SECRETKEY="afE0WZf345@werdm";
@@ -128,22 +132,17 @@ public class WapLoginAction extends BaseController {
         UserOperationLogUtil.log(userOperationLog);
 
         if (result.isSuccess()) {
-            String userId = result.getModels().get("userid").toString();
-            String sgid = result.getModels().get("sgid").toString();
+            String userId = (String) result.getModels().get("userid");
+            String sgid = (String) result.getModels().get("sgid");
 
             ServletUtil.setCookie(response, "sgid", sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
                 //在返回的数据中导入 json格式，用来给客户端用。
                 //第三方获取个人资料
-                AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(result.getModels().get("userid").toString());
-                // 调用内部接口
-                GetUserInfoApiparams userInfoApiparams=new GetUserInfoApiparams(result.getModels().get("userid").toString(),"uniqname,avatarurl,gender");
-                if (domain == AccountDomainEnum.THIRD) {
-                    result = sgUserInfoApiManager.getUserInfo(userInfoApiparams);
-                }else {
-                    result = proxyUserInfoApiManager.getUserInfo(userInfoApiparams);
-                }
+                String fields = "uniqname,avatarurl,gender";
+                ObtainAccountInfoParams accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), userId, fields);
+                result = accountInfoManager.getUserInfo(accountInfoParams);
                 result.getModels().put("sgid",sgid);
                 writeResultToResponse(response, result);
                 wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));

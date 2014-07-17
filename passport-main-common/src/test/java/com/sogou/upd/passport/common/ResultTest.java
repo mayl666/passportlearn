@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import junit.framework.TestCase;
+import org.junit.Ignore;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import java.util.Map;
  * Time: 下午10:17
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class ResultTest extends TestCase {
 
     public void testGetMessage() {

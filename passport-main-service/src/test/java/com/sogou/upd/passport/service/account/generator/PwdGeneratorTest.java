@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account.generator;
 
 import junit.framework.Assert;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -11,6 +12,7 @@ import org.junit.Test;
  * Time: 上午2:34
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class PwdGeneratorTest extends BaseGeneratorTest {
 
     @Test

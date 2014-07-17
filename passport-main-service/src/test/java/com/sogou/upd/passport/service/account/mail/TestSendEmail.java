@@ -3,6 +3,7 @@ package com.sogou.upd.passport.service.account.mail;
 import com.sohu.sendcloud.Message;
 import com.sohu.sendcloud.SendCloud;
 import com.sohu.sendcloud.SmtpApiHeader;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -17,6 +18,7 @@ import java.util.List;
  * Time: 下午2:02
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 @ContextConfiguration(locations = {"classpath:spring-config-mail.xml"})
 public class TestSendEmail  extends AbstractJUnit4SpringContextTests {
      @Inject

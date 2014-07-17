@@ -4,6 +4,7 @@ import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.math.Coder;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -13,6 +14,7 @@ import org.junit.Test;
  * Time: 下午2:35
  * To change this template use File | Settings | File Templates.
  */
+@Ignore
 public class ConfigureManagerTest extends TestCase {
 
     @Test

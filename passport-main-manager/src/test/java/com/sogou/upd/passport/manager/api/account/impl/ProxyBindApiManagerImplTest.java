@@ -7,8 +7,7 @@ import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
-import junit.framework.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Date: 13-6-7
  * Time: 下午2:02
  */
+//@Ignore
 public class ProxyBindApiManagerImplTest extends BaseTest {
 
     @Autowired
@@ -25,37 +25,26 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
     @Autowired
     private BaseProxyManager baseProxyManager;
 
-    @Test
-    public void testBindMobile() {
-        BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
-        bindMobileApiParams.setUserid(userid);
-//        bindMobileApiParams.setMobile("13940075348");
-        bindMobileApiParams.setClient_id(clientId);
-        Result result = proxyBindApiManager.bindMobile("tinkame710@sogou.com", "15210832767");
-        System.out.println(result.toString());
-        Assert.assertTrue(result.isSuccess());
-
-//        this.testUnbindMobile();
-    }
-
- 
-    //安卓，通用语和皮肤词库官网都是
-    @Test
-    public void testUnbindMobile() {
-        Result result = proxyBindApiManager.unBindMobile("15210832767");
-        System.out.println(result.toString());
-        Assert.assertTrue(result.isSuccess());
-    }
-
-    @Test
-    public void testGetPassportIdByMobile() {
-        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-        baseMoblieApiParams.setMobile("18952461329");
-        baseMoblieApiParams.setClient_id(1120);
-        Result result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-        System.out.println(result.toString());
+//    @Test
+//    public void testBindMobile(){
+//        BindMobileApiParams bindMobileApiParams = new BindMobileApiParams();
+//        bindMobileApiParams.setUserid(userid);
+////        bindMobileApiParams.setMobile("13940075348");
+//        bindMobileApiParams.setClient_id(clientId);
+//        Result result = proxyBindApiManager.bindMobile("tinkame710@sogou.com","15210832767");
+//        System.out.println(result.toString());
 //        Assert.assertTrue(result.isSuccess());
-    }
+//
+////        this.testUnbindMobile();
+//    }
+////
+////
+//    @Test
+//    public void testUnbindMobile(){
+//        Result result = proxyBindApiManager.unBindMobile("15210832767");
+//        System.out.println(result.toString());
+//        Assert.assertTrue(result.isSuccess());
+//    }
 //
 //    @Test
 //    public void testUpdataBindMobile(){
@@ -110,9 +99,11 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
 //    }
 
 
+
+    @Ignore
     @Test
     public void testBindEmail() throws Exception {
-        BindEmailApiParams bindEmailApiParams = new BindEmailApiParams();
+        BindEmailApiParams bindEmailApiParams=new BindEmailApiParams();
         bindEmailApiParams.setNewbindemail("411541129@qq.com");
         bindEmailApiParams.setOldbindemail("34310327@qq.com");
         bindEmailApiParams.setPassword(Coder.encryptMD5(password));
@@ -125,10 +116,10 @@ public class ProxyBindApiManagerImplTest extends BaseTest {
     }
 
     @Test
-    public void testGetPassportIdFromMobile() {
-        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+    public void testGetPassportIdFromMobile(){
+        BaseMoblieApiParams baseMoblieApiParams=new BaseMoblieApiParams();
         baseMoblieApiParams.setMobile("13621050796");
         Result result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-        System.out.println("result:" + result.toString());
+        System.out.println("result:"+result.toString());
     }
 }
