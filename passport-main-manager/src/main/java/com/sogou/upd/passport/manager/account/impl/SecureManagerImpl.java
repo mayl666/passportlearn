@@ -40,8 +40,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * 安全相关：修改密码、修改密保（手机、邮箱、问题） ——接口代理OK—— .
@@ -387,63 +389,136 @@ public class SecureManagerImpl implements SecureManager {
         return result;
     }
 
-    @Override
-    public void resetPwd(List<UserNamePwdMappingParams> list, final int clientId) throws Exception {
+//    @Override
+//    public void resetPwd(List<UserNamePwdMappingParams> list, final int clientId) throws Exception {
+//
+//        if (CollectionUtils.isNotEmpty(list)) {
+//            for (final UserNamePwdMappingParams params : list) {
+//                service.execute(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        String mobile = params.getMobile();
+//                        String newPwd = params.getPwd();
+//                        String smsText = "搜狗通行证提醒您：" + mobile;
+//                        boolean isSuccess = false;
+//                        try {
+//                            //查是否是手机号码
+//                            if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
+//                                if (!Strings.isNullOrEmpty(newPwd) && StringUtils.isAsciiPrintable(newPwd) && newPwd.length() >= 6 && newPwd.length() <= 16) {
+//                                    String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
+//                                    if (!Strings.isNullOrEmpty(passportId)) {
+//                                        //查是否进黑名单
+//                                        if (!operateTimesService.checkLimitResetPwd(passportId, clientId)) {
+//                                            //校验account是否存在
+//                                            Account account = accountService.queryNormalAccount(passportId);
+//                                            if (account != null) {
+////                                                if (accountService.resetPassword(account, newPwd, true)) {
+////                                                    operateTimesService.incLimitResetPwd(passportId, clientId);
+////                                                    smsText = smsText + "重置密码成功，请使用新密码登录。";
+////                                                    isSuccess = true;
+////                                                } else {
+////                                                    smsText = smsText + "重置密码失败，请再次尝试。";
+////                                                }
+//                                            } else {
+//                                                smsText = smsText + "账号不存在，重置密码失败。";
+//                                            }
+//                                        } else {
+//                                            smsText = smsText + "重置密码次数超限，请24小时后尝试。";
+//                                        }
+//                                    } else {
+//                                        smsText = smsText + "未绑定账号或未注册，重置密码失败。";
+//                                    }
+//                                } else {
+//                                    smsText = smsText + "重置密码格式不正确，必须为字母、数字、字符且长度为6~16位!";
+//                                }
+//                                //短信通知结果
+////                                if (!Strings.isNullOrEmpty(mobile)) {
+////                                    SMSUtil.sendSMS(mobile, smsText);
+////                                }
+//                            }
+//                            if (!isSuccess) {
+//                                logger.info("BatchResetPwd is fail, smsText:" + smsText);
+//                            }
+//                        } catch (Exception e) {
+//                            logger.error("resetPwd Fail username:" + mobile, e);
+//                        }
+//                    }
+//                });
+//            }
+//        }
+//    }
 
-        if (CollectionUtils.isNotEmpty(list)) {
-            for (final UserNamePwdMappingParams params : list) {
-                service.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        String mobile = params.getMobile();
-                        String newPwd = params.getPwd();
-                        String smsText = "搜狗通行证提醒您：" + mobile;
-                        boolean isSuccess = false;
-                        try {
-                            //查是否是手机号码
-                            if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
-                                if (!Strings.isNullOrEmpty(newPwd) && StringUtils.isAsciiPrintable(newPwd) && newPwd.length() >= 6 && newPwd.length() <= 16) {
-                                    String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
-                                    if (!Strings.isNullOrEmpty(passportId)) {
-                                        //查是否进黑名单
-                                        if (!operateTimesService.checkLimitResetPwd(passportId, clientId)) {
-                                            //校验account是否存在
-                                            Account account = accountService.queryNormalAccount(passportId);
-                                            if (account != null) {
-//                                                if (accountService.resetPassword(account, newPwd, true)) {
-//                                                    operateTimesService.incLimitResetPwd(passportId, clientId);
-//                                                    smsText = smsText + "重置密码成功，请使用新密码登录。";
-//                                                    isSuccess = true;
-//                                                } else {
-//                                                    smsText = smsText + "重置密码失败，请再次尝试。";
-//                                                }
-                                            } else {
-                                                smsText = smsText + "账号不存在，重置密码失败。";
-                                            }
+    @Override
+    public Result resetPwd(List<UserNamePwdMappingParams> list, final int clientId) throws Exception {
+        Result resultList = new APIResultSupport(true);
+        List<Future<Result>> futureList = Lists.newArrayList();
+        for (final UserNamePwdMappingParams params : list) {
+            Future<Result> future = service.submit(new Callable<Result>() {
+                public Result call() throws Exception {
+                    Result result = new APIResultSupport(false);
+                    String mobile = params.getMobile();
+                    String newPwd = params.getPwd();
+                    String smsText = "搜狗通行证提醒您：" + mobile;
+                    try {
+                        //查是否是手机号码
+                        if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
+                            if (!Strings.isNullOrEmpty(newPwd) && StringUtils.isAsciiPrintable(newPwd) && newPwd.length() >= 6 && newPwd.length() <= 16) {
+                                String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
+                                if (!Strings.isNullOrEmpty(passportId)) {
+                                    //查是否进黑名单
+                                    if (!operateTimesService.checkLimitResetPwd(passportId, clientId)) {
+                                        //校验account是否存在
+                                        Account account = accountService.queryNormalAccount(passportId);
+                                        if (account != null) {
+//                                            if (accountService.resetPassword(account, newPwd, true)) {
+//                                                operateTimesService.incLimitResetPwd(passportId, clientId);
+//                                                smsText = smsText + "重置密码成功，请使用新密码登录。";
+//                                                result.setSuccess(true);
+//                                            } else {
+//                                                smsText = smsText + "重置密码失败，请再次尝试。";
+//                                            }
                                         } else {
-                                            smsText = smsText + "重置密码次数超限，请24小时后尝试。";
+                                            smsText = smsText + "账号不存在，重置密码失败。";
                                         }
                                     } else {
-                                        smsText = smsText + "未绑定账号或未注册，重置密码失败。";
+                                        smsText = smsText + "重置密码次数超限，请24小时后尝试。";
                                     }
                                 } else {
-                                    smsText = smsText + "重置密码格式不正确，必须为字母、数字、字符且长度为6~16位!";
+                                    smsText = smsText + "未绑定账号或未注册，重置密码失败。";
                                 }
-                                //短信通知结果
-//                                if (!Strings.isNullOrEmpty(mobile)) {
-//                                    SMSUtil.sendSMS(mobile, smsText);
-//                                }
+                            } else {
+                                smsText = smsText + "重置密码格式不正确，必须为字母、数字、字符且长度为6~16位!";
                             }
-                            if (!isSuccess) {
-                                logger.info("BatchResetPwd is fail, smsText:" + smsText);
-                            }
-                        } catch (Exception e) {
-                            logger.error("resetPwd Fail username:" + mobile, e);
+                            //短信通知结果
+//                            boolean isSendSms = false;
+//                            if (SMSUtil.sendSMS(mobile, smsText)) {
+//                                isSendSms = true;
+//                            }
+//                            result.setDefaultModel("sendSms", isSendSms);
                         }
+                        result.setDefaultModel("mobile", mobile);
+                        result.setDefaultModel("smsText", smsText);
+                        if (!result.isSuccess()) {
+                            logger.info("mobile:" + mobile + ", resetPwd is fail, smsText:" + smsText);
+                        }
+                    } catch (Exception e) {
+                        logger.error("resetPwd Fail username:" + mobile, e);
                     }
-                });
+                    return result;
+                }
+            });
+            futureList.add(future);
+        }
+        List<String> smsTextList = Lists.newArrayList();
+        for (Future<Result> future : futureList) {
+            Result result = future.get();
+            if (!result.isSuccess()) {
+                String smsText = (String) result.getModels().get("smsText");
+                smsTextList.add(smsText);
             }
         }
+        resultList.setMessage(smsTextList.toString());
+        return resultList;
     }
 
     /* --------------------------------------------修改密保内容-------------------------------------------- */
