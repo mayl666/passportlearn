@@ -410,13 +410,13 @@ public class SecureManagerImpl implements SecureManager {
                                             //校验account是否存在
                                             Account account = accountService.queryNormalAccount(passportId);
                                             if (account != null) {
-                                                if (accountService.resetPassword(account, newPwd, true)) {
-                                                    operateTimesService.incLimitResetPwd(passportId, clientId);
-                                                    smsText = smsText + "重置密码成功，请使用新密码登录。";
-                                                    isSuccess = true;
-                                                } else {
-                                                    smsText = smsText + "重置密码失败，请再次尝试。";
-                                                }
+//                                                if (accountService.resetPassword(account, newPwd, true)) {
+//                                                    operateTimesService.incLimitResetPwd(passportId, clientId);
+//                                                    smsText = smsText + "重置密码成功，请使用新密码登录。";
+//                                                    isSuccess = true;
+//                                                } else {
+//                                                    smsText = smsText + "重置密码失败，请再次尝试。";
+//                                                }
                                             } else {
                                                 smsText = smsText + "账号不存在，重置密码失败。";
                                             }
