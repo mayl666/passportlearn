@@ -375,7 +375,7 @@ public class WapResetPwdAction extends BaseController {
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         redirectAttributes.addAttribute("ru", ru);
         redirectAttributes.addAttribute("client_id", client_id);
-        redirectAttributes.addAttribute("message", Coder.encodeUTF8(result.getMessage()));
+        redirectAttributes.addAttribute("message", result.getMessage());
         redirectAttributes.addAttribute("username", params.getUsername());
         if (result.isSuccess()) {
             String scode = (String) result.getModels().get("scode");
