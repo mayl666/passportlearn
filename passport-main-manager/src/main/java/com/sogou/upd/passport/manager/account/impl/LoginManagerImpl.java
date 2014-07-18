@@ -138,7 +138,7 @@ public class LoginManagerImpl implements LoginManager {
     public String getIndividPassportIdByUsername(String username) {
         AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
         if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
-            return (username + "@sogou.com");
+            return (username + CommonConstant.SOGOU_SUFFIX);
         }
         return username;
     }

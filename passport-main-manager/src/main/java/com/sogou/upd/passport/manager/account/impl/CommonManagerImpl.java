@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
@@ -79,10 +80,10 @@ public class CommonManagerImpl implements CommonManager {
         //根据username获取passportID
         String passportId = username;
         if (AccountDomainEnum.isPhone(username)) {
-            passportId = username + "@sohu.com";
+            passportId = username + CommonConstant.SOHU_SUFFIX;
         }
         if (AccountDomainEnum.isIndivid(username)) {
-            passportId = username + "@sogou.com";
+            passportId = username + CommonConstant.SOGOU_SUFFIX;
         }
         try {
             //如果是手机号，需要查询该手机绑定的主账号

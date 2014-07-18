@@ -50,7 +50,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
         String userId = authUserParameters.getUserid();
         if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(userId))) {
-            userId = userId + "@sogou.com";
+            userId = userId + CommonConstant.SOGOU_SUFFIX;
             authUserParameters.setUserid(userId);
         }
         if (PhoneUtil.verifyPhoneNumberFormat(userId)) {

@@ -90,7 +90,7 @@ public class RegManagerImpl implements RegManager {
             if (username.indexOf("@") == -1) {
                 //判断是否是手机号注册
                 if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
-                    username = username + "@sogou.com";
+                    username = username + CommonConstant.SOGOU_SUFFIX;
                     isSogou = true;
                 }
             } else {
@@ -119,15 +119,6 @@ public class RegManagerImpl implements RegManager {
                     result = sgRegisterApiManager.regMailUser(regEmailApiParams);
                     break;
                 case PHONE://手机号
-                    RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);
-//                    if (ManagerHelper.isInvokeProxyApi(username)) {
-//                        result = registerMobile(username, password, clientId, captcha, null);
-//                        if (result.isSuccess()) {
-//                            username = (String) result.getModels().get("userid");
-//                        }
-//                    } else {
-//                        result = sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
-//                    }
                     result = registerMobile(username, password, clientId, captcha, null);
                     if (result.isSuccess()) {
                         username = (String) result.getModels().get("userid");
@@ -345,7 +336,7 @@ public class RegManagerImpl implements RegManager {
             if (username.indexOf("@") == -1) {
                 //判断是否是手机号注册
                 if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
-                    username = username + "@sogou.com";
+                    username = username + CommonConstant.SOGOU_SUFFIX;
                 }
             }
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {

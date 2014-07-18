@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -60,8 +61,13 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             String password = params.getPassword();
             String ip = params.getCreateip();
             int clientId = params.getClient_id();
-            //判断注册账号类型，外域用户还是个性用户
             AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
+            //不支持sohu域账号注册
+            if (AccountDomainEnum.SOHU.equals(emailType)) {
+                result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
+                return result;
+            }
+            //判断注册账号类型，外域用户还是个性用户
             boolean flag = userNameValidator.isValid(username, null);
             if (!flag) {
                 result = new APIResultSupport(false);
@@ -76,6 +82,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                 return result;
             }
+
             switch (emailType) {
                 case SOGOU://个性账号直接注册
                 case INDIVID:
@@ -171,7 +178,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             if (username.indexOf("@") == -1) {
                 //判断是否是手机号注册
                 if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
-                    username = username + "@sogou.com";
+                    username = username + CommonConstant.SOGOU_SUFFIX;
                 }
             }
             //如果是手机账号注册

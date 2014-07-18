@@ -388,39 +388,32 @@ public class AccountServiceImpl implements AccountService {
                 ru = CommonConstant.DEFAULT_INDEX_URL;
                 activeUrl += "&ru=" + Coder.encodeUTF8(ru);
             }
-
             String cacheKey = buildCacheKey(username);
             Map<String, String> mapParam = new HashMap<>();
             //设置连接失效时间
             mapParam.put("token", token);
             //设置ru
             mapParam.put("ru", ru);
-
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();
             activeEmail.setActiveUrl(activeUrl);
-
             //模版中参数替换
             Map<String, Object> map = Maps.newHashMap();
             map.put("activeUrl", activeUrl);
             map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             activeEmail.setMap(map);
-
             activeEmail.setTemplateFile("activemail.vm");
             activeEmail.setSubject("激活您的搜狗通行证帐户");
             activeEmail.setCategory("register");
             activeEmail.setToEmail(username);
-
             mailUtils.sendEmail(activeEmail);
-
             //如果重新发送激活邮件，password是为空的，说明不是注册，否则需要临时注册到缓存
             if (!Strings.isNullOrEmpty(passpord)) {
+                //临时注册到缓存
                 initialAccountToCache(username, passpord, ip);
             }
             redisUtils.hPutAll(cacheKey, mapParam);
             redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
-            //临时注册到缓存
-            initialAccountToCache(username, passpord, ip);
         } catch (Exception e) {
             flag = false;
         }

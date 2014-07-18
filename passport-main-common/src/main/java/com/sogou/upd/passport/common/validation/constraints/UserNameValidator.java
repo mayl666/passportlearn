@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.validation.constraints;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import org.springframework.stereotype.Component;
 
@@ -39,9 +40,8 @@ public class UserNameValidator implements ConstraintValidator<UserName, String> 
             }
         } else {
             //搜狗账号需要检查是否包含敏感字符
-            if (value.endsWith("@sogou.com")) {
-                String prefix = value.substring(0, value.lastIndexOf(
-                        "@sogou.com"));
+            if (value.endsWith(CommonConstant.SOGOU_SUFFIX)) {
+                String prefix = value.substring(0, value.lastIndexOf(CommonConstant.SOGOU_SUFFIX));
                 String sens = "^(?!.*help)(?!.*info)(?!.*admin)(?!.*owner)(?!.*support)(?!.*www)(?!.*master).*$";
                 boolean sensFlag = prefix.matches(sens);
                 if (!sensFlag) {

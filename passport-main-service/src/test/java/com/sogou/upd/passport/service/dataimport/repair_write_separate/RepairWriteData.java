@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.FileIOUtil;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
@@ -63,7 +64,7 @@ public class RepairWriteData extends BaseTest {
             String[] array = str.split(",");
             String passportId = array[0];
             if (!passportId.contains("@")) {
-                passportId = passportId + "@sogou.com";
+                passportId = passportId + CommonConstant.SOGOU_SUFFIX;
             }
             try {
                 String regTime = array[1];

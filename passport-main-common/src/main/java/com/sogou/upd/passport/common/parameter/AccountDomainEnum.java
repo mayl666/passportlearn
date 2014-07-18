@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.parameter;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import org.apache.commons.lang.StringUtils;
 
@@ -65,15 +66,15 @@ public enum AccountDomainEnum {
         }
 
         // 验证手机账号（如137****@sohu.com）和sogou域账号
-        if (username.endsWith("@sohu.com")) {
+        if (username.endsWith(CommonConstant.SOHU_SUFFIX)) {
             String prefix = username.substring(0, username.lastIndexOf(
-                    "@sohu.com"));
+                    CommonConstant.SOHU_SUFFIX));
             if (PhoneUtil.verifyPhoneNumberFormat(prefix)) {
                 return AccountDomainEnum.PHONE;
             }
         }
 
-        if (username.endsWith("@sogou.com")) {
+        if (username.endsWith(CommonConstant.SOGOU_SUFFIX)) {
             return AccountDomainEnum.SOGOU;
         }
 

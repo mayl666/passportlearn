@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSAEncoder;
@@ -16,7 +17,6 @@ import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MappTokenService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
@@ -85,7 +85,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
                 }
             }
             if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(userId))) {
-                userId = userId + "@sogou.com";
+                userId = userId + CommonConstant.SOGOU_SUFFIX;
             }
             Result verifyUserResult = accountService.verifyUserPwdVaild(userId, authUserApiParams.getPassword(), false);
             if(verifyUserResult.isSuccess()){

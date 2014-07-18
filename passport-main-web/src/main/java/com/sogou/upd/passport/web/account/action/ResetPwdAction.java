@@ -100,7 +100,7 @@ public class ResetPwdAction extends BaseController {
             AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
             String passportId = username;
             if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
-                passportId = passportId + "@sogou.com";
+                passportId = passportId + CommonConstant.SOGOU_SUFFIX;
             }
             //查询主账号：@sogou.com/外域/第三方账号返回原样，手机账号返回绑定的主账号，若无主账号则返回手机号+@sohu.com
             passportId = commonManager.getPassportIdByUsername(passportId);
@@ -389,7 +389,7 @@ public class ResetPwdAction extends BaseController {
             String username = params.getUsername();
             String passportId = username;
             if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(username))) {
-                passportId += "@sogou.com";
+                passportId += CommonConstant.SOGOU_SUFFIX;
             }
             passportId = commonManager.getPassportIdByUsername(username);
             if (Strings.isNullOrEmpty(passportId)) {
