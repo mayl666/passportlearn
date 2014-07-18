@@ -395,7 +395,6 @@ public class RegisterApiManagerTest extends BaseTest {
         params.setMobile("13545210241");
 //        Result expectResult_exist = proxyRegisterApiManager.regMobileUser(params);
         String expectResult_exist = "{\"data\":{},\"status\":\"20201\",\"statusText\":\"账号已注册\"}";
-//        System.out.println(expectResult_exist.toString());     //{"data":{},"status":"20201","statusText":"账号已注册"}
         APIResultForm expectForm_exist = JacksonJsonMapperUtil.getMapper().readValue(expectResult_exist.toString(), APIResultForm.class);
         Result resultSG_exist = sgRegisterApiManager.regMobileUser(params);
         System.out.println(resultSG_exist.toString());
