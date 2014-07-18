@@ -15,7 +15,6 @@ import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
@@ -78,16 +77,14 @@ public class RegManagerImpl implements RegManager {
 
     @Override
     public Result webRegister(WebRegisterParams regParams, String ip) throws Exception {
-
         Result result = new APIResultSupport(false);
-        String username = null;
+        String username;
         try {
             int clientId = Integer.parseInt(regParams.getClient_id());
             username = regParams.getUsername().trim().toLowerCase();
             String password = regParams.getPassword();
             String captcha = regParams.getCaptcha();
             String ru = regParams.getRu();
-
             boolean isSogou = false;//外域还是个性账号
             //判断是否是个性账号
             if (username.indexOf("@") == -1) {
@@ -102,7 +99,6 @@ public class RegManagerImpl implements RegManager {
             }
             //判断注册账号类型，sogou用户还是手机用户
             AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
-
             switch (emailType) {
                 case SOGOU://个性账号直接注册
                 case OTHER://外域邮件注册
@@ -116,30 +112,25 @@ public class RegManagerImpl implements RegManager {
                     }
                     //发出激活信以后跳转页面，ru为空跳到sogou激活成功页面
                     if (Strings.isNullOrEmpty(ru)) {
-                        if (isSogou) {
-                            ru = LOGIN_INDEX_URL;
-                        } else {
-                            ru = EMAIL_REG_VERIFY_URL;
-                        }
+                        ru = isSogou ? LOGIN_INDEX_URL : EMAIL_REG_VERIFY_URL;
                     }
                     RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                             clientId, ru);
-                    result = registerApiManager.regMailUser(regEmailApiParams);
-//                    if (ManagerHelper.isInvokeProxyApi(username)) {
-//                        result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
-//                    } else {
-//                        result = sgRegisterApiManager.regMailUser(regEmailApiParams);
-//                    }
+                    result = sgRegisterApiManager.regMailUser(regEmailApiParams);
                     break;
                 case PHONE://手机号
                     RegMobileCaptchaApiParams regMobileCaptchaApiParams = buildProxyApiParams(username, password, captcha, clientId, ip);
-                    if (ManagerHelper.isInvokeProxyApi(username)) {
-                        result = registerMobile(username, password, clientId, captcha, null);
-                        if (result.isSuccess()) {
-                            username = (String) result.getModels().get("userid");
-                        }
-                    } else {
-                        result = sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+//                    if (ManagerHelper.isInvokeProxyApi(username)) {
+//                        result = registerMobile(username, password, clientId, captcha, null);
+//                        if (result.isSuccess()) {
+//                            username = (String) result.getModels().get("userid");
+//                        }
+//                    } else {
+//                        result = sgRegisterApiManager.regMobileCaptchaUser(regMobileCaptchaApiParams);
+//                    }
+                    result = registerMobile(username, password, clientId, captcha, null);
+                    if (result.isSuccess()) {
+                        username = (String) result.getModels().get("userid");
                     }
                     break;
             }
@@ -180,7 +171,7 @@ public class RegManagerImpl implements RegManager {
             String randomPwd = RandomStringUtils.randomNumeric(6);
             //注册手机号
             RegMobileApiParams regApiParams = new RegMobileApiParams(mobile, randomPwd, clientId);
-            Result regMobileResult = proxyRegisterApiManager.regMobileUser(regApiParams);
+            Result regMobileResult = sgRegisterApiManager.regMobileUser(regApiParams);
             if (regMobileResult.isSuccess()) {
                 passportId = (String) regMobileResult.getModels().get("userid");
                 //发送短信验证码
@@ -226,7 +217,7 @@ public class RegManagerImpl implements RegManager {
             return result;
         }
         RegMobileApiParams regApiParams = new RegMobileApiParams(username, password, clientId);
-        result = proxyRegisterApiManager.regMobileUser(regApiParams);
+        result = sgRegisterApiManager.regMobileUser(regApiParams);
         if (result.isSuccess()) {
             if (!Strings.isNullOrEmpty(type)) {
                 if (ConnectTypeEnum.WAP.toString().equals(type)) {
@@ -391,13 +382,15 @@ public class RegManagerImpl implements RegManager {
     public Result isAccountNotExists(String username, int clientId) throws Exception {
         Result result;
         try {
-            if (ManagerHelper.readSohuSwitcher()) {
-                //回滚流程
-                result = checkUserFromSohu(username, clientId);
-            } else {
-                //正常双读流程
-                result = bothCheck(username, clientId);
-            }
+//            if (ManagerHelper.readSohuSwitcher()) {
+//                //回滚流程
+//                result = checkUserFromSohu(username, clientId);
+//            } else {
+//                //正常双读流程
+//                result = bothCheck(username, clientId);
+//            }
+            CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
+            result = sgRegisterApiManager.checkUser(checkUserApiParams);
         } catch (ServiceException e) {
             logger.error("Check account is exists Exception, username:" + username, e);
             throw new Exception(e);

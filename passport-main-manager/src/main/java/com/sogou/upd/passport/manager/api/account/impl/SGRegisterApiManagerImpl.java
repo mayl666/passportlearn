@@ -131,15 +131,12 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
 
     @Override
     public Result regMobileCaptchaUser(RegMobileCaptchaApiParams regParams) {
-
         Result result = new APIResultSupport(false);
         try {
-
             int clientId = regParams.getClient_id();
             String mobile = regParams.getMobile();
             String password = regParams.getPassword();
             String ip = regParams.getIp();
-
             String captcha = regParams.getCaptcha();
             //验证手机号码与验证码是否匹配
             result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.REGISTER, captcha);
@@ -147,7 +144,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
                 return result;
             }
-
             Account account = accountService.initialAccount(mobile, password, false, ip, AccountTypeEnum
                     .PHONE.getValue());
             if (account != null) {

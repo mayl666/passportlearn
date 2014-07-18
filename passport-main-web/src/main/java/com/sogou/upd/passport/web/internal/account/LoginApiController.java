@@ -135,11 +135,6 @@ public class LoginApiController extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 return result.toString();
             }
-//            if (ManagerHelper.isInvokeProxyApi(params.getUserid())) {
-//                result = proxyLoginApiManager.webAuthUser(params);
-//            } else {
-//                result = sgLoginApiManager.webAuthUser(params);
-//            }
             result = loginApiManager.webAuthUser(params);
             if (!result.isSuccess()) {
                 pcAccountManager.doAuthUserFailed(params.getClient_id(), userid, createip, result.getCode());
@@ -153,7 +148,6 @@ public class LoginApiController extends BaseController {
             userOperationLog.putOtherMessage("createip", createip);
             UserOperationLogUtil.log(userOperationLog, authEmailUserLogger);
             return result.toString();
-
         }
     }
 
@@ -198,7 +192,6 @@ public class LoginApiController extends BaseController {
             logger.error("authuser fail,userid:" + params.getUserid(), e);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             return result.toString();
-
         } finally {
             // 获取记录UserOperationLog的数据
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));

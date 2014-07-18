@@ -6,7 +6,6 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
@@ -75,9 +74,7 @@ public class LoginManagerImpl implements LoginManager {
                     return result;
                 }
             }
-
             result = authUser(username, ip, pwdMD5);
-
         } catch (Exception e) {
             logger.error("accountLogin fail,passportId:" + passportId, e);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
@@ -102,12 +99,6 @@ public class LoginManagerImpl implements LoginManager {
         authUserApiParams.setPassword(pwdMD5);
         authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
         result = loginApiManager.webAuthUser(authUserApiParams);
-        //根据域名判断是否代理，一期全部走代理
-//        if (ManagerHelper.isInvokeProxyApi(passportId)) {
-//            result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-//        } else {
-//            result = sgLoginApiManager.webAuthUser(authUserApiParams);
-//        }
         return result;
     }
 

@@ -124,9 +124,7 @@ public class RegAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-
             ip = getIp(request);
-
             //校验用户是否允许注册
             uuidName = ServletUtil.getCookie(request, "uuidName");
             result = regManager.checkRegInBlackList(ip, uuidName);
@@ -153,12 +151,8 @@ public class RegAction extends BaseController {
         } catch (Exception e) {
             logger.error("reguser:User Register Is Failed,Username is " + regParams.getUsername(), e);
         } finally {
-            String logCode = null;
-            if (!Strings.isNullOrEmpty(finalCode)) {
-                logCode = finalCode;
-            } else {
-                logCode = result.getCode();
-            }
+            String logCode;
+            logCode = !Strings.isNullOrEmpty(finalCode) ? finalCode : result.getCode();
             regManager.incRegTimes(ip, uuidName);
             String userId = (String) result.getModels().get("userid");
             if (!Strings.isNullOrEmpty(userId) && AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {
