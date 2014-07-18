@@ -369,7 +369,6 @@ public class RegisterApiManagerTest extends BaseTest {
     @Test
     public void testRegMobileUser() throws IOException {
         RegMobileApiParams params = new RegMobileApiParams();
-        params.setMobile(new_mobile);
         params.setPassword(password);
         long ct = System.currentTimeMillis();
         params.setCt(ct);
@@ -377,6 +376,7 @@ public class RegisterApiManagerTest extends BaseTest {
         String code = ManagerHelper.generatorCodeGBK(new_mobile, clientId, serverSecret, ct);
         params.setCode(code);
         //可以正常注册
+        params.setMobile(new_mobile);
 //        Result expectResult = proxyRegisterApiManager.regMobileUser(params);
         String expectResult = "{\"statusText\":\"注册成功\",\"data\":{\"userid\":\"" + new_mobile + "@sohu.com\",\"isSetCookie\":false},\"status\":\"0\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
@@ -385,8 +385,8 @@ public class RegisterApiManagerTest extends BaseTest {
         Assert.assertTrue(expectForm.equals(formSG));
         //手机号格式有误
         params.setMobile("135xxx3xxx41");
-        Result expectResult_format = proxyRegisterApiManager.regMobileUser(params);
-        System.out.println(expectResult_format.toString());
+//        Result expectResult_format = proxyRegisterApiManager.regMobileUser(params);
+        String expectResult_format = "{\"statusText\":\"参数错误,请输入必填的参数\",\"data\":{},\"status\":\"10002\"}";
         APIResultForm expectForm_format = JacksonJsonMapperUtil.getMapper().readValue(expectResult_format.toString(), APIResultForm.class);
         Result resultSG_format = sgRegisterApiManager.regMobileUser(params);
         APIResultForm formSG_format = JacksonJsonMapperUtil.getMapper().readValue(resultSG_format.toString(), APIResultForm.class);
