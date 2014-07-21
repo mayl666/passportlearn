@@ -108,8 +108,6 @@ public class ResetPwdAction extends BaseController {
             switch (domain) {
                 //主账号是sohu域/外域/手机号的去sohu找回密码
                 case SOHU:
-                case OTHER:
-                case PHONE:
                     return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
                 case THIRD:
                     return "redirect:/web/findpwd";
@@ -153,10 +151,15 @@ public class ResetPwdAction extends BaseController {
             //记录找回密码次数
             resetPwdManager.incFindPwdTimes(passportId);
             //如果用户的密保手机和密保邮箱存在，则返回模糊处理的手机号/密保邮箱及完整手机号/邮箱加密后的md5串
-            //todo 外域邮箱找回时也需要模糊处理，目前只是搜狗账号阶段，暂未添加注册邮箱找回
             if (accountSecureInfoVO != null) {
                 String sec_mobile = (String) result.getModels().get("sec_mobile");
                 String sec_email = (String) result.getModels().get("sec_email");
+                if (AccountDomainEnum.OTHER.equals(domain)) {
+                    if (!passportId.equals(sec_email)) { //如果passportId是外域，则注册邮箱是它本身,当注册邮箱和密保邮箱不一样时，才返回注册邮箱
+                        result.setDefaultModel("sec_process_reg_email", accountSecureInfoVO.getReg_email());
+                        result.setDefaultModel("sec_reg_email_md5", DigestUtils.md5Hex(passportId));
+                    }
+                }
                 if (!Strings.isNullOrEmpty(sec_mobile)) {
                     result.setDefaultModel("sec_process_mobile", accountSecureInfoVO.getSec_mobile());
                     result.setDefaultModel("sec_mobile_md5", DigestUtils.md5Hex(sec_mobile.getBytes()));
