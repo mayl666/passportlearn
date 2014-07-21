@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.FileIOUtil;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.FileUtil;
 import com.sogou.upd.passport.dao.account.AccountDAO;
@@ -47,7 +47,7 @@ public class RepairWriteData extends BaseTest {
     */
     @Test
     public void checkIsSogouExistDate() {
-        List<String> passportList = FileIOUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\phone.txt");
+        List<String> passportList = FileIOUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\sogou.txt");
         String content;
         int count = 0;
         String sgPassportId = null;
@@ -56,7 +56,7 @@ public class RepairWriteData extends BaseTest {
             if (Strings.isNullOrEmpty(passportId)) {
                 continue;
             }
-            if (AccountTypeEnum.PHONE == AccountTypeEnum.getAccountType(passportId)) {
+            if (AccountDomainEnum.PHONE == AccountDomainEnum.getAccountDomain(passportId)) {
                 sgPassportId = mobilePassportMappingDAO.getPassportIdByMobile(passportId);
             } else {
                 Account account = accounDao.getAccountByPassportId(passportId);
@@ -77,7 +77,7 @@ public class RepairWriteData extends BaseTest {
         content = "total:" + passportList.size() + ",count:" + count;
         contentList.add(content);
         try {
-            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\phone_result.txt", contentList);
+            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\sogou_result.txt", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
