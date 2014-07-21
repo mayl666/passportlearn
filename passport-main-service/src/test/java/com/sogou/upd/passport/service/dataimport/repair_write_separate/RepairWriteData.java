@@ -54,6 +54,10 @@ public class RepairWriteData extends BaseTest {
     @Autowired
     private AccountInfoDAO accountInfoDAO;
 
+    /*
+     * 检查新注册账号，是否从增量数据库里的账号写入搜狗数据库里
+     * 输入"userid，createtim"
+     */
     @Test
     public void checkRegDate() {
         List<String> regList = FileIOUtil.readFileByLines("D:\\userid_time_2310.txt");
