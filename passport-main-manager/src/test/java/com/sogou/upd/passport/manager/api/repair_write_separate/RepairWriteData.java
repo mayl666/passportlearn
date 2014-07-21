@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.FileIOUtil;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.FileUtil;
@@ -83,11 +84,48 @@ public class RepairWriteData extends BaseTest {
         }
     }
 
-    /*
-* 数据来源：双读异常log里用搜狐域账号绑定的手机号来登录的useridld列表，检查是否在搜狗数据库里
-* 输入："mobile userid"
-* 输出：不在搜狗数据库里的账号
-*/
+    //查询手机号绑定的主账号
+    @Test
+    public void getPassportIdByUsername() {
+        List<String> contentList = Lists.newArrayList();
+        List<String> dataList = FileIOUtil.readFileByLines("D:\\phoneuids.txt");
+        String content = null;
+        int count = 0;
+        for (String data : dataList) {
+            String mobile = data;
+            if (data.endsWith("@sohu.com")) {
+                mobile = data.substring(0, data.lastIndexOf("@sohu.com"));
+            }
+            String sgPassportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
+            if (Strings.isNullOrEmpty(sgPassportId)) {
+                BaseMoblieApiParams params = new BaseMoblieApiParams();
+                params.setMobile(mobile);
+                Result shResult = proxyBindApiManager.getPassportIdByMobile(params);
+                if (shResult.isSuccess()) {
+                    String shPassportId = (String) shResult.getModels().get("userid");
+                    if (!Strings.isNullOrEmpty(shPassportId) && AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(shPassportId))) {
+                        content = mobile + " " + shPassportId;
+                    }
+                }
+            } else {
+                continue;
+            }
+            count++;
+            contentList.add(content);
+        }
+        content = "total:" + dataList.size() + ", sogouNoExist:" + count;
+        contentList.add(content);
+        try {
+            com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\passportidlist.txt", contentList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*据来源：双读异常log里用搜狐域账号绑定的手机号来登录的useridld列表，检查是否在搜狗数据库里
+    * 输入："mobile userid"
+            * 输出：不在搜狗数据库里的账号
+    */
     @Test
     public void checkSohuBindMobileDate() {
         List<String> contentList = Lists.newArrayList();
@@ -120,6 +158,7 @@ public class RepairWriteData extends BaseTest {
             e.printStackTrace();
         }
     }
+
 
     @Test
     public void checkRegFailDate() {
