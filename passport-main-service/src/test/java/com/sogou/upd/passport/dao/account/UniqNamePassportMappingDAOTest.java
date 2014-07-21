@@ -27,6 +27,13 @@ public class UniqNamePassportMappingDAOTest extends BaseDAOTest {
         Assert.assertNotNull(count);
     }
 
+    @Test
+    public void getPassportIdByUniqName() {
+        String uniqname = "难忘";
+        String passportId = mappingDAO.getPassportIdByUniqName(uniqname);
+        System.out.println("passportId:" + passportId);
+    }
+
 
     @Test
     public void testGetUpmByPassportId() {
