@@ -59,11 +59,7 @@ public class PCAccountController extends BaseController {
     @Autowired
     private LoginManager loginManager;
     @Autowired
-    private CookieManager cookieManager;
-    @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
-
-    private static final String DEFAULT_URL = "https://account.sogou.com";
 
     @RequestMapping(value = "/act/pclogin", method = RequestMethod.GET)
     public String pcLogin(HttpServletRequest request, PcAccountWebParams pcAccountWebParams, Model model)
