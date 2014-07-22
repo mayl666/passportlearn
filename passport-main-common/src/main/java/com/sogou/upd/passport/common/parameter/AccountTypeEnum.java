@@ -17,7 +17,7 @@ public enum AccountTypeEnum {
     EMAIL(1), // 外域邮箱账号
     PHONE(2), // 手机号码
     QQ(3), // QQ
-    SINA(4), // Sina微博
+    SINA(4), // Sina微博      +
     RENREN(5), // 人人
     TAOBAO(6), // 淘宝
     BAIDU(7),  // 百度

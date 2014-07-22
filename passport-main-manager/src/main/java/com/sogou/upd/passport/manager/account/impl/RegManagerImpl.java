@@ -448,7 +448,7 @@ public class RegManagerImpl implements RegManager {
             }
         }
         result.setSuccess(true);
-        return result;  //To change body of implemented methods use File | Settings | File Templates.
+        return result;
     }
 
     @Override
