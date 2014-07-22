@@ -26,10 +26,13 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     public void testAuthUser() {
         try {
             AuthUserApiParams authUserParameters = new AuthUserApiParams();
-            authUserParameters.setUserid("13621009174");
+//            authUserParameters.setUserid("13621009174");
+            authUserParameters.setUserid("xuweiibm@game.sohu.com");
+//            authUserParameters.setUserid("wangyong0369@game.sohu.com");
             authUserParameters.setClient_id(1100);
 //            authUserParameters.setIp("10.129.192.193");
-            authUserParameters.setPassword(Coder.encryptMD5("111111"));
+            authUserParameters.setPassword(Coder.encryptMD5("jsjdxuweiibm"));
+//            authUserParameters.setPassword(Coder.encryptMD5("960324"));
 //            Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
 
 //
@@ -40,7 +43,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
 ////            authUserParameters.setPassword("e355b0428c262b7c883a724a002bf8b8");
 //            authUserParameters.setPassword(Coder.encryptMD5("cd98203213"));
             Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
-            System.out.println("resultStr:"+result);
+            System.out.println("resultStr:" + result);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -63,7 +66,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
 //                String value = listString.get(i).get("value").toString();
 //                mapString.put(key,value);
 //            }
-            System.out.println("result:"+result.toString());
+            System.out.println("result:" + result.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,22 +74,22 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
 
     @Test
     public void testgetSHCookieValue() {
-       try {
-           String userid =  "大大大31231@focus.cn";
+        try {
+            String userid = "大大大31231@focus.cn";
 //           String utfUserId = new String(userid.getBytes(),"gbk");
-           CookieApiParams cookieApiParams = new CookieApiParams();
-           cookieApiParams.setUserid(userid);
-           cookieApiParams.setClient_id(1044);
-           cookieApiParams.setRu("https://account.sogou.com/");
-           cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-           cookieApiParams.setPersistentcookie(String.valueOf(1));
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(userid);
+            cookieApiParams.setClient_id(1044);
+            cookieApiParams.setRu("https://account.sogou.com/");
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            cookieApiParams.setPersistentcookie(String.valueOf(1));
 
-           //TODO sogou域账号迁移后cookie生成问题
-           Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-           System.out.println(getCookieValueResult.toString());
-       }catch (Exception ex){
+            //TODO sogou域账号迁移后cookie生成问题
+            Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+            System.out.println(getCookieValueResult.toString());
+        } catch (Exception ex) {
 
-       }
+        }
 
     }
 
