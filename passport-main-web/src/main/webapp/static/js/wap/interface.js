@@ -143,7 +143,7 @@ define([], function() {
     function checksms(params, callback) {
         var options = {
             client_id: client_id,
-            v: 0,
+            v: 5,
             ru: 'http://wap.sogou.com'
         };
         callback = callback || noop;
@@ -206,7 +206,7 @@ define([], function() {
     function findpwdCheck(params, callback) {
         var options = {
             client_id: client_id,
-            v: 0,
+            v: 5,
             ru: 'http://wap.sogou.com'
         };
         callback = callback || noop;
@@ -238,7 +238,7 @@ define([], function() {
     function findpwdSendmail(params, callback) {
         var options = {
             client_id: client_id,
-            v: 0,
+            v: 5,
             ru: 'http://wap.sogou.com'
         };
         callback = callback || noop;
@@ -270,7 +270,7 @@ define([], function() {
     function reset(params, callback) {
         var options = {
             client_id: client_id,
-            v: 0,
+            v: 5,
             ru: 'http://wap.sogou.com'
         };
         callback = callback || noop;

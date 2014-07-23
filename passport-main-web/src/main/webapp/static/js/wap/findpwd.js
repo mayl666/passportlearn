@@ -111,8 +111,9 @@ define(['./interface', './utils',  './skin' , './common'], function(Form, Utils)
 				self.__mFinding = true;
 				return Form.checksms({
 					smscode: c,
-					mobile: u,
-                    ru: decodeURIComponent(ru)
+					mobile: u, 
+                    skin: Utils.getUrlParams()['skin'],
+                   ru: decodeURIComponent(ru)
 				}, function(result, data) {
 					self.__mFinding = false;
 					if (result) {
