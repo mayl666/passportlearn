@@ -156,8 +156,8 @@ public class ResetPwdAction extends BaseController {
                 String sec_email = (String) result.getModels().get("sec_email");
                 if (AccountDomainEnum.OTHER.equals(domain)) {
                     if (!passportId.equals(sec_email)) { //如果passportId是外域，则注册邮箱是它本身,当注册邮箱和密保邮箱不一样时，才返回注册邮箱
-                        result.setDefaultModel("sec_process_reg_email", accountSecureInfoVO.getReg_email());
-                        result.setDefaultModel("sec_reg_email_md5", DigestUtils.md5Hex(passportId));
+                        result.setDefaultModel("reg_process_email", accountSecureInfoVO.getReg_email());
+                        result.setDefaultModel("reg_email_md5", DigestUtils.md5Hex(passportId));
                     }
                 }
                 if (!Strings.isNullOrEmpty(sec_mobile)) {
