@@ -1,11 +1,11 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
@@ -29,10 +29,12 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
 
     private static final Logger logger = LoggerFactory.getLogger(LoginApiManagerImpl.class);
 
+    private static final Logger checkWriteLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothWriteSyncErrorLogger");
+
     @Autowired
     private LoginApiManager sgLoginApiManager;
     @Autowired
-    private CommonManager commonManager;
+    private LoginApiManager proxyLoginApiManager;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
@@ -40,17 +42,15 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
         try {
             String userId = authUserApiParams.getUserid();
             //第三方账号不允许此操作
-            if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(authUserApiParams.getUserid()))) {
+            if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(userId))) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result;
             }
-            //主要是为了查询手机号绑定的主账号是否是sohu域的及主账号是否有修改密码或绑定手机的操作，读写彻底分离后，查主账号的逻辑可去除
-            String passportId = commonManager.getPassportIdByUsername(userId);
-            if (Strings.isNullOrEmpty(passportId)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND);
-                return result;
-            }
             result = sgLoginApiManager.webAuthUser(authUserApiParams);
+            if (ErrorUtil.INVALID_ACCOUNT.equals(result.getCode())) { //如果账号不存在，去sohu校验用户名和密码
+                result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.LOGIN, "webAuthUser", "check_sh", userId, result.getCode(), result.toString());
+            }
         } catch (Exception e) {
             logger.error("bothAuthUser Exception", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);

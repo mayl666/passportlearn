@@ -330,7 +330,8 @@ public class RegManagerImpl implements RegManager {
         return accountService.getCaptchaCode(code);
     }
 
-    private Result checkUserFromSohu(String username, int clientId) throws Exception {
+    @Override
+    public Result checkUserFromSohu(String username, int clientId) throws Exception {
         Result result;
         try {
             if (username.indexOf("@") == -1) {
