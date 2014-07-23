@@ -71,12 +71,14 @@ define(['./interface','../lib/tpl', './utils',  './skin' , './common'], function
 					    if (result) {
                             if(data.url && data.url.length){
                                 location.href = data.url;
-                            }else{
+                            }else if(data.sec_process_email){
                                 self.$form.html(Tpl(self.$confirmTpl)({
                                     email: data.sec_process_email
                                 }));
                                 self.__confirmData = data;
                                 self.__currentStep = 2;
+                            }else {
+                                location.href = '/wap/findpwd/kefu?' + passParamsStr;
                             }
 					    } else {
 						    self.showMsg(data.statusText);
@@ -97,6 +99,7 @@ define(['./interface','../lib/tpl', './utils',  './skin' , './common'], function
 					    username: self.__confirmData.userid,
                         scode:self.__confirmData.scode,
                         email:self.__confirmData.sec_email,
+                        skin: Utils.getUrlParams()['skin'],
                         ru: decodeURIComponent(ru)
 				    }, function(result, data) {
 					    self.__mFinding = false;
