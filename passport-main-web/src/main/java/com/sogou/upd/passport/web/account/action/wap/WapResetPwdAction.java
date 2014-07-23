@@ -362,7 +362,7 @@ public class WapResetPwdAction extends BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 redirectAttributes.addAttribute("code", ErrorUtil.ERR_CODE_COM_REQURIE);
                 redirectAttributes.addAttribute("message", Coder.encodeUTF8(validateResult));
-                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code={code}&message={message}";
+                return "redirect:/findpwd/vm/reset?code={code}&message={message}";
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
@@ -384,10 +384,10 @@ public class WapResetPwdAction extends BaseController {
             String scode = (String) result.getModels().get("scode");
             redirectAttributes.addAttribute("scode", scode);
             redirectAttributes.addAttribute("code", "0");
-            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&scode={scode}&client_id={client_id}&ru={ru}&code={code}&message={message}&skin={skin}";
+            return "redirect:/findpwd/vm/reset?username={username}&scode={scode}&client_id={client_id}&ru={ru}&code={code}&message={message}&skin={skin}";
         }
         redirectAttributes.addAttribute("code", result.getCode());
-        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&client_id={client_id}&ru={ru}&code={code}&message={message}&skin={skin}";
+        return "redirect:/findpwd/vm/reset?username={username}&client_id={client_id}&ru={ru}&code={code}&message={message}&skin={skin}";
 
     }
 
