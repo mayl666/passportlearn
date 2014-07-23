@@ -27,6 +27,7 @@ public class BaseWapResetPwdParams {
     @NotBlank(message = "v参数不可为空")
     @V
     protected String v = WapConstant.WAP_TOUCH;
+    protected String skin;
 
     public String getRu() {
         return ru;
@@ -50,5 +51,13 @@ public class BaseWapResetPwdParams {
 
     public void setV(String v) {
         this.v = v;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
     }
 }

@@ -151,8 +151,7 @@ public class RegAction extends BaseController {
         } catch (Exception e) {
             logger.error("reguser:User Register Is Failed,Username is " + regParams.getUsername(), e);
         } finally {
-            String logCode;
-            logCode = !Strings.isNullOrEmpty(finalCode) ? finalCode : result.getCode();
+            String logCode = !Strings.isNullOrEmpty(finalCode) ? finalCode : result.getCode();
             regManager.incRegTimes(ip, uuidName);
             String userId = (String) result.getModels().get("userid");
             if (!Strings.isNullOrEmpty(userId) && AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {
@@ -164,9 +163,9 @@ public class RegAction extends BaseController {
             }
             //用户注册log
             //验证码信息先输出到warning，不记录到日志中，省得报警
-            if(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED.equals(logCode)){
-                logger.warn("ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, username:"+regParams.getUsername()+" clientId:"+regParams.getClient_id()+" ip:"+getIp(request)+" requestURI:"+request.getRequestURI());
-            }else {
+            if (ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED.equals(logCode)) {
+                logger.warn("ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, username:" + regParams.getUsername() + " clientId:" + regParams.getClient_id() + " ip:" + getIp(request) + " requestURI:" + request.getRequestURI());
+            } else {
                 UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id(), logCode, getIp(request));
                 String referer = request.getHeader("referer");
                 userOperationLog.putOtherMessage("ref", referer);
