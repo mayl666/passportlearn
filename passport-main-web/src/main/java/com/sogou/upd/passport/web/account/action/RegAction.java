@@ -46,7 +46,6 @@ import java.net.URLDecoder;
 @RequestMapping("/web")
 public class RegAction extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
-    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
     @Autowired
     private RegManager regManager;
@@ -142,7 +141,7 @@ public class RegAction extends BaseController {
                 //设置来源
                 String ru = regParams.getRu();
                 if (Strings.isNullOrEmpty(ru)) {
-                    ru = LOGIN_INDEX_URL;
+                    ru = CommonConstant.LOGIN_INDEX_URL;
                 }
                 String passportId = (String) result.getModels().get("username");
                 Boolean isSetCookie = (Boolean) result.getModels().get("isSetCookie");
@@ -240,34 +239,44 @@ public class RegAction extends BaseController {
      * @param activeParams 传入的参数
      */
     @RequestMapping(value = "/activemail", method = RequestMethod.GET)
-    @ResponseBody
-    public Object activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams)
+    public void activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams, Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(activeParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result;
+            response.sendRedirect(CommonConstant.EMAIL_FAILED_VERIFY_URL + "?code=" + result.getCode());
+            return;
         }
         //验证client_id
         int clientId = Integer.parseInt(activeParams.getClient_id());
-
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result;
+            response.sendRedirect(CommonConstant.EMAIL_FAILED_VERIFY_URL + "?code=" + result.getCode());
+            return;
         }
         String ip = getIp(request);
         //邮件激活
         result = regManager.activeEmail(activeParams, ip);
         if (result.isSuccess()) {
-            // 种sohu域cookie
+            // 种sogou域cookie
             result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
-            result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
+            if (result.isSuccess()) {
+                if (Strings.isNullOrEmpty(activeParams.getRu()) || CommonConstant.EMAIL_REG_VERIFY_URL.equals(activeParams.getRu())) {
+                    activeParams.setRu(CommonConstant.DEFAULT_INDEX_URL);
+                }
+                result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
+                result.setDefaultModel(CommonConstant.CLIENT_ID, clientId);
+                result.setCode("0");
+                response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode() + "&ru=" + activeParams.getRu());
+                return;
+            }
         }
-        return result;
+        response.sendRedirect(CommonConstant.EMAIL_FAILED_VERIFY_URL + "?code=" + result.getCode());
+        return;
+
     }
 
     /**
