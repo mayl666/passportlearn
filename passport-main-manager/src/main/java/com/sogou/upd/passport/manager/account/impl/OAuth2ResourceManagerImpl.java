@@ -43,6 +43,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * 采用OAuth2协议访问受保护数据
@@ -150,6 +151,11 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
                 cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
                 cookieApiParams.setPersistentcookie(String.valueOf(1));
+//                Random random = new Random();
+//                int num = random.nextInt(10);
+//                if(num/2 == 0){
+//
+//                }
                 cookieResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
 
             }
@@ -162,6 +168,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             String suffix = ";path=/;domain=.sogou.com;expires=" + expires;
             String ppinf = cookieResult.getModels().get("ppinf") + suffix;
             String pprdig = cookieResult.getModels().get("pprdig") + suffix;
+//            String ppinf = "";
+//            String pprdig = "";
             String[] cookieArray = new String[]{"ppinf=" + ppinf, "pprdig=" + pprdig};
             resourceMap.put("msg", "get cookie success");
             resourceMap.put("code", 0);

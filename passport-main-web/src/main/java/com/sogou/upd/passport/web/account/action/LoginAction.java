@@ -84,8 +84,12 @@ public class LoginAction extends BaseController {
                 result.setSuccess(true);
                 result.setDefaultModel("needCaptcha", needCaptcha);
             } else {
-                result = new APIResultSupport(false);
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                //登录时校验用户名是否存在，因为要考虑数据可能不完整，登录时不存在的会去sohu校验密码，所以检查用户名时也需要兼容不存在的情况，sogou不存在，去校验sohu
+                //todo 上线观察几天后，此兼容逻辑可删除
+                result = regManager.checkUserFromSohu(username, clientId);
+                if (!result.isSuccess()) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                }
             }
         } catch (Exception e) {
             logger.error("checkNeedCaptcha:check user need captcha or not is failed,username is " + checkParam.getUsername(), e);
@@ -108,7 +112,6 @@ public class LoginAction extends BaseController {
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
-
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -120,13 +123,11 @@ public class LoginAction extends BaseController {
         }
         String userId = loginParams.getUsername();
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
-
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
         userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(request, "YYID"));
         UserOperationLogUtil.log(userOperationLog);
-
         if (result.isSuccess()) {
             userId = result.getModels().get("userid").toString();
             int clientId = Integer.parseInt(loginParams.getClient_id());
@@ -142,7 +143,6 @@ public class LoginAction extends BaseController {
                 result.setDefaultModel("userid", userId);
                 loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
             }
-
         } else {
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
             //校验是否需要验证码
@@ -155,7 +155,6 @@ public class LoginAction extends BaseController {
                 result.setMessage("您登陆过于频繁，请稍后再试。");
             }
         }
-
         result.setDefaultModel("xd", loginParams.getXd());
         model.addAttribute("data", result.toString());
         return "/login/api";

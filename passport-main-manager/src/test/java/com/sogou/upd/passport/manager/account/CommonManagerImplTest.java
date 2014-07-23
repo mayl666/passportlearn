@@ -25,8 +25,8 @@ public class CommonManagerImplTest extends BaseTest {
     @Test
     public void testGetPassportIdByUsername() throws Exception {
         //手机@sohu.com账号
-        String actual1 = commonManager.getPassportIdByUsername(userid_sohu);
-        Assert.assertEquals(actual1, userid_sohu);
+        String actual1 = commonManager.getPassportIdByUsername(userid_phone);
+        Assert.assertEquals(actual1, userid_phone);
         //外域账号
         String actual2 = commonManager.getPassportIdByUsername(userid_email);
         Assert.assertEquals(actual2, userid_email);

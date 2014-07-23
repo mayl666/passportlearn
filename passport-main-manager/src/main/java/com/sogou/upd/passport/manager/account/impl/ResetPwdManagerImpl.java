@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -80,7 +81,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             } else {
                 // 不查询account表
                 if (username.indexOf("@") == -1) {
-                    userId += "@sogou.com";
+                    userId += CommonConstant.SOGOU_SUFFIX;
                 }
             }
 

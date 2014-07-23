@@ -4,15 +4,11 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
-import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountSecureService;
@@ -84,24 +80,17 @@ public class CommonManagerImpl implements CommonManager {
         //根据username获取passportID
         String passportId = username;
         if (AccountDomainEnum.isPhone(username)) {
-            passportId = username + "@sohu.com";
+            passportId = username + CommonConstant.SOHU_SUFFIX;
         }
         if (AccountDomainEnum.isIndivid(username)) {
-            passportId = username + "@sogou.com";
+            passportId = username + CommonConstant.SOGOU_SUFFIX;
         }
         try {
             //如果是手机号，需要查询该手机绑定的主账号
             if (PhoneUtil.verifyPhoneNumberFormat(username)) {
                 passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
                 if (Strings.isNullOrEmpty(passportId)) {
-                    BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-                    baseMoblieApiParams.setMobile(username);
-                    Result result = proxyBindApiManager.getPassportIdByMobile(baseMoblieApiParams);
-                    if (result.isSuccess()) {
-                        passportId = (String) result.getModels().get("userid");
-                        String message = CommonConstant.MOBILE_MESSAGE;
-                        LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.UNKNOWN, "getPassportIdByUsername", message, username, passportId, result.toString());
-                    }
+                    return null;
                 }
             }
         } catch (Exception e) {

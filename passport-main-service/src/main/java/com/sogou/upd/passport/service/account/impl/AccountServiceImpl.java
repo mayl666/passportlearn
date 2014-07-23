@@ -16,10 +16,7 @@ import com.sogou.upd.passport.common.utils.*;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.service.account.AccountHelper;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.MobilePassportMappingService;
-import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
+import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
@@ -61,6 +58,8 @@ public class AccountServiceImpl implements AccountService {
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private UniqNamePassportMappingService uniqNamePassportMappingService;
+    @Autowired
+    private PCAccountTokenService pcAccountTokenService;
 
     @Override
     public Account initialWebAccount(String username, String ip) throws ServiceException {
@@ -335,11 +334,11 @@ public class AccountServiceImpl implements AccountService {
             String passportId = account.getPassportId();
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMD5);
             int row = accountDAO.updatePassword(passwdSign, passportId);
+            pcAccountTokenService.batchRemoveAccountToken(passportId, true);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPassword(passwdSign);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-                // TODO 清除PC端token，后续移至accountService.resetPassword
                 return true;
             }
         } catch (Exception e) {
@@ -389,39 +388,32 @@ public class AccountServiceImpl implements AccountService {
                 ru = CommonConstant.DEFAULT_INDEX_URL;
                 activeUrl += "&ru=" + Coder.encodeUTF8(ru);
             }
-
             String cacheKey = buildCacheKey(username);
             Map<String, String> mapParam = new HashMap<>();
             //设置连接失效时间
             mapParam.put("token", token);
             //设置ru
             mapParam.put("ru", ru);
-
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();
             activeEmail.setActiveUrl(activeUrl);
-
             //模版中参数替换
             Map<String, Object> map = Maps.newHashMap();
             map.put("activeUrl", activeUrl);
             map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             activeEmail.setMap(map);
-
             activeEmail.setTemplateFile("activemail.vm");
             activeEmail.setSubject("激活您的搜狗通行证帐户");
             activeEmail.setCategory("register");
             activeEmail.setToEmail(username);
-
             mailUtils.sendEmail(activeEmail);
-
             //如果重新发送激活邮件，password是为空的，说明不是注册，否则需要临时注册到缓存
             if (!Strings.isNullOrEmpty(passpord)) {
+                //临时注册到缓存
                 initialAccountToCache(username, passpord, ip);
             }
             redisUtils.hPutAll(cacheKey, mapParam);
             redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
-            //临时注册到缓存
-            initialAccountToCache(username, passpord, ip);
         } catch (Exception e) {
             flag = false;
         }

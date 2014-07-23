@@ -34,7 +34,7 @@ public class BindApiManagerTest extends BaseTest {
     private BindApiManager bindApiManager;
 
     private static final String mobile = mobile_2;
-    private static final String mobile_passportId = userid_sohu;
+    private static final String mobile_passportId = userid_phone;
     private static final String exist_mobile = "18978941658";
     private static final String new_bind_mobile = "15986484867";
     private static final String binded_mobile = "13621009174";

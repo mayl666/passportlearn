@@ -187,7 +187,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             result.setDefaultModel("connectToken", connectToken);
         } catch (Exception e) {
 //            logger.error("method[obtainConnectToken] obtain connect token from sogou db error passportId:{}", passportId, e);
-            logger.error("obtain connect token from sogou db error.passportId [{}] clientId {}", passportId, clientId);
+            logger.error("obtain connect token from sogou db error.passportId [{}] clientId {}", passportId, clientId, e);
         }
         return result;
     }
@@ -212,7 +212,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         connectToken.setUpdateTime(new Date());
         ConnectUserInfoVO connectUserInfoVO = oAuthTokenVO.getConnectUserInfoVO();
         if (connectUserInfoVO != null) {
-            connectToken.setConnectUniqname(StringUtil.filterConnectUniqname(connectUserInfoVO.getNickname()));
+            connectToken.setConnectUniqname(connectUserInfoVO.getNickname());
             connectToken.setGender(String.valueOf(connectUserInfoVO.getGender()));
             connectToken.setAvatarSmall(connectUserInfoVO.getAvatarSmall());
             connectToken.setAvatarMiddle(connectUserInfoVO.getAvatarMiddle());
@@ -244,7 +244,12 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             String refreshToken = connectToken.getRefreshToken();
             //refreshToken不为空，则刷新token
             if (!Strings.isNullOrEmpty(refreshToken)) {
-                OAuthTokenVO oAuthTokenVO = connectAuthService.refreshAccessToken(refreshToken, connectConfig);
+                OAuthTokenVO oAuthTokenVO = null;
+                try {
+                    oAuthTokenVO = connectAuthService.refreshAccessToken(refreshToken, connectConfig);
+                } catch (OAuthProblemException e) {
+                    logger.warn("Refresh connect refreshtoken fail, errorCode:" + e.getError() + " ,errorDesc:" + e.getDescription());
+                }
                 if (oAuthTokenVO == null) {
                     return false;
                 }
@@ -293,8 +298,8 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     }
 
     private boolean isMobileDisplay(String type, String from) {
-        return type.equals(ConnectTypeEnum.TOKEN.toString()) && "mob".equalsIgnoreCase(from)
-                || type.equals(ConnectTypeEnum.MOBILE.toString());
+        return ConnectTypeEnum.TOKEN.toString().equals(type) && "mob".equalsIgnoreCase(from)
+                || ConnectTypeEnum.MOBILE.toString().equals(type);
     }
 
 }

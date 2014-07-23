@@ -8,6 +8,7 @@ DELETE FROM `account_27` WHERE passport_id = 'loveerin9460@163.com';
 DELETE FROM `account_28` WHERE passport_id = 'liulingtest01@sogou.com';
 DELETE FROM `account_29` WHERE passport_id = 'osadnfdf@sogou.com';
 DELETE FROM `account_23` WHERE passport_id = 'liulingtest02@sogou.com';
+DELETE FROM mobile_passportid_mapping_13 WHERE mobile='13545210241';
 DELETE FROM `uniqname_passportid_mapping_20` WHERE uniqname = '阿沐测试01';
 DELETE FROM `mobile_passportid_mapping_26` WHERE mobile = '13581695053';
 

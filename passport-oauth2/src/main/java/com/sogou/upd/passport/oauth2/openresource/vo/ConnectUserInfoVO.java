@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.oauth2.openresource.vo;
 
+import com.sogou.upd.passport.common.lang.StringUtil;
+
 import java.util.Map;
 
 /**
@@ -28,7 +30,7 @@ public class ConnectUserInfoVO {
     }
 
     public void setNickname(String nickname) {
-        this.nickname = nickname;
+        this.nickname = StringUtil.filterSpecialChar(nickname);
     }
 
     public String getUserDesc() {

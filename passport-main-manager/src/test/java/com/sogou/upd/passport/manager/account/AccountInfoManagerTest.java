@@ -3,17 +3,16 @@ package com.sogou.upd.passport.manager.account;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.result.APIResultForm;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.AccountInfoParams;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import junit.framework.Assert;
-import org.codehaus.jackson.JsonParseException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -28,29 +27,71 @@ public class AccountInfoManagerTest extends BaseTest {
 
     private String uniqname_update = "测试昵称" + new Random().nextInt(1000);
     private String fullname_update = "测试全称" + new Random().nextInt(1000);
-    private static final String fields = "province,city,fullname,personalid,uniqname";
     private static final String personalId = "530101198309115642";
 
     @Test
     public void testUpdateAccountInfo() throws IOException {
         //搜狗账号修改昵称
-//        AccountInfoParams aip1 = getAccountInfoParams(userid_sogou_1, uniqname_update, fullname_update, null, null, null, personalId, null, null);
-//        Result actualResult1 = accountInfoManager.updateUserInfo(aip1, modifyIp);
-//        APIResultForm actualForm1 = JacksonJsonMapperUtil.getMapper().readValue(actualResult1.toString(), APIResultForm.class);
-//        String expectString1 = "{\"data\":{\"baseInfo\":{\"id\":483846,\"uniqname\":\"" + uniqname_update + "\",\"avatar\":null,\"passportId\":\"" + userid_sogou_1 + "\"}},\"statusText\":\"修改成功\",\"status\":\"0\"}";
-//        APIResultForm expectForm1 = JacksonJsonMapperUtil.getMapper().readValue(expectString1, APIResultForm.class);
-//        Assert.assertTrue(expectForm1.equals(actualForm1));
-//        System.out.println(expectString1);
+        AccountInfoParams aip1 = getAccountInfoParams(userid_sogou_1, uniqname_update, fullname_update, null, null, null, personalId, null, null);
+        Result actualResult1 = accountInfoManager.updateUserInfo(aip1, modifyIp);
+        APIResultForm actualForm1 = JacksonJsonMapperUtil.getMapper().readValue(actualResult1.toString(), APIResultForm.class);
+        String expectString1 = "{\"data\":{},\"statusText\":\"修改成功\",\"status\":\"0\"}";
+        APIResultForm expectForm1 = JacksonJsonMapperUtil.getMapper().readValue(expectString1, APIResultForm.class);
+        Assert.assertTrue(expectForm1.equals(actualForm1));
+        AccountInfoParams aip2 = getAccountInfoParams(userid_sogou_1, "阿沐测试01", "测试全称", null, null, null, personalId, null, null);
+        Result actualResult2 = accountInfoManager.updateUserInfo(aip2, modifyIp);
     }
 
     @Test
     public void testGetAccountInfo() throws IOException {
-//        ObtainAccountInfoParams oaip1 = getObtainAccountInfoParams(userid_sogou_1, fields);
-//        Result actualResult1 = accountInfoManager.getUserInfo(oaip1);
-//        APIResultForm actualForm1 = JacksonJsonMapperUtil.getMapper().readValue(actualResult1.toString(), APIResultForm.class);
-//        String expectString1 = "{\"statusText\":\"操作成功\",\"data\":{\"username\":\"\",\"flag\":\"1\",\"province\":\"\",\"userid\":\"" + userid_sogou_1 + "\",\"uniqname\":\"" + uniqname_update + "\",\"avatarurl\":null,\"city\":\"\"},\"status\":\"0\"}";
-//        APIResultForm expectForm1 = JacksonJsonMapperUtil.getMapper().readValue(expectString1, APIResultForm.class);
-//        Assert.assertTrue(expectForm1.equals(actualForm1));
+        ObtainAccountInfoParams params = getObtainAccountInfoParams(userid_sogou_1, userinfo_all_fields);
+        //搜狗账号获取全属性的个人资料
+        String expectString1 = "{\"data\":{\"birthday\":\"1900-01-01\",\"username\":\"测试全称\",\"sec_ques\":\"测试问题\",\"userid\":\"liulingtest01@sogou.com\",\"province\":\"\",\"gender\":\"1\",\"sec_email\":\"\",\"sec_mobile\":\"\",\"uniqname\":\"阿沐测试01\",\"personalid\":\"530101198309115642\",\"city\":\"\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expectForm1 = JacksonJsonMapperUtil.getMapper().readValue(expectString1, APIResultForm.class);
+        Result actualResult1 = accountInfoManager.getUserInfo(params);
+        APIResultForm actualForm1 = JacksonJsonMapperUtil.getMapper().readValue(actualResult1.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm1.equals(actualForm1));
+        //个性账号获取全属性的个人资料
+        params.setUsername(userid_sogou_1_another);
+        Result actualResult2 = accountInfoManager.getUserInfo(params);
+        APIResultForm actualForm2 = JacksonJsonMapperUtil.getMapper().readValue(actualResult2.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm1.equals(actualForm2));
+        //手机账号获取全属性的个人资料
+        params.setUsername(userid_phone);
+        String expectString3 = "{\"data\":{\"birthday\":\"1987-01-01\",\"username\":\"\",\"sec_ques\":\"\",\"userid\":\"13581695053@sohu.com\",\"province\":\"110000\",\"gender\":\"2\",\"sec_email\":\"\",\"sec_mobile\":\"13581695053\",\"uniqname\":\"13581695053\",\"personalid\":\"\",\"city\":\"110100\"},\"statusText\":\"操作成功\",\"status\":\"0\"}";
+        APIResultForm expectForm3 = JacksonJsonMapperUtil.getMapper().readValue(expectString3, APIResultForm.class);
+        Result actualResult3 = accountInfoManager.getUserInfo(params);
+        APIResultForm actualForm3 = JacksonJsonMapperUtil.getMapper().readValue(actualResult3.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm3.equals(actualForm3));
+        //外域邮箱账号获取全属性的个人资料
+        params.setUsername(userid_email);
+        String expectString4 = "{\"data\":{\"birthday\":\"1900-01-01\",\"username\":\"\",\"sec_ques\":\"\",\"userid\":\"loveerin9460@163.com\",\"province\":\"\",\"gender\":\"1\",\"sec_email\":\"loveerin9460@163.com\",\"sec_mobile\":\"\",\"uniqname\":\"loveerin9460\",\"personalid\":\"\",\"city\":\"\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+        APIResultForm expectForm4 = JacksonJsonMapperUtil.getMapper().readValue(expectString4, APIResultForm.class);
+        Result actualResult4 = accountInfoManager.getUserInfo(params);
+        APIResultForm actualForm4 = JacksonJsonMapperUtil.getMapper().readValue(actualResult4.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm4.equals(actualForm4));
+        //第三方账号获取全属性的个人资料，且account_info表里没记录
+        params.setUsername(userid_connect);
+        String expectString5 = "{\"data\":{\"userid\":\"CFF81AB013A94663D83FEC36AC117933@qq.sohu.com\",\"sec_mobile\":\"\",\"uniqname\":\"阿沐\"},\"statusText\":\"操作成功\",\"status\":\"0\"}";
+        APIResultForm expectForm5 = JacksonJsonMapperUtil.getMapper().readValue(expectString5, APIResultForm.class);
+        Result actualResult5 = accountInfoManager.getUserInfo(params);
+        APIResultForm actualForm5 = JacksonJsonMapperUtil.getMapper().readValue(actualResult5.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm5.equals(actualForm5));
+        //不存在的账号获取全属性的个人资料，且account_info表里没记录
+        params.setUsername(userid_invild);
+        String expectString6 = "{\"data\":{},\"status\":\"20205\",\"statusText\":\"账号不存在\"}";
+        APIResultForm expectForm6 = JacksonJsonMapperUtil.getMapper().readValue(expectString6, APIResultForm.class);
+        Result actualResult6 = accountInfoManager.getUserInfo(params);
+        APIResultForm actualForm6 = JacksonJsonMapperUtil.getMapper().readValue(actualResult6.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm6.equals(actualForm6));
+        //搜狗账号获取不存在属性的个人资料
+        params.setUsername(userid_sogou_1);
+        params.setFields(userinfo_no_fields);
+        String expectString7 = "{\"data\":{\"username\":\"测试全称\",\"userid\":\"liulingtest01@sogou.com\",\"uniqname\":\"阿沐测试01\"},\"statusText\":\"操作成功\",\"status\":\"0\"}";
+        APIResultForm expectForm7 = JacksonJsonMapperUtil.getMapper().readValue(expectString7, APIResultForm.class);
+        Result actualResult7 = accountInfoManager.getUserInfo(params);
+        APIResultForm actualForm7 = JacksonJsonMapperUtil.getMapper().readValue(actualResult7.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm7.equals(actualForm7));
     }
 
     @Test
@@ -59,7 +100,7 @@ public class AccountInfoManagerTest extends BaseTest {
         params.setClient_id(clientId);
         params.setFields("uniqname,avatarurl");
         //数据库里存在的搜狐域账号
-        params.setUserid(userid_sohu);
+        params.setUserid(userid_phone);
         String sohuAccountInfoExpect = "{\"data\":{\"img_30\":\"\",\"img_50\":\"\",\"img_180\":\"\",\"userid\":\"13581695053@sohu.com\",\"account\":{\"id\":0,\"password\":\"ybiqf2QI$ygztMKXtqLj8QUlWIUv1x0\",\"uniqname\":null,\"avatar\":null,\"accountType\":2,\"passportId\":\"13581695053@sohu.com\",\"flag\":1,\"mobile\":\"13581695053\",\"regIp\":\"10.129.192.121\",\"regTime\":1395671209000,\"passwordtype\":2},\"uniqname\":\"13581695053\",\"avatarurl\":\"\"},\"status\":\"0\",\"statusText\":\"\"}";
         APIResultForm expect1 = JacksonJsonMapperUtil.getMapper().readValue(sohuAccountInfoExpect, APIResultForm.class);
         String sohuAccountInfoActual = accountInfoManager.getUserNickNameAndAvatar(params).toString();

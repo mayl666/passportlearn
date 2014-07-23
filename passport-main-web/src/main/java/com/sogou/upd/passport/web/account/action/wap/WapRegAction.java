@@ -63,7 +63,6 @@ public class WapRegAction extends BaseController {
     @RequestMapping(value = "/wap/reguser", method = RequestMethod.POST)
     @ResponseBody
     public Object reguser(HttpServletRequest request, HttpServletResponse response, RegMobileParams regParams, Model model) throws Exception {
-
         Result result = new APIResultSupport(false);
         String ip = null;
         String uuidName = null;
@@ -76,7 +75,6 @@ public class WapRegAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-
             ip = getIp(request);
             //校验用户是否允许注册
             uuidName = ServletUtil.getCookie(request, "uuidName");
@@ -89,7 +87,6 @@ public class WapRegAction extends BaseController {
                 }
                 return result.toString();
             }
-
             // 调用内部接口
             if (PhoneUtil.verifyPhoneNumberFormat(regParams.getUsername())) {
                 result = regManager.registerMobile(regParams.getUsername(), regParams.getPassword(), regParams.getClient_id(), regParams.getCaptcha(), null);
@@ -98,10 +95,7 @@ public class WapRegAction extends BaseController {
                 result.setMessage("只支持手机号注册");
                 return result.toString();
             }
-
-
             if (result.isSuccess()) {
-
                 //第三方获取个人资料
                 String userid = result.getModels().get("userid").toString();
                 AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userid);
@@ -114,14 +108,13 @@ public class WapRegAction extends BaseController {
                 }
                 logger.info("wap reg userinfo result:" + result);
                 Result sessionResult = sessionServerManager.createSession(userid);
-                String sgid = null;
+                String sgid;
                 if (sessionResult.isSuccess()) {
                     sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                     result.getModels().put("userid", userid);
                     if (!Strings.isNullOrEmpty(sgid)) {
                         result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                         setSgidCookie(response, sgid);
-
                     }
                 } else {
                     logger.warn("can't get session result, userid:" + result.getModels().get("userid"));
@@ -130,12 +123,7 @@ public class WapRegAction extends BaseController {
         } catch (Exception e) {
             logger.error("wap reguser:User Register Is Failed,Username is " + regParams.getUsername(), e);
         } finally {
-            String logCode = null;
-            if (!Strings.isNullOrEmpty(finalCode)) {
-                logCode = finalCode;
-            } else {
-                logCode = result.getCode();
-            }
+            String logCode = !Strings.isNullOrEmpty(finalCode) ? finalCode : result.getCode();
             regManager.incRegTimes(ip, uuidName);
             String userId = (String) result.getModels().get("userid");
             if (!Strings.isNullOrEmpty(userId) && AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {

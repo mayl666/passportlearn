@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account.form.wap;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.web.account.form.BaseWapResetPwdParams;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -18,10 +19,15 @@ public class WapCheckEmailParams extends BaseWapResetPwdParams {
     protected String scode;
 
     public String getUsername() {
+        String internalUsername = AccountDomainEnum.getInternalCase(username);
+        setUsername(internalUsername);
         return username;
     }
 
     public void setUsername(String username) {
+        if (username != null) {
+            username = username.trim();
+        }
         this.username = username;
     }
 

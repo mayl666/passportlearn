@@ -2,14 +2,15 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.*;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -40,8 +41,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * 安全相关：修改密码、修改密保（手机、邮箱、问题） ——接口代理OK—— .
@@ -196,65 +199,14 @@ public class SecureManagerImpl implements SecureManager {
 
             int score = 0; // 安全系数
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
-
-//            if (ManagerHelper.isInvokeProxyApi(userId)) {
-//                // 代理接口
-//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-//                getUserInfoApiparams.setUserid(userId);
-//                getUserInfoApiparams.setClient_id(clientId);
-//                getUserInfoApiparams.setImagesize("50");
-//                getUserInfoApiparams.setFields(SECURE_FIELDS);
-//
-//                //调用sohu 接口取用户信息
-//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-//
-//                Result shPlusResult = shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-//                if (shPlusResult.isSuccess()) {
-//                    Object obj = shPlusResult.getModels().get("baseInfo");
-//                    if (obj != null) {
-//                        AccountBaseInfo baseInfo = (AccountBaseInfo) obj;
-//                        String uniqname = baseInfo.getUniqname();
-//                        result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
-//                        Result photoResult = photoUtils.obtainPhoto(baseInfo.getAvatar(), "50");
-//                        if (photoResult.isSuccess()) {
-//                            result.getModels().put("avatarurl", photoResult.getModels());
-//                        }
-//                    } else {
-//                        result.getModels().put("uniqname", userId);
-//                    }
-//                }
-//            } else {
-
-            //TODO 统一调用 AccountInfoManager getUserInfo 方法
-
-//                GetSecureInfoApiParams params = new GetSecureInfoApiParams();
-//                params.setUserid(userId);
-//                params.setClient_id(clientId);
-//                result = sgSecureApiManager.getUserSecureInfo(params);
-
-
-            //调用 SGUserInfoApiManagerImpl 中 getUserInfo
-
             GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
             getUserInfoApiparams.setUserid(userId);
             getUserInfoApiparams.setClient_id(clientId);
             getUserInfoApiparams.setFields(SOGOU_SECURE_FIELDS);
 
+            result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
-            if (domain == AccountDomainEnum.THIRD) {
-                result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-            } else {
-                result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                if (!result.isSuccess()) {
-                    result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                    if (result.isSuccess()) {
-                        //记录Log 跟踪数据同步延时情况
-                        LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "getuserinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, userId, userId, result.toString());
-                    }
-
-                    result.getModels().put("uniqname", defaultUniqname(userId));
-                    result.getModels().put("avatarurl", StringUtils.EMPTY);
-                }
+            if (domain != AccountDomainEnum.THIRD) {
                 String uniqname = String.valueOf(result.getModels().get("uniqname"));
                 result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
                 Result photoResult = photoUtils.obtainPhoto(String.valueOf(result.getModels().get("avatarurl")), "50");
@@ -262,7 +214,6 @@ public class SecureManagerImpl implements SecureManager {
                     result.getModels().put("avatarurl", photoResult.getModels());
                 }
             }
-//            }
 
             Map<String, String> map = result.getModels();
             result.setModels(map);
@@ -387,63 +338,136 @@ public class SecureManagerImpl implements SecureManager {
         return result;
     }
 
-    @Override
-    public void resetPwd(List<UserNamePwdMappingParams> list, final int clientId) throws Exception {
+//    @Override
+//    public void resetPwd(List<UserNamePwdMappingParams> list, final int clientId) throws Exception {
+//
+//        if (CollectionUtils.isNotEmpty(list)) {
+//            for (final UserNamePwdMappingParams params : list) {
+//                service.execute(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        String mobile = params.getMobile();
+//                        String newPwd = params.getPwd();
+//                        String smsText = "搜狗通行证提醒您：" + mobile;
+//                        boolean isSuccess = false;
+//                        try {
+//                            //查是否是手机号码
+//                            if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
+//                                if (!Strings.isNullOrEmpty(newPwd) && StringUtils.isAsciiPrintable(newPwd) && newPwd.length() >= 6 && newPwd.length() <= 16) {
+//                                    String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
+//                                    if (!Strings.isNullOrEmpty(passportId)) {
+//                                        //查是否进黑名单
+//                                        if (!operateTimesService.checkLimitResetPwd(passportId, clientId)) {
+//                                            //校验account是否存在
+//                                            Account account = accountService.queryNormalAccount(passportId);
+//                                            if (account != null) {
+////                                                if (accountService.resetPassword(account, newPwd, true)) {
+////                                                    operateTimesService.incLimitResetPwd(passportId, clientId);
+////                                                    smsText = smsText + "重置密码成功，请使用新密码登录。";
+////                                                    isSuccess = true;
+////                                                } else {
+////                                                    smsText = smsText + "重置密码失败，请再次尝试。";
+////                                                }
+//                                            } else {
+//                                                smsText = smsText + "账号不存在，重置密码失败。";
+//                                            }
+//                                        } else {
+//                                            smsText = smsText + "重置密码次数超限，请24小时后尝试。";
+//                                        }
+//                                    } else {
+//                                        smsText = smsText + "未绑定账号或未注册，重置密码失败。";
+//                                    }
+//                                } else {
+//                                    smsText = smsText + "重置密码格式不正确，必须为字母、数字、字符且长度为6~16位!";
+//                                }
+//                                //短信通知结果
+////                                if (!Strings.isNullOrEmpty(mobile)) {
+////                                    SMSUtil.sendSMS(mobile, smsText);
+////                                }
+//                            }
+//                            if (!isSuccess) {
+//                                logger.info("BatchResetPwd is fail, smsText:" + smsText);
+//                            }
+//                        } catch (Exception e) {
+//                            logger.error("resetPwd Fail username:" + mobile, e);
+//                        }
+//                    }
+//                });
+//            }
+//        }
+//    }
 
-        if (CollectionUtils.isNotEmpty(list)) {
-            for (final UserNamePwdMappingParams params : list) {
-                service.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        String mobile = params.getMobile();
-                        String newPwd = params.getPwd();
-                        String smsText = "搜狗通行证提醒您：" + mobile;
-                        boolean isSuccess = false;
-                        try {
-                            //查是否是手机号码
-                            if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
-                                if (!Strings.isNullOrEmpty(newPwd) && StringUtils.isAsciiPrintable(newPwd) && newPwd.length() >= 6 && newPwd.length() <= 16) {
-                                    String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
-                                    if (!Strings.isNullOrEmpty(passportId)) {
-                                        //查是否进黑名单
-                                        if (!operateTimesService.checkLimitResetPwd(passportId, clientId)) {
-                                            //校验account是否存在
-                                            Account account = accountService.queryNormalAccount(passportId);
-                                            if (account != null) {
-                                                if (accountService.resetPassword(account, newPwd, true)) {
-                                                    operateTimesService.incLimitResetPwd(passportId, clientId);
-                                                    smsText = smsText + "重置密码成功，请使用新密码登录。";
-                                                    isSuccess = true;
-                                                } else {
-                                                    smsText = smsText + "重置密码失败，请再次尝试。";
-                                                }
-                                            } else {
-                                                smsText = smsText + "账号不存在，重置密码失败。";
-                                            }
+    @Override
+    public Result resetPwd(List<UserNamePwdMappingParams> list, final int clientId) throws Exception {
+        Result resultList = new APIResultSupport(true);
+        List<Future<Result>> futureList = Lists.newArrayList();
+        for (final UserNamePwdMappingParams params : list) {
+            Future<Result> future = service.submit(new Callable<Result>() {
+                public Result call() throws Exception {
+                    Result result = new APIResultSupport(false);
+                    String mobile = params.getMobile();
+                    String newPwd = params.getPwd();
+                    String smsText = "搜狗通行证提醒您：" + mobile;
+                    try {
+                        //查是否是手机号码
+                        if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
+                            if (!Strings.isNullOrEmpty(newPwd) && StringUtils.isAsciiPrintable(newPwd) && newPwd.length() >= 6 && newPwd.length() <= 16) {
+                                String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
+                                if (!Strings.isNullOrEmpty(passportId)) {
+                                    //查是否进黑名单
+                                    if (!operateTimesService.checkLimitResetPwd(passportId, clientId)) {
+                                        //校验account是否存在
+                                        Account account = accountService.queryNormalAccount(passportId);
+                                        if (account != null) {
+//                                            if (accountService.resetPassword(account, newPwd, true)) {
+//                                                operateTimesService.incLimitResetPwd(passportId, clientId);
+//                                                smsText = smsText + "重置密码成功，请使用新密码登录。";
+//                                                result.setSuccess(true);
+//                                            } else {
+//                                                smsText = smsText + "重置密码失败，请再次尝试。";
+//                                            }
                                         } else {
-                                            smsText = smsText + "重置密码次数超限，请24小时后尝试。";
+                                            smsText = smsText + "账号不存在，重置密码失败。";
                                         }
                                     } else {
-                                        smsText = smsText + "未绑定账号或未注册，重置密码失败。";
+                                        smsText = smsText + "重置密码次数超限，请24小时后尝试。";
                                     }
                                 } else {
-                                    smsText = smsText + "重置密码格式不正确，必须为字母、数字、字符且长度为6~16位!";
+                                    smsText = smsText + "未绑定账号或未注册，重置密码失败。";
                                 }
-                                //短信通知结果
-//                                if (!Strings.isNullOrEmpty(mobile)) {
-//                                    SMSUtil.sendSMS(mobile, smsText);
-//                                }
+                            } else {
+                                smsText = smsText + "重置密码格式不正确，必须为字母、数字、字符且长度为6~16位!";
                             }
-                            if (!isSuccess) {
-                                logger.info("BatchResetPwd is fail, smsText:" + smsText);
-                            }
-                        } catch (Exception e) {
-                            logger.error("resetPwd Fail username:" + mobile, e);
+                            //短信通知结果
+//                            boolean isSendSms = false;
+//                            if (SMSUtil.sendSMS(mobile, smsText)) {
+//                                isSendSms = true;
+//                            }
+//                            result.setDefaultModel("sendSms", isSendSms);
                         }
+                        result.setDefaultModel("mobile", mobile);
+                        result.setDefaultModel("smsText", smsText);
+                        if (!result.isSuccess()) {
+                            logger.info("mobile:" + mobile + ", resetPwd is fail, smsText:" + smsText);
+                        }
+                    } catch (Exception e) {
+                        logger.error("resetPwd Fail username:" + mobile, e);
                     }
-                });
+                    return result;
+                }
+            });
+            futureList.add(future);
+        }
+        List<String> smsTextList = Lists.newArrayList();
+        for (Future<Result> future : futureList) {
+            Result result = future.get();
+            if (!result.isSuccess()) {
+                String smsText = (String) result.getModels().get("smsText");
+                smsTextList.add(smsText);
             }
         }
+        resultList.setMessage(smsTextList.toString());
+        return resultList;
     }
 
     /* --------------------------------------------修改密保内容-------------------------------------------- */

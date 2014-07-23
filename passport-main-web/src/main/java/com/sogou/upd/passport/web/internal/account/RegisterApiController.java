@@ -140,7 +140,7 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = registerApiManager.regMailUser(params);
+            result = sgRegisterApiManager.regMailUser(params);
 //            result = proxyRegisterApiManager.regMailUser(params);
         } catch (Exception e) {
             logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + userid, e);
@@ -178,7 +178,8 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = proxyRegisterApiManager.regMobileUser(params);
+//            result = proxyRegisterApiManager.regMobileUser(params);
+            result = sgRegisterApiManager.regMobileUser(params);
         } catch (Exception e) {
             logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
         } finally {
@@ -206,7 +207,6 @@ public class RegisterApiController extends BaseController {
         Result result = new APIResultSupport(false);
         String createIp = params.getCreateip();
         String mobile = params.getMobile();
-
         try {
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
