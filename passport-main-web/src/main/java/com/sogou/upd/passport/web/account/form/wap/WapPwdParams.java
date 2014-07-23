@@ -14,6 +14,7 @@ public class WapPwdParams extends WapCheckEmailParams {
     @NotBlank(message = "密码不允许为空!")
     @Password(message = "密码必须为字母、数字、字符且长度为6~16位!")
     protected String password;
+    protected String skin;
 
     public String getPassword() {
         return password;
@@ -23,4 +24,11 @@ public class WapPwdParams extends WapCheckEmailParams {
         this.password = password;
     }
 
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
+    }
 }
