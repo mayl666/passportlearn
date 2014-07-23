@@ -19,6 +19,8 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_REGISTER_IPBLACKLIST = "SP.REGISTER:IPBLACKLIST_SET_"; // ip与注册次数映射
     public static final String CACHE_PREFIX_REGISTER_CLIENTIDBLACKLIST = "SP.REGISTER:CLIENTIDBLACKLIST_SET_"; // ip与注册次数映射
     public static final String CACHE_PREFIX_REGISTER_COOKIEBLACKLIST = "SP.REGISTER:COOKIEBLACKLIST_"; // cookie与注册次数映射
+
+
     public static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = "SP.PASSPORTID:ACTIVEMAILTOKEN_"; //passportId 与第三方邮件注册token有效期验证
     public static final String CACHE_PREFIX_NICKNAME_PASSPORTID = "SP.NICKNAME:PASSPORTID_"; //昵称与passportId映射
     public static final String CACHE_PREFIX_PASSPORTID_UPDATE_PWD_OR_BIND = "SP.UPDATE:PASSPORTID_"; //passportId与该用户是否修改了密码或绑定手机映射
@@ -53,6 +55,7 @@ public class CacheConstant {
     // username或者ip在黑名单中的set KEY
     public static final String CACHE_PREFIX_LOGIN_BLACKLIST = "SP.USERNAME.IP:BLACKLIST_KEY";
 
+
     // 登陆在黑名单的前缀
     public static final String CACHE_PREFIX_LOGIN_USERNAME_BLACK_ = "SP.USERNAME:BLACK_";
     public static final String CACHE_PREFIX_LOGIN_IP_BLACK_ = "SP.IP:BLACK_";
@@ -61,9 +64,33 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_EXIST_USERNAME_BLACK_ = "SP.EXIST.USERNAME:BLACK_";
     public static final String CACHE_PREFIX_EXIST_IP_BLACK_ = "SP.EXIST.IP:BLACK_";
 
+    // 内部接口检查账号是否存在在黑名单的前缀
+    public static final String CACHE_PREFIX_EXIST_INTERNAL_USERNAME_BLACK = "SP.EXIST.INTERNAL.USERNAME:BLACK_";
+    public static final String CACHE_PREFIX_EXIST_INTERNAL_IP_BLACK = "SP.EXIST.INTERNAL.IP:BLACK_";
+
+    //检查昵称是否存在黑名单前缀
+    public static final String CACHE_PREFIX_EXIST_NICKNAME_IP_BLACK = "SP.EXIST.NICKNAME.IP:BLACK_";
+
+    //检查昵称是否存在次数前缀
+    public static final String CACHE_PREFIX_CHECK_NICKNAME_EXIST_IP_NUM = "SP.IP.CHECK_NICKNAME_NUM_";
+
+    //cookie与检查用户昵称次数映射
+    public static final String CACHE_PREFIX_CHECK_NICKNAME_COOKIE_BLACK = "SP.EXIST.NICKNAME.COOKIE:BLACK_";
+
+    //基于cookie检查用户昵称次数限制
+    public static final String CACHE_PREFIX_CHECK_NICKNAME_EXIST_COOKIE_NUM = "SP.COOKIE.CHECK_NICKNAME_NUM_";
+
+
+    //内部接口 检查用户是否存在次数前缀
+    public static final String CACHE_PREFIX_CHECK_USER_INTERNAL_USERNAME_NUM ="SP.EXIST.INTERNAL.USERNAME_NUM_";
+
+    //内部接口 检查用户是否存在次数前缀
+    public static final String CACHE_PREFIX_CHECK_USER_INTERNAL_IP_NUM ="SP.EXIST.INTERNAL.IP_NUM_";
+
     // 检查账号是否存在在黑名单的前缀
     public static final String CACHE_PREFIX_GETPAIRTOKEN_USERNAME_BLACK_ = "SP.GETPAIRTOKEN.USERNAME:BLACK_";
     public static final String CACHE_PREFIX_GETPAIRTOKEN__IP_BLACK_ = "SP.GETPAIRTOKEN.IP:BLACK_";
+
 
     //IP网段黑名单
     public static final String CACHE_PREFIX_IP_SUBIPBLACKLIST = "SP.IP:SUBIPBLACKLIST_KEY";

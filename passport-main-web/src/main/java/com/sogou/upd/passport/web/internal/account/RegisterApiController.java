@@ -260,12 +260,18 @@ public class RegisterApiController extends BaseController {
             }
             // 调用内部接口
             String userid = params.getUserid();
-            result = regManager.isAccountNotExists(userid, params.getClient_id());
-            if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
-                if (!result.isSuccess()) {
-                    result.setDefaultModel("flag", "1");
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                    result.setMessage("手机号已绑定其他账号");
+
+            //增加安全限制
+            if (regManager.checkUserExistInBlack(userid, getIp(request))) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+            } else {
+                result = regManager.isAccountNotExists(userid, params.getClient_id());
+                if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
+                    if (!result.isSuccess()) {
+                        result.setDefaultModel("flag", "1");
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                        result.setMessage("手机号已绑定其他账号");
+                    }
                 }
             }
         } catch (Exception e) {

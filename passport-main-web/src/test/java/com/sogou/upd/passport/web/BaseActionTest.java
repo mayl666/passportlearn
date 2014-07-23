@@ -141,7 +141,7 @@ public class BaseActionTest extends TestCase {
         }
     }
 
-    protected String sendPostLocal(String sendUrl, Map<String, String> params){
+    protected String sendPostLocal(String sendUrl, Map<String, String> params) {
         Result result;
         try {
             String sendUrlFull = "http://localhost/";
@@ -158,7 +158,7 @@ public class BaseActionTest extends TestCase {
         }
     }
 
-    protected String sendGetLocal(String sendUrl, Map<String, String> params){
+    protected String sendGetLocal(String sendUrl, Map<String, String> params) {
         Result result;
         try {
             String sendUrlFull = "http://localhost/";
@@ -247,8 +247,18 @@ public class BaseActionTest extends TestCase {
             String code = Coder.encryptMD5(key + ts + secret);
             System.out.println("ts:" + ts);
             System.out.println("code:" + code);
+
+            String cookie = "da3636f186364a30bc132bfb7f87ba0d";
+            String cookie_md5 = Coder.encryptMD5(cookie);
+            System.out.println("=====cookie_md5 :" + cookie_md5 + "======= cookie_md5 length : " + cookie_md5.length() + "=======cookie length : " + cookie.length());
+
+            String cookie_base64 = Coder.encryptBase64(cookie);
+            System.out.println("=====cookie base64 :" + cookie_base64);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
     }
 }
