@@ -38,6 +38,8 @@ public class AccountInfoManagerTest extends BaseTest {
         String expectString1 = "{\"data\":{},\"statusText\":\"修改成功\",\"status\":\"0\"}";
         APIResultForm expectForm1 = JacksonJsonMapperUtil.getMapper().readValue(expectString1, APIResultForm.class);
         Assert.assertTrue(expectForm1.equals(actualForm1));
+        AccountInfoParams aip2 = getAccountInfoParams(userid_sogou_1, "阿沐测试01", "测试全称", null, null, null, personalId, null, null);
+        Result actualResult2 = accountInfoManager.updateUserInfo(aip2, modifyIp);
     }
 
     @Test
