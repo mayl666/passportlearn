@@ -1,67 +1,31 @@
+<!doctype html>
 <html>
 <head>
-    <base target="_blank">
-
-
+    <meta charset="utf-8"/>
+    <title>搜狗通行证</title>
+    <base target="_blank"/>
+    <style type="text/css">
+        body {
+            font: 14px/1.666 arial, verdana, sans-serif;
+            padding: 0;
+            margin: 0;
+            white-space: normal;
+            word-wrap: break-word;
+            min-height: 100px
+        }
+        a{color: #003399}
+    </style>
 </head>
-<body style="margin-bottom: 0px; margin-top: 0px; padding-bottom: 0px; padding-top: 0px;"><img
-        src="../static/img/elogo.png"><br><br>亲爱的用户：<br><br>&nbsp;&nbsp;&nbsp;&nbsp;您好，欢迎您使用搜狗通行证服务，为确保用户注册信息的真实性，我们会验证此邮箱是否属于您。请单击以下链接进行激活：<br><br>&nbsp;&nbsp;&nbsp;&nbsp;<a
-        href="$activeUrl">$activeUrl</a><br><br>&nbsp;&nbsp;&nbsp;&nbsp;如果您的邮箱不支持链接点击，请将以上链接地址拷贝到您的浏览器地址栏中。如果该邮件误发给了您，您无需执行任何操作，此帐户将不会启动。<br><br>&nbsp;&nbsp;&nbsp;&nbsp;该链接仅在2日内有效，如果超过2日未激活，请重新注册。<br><br>&nbsp;&nbsp;&nbsp;&nbsp;此邮件由系统自动产生，请勿回复。<br><br>&nbsp;&nbsp;&nbsp;&nbsp;搜狗通行证<br><br>&nbsp;&nbsp;&nbsp;&nbsp;$date
-<br><br><img
-        style="display: none"
-        src="http://scf.sohu.com/track/oTrack.do?p=M19zcGxpdDIwMTJfMTM5NTA2MzAzNzgyNF8wXzEzOTQ3XzkzNjAuc2MtMTBfMTBfMTI3XzExOS1pbmJvdW5kMCRsb3ZlZXJpbjk0NjBAMTYzLmNvbV9zcGxpdDIwMTJfNTY4Mjhfc3BsaXQyMDEyXzEzOTUwNjMwMzc5MjBfc3BsaXQyMDEyXzA=">
-
-
-<style type="text/css">
-    body {
-        font-size: 14px;
-        font-family: arial, verdana, sans-serif;
-        line-height: 1.666;
-        padding: 0;
-        margin: 0;
-        overflow: auto;
-        white-space: normal;
-        word-wrap: break-word;
-        min-height: 100px
-    }
-
-    td, input, button, select, body {
-        font-family: Helvetica, 'Microsoft Yahei', verdana
-    }
-
-    pre {
-        white-space: pre-wrap;
-        white-space: -moz-pre-wrap;
-        white-space: -pre-wrap;
-        white-space: -o-pre-wrap;
-        word-wrap: break-word
-    }
-
-    th, td {
-        font-family: arial, verdana, sans-serif;
-        line-height: 1.666
-    }
-
-    img {
-        border: 0
-    }
-
-    header, footer, section, aside, article, nav, hgroup, figure, figcaption {
-        display: block
-    }
-</style>
-
-<style id="ntes_link_color" type="text/css">a, td a {
-    color: #003399
-}</style>
-<script type="text/javascript">try {
-    if (parent.$.Browser.chrome()) {
-        var o = document.body.style;
-        o.paddingTop = o.paddingBottom = o.marginTop = o.marginBottom = "0px";
-    }
-    parent.JS5.find(window.name).content.setHeight();
-} catch (e) {
-}
-/*20130913*/</script>
+<body>
+<img src="http://account.sogou.com/static/img/index/logo.png" border="0"/>
+<br><br>亲爱的用户：<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;您好，欢迎您使用搜狗通行证服务!
+<br><br>为确保用户注册信息的真实性，我们会验证此邮箱是否属于您,请单击以下链接进行激活:<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="$activeUrl">$activeUrl</a><br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;如果您的邮箱不支持链接点击，请将以上链接地址拷贝到您的浏览器地址栏中。如果该邮件误发给了您，您无需执行任何操作。<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;该链接仅在2日内有效，如果超过2日未激活，请重新注册。<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;此邮件由系统自动产生，请勿回复。<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;搜狗通行证<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;$date
 </body>
 </html>

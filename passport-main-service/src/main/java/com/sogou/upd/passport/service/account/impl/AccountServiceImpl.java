@@ -386,8 +386,8 @@ public class AccountServiceImpl implements AccountService {
                             "&token=" + token;
             if (Strings.isNullOrEmpty(ru)) {
                 ru = CommonConstant.DEFAULT_INDEX_URL;
-                activeUrl += "&ru=" + Coder.encodeUTF8(ru);
             }
+            activeUrl += "&ru=" + Coder.encodeUTF8(ru);
             String cacheKey = buildCacheKey(username);
             Map<String, String> mapParam = new HashMap<>();
             //设置连接失效时间
