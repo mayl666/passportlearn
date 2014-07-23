@@ -8,7 +8,7 @@ public class WapConstant {
     /**
      * JSON格式标识
      */
-    public  static final String WAP_JSON="0";
+    public static final String WAP_JSON = "0";
     /**
      * 简版页面标识
      */

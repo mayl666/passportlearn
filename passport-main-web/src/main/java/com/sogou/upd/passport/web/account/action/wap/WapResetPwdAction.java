@@ -174,6 +174,7 @@ public class WapResetPwdAction extends BaseController {
             result = wapRestPwdManager.checkMobileCodeResetPwd(params.getMobile(), clientId, params.getSmscode());
             if (result.isSuccess()) {
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+                result.setDefaultModel("skin", params.getSkin());
                 String param = buildRedirectUrl(result);
                 String url = CommonConstant.DEFAULT_WAP_INDEX_URL + param;
                 result.setDefaultModel("url", url);
@@ -199,9 +200,11 @@ public class WapResetPwdAction extends BaseController {
         String client_id = (String) result.getModels().get("client_id");
         urlStr.append("&client_id=" + client_id);
         String ru = (String) result.getModels().get("ru");
-        urlStr.append("&ru=" + ru);
+        urlStr.append("&ru=" + Coder.encodeUTF8(ru));
         urlStr.append("&code=" + result.getCode());
         urlStr.append("&message=" + result.getMessage());
+        urlStr.append("&v=" + WapConstant.WAP_TOUCH);
+        urlStr.append("&skin=" + result.getModels().get("skin"));
         return urlStr.toString();
     }
 
@@ -283,7 +286,6 @@ public class WapResetPwdAction extends BaseController {
                     if (!result.isSuccess()) {
                         result.setCode(ErrorUtil.ERR_CODE_FIND_KEFU);
                         return result.toString();//跳转至其它方式找回首页
-
                     } else {
                         String sec_mobile = (String) result.getModels().get("sec_mobile");
                         String sec_email = (String) result.getModels().get("sec_email");
@@ -371,20 +373,21 @@ public class WapResetPwdAction extends BaseController {
         } finally {
             log(request, params.getUsername(), result.getCode());
         }
-        String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
+        String ru = Strings.isNullOrEmpty(params.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(params.getRu());
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         redirectAttributes.addAttribute("ru", ru);
         redirectAttributes.addAttribute("client_id", client_id);
         redirectAttributes.addAttribute("message", result.getMessage());
         redirectAttributes.addAttribute("username", params.getUsername());
+        redirectAttributes.addAttribute("skin", params.getSkin());
         if (result.isSuccess()) {
             String scode = (String) result.getModels().get("scode");
             redirectAttributes.addAttribute("scode", scode);
             redirectAttributes.addAttribute("code", "0");
-            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&scode={scode}&client_id={client_id}&ru={ru}&code={code}&message={message}";
+            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&scode={scode}&client_id={client_id}&ru={ru}&code={code}&message={message}&skin={skin}";
         }
         redirectAttributes.addAttribute("code", result.getCode());
-        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&client_id={client_id}&ru={ru}&code={code}&message={message}";
+        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&client_id={client_id}&ru={ru}&code={code}&message={message}&skin={skin}";
 
     }
 
@@ -396,9 +399,9 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/vm/reset", method = RequestMethod.GET)
-    public String findResetView(String ru, Model model, String client_id, String scode, String username, String code, String message) throws Exception {
+    public String findResetView(String ru, Model model, String client_id, String scode, String username, String code, String message, String skin) throws Exception {
         Result result = new APIResultSupport(false);
-        ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
+        ru = Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(ru);
         client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
         result.setCode(code);
         result.setMessage(message);
@@ -406,6 +409,8 @@ public class WapResetPwdAction extends BaseController {
         result.setDefaultModel("client_id", client_id);
         result.setDefaultModel("userid", username);
         result.setDefaultModel("scode", scode);
+        result.setDefaultModel("v", WapConstant.WAP_TOUCH);
+        result.setDefaultModel("skin", skin);
         model.addAttribute("data", result.toString());
         return "/wap/resetpwd_touch";
     }
@@ -436,6 +441,7 @@ public class WapResetPwdAction extends BaseController {
             result = resetPwdManager.resetPasswordByScode(passportId, clientId, password, params.getScode(), getIp(request));
             if (!result.isSuccess()) {
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+                result.setDefaultModel("skin", params.getSkin());
                 return result.toString();
             }
         } catch (Exception e) {
@@ -445,6 +451,7 @@ public class WapResetPwdAction extends BaseController {
         }
         result.setCode(ErrorUtil.SUCCESS);
         result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+        result.setDefaultModel("skin", params.getSkin());
         return result.toString();
     }
 
@@ -476,8 +483,9 @@ public class WapResetPwdAction extends BaseController {
     }
 
     private Result setRuAndClientId(Result result, String ru, String client_id) {
-        result.setDefaultModel("ru", Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru);
+        result.setDefaultModel("ru", Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(ru));
         result.setDefaultModel("client_id", Strings.isNullOrEmpty(client_id) ? CommonConstant.SGPP_DEFAULT_CLIENTID : client_id);
+        result.setDefaultModel("v", WapConstant.WAP_TOUCH);
         return result;
     }
 
