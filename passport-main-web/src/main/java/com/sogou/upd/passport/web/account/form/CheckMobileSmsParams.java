@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.web.BaseWebParams;
 import org.hibernate.validator.constraints.NotBlank;
@@ -21,10 +22,15 @@ public class CheckMobileSmsParams extends BaseWebParams {
     protected String ru;
 
     public String getUsername() {
+        String internalUsername = AccountDomainEnum.getInternalCase(username);
+        setUsername(internalUsername);
         return username;
     }
 
     public void setUsername(String username) {
+        if (username != null) {
+            username = username.trim();
+        }
         this.username = username;
     }
 
