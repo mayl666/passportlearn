@@ -2,14 +2,15 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.*;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -203,11 +204,9 @@ public class SecureManagerImpl implements SecureManager {
             getUserInfoApiparams.setClient_id(clientId);
             getUserInfoApiparams.setFields(SOGOU_SECURE_FIELDS);
 
+            result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
-            if (domain == AccountDomainEnum.THIRD) {
-                result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-            } else {
-                result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
+            if (domain != AccountDomainEnum.THIRD) {
                 String uniqname = String.valueOf(result.getModels().get("uniqname"));
                 result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
                 Result photoResult = photoUtils.obtainPhoto(String.valueOf(result.getModels().get("avatarurl")), "50");
