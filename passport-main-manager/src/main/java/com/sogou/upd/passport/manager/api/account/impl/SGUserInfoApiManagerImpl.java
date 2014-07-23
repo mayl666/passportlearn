@@ -97,8 +97,8 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                         }
                         if (account != null) {
                             //检查是否有绑定手机
-                            if (ArrayUtils.contains(paramArray, "mobile")) {
-                                result.setDefaultModel("sec_mobile", account.getMobile());
+                            if (ArrayUtils.contains(paramArray, "mobile") || ArrayUtils.contains(paramArray, "sec_mobile")) {
+                                result.setDefaultModel("sec_mobile", Strings.isNullOrEmpty(account.getMobile()) ? "" : account.getMobile());
                                 paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "mobile"));
                             }
                             //昵称
@@ -129,51 +129,52 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                         //查询用户其他信息、查询account_info_0~32
                         AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(passportId);
                         if (accountInfo != null) {
-                            for (int i = 0; i < arrayLen; i++) {
+                            for (int i = 0; i < paramArray.length; i++) {
                                 try {
-                                    if (!"birthday".equals(paramArray[i])) {
-                                        if ("email".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("sec_email", value);
-                                            continue;
-                                        }
-                                        if ("question".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("sec_ques", value);
-                                            continue;
-                                        }
-                                        //web接口传的是fullname
-                                        if ("fullname".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("fullname", value);
-                                            continue;
-                                        }
-                                        //内部接口传的是username
-                                        if ("username".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, "fullname");
-                                            result.setDefaultModel("username", value);
-                                            continue;
-                                        }
-                                        if ("gender".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("gender", value);
-                                            continue;
-                                        }
-                                        if ("personalid".equals(paramArray[i])) {
-                                            String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                            result.setDefaultModel("personalid", value);
-                                            continue;
-                                        }
-                                        //TODO 此处存在异常，有paramArray[i] 不存在于 accountInfo的情况
-                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                        result.setDefaultModel(paramArray[i], value);
-                                    } else {
+                                    if ("birthday".equals(paramArray[i])) {
                                         Date birthday = accountInfo.getBirthday();
                                         String birthdayStr = (birthday == null) ? "" : new SimpleDateFormat("yyyy-MM-dd").format(birthday);
                                         result.setDefaultModel(paramArray[i], birthdayStr);
+                                        continue;
                                     }
+                                    if ("email".equals(paramArray[i]) || "sec_email".equals(paramArray[i])) {
+                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                        result.setDefaultModel("sec_email", value);
+                                        continue;
+                                    }
+                                    if ("question".equals(paramArray[i]) || "sec_ques".equals(paramArray[i])) {
+                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                        result.setDefaultModel("sec_ques", value);
+                                        continue;
+                                    }
+                                    //web接口传的是fullname
+                                    if ("fullname".equals(paramArray[i])) {
+                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                        result.setDefaultModel("fullname", value);
+                                        continue;
+                                    }
+                                    //内部接口传的是username
+                                    if ("username".equals(paramArray[i])) {
+                                        String value = BeanUtils.getProperty(accountInfo, "fullname");
+                                        result.setDefaultModel("username", value);
+                                        continue;
+                                    }
+                                    if ("gender".equals(paramArray[i])) {
+                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                        result.setDefaultModel("gender", value);
+                                        continue;
+                                    }
+                                    if ("personalid".equals(paramArray[i])) {
+                                        String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                        result.setDefaultModel("personalid", value);
+                                        continue;
+                                    }
+                                    //TODO 此处存在异常，有paramArray[i] 不存在于 accountInfo的情况
+                                    String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
+                                    result.setDefaultModel(paramArray[i], value);
                                 } catch (Exception e) {
                                     paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, paramArray[i]));
+                                    i--;
                                 }
                             }
                         }
@@ -347,7 +348,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
             boolean accountUpdateResult = accountService.updateUniqName(account, nickName);
             if (accountUpdateResult) {
                 result.setSuccess(true);
-                result.setMessage("更新昵称成功");
+                result.setMessage("修改成功");
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
             }
@@ -422,7 +423,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
             boolean updateResult = accountInfoService.updateAccountInfo(accountInfo);
             if (updateResult) {
                 result.setSuccess(true);
-                result.setMessage("修改个人资料成功");
+                result.setMessage("修改成功");
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_UPDATE_USERINFO);
             }

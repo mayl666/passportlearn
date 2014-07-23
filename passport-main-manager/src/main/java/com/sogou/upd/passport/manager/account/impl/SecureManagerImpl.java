@@ -198,45 +198,6 @@ public class SecureManagerImpl implements SecureManager {
 
             int score = 0; // 安全系数
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
-
-//            if (ManagerHelper.isInvokeProxyApi(userId)) {
-//                // 代理接口
-//                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-//                getUserInfoApiparams.setUserid(userId);
-//                getUserInfoApiparams.setClient_id(clientId);
-//                getUserInfoApiparams.setImagesize("50");
-//                getUserInfoApiparams.setFields(SECURE_FIELDS);
-//
-//                //调用sohu 接口取用户信息
-//                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-//
-//                Result shPlusResult = shPlusUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-//                if (shPlusResult.isSuccess()) {
-//                    Object obj = shPlusResult.getModels().get("baseInfo");
-//                    if (obj != null) {
-//                        AccountBaseInfo baseInfo = (AccountBaseInfo) obj;
-//                        String uniqname = baseInfo.getUniqname();
-//                        result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
-//                        Result photoResult = photoUtils.obtainPhoto(baseInfo.getAvatar(), "50");
-//                        if (photoResult.isSuccess()) {
-//                            result.getModels().put("avatarurl", photoResult.getModels());
-//                        }
-//                    } else {
-//                        result.getModels().put("uniqname", userId);
-//                    }
-//                }
-//            } else {
-
-            //TODO 统一调用 AccountInfoManager getUserInfo 方法
-
-//                GetSecureInfoApiParams params = new GetSecureInfoApiParams();
-//                params.setUserid(userId);
-//                params.setClient_id(clientId);
-//                result = sgSecureApiManager.getUserSecureInfo(params);
-
-
-            //调用 SGUserInfoApiManagerImpl 中 getUserInfo
-
             GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
             getUserInfoApiparams.setUserid(userId);
             getUserInfoApiparams.setClient_id(clientId);
@@ -247,16 +208,6 @@ public class SecureManagerImpl implements SecureManager {
                 result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
             } else {
                 result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                if (!result.isSuccess()) {
-                    result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-                    if (result.isSuccess()) {
-                        //记录Log 跟踪数据同步延时情况
-                        LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "getuserinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, userId, userId, result.toString());
-                    }
-
-                    result.getModels().put("uniqname", defaultUniqname(userId));
-                    result.getModels().put("avatarurl", StringUtils.EMPTY);
-                }
                 String uniqname = String.valueOf(result.getModels().get("uniqname"));
                 result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
                 Result photoResult = photoUtils.obtainPhoto(String.valueOf(result.getModels().get("avatarurl")), "50");
@@ -264,7 +215,6 @@ public class SecureManagerImpl implements SecureManager {
                     result.getModels().put("avatarurl", photoResult.getModels());
                 }
             }
-//            }
 
             Map<String, String> map = result.getModels();
             result.setModels(map);
