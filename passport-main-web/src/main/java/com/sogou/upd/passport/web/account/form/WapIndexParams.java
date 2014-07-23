@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.form;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.WapConstant;
+import com.sogou.upd.passport.common.validation.constraints.Skin;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
@@ -26,6 +27,8 @@ public class WapIndexParams {
     @URL
 //    @Ru
     private String ru = WapConstant.WAP_INDEX;//登陆来源
+    @Skin
+    private String skin;
 
     private String errorMsg;//错误信息
     private int needCaptcha;//是否需要输入验证码:0-不需要；1-需要
@@ -68,5 +71,13 @@ public class WapIndexParams {
 
     public void setNeedCaptcha(int needCaptcha) {
         this.needCaptcha = needCaptcha;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
     }
 }
