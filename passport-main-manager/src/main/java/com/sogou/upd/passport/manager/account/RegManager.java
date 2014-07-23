@@ -29,10 +29,11 @@ public interface RegManager {
      * 2.判断手机号是否被绑定或已被注册；
      * 3.生成手机账号，并发送验证码；
      * 4.如果是wap端注册，额外返回sgid
-     * @param mobile 要注册的手机号
+     *
+     * @param mobile   要注册的手机号
      * @param clientId 应用ID
      * @param createip 用户真实ip
-     * @param type wap端注册时才用到此字段，值为wap
+     * @param type     wap端注册时才用到此字段，值为wap
      * @return Result格式的返回值，提示注册成功信息
      */
     public Result fastRegisterPhone(String mobile, int clientId, String createip, String type);
@@ -50,6 +51,16 @@ public interface RegManager {
      * @return 验证码
      */
     public Map<String, Object> getCaptchaCode(String code);
+
+    /**
+     * 检查用户是否存在去sohu校验
+     *
+     * @param username
+     * @param clientId
+     * @return
+     * @throws Exception
+     */
+    public Result checkUserFromSohu(String username, int clientId) throws Exception;
 
     /**
      * 判断用户名是否被占用

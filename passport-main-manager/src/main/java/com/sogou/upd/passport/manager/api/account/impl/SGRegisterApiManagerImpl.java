@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.validation.constraints.UserNameValidator;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -36,6 +37,7 @@ import java.util.Date;
 @Component("sgRegisterApiManager")
 public class SGRegisterApiManagerImpl extends BaseProxyManager implements RegisterApiManager {
     private static Logger logger = LoggerFactory.getLogger(SGRegisterApiManagerImpl.class);
+    private static final Logger checkWriteLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothWriteSyncErrorLogger");
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -52,6 +54,8 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
     private RegManager regManager;
     @Autowired
     private UserNameValidator userNameValidator;
+    @Autowired
+    private RegisterApiManager proxyRegisterApiManager;
 
     @Override
     public Result regMailUser(RegEmailApiParams params) {
@@ -82,7 +86,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                 return result;
             }
-
             switch (emailType) {
                 case SOGOU://个性账号直接注册
                 case INDIVID:
@@ -102,6 +105,8 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                             result.setDefaultModel("userid", account.getPassportId());
                             result.setMessage("注册成功");
                             result.setDefaultModel("isSetCookie", true);
+                            Result shResult = proxyRegisterApiManager.regMailUser(params);
+                            LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.REGISTER, "regMailUser", "write_sh", account.getPassportId(), shResult.getCode(), shResult.toString());
                         }
                     } else {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);

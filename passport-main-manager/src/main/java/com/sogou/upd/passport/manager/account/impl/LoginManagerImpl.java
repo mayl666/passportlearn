@@ -47,10 +47,6 @@ public class LoginManagerImpl implements LoginManager {
     @Autowired
     private LoginApiManager loginApiManager;
     @Autowired
-    private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private LoginApiManager sgLoginApiManager;
-    @Autowired
     private SecureManager secureManager;
 
     @Override
