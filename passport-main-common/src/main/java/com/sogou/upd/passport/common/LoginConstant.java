@@ -71,9 +71,9 @@ public class LoginConstant {
     public static final int BINDNUM_IP_LIMITED = 100; // 密码修改一个ip一天限制次数
 
     /**
-     * 内部接口安全限制50天一次
+     * 内部接口安全限制20天一次
      */
-    public static final int REGISTER_IP_COOKIE_LIMITED_FOR_INTERNAL = 20;//内部接口ip限制为50次一天
+    public static final int REGISTER_IP_COOKIE_LIMITED_FOR_INTERNAL = 20;//内部接口ip限制为20次一天
 
     /**
      * 内部接口安全限制50天一次
@@ -142,12 +142,12 @@ public class LoginConstant {
     /**
      * 内部接口 检查用户是否存在 一小时限制 50
      */
-    public static final int CHECK_USER_EXIST_INTERNAL_USER_LIMIT = 50;
+    public static final int CHECK_USER_EXIST_INTERNAL_USER_LIMIT = 20;
 
     /**
-     * 内部接口 检查用户是否存在 一小时限制 200
+     * 内部接口 检查用户是否存在 一小时限制某用户IP 20次
      */
-    public static final int CHECK_USER_EXIST_INTERNAL_IP_LIMIT = 200;
+    public static final int CHECK_USER_EXIST_INTERNAL_IP_LIMIT = 20;
 
 
 }

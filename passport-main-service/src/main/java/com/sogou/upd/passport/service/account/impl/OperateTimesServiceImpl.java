@@ -898,8 +898,8 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public boolean checkNickNameExistInBlackList(final String ip, final String cookie) {
         try {
             if (!Strings.isNullOrEmpty(cookie)) {
-                String check_nickname_cookie_key = CacheConstant.CACHE_PREFIX_CHECK_NICKNAME_COOKIE_BLACK + Coder.encryptMD5(cookie);
-                String check_nickname_cookie_black_key = CacheConstant.CACHE_PREFIX_CHECK_NICKNAME_EXIST_COOKIE_NUM + Coder.encryptMD5(cookie);
+                String check_nickname_cookie_key = CacheConstant.CACHE_PREFIX_CHECK_NICKNAME_COOKIE_BLACK + cookie;
+                String check_nickname_cookie_black_key = CacheConstant.CACHE_PREFIX_CHECK_NICKNAME_EXIST_COOKIE_NUM + cookie;
                 String checkNickNameByCookieTimes = redisUtils.get(check_nickname_cookie_black_key);
                 if (!Strings.isNullOrEmpty(checkNickNameByCookieTimes) && CommonConstant.SIGN_IN_BLACKLIST.equals(checkNickNameByCookieTimes)) {
                     return true;
@@ -937,7 +937,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public void incCheckNickNameExistTimes(final String ip, final String cookie) {
         try {
             if (!Strings.isNullOrEmpty(cookie)) {
-                recordTimes(CacheConstant.CACHE_PREFIX_CHECK_NICKNAME_COOKIE_BLACK + Coder.encryptMD5(cookie), DateAndNumTimesConstant.TIME_ONEHOUR);
+                recordTimes(CacheConstant.CACHE_PREFIX_CHECK_NICKNAME_COOKIE_BLACK + cookie, DateAndNumTimesConstant.TIME_ONEHOUR);
             } else {
                 logger.warn("incCheckNickNameExistTimes cookie is NULL");
             }
