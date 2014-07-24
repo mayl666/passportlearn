@@ -117,7 +117,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                     boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip, ru);
                     if (isSendSuccess) {
                         result.setSuccess(true);
-                        result.setMessage("感谢注册，请立即激活账户！");
+                        result.setMessage("注册成功");
                         result.setDefaultModel("userid", username);
                         result.setDefaultModel("isSetCookie", false);
                     } else {
