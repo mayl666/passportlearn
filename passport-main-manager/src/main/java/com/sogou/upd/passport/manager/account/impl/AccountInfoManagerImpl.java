@@ -50,8 +50,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
-    private UserInfoApiManager shPlusUserInfoApiManager;
-    @Autowired
     private AccountService accountService;
     @Autowired
     private ConnectTokenService connectTokenService;
@@ -232,6 +230,10 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                         if (connectToken != null) {
                             if (Strings.isNullOrEmpty(uniqname)) {
                                 uniqname = connectToken.getConnectUniqname();
+                                //判断uniqname,若为空，则调用 getAndUpdateUniqname 方法
+                                if (Strings.isNullOrEmpty(uniqname)) {
+                                    uniqname = getAndUpdateUniqname(passportId, account, uniqname);
+                                }
                             }
                             if (Strings.isNullOrEmpty(avatarurl)) {
                                 nameAndAvatarVO.setLarge_avatar(connectToken.getAvatarLarge());
@@ -358,7 +360,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         return true;
     }
 
-
     /**
      * 获取默认昵称
      *
@@ -408,34 +409,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             logger.error(e.getMessage(), e);
         }
         return updateUserInfoApiParams;
-    }
-
-    private UpdateUserUniqnameApiParams buildUpdateUserUniqnameApiParams(CheckNickNameParams params) {
-        UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
-        updateUserUniqnameApiParams.setUniqname(params.getNickname());
-        updateUserUniqnameApiParams.setClient_id(Integer.parseInt(params.getClient_id()));
-        return updateUserUniqnameApiParams;
-    }
-
-    /**
-     * 用户 昵称、头像 信息读 account_base_info
-     *
-     * @param passportId
-     * @return
-     */
-    private AccountBaseInfo getBaseInfo(String passportId) {
-        GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
-        infoApiparams.setUserid(passportId);
-        Result getUserInfoResult = shPlusUserInfoApiManager.getUserInfo(infoApiparams);
-        if (getUserInfoResult.isSuccess()) {
-            Object obj = getUserInfoResult.getModels().get("baseInfo");
-            AccountBaseInfo accountBaseInfo = null;
-            if (obj != null) {
-                accountBaseInfo = (AccountBaseInfo) obj;
-            }
-            return accountBaseInfo;
-        }
-        return null;
     }
 
 }

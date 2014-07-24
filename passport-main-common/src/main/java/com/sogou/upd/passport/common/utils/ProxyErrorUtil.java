@@ -147,7 +147,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         //checkuser 检查用户名是否可以
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.3", ERR_CODE_USERID_ILLEGAL);//非法userid
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.4", ERR_CODE_USER_ID_EXIST);//用户名已经存在
-        SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.6", SYSTEM_UNKNOWN_EXCEPTION);//修改失败
+        SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.6", SYSTEM_UNKNOWN_EXCEPTION);//查找失败
 
         //obtainconnecttokeninfo 调用SOHU接口获取第三方用户的token
         SHPPERRCODE_SGPPERRCODE_MAP.put("get.1001", ERR_CODE_COM_REQURIE);     //缺少必须参数

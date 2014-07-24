@@ -1,25 +1,16 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
-import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
-import com.sogou.upd.passport.manager.api.account.SecureApiManager;
-import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.model.app.AppConfig;
@@ -41,8 +32,6 @@ import java.util.Map;
 public class ResetPwdManagerImpl implements ResetPwdManager {
     private static Logger logger = LoggerFactory.getLogger(ResetPwdManagerImpl.class);
 
-    private static String SECURE_FIELDS = "sec_email,sec_mobile,sec_ques";
-
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
     @Autowired
@@ -52,118 +41,13 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     @Autowired
     private AppConfigService appConfigService;
     @Autowired
-    private MobilePassportMappingService mobilePassportMappingService;
-    @Autowired
     private EmailSenderService emailSenderService;
     @Autowired
     private AccountSecureService accountSecureService;
     @Autowired
     private OperateTimesService operateTimesService;
-
-    // Manager
-    @Autowired
-    private SecureApiManager sgSecureApiManager;
-    @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private SecureManager secureManager;
-
-    @Override
-    public Result queryAccountSecureInfo(String username, int clientId, boolean doProcess) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            String userId = username;
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                userId = mobilePassportMappingService.queryPassportIdByMobile(username);
-                if (Strings.isNullOrEmpty(userId)) {
-                    userId += "@sohu.com";
-                }
-            } else {
-                // 不查询account表
-                if (username.indexOf("@") == -1) {
-                    userId += CommonConstant.SOGOU_SUFFIX;
-                }
-            }
-
-            // 判断是否超过修改密码次数
-            if (operateTimesService.checkLimitResetPwd(username, clientId)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
-                return result;
-            }
-
-            Account account = accountService.queryNormalAccount(userId);
-            if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                return result;
-            }
-
-            AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
-
-            if (ManagerHelper.isInvokeProxyApi(userId)) {
-                // 代理接口
-                GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
-                getUserInfoApiparams.setUserid(userId);
-                getUserInfoApiparams.setClient_id(clientId);
-                getUserInfoApiparams.setFields(SECURE_FIELDS);
-                result = proxyUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-            } else {
-                GetSecureInfoApiParams params = new GetSecureInfoApiParams();
-                params.setUserid(userId);
-                params.setClient_id(clientId);
-                result = sgSecureApiManager.getUserSecureInfo(params);
-            }
-
-            Map<String, String> map = result.getModels();
-            result.setModels(Maps.newHashMap());
-
-            if (!result.isSuccess()) {
-                return result;
-            }
-
-            String mobile = map.get("sec_mobile");
-            String emailBind = map.get("sec_email");
-            String question = map.get("sec_ques");
-
-            if (doProcess) {
-                if (!Strings.isNullOrEmpty(emailBind)) {
-                    String emailProcessed = StringUtil.processEmail(emailBind);
-                    accountSecureInfoVO.setSec_email(emailProcessed);
-                }
-                if (!Strings.isNullOrEmpty(mobile)) {
-                    String mobileProcessed = StringUtil.processMobile(mobile);
-                    accountSecureInfoVO.setSec_mobile(mobileProcessed);
-                }
-                if (!Strings.isNullOrEmpty(question)) {
-                    accountSecureInfoVO.setSec_ques(question);
-                }
-                if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.OTHER) {
-                    String emailRegProcessed = StringUtil.processEmail(userId);
-                    accountSecureInfoVO.setReg_email(emailRegProcessed);
-                }
-            } else {
-                if (!Strings.isNullOrEmpty(emailBind)) {
-                    accountSecureInfoVO.setSec_email(emailBind);
-                }
-                if (!Strings.isNullOrEmpty(mobile)) {
-                    accountSecureInfoVO.setSec_mobile(mobile);
-                }
-                if (!Strings.isNullOrEmpty(question)) {
-                    accountSecureInfoVO.setSec_ques(question);
-                }
-                if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.OTHER) {
-                    accountSecureInfoVO.setReg_email(userId);
-                }
-            }
-            result.setSuccess(true);
-            result.setMessage("查询成功");
-            result.setDefaultModel(accountSecureInfoVO);
-            return result;
-        } catch (ServiceException e) {
-            logger.error("query account_secure_info Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return result;
-        }
-    }
 
     @Override
     public Map<String, Object> getEmailAndStatus(String username) throws Exception {

@@ -13,17 +13,6 @@ import java.util.Map;
 public interface ResetPwdManager {
 
     /**
-     * 查询密保信息
-     *
-     * @param username
-     * @param clientId
-     * @param doProcess
-     * @return
-     * @throws Exception
-     */
-    public Result queryAccountSecureInfo(String username, int clientId, boolean doProcess) throws Exception;
-
-    /**
      * 为了获取用户绑定邮箱及用户的激活状态
      *
      * @param username

@@ -6,7 +6,9 @@ import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.FileIOUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.FileUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.dao.account.MobilePassportMappingDAO;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
@@ -47,7 +49,7 @@ public class RepairWriteData extends BaseTest {
     */
     @Test
     public void checkIsSogouExistDate() {
-        List<String> passportList = FileIOUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\phone.txt");
+        List<String> passportList = FileIOUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_phone_userid_0526_0722");
         String content;
         int count = 0;
         String sgPassportId = null;
@@ -56,28 +58,34 @@ public class RepairWriteData extends BaseTest {
             if (Strings.isNullOrEmpty(passportId)) {
                 continue;
             }
-            if (AccountDomainEnum.PHONE == AccountDomainEnum.getAccountDomain(passportId)) {
+            if (PhoneUtil.verifyPhoneNumberFormat(passportId)) {
                 sgPassportId = mobilePassportMappingDAO.getPassportIdByMobile(passportId);
+                if (Strings.isNullOrEmpty(sgPassportId)) {
+                    BaseMoblieApiParams params = new BaseMoblieApiParams(passportId);
+                    Result shResult = proxyBindApiManager.getPassportIdByMobile(params);
+                    if (shResult.isSuccess()) {
+                        content = passportId + ",shUserId:" + shResult.getModels().get("userid");
+                        count++;
+                        contentList.add(content);
+                    }
+                }
             } else {
                 Account account = accounDao.getAccountByPassportId(passportId);
-                if (account != null) {
-                    sgPassportId = account.getPassportId();
-                }
-            }
-            if (Strings.isNullOrEmpty(sgPassportId)) {
-                checkUserApiParams.setUserid(passportId);
-                Result shResult = proxyRegisterApiManager.checkUser(checkUserApiParams);
-                if (!shResult.isSuccess()) {
-                    content = passportId + ",shUserId:" + shResult.getModels().get("userid");
-                    count++;
-                    contentList.add(content);
+                if (account == null) {
+                    checkUserApiParams.setUserid(passportId);
+                    Result shResult = proxyRegisterApiManager.checkUser(checkUserApiParams);
+                    if (shResult.getCode().equals(ErrorUtil.ERR_CODE_USER_ID_EXIST)) {
+                        content = passportId + "," + shResult.getModels().get("userid");
+                        count++;
+                        contentList.add(content);
+                    }
                 }
             }
         }
         content = "total:" + passportList.size() + ",count:" + count;
         contentList.add(content);
         try {
-            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\phone_result.txt", contentList);
+            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_phone_userid_0526_0722_result", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
