@@ -202,7 +202,11 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
                 return result;
             }
-            if (!emailSenderService.sendEmail(passportId, clientId, clientModule, module, email, false, ru)) {
+            HashMap<String, Object> urlMap = new HashMap<>();
+            urlMap.put("passportId", passportId);
+            urlMap.put("clientId", clientId);
+            urlMap.put("ru", ru);
+            if (!emailSenderService.sendEmail(urlMap, clientModule, module, email, false)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
                 return result;
             }

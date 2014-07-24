@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -56,7 +58,11 @@ public class SGBindApiManagerImpl implements BindApiManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
             return result;
         }
-        if (!emailSenderService.sendEmail(passportId, clientId, AccountClientEnum.web, AccountModuleEnum.SECURE, newEmail, true, bindEmailApiParams.getRu())) {
+        HashMap<String, Object> urlMap = new HashMap<>();
+        urlMap.put("passportId", passportId);
+        urlMap.put("clientId", clientId);
+        urlMap.put("ru", bindEmailApiParams.getRu());
+        if (!emailSenderService.sendEmail(urlMap, AccountClientEnum.web, AccountModuleEnum.SECURE, newEmail, true)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
             return result;
         }
