@@ -557,15 +557,13 @@ public class RegManagerImpl implements RegManager {
 
     @Override
     public boolean checkUserExistInBlack(String username, String ip) {
-        if (!Strings.isNullOrEmpty(ip)) {
-            if (operateTimesService.checkUserInBlackListForInternal(ip, username)) {
-                //检查账号是否在白名单中
-                if (!operateTimesService.checkRegInWhiteList(ip)) {
-                    return true;
-                }
+        if (operateTimesService.checkUserInBlackListForInternal(ip, username)) {
+            //检查账号是否在白名单中
+            if (!operateTimesService.checkRegInWhiteList(ip)) {
+                return true;
             }
-            operateTimesService.incInterCheckUserTimes(username, ip);
         }
+        operateTimesService.incInterCheckUserTimes(username, ip);
         return false;
     }
 }

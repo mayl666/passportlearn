@@ -379,17 +379,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public boolean checkUserInBlackListForInternal(String ip, String username) {
         try {
             String username_black_key = CacheConstant.CACHE_PREFIX_EXIST_INTERNAL_USERNAME_BLACK + username;
-            String ip_black_key = CacheConstant.CACHE_PREFIX_EXIST_INTERNAL_IP_BLACK + ip;
-
             String value = redisUtils.get(username_black_key);
             if (CommonConstant.LOGIN_IN_BLACKLIST.equals(value)) {
                 return true;
-            }
-            if (!StringUtils.isBlank(ip)) {
-                value = redisUtils.get(ip_black_key);
-                if (CommonConstant.LOGIN_IN_BLACKLIST.equals(value)) {
-                    return true;
-                }
             }
 
             String username_hKey = CacheConstant.CACHE_PREFIX_CHECK_USER_INTERNAL_USERNAME_NUM + username;
@@ -398,7 +390,14 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 redisUtils.setWithinSeconds(username_black_key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                 return true;
             }
-            if (!Strings.isNullOrEmpty(ip)) {
+
+            if (!StringUtils.isBlank(ip)) {
+                String ip_black_key = CacheConstant.CACHE_PREFIX_EXIST_INTERNAL_IP_BLACK + ip;
+                value = redisUtils.get(ip_black_key);
+                if (CommonConstant.LOGIN_IN_BLACKLIST.equals(value)) {
+                    return true;
+                }
+
                 String ip_hKey = CacheConstant.CACHE_PREFIX_CHECK_USER_INTERNAL_IP_NUM + ip;
                 boolean checkIpTimes = checkTimesByKey(ip_hKey, LoginConstant.CHECK_USER_EXIST_INTERNAL_IP_LIMIT);
                 if (checkIpTimes) {
