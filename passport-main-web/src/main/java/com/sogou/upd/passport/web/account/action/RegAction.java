@@ -241,7 +241,7 @@ public class RegAction extends BaseController {
     @RequestMapping(value = "/activemail", method = RequestMethod.GET)
     public void activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams, Model model)
             throws Exception {
-        Result result = new APIResultSupport(false);
+        Result result;
         //参数验证
         String validateResult = ControllerHelper.validateParams(activeParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
