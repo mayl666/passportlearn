@@ -26,6 +26,7 @@ import com.sogou.upd.passport.web.account.form.CheckOrUpdateNickNameParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,9 +81,9 @@ public class AccountInfoAction extends BaseController {
         updateUserUniqnameApiParams.setUniqname(checkOrUpdateNickNameParams.getNickname());
         updateUserUniqnameApiParams.setClient_id(SHPPUrlConstant.APP_ID);
 
-        //增加安全限制 ip+cookie
-        String cookie = ServletUtil.getCookie(request, "uuidName");
-        if (accountInfoManager.checkNickNameExistInBlackList(getIp(request), cookie)) {
+        //增加安全限制 ip+cookie 暂不做cookie限制，需要前端配合加。
+//        String cookie = ServletUtil.getCookie(request, "uuidName");
+        if (accountInfoManager.checkNickNameExistInBlackList(getIp(request), StringUtils.EMPTY)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
         } else {
             result = sgUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
