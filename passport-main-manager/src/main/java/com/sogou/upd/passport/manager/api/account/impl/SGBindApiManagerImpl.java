@@ -10,6 +10,7 @@ import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.EmailSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
@@ -88,7 +89,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result bindMobile(String passportId, String newMobile) {
+    public Result bindMobile(String passportId, String newMobile, Account account) {
         return null;
     }
 
