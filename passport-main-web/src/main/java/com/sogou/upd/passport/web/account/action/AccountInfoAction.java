@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
@@ -78,7 +79,14 @@ public class AccountInfoAction extends BaseController {
         UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
         updateUserUniqnameApiParams.setUniqname(checkOrUpdateNickNameParams.getNickname());
         updateUserUniqnameApiParams.setClient_id(SHPPUrlConstant.APP_ID);
-        result = sgUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
+
+        //增加安全限制 ip+cookie
+        String cookie = ServletUtil.getCookie(request, "uuidName");
+        if (accountInfoManager.checkNickNameExistInBlackList(getIp(request), cookie)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+        } else {
+            result = sgUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
+        }
 
         //用于记录log
         UserOperationLog userOperationLog = new UserOperationLog("", String.valueOf(SHPPUrlConstant.APP_ID), result.getCode(), getIp(request));

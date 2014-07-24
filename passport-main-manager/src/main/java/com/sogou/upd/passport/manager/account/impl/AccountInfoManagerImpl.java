@@ -26,6 +26,7 @@ import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.lang3.StringUtils;
@@ -56,8 +57,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
-    private UserInfoApiManager shPlusUserInfoApiManager;
-    @Autowired
     private AccountService accountService;
     @Autowired
     private ConnectTokenService connectTokenService;
@@ -65,6 +64,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     private ConnectConfigService connectConfigService;
     @Autowired
     private PCAccountManager pcAccountManager;
+
+    @Autowired
+    private OperateTimesService operateTimesService;
 
 
     /**
@@ -123,48 +125,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                     return result;
                 }
-
-                //TODO 非第三方账号迁移，注释掉之前老的流程，待上线成功后，删除掉下面老的逻辑代码
-                //更新缓存记录 临时方案 暂时这里写缓存，数据迁移后以 搜狗分支为主（更新库更新缓存）
-                /*GetUserInfoApiparams apiparams = new GetUserInfoApiparams();
-                apiparams.setUserid(passportId);
-
-                AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
-                //第三方登录 走搜狗流程
-                if (domain == AccountDomainEnum.THIRD) {
-                    Account account = accountService.queryAccountByPassportId(passportId);
-                    if (!accountService.updateAvatar(account, imgURL)) {
-                        result.setCode(ErrorUtil.ERR_CODE_UPLOAD_PHOTO);
-                        return result;
-                    }
-                } else {
-                    Result resultUserInfo = shPlusUserInfoApiManager.getUserInfo(apiparams);
-                    if (resultUserInfo.isSuccess()) {
-                        Object obj = resultUserInfo.getModels().get("baseInfo");
-                        AccountBaseInfo baseInfo = null;
-                        if (obj != null) {
-                            baseInfo = (AccountBaseInfo) obj;
-                            //更新数据库
-                            int rows = accountBaseInfoDAO.updateAvatarByPassportId(imgURL, passportId);
-                            if (rows != 0) {
-                                //更新缓存
-                                baseInfo.setAvatar(imgURL);
-                            }
-                        } else {
-                            //新添加记录
-                            baseInfo = new AccountBaseInfo();
-                            baseInfo.setPassportId(passportId);
-                            baseInfo.setAvatar(imgURL);
-                            baseInfo.setUniqname("");
-                            accountBaseInfoDAO.insertAccountBaseInfo(passportId, baseInfo);
-                        }
-
-                        //更新缓存
-                        String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO + passportId;
-                        dbRedisUtils.set(cacheKey, baseInfo, 30, TimeUnit.DAYS);
-                    }
-                }
-                */
                 result.setSuccess(true);
                 result.setDefaultModel("image", imgURL);
                 result.setMessage("头像设置成功");
@@ -233,55 +193,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         Result result = new APIResultSupport(false);
 
         UpdateUserInfoApiParams updateUserInfoApiParams = null;
-
-        // 调用内部接口
-        /*if (ManagerHelper.isInvokeProxyApi(infoParams.getUsername())) {
-            updateUserInfoApiParams = new UpdateUserInfoApiParams();
-            updateUserInfoApiParams.setUserid(infoParams.getUsername());
-            updateUserInfoApiParams.setGender(infoParams.getGender());
-            updateUserInfoApiParams.setClient_id(Integer.parseInt(infoParams.getClient_id()));
-
-            //替换sohu日期
-            String birthday = !Strings.isNullOrEmpty(infoParams.getBirthday()) ? infoParams.getBirthday() : null;
-            if (!Strings.isNullOrEmpty(birthday)) {
-                String[] birthdayArr = birthday.split("-");
-                String month = birthdayArr[1];
-                if (month.startsWith("0")) {
-                    month = "0" + String.valueOf(Integer.parseInt(month));
-                } else {
-                    month = String.valueOf(Integer.parseInt(month));
-                }
-                if ("010".equals(month)) {
-                    month = "10";
-                }
-                birthday = birthdayArr[0] + "-" + month + "-" + birthdayArr[2];
-            }
-
-            updateUserInfoApiParams.setBirthday(birthday);
-            updateUserInfoApiParams.setUsername(infoParams.getFullname());
-            updateUserInfoApiParams.setUniqname(infoParams.getUniqname());
-            updateUserInfoApiParams.setProvince(infoParams.getProvince());
-            updateUserInfoApiParams.setCity(infoParams.getCity());
-            updateUserInfoApiParams.setPersonalid(infoParams.getPersonalid());
-            updateUserInfoApiParams.setModifyip(ip);
-
-            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(infoParams.getUsername());
-            //第三方登录 走搜狗流程
-            if (domain == AccountDomainEnum.THIRD) {
-                result = sgUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
-            } else {
-                //非第三方账号，用户更新昵称信息，更新至sogou
-                result = shPlusUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
-
-                //非第三方账号，用户更新其他信息(非头像、昵称信息)，更新至sohu
-                updateUserInfoApiParams.setUniqname(null);
-                proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
-            }
-        } else {
-            //TODO 提醒 非第三方账号迁移完成后, 更新用户信息,开启此分支
-            updateUserInfoApiParams = buildUpdateUserInfoApiParams(infoParams, ip);
-            result = sgUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
-        }*/
 
         // 非第三方账号迁移完成后, 更新用户信息,开启此分支
         updateUserInfoApiParams = buildUpdateUserInfoApiParams(infoParams, ip);
@@ -435,6 +346,18 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         return result;
     }
 
+    @Override
+    public boolean checkNickNameExistInBlackList(final String ip, final String cookie) {
+        if (operateTimesService.checkNickNameExistInBlackList(ip, cookie)) {
+            //是否在白名单中
+            if (!operateTimesService.checkRegInWhiteList(ip)) {
+                return true;
+            }
+        }
+        operateTimesService.incCheckNickNameExistTimes(ip, cookie);
+        return false;
+    }
+
     /*
      * 根据获取到的昵称或头像，设置result返回结果
      */
@@ -582,26 +505,4 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         updateUserUniqnameApiParams.setClient_id(Integer.parseInt(params.getClient_id()));
         return updateUserUniqnameApiParams;
     }
-
-    /**
-     * 用户 昵称、头像 信息读 account_base_info
-     *
-     * @param passportId
-     * @return
-     */
-    private AccountBaseInfo getBaseInfo(String passportId) {
-        GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
-        infoApiparams.setUserid(passportId);
-        Result getUserInfoResult = shPlusUserInfoApiManager.getUserInfo(infoApiparams);
-        if (getUserInfoResult.isSuccess()) {
-            Object obj = getUserInfoResult.getModels().get("baseInfo");
-            AccountBaseInfo accountBaseInfo = null;
-            if (obj != null) {
-                accountBaseInfo = (AccountBaseInfo) obj;
-            }
-            return accountBaseInfo;
-        }
-        return null;
-    }
-
 }

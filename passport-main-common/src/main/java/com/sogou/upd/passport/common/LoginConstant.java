@@ -71,9 +71,9 @@ public class LoginConstant {
     public static final int BINDNUM_IP_LIMITED = 100; // 密码修改一个ip一天限制次数
 
     /**
-     * 内部接口安全限制50天一次
+     * 内部接口安全限制20天一次
      */
-    public static final int REGISTER_IP_COOKIE_LIMITED_FOR_INTERNAL = 20;//内部接口ip限制为50次一天
+    public static final int REGISTER_IP_COOKIE_LIMITED_FOR_INTERNAL = 20;//内部接口ip限制为20次一天
 
     /**
      * 内部接口安全限制50天一次
@@ -111,6 +111,22 @@ public class LoginConstant {
     public static final int IS_IN_WHITE_LIST = 1;
 
 
+    /**
+     * 1小时内用户
+     */
+    public static final int GETPAIRTOKEN_USERNAME_EXCEED_MAX_LIMIT_COUNT = 50;
+    public static final int GETPAIRTOKEN_IP_EXCEED_MAX_LIMIT_COUNT = 200;
+
+    /**
+     * 1小时内，同一个IP，检查昵称次数最大为30次
+     */
+    public static final int CHECK_NICKNAME_EXIST_MAX_LIMIT_COUNT = 30;
+
+
+    /**
+     * 某cookie 检查用户昵称是否存在次数限制
+     */
+    public static final int CHECK_NICKNAME_EXIT_COOKIE_LIMIT_COUNT = 5;
 
 
     /**
@@ -122,11 +138,16 @@ public class LoginConstant {
      */
     public static final int EXIST_IPNUM_EXCEED_MAX_LIMIT_COUNT = 50;
 
+
     /**
-     * 1小时内用户
+     * 内部接口 检查用户是否存在 一小时限制 50
      */
-    public static final int GETPAIRTOKEN_USERNAME_EXCEED_MAX_LIMIT_COUNT = 50;
-    public static final int GETPAIRTOKEN_IP_EXCEED_MAX_LIMIT_COUNT = 200;
+    public static final int CHECK_USER_EXIST_INTERNAL_USER_LIMIT = 20;
+
+    /**
+     * 内部接口 检查用户是否存在 一小时限制某用户IP 20次
+     */
+    public static final int CHECK_USER_EXIST_INTERNAL_IP_LIMIT = 20;
 
 
 }

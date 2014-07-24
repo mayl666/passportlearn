@@ -171,4 +171,19 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     private String buildAccountInfoKey(String passportId) {
         return CACHE_PREFIX_PASSPORTID_ACCOUNT_INFO + passportId;
     }
+    public boolean updateBindMEmail(AccountInfo accountInfo, String email) throws ServiceException {
+        try {
+            String passportId = accountInfo.getPassportId();
+            int result = accountInfoDAO.updateBindEmail(email, passportId);
+            if (result > 0) {
+                String cacheKey = buildAccountInfoKey(passportId);
+                accountInfo.setEmail(email);
+                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, accountInfo, DateAndNumTimesConstant.ONE_MONTH);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
 }
