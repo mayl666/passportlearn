@@ -188,7 +188,7 @@ public class SecureManagerImpl implements SecureManager {
     }
 
     @Override
-    public Result queryAccountSecureInfo(String userId, int clientId, boolean doProcess) throws Exception {
+    public Result queryAccountSecureInfo(String userId, int clientId, boolean doProcess) {
         Result result = new APIResultSupport(false);
         try {
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
@@ -205,15 +205,19 @@ public class SecureManagerImpl implements SecureManager {
             getUserInfoApiparams.setFields(SOGOU_SECURE_FIELDS);
 
             result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
-            if (domain != AccountDomainEnum.THIRD) {
+//            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+//            if (domain != AccountDomainEnum.THIRD) {
+            if (result.isSuccess()) {
                 String uniqname = String.valueOf(result.getModels().get("uniqname"));
                 result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
                 Result photoResult = photoUtils.obtainPhoto(String.valueOf(result.getModels().get("avatarurl")), "50");
                 if (photoResult.isSuccess()) {
                     result.getModels().put("avatarurl", photoResult.getModels());
                 }
+            } else {
+                result.getModels().put("uniqname", Coder.encode(userId, "UTF-8"));
             }
+//            }
 
             Map<String, String> map = result.getModels();
             result.setModels(map);
