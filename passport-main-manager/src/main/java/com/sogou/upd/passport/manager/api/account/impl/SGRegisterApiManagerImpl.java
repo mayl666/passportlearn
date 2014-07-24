@@ -66,9 +66,9 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             String ip = params.getCreateip();
             int clientId = params.getClient_id();
             AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
-            //不支持sohu域账号注册
-            if (AccountDomainEnum.SOHU.equals(emailType)) {
-                result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
+            //不支持sohu域账号,第三方账号注册
+            if (AccountDomainEnum.SOHU.equals(emailType) || AccountDomainEnum.THIRD.equals(emailType)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
                 return result;
             }
             //判断注册账号类型，外域用户还是个性用户
@@ -117,7 +117,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                     boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip, ru);
                     if (isSendSuccess) {
                         result.setSuccess(true);
-                        result.setMessage("感谢注册，请立即激活账户！");
+                        result.setMessage("注册成功");
                         result.setDefaultModel("userid", username);
                         result.setDefaultModel("isSetCookie", false);
                     } else {
@@ -180,6 +180,11 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
         String username = null;
         try {
             username = checkUserApiParams.getUserid();
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
+            if (AccountDomainEnum.SOHU.equals(domain) || AccountDomainEnum.THIRD.equals(domain)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                return result;
+            }
             if (username.indexOf("@") == -1) {
                 //判断是否是手机号注册
                 if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
@@ -251,7 +256,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             if (!result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                result.setMessage("手机号已绑定其他账号");
                 return result;
             }
             result = secureManager.sendMobileCode(params.getMobile(), params.getClient_id(), AccountModuleEnum.REGISTER);

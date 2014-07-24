@@ -25,6 +25,9 @@ public class WapCheckEmailParams extends BaseWapResetPwdParams {
     }
 
     public void setUsername(String username) {
+        if (username != null) {
+            username = username.trim();
+        }
         this.username = username;
     }
 

@@ -85,13 +85,11 @@ public class RegManagerImpl implements RegManager {
             String password = regParams.getPassword();
             String captcha = regParams.getCaptcha();
             String ru = regParams.getRu();
-            boolean isSogou = false;//外域还是个性账号
             //判断是否是个性账号
             if (username.indexOf("@") == -1) {
                 //判断是否是手机号注册
                 if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
                     username = username + CommonConstant.SOGOU_SUFFIX;
-                    isSogou = true;
                 }
             } else {
                 int index = username.indexOf("@");
@@ -110,10 +108,7 @@ public class RegManagerImpl implements RegManager {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                         return result;
                     }
-                    //发出激活信以后跳转页面，ru为空跳到sogou激活成功页面
-                    if (Strings.isNullOrEmpty(ru)) {
-                        ru = isSogou ? LOGIN_INDEX_URL : EMAIL_REG_VERIFY_URL;
-                    }
+                    ru = Strings.isNullOrEmpty(ru) ? LOGIN_INDEX_URL : ru;
                     RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                             clientId, ru);
                     result = sgRegisterApiManager.regMailUser(regEmailApiParams);

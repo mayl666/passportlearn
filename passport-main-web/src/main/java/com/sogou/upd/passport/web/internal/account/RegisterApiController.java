@@ -269,7 +269,7 @@ public class RegisterApiController extends BaseController {
                 }
             }
         } catch (Exception e) {
-            logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getUserid(), e);
+            logger.error("checkUser is failed,username is {}", params.getUserid(), e);
         } finally {
             //记录log
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));

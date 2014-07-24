@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -55,43 +56,32 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
 
     @Override
-    public boolean sendEmail(String passportId, int clientId, AccountClientEnum clientEnum, AccountModuleEnum module, String address, boolean saveEmail, String ru)
+    public boolean sendEmail(HashMap<String, Object> urlParamMap, AccountClientEnum clientEnum, AccountModuleEnum module, String address, boolean saveEmail)
             throws ServiceException {
         try {
-            String prefix = PASSPORT_HOST;
-            String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
-            switch (clientEnum) {
-                case web:
-                    prefix = PASSPORT_HOST;
-                    ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
-                    break;
-                case wap:
-                    prefix = PASSPORT_WAP_HOST;
-                    ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
-                    break;
+            if (CollectionUtils.isEmpty(urlParamMap)) {
+                return false;
             }
-            String activeUrl = prefix + "/" + clientEnum.toString() + "/" + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
-            activeUrl += "username=" + passportId + "&client_id=" + clientId + "&scode=" + scode + "&ru=";
-
-
-            activeUrl += Coder.encodeUTF8(ru);
+            String passportId = (String) urlParamMap.get("passportId");
+            if (Strings.isNullOrEmpty(passportId)) {
+                return false;
+            }
+            int clientId = Strings.isNullOrEmpty((String) urlParamMap.get("clientId")) ? CommonConstant.SGPP_DEFAULT_CLIENTID : Integer.parseInt((String) urlParamMap.get("clientId"));
+            String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
+            String activeUrl = buildActiveUrl(clientEnum, module, urlParamMap);
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();
             activeEmail.setActiveUrl(activeUrl);
-
             //模版中参数替换
             Map<String, Object> map = Maps.newHashMap();
             map.put("activeUrl", activeUrl);
             map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             activeEmail.setMap(map);
-
             activeEmail.setTemplateFile(module.getDirect() + ".vm");
             activeEmail.setSubject(subjects.get(module));
             activeEmail.setCategory(module.getDirect());
             activeEmail.setToEmail(address);
-
             mailUtils.sendEmail(activeEmail);
-
             //连接失效时间
             String cacheKey = buildCacheKeyForScode(passportId, clientId, module);
             if (saveEmail) {
@@ -108,6 +98,41 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
+
+    //构建激活邮件中的链接
+    private String buildActiveUrl(AccountClientEnum clientEnum, AccountModuleEnum module, HashMap<String, Object> urlParamMap) throws Exception {
+        String prefix = PASSPORT_HOST;
+        String passportId = (String) urlParamMap.get("passportId");
+        String ru = (String) urlParamMap.get("ru");
+        int clientId = Strings.isNullOrEmpty((String) urlParamMap.get("clientId")) ? CommonConstant.SGPP_DEFAULT_CLIENTID : Integer.parseInt((String) urlParamMap.get("clientId"));
+        String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
+        switch (clientEnum) {
+            case web:
+                prefix = PASSPORT_HOST;
+                ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
+                break;
+            case wap:
+                prefix = PASSPORT_WAP_HOST;
+                ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
+                break;
+        }
+        StringBuilder activeUrl = new StringBuilder();
+        activeUrl.append(prefix);
+        activeUrl.append("/");
+        activeUrl.append(clientEnum.toString());
+        activeUrl.append("/");
+        activeUrl.append(module.getDirect());
+        activeUrl.append(PASSPORT_EMAIL_URL_SUFFIX);
+        activeUrl.append("username=" + passportId);
+        activeUrl.append("&client_id=" + clientId);
+        activeUrl.append("&scode=" + scode);
+        if (urlParamMap.containsKey("v") && urlParamMap.get("v") != null)
+            activeUrl.append("&v=" + urlParamMap.get("v"));
+        if (urlParamMap.containsKey("skin") && urlParamMap.get("skin") != null)
+            activeUrl.append("&skin=" + urlParamMap.get("skin"));
+        activeUrl.append("&ru=" + Coder.encodeUTF8(ru));
+        return activeUrl.toString();
     }
 
     @Override

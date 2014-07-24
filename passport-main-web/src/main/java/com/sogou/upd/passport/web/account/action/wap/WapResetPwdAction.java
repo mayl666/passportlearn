@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 移动端找回密码
@@ -204,7 +205,8 @@ public class WapResetPwdAction extends BaseController {
         urlStr.append("&code=" + result.getCode());
         urlStr.append("&message=" + result.getMessage());
         urlStr.append("&v=" + WapConstant.WAP_TOUCH);
-        urlStr.append("&skin=" + result.getModels().get("skin"));
+        String skin = (String) result.getModels().get("skin");
+        urlStr.append("&skin=" + skin);
         return urlStr.toString();
     }
 
@@ -350,45 +352,53 @@ public class WapResetPwdAction extends BaseController {
      * 校验找回密码邮箱连接
      *
      * @param params
-     * @param model
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.GET)
-    public String checkEmailResetPwd(HttpServletRequest request, WapCheckEmailParams params, Model model, RedirectAttributes redirectAttributes) throws Exception {
+    public void checkEmailResetPwd(HttpServletRequest request, WapCheckEmailParams params, HttpServletResponse response, RedirectAttributes redirectAttributes) throws Exception {
         Result result = new APIResultSupport(false);
+        String url = null;
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                redirectAttributes.addAttribute("code", ErrorUtil.ERR_CODE_COM_REQURIE);
-                redirectAttributes.addAttribute("message", Coder.encodeUTF8(validateResult));
-                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code={code}&message={message}";
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&message=" + Coder.encodeUTF8(validateResult));
+                return;
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
             result = resetPwdManager.checkEmailResetPwd(passportId, clientId, params.getScode());
-            //邮箱连接校验成功跳转到修改密码页面
+            url = buildSendRedirectUrl(result, params);
+            if (result.isSuccess()) {
+                String scode = (String) result.getModels().get("scode");
+                url = url + "&scode=" + scode + "&code=0";
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + url);
+                return;
+            }
         } catch (Exception e) {
             logger.error("checkEmailResetPwd Is Failed,Username is " + params.getUsername(), e);
         } finally {
             log(request, params.getUsername(), result.getCode());
         }
+        url += "&code=" + result.getCode();
+        response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + url);
+        return;
+    }
+
+    //验证完邮件跳转至页面提示重置密码页
+    private String buildSendRedirectUrl(Result result, WapCheckEmailParams params) {
         String ru = Strings.isNullOrEmpty(params.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(params.getRu());
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
-        redirectAttributes.addAttribute("ru", ru);
-        redirectAttributes.addAttribute("client_id", client_id);
-        redirectAttributes.addAttribute("message", result.getMessage());
-        redirectAttributes.addAttribute("username", params.getUsername());
-        redirectAttributes.addAttribute("skin", params.getSkin());
-        if (result.isSuccess()) {
-            String scode = (String) result.getModels().get("scode");
-            redirectAttributes.addAttribute("scode", scode);
-            redirectAttributes.addAttribute("code", "0");
-            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&scode={scode}&client_id={client_id}&ru={ru}&code={code}&message={message}&skin={skin}";
-        }
-        redirectAttributes.addAttribute("code", result.getCode());
-        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&client_id={client_id}&ru={ru}&code={code}&message={message}&skin={skin}";
-
+        StringBuilder urlStr = new StringBuilder();
+        urlStr.append("/wap/findpwd/vm/reset?");
+        urlStr.append("username=" + params.getUsername());
+        urlStr.append("&client_id=" + client_id);
+        urlStr.append("&ru=" + ru);
+        urlStr.append("&message=" + result.getMessage());
+        String skin = (String) result.getModels().get("skin");
+        urlStr.append("&skin=" + skin);
+        urlStr.append("&v=" + params.getV());
+        return urlStr.toString();
     }
 
     /**
@@ -399,7 +409,8 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/vm/reset", method = RequestMethod.GET)
-    public String findResetView(String ru, Model model, String client_id, String scode, String username, String code, String message, String skin) throws Exception {
+    public String findResetView(String ru, Model model, String client_id, String scode, String username, String
+            code, String message, String skin) throws Exception {
         Result result = new APIResultSupport(false);
         ru = Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(ru);
         client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
