@@ -105,7 +105,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         String prefix = PASSPORT_HOST;
         String passportId = (String) urlParamMap.get("passportId");
         String ru = (String) urlParamMap.get("ru");
-        int clientId = Strings.isNullOrEmpty((String) urlParamMap.get("clientId")) ? CommonConstant.SGPP_DEFAULT_CLIENTID : Integer.parseInt((String) urlParamMap.get("clientId"));
+        int clientId = (int) urlParamMap.get("clientId");
         String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
         switch (clientEnum) {
             case web:
