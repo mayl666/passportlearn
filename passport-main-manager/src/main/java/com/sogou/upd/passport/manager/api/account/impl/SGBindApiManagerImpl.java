@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -61,7 +62,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
             return result;
         }
-        HashMap<String, Object> urlMap = new HashMap<>();
+        HashMap<String, Object> urlMap = Maps.newHashMap();
         urlMap.put("passportId", passportId);
         urlMap.put("clientId", clientId);
         urlMap.put("ru", bindEmailApiParams.getRu());
