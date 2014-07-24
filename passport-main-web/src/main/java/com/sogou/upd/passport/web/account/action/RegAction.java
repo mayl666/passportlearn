@@ -245,16 +245,14 @@ public class RegAction extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(activeParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            response.sendRedirect(CommonConstant.EMAIL_FAILED_VERIFY_URL + "?code=" + result.getCode());
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.ERR_CODE_COM_REQURIE);
             return;
         }
         //验证client_id
         int clientId = Integer.parseInt(activeParams.getClient_id());
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
-            result.setCode(ErrorUtil.INVALID_CLIENTID);
-            response.sendRedirect(CommonConstant.EMAIL_FAILED_VERIFY_URL + "?code=" + result.getCode());
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.INVALID_CLIENTID);
             return;
         }
         String ip = getIp(request);
@@ -264,17 +262,15 @@ public class RegAction extends BaseController {
             // 种sogou域cookie
             result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
             if (result.isSuccess()) {
-                if (Strings.isNullOrEmpty(activeParams.getRu()) || CommonConstant.EMAIL_REG_VERIFY_URL.equals(activeParams.getRu())) {
-                    activeParams.setRu(CommonConstant.DEFAULT_INDEX_URL);
+                String ru = activeParams.getRu();
+                if (Strings.isNullOrEmpty(ru) || CommonConstant.EMAIL_REG_VERIFY_URL.equals(ru)) {
+                    ru = CommonConstant.DEFAULT_INDEX_URL;
                 }
-                result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
-                result.setDefaultModel(CommonConstant.CLIENT_ID, clientId);
-                result.setCode("0");
-                response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode() + "&ru=" + activeParams.getRu());
+                response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=0&ru=" + ru);
                 return;
             }
         }
-        response.sendRedirect(CommonConstant.EMAIL_FAILED_VERIFY_URL + "?code=" + result.getCode());
+        response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode());
         return;
 
     }
