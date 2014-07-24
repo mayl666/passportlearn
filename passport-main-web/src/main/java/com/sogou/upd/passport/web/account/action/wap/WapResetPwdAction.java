@@ -369,30 +369,26 @@ public class WapResetPwdAction extends BaseController {
             int clientId = Integer.parseInt(params.getClient_id());
             result = resetPwdManager.checkEmailResetPwd(passportId, clientId, params.getScode());
             //邮箱连接校验成功跳转到修改密码页面
-//            redirectAttributes.addAttribute("code", ErrorUtil.ERR_CODE_COM_REQURIE);
-//            redirectAttributes.addAttribute("message", Coder.encodeUTF8(validateResult));
-//            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code={code}&message={message}";
+            String ru = Strings.isNullOrEmpty(params.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(params.getRu());
+            String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
+            redirectAttributes.addAttribute("ru", ru);
+            redirectAttributes.addAttribute("client_id", client_id);
+            redirectAttributes.addAttribute("message", result.getMessage());
+            redirectAttributes.addAttribute("username", params.getUsername());
+            redirectAttributes.addAttribute("skin", params.getSkin());
+            if (result.isSuccess()) {
+                String scode = (String) result.getModels().get("scode");
+                redirectAttributes.addAttribute("scode", scode);
+                redirectAttributes.addAttribute("code", "0");
+                return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&scode={scode}&client_id={client_id}&ru={ru}&code={code}&message={message}&skin={skin}";
+            }
         } catch (Exception e) {
             logger.error("checkEmailResetPwd Is Failed,Username is " + params.getUsername(), e);
         } finally {
             log(request, params.getUsername(), result.getCode());
         }
-        String ru = Strings.isNullOrEmpty(params.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(params.getRu());
-        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
-        redirectAttributes.addAttribute("ru", ru);
-        redirectAttributes.addAttribute("client_id", client_id);
-        redirectAttributes.addAttribute("message", result.getMessage());
-        redirectAttributes.addAttribute("username", params.getUsername());
-        redirectAttributes.addAttribute("skin", params.getSkin());
-        if (result.isSuccess()) {
-            String scode = (String) result.getModels().get("scode");
-            redirectAttributes.addAttribute("scode", scode);
-            redirectAttributes.addAttribute("code", "0");
-            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&scode={scode}&client_id={client_id}&ru={ru}&code={code}&message={message}&skin={skin}";
-        }
         redirectAttributes.addAttribute("code", result.getCode());
         return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?username={username}&client_id={client_id}&ru={ru}&code={code}&message={message}&skin={skin}";
-
     }
 
     /**
