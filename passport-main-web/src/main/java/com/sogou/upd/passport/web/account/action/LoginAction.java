@@ -55,7 +55,6 @@ public class LoginAction extends BaseController {
     @Autowired
     private HostHolder hostHolder;
 
-
     /**
      * 用户登录检查是否显示验证码
      *

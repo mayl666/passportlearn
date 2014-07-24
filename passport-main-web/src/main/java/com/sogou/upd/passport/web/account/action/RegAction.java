@@ -346,7 +346,6 @@ public class RegAction extends BaseController {
     protected Result checkAccountNotExists(String username, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         //校验是否是搜狐域内用户
-
         if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
             result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
             return result;
