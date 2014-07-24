@@ -204,7 +204,8 @@ public class WapResetPwdAction extends BaseController {
         urlStr.append("&code=" + result.getCode());
         urlStr.append("&message=" + result.getMessage());
         urlStr.append("&v=" + WapConstant.WAP_TOUCH);
-        urlStr.append("&skin=" + result.getModels().get("skin"));
+        String skin = (String) result.getModels().get("skin");
+        urlStr.append("&skin=" + skin);
         return urlStr.toString();
     }
 
@@ -368,6 +369,7 @@ public class WapResetPwdAction extends BaseController {
             int clientId = Integer.parseInt(params.getClient_id());
             result = resetPwdManager.checkEmailResetPwd(passportId, clientId, params.getScode());
             //邮箱连接校验成功跳转到修改密码页面
+            return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code=0&message=this is a testing";
         } catch (Exception e) {
             logger.error("checkEmailResetPwd Is Failed,Username is " + params.getUsername(), e);
         } finally {
