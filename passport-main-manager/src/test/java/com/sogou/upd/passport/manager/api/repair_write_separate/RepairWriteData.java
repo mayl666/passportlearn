@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.FileIOUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.FileUtil;
 import com.sogou.upd.passport.dao.account.AccountDAO;
@@ -57,7 +56,7 @@ public class RepairWriteData extends BaseTest {
             if (Strings.isNullOrEmpty(passportId)) {
                 continue;
             }
-            if (AccountTypeEnum.PHONE == AccountTypeEnum.getAccountType(passportId)) {
+            if (AccountDomainEnum.PHONE == AccountDomainEnum.getAccountDomain(passportId)) {
                 sgPassportId = mobilePassportMappingDAO.getPassportIdByMobile(passportId);
             } else {
                 Account account = accounDao.getAccountByPassportId(passportId);
@@ -88,7 +87,7 @@ public class RepairWriteData extends BaseTest {
     @Test
     public void getPassportIdByUsername() {
         List<String> contentList = Lists.newArrayList();
-        List<String> dataList = FileIOUtil.readFileByLines("D:\\phoneuids.txt");
+        List<String> dataList = FileIOUtil.readFileByLines("D:\\数据迁移\\用搜狐域绑定的手机号登录\\sglog_all_phoneuserid_0628");
         String content = null;
         int count = 0;
         for (String data : dataList) {
@@ -104,19 +103,20 @@ public class RepairWriteData extends BaseTest {
                 if (shResult.isSuccess()) {
                     String shPassportId = (String) shResult.getModels().get("userid");
                     if (!Strings.isNullOrEmpty(shPassportId) && AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(shPassportId))) {
-                        content = mobile + " " + shPassportId;
+                        content = mobile + "," + shPassportId;
+                        count++;
+                        contentList.add(content);
                     }
                 }
             } else {
                 continue;
             }
-            count++;
-            contentList.add(content);
+
         }
         content = "total:" + dataList.size() + ", sogouNoExist:" + count;
         contentList.add(content);
         try {
-            com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\passportidlist.txt", contentList);
+            com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\sglog_all_phoneuserid_0628_result", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -158,7 +158,6 @@ public class RepairWriteData extends BaseTest {
             e.printStackTrace();
         }
     }
-
 
     @Test
     public void checkRegFailDate() {
