@@ -20,7 +20,8 @@ public enum ConnectDomainEnum {
     PINYIN("pinyin.qq.com"), //pinyin.qq.com
     WUBI(" wubi.qq.com"), // wubi.qq.com
     SHURU("shuru.qq.com"), //shuru.qq.com
-    PINYIN_CN("qq.pinyin.cn"); //qq.pinyin.cn
+    PINYIN_CN("qq.pinyin.cn"), //qq.pinyin.cn
+    TEEMO("teemo.cn"); // www.teemo.cn
 
 
     private String connectType;
@@ -35,6 +36,7 @@ public enum ConnectDomainEnum {
         DOMAIN_LIST.add(WUBI.toString());
         DOMAIN_LIST.add(SHURU.toString());
         DOMAIN_LIST.add(PINYIN_CN.toString());
+        DOMAIN_LIST.add(TEEMO.toString());
     }
 
     ConnectDomainEnum(String connectType) {

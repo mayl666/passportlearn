@@ -95,6 +95,7 @@ public class CommonConstant {
 
     public static final String SHURUFA_CREATE_COOKIE_URL = "http://account.shurufa.qq.com/sso/setcookie";   //TODO 这个以后改成统一的！！！！！ denghua
     public static final String PINYIN_CN_CREATE_COOKIE_URL = "http://account.qq.pinyin.cn/sso/setcookie";
+    public static final String TEEMO_CN_CREATE_COOKIE_URL = "http://account.teemo.cn/sso/setcookie";
 
 
     public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 1; // 默认种cookie的有效期，1小时

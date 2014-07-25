@@ -470,13 +470,13 @@ public class SecureManagerImpl implements SecureManager {
                                         //校验account是否存在
                                         Account account = accountService.queryNormalAccount(passportId);
                                         if (account != null) {
-                                            if (accountService.resetPassword(account, newPwd, true)) {
-                                                operateTimesService.incLimitResetPwd(passportId, clientId);
-                                                smsText = smsText + "重置密码成功，请使用新密码登录。";
-                                                result.setSuccess(true);
-                                            } else {
-                                                smsText = smsText + "重置密码失败，请再次尝试。";
-                                            }
+//                                            if (accountService.resetPassword(account, newPwd, true)) {
+//                                                operateTimesService.incLimitResetPwd(passportId, clientId);
+//                                                smsText = smsText + "重置密码成功，请使用新密码登录。";
+//                                                result.setSuccess(true);
+//                                            } else {
+//                                                smsText = smsText + "重置密码失败，请再次尝试。";
+//                                            }
                                         } else {
                                             smsText = smsText + "账号不存在，重置密码失败。";
                                         }
@@ -490,11 +490,11 @@ public class SecureManagerImpl implements SecureManager {
                                 smsText = smsText + "重置密码格式不正确，必须为字母、数字、字符且长度为6~16位!";
                             }
                             //短信通知结果
-                            boolean isSendSms = false;
-                            if (SMSUtil.sendSMS(mobile, smsText)) {
-                                isSendSms = true;
-                            }
-                            result.setDefaultModel("sendSms", isSendSms);
+//                            boolean isSendSms = false;
+//                            if (SMSUtil.sendSMS(mobile, smsText)) {
+//                                isSendSms = true;
+//                            }
+//                            result.setDefaultModel("sendSms", isSendSms);
                         }
                         result.setDefaultModel("mobile", mobile);
                         result.setDefaultModel("smsText", smsText);

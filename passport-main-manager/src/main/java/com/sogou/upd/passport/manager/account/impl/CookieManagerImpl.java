@@ -129,9 +129,9 @@ public class CookieManagerImpl implements CookieManager {
         StringBuilder urlBuilder = new StringBuilder();
         String daohangDomain = ConnectDomainEnum.DAOHANG.toString();
         String haoDomain = ConnectDomainEnum.HAO.toString();
-
         String shurufaDomain = ConnectDomainEnum.SHURUFA.toString();
-        String pinyin_QQ_domain=ConnectDomainEnum.PINYIN_CN.toString();
+        String pinyinQQDomain = ConnectDomainEnum.PINYIN_CN.toString();
+        String teemoDomain = ConnectDomainEnum.TEEMO.toString();
 
         if (domain.equals(daohangDomain)) {
             urlBuilder.append(CommonConstant.DAOHANG_CREATE_COOKIE_URL).append("?domain=").append(daohangDomain);
@@ -143,10 +143,11 @@ public class CookieManagerImpl implements CookieManager {
             urlBuilder.append(CommonConstant.SHURUFA_CREATE_COOKIE_URL).append("?domain=").append(shurufaDomain);
         }
         ////////////////////// add by denghua end///////////////
-        else if(domain.equals(pinyin_QQ_domain)){
-            urlBuilder.append(CommonConstant.PINYIN_CN_CREATE_COOKIE_URL).append("?domain=").append(pinyin_QQ_domain);
-        }
-        else {
+        else if (domain.equals(pinyinQQDomain)) {
+            urlBuilder.append(CommonConstant.PINYIN_CN_CREATE_COOKIE_URL).append("?domain=").append(pinyinQQDomain);
+        } else if (domain.equals(teemoDomain)) {
+            urlBuilder.append(CommonConstant.TEEMO_CN_CREATE_COOKIE_URL).append("?domain=").append(teemoDomain);
+        } else {
             return null;
         }
 
