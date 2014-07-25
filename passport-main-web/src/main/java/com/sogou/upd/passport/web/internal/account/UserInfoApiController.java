@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
@@ -53,6 +54,9 @@ public class UserInfoApiController extends BaseController {
     private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
+
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
     /**
      * 获取用户基本信息
@@ -141,7 +145,7 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        //调用搜狗接口check用户昵称
+
         result = sgUserInfoApiManager.checkUniqName(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUniqname(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);

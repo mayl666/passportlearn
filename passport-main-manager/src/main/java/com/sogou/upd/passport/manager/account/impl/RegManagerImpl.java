@@ -448,7 +448,7 @@ public class RegManagerImpl implements RegManager {
             }
         }
         result.setSuccess(true);
-        return result;  //To change body of implemented methods use File | Settings | File Templates.
+        return result;
     }
 
     @Override
@@ -552,6 +552,18 @@ public class RegManagerImpl implements RegManager {
         }
         //次数累加
         operateTimesService.incExistTimes(username, ip);
+        return false;
+    }
+
+    @Override
+    public boolean checkUserExistInBlack(String username, String ip) {
+        if (operateTimesService.checkUserInBlackListForInternal(ip, username)) {
+            //检查账号是否在白名单中
+            if (!operateTimesService.checkRegInWhiteList(ip)) {
+                return true;
+            }
+        }
+        operateTimesService.incInterCheckUserTimes(username, ip);
         return false;
     }
 }
