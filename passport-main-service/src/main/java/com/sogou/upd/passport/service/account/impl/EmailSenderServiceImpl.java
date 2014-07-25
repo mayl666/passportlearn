@@ -68,7 +68,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             }
             int clientId = Strings.isNullOrEmpty((String) urlParamMap.get("clientId")) ? CommonConstant.SGPP_DEFAULT_CLIENTID : Integer.parseInt((String) urlParamMap.get("clientId"));
             String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
-            String activeUrl = buildActiveUrl(clientEnum, module, urlParamMap);
+            String activeUrl = buildActiveUrl(clientEnum, module, urlParamMap, scode, clientId);
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();
             activeEmail.setActiveUrl(activeUrl);
@@ -101,12 +101,10 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     }
 
     //构建激活邮件中的链接
-    private String buildActiveUrl(AccountClientEnum clientEnum, AccountModuleEnum module, HashMap<String, Object> urlParamMap) throws Exception {
+    private String buildActiveUrl(AccountClientEnum clientEnum, AccountModuleEnum module, HashMap<String, Object> urlParamMap, String scode, int clientId) throws Exception {
         String prefix = PASSPORT_HOST;
         String passportId = (String) urlParamMap.get("passportId");
         String ru = (String) urlParamMap.get("ru");
-        int clientId = Strings.isNullOrEmpty((String) urlParamMap.get("clientId")) ? CommonConstant.SGPP_DEFAULT_CLIENTID : Integer.parseInt((String) urlParamMap.get("clientId"));
-        String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
         switch (clientEnum) {
             case web:
                 prefix = PASSPORT_HOST;

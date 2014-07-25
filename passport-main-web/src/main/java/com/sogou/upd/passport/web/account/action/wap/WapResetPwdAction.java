@@ -395,8 +395,7 @@ public class WapResetPwdAction extends BaseController {
         urlStr.append("&client_id=" + client_id);
         urlStr.append("&ru=" + ru);
         urlStr.append("&message=" + result.getMessage());
-        String skin = (String) result.getModels().get("skin");
-        urlStr.append("&skin=" + skin);
+        urlStr.append("&skin=" + params.getSkin());
         urlStr.append("&v=" + params.getV());
         return urlStr.toString();
     }
