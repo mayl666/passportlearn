@@ -476,6 +476,7 @@ public class WapResetPwdAction extends BaseController {
             if (accountSecureInfoVO != null) {
                 String sec_mobile = (String) queryResult.getModels().get("sec_mobile");
                 String sec_email = (String) queryResult.getModels().get("sec_email");
+                String reg_email = accountSecureInfoVO.getReg_email();
                 if (!Strings.isNullOrEmpty(sec_mobile)) {
                     result = new APIResultSupport(true);
                     result.setDefaultModel("sec_mobile", sec_mobile);
@@ -485,6 +486,11 @@ public class WapResetPwdAction extends BaseController {
                     result = new APIResultSupport(true);
                     result.setDefaultModel("sec_email", sec_email);
                     result.setDefaultModel("sec_process_email", accountSecureInfoVO.getSec_email());
+                }
+                if (!Strings.isNullOrEmpty(reg_email)) {
+                    result = new APIResultSupport(true);
+                    result.setDefaultModel("reg_email", passportId);
+                    result.setDefaultModel("reg_process_email", reg_email);
                 }
             }
         } else {
