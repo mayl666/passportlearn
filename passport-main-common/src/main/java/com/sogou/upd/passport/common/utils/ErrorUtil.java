@@ -126,7 +126,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED = "20231";
     // 账号已封杀
     public static final String ERR_CODE_ACCOUNT_KILLED = "20232";
-    //TODO 手机号未被绑定
+    //手机号未被绑定
     public static final String ERR_CODE_ACCOUNT_PHONE_NOBIND = "20233";
     //TODO 手机绑定次数超限
     public static final String ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT = "20236";

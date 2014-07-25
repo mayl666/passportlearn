@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -76,18 +77,20 @@ public class LoginAction extends BaseController {
             String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
             int clientId = Integer.valueOf(checkParam.getClient_id());
             //判断账号是否存在
-            result = regManager.isAccountNotExists(username, clientId);
+            result = loginManager.checkUser(username, clientId);
             if (!result.isSuccess()) {
                 //校验是否需要验证码
                 boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
                 result.setSuccess(true);
                 result.setDefaultModel("needCaptcha", needCaptcha);
             } else {
-                //登录时校验用户名是否存在，因为要考虑数据可能不完整，登录时不存在的会去sohu校验密码，所以检查用户名时也需要兼容不存在的情况，sogou不存在，去校验sohu
+                //非sohu域账号登录时校验用户名是否存在，因为要考虑数据可能不完整，登录时不存在的会去sohu校验密码，所以检查用户名时也需要兼容不存在的情况，sogou不存在，去校验sohu
                 //todo 上线观察几天后，此兼容逻辑可删除
-                result = regManager.checkUserFromSohu(username, clientId);
-                if (!result.isSuccess()) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                if (!AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
+                    result = regManager.checkUserFromSohu(username, clientId);
+                    if (!result.isSuccess()) {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                    }
                 }
             }
         } catch (Exception e) {

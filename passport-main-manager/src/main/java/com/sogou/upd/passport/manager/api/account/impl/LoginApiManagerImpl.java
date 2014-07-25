@@ -1,11 +1,13 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LogUtil;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
@@ -35,6 +37,8 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
     private LoginApiManager sgLoginApiManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private CommonManager commonManager;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
@@ -46,11 +50,24 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result;
             }
-            result = sgLoginApiManager.webAuthUser(authUserApiParams);
-            if (ErrorUtil.INVALID_ACCOUNT.equals(result.getCode())) { //如果账号不存在，去sohu校验用户名和密码
-                result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.LOGIN, "webAuthUser", "check_sh", userId, result.getCode(), result.toString());
+            //todo 查询手机号绑定的主账号目前只单查了sogou侧，待绑定关系确定是否迁移后，再确定是否双查绑定关系
+            String passportId = commonManager.getPassportIdByUsername(userId);
+            if (Strings.isNullOrEmpty(passportId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND);
+                return result;
             }
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+            if (AccountDomainEnum.SOHU.equals(domain)) {
+                //主账号是sohu域账号调用sohu api校验用户名和密码
+                result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+            } else{
+                result = sgLoginApiManager.webAuthUser(authUserApiParams);
+                if (ErrorUtil.INVALID_ACCOUNT.equals(result.getCode())) { //如果账号不存在，去sohu校验用户名和密码
+                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.LOGIN, "webAuthUser", "check_sh", userId, result.getCode(), result.toString());
+                }
+            }
+
         } catch (Exception e) {
             logger.error("bothAuthUser Exception", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
