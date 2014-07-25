@@ -1,8 +1,9 @@
 .two-col-r .col-r .reg-email{padding:14px 12px 20px;}
 .reg-email .step{ border-bottom:1px #f3f3f3 solid;padding-bottom:20px;}
-.reg-email .step span{display:block;width:686px;height:102px;background:url(/./static/img/email-step.jpg?t=151497) no-repeat 0 0; }
+.reg-email .step span{display:block;width:686px;height:102px;background:url(/./static/img/email-step.jpg?t=325767) no-repeat 0 0; }
 .reg-email .step2 span{background-position: 0 -102px; }
 .reg-email .step3 span{background-position: 0 -204px; }
+.reg-email .step4 span{background-position: 0 -306px; }
 .reg-email .binding,
 .reg-email .binded{padding:20px 0 0 20px;font-size:16px;}
 .reg-email .binding p,

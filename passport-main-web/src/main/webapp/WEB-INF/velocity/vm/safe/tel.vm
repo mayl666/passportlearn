@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=237098" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=179489" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -188,7 +188,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/safe.js?t=2014072303"></script>
+    <script type="text/javascript" src="/./static/js/safe.js?t=2014072517"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

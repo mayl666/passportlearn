@@ -804,7 +804,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                 $("#s-province").val(data.province || "");
                 $("#s-province").change(changeCities).trigger('change'); //show the list before set city value.
                 $("#s-city").val(data.city || "");
-                $("#FullnameIpt").val(data.fullname || "");
+                $("#UsernameIpt").val(data.username || "");
                 $("#UniqnameIpt").val(decodeURIComponent(data.uniqname) || ""); //Uniqname or nickname?I cannot tell.
                 $("#PersonalidIpt").val(data.personalid || ""); //Note:if the personalid is not empty,we think it not editable!
                 if(data.personalid){
