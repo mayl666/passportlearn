@@ -364,7 +364,11 @@ public class RegAction extends BaseController {
      外域邮箱用户激活成功的页面
    */
     @RequestMapping(value = "/reg/emailverify", method = RequestMethod.GET)
-    public String emailVerifySuccess(HttpServletRequest request) throws Exception {
+    public String emailVerifySuccess(String code, String message, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        result.setDefaultModel("code", code);
+        result.setDefaultModel("message", message);
+        model.addAttribute("data", result.toString());
         //状态码参数
         return "reg/emailsuccess";
     }
