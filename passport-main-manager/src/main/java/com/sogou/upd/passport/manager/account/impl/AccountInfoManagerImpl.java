@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
@@ -16,12 +17,9 @@ import com.sogou.upd.passport.manager.account.vo.NickNameAndAvatarVO;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
-import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.manager.form.AccountInfoParams;
-import com.sogou.upd.passport.manager.form.CheckNickNameParams;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -180,6 +178,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         try {
             //获取账号类型
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+            if (AccountDomainEnum.isIndivid(passportId)) {
+                passportId = passportId + CommonConstant.SOGOU_SUFFIX;
+            }
             Account account = accountService.queryAccountByPassportId(passportId);
             if (account != null && !Strings.isNullOrEmpty(account.getUniqname())) {
                 uniqname = account.getUniqname();
@@ -370,7 +371,11 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(passportId)) {
             return "搜狗用户";
         }
-        return passportId.substring(0, passportId.indexOf("@"));
+        if (passportId.contains("@")) {
+            return passportId.substring(0, passportId.indexOf("@"));
+        } else {
+            return passportId;
+        }
     }
 
 

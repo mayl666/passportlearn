@@ -1,13 +1,11 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
@@ -46,8 +44,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
 
     @Override
     public Result updatePwd(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
-        Result result;
-        result = accountService.verifyUserPwdVaild(passportId, oldPwd, true);
+        Result result = accountService.verifyUserPwdVaild(passportId, oldPwd, true);
         if (!result.isSuccess()) {
             operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.RESETPWD);
             return result;
@@ -56,8 +53,8 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         result.setModels(Maps.newHashMap());
         if (!accountService.resetPassword(account, newPwd, true)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
+            result.setSuccess(false);
         }
-        result.setSuccess(true);
         return result;
     }
 

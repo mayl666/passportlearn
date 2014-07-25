@@ -3,8 +3,6 @@ package com.sogou.upd.passport.manager.api.account;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
-import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
-import com.sogou.upd.passport.manager.api.account.form.SendCaptchaApiParams;
 import com.sogou.upd.passport.model.account.Account;
 
 /**
@@ -34,7 +32,7 @@ public interface BindApiManager {
      * @param newMobile
      * @return
      */
-    public Result bindMobile(String passportId,String newMobile);
+    public Result bindMobile(String passportId,String newMobile, Account account);
 
     /**
      * 修改绑定密保手机

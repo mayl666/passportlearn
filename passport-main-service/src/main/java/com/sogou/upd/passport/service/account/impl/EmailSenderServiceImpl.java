@@ -66,7 +66,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             if (Strings.isNullOrEmpty(passportId)) {
                 return false;
             }
-            int clientId = Strings.isNullOrEmpty((String) urlParamMap.get("clientId")) ? CommonConstant.SGPP_DEFAULT_CLIENTID : Integer.parseInt((String) urlParamMap.get("clientId"));
+            int clientId = (int) urlParamMap.get("clientId");
             String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
             String activeUrl = buildActiveUrl(clientEnum, module, urlParamMap, scode, clientId);
             //发送邮件

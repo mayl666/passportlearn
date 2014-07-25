@@ -49,15 +49,15 @@ public class RepairWriteData extends BaseTest {
     */
     @Test
     public void checkIsSogouExistDate() {
-        List<String> passportList = FileIOUtil.readFileByLines("D:\\userlog_other_userid_0526_0722_1");
+        List<String> passportList = FileIOUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_other_userid_0526_0722_2");
         String content;
         int count = 0;
         String sgPassportId = null;
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
         for (String passportId : passportList) {
+            try{
             if (Strings.isNullOrEmpty(passportId)) {
                 continue;
-
             }
             if (PhoneUtil.verifyPhoneNumberFormat(passportId)) {
                 sgPassportId = mobilePassportMappingDAO.getPassportIdByMobile(passportId);
@@ -82,11 +82,14 @@ public class RepairWriteData extends BaseTest {
                     }
                 }
             }
+            }catch(Exception e){
+                continue;
+            }
         }
         content = "total:" + passportList.size() + ",count:" + count;
         contentList.add(content);
         try {
-            FileUtil.storeFile("D:\\userlog_other_userid_0526_0722_1_result", contentList);
+            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_other_userid_0526_0722_2_result", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }

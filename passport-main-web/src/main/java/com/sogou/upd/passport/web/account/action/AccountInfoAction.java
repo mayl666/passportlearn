@@ -254,7 +254,7 @@ public class AccountInfoAction extends BaseController {
 
         if (hostHolder.isLogin()) {
             String userId = hostHolder.getPassportId();
-            result = secureManager.queryAccountSecureInfo(userId, SHPPUrlConstant.APP_ID, false);
+            result = secureManager.queryAccountSecureInfo(userId, CommonConstant.SGPP_DEFAULT_CLIENTID, false);
 
             //用于记录log
             UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(SHPPUrlConstant.APP_ID), result.getCode(), getIp(request));
@@ -262,10 +262,7 @@ public class AccountInfoAction extends BaseController {
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
-                //非第三方账号迁移，获取用户昵称信息，统一调用 accountInfoManager 的 getUserUniqName方法
-//                result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(userId, 1120));
-
-                result.getModels().put("uniqname", accountInfoManager.getUserUniqName(userId, CommonConstant.SGPP_DEFAULT_CLIENTID));
+//                result.getModels().put("uniqname", accountInfoManager.getUserUniqName(userId, CommonConstant.SGPP_DEFAULT_CLIENTID));
                 //TODO disable 作用是对于第三方账号，不显示安全信息tab
                 result.setDefaultModel("disable", true);
             }

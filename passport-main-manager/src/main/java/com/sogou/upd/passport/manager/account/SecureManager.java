@@ -62,7 +62,7 @@ public interface SecureManager {
      * @return result.getData().get("data") // 账户安全信息
      * @throws Exception
      */
-    public Result queryAccountSecureInfo(String passportId, int clientId, boolean doProcess) throws Exception;
+    public Result queryAccountSecureInfo(String passportId, int clientId, boolean doProcess);
 
     /**
      * 修改用户密码（web验证码方式）
