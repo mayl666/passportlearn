@@ -15,6 +15,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.EmailSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,8 @@ public class SGBindApiManagerImpl implements BindApiManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
             return result;
         }
-        if (!emailSenderService.sendEmail(passportId, clientId, AccountClientEnum.web, AccountModuleEnum.SECURE, newEmail, true, bindEmailApiParams.getRu())) {
+        ActiveEmailDO activeEmailDO = new ActiveEmailDO(passportId, clientId, bindEmailApiParams.getRu(), AccountClientEnum.web, AccountModuleEnum.SECURE, newEmail, true, null, null);
+        if (!emailSenderService.sendEmail(activeEmailDO)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
             return result;
         }

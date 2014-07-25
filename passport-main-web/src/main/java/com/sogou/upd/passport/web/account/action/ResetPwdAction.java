@@ -13,6 +13,7 @@ import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -282,7 +283,8 @@ public class ResetPwdAction extends BaseController {
                 account = (Account) map.get("account");
             }
             if (account != null) {
-                result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountClientEnum.web, AccountModuleEnum.RESETPWD, email, params.getRu(), params.getScode(), null, null);
+                ActiveEmailDO activeEmailDO = new ActiveEmailDO(params.getUsername(), Integer.parseInt(params.getClient_id()), params.getRu(), AccountClientEnum.web, AccountModuleEnum.RESETPWD, email, false, null, null);
+                result = resetPwdManager.sendEmailResetPwd(activeEmailDO, params.getScode());
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }

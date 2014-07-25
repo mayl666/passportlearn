@@ -1,8 +1,8 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.parameter.AccountClientEnum;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 
 import java.util.Map;
 
@@ -50,17 +50,12 @@ public interface ResetPwdManager {
     /**
      * 重置密码时发送验证邮件
      *
-     * @param passportId
-     * @param clientId
-     * @param module
-     * @param email
-     * @param ru
+     * @param activeEmailDO
      * @param scode
      * @return
      * @throws Exception
      */
-    public Result sendEmailResetPwd(String passportId, int clientId, AccountClientEnum clientEnum, AccountModuleEnum module,
-                                    String email, String ru, String scode, String skin, String v) throws Exception;
+    public Result sendEmailResetPwd(ActiveEmailDO activeEmailDO, String scode) throws Exception;
 
 
     /**

@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -15,6 +16,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,10 +75,13 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     }
 
     @Override
-    public Result sendEmailResetPwd(String passportId, int clientId, AccountClientEnum clientModule, AccountModuleEnum module,
-                                    String email, String ru, String scode, String skin, String v) throws Exception {
+    public Result sendEmailResetPwd(ActiveEmailDO activeEmailDO, String scode) throws Exception {
         Result result = new APIResultSupport(false);
         try {
+            String passportId = activeEmailDO.getPassportId();
+            int clientId = activeEmailDO.getClientId() == 0 ? CommonConstant.SGPP_DEFAULT_CLIENTID : activeEmailDO.getClientId();
+            AccountModuleEnum module = activeEmailDO.getModule();
+            String email = activeEmailDO.getToEmail();
             if (!emailSenderService.checkLimitForSendEmail(passportId, clientId, module, email)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
                 return result;
@@ -86,13 +91,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
                 return result;
             }
-            boolean sendEmailFlag;
-            if (AccountClientEnum.wap.equals(clientModule)) {
-                sendEmailFlag = emailSenderService.sendWapEmail(passportId, clientId, clientModule, module, email, false, ru, skin, v);
-            } else {
-                sendEmailFlag = emailSenderService.sendEmail(passportId, clientId, clientModule, module, email, false, ru);
-            }
-            if (!sendEmailFlag) {
+            if (!emailSenderService.sendEmail(activeEmailDO)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
                 return result;
             }
@@ -178,13 +177,15 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
                 return result;
             }
+            ActiveEmailDO activeEmailDO = new ActiveEmailDO(passportId, clientId, ru, clientEnum, module, null, false, null, null);
             if (useRegEmail) {
                 // 使用注册邮箱
                 boolean isOtherDomain = (AccountDomainEnum.getAccountDomain(passportId) ==
                         AccountDomainEnum.OTHER);
                 if (isOtherDomain) {
                     // 外域用户无绑定邮箱
-                    return sendEmailResetPwd(passportId, clientId, clientEnum, module, passportId, ru, scode, null, null);
+                    activeEmailDO.setToEmail(passportId);
+                    return sendEmailResetPwd(activeEmailDO, scode);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_EMAIL_FAILED);
                     return result;
@@ -197,7 +198,8 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                     return result;
                 } else {
                     String emailBind = accountInfo.getEmail();
-                    return sendEmailResetPwd(passportId, clientId, clientEnum, module, emailBind, ru, scode, null, null);
+                    activeEmailDO.setToEmail(emailBind);
+                    return sendEmailResetPwd(activeEmailDO, scode);
                 }
             }
         } catch (ServiceException e) {

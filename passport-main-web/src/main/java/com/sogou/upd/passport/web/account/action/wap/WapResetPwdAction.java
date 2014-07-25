@@ -15,6 +15,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -336,7 +337,8 @@ public class WapResetPwdAction extends BaseController {
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
             String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
-            result = resetPwdManager.sendEmailResetPwd(passportId, clientId, AccountClientEnum.wap, AccountModuleEnum.RESETPWD, params.getEmail(), ru, params.getScode(), params.getSkin(), params.getV());
+            ActiveEmailDO activeEmailDO = new ActiveEmailDO(passportId, clientId, ru, AccountClientEnum.wap, AccountModuleEnum.RESETPWD, params.getEmail(), false, params.getSkin(), params.getV());
+            result = resetPwdManager.sendEmailResetPwd(activeEmailDO, params.getScode());
             result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
             result.setDefaultModel("userid", passportId);
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());

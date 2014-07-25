@@ -15,6 +15,7 @@ import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.EmailSenderService;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,24 +56,15 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
 
     @Override
-    public boolean sendEmail(String passportId, int clientId, AccountClientEnum clientEnum, AccountModuleEnum module, String address, boolean saveEmail, String ru)
+    public boolean sendEmail(ActiveEmailDO activeEmailDO)
             throws ServiceException {
         try {
-            String prefix = PASSPORT_HOST;
+            String passportId = activeEmailDO.getPassportId();
+            int clientId = activeEmailDO.getClientId() == 0 ? CommonConstant.SGPP_DEFAULT_CLIENTID : activeEmailDO.getClientId();
             String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
-            switch (clientEnum) {
-                case web:
-                    prefix = PASSPORT_HOST;
-                    ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
-                    break;
-                case wap:
-                    prefix = PASSPORT_WAP_HOST;
-                    ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
-                    break;
-            }
-            String activeUrl = prefix + "/" + clientEnum.toString() + "/" + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
-            activeUrl += "username=" + passportId + "&client_id=" + clientId + "&scode=" + scode + "&ru=";
-            activeUrl += Coder.encodeUTF8(ru);
+            String activeUrl = buildActiveUrl(activeEmailDO, scode);
+            AccountModuleEnum module = activeEmailDO.getModule();
+            String address = activeEmailDO.getToEmail();
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();
             activeEmail.setActiveUrl(activeUrl);
@@ -88,7 +80,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             mailUtils.sendEmail(activeEmail);
             //连接失效时间
             String cacheKey = buildCacheKeyForScode(passportId, clientId, module);
-            if (saveEmail) {
+            if (activeEmailDO.isSaveEmail()) {
                 Map<String, String> mapResult = new HashMap<>();
                 mapResult.put("email", address);
                 mapResult.put("scode", scode);
@@ -104,60 +96,12 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         }
     }
 
-    @Override
-    public boolean sendWapEmail(String passportId, int clientId, AccountClientEnum clientEnum, AccountModuleEnum module, String address, boolean saveEmail, String ru, String skin, String v) throws ServiceException {
-        try {
-            String prefix = PASSPORT_HOST;
-            String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
-            switch (clientEnum) {
-                case web:
-                    prefix = PASSPORT_HOST;
-                    ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
-                    break;
-                case wap:
-                    prefix = PASSPORT_WAP_HOST;
-                    ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
-                    break;
-            }
-            String activeUrl = prefix + "/" + clientEnum.toString() + "/" + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
-            activeUrl += "username=" + passportId + "&client_id=" + clientId + "&scode=" + scode + "&skin=" + skin + "&v=" + v + "&ru=";
-            activeUrl += Coder.encodeUTF8(ru);
-            //发送邮件
-            ActiveEmail activeEmail = new ActiveEmail();
-            activeEmail.setActiveUrl(activeUrl);
-            //模版中参数替换
-            Map<String, Object> map = Maps.newHashMap();
-            map.put("activeUrl", activeUrl);
-            map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-            activeEmail.setMap(map);
-            activeEmail.setTemplateFile(module.getDirect() + ".vm");
-            activeEmail.setSubject(subjects.get(module));
-            activeEmail.setCategory(module.getDirect());
-            activeEmail.setToEmail(address);
-            mailUtils.sendEmail(activeEmail);
-            //连接失效时间
-            String cacheKey = buildCacheKeyForScode(passportId, clientId, module);
-            if (saveEmail) {
-                Map<String, String> mapResult = new HashMap<>();
-                mapResult.put("email", address);
-                mapResult.put("scode", scode);
-                redisUtils.setWithinSeconds(cacheKey, mapResult, DateAndNumTimesConstant.TIME_TWODAY);
-            } else {
-                redisUtils.setWithinSeconds(cacheKey, scode, DateAndNumTimesConstant.TIME_TWODAY);
-            }
-            return true;
-        } catch (MailException me) {
-            return false;
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    //构建激活邮件中的链接
-    private String buildActiveUrl(AccountClientEnum clientEnum, AccountModuleEnum module, HashMap<String, Object> urlParamMap, String scode, int clientId) throws Exception {
+    //构建激活邮件中的激活链接
+    private String buildActiveUrl(ActiveEmailDO activeEmailDO, String scode) throws Exception {
         String prefix = PASSPORT_HOST;
-        String passportId = (String) urlParamMap.get("passportId");
-        String ru = (String) urlParamMap.get("ru");
+        String passportId = activeEmailDO.getPassportId();
+        String ru = activeEmailDO.getRu();
+        AccountClientEnum clientEnum = activeEmailDO.getClientEnum();
         switch (clientEnum) {
             case web:
                 prefix = PASSPORT_HOST;
@@ -173,15 +117,15 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         activeUrl.append("/");
         activeUrl.append(clientEnum.toString());
         activeUrl.append("/");
-        activeUrl.append(module.getDirect());
+        activeUrl.append(activeEmailDO.getModule().getDirect());
         activeUrl.append(PASSPORT_EMAIL_URL_SUFFIX);
         activeUrl.append("username=" + passportId);
-        activeUrl.append("&client_id=" + clientId);
+        activeUrl.append("&client_id=" + activeEmailDO.getClientId());
         activeUrl.append("&scode=" + scode);
-        if (urlParamMap.containsKey("v") && urlParamMap.get("v") != null)
-            activeUrl.append("&v=" + urlParamMap.get("v"));
-        if (urlParamMap.containsKey("skin") && urlParamMap.get("skin") != null)
-            activeUrl.append("&skin=" + urlParamMap.get("skin"));
+        if (AccountClientEnum.wap.equals(clientEnum) && !Strings.isNullOrEmpty(activeEmailDO.getV()))
+            activeUrl.append("&v=" + activeEmailDO.getV());
+        if (AccountClientEnum.wap.equals(clientEnum) && !Strings.isNullOrEmpty(activeEmailDO.getSkin()))
+            activeUrl.append("&skin=" + activeEmailDO.getSkin());
         activeUrl.append("&ru=" + Coder.encodeUTF8(ru));
         return activeUrl.toString();
     }
