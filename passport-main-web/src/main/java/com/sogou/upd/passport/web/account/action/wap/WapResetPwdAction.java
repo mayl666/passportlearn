@@ -336,7 +336,7 @@ public class WapResetPwdAction extends BaseController {
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
             String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
-            result = resetPwdManager.sendEmailResetPwd(passportId, clientId, AccountClientEnum.wap, AccountModuleEnum.RESETPWD, params.getEmail(), ru, params.getScode());
+            result = resetPwdManager.sendEmailResetPwd(passportId, clientId, AccountClientEnum.wap, AccountModuleEnum.RESETPWD, params.getEmail(), ru, params.getScode(), params.getSkin(), params.getV());
             result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
             result.setDefaultModel("userid", passportId);
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());

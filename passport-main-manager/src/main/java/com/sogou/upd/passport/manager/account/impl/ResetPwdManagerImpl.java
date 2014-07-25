@@ -74,7 +74,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
 
     @Override
     public Result sendEmailResetPwd(String passportId, int clientId, AccountClientEnum clientModule, AccountModuleEnum module,
-                                    String email, String ru, String scode) throws Exception {
+                                    String email, String ru, String scode, String skin, String v) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             if (!emailSenderService.checkLimitForSendEmail(passportId, clientId, module, email)) {
@@ -86,11 +86,13 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
                 return result;
             }
-            HashMap<String, Object> urlMap = new HashMap<>();
-            urlMap.put("passportId", passportId);
-            urlMap.put("clientId", clientId);
-            urlMap.put("ru", ru);
-            if (!emailSenderService.sendEmail(urlMap, clientModule, module, email, false)) {
+            boolean sendEmailFlag;
+            if (AccountClientEnum.wap.equals(clientModule)) {
+                sendEmailFlag = emailSenderService.sendWapEmail(passportId, clientId, clientModule, module, email, false, ru, skin, v);
+            } else {
+                sendEmailFlag = emailSenderService.sendEmail(passportId, clientId, clientModule, module, email, false, ru);
+            }
+            if (!sendEmailFlag) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
                 return result;
             }
@@ -182,7 +184,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                         AccountDomainEnum.OTHER);
                 if (isOtherDomain) {
                     // 外域用户无绑定邮箱
-                    return sendEmailResetPwd(passportId, clientId, clientEnum, module, passportId, ru, scode);
+                    return sendEmailResetPwd(passportId, clientId, clientEnum, module, passportId, ru, scode, null, null);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_RESETPWD_EMAIL_FAILED);
                     return result;
@@ -195,7 +197,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                     return result;
                 } else {
                     String emailBind = accountInfo.getEmail();
-                    return sendEmailResetPwd(passportId, clientId, clientEnum, module, emailBind, ru, scode);
+                    return sendEmailResetPwd(passportId, clientId, clientEnum, module, emailBind, ru, scode, null, null);
                 }
             }
         } catch (ServiceException e) {

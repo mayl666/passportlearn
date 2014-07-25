@@ -60,7 +60,7 @@ public interface ResetPwdManager {
      * @throws Exception
      */
     public Result sendEmailResetPwd(String passportId, int clientId, AccountClientEnum clientEnum, AccountModuleEnum module,
-                                    String email, String ru, String scode) throws Exception;
+                                    String email, String ru, String scode, String skin, String v) throws Exception;
 
 
     /**

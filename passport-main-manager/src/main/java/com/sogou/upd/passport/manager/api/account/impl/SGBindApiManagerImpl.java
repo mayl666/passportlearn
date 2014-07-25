@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -20,8 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -62,12 +59,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
             return result;
         }
-        HashMap<String, Object> urlMap = Maps.newHashMap();
-        urlMap.put("passportId", passportId);
-        urlMap.put("clientId", clientId);
-        urlMap.put("ru", bindEmailApiParams.getRu());
-        if (!emailSenderService.sendEmail(urlMap, AccountClientEnum.web, AccountModuleEnum.SECURE, newEmail, true)) {
-            result.setSuccess(false);
+        if (!emailSenderService.sendEmail(passportId, clientId, AccountClientEnum.web, AccountModuleEnum.SECURE, newEmail, true, bindEmailApiParams.getRu())) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
             return result;
         }
