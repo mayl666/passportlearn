@@ -59,7 +59,8 @@ define(['./utils'],function(utils){
             var self=this;
             var count=60;
             var inter=null;
-            $('#ResendEmail').click(function(e){
+            var $ResendEmail = $('#ResendEmail');
+            $ResendEmail.click(function(e){
                 if(!inter){
                     var btn=this;
                     var time=count;
@@ -68,10 +69,15 @@ define(['./utils'],function(utils){
                         url:"/web/resendActiveMail",
                         data:{
                             client_id:1120,
-                            username:data.email
+                            username:data.email||$ResendEmail.attr('data-email')
                         },
                         type:"post",
+                        beforeSend:function(){
+                            $(btn).addClass('disabled');
+                        },
                         error:function(xhr,error){
+                            ResendEmail.removeClass('disabled');
+                            $(btn).text("重发验证邮件");
                             alert("通信错误");
                         },success:function(){
                             inter = setInterval(function() {
@@ -80,6 +86,7 @@ define(['./utils'],function(utils){
                                     clearInterval(inter);
                                     inter = null;
                                     $(btn).text("重发验证邮件");
+                                    $(btn).removeClass('disabled');
                                 }
                             }, 1000);
                         }

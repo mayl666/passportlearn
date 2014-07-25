@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=237098" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=179489" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -104,6 +104,7 @@
         <p>验证邮件已发送至您的邮箱：<span id="JumpTarget"><{sec_email}></span></p>
         <p class="warn">请您尽快登录邮箱，按邮件中指示完成验证</p>
         <a id="JumpToUrl" href="#" class="long-btn">去邮箱验证</a>
+        <a id="ResendEmail" data-email="<{sec_email}>" href="#" class="long-btn">重新发送</a>
     </div>
 
 </script>
@@ -119,7 +120,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2014072303"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2014072517"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
