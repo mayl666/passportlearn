@@ -282,7 +282,7 @@ public class ResetPwdAction extends BaseController {
                 account = (Account) map.get("account");
             }
             if (account != null) {
-                result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountClientEnum.web, AccountModuleEnum.RESETPWD, email, params.getRu(), params.getScode());
+                result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountClientEnum.web, AccountModuleEnum.RESETPWD, email, params.getRu(), params.getScode(), null, null);
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
