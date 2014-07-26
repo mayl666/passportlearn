@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.model.repairdata;
 
-import java.util.Date;
-
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -16,9 +14,7 @@ public class IncUserExtInfo {
     private String question;
     private String answer;
     private String username;
-    private Date birthday;
     private String gender;
-    private Date createtime;
     private String createip;
 
     public String getInc_type() {
@@ -61,28 +57,12 @@ public class IncUserExtInfo {
         this.username = username;
     }
 
-    public Date getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
-    }
-
     public String getGender() {
         return gender;
     }
 
     public void setGender(String gender) {
         this.gender = gender;
-    }
-
-    public Date getCreatetime() {
-        return createtime;
-    }
-
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
     }
 
     public String getCreateip() {
