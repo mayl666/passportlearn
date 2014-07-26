@@ -141,7 +141,7 @@ public class RegAction extends BaseController {
                 //设置来源
                 String ru = regParams.getRu();
                 if (Strings.isNullOrEmpty(ru)) {
-                    ru = CommonConstant.LOGIN_INDEX_URL;
+                    ru = CommonConstant.DEFAULT_INDEX_URL;
                 }
                 String passportId = (String) result.getModels().get("username");
                 Boolean isSetCookie = (Boolean) result.getModels().get("isSetCookie");

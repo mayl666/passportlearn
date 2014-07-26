@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.manager.account;
 
-import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 
@@ -39,13 +38,12 @@ public interface ResetPwdManager {
      *
      * @param passportId
      * @param clientId
-     * @param clientEnum  web端还是wap端
      * @param useRegEmail 邮件选择方式，true为注册邮箱，false为绑定邮箱
      * @param ru          用户传递的ru参数
      * @param scode       安全码
      * @throws Exception
      */
-    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, AccountClientEnum clientEnum, boolean useRegEmail, String ru, String scode) throws Exception;
+    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail, String ru, String scode) throws Exception;
 
     /**
      * 重置密码时发送验证邮件

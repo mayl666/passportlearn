@@ -8,7 +8,6 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
-import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountSecureService;
@@ -32,7 +31,6 @@ import org.springframework.stereotype.Component;
 @Component("commonManager")
 public class CommonManagerImpl implements CommonManager {
     private static final Logger logger = LoggerFactory.getLogger(CommonManagerImpl.class);
-    private static final Logger checkLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothCheckSyncErrorLogger");
 
     @Autowired
     private OperateTimesService operateTimesService;
@@ -40,8 +38,6 @@ public class CommonManagerImpl implements CommonManager {
     private AppConfigService appConfigService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
-    @Autowired
-    private BindApiManager proxyBindApiManager;
     @Autowired
     private AccountService accountService;
     @Autowired

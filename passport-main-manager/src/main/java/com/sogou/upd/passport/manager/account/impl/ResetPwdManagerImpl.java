@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -81,8 +80,8 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             String passportId = activeEmailDO.getPassportId();
             int clientId = activeEmailDO.getClientId() == 0 ? CommonConstant.SGPP_DEFAULT_CLIENTID : activeEmailDO.getClientId();
             AccountModuleEnum module = activeEmailDO.getModule();
-            String email = activeEmailDO.getToEmail();
-            if (!emailSenderService.checkLimitForSendEmail(passportId, clientId, module, email)) {
+            String toEmail = activeEmailDO.getToEmail();
+            if (!emailSenderService.checkLimitForSendEmail(passportId, clientId, module, toEmail)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
                 return result;
             }
@@ -98,7 +97,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             result.setSuccess(true);
             result.setMessage("重置密码申请邮件发送成功");
             //记录发送邮件次数
-            emailSenderService.incLimitForSendEmail(passportId, clientId, module, email);
+            emailSenderService.incLimitForSendEmail(passportId, clientId, module, toEmail);
             return result;
         } catch (ServiceException e) {
             logger.error("send email for reset pwd fail:", e);
@@ -162,7 +161,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
      * 重置密码（邮件方式）——1.发送重置密码申请验证邮件
      */
     @Override
-    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, AccountClientEnum clientEnum, boolean useRegEmail, String ru, String scode)
+    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail, String ru, String scode)
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
@@ -177,11 +176,10 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
                 return result;
             }
-            ActiveEmailDO activeEmailDO = new ActiveEmailDO(passportId, clientId, ru, clientEnum, module, null, false, null, null);
+            ActiveEmailDO activeEmailDO = new ActiveEmailDO(passportId, clientId, ru, module, null, false);
             if (useRegEmail) {
                 // 使用注册邮箱
-                boolean isOtherDomain = (AccountDomainEnum.getAccountDomain(passportId) ==
-                        AccountDomainEnum.OTHER);
+                boolean isOtherDomain = (AccountDomainEnum.getAccountDomain(passportId) == AccountDomainEnum.OTHER);
                 if (isOtherDomain) {
                     // 外域用户无绑定邮箱
                     activeEmailDO.setToEmail(passportId);

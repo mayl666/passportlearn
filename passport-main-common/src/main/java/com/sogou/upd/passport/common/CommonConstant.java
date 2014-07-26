@@ -79,23 +79,16 @@ public class CommonConstant {
 
     public static final String DEFAULT_CONNECT_REDIRECT_URL = "https://account.sogou.com";
     public static final String DEFAULT_INDEX_URL = "https://account.sogou.com";
-    public static final String DEFAULT_WAP_INDEX_URL = "https://m.account.sogou.com";
+    public static final String DEFAULT_WAP_INDEX_URL = "http://m.account.sogou.com";
     public static final String DEFAULT_WAP_URL = "http://wap.sogou.com";
     public static final String DEFAULT_WAP_CONNECT_REDIRECT_URL = "http://wap.sogou.com";
     public static final String SOGOU_ROOT_DOMAIN = ".sogou.com";
     public static final String SOGOU_SUFFIX = "@sogou.com";
     public static final String SOHU_SUFFIX = "@sohu.com";
-    public static final String SOHU_ROOT_DOMAIN = ".sohu.com";
-    public static final String PASSPORT_ACTIVE_EMAIL_URL = "https://account.sogou.com/web/activemail?";
     public static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
-    public static final String EMAIL_FAILED_VERIFY_URL = "https://account.sogou.com/web/reg/emailfail";
-    public static final String LOGIN_INDEX_URL = "https://account.sogou.com";
-
-    public static final String DEFAULT_AVATAR_URL = "http://s5.suc.itc.cn/ux_sogou_member/src/asset/sogou/img_sogouAvatar";
 
     public static final String HAO_CREATE_COOKIE_URL = "http://account.hao.qq.com/sso/setcookie";
     public static final String DAOHANG_CREATE_COOKIE_URL = "http://account.daohang.qq.com/sso/setcookie";
-
     public static final String SHURUFA_CREATE_COOKIE_URL = "http://account.shurufa.qq.com/sso/setcookie";   //TODO 这个以后改成统一的！！！！！ denghua
     public static final String PINYIN_CN_CREATE_COOKIE_URL = "http://account.qq.pinyin.cn/sso/setcookie";
 

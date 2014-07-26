@@ -3,7 +3,6 @@ package com.sogou.upd.passport.web.account.action;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountClientEnum;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -211,7 +210,7 @@ public class ResetPwdAction extends BaseController {
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, AccountClientEnum.web, false, params.getRu(), params.getScode());
+            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false, params.getRu(), params.getScode());
             result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
             result.setDefaultModel("userid", passportId);
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());
@@ -244,7 +243,7 @@ public class ResetPwdAction extends BaseController {
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, AccountClientEnum.web, true, params.getRu(), params.getScode());
+            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true, params.getRu(), params.getScode());
             result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
             result.setDefaultModel("userid", passportId);
         } catch (Exception e) {
@@ -283,7 +282,7 @@ public class ResetPwdAction extends BaseController {
                 account = (Account) map.get("account");
             }
             if (account != null) {
-                ActiveEmailDO activeEmailDO = new ActiveEmailDO(params.getUsername(), Integer.parseInt(params.getClient_id()), params.getRu(), AccountClientEnum.web, AccountModuleEnum.RESETPWD, email, false, null, null);
+                ActiveEmailDO activeEmailDO = new ActiveEmailDO(params.getUsername(), Integer.parseInt(params.getClient_id()), params.getRu(), AccountModuleEnum.RESETPWD, email, false);
                 result = resetPwdManager.sendEmailResetPwd(activeEmailDO, params.getScode());
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
