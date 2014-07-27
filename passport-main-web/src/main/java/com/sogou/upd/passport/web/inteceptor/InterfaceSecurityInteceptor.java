@@ -127,6 +127,7 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
         String mobile = request.getParameter("mobile");
         String token = request.getParameter("token");
         String uniqName = request.getParameter("uniqname");
+        String key = request.getParameter("key");
         StringBuffer firstStr = new StringBuffer();
         if (!Strings.isNullOrEmpty(userid)) {
             firstStr.append(userid);
@@ -136,6 +137,10 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
             firstStr.append(token);
         } else if (!Strings.isNullOrEmpty(uniqName)) {
             firstStr.append(uniqName);
+        }
+        //适配debug接口，只有一个key参数的签名校验
+        if (firstStr.length() == 0 && !Strings.isNullOrEmpty(key)) {
+            firstStr.append(key);
         }
         return firstStr.toString();
     }

@@ -1,9 +1,13 @@
 package com.sogou.upd.passport.web;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -16,6 +20,9 @@ public class BaseController {
             "api.id.sogou.com.z.sogou-op.org;dev01.id.sogou.com;test01.id.sogou.com";
 
     protected static Logger logger = LoggerFactory.getLogger(BaseController.class);
+
+    @Autowired
+    private AppConfigService appConfigService;
 
     /**
      * 判断是否是服务端签名
@@ -75,6 +82,32 @@ public class BaseController {
             return true;
         }
         return false;
+    }
+
+    public boolean isAccessAccept(int clientId, HttpServletRequest request) {
+        String apiName = request.getPathInfo();
+        apiName = request.getContextPath();
+        apiName = request.getRequestURI();
+        apiName = request.getServletPath();
+        String requestIp = getIp(request);
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                return false;
+            }
+            String scope = appConfig.getScope();
+            if (!Strings.isNullOrEmpty(apiName) && !StringUtil.splitStringContains(scope, ",", apiName)) {
+                return false;
+            }
+            String serverIp = appConfig.getServerIp();
+            if (!Strings.isNullOrEmpty(requestIp) && !StringUtil.splitStringContains(serverIp, ",", requestIp)) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error("isAccessAccept error, api:" + apiName, e);
+            return false;
+        }
     }
 
 }
