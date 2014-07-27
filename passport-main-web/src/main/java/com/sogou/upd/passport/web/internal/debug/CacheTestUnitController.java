@@ -38,7 +38,7 @@ public class CacheTestUnitController extends BaseController {
     private CacheSyncUpdateManager cacheSyncUpdateManager;
 
     @InterfaceSecurity
-    @RequestMapping(value = "/internal/debug/testunit_cache", method = RequestMethod.GET)
+    @RequestMapping(value = "/internal/debug/testunit_cache", method = RequestMethod.POST)
     @ResponseBody
     public String cacheSync(HttpServletRequest req, CacheTestUnitParams params) throws Exception {
         Result result = new APIResultSupport(false);

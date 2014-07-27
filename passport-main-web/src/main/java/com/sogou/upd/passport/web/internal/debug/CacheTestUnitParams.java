@@ -3,10 +3,7 @@ package com.sogou.upd.passport.web.internal.debug;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.CacheOperEnum;
 import com.sogou.upd.passport.common.parameter.CacheTypeEnum;
-import com.sogou.upd.passport.common.utils.ProvinceAndCityUtil;
-import com.sogou.upd.passport.common.utils.UniqNameUtil;
 import com.sogou.upd.passport.manager.api.BaseApiParams;
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.AssertTrue;
@@ -22,9 +19,9 @@ public class CacheTestUnitParams extends BaseApiParams {
     @NotBlank(message = "key不允许为空")
     private String key; // 缓存的key
     @NotBlank(message = "type不允许为空")
-    private String type; //缓存类型，有db、cache、token
+    private String type; //缓存类型，目前支持db、cache、token
     @NotBlank(message = "oper不允许为空")
-    private String oper; //操作类型，仅支持get、hget、hgetall
+    private String oper; //操作类型，目前支持支持get、hget、hgetall
 
     @AssertTrue(message = "不支持的type")
     private boolean isValidType() {
@@ -40,6 +37,17 @@ public class CacheTestUnitParams extends BaseApiParams {
             return true;
         }
         return CacheOperEnum.CacheOperList.contains(oper);
+    }
+
+    @AssertTrue(message = "oper=hget时，key必须包含逗号")
+    private boolean isValidKey() {
+        if (Strings.isNullOrEmpty(key)) {
+            return true;
+        }
+        if (CacheOperEnum.hget.toString().equals(oper)) {
+            return key.contains(",");
+        }
+        return true;
     }
 
     public String getKey() {

@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.manager.api;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.parameter.CacheOperEnum;
 import com.sogou.upd.passport.common.parameter.CacheTypeEnum;
@@ -71,14 +70,8 @@ public class CacheSyncUpdateManager {
                 if (CacheOperEnum.get.toString().equals(cacheOper)) {
                     cacheValueStr = dbShardRedisUtils.get(cacheKey);
                 } else if (CacheOperEnum.hget.toString().equals(cacheOper)) {
-                    if (cacheKey.contains(",")) {
-                        String[] keyArray = cacheKey.split(",");
-                        cacheValueStr = dbShardRedisUtils.hGet(keyArray[0], keyArray[1]);
-                    } else {
-                        result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                        result.setMessage("oper=hget，key not contains “，”");
-                        return result;
-                    }
+                    String[] keyArray = cacheKey.split(",");
+                    cacheValueStr = dbShardRedisUtils.hGet(keyArray[0], keyArray[1]);
                 } else if (CacheOperEnum.hgetall.toString().equals(cacheOper)) {
                     cacheValueMap = dbShardRedisUtils.hGetAll(cacheKey);
                 }
@@ -86,14 +79,8 @@ public class CacheSyncUpdateManager {
                 if (CacheOperEnum.get.toString().equals(cacheOper)) {
                     cacheValueStr = redisUtils.get(cacheKey);
                 } else if (CacheOperEnum.hget.toString().equals(cacheOper)) {
-                    if (cacheKey.contains(",")) {
-                        String[] keyArray = cacheKey.split(",");
-                        cacheValueStr = redisUtils.hGet(keyArray[0], keyArray[1]);
-                    } else {
-                        result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                        result.setMessage("oper=hget，key not contains “，”");
-                        return result;
-                    }
+                    String[] keyArray = cacheKey.split(",");
+                    cacheValueStr = redisUtils.hGet(keyArray[0], keyArray[1]);
                 } else if (CacheOperEnum.hgetall.toString().equals(cacheOper)) {
                     cacheValueMap = redisUtils.hGetAll(cacheKey);
                 }
@@ -101,21 +88,15 @@ public class CacheSyncUpdateManager {
                 if (CacheOperEnum.get.toString().equals(cacheOper)) {
                     cacheValueStr = tokenRedisUtils.get(cacheKey);
                 } else if (CacheOperEnum.hget.toString().equals(cacheOper)) {
-                    if (cacheKey.contains(",")) {
-                        String[] keyArray = cacheKey.split(",");
-                        cacheValueStr = tokenRedisUtils.hGet(keyArray[0], keyArray[1]);
-                    } else {
-                        result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                        result.setMessage("oper=hget，key not contains “，”");
-                        return result;
-                    }
+                    String[] keyArray = cacheKey.split(",");
+                    cacheValueStr = tokenRedisUtils.hGet(keyArray[0], keyArray[1]);
                 } else if (CacheOperEnum.hgetall.toString().equals(cacheOper)) {
                     cacheValueMap = tokenRedisUtils.hGetAll(cacheKey);
                 }
             }
             result.setSuccess(true);
-            if(CacheOperEnum.hgetall.toString().equals(cacheOper)) {
-               result.setDefaultModel("value", cacheValueMap);
+            if (CacheOperEnum.hgetall.toString().equals(cacheOper)) {
+                result.setDefaultModel("value", cacheValueMap);
             } else {
                 result.setDefaultModel("value", cacheValueStr);
             }

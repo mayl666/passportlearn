@@ -85,10 +85,8 @@ public class BaseController {
     }
 
     public boolean isAccessAccept(int clientId, HttpServletRequest request) {
-        String apiName = request.getPathInfo();
-        apiName = request.getContextPath();
-        apiName = request.getRequestURI();
-        apiName = request.getServletPath();
+        String apiName = request.getRequestURI();
+        apiName = apiName.substring(apiName.lastIndexOf("/") + 1, apiName.length());
         String requestIp = getIp(request);
         try {
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
