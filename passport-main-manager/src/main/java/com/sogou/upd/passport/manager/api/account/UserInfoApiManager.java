@@ -36,4 +36,6 @@ public interface UserInfoApiManager {
     Result checkUniqName(UpdateUserUniqnameApiParams updateUserUniqnameApiParams);
 
 
+
+
 }

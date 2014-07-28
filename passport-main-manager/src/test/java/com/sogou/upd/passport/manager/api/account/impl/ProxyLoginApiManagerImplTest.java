@@ -63,7 +63,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
 //                String value = listString.get(i).get("value").toString();
 //                mapString.put(key,value);
 //            }
-            System.out.println("result:"+result.toString());
+            System.out.println("result:" + result.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -71,22 +71,22 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
 
     @Test
     public void testgetSHCookieValue() {
-       try {
-           String userid =  "大大大31231@focus.cn";
+        try {
+            String userid = "大大大31231@focus.cn";
 //           String utfUserId = new String(userid.getBytes(),"gbk");
-           CookieApiParams cookieApiParams = new CookieApiParams();
-           cookieApiParams.setUserid(userid);
-           cookieApiParams.setClient_id(1044);
-           cookieApiParams.setRu("https://account.sogou.com/");
-           cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-           cookieApiParams.setPersistentcookie(String.valueOf(1));
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(userid);
+            cookieApiParams.setClient_id(1044);
+            cookieApiParams.setRu("https://account.sogou.com/");
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            cookieApiParams.setPersistentcookie(String.valueOf(1));
 
-           //TODO sogou域账号迁移后cookie生成问题
-           Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-           System.out.println(getCookieValueResult.toString());
-       }catch (Exception ex){
+            //TODO sogou域账号迁移后cookie生成问题
+            Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+            System.out.println(getCookieValueResult.toString());
+        } catch (Exception ex) {
 
-       }
+        }
 
     }
 

@@ -39,8 +39,6 @@ public class SecureApiController extends BaseController {
 
     @Autowired
     private SecureManager secureManager;
-    @Autowired
-    private CommonManager commonManager;
 
     /**
      * 手机发送短信重置密码
@@ -61,7 +59,7 @@ public class SecureApiController extends BaseController {
                 return result.toString();
             }
             //判断访问者是否有权限
-            if (!commonManager.isAccessAccept(clientId, ip, "resetpwd_batch")) {
+            if (!isAccessAccept(clientId, request)) {
                 result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
                 return result.toString();
             }

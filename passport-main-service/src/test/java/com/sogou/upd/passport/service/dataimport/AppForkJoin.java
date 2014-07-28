@@ -38,7 +38,7 @@ import java.util.concurrent.ForkJoinPool;
  * Date: 14-4-22
  * Time: 下午2:22
  */
-@Ignore
+//@Ignore
 public class AppForkJoin extends BaseTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppForkJoin.class);
@@ -260,7 +260,7 @@ public class AppForkJoin extends BaseTest {
         Map<String, String> differenceMap = Maps.newConcurrentMap();
 
 //        String passportId = "joblim@sogou.com";  //返回有昵称
-        String passportId = "wangqingemail@sohu.com";  //返回有昵称
+        String passportId = "alva396@sohu.com";  //返回有昵称
 
 
         /*StopWatch watch = new StopWatch();
@@ -272,14 +272,14 @@ public class AppForkJoin extends BaseTest {
             try {
                 mapB = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
 
-                if (mapB.containsKey("birthday")) {
+               /* if (mapB.containsKey("birthday")) {
                     String birthday = String.valueOf(mapB.get("birthday"));
                     if (StringUtils.isNotEmpty(birthday)) {
                         mapB.put("birthday", birthday);
                     } else {
                         mapB.put("birthday", "1900-01-01");
                     }
-                }
+                }*/
 
                 System.out.println("===================mapB:" + mapB.toString());
 

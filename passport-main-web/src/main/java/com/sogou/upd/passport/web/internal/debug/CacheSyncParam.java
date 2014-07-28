@@ -18,7 +18,7 @@ public class CacheSyncParam {
     @Min(0)
     private long ts; //timestamp,单位
     @NotBlank(message = "code不允许为空")
-    private String code; //MD5（key+tn+ts+secret）
+    private String code; //MD5（key+ts+secret）
 
     public String getKey() {
         return key;

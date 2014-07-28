@@ -126,6 +126,16 @@ public interface RegManager {
      */
     public boolean isUserInExistBlackList(final String username, final String ip);
 
+
+    /**
+     * 内部接口 检查用户是否存在 是否中黑名单限制
+     *
+     * @param username
+     * @param ip
+     * @return
+     */
+    public boolean checkUserExistInBlack(final String username, final String ip);
+
     /**
      * 校验sogou验证码，并注册手机号账号
      *
