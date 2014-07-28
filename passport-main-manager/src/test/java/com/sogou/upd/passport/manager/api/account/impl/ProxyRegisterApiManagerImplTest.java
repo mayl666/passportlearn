@@ -1,12 +1,16 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.collect.Lists;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.FileUtil;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -54,7 +58,7 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
     @Test
     public void testCheckUser() {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid("business@lamahui.com");
+        checkUserApiParams.setUserid("toptxy123@sogou.com");
         Result result = proxyRegisterApiManager.checkUser(checkUserApiParams);
         System.out.println("result1:" + result.toString());
 //        checkUserApiParams = new CheckUserApiParams();
@@ -69,6 +73,27 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
 //        checkUserApiParams.setUserid("q435053906@game.sohu.com");
 //        result = proxyRegisterApiManager.checkUser(checkUserApiParams);
 //        System.out.println("result4:" + result.toString());
+    }
+
+    @Test
+    public void testBatchCheckUser() {
+        List<String> contentList = Lists.newArrayList();
+        List<String> passportList = FileUtil.readFileByLines("D:\\phone_diff");
+        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
+        String content;
+        for(String passportId : passportList){
+            checkUserApiParams.setUserid("toptxy123@sogou.com");
+            Result result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+            if(!result.isSuccess()){
+                content = passportId + "," + result.toString();
+                contentList.add(content);
+            }
+        }
+        try {
+            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\phone_diff_result", contentList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
