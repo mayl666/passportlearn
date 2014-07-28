@@ -24,7 +24,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="$activeUrl">$activeUrl</a><br><br>
 &nbsp;&nbsp;&nbsp;&nbsp;如果您的邮箱不支持链接点击，请将以上链接地址拷贝到您的浏览器地址栏中。如果该邮件误发给了您，您无需执行任何操作。<br><br>
 &nbsp;&nbsp;&nbsp;&nbsp;此邮件由系统自动产生，请勿回复。<br><br>
-&nbsp;&nbsp;&nbsp;&nbsp;搜狗通行证<br><br>
-&nbsp;&nbsp;&nbsp;&nbsp;$date
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;搜狗通行证<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$date
 </body>
 </html>
