@@ -84,16 +84,18 @@ public class LoginManagerImpl implements LoginManager {
         return result;
     }
 
-    private void buildLoginResult(Result result) {
+    private Result buildLoginResult(Result result) {
         //注册的checkuser返回结果为false有可能是账号已存在，当提示账号已存在或已注册时，需要转成登录的结果
         if (!result.isSuccess() && (ErrorUtil.ERR_CODE_USER_ID_EXIST.equals(result.getCode()) || ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode()))) {
             result.setSuccess(true);
+            return result;
         }
         //注册checkuser返回结果为true，表示账号不存在，需要转成登录的结果
         if (result.isSuccess()) {
             result.setSuccess(false);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
         }
+        return result;
     }
 
     private CheckUserApiParams buildProxyApiParams(String username, int clientId) {
