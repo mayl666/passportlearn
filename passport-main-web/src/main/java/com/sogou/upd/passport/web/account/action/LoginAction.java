@@ -76,17 +76,16 @@ public class LoginAction extends BaseController {
             }
             String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
             int clientId = Integer.valueOf(checkParam.getClient_id());
-            //判断账号是否存在
+            //判断账号是否存在,存在返回0，否则返回相应错误码
             result = loginManager.checkUser(username, clientId);
-            if (!result.isSuccess()) {
+            if (result.isSuccess()) {
                 //校验是否需要验证码
                 boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
-                result.setSuccess(true);
                 result.setDefaultModel("needCaptcha", needCaptcha);
             } else {
                 //非sohu域账号登录时校验用户名是否存在，因为要考虑数据可能不完整，登录时不存在的会去sohu校验密码，所以检查用户名时也需要兼容不存在的情况，sogou不存在，去校验sohu
                 //todo 上线观察几天后，此兼容逻辑可删除
-                if (!AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
+                if (!AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username)) && ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT.equals(result.getCode())) {
                     result = regManager.checkUserFromSohu(username, clientId);
                     if (!result.isSuccess()) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);

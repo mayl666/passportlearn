@@ -4,12 +4,14 @@ import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.APIResultForm;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +76,7 @@ public class RegisterApiManagerTest extends BaseTest {
     @Test
     public void testCheckUser_2() throws IOException {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid(username_sogou);
+        checkUserApiParams.setUserid(mobile_2);
 //        Result expectResult = proxyRegisterApiManager.checkUser(checkUserApiParams);
         String expectResult = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + username_sogou + "\"},\"status\":\"20294\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
@@ -106,18 +108,13 @@ public class RegisterApiManagerTest extends BaseTest {
     @Test
     public void testCheckUser_4() throws IOException {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid(mobile_2);
-        BaseMoblieApiParams bmap = new BaseMoblieApiParams();
-        bmap.setMobile(mobile_2);
-        Result expectResult = proxyBindApiManager.getPassportIdByMobile(bmap);
-        Assert.assertEquals("0", expectResult.getCode());
-        Assert.assertEquals(mobile_2 + "@sohu.com", expectResult.getModels().get("userid"));
-//        String expectResult = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + username_mail + "\"},\"status\":\"20294\"}";
+        checkUserApiParams.setUserid(mobile_2 + "@sohu.com");
+//        Result expectResult = proxyRegisterApiManager.checkUser(checkUserApiParams);
+        String expectResult = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + mobile_2 + "@sohu.com\"},\"status\":\"20294\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
         Result actualResult = sgRegisterApiManager.checkUser(checkUserApiParams);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
-        Assert.assertEquals(ErrorUtil.ERR_CODE_ACCOUNT_REGED, actualForm.getStatus());
-        Assert.assertEquals(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_REGED), actualForm.getStatusText());
+        Assert.assertTrue(expectForm.equals(actualForm));
     }
 
     /**

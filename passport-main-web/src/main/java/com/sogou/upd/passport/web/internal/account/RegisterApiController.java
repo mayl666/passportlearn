@@ -36,13 +36,9 @@ public class RegisterApiController extends BaseController {
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
-    private RegisterApiManager proxyRegisterApiManager;
-    @Autowired
     private RegManager regManager;
     @Autowired
     private CommonManager commonManager;
-    @Autowired
-    private RegisterApiManager registerApiManager;
 
     /**
      * 注册手机账号时，发送手机验证码
