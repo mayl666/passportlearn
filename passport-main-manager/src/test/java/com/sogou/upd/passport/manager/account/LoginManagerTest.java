@@ -39,10 +39,15 @@ public class LoginManagerTest extends BaseTest {
     private static final String username_sogou = "tinkame732@sogou.com";
     private static final String pwd_sogou = "111111";
 
+    private static final String test_username_game="xuweiibm@game.sohu.com";
+    private static final String pwd_test_username_game="jsjdxuweiibm";
+
+
     @Test
     public void testAccountLogin() {
         try {
-            WebLoginParams webLoginParams3 = getParam(username_waiyu, pwd_waiyu);
+//            WebLoginParams webLoginParams3 = getParam(username_waiyu, pwd_waiyu);
+            WebLoginParams webLoginParams3 = getParam(test_username_game, pwd_test_username_game);
             Result result_email = loginManager.accountLogin(webLoginParams3, ip, scheme);
             APIResultForm email_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_email.toString(), APIResultForm.class);
             String expire_email_data = "{\"data\":{\"userid\":\"" + username_waiyu + "\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
@@ -50,19 +55,19 @@ public class LoginManagerTest extends BaseTest {
             Assert.assertTrue(expireResultForm.equals(email_APIResultForm));
 
 
-            WebLoginParams webLoginParams2 = getParam(passportId_phone, pwd_phone);
-            Result result_soji = loginManager.accountLogin(webLoginParams2, ip, scheme);
-            String expire_phone_data = "{\"data\":{\"userid\":\"" + passportId_phone + "\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
-            APIResultForm phone_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_soji.toString(), APIResultForm.class);
-            APIResultForm expire_phone_ResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_phone_data, APIResultForm.class);
-            Assert.assertTrue(expire_phone_ResultForm.equals(phone_APIResultForm));
-
-            WebLoginParams webLoginParams1 = getParam(username_sogou, pwd_sogou);
-            Result result_sogou = loginManager.accountLogin(webLoginParams1, ip, scheme);
-            String expire_sogou_data = "{\"data\":{},\"status\":\"20206\",\"statusText\":\"密码错误\"}";
-            APIResultForm sogou_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_sogou.toString(), APIResultForm.class);
-            APIResultForm expire_sogou_ResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_sogou_data, APIResultForm.class);
-            Assert.assertTrue(expire_sogou_ResultForm.equals(sogou_APIResultForm));
+//            WebLoginParams webLoginParams2 = getParam(passportId_phone, pwd_phone);
+//            Result result_soji = loginManager.accountLogin(webLoginParams2, ip, scheme);
+//            String expire_phone_data = "{\"data\":{\"userid\":\"" + passportId_phone + "\"},\"status\":\"0\",\"statusText\":\"操作成功\"}";
+//            APIResultForm phone_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_soji.toString(), APIResultForm.class);
+//            APIResultForm expire_phone_ResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_phone_data, APIResultForm.class);
+//            Assert.assertTrue(expire_phone_ResultForm.equals(phone_APIResultForm));
+//
+//            WebLoginParams webLoginParams1 = getParam(username_sogou, pwd_sogou);
+//            Result result_sogou = loginManager.accountLogin(webLoginParams1, ip, scheme);
+//            String expire_sogou_data = "{\"data\":{},\"status\":\"20206\",\"statusText\":\"密码错误\"}";
+//            APIResultForm sogou_APIResultForm = JacksonJsonMapperUtil.getMapper().readValue(result_sogou.toString(), APIResultForm.class);
+//            APIResultForm expire_sogou_ResultForm = JacksonJsonMapperUtil.getMapper().readValue(expire_sogou_data, APIResultForm.class);
+//            Assert.assertTrue(expire_sogou_ResultForm.equals(sogou_APIResultForm));
 
 
         } catch (Exception e) {

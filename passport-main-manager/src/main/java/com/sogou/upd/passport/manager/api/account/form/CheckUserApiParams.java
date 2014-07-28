@@ -10,4 +10,18 @@ import com.sogou.upd.passport.manager.api.account.BaseRegUserApiParams;
  */
 public class CheckUserApiParams extends BaseRegUserApiParams {
 
+
+    /**
+     * 业务线传过来的用户真实IP
+     */
+    private String createip;
+
+    public String getCreateip() {
+        return createip;
+    }
+
+    public void setCreateip(String createip) {
+        this.createip = createip;
+    }
+
 }

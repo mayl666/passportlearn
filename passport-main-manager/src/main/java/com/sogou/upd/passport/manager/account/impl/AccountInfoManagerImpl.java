@@ -3,10 +3,7 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
+import com.sogou.upd.passport.common.parameter.*;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -23,6 +20,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +54,8 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Autowired
     private PCAccountManager pcAccountManager;
 
+    @Autowired
+    private OperateTimesService operateTimesService;
 
     /**
      * 上传头像信息
@@ -272,6 +272,18 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         return result;
     }
 
+    @Override
+    public boolean checkNickNameExistInBlackList(final String ip, final String cookie) {
+        if (operateTimesService.checkNickNameExistInBlackList(ip, cookie)) {
+            //是否在白名单中
+            if (!operateTimesService.checkRegInWhiteList(ip)) {
+                return true;
+            }
+        }
+        operateTimesService.incCheckNickNameExistTimes(ip, cookie);
+        return false;
+    }
+
     /*
      * 根据获取到的昵称或头像，设置result返回结果
      */
@@ -415,5 +427,4 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         }
         return updateUserInfoApiParams;
     }
-
 }

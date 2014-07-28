@@ -44,4 +44,13 @@ public interface AccountInfoManager {
      * @return
      */
     public Result getUserNickNameAndAvatar(GetUserInfoApiparams infoApiparams);
+
+    /**
+     * 某IP检查账号昵称是否存在是否中黑名单
+     *
+     * @param ip
+     * @param cookie
+     * @return
+     */
+    boolean checkNickNameExistInBlackList(final String ip, final String cookie);
 }

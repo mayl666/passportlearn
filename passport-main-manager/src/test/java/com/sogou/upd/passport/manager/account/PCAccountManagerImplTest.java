@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
-import com.alibaba.dubbo.common.utils.StringUtils;
+//import com.alibaba.dubbo.common.utils.StringUtils;
+
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
@@ -9,6 +10,7 @@ import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import junit.framework.Assert;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 下午8:57
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 public class PCAccountManagerImplTest extends BaseTest {
     @Autowired
     private PCAccountManager pcAccountManager;
@@ -114,8 +116,16 @@ public class PCAccountManagerImplTest extends BaseTest {
     @Test
     public void testGetBrowserBbsUniqname() {
         String passportId = "shipengzhi1986@sogou.com";
-        String uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
-        Assert.assertTrue(!StringUtils.isBlank(uniqname));
+//        String passportId = "都市捕蛇者"; //都市捕蛇者@focus.cn
+
+        //%E9%83%BD%E5%B8%82%E6%8D%95%E8%9B%87%E8%80%85@focus.cn
+
+        System.out.println(" encode result :" + Coder.encodeUTF8(StringUtils.substringBefore(passportId, "@")));
+
+        Assert.assertEquals("%E9%83%BD%E5%B8%82%E6%8D%95%E8%9B%87%E8%80%85", Coder.encodeUTF8(passportId));
+
+//        String uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
+//        Assert.assertTrue(!StringUtils.isBlank(uniqname));
     }
 
 
