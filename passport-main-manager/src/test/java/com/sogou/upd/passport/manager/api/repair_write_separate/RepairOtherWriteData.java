@@ -77,7 +77,7 @@ public class RepairOtherWriteData extends BaseTest {
     @Test
     public void checkIsSogouExistDate() {
         List<String> contentList = Lists.newArrayList();
-        List<String> passportList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\xad");
+        List<String> passportList = FileUtil.readFileByLines("D:\\xae");
         String content;
         int count = 0;
         String sgPassportId;
@@ -123,7 +123,7 @@ public class RepairOtherWriteData extends BaseTest {
         content = "total:" + passportList.size() + ",count:" + count;
         contentList.add(content);
         try {
-            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_sogou_userid_0526_0722_xad", contentList);
+            FileUtil.storeFile("D:\\userlog_sogou_userid_0526_0722_xae", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
