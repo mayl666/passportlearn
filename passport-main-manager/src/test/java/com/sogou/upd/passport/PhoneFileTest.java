@@ -2,6 +2,7 @@ package com.sogou.upd.passport;
 
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.FileUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
@@ -31,7 +32,7 @@ public class PhoneFileTest extends BaseTest {
     @Test
     public void testQueryPassportIdByPhone() {
         try {
-            List<String> phoneList = FileIOUtil.readFileByLines("D:\\statis_phone_201404.txt");
+            List<String> phoneList = FileUtil.readFileByLines("D:\\statis_phone_201404.txt");
             FileOutputStream fos = new FileOutputStream("D:\\statis_phone_bindpassportid_201404.txt");
             int i = 0, j = 0;
             for (String str : phoneList) {
@@ -69,7 +70,7 @@ public class PhoneFileTest extends BaseTest {
     @Test
     public void testBuildRegisterPhoneUserid() {
         try {
-            List<String> phoneList = FileIOUtil.readFileByLines("D:\\全量迁移需要的用户列表\\5.7_all_sgpp_phone_userid.txt");
+            List<String> phoneList = FileUtil.readFileByLines("D:\\全量迁移需要的用户列表\\5.7_all_sgpp_phone_userid.txt");
             FileOutputStream fos = new FileOutputStream("D:\\全量迁移需要的用户列表\\5.7_all_sgpp_regphone_userid.txt");
             int i = 0, j = 0;
             for (String phone : phoneList) {
@@ -108,7 +109,7 @@ public class PhoneFileTest extends BaseTest {
     @Test
     public void testBuildRegisterPhoneOtherUserid() {
         try {
-            List<String> phoneList = FileIOUtil.readFileByLines("D:\\全量迁移需要的用户列表\\all-userid");
+            List<String> phoneList = FileUtil.readFileByLines("D:\\全量迁移需要的用户列表\\all-userid");
             FileOutputStream fos = new FileOutputStream("D:\\全量迁移需要的用户列表\\4.30_sgproduct_regphone_other_userid");
             int i = 0, j = 0;
             for (String phone : phoneList) {
@@ -165,10 +166,10 @@ public class PhoneFileTest extends BaseTest {
     @Test
     public void testChajiInSgproduct() {
         try {
-            List<String> chajiUseridList = FileIOUtil.readFileByLines("D:\\全量迁移需要的用户列表\\4.30_sgproduct_regphone_other_userid_uniq_0521");
+            List<String> chajiUseridList = FileUtil.readFileByLines("D:\\全量迁移需要的用户列表\\4.30_sgproduct_regphone_other_userid_uniq_0521");
             FileOutputStream fos = new FileOutputStream("D:\\全量迁移需要的用户列表\\chaji_in_sgproduct");
             for (String sgproductUrl : sgproductList) {
-                List<String> useridList = FileIOUtil.readFileByLines(sgproductUrl);
+                List<String> useridList = FileUtil.readFileByLines(sgproductUrl);
                 int i = 0, j = 0;
                 for (String chajiUserid : chajiUseridList) {
                     for (String str : useridList) {

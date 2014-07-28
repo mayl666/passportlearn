@@ -1,16 +1,10 @@
 package com.sogou.upd.passport.dao;
 
-import com.sogou.upd.passport.FileIOUtil;
 import com.sogou.upd.passport.dao.dal.routing.SGStringHashRouter;
-import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -62,24 +56,4 @@ public class SGStringHashRouterTest extends TestCase {
         LOGGER.info("u_p_m shard." + router.doRoute("簩龖"));
     }
 
-
-    /**
-     * 对比DBA导入的数据分表和sg-string-hash计算的分表是否一致
-     */
-    public void testContrastJava_Mysql() {
-        try {
-            BufferedWriter bw = FileIOUtil.newWriter("c:/diff_java_mysql_stringhash.txt");
-            List<String> passportIdList = FileIOUtil.readFileByLines("C:\\Users\\shipengzhi\\Downloads\\32.txt");
-            for (String passportId : passportIdList) {
-                String name = router.doRoute(passportId);
-                if (!name.equals("account_31")) {
-                    bw.write(passportId + "\n");
-                    bw.flush();
-                }
-            }
-            Assert.assertTrue(true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

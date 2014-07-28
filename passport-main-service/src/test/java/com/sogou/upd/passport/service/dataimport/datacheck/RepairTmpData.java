@@ -3,7 +3,6 @@ package com.sogou.upd.passport.service.dataimport.datacheck;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.BaseTest;
-import com.sogou.upd.passport.FileIOUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.utils.DateUtil;
@@ -71,7 +70,7 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testCheckDataIsNewRegister() {
-        List<String> accountList = FileIOUtil.readFileByLines("D:\\db\\checkusererror.log.new.2014-06-23");
+        List<String> accountList = FileUtil.readFileByLines("D:\\db\\checkusererror.log.new.2014-06-23");
         String content = null;
         int count = 0;
         for (String accountString : accountList) {
@@ -99,7 +98,7 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testCheckIsSyncSogouDB() {
-        List<String> passportIdList = FileIOUtil.readFileByLines("D:\\checkIsSyncSogou_0627_total");
+        List<String> passportIdList = FileUtil.readFileByLines("D:\\checkIsSyncSogou_0627_total");
         String content = null;
         int count = 0;
         for (String passportId : passportIdList) {
@@ -124,7 +123,7 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testRepairtProvinceAndCity() {
-        List<String> useridList = FileIOUtil.readFileByLines("D:\\repairDataList\\all_province_city_error.txt");
+        List<String> useridList = FileUtil.readFileByLines("D:\\repairDataList\\all_province_city_error.txt");
         String errorText = "";
         String[] errorProviceAndCity = new String[]{"请选择", "不限", "-1", "请选择城市"};
         int total = 0;
@@ -201,7 +200,7 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testRepairtQuestion() {
-        List<String> useridList = FileIOUtil.readFileByLines("D:\\repairDataList\\repair_user_ext_info_userid.log");
+        List<String> useridList = FileUtil.readFileByLines("D:\\repairDataList\\repair_user_ext_info_userid.log");
         String errorText = null;
         int total = 0;
         int repairNum = 0;
@@ -250,7 +249,7 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testNoOtherInfo() {
-        List<String> useridList = FileIOUtil.readFileByLines("D:\\repairDataList\\no_other_info");
+        List<String> useridList = FileUtil.readFileByLines("D:\\repairDataList\\no_other_info");
         String errorText = "";
         int total = 0;
         int repairNum = 0;
@@ -298,7 +297,7 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testRepairUserExtInfoDup() {
-        List<String> useridList = FileIOUtil.readFileByLines("D:\\repairDataList\\user_ext_info_tmp_inc0527wy_userid_dup.csv");
+        List<String> useridList = FileUtil.readFileByLines("D:\\repairDataList\\user_ext_info_tmp_inc0527wy_userid_dup.csv");
         String errorText = "";
         int total = 0;
         int repairNum = 0;
@@ -344,7 +343,7 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testRepairUserOtherInfoDup() {
-        List<String> useridList = FileIOUtil.readFileByLines("D:\\repairDataList\\user_other_info_tmp_inc0527wy_userid_dup.csv");
+        List<String> useridList = FileUtil.readFileByLines("D:\\repairDataList\\user_other_info_tmp_inc0527wy_userid_dup.csv");
         String errorText = "";
         int total = 0;
         int repairNum = 0;
@@ -390,7 +389,7 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testRepairUserInfoDup() {
-        List<String> useridList = FileIOUtil.readFileByLines("D:\\repairDataList\\user_info_tmp_inc0527wy_userid_dup.csv");
+        List<String> useridList = FileUtil.readFileByLines("D:\\repairDataList\\user_info_tmp_inc0527wy_userid_dup.csv");
         String errorText = "";
         int total = 0;
         int repairNum = 0;
@@ -437,7 +436,7 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testRepairBirthday() {
-        List<String> useridList = FileIOUtil.readFileByLines("D:\\repairDataList\\account_00_userid.csv");
+        List<String> useridList = FileUtil.readFileByLines("D:\\repairDataList\\account_00_userid.csv");
         String errorText = "";
         int total = 0;
         int repairNum = 0;
@@ -476,7 +475,7 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testErrorRegTime() {
-        List<String> useridList = FileIOUtil.readFileByLines("D:\\repairDataList\\account_regtimeerror_0609.csv");
+        List<String> useridList = FileUtil.readFileByLines("D:\\repairDataList\\account_regtimeerror_0609.csv");
         String errorText = "";
         int total = 0;
         int repairNum = 0;
@@ -515,7 +514,7 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testGetFullUserInfo() {
-        List<String> mobileList = FileIOUtil.readFileByLines("D:\\phoneList");
+        List<String> mobileList = FileUtil.readFileByLines("D:\\phoneList");
         int total = 0;
         int repairNum = 0;
         for (String mobile : mobileList) {

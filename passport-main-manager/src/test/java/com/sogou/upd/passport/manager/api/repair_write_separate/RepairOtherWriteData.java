@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager.api.repair_write_separate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.sogou.upd.passport.BaseTest;
-import com.sogou.upd.passport.FileIOUtil;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
@@ -78,7 +77,7 @@ public class RepairOtherWriteData extends BaseTest {
     @Test
     public void checkIsSogouExistDate() {
         List<String> contentList = Lists.newArrayList();
-        List<String> passportList = FileIOUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\xaa");
+        List<String> passportList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\xad");
         String content;
         int count = 0;
         String sgPassportId;
@@ -124,7 +123,7 @@ public class RepairOtherWriteData extends BaseTest {
         content = "total:" + passportList.size() + ",count:" + count;
         contentList.add(content);
         try {
-            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_sogou_userid_0526_0722_xaa", contentList);
+            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_sogou_userid_0526_0722_xad", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -138,7 +137,7 @@ public class RepairOtherWriteData extends BaseTest {
     @Test
     public void checkSohuBindMobile() {
         List<String> contentList = Lists.newArrayList();
-        List<String> dataList = FileIOUtil.readFileByLines("D:\\数据迁移\\用搜狐域绑定的手机号登录\\xab");
+        List<String> dataList = FileUtil.readFileByLines("D:\\数据迁移\\用搜狐域绑定的手机号登录\\xad");
         String content;
         int count = 0;
         long start = System.currentTimeMillis();
@@ -150,6 +149,7 @@ public class RepairOtherWriteData extends BaseTest {
             if (!PhoneUtil.verifyPhoneNumberFormat(mobile)) {
                 continue;
             }
+            try{
             String sgPassportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
             if (Strings.isNullOrEmpty(sgPassportId)) {
                 BaseMoblieApiParams params = new BaseMoblieApiParams(mobile);
@@ -163,16 +163,20 @@ public class RepairOtherWriteData extends BaseTest {
                     }
                 }
             }
+            }catch (Exception e){
+               content = mobile;
+                contentList.add(content);
+            }
         }
         content = "total:" + dataList.size() + ",SohuBindMobile:" + count;
         contentList.add(content);
         try {
-            com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\userlog_phone_userid_end_0725_xae", contentList);
+            FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\userlog_phone_userid_end_0725_xad", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
         long end = System.currentTimeMillis();
-        System.out.println("use time:" + (end - start) / 1000 / 60 / 60 + "h");
+        System.out.println("use time:" + (end - start) / 1000 / 60 + "m");
     }
 
     /**
@@ -183,7 +187,7 @@ public class RepairOtherWriteData extends BaseTest {
     @Test
     public void fillSogouWriteSGDB() {
         List<String> contentList = Lists.newArrayList();
-        List<String> dataList = FileIOUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_sogou_userid_0526_0722_xaa");
+        List<String> dataList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_sogou_userid_0526_0722_xaa");
         String content;
         int count = 0;
         long start = System.currentTimeMillis();
@@ -310,7 +314,7 @@ public class RepairOtherWriteData extends BaseTest {
     @Test
     public void sohuBindMobileWriteSGDB() {
         List<String> contentList = Lists.newArrayList();
-        List<String> mobileList = FileIOUtil.readFileByLines("D:\\数据迁移\\用搜狐域绑定的手机号登录\\userlog_phone_userid_end_0725_xaa");
+        List<String> mobileList = FileUtil.readFileByLines("D:\\数据迁移\\用搜狐域绑定的手机号登录\\userlog_phone_userid_end_0725_xab_xae");
         String content;
         int count = 0;
         long start = System.currentTimeMillis();
@@ -405,7 +409,7 @@ public class RepairOtherWriteData extends BaseTest {
         content = "use time:" + (end - start) / 1000 / 60 + "m";
         contentList.add(content);
         try {
-            com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\fill_phone_userid_0526_0725_xaa", contentList);
+            com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\fill_phone_userid_end_0725_xab_xae", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -418,7 +422,7 @@ public class RepairOtherWriteData extends BaseTest {
     @Test
     public void checkSohuBindMobileDate() {
         List<String> contentList = Lists.newArrayList();
-        List<String> dataList = FileIOUtil.readFileByLines("D:\\数据迁移\\用搜狐域绑定的手机号登录\\sohubindmobile_0629_0712_total");
+        List<String> dataList = FileUtil.readFileByLines("D:\\数据迁移\\用搜狐域绑定的手机号登录\\sohubindmobile_0629_0712_total");
         String content;
         int count = 0;
         for (String data : dataList) {
@@ -454,7 +458,7 @@ public class RepairOtherWriteData extends BaseTest {
     @Test
     public void checkRegFailDate() {
         List<String> failedList = Lists.newArrayList();
-        List<String> passportIdList = FileIOUtil.readFileByLines("D:\\regfail_0716_total");
+        List<String> passportIdList = FileUtil.readFileByLines("D:\\regfail_0716_total");
         String content = null;
         int count = 0;
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
@@ -476,7 +480,7 @@ public class RepairOtherWriteData extends BaseTest {
     }
 
 
-    public static RequestModelXml buildRequestModelXml(String passportId) {
+    private static RequestModelXml buildRequestModelXml(String passportId) {
 
         RequestModelXml requestModelXml = new RequestModelXml(REQUEST_URL, REQUEST_INFO);
         try {
