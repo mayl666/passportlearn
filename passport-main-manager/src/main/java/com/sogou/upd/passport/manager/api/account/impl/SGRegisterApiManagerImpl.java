@@ -283,7 +283,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                     result.setSuccess(true);
                     result.setDefaultModel("userid", account.getPassportId());
                     result.setMessage("注册成功");
-                    result.setDefaultModel("isSetCookie", false);
+                    result.setDefaultModel("isSetCookie", true);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     return result;
