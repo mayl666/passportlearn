@@ -54,7 +54,7 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
     @Test
     public void testCheckUser() {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid("toptxy123@sogou.com");
+        checkUserApiParams.setUserid("business@lamahui.com");
         Result result = proxyRegisterApiManager.checkUser(checkUserApiParams);
         System.out.println("result1:" + result.toString());
 //        checkUserApiParams = new CheckUserApiParams();
