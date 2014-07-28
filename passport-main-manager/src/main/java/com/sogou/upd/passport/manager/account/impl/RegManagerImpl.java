@@ -24,6 +24,7 @@ import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -48,7 +50,7 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private EmailSenderService emailSenderService;
     @Autowired
-    private RegisterApiManager registerApiManager;
+    private AccountInfoService accountInfoService;
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
@@ -250,17 +252,11 @@ public class RegManagerImpl implements RegManager {
             String token = activeParams.getToken();
             int clientId = Integer.parseInt(activeParams.getClient_id());
             //激活邮件
-            boolean isSuccessActive = accountService.activeEmail(username, token, clientId);
-
-            if (isSuccessActive) {
+            if (accountService.activeEmail(username, token, clientId)) {
                 //激活成功
                 Account account = accountService.initialWebAccount(username, ip);
                 if (account != null) {
-                    //更新缓存
-                    result.setDefaultModel(account);
-                    result.setDefaultModel("userid", account.getPassportId());
-                    result.setSuccess(true);
-                    result.setMessage("激活成功！");
+                    result = insertAccountInfo(account, result, ip);
                     return result;
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
@@ -289,6 +285,24 @@ public class RegManagerImpl implements RegManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
+    }
+
+    private Result insertAccountInfo(Account account, Result result, String ip) {
+        AccountInfo accountInfo = new AccountInfo(account.getPassportId(), new Date(), new Date());
+        if (!Strings.isNullOrEmpty(ip)) {
+            accountInfo.setModifyip(ip);
+        }
+        boolean isUpdateSuccess = accountInfoService.updateAccountInfo(accountInfo);
+        if (!isUpdateSuccess) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+        } else {
+            result.setSuccess(true);
+            result.setDefaultModel(account);
+            result.setDefaultModel("userid", account.getPassportId());
+            result.setMessage("注册成功");
+            result.setDefaultModel("isSetCookie", true);
+        }
+        return result;
     }
 
     @Override

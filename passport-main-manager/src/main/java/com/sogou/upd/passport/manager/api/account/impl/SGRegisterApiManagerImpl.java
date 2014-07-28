@@ -92,19 +92,8 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                     Account account = accountService.initialAccount(username, password, true, ip, AccountTypeEnum
                             .SOGOU.getValue());
                     if (account != null) {
-                        AccountInfo accountInfo = new AccountInfo();
-                        accountInfo.setPassportId(account.getPassportId());
-                        accountInfo.setCreateTime(new Date());
-                        accountInfo.setUpdateTime(new Date());
-                        accountInfo.setModifyip(ip);
-                        boolean isUpdateSuccess = accountInfoService.updateAccountInfo(accountInfo);
-                        if (!isUpdateSuccess) {
-                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-                        } else {
-                            result.setSuccess(true);
-                            result.setDefaultModel("userid", account.getPassportId());
-                            result.setMessage("注册成功");
-                            result.setDefaultModel("isSetCookie", true);
+                        result = insertAccountInfo(account, result, ip);
+                        if (result.isSuccess()) {
                             Result shResult = proxyRegisterApiManager.regMailUser(params);
                             LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.REGISTER, "regMailUser", "write_sh", account.getPassportId(), shResult.getCode(), shResult.toString());
                         }
@@ -129,6 +118,23 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
         } catch (Exception e) {
             logger.error("mail register account Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
+    }
+
+    private Result insertAccountInfo(Account account, Result result, String ip) {
+        AccountInfo accountInfo = new AccountInfo(account.getPassportId(), new Date(), new Date());
+        if (!Strings.isNullOrEmpty(ip)) {
+            accountInfo.setModifyip(ip);
+        }
+        boolean isUpdateSuccess = accountInfoService.updateAccountInfo(accountInfo);
+        if (!isUpdateSuccess) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+        } else {
+            result.setSuccess(true);
+            result.setDefaultModel("userid", account.getPassportId());
+            result.setMessage("注册成功");
+            result.setDefaultModel("isSetCookie", true);
         }
         return result;
     }
@@ -280,10 +286,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                 Account account = accountService.initialAccount(mobile, password, true, null, AccountTypeEnum
                         .PHONE.getValue());
                 if (account != null) {
-                    result.setSuccess(true);
-                    result.setDefaultModel("userid", account.getPassportId());
-                    result.setMessage("注册成功");
-                    result.setDefaultModel("isSetCookie", true);
+                    result = insertAccountInfo(account, result, null);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     return result;
