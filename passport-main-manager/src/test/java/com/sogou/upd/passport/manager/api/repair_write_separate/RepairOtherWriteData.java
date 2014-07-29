@@ -77,7 +77,7 @@ public class RepairOtherWriteData extends BaseTest {
     @Test
     public void checkIsSogouExistDate() {
         List<String> contentList = Lists.newArrayList();
-        List<String> passportList = FileUtil.readFileByLines("D:\\xae");
+        List<String> passportList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\xaf");
         String content;
         int count = 0;
         String sgPassportId;
@@ -99,8 +99,10 @@ public class RepairOtherWriteData extends BaseTest {
                     if (Strings.isNullOrEmpty(sgPassportId)) {
                         BaseMoblieApiParams params = new BaseMoblieApiParams(passportId);
                         Result shResult = proxyBindApiManager.getPassportIdByMobile(params);
+                        String shPassportId = (String) shResult.getModels().get("userid");
+                        shPassportId = shPassportId.replaceAll(" ", "");
                         if (shResult.isSuccess()) {
-                            content = passportId + "," + shResult.getModels().get("userid");
+                            content = passportId + "," + shPassportId;
                             count++;
                             contentList.add(content);
                         }
@@ -123,7 +125,7 @@ public class RepairOtherWriteData extends BaseTest {
         content = "total:" + passportList.size() + ",count:" + count;
         contentList.add(content);
         try {
-            FileUtil.storeFile("D:\\userlog_sogou_userid_0526_0722_xae", contentList);
+            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_sogou_userid_0526_0722_xaf", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -143,28 +145,30 @@ public class RepairOtherWriteData extends BaseTest {
         long start = System.currentTimeMillis();
         for (String data : dataList) {
             String mobile = data;
+            mobile = mobile.replaceAll(" ", "");
             if (data.endsWith("@sohu.com")) {
                 mobile = data.substring(0, data.lastIndexOf("@sohu.com"));
             }
             if (!PhoneUtil.verifyPhoneNumberFormat(mobile)) {
                 continue;
             }
-            try{
-            String sgPassportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
-            if (Strings.isNullOrEmpty(sgPassportId)) {
-                BaseMoblieApiParams params = new BaseMoblieApiParams(mobile);
-                Result shResult = proxyBindApiManager.getPassportIdByMobile(params);
-                if (shResult.isSuccess()) {
-                    String shPassportId = (String) shResult.getModels().get("userid");
-                    if (!Strings.isNullOrEmpty(shPassportId) && AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(shPassportId))) {
-                        content = mobile;
-                        count++;
-                        contentList.add(content);
+            try {
+                String sgPassportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
+                if (Strings.isNullOrEmpty(sgPassportId)) {
+                    BaseMoblieApiParams params = new BaseMoblieApiParams(mobile);
+                    Result shResult = proxyBindApiManager.getPassportIdByMobile(params);
+                    if (shResult.isSuccess()) {
+                        String shPassportId = (String) shResult.getModels().get("userid");
+                        shPassportId = shPassportId.replaceAll(" ", "");
+                        if (!Strings.isNullOrEmpty(shPassportId) && AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(shPassportId))) {
+                            content = mobile;
+                            count++;
+                            contentList.add(content);
+                        }
                     }
                 }
-            }
-            }catch (Exception e){
-               content = mobile;
+            } catch (Exception e) {
+                content = mobile;
                 contentList.add(content);
             }
         }

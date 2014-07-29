@@ -59,7 +59,7 @@
     <div class="col-r">
         <div class="inner reg-email">
            <script type="text/tpl" id="result-tpl">
-            <div class="step <%if data.status===0%>step3<%else%>step4<%endif%>">
+            <div class="step <%if data.status==0%>step3<%else%>step4<%endif%>">
                 <span ></span>
             </div>
             <div class="form">
@@ -89,7 +89,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2014072531"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2014072939"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
