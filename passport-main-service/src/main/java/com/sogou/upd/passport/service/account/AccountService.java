@@ -15,7 +15,7 @@ public interface AccountService {
     /**
      * 初始化web用户账号
      */
-    public Account initialWebAccount(String username, String ip)
+    public Account initialEmailAccount(String username, String ip)
             throws ServiceException;
 
     /**
@@ -80,12 +80,6 @@ public interface AccountService {
      * 重置密码
      */
     public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException;
-
-    /**
-     * 根据ip看是否在黑名单中
-     */
-    public boolean isInAccountBlackListByIp(String passportId, String ip)
-            throws ServiceException;
 
     /**
      * 激活验证邮件

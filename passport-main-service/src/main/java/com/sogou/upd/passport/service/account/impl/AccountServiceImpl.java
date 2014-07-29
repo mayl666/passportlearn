@@ -62,9 +62,9 @@ public class AccountServiceImpl implements AccountService {
     private PCAccountTokenService pcAccountTokenService;
 
     @Override
-    public Account initialWebAccount(String username, String ip) throws ServiceException {
-        Account account = null;
-        String cacheKey = null;
+    public Account initialEmailAccount(String username, String ip) throws ServiceException {
+        Account account;
+        String cacheKey;
         try {
             cacheKey = buildAccountKey(username);
             account = dbShardRedisUtils.getObject(cacheKey, Account.class);
@@ -74,11 +74,6 @@ public class AccountServiceImpl implements AccountService {
                 if (id != 0) {
                     //更新缓存，成为正式账户
                     dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-                    //更新黑名单缓存
-                    cacheKey = buildAccountBlackCacheKey(ip);
-                    redisUtils.increment(cacheKey);
-                    //设置cookie
-                    setCookie();
                     return account;
                 }
             }
@@ -345,34 +340,6 @@ public class AccountServiceImpl implements AccountService {
             throw new ServiceException(e);
         }
         return false;
-    }
-
-    private String buildAccountBlackCacheKey(String ip) {
-        return CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
-    }
-
-    @Override
-    public boolean isInAccountBlackListByIp(String passportId, String ip) throws ServiceException {
-        boolean flag = true;
-        long ipCount = 0;
-        try {
-            String cacheKey = buildAccountBlackCacheKey(ip);
-            String ipValue = redisUtils.get(cacheKey);
-            if (Strings.isNullOrEmpty(ipValue)) {
-                redisUtils.setWithinSeconds(cacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
-            } else {
-                ipCount = Long.parseLong(ipValue);
-                //判断ip注册限制次数（一天20次）
-                if (ipCount < DateAndNumTimesConstant.IP_LIMITED) {
-                    redisUtils.increment(cacheKey);
-                } else {
-                    return false;
-                }
-            }
-        } catch (Exception e) {
-            flag = false;
-        }
-        return flag;
     }
 
     @Override
@@ -650,10 +617,8 @@ public class AccountServiceImpl implements AccountService {
             account.setFlag(AccountStatusEnum.DISABLED.getValue());
             account.setPasswordtype(PasswordTypeEnum.CRYPT.getValue());
             account.setRegIp(ip);
-
             String cacheKey = buildAccountKey(username);
             dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.TIME_TWODAY);
-
         } catch (Exception e) {
             throw new ServiceException(e);
         }
