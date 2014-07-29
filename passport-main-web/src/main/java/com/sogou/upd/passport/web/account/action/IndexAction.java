@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
-import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
@@ -28,9 +27,6 @@ public class IndexAction extends BaseController {
     private HostHolder hostHolder;
     @Autowired
     private SecureManager secureManager;
-    @Autowired
-    private OAuth2ResourceManager oAuth2ResourceManager;
-
     @Autowired
     private AccountInfoManager accountInfoManager;
 

@@ -188,7 +188,7 @@ public class MobileSecureAction extends BaseController {
     /*
      * 修改密保手机
      */
-    @RequestMapping(value = "bindmobilenew", method = RequestMethod.POST)
+    @RequestMapping(value = "/bindmobilenew", method = RequestMethod.POST)
     @LoginRequired
     @ResponseBody
     public Object modifyMobile(WebModifyMobileParams params, HttpServletRequest request) throws Exception {

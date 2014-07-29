@@ -254,7 +254,7 @@ public class RegManagerImpl implements RegManager {
             //激活邮件
             if (accountService.activeEmail(username, token, clientId)) {
                 //激活成功
-                Account account = accountService.initialWebAccount(username, ip);
+                Account account = accountService.initialEmailAccount(username, ip);
                 if (account != null) {
                     result = insertAccountInfo(account, result, ip);
                     return result;
