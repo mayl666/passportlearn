@@ -78,11 +78,10 @@ public class RepairOtherWriteData extends BaseTest {
     @Test
     public void checkIsSogouExistDate() {
         List<String> contentList = Lists.newArrayList();
-        List<String> passportList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\xaf");
+        List<String> passportList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\xao");
         String content;
         int count = 0;
         String sgPassportId;
-        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
         for (String passportId : passportList) {
             try {
                 if (Strings.isNullOrEmpty(passportId)) {
@@ -111,6 +110,7 @@ public class RepairOtherWriteData extends BaseTest {
                 } else {
                     Account account = accountDAO.getAccountByPassportId(passportId);
                     if (account == null) {
+                        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
                         checkUserApiParams.setUserid(passportId);
                         Result shResult = proxyRegisterApiManager.checkUser(checkUserApiParams);
                         if (shResult.getCode().equals(ErrorUtil.ERR_CODE_USER_ID_EXIST)) {
@@ -128,7 +128,7 @@ public class RepairOtherWriteData extends BaseTest {
         content = "total:" + passportList.size() + ",count:" + count;
         contentList.add(content);
         try {
-            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_sogou_userid_0526_0722_xaf", contentList);
+            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_sogou_userid_0526_0722_xao", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -61,9 +61,9 @@
     <bean id="slaveDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
-            <value>jdbc:mysql://readpassport03.upd.mysql.db.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>
+            <!--<value>jdbc:mysql://readpassport03.upd.mysql.db.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
             <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/test?characterEncoding=utf-8</value>-->
-            <!--<value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>-->
+            <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
             <value>sogou_passport</value>
