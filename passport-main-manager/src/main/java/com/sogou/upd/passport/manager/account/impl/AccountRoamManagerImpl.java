@@ -77,7 +77,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             //TODO 验证 r_key
 
 
-
             //根据sgId 取出存储在缓存的漫游用户信息
             AccountRoamInfo accountRoamInfo = accountRoamService.getAccountRoamInfoBySgId(r_key);
             if (accountRoamInfo != null) {
@@ -101,9 +100,9 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(roamPassportId);
 
             //对于漫游过来的手机、外域账号、直接清除cookie
-            // TODO 搜狐切断漫游后去除清cookie逻辑
+            // TODO 搜狐切断漫游后、去除清cookie逻辑、防止误清缓存的情况
             if (accountDomain == AccountDomainEnum.PHONE || accountDomain == AccountDomainEnum.OTHER) {
-                clearCookie(response);
+                cookieManager.clearCookie(response);
                 result.setSuccess(true);
                 return result;
             }
@@ -118,7 +117,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                     LOGGER.info("roam account sg not exist. userId:{},accountDomain:{}", roamPassportId, accountDomain.getValue());
 
                     //清cookie
-                    clearCookie(response);
+                    cookieManager.clearCookie(response);
 
                     //返回result
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
@@ -146,18 +145,5 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
         result.setDefaultModel("createIp", createIp);
         result.setSuccess(true);
         return result;
-    }
-
-
-    /**
-     * 清除cookie
-     *
-     * @param response
-     */
-    private void clearCookie(HttpServletResponse response) {
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PASSPORT);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINFO);
     }
 }

@@ -275,6 +275,14 @@ public class CookieManagerImpl implements CookieManager {
         return result;
     }
 
+    @Override
+    public void clearCookie(HttpServletResponse response) {
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PASSPORT);
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINFO);
+    }
+
     //获取cookie有效期
     private int getMaxAge(long et) {
         int maxAge = -1;
