@@ -186,17 +186,13 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result;
             }
-
             int score = 0; // 安全系数
             AccountSecureInfoVO accountSecureInfoVO = new AccountSecureInfoVO();
             GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
             getUserInfoApiparams.setUserid(userId);
             getUserInfoApiparams.setClient_id(clientId);
             getUserInfoApiparams.setFields(SOGOU_SECURE_FIELDS);
-
             result = sgUserInfoApiManager.getUserInfo(getUserInfoApiparams);
-//            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
-//            if (domain != AccountDomainEnum.THIRD) {
             if (result.isSuccess()) {
                 String uniqname = String.valueOf(result.getModels().get("uniqname"));
                 result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
@@ -207,19 +203,14 @@ public class SecureManagerImpl implements SecureManager {
             } else {
                 result.getModels().put("uniqname", Coder.encode(userId, "UTF-8"));
             }
-//            }
-
             Map<String, String> map = result.getModels();
             result.setModels(map);
-
             if (!result.isSuccess()) {
                 return result;
             }
-
             String mobile = map.get("sec_mobile");
             String emailBind = map.get("sec_email");
             String question = map.get("sec_ques");
-
             if (doProcess) {
                 if (!Strings.isNullOrEmpty(emailBind)) {
                     String emailProcessed = StringUtil.processEmail(emailBind);
@@ -262,7 +253,6 @@ public class SecureManagerImpl implements SecureManager {
                 accountSecureInfoVO.setLast_login_time(record.getTime());
                 accountSecureInfoVO.setLast_login_loc(record.getLoc());
             }
-
             result.setSuccess(true);
             result.setMessage("查询成功");
             result.setDefaultModel(accountSecureInfoVO);
@@ -793,19 +783,6 @@ public class SecureManagerImpl implements SecureManager {
             record.setType(appConfigService.queryClientName(clientIdRes));
         }
         return record;
-    }
-
-    /**
-     * 获取默认昵称
-     *
-     * @param passportId
-     * @return
-     */
-    private String defaultUniqname(String passportId) {
-        if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(passportId)) {
-            return "搜狗用户";
-        }
-        return passportId.substring(0, passportId.indexOf("@"));
     }
 
 }

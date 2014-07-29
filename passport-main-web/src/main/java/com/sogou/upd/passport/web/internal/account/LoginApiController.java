@@ -80,13 +80,11 @@ public class LoginApiController extends BaseController {
             return result.toString();
         }
         //todo 检查用户名是否存在
-
         //设置来源
         String ru = params.getRu();
         if (Strings.isNullOrEmpty(ru)) {
             ru = LOGIN_INDEX_URL;
         }
-
         String passportId = params.getUserid();
         String ip = getIp(request);
         CookieApiParams cookieApiParams = new CookieApiParams(passportId, clientId, ru, ip);
@@ -224,10 +222,6 @@ public class LoginApiController extends BaseController {
         }
         // 调用内部接口
         result = sgLoginApiManager.appAuthToken(params);
-//        if (!result.isSuccess()) {
-//            result = proxyLoginApiManager.appAuthToken(params);
-//        }
-
         String userId = (String) result.getModels().get("userid");
         //记录log
         UserOperationLog userOperationLog = new UserOperationLog(StringUtil.defaultIfEmpty(userId, "third"), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));

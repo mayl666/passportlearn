@@ -137,7 +137,6 @@ public class RegisterApiController extends BaseController {
             }
             // 调用内部接口
             result = sgRegisterApiManager.regMailUser(params);
-//            result = proxyRegisterApiManager.regMailUser(params);
         } catch (Exception e) {
             logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + userid, e);
         } finally {
@@ -174,7 +173,6 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-//            result = proxyRegisterApiManager.regMobileUser(params);
             result = sgRegisterApiManager.regMobileUser(params);
         } catch (Exception e) {
             logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
