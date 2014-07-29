@@ -34,19 +34,20 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 public class WebRoamController extends BaseController {
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(WebRoamController.class);
 
     @Autowired
     private AccountRoamManager accountRoamManager;
-
     @Autowired
     private HostHolder hostHolder;
 
-
+    /*
+     * 解析搜狐侧登录态，并将登录态传递给搜狗侧,
+     * 目前支持搜狐漫游到搜狗，sg.passport.sohu.com
+     */
     @ResponseBody
-    @RequestMapping(value = "/sso/web_roam", method = RequestMethod.POST)
-    public void webRoam(HttpServletRequest request, HttpServletResponse response, WebRoamParams webRoamParams) throws Exception {
+    @RequestMapping(value = "/sso/web_roam_go", method = RequestMethod.GET)
+    public void webRoamGo(HttpServletRequest request, HttpServletResponse response, WebRoamParams webRoamParams) throws Exception {
         Result result = new APIResultSupport(false);
 
         try {
@@ -73,6 +74,48 @@ public class WebRoamController extends BaseController {
             }
         } catch (Exception e) {
             LOGGER.error(" web_roam error.userId:{},r_key:{}", result.getModels().get("userId"), webRoamParams.getR_key(), e);
+        } finally {
+            String resultCode = StringUtils.defaultIfEmpty(result.getCode(), "0");
+            String userId = StringUtils.defaultString(String.valueOf(result.getModels().get("userId")));
+            String createIp = StringUtils.defaultString(String.valueOf(result.getModels().get("createIp")));
+
+            //记录用户操作日志
+            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), webRoamParams.getClient_id(), resultCode, createIp);
+            userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+            UserOperationLogUtil.log(userOperationLog);
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/sso/web_roam", method = RequestMethod.GET)
+    public void webRoam(HttpServletRequest request, HttpServletResponse response, WebRoamParams webRoamParams) throws Exception {
+        Result result = new APIResultSupport(false);
+        String ru = webRoamParams.getRu();
+        String r_key = webRoamParams.getR_key();
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(webRoamParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                returnErrMsg(response, ru, result.getCode(), result.getMessage());
+                return;
+            }
+
+            String sgLgUserId = StringUtils.EMPTY;
+            if (hostHolder.isLogin()) {
+                sgLgUserId = hostHolder.getPassportId();
+            }
+
+            result = accountRoamManager.webRoam(response, hostHolder.isLogin(), sgLgUserId, r_key, ru, Integer.parseInt(webRoamParams.getClient_id()));
+            if (result.isSuccess()) {
+                if (!Strings.isNullOrEmpty(ru)) {
+                    response.sendRedirect(ru);
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error(" web_roam error.userId:{},r_key:{}", result.getModels().get("userId"), r_key, e);
         } finally {
             String resultCode = StringUtils.defaultIfEmpty(result.getCode(), "0");
             String userId = StringUtils.defaultString(String.valueOf(result.getModels().get("userId")));
