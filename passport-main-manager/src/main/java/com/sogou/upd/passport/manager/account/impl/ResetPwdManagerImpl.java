@@ -8,7 +8,6 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.model.account.Account;
@@ -392,10 +391,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             if (!accountService.resetPassword(account, password, true)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
                 return result;
-            }
-            //找回密码时，如果重置密码成功，记录标志位，双读时只读SG了，因为sohu无重置密码接口
-            if (!ManagerHelper.writeSohuSwitcher()) {
-                accountSecureService.updateSuccessFlag(passportId);
             }
             operateTimesService.incLimitFindPwdResetPwd(passportId, clientId, ip);
             result.setSuccess(true);
