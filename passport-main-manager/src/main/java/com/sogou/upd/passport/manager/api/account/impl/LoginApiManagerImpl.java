@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -50,17 +49,11 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result;
             }
-            //todo 查询手机号绑定的主账号目前只单查了sogou侧，待绑定关系确定是否迁移后，再确定是否双查绑定关系
-            String passportId = commonManager.getPassportIdByUsername(userId);
-            if (Strings.isNullOrEmpty(passportId)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND);
-                return result;
-            }
-            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (AccountDomainEnum.SOHU.equals(domain)) {
                 //主账号是sohu域账号调用sohu api校验用户名和密码
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-            } else{
+            } else {
                 result = sgLoginApiManager.webAuthUser(authUserApiParams);
                 if (ErrorUtil.INVALID_ACCOUNT.equals(result.getCode())) { //如果账号不存在，去sohu校验用户名和密码
                     result = proxyLoginApiManager.webAuthUser(authUserApiParams);
