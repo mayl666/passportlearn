@@ -76,27 +76,6 @@ public class ProxyRegisterApiManagerImplTest extends BaseTest {
     }
 
     @Test
-    public void testBatchCheckUser() {
-        List<String> contentList = Lists.newArrayList();
-        List<String> passportList = FileUtil.readFileByLines("D:\\phone_diff");
-        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        String content;
-        for(String passportId : passportList){
-            checkUserApiParams.setUserid("toptxy123@sogou.com");
-            Result result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-            if(!result.isSuccess()){
-                content = passportId + "," + result.toString();
-                contentList.add(content);
-            }
-        }
-        try {
-            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\phone_diff_result", contentList);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
     public void testRegMobileUser() {
         RegMobileApiParams regMobileCaptchaApiParams = new RegMobileApiParams();
         regMobileCaptchaApiParams.setMobile("13621009174");

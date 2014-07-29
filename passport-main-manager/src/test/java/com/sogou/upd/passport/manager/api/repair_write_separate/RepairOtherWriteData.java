@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.repair_write_separate;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
@@ -23,14 +24,14 @@ import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
-import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountInfo;
+import com.sogou.upd.passport.model.account.*;
 import com.sogou.upd.passport.model.repairdata.IncUserExtInfo;
 import com.sogou.upd.passport.model.repairdata.IncUserInfo;
 import com.sogou.upd.passport.model.repairdata.IncUserOtherInfo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -120,6 +121,8 @@ public class RepairOtherWriteData extends BaseTest {
                     }
                 }
             } catch (Exception e) {
+                content = passportId + "," + passportId;
+                contentList.add(content);
             }
         }
         content = "total:" + passportList.size() + ",count:" + count;
@@ -139,7 +142,7 @@ public class RepairOtherWriteData extends BaseTest {
     @Test
     public void checkSohuBindMobile() {
         List<String> contentList = Lists.newArrayList();
-        List<String> dataList = FileUtil.readFileByLines("D:\\数据迁移\\用搜狐域绑定的手机号登录\\xad");
+        List<String> dataList = FileUtil.readFileByLines("D:\\数据迁移\\用搜狐域绑定的手机号登录\\userlog_phone_userid_login_success_0726_0727");
         String content;
         int count = 0;
         long start = System.currentTimeMillis();
@@ -175,7 +178,7 @@ public class RepairOtherWriteData extends BaseTest {
         content = "total:" + dataList.size() + ",SohuBindMobile:" + count;
         contentList.add(content);
         try {
-            FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\userlog_phone_userid_end_0725_xad", contentList);
+            FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\userlog_phone_userid_login_success_0726_0727_result", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -264,35 +267,7 @@ public class RepairOtherWriteData extends BaseTest {
                 accountInfo.setUpdateTime(new Date());
                 accountInfo.setCreateTime(reg_time);
 
-                int mobileMapSucc = 1, uniqMapSucc = 1, accountSucc = 1, accountInfoSucc = 1;
-                if (!Strings.isNullOrEmpty(mobile) && mobilePassportMappingDAO.getPassportIdByMobile(mobile) == null) {
-                    String mobilePassportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
-                    if (Strings.isNullOrEmpty(mobilePassportId)) {
-                        mobileMapSucc = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
-                    } else {
-                        account.setMobile(null);
-                    }
-                }
-                if (!Strings.isNullOrEmpty(uniqname) && uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname) == null) {
-                    String uniqPassportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
-                    if (Strings.isNullOrEmpty(uniqPassportId)) {
-                        uniqMapSucc = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
-                    } else {
-                        account.setUniqname(null);
-                    }
-                }
-                if (accountDAO.getAccountByPassportId(passportId) == null) {
-                    accountSucc = accountDAO.insertAccount(passportId, account);
-                }
-                if (accountInfoDAO.getAccountInfoByPassportId(passportId) == null) {
-                    accountInfoSucc = accountInfoDAO.saveInfoOrInsert(passportId, accountInfo);
-                }
-                if (mobileMapSucc == 1 && accountSucc == 1 && accountInfoSucc == 1) {
-                    count++;
-                } else {
-                    content = passportId + ",mobileMap-" + mobileMapSucc + ",uniqMap-" + uniqMapSucc + ",account-" + accountSucc + ",accountInfo-" + accountInfoSucc;
-                    contentList.add(content);
-                }
+                fillSGDB(uniqname, mobile, passportId, account, accountInfo, count, contentList);
             } catch (Exception e) {
                 content = passportId + ",getUserInfoFromSohu OR insertSogouDB Error," + e.getMessage();
                 contentList.add(content);
@@ -329,82 +304,67 @@ public class RepairOtherWriteData extends BaseTest {
             if (mobile.endsWith("@sohu.com")) {
                 mobile = mobile.substring(0, mobile.lastIndexOf("@sohu.com"));
             }
-            String sgPassportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
-            if (!Strings.isNullOrEmpty(sgPassportId)) {
-                continue;
-            }
-            BaseMoblieApiParams params = new BaseMoblieApiParams(mobile);
-            Result shResult = proxyBindApiManager.getPassportIdByMobile(params);
-            if (shResult.isSuccess()) {
-                String shPassportId = (String) shResult.getModels().get("userid");
-                if (!Strings.isNullOrEmpty(shPassportId) && AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(shPassportId))) {
-                    //构建参数
-                    RequestModelXml requestModelXml = buildRequestModelXml(shPassportId);
-                    if (requestModelXml == null) {
-                        content = mobile + ":buildRequestModelXmlError," + requestModelXml.toString();
-                        contentList.add(content);
-                        continue;
-                    }
-                    try {
-                        Map<String, Object> infoMap = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
-                        String birthdayStr = String.valueOf(infoMap.get("birthday"));
-                        Date birthday = !Strings.isNullOrEmpty(birthdayStr) ? DateUtil.parse(birthdayStr, DateUtil.DATE_FMT_3) : DateUtil.parse("1900-01-01", DateUtil.DATE_FMT_3);
-                        String email = "1".equals(infoMap.get("emailflag")) ? (String) infoMap.get("email") : "";
-                        String createTime = (String) infoMap.get("createtime");
-                        Date reg_time = new Date();
-                        if (!Strings.isNullOrEmpty(createTime)) {
-                            reg_time = DateUtil.parse(createTime, DateUtil.DATE_FMT_2);
+            try {
+                String sgPassportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
+                if (!Strings.isNullOrEmpty(sgPassportId)) {
+                    continue;
+                }
+                BaseMoblieApiParams params = new BaseMoblieApiParams(mobile);
+                Result shResult = proxyBindApiManager.getPassportIdByMobile(params);
+                if (shResult.isSuccess()) {
+                    String shPassportId = (String) shResult.getModels().get("userid");
+                    if (!Strings.isNullOrEmpty(shPassportId) && AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(shPassportId))) {
+                        //构建参数
+                        RequestModelXml requestModelXml = buildRequestModelXml(shPassportId);
+                        if (requestModelXml == null) {
+                            content = mobile + ":buildRequestModelXmlError," + requestModelXml.toString();
+                            contentList.add(content);
+                            continue;
                         }
-                        String reg_ip = (String) infoMap.get("createip");
-                        reg_ip = Strings.isNullOrEmpty(reg_ip) ? "" : reg_ip;
-                        String uniqname = !Strings.isNullOrEmpty((String) infoMap.get("uniqname")) ? (String) infoMap.get("uniqname") : null;
-
-                        Account account = new Account();
-                        account.setPassportId(shPassportId);
-                        account.setMobile(mobile);
-                        account.setRegTime(reg_time);
-                        account.setRegIp(reg_ip);
-                        account.setFlag(1);
-                        account.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
-                        account.setAccountType(AccountTypeEnum.SOHU.getValue());
-                        AccountInfo accountInfo = new AccountInfo();
-                        accountInfo.setPassportId(shPassportId);
-                        accountInfo.setEmail(email);
-                        accountInfo.setBirthday(birthday);
-                        accountInfo.setGender((String) infoMap.get("gender"));
-                        accountInfo.setProvince((String) infoMap.get("province"));
-                        accountInfo.setCity((String) infoMap.get("city"));
-                        accountInfo.setFullname((String) infoMap.get("username"));
-                        accountInfo.setPersonalid((String) infoMap.get("personalid"));
-                        accountInfo.setUpdateTime(new Date());
-                        accountInfo.setCreateTime(reg_time);
-                        int mobileMapSucc = 1, accountSucc = 1, accountInfoSucc = 1, uniqMapSucc = 1;
-                        mobileMapSucc = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, shPassportId);
-                        if (!Strings.isNullOrEmpty(uniqname) && uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname) == null) {
-                            String uniqPassportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
-                            if (Strings.isNullOrEmpty(uniqPassportId)) {
-                                uniqMapSucc = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, shPassportId);
-                            } else {
-                                account.setUniqname(null);
+                        try {
+                            Map<String, Object> infoMap = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
+                            String birthdayStr = String.valueOf(infoMap.get("birthday"));
+                            Date birthday = !Strings.isNullOrEmpty(birthdayStr) ? DateUtil.parse(birthdayStr, DateUtil.DATE_FMT_3) : DateUtil.parse("1900-01-01", DateUtil.DATE_FMT_3);
+                            String email = "1".equals(infoMap.get("emailflag")) ? (String) infoMap.get("email") : "";
+                            String createTime = (String) infoMap.get("createtime");
+                            Date reg_time = new Date();
+                            if (!Strings.isNullOrEmpty(createTime)) {
+                                reg_time = DateUtil.parse(createTime, DateUtil.DATE_FMT_2);
                             }
-                        }
-                        if (accountDAO.getAccountByPassportId(shPassportId) == null) {
-                            accountSucc = accountDAO.insertAccount(shPassportId, account);
-                        }
-                        if (accountInfoDAO.getAccountInfoByPassportId(shPassportId) == null) {
-                            accountInfoSucc = accountInfoDAO.saveInfoOrInsert(shPassportId, accountInfo);
-                        }
-                        if (mobileMapSucc == 1 && uniqMapSucc == 1 && accountSucc == 1 && accountInfoSucc == 1) {
-                            count++;
-                        } else {
-                            content = mobile + "," + shPassportId + ",mobileMap-" + mobileMapSucc + ",uniqMap-" + uniqMapSucc + ",account-" + accountSucc + ",accountInfo-" + accountInfoSucc;
+                            String reg_ip = (String) infoMap.get("createip");
+                            reg_ip = Strings.isNullOrEmpty(reg_ip) ? "" : reg_ip;
+                            String uniqname = !Strings.isNullOrEmpty((String) infoMap.get("uniqname")) ? (String) infoMap.get("uniqname") : null;
+
+                            Account account = new Account();
+                            account.setPassportId(shPassportId);
+                            account.setMobile(mobile);
+                            account.setRegTime(reg_time);
+                            account.setRegIp(reg_ip);
+                            account.setFlag(1);
+                            account.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
+                            account.setAccountType(AccountTypeEnum.SOHU.getValue());
+                            AccountInfo accountInfo = new AccountInfo();
+                            accountInfo.setPassportId(shPassportId);
+                            accountInfo.setEmail(email);
+                            accountInfo.setBirthday(birthday);
+                            accountInfo.setGender((String) infoMap.get("gender"));
+                            accountInfo.setProvince((String) infoMap.get("province"));
+                            accountInfo.setCity((String) infoMap.get("city"));
+                            accountInfo.setFullname((String) infoMap.get("username"));
+                            accountInfo.setPersonalid((String) infoMap.get("personalid"));
+                            accountInfo.setUpdateTime(new Date());
+                            accountInfo.setCreateTime(reg_time);
+
+                            fillSGDB(uniqname, mobile, shPassportId, account, accountInfo, count, contentList);
+                        } catch (Exception e) {
+                            content = mobile + "," + shPassportId + ",getUserInfoFromSohu OR insertSogouDB Error," + e.getMessage();
                             contentList.add(content);
                         }
-                    } catch (Exception e) {
-                        content = mobile + "," + shPassportId + ",getUserInfoFromSohu OR insertSogouDB Error," + e.getMessage();
-                        contentList.add(content);
                     }
                 }
+            } catch (Exception e) {
+                content = mobile + ",getUserInfoFromSohu OR insertSogouDB Error," + e.getMessage();
+                contentList.add(content);
             }
         }
         content = "total:" + mobileList.size() + ",initSuccess:" + count;
@@ -416,6 +376,218 @@ public class RepairOtherWriteData extends BaseTest {
             com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\fill_phone_userid_end_0725_xab_xae", contentList);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * 补全线上表缺失的外域邮箱或手机账号
+     * 输入：搜狐的user_info表、user_other_info表、user_ext_info表
+     * 输出：写入线上account表、account_info表、mobile_passportId_mapping表、uniqname_passportId_mapping表
+     */
+    @Test
+    public void fillOtherOrPhoneWriteSGDB() {
+        String content;
+        int count = 0;
+        long start = System.currentTimeMillis();
+        List<String> contentList = Lists.newArrayList();
+        List<String> userInfoList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\waiyu_4097_phone\\passport.user_info.2014-07-28");
+        List<String> userOtherInfoList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\waiyu_4097_phone\\passport.user_other_info.2014-07-28");
+        List<String> userExtInfoList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\waiyu_4097_phone\\passport.user_ext_info.2014-07-28");
+        Map<String, UserInfoTmp> userInfoMap = Maps.newHashMap();
+        for (String data : userInfoList) {
+            String[] userInfoArray = data.split(":%:");
+            String passportId = userInfoArray[0].toLowerCase();
+            if (userInfoArray.length != 4) {
+                content = passportId + ",userInfo length != 4";
+                contentList.add(content);
+                continue;
+            }
+            UserInfoTmp userInfoTmp = new UserInfoTmp();
+            userInfoTmp.setUserid(passportId);
+            userInfoTmp.setPassword(userInfoArray[1]);
+            userInfoTmp.setPasswordtype(userInfoArray[2]);
+            userInfoTmp.setFlag(userInfoArray[3]);
+            userInfoMap.put(passportId, userInfoTmp);
+        }
+        Map<String, UserOtherInfoTmp> userOtherInfoMap = Maps.newHashMap();
+        for (String data : userOtherInfoList) {
+            String[] userOtherInfoArray = data.split(":%:");
+            String passportId = userOtherInfoArray[0].toLowerCase();
+            if (userOtherInfoArray.length != 9) {
+                content = passportId + ",userOtherInfo length != 9";
+                contentList.add(content);
+                continue;
+            }
+            UserOtherInfoTmp userOtherInfoTmp = new UserOtherInfoTmp();
+            userOtherInfoTmp.setUserid(passportId);
+            userOtherInfoTmp.setPersonalid(userOtherInfoArray[1]);
+            userOtherInfoTmp.setMobile(userOtherInfoArray[2]);
+            userOtherInfoTmp.setMobileflag(userOtherInfoArray[3]);
+            userOtherInfoTmp.setEmail(userOtherInfoArray[4]);
+            userOtherInfoTmp.setEmailflag(userOtherInfoArray[5]);
+            userOtherInfoTmp.setProvince(userOtherInfoArray[6]);
+            try {
+                String uniqStr = userOtherInfoArray[7];
+                if (!Strings.isNullOrEmpty(uniqStr)) {
+                    uniqStr = new String(userOtherInfoArray[7].getBytes(), "utf-8");
+                }
+                userOtherInfoTmp.setUniqname(uniqStr);
+            } catch (UnsupportedEncodingException e) {
+                userOtherInfoTmp.setUniqname("");
+            }
+            userOtherInfoTmp.setCity(userOtherInfoArray[8]);
+            userOtherInfoMap.put(passportId, userOtherInfoTmp);
+        }
+        Map<String, UserExtInfoTmp> userExtInfoTmpMap = Maps.newHashMap();
+        for (String data : userExtInfoList) {
+            String[] userExtInfoArray = data.split(":%:");
+            String passportId = userExtInfoArray[0].toLowerCase();
+            if (userExtInfoArray.length != 8) {
+                content = passportId + ",userExtInfo length != 8";
+                contentList.add(content);
+                continue;
+            }
+            UserExtInfoTmp userExtInfoTmp = new UserExtInfoTmp();
+            userExtInfoTmp.setUserid(passportId);
+            try {
+                String quesStr = userExtInfoArray[1];
+                if (!Strings.isNullOrEmpty(quesStr)) {
+                    quesStr = new String(userExtInfoArray[1].getBytes(), "utf-8");
+                }
+                userExtInfoTmp.setQuestion(quesStr);
+            } catch (UnsupportedEncodingException e) {
+                userExtInfoTmp.setQuestion("");
+            }
+            userExtInfoTmp.setAnswer(userExtInfoArray[2]);
+            userExtInfoTmp.setUsername(userExtInfoArray[3]);
+            userExtInfoTmp.setBirthday(userExtInfoArray[4]);
+            userExtInfoTmp.setGender(userExtInfoArray[5]);
+            userExtInfoTmp.setCreatetime(userExtInfoArray[6]);
+            userExtInfoTmp.setCreateip(userExtInfoArray[7]);
+            userExtInfoTmpMap.put(passportId, userExtInfoTmp);
+        }
+
+        for (String passportId : userInfoMap.keySet()) {
+            if (Strings.isNullOrEmpty(passportId)) {
+                continue;
+            }
+            passportId = passportId.toLowerCase();
+            if (accountDAO.getAccountByPassportId(passportId) != null) {
+                continue;
+            }
+            UserInfoTmp userInfoTmp = userInfoMap.get(passportId);
+            if (userInfoTmp == null || ("0".equals(userInfoTmp.getFlag()) | Strings.isNullOrEmpty(userInfoTmp.getPassword()))) {
+                content = passportId + ",IncUserInfo is empty or flag==0 or password==null";
+                contentList.add(content);
+                continue;
+            }
+            UserOtherInfoTmp userOtherInfoTmp = userOtherInfoMap.get(passportId);
+            UserExtInfoTmp userExtInfoTmp = userExtInfoTmpMap.get(passportId);
+            try {
+                String email = null, mobile = null, personalId = null, province = "", city = "", uniqname = null;
+                if (userOtherInfoTmp != null) {
+                    email = "1".equals(userOtherInfoTmp.getEmailflag()) ? userOtherInfoTmp.getEmail() : "";
+                    mobile = "1".equals(userOtherInfoTmp.getMobileflag()) ? userOtherInfoTmp.getMobile() : "";
+                    personalId = !Strings.isNullOrEmpty(userOtherInfoTmp.getPersonalid()) ? userOtherInfoTmp.getPersonalid() : "";
+                    province = !Strings.isNullOrEmpty(userOtherInfoTmp.getProvince()) ? userOtherInfoTmp.getProvince() : "";
+                    city = !Strings.isNullOrEmpty(userOtherInfoTmp.getCity()) ? userOtherInfoTmp.getCity() : "";
+                    uniqname = !Strings.isNullOrEmpty(userOtherInfoTmp.getUniqname()) ? userOtherInfoTmp.getUniqname() : "";
+                }
+                String question = null, answer = null, gender = "0", fullname = null, reg_ip = null;
+                Date birthday = DateUtil.parse("1900-00-00", DateUtil.DATE_FMT_3);
+                Date reg_time = new Date();
+                if (userExtInfoTmp != null) {
+                    question = !Strings.isNullOrEmpty(userExtInfoTmp.getQuestion()) ? userExtInfoTmp.getQuestion() : "";
+                    answer = !Strings.isNullOrEmpty(userExtInfoTmp.getAnswer()) ? userExtInfoTmp.getAnswer() : "";
+                    gender = !Strings.isNullOrEmpty(userExtInfoTmp.getGender()) ? userExtInfoTmp.getGender() : "";
+                    fullname = !Strings.isNullOrEmpty(userExtInfoTmp.getUsername()) ? userExtInfoTmp.getUsername() : "";
+                    reg_ip = !Strings.isNullOrEmpty(userExtInfoTmp.getCreateip()) ? userExtInfoTmp.getCreateip() : "";
+                    reg_time = !Strings.isNullOrEmpty(userExtInfoTmp.getCreatetime()) ? DateUtil.parse(userExtInfoTmp.getCreatetime(), DateUtil.DATE_FMT_3) : reg_time;
+                }
+
+                Account account = new Account();
+                account.setPassportId(passportId);
+                account.setPassword(userInfoTmp.getPassword());
+                account.setPasswordtype(Integer.parseInt(userInfoTmp.getPasswordtype()));
+                account.setMobile(mobile);
+                account.setRegTime(reg_time);
+                account.setRegIp(reg_ip);
+                account.setFlag(1);
+                if (AccountDomainEnum.OTHER.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+                    account.setAccountType(AccountTypeEnum.EMAIL.getValue());
+                } else if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+                    account.setAccountType(AccountTypeEnum.PHONE.getValue());
+                } else {
+                    content = passportId + ",accountType not other or phone";
+                    contentList.add(content);
+                    continue;
+                }
+                account.setUniqname(uniqname);
+
+                AccountInfo accountInfo = new AccountInfo();
+                accountInfo.setPassportId(passportId);
+                accountInfo.setQuestion(question);
+                accountInfo.setAnswer(answer);
+                accountInfo.setEmail(email);
+                accountInfo.setBirthday(birthday);
+                accountInfo.setGender(gender);
+                accountInfo.setProvince(province);
+                accountInfo.setCity(city);
+                accountInfo.setFullname(fullname);
+                accountInfo.setPersonalid(personalId);
+                accountInfo.setUpdateTime(new Date());
+                accountInfo.setCreateTime(reg_time);
+
+                fillSGDB(uniqname, mobile, passportId, account, accountInfo, count, contentList);
+            } catch (Exception e) {
+                content = passportId + ",insertSogouDB Error," + e.getMessage();
+                contentList.add(content);
+            }
+        }
+        content = "total:" + userInfoMap.size() + ",InertSuccess:" + count;
+        contentList.add(content);
+        long end = System.currentTimeMillis();
+        content = "use time:" + (end - start) / 1000 / 60 + "m";
+        contentList.add(content);
+        try {
+            FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\fill_phone_userid_0526_0725", contentList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*
+     * 缺失账号写入搜狗数据库
+     */
+    private void fillSGDB(String uniqname, String mobile, String passportId, Account account, AccountInfo accountInfo, int count, List<String> contentList) throws Exception {
+        int mobileMapSucc = 1, accountSucc = 1, accountInfoSucc = 1, uniqMapSucc = 1;
+        if (!Strings.isNullOrEmpty(mobile) && mobilePassportMappingDAO.getPassportIdByMobile(mobile) == null) {
+            String mobilePassportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
+            if (Strings.isNullOrEmpty(mobilePassportId)) {
+                mobileMapSucc = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
+            } else {
+                account.setMobile(null);
+            }
+        }
+        if (!Strings.isNullOrEmpty(uniqname) && uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname) == null) {
+            String uniqPassportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
+            if (Strings.isNullOrEmpty(uniqPassportId)) {
+                uniqMapSucc = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
+            } else {
+                account.setUniqname(null);
+            }
+        }
+        if (accountDAO.getAccountByPassportId(passportId) == null) {
+            accountSucc = accountDAO.insertAccount(passportId, account);
+        }
+        if (accountInfoDAO.getAccountInfoByPassportId(passportId) == null) {
+            accountInfoSucc = accountInfoDAO.saveInfoOrInsert(passportId, accountInfo);
+        }
+        if (mobileMapSucc == 1 && accountSucc == 1 && accountInfoSucc == 1) {
+            count++;
+        } else {
+            String content = passportId + ",mobileMap-" + mobileMapSucc + ",uniqMap-" + uniqMapSucc + ",account-" + accountSucc + ",accountInfo-" + accountInfoSucc;
+            contentList.add(content);
         }
     }
 
@@ -451,6 +623,30 @@ public class RepairOtherWriteData extends BaseTest {
         contentList.add(content);
         try {
             com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\sohubindmobile_0629_0712_total_result", contentList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 验证搜狐导出的外域邮箱或手机账号是否在搜狐存在
+     */
+    @Test
+    public void testBatchCheckUser() {
+        List<String> contentList = Lists.newArrayList();
+        List<String> passportList = FileUtil.readFileByLines("D:\\phone_diff");
+        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
+        String content;
+        for(String passportId : passportList){
+            checkUserApiParams.setUserid("toptxy123@sogou.com");
+            Result result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+            if(!result.isSuccess()){
+                content = passportId + "," + result.toString();
+                contentList.add(content);
+            }
+        }
+        try {
+            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\phone_diff_result", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
