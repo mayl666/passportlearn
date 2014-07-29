@@ -1,11 +1,13 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LogUtil;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
@@ -35,6 +37,8 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
     private LoginApiManager sgLoginApiManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
+    @Autowired
+    private CommonManager commonManager;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
@@ -46,7 +50,12 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result;
             }
-            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
+            String passportId = commonManager.getPassportIdByUsername(userId);
+            if (Strings.isNullOrEmpty(passportId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND);
+                return result;
+            }
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             if (AccountDomainEnum.SOHU.equals(domain)) {
                 //主账号是sohu域账号调用sohu api校验用户名和密码
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
