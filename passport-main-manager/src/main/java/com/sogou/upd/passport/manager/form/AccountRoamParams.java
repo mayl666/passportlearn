@@ -13,18 +13,25 @@ import javax.validation.constraints.Min;
 public class AccountRoamParams {
 
 
-    public String getSgid() {
-        return sgid;
-    }
-
+    /**
+     * 应用client_id
+     */
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
     private int client_id;
 
+
+    /**
+     * 签名串
+     */
     private String sgid;
 
     public void setSgid(String sgid) {
         this.sgid = sgid;
+    }
+
+    public String getSgid() {
+        return sgid;
     }
 
     public int getClient_id() {
