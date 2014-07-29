@@ -365,6 +365,16 @@ public class ErrorUtil {
     //解密错误
     public static final String ERR_CODE_RSA_DECRYPT = "31000";
 
+    /**
+     * 验证漫游签名错误
+     */
+    public static final String ERR_CODE_SIGNATURE_VALIDATION = "41000";
+
+    /**
+     * 漫游用户 签名对应信息不存在
+     */
+    public static final String ERR_CODE_ROAM_INFO_NOT_EXIST = "41001";
+
 
     public ErrorUtil() {
         super();
