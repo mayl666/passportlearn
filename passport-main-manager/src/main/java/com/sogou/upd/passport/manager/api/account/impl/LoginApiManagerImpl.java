@@ -6,7 +6,6 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LogUtil;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
@@ -36,8 +35,6 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
     private LoginApiManager sgLoginApiManager;
     @Autowired
     private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private CommonManager commonManager;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
