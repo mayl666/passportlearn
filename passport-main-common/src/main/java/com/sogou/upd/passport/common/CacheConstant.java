@@ -14,7 +14,6 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORT_ACCOUNT = "SP.PASSPORTID:ACCOUNT_"; // passportId与account映射
     public static final String CACHE_PREFIX_MOBILE_PASSPORTID = "SP.MOBILE:PASSPORTID_";  // mobile与passportId映射
     public static final String CACHE_PREFIX_SNAME_PASSPORTID = "SP.SNAME:PASSPORTID_";  // sname与passportId映射
-    public static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = "SP.PASSPORTID:IPBLACKLIST_"; // passportId与ip blacklist映射
     public static final String CACHE_PREFIX_REGISTER_IPBLACKLIST = "SP.REGISTER:IPBLACKLIST_SET_"; // ip与注册次数映射
     public static final String CACHE_PREFIX_REGISTER_CLIENTIDBLACKLIST = "SP.REGISTER:CLIENTIDBLACKLIST_SET_"; // ip与注册次数映射
     public static final String CACHE_PREFIX_REGISTER_COOKIEBLACKLIST = "SP.REGISTER:COOKIEBLACKLIST_"; // cookie与注册次数映射
@@ -22,7 +21,6 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = "SP.PASSPORTID:ACTIVEMAILTOKEN_"; //passportId 与第三方邮件注册token有效期验证
     public static final String CACHE_PREFIX_NICKNAME_PASSPORTID = "SP.NICKNAME:PASSPORTID_"; //昵称与passportId映射
     public static final String CACHE_PREFIX_PASSPORTID_UPDATE_PWD_OR_BIND = "SP.UPDATE:PASSPORTID_"; //passportId与该用户是否修改了密码或绑定手机映射
-    public static final String CACHE_PREFIX_PASSPORTID_RESETPWD = "SP.RESETPWD:PASSPORTID_"; //passportId与该用户是否找回密码了
 
     // public static final String CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN = "SP.PASSPORTID:RESETPWDEMAILTOKEN_"; //passportId与邮件重置密码token有效期验证
     public static final String CACHE_PREFIX_PASSPORTID_ACCOUNTINFO = "SP.PASSPORTID:ACCOUNTINFO_"; // passportId与accountInfo映射
