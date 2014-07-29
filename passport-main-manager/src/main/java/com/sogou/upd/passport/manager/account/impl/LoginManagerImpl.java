@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.manager.account.impl;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -8,7 +7,6 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
@@ -57,21 +55,14 @@ public class LoginManagerImpl implements LoginManager {
     private LoginApiManager loginApiManager;
     @Autowired
     private SecureManager secureManager;
-    @Autowired
-    private CommonManager commonManager;
 
     @Override
     public Result checkUser(String username, int clientId) throws Exception {
-        Result result = new APIResultSupport(false);
+        Result result;
         try {
             //sohu域账号去sohu检查用户名，否则走sogou检查用户名的逻辑
             CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
-            String passportId = commonManager.getPassportIdByUsername(username);
-            if (Strings.isNullOrEmpty(passportId)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                return result;
-            }
-            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
                 result = proxyRegisterApiManager.checkUser(checkUserApiParams);
             } else {
                 result = sgRegisterApiManager.checkUser(checkUserApiParams);
