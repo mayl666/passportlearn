@@ -14,12 +14,10 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORT_ACCOUNT = "SP.PASSPORTID:ACCOUNT_"; // passportId与account映射
     public static final String CACHE_PREFIX_MOBILE_PASSPORTID = "SP.MOBILE:PASSPORTID_";  // mobile与passportId映射
     public static final String CACHE_PREFIX_SNAME_PASSPORTID = "SP.SNAME:PASSPORTID_";  // sname与passportId映射
-    public static final String CACHE_PREFIX_PASSPORT_ACCOUNTTOKEN = "SP.PASSPORTID:ACCOUNTTOKEN_"; // passportId:Map<client_id+instance_id, accountToken>
     public static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = "SP.PASSPORTID:IPBLACKLIST_"; // passportId与ip blacklist映射
     public static final String CACHE_PREFIX_REGISTER_IPBLACKLIST = "SP.REGISTER:IPBLACKLIST_SET_"; // ip与注册次数映射
     public static final String CACHE_PREFIX_REGISTER_CLIENTIDBLACKLIST = "SP.REGISTER:CLIENTIDBLACKLIST_SET_"; // ip与注册次数映射
     public static final String CACHE_PREFIX_REGISTER_COOKIEBLACKLIST = "SP.REGISTER:COOKIEBLACKLIST_"; // cookie与注册次数映射
-
 
     public static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = "SP.PASSPORTID:ACTIVEMAILTOKEN_"; //passportId 与第三方邮件注册token有效期验证
     public static final String CACHE_PREFIX_NICKNAME_PASSPORTID = "SP.NICKNAME:PASSPORTID_"; //昵称与passportId映射
@@ -51,50 +49,31 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_IP_BINDNUM = "SP.IP:BINDNUM_"; //IP的设置密保限制
     // username或者ip在白名单中的set KEY
     public static final String CACHE_PREFIX_LOGIN_WHITELIST = "SP.USERNAME.IP:WHITELIST_KEY";
-
-    // username或者ip在黑名单中的set KEY
-    public static final String CACHE_PREFIX_LOGIN_BLACKLIST = "SP.USERNAME.IP:BLACKLIST_KEY";
-
-
     // 登陆在黑名单的前缀
     public static final String CACHE_PREFIX_LOGIN_USERNAME_BLACK_ = "SP.USERNAME:BLACK_";
     public static final String CACHE_PREFIX_LOGIN_IP_BLACK_ = "SP.IP:BLACK_";
-
     // 检查账号是否存在在黑名单的前缀
     public static final String CACHE_PREFIX_EXIST_USERNAME_BLACK_ = "SP.EXIST.USERNAME:BLACK_";
     public static final String CACHE_PREFIX_EXIST_IP_BLACK_ = "SP.EXIST.IP:BLACK_";
-
     // 内部接口检查账号是否存在在黑名单的前缀
     public static final String CACHE_PREFIX_EXIST_INTERNAL_USERNAME_BLACK = "SP.EXIST.INTERNAL.USERNAME:BLACK_";
     public static final String CACHE_PREFIX_EXIST_INTERNAL_IP_BLACK = "SP.EXIST.INTERNAL.IP:BLACK_";
-
-    //检查昵称是否存在黑名单前缀
+    //检查昵称是否存在IP黑名单
     public static final String CACHE_PREFIX_EXIST_NICKNAME_IP_BLACK = "SP.EXIST.NICKNAME.IP:BLACK_";
-
-    //检查昵称是否存在次数前缀
-    public static final String CACHE_PREFIX_CHECK_NICKNAME_EXIST_IP_NUM = "SP.IP.CHECK_NICKNAME_NUM_";
-
+    public static final String CACHE_PREFIX_CHECK_NICKNAME_EXIST_IP_NUM = "SP.IP.CHECK_NICKNAME_NUM_"; //检查昵称是否存在昵称黑名单
     //cookie与检查用户昵称次数映射
     public static final String CACHE_PREFIX_CHECK_NICKNAME_COOKIE_BLACK = "SP.EXIST.NICKNAME.COOKIE:BLACK_";
-
     //基于cookie检查用户昵称次数限制
     public static final String CACHE_PREFIX_CHECK_NICKNAME_EXIST_COOKIE_NUM = "SP.COOKIE.CHECK_NICKNAME_NUM_";
-
-
     //内部接口 检查用户是否存在次数前缀
     public static final String CACHE_PREFIX_CHECK_USER_INTERNAL_USERNAME_NUM ="SP.EXIST.INTERNAL.USERNAME_NUM_";
-
     //内部接口 检查用户是否存在次数前缀
     public static final String CACHE_PREFIX_CHECK_USER_INTERNAL_IP_NUM ="SP.EXIST.INTERNAL.IP_NUM_";
-
     // 检查账号是否存在在黑名单的前缀
     public static final String CACHE_PREFIX_GETPAIRTOKEN_USERNAME_BLACK_ = "SP.GETPAIRTOKEN.USERNAME:BLACK_";
     public static final String CACHE_PREFIX_GETPAIRTOKEN__IP_BLACK_ = "SP.GETPAIRTOKEN.IP:BLACK_";
-
-
     //IP网段黑名单
     public static final String CACHE_PREFIX_IP_SUBIPBLACKLIST = "SP.IP:SUBIPBLACKLIST_KEY";
-
     public static final String CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING = "SP.PASSPORTID:IMAGE_HASH_"; //passportId与新旧头像映射
 
     /*================绑定密保限制相关缓存常量=====================*/
