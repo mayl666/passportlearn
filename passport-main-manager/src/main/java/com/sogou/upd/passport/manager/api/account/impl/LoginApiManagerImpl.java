@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LogUtil;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -61,10 +62,13 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
             } else {
                 result = sgLoginApiManager.webAuthUser(authUserApiParams);
-                if (ErrorUtil.INVALID_ACCOUNT.equals(result.getCode())) { //如果账号不存在，去sohu校验用户名和密码
-                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                    LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.LOGIN, "webAuthUser", "check_sh", userId, result.getCode(), result.toString());
+                if (ManagerHelper.isDoubleCheckUserLogin()) {
+                    if (ErrorUtil.INVALID_ACCOUNT.equals(result.getCode())) { //如果账号不存在，去sohu校验用户名和密码
+                        result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                        LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.LOGIN, "webAuthUser", "check_sh", userId, result.getCode(), result.toString());
+                    }
                 }
+
             }
 
         } catch (Exception e) {

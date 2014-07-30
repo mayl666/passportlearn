@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.RegManager;
@@ -84,19 +85,23 @@ public class LoginAction extends BaseController {
                 result.setDefaultModel("needCaptcha", needCaptcha);
             } else {
                 //非sohu域账号登录时校验用户名是否存在，因为要考虑数据可能不完整，登录时不存在的会去sohu校验密码，所以检查用户名时也需要兼容不存在的情况，sogou不存在，去校验sohu
-                //todo 上线观察几天后，此兼容逻辑可删除
-
-                if (!AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username)) && ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT.equals(result.getCode())) {
-                    result = regManager.checkUserFromSohu(username, clientId);
-                    if (result.isSuccess()) {
-                        result.setSuccess(false);
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                        return result.toString();
+                //todo 上线观察几天后，若账号缺失严重，再打开开关
+                if (ManagerHelper.isDoubleCheckUserLogin()) {
+                    if (!AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username)) && ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT.equals(result.getCode())) {
+                        result = regManager.checkUserFromSohu(username, clientId);
+                        if (result.isSuccess()) {
+                            result.setSuccess(false);
+                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                            return result.toString();
+                        }
+                        if (!result.isSuccess() && (ErrorUtil.ERR_CODE_USER_ID_EXIST.equals(result.getCode()) || ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode()))) {
+                            result.setSuccess(true);
+                            result.setMessage("操作成功");
+                        }
                     }
-                    if (!result.isSuccess() && (ErrorUtil.ERR_CODE_USER_ID_EXIST.equals(result.getCode()) || ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode()))) {
-                        result.setSuccess(true);
-                        result.setMessage("操作成功");
-                    }
+                } else {
+                    result = new APIResultSupport(false);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 }
             }
         } catch (Exception e) {
