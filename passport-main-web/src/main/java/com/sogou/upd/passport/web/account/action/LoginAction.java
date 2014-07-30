@@ -95,6 +95,7 @@ public class LoginAction extends BaseController {
                     }
                     if (!result.isSuccess() && (ErrorUtil.ERR_CODE_USER_ID_EXIST.equals(result.getCode()) || ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode()))) {
                         result.setSuccess(true);
+                        result.setMessage("操作成功");
                     }
                 }
             }
