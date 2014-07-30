@@ -135,14 +135,6 @@ public class SSOCookieController extends BaseController {
         return;
     }
 
-    private void returnErrMsg(HttpServletResponse response, String ru, String errorCode, String errorMsg) throws Exception {
-        if (Strings.isNullOrEmpty(ru)) {
-            ru = DEFAULT_URL;
-        }
-        response.sendRedirect(ru + "?errorCode=" + errorCode + "&errorMsg=" + Coder.encodeUTF8(errorMsg));
-        return;
-    }
-
     private void log(HttpServletRequest request, String passportId, String ru, String resultCode) {
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), "", resultCode, getIp(request));

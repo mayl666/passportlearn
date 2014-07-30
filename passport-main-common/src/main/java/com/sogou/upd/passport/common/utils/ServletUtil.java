@@ -1,10 +1,14 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.math.Coder;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -26,6 +30,50 @@ public class ServletUtil {
             requestParam.append(",");
         }
         return requestParam.toString();
+    }
+
+    public static String applyOAuthParametersString(String messageUrl, Map<String, Object> params) {
+        boolean isContainsQuery = messageUrl.contains("?");
+        StringBuilder url = new StringBuilder(messageUrl);
+        StringBuilder query = new StringBuilder(format(params.entrySet(),
+                CommonConstant.DEFAULT_CONTENT_CHARSET));
+        if (!Strings.isNullOrEmpty(query.toString())) {
+            if (isContainsQuery) {
+                url.append("&").append(query);
+            } else {
+                url.append("?").append(query);
+            }
+        }
+        return url.toString();
+    }
+
+    /**
+     * 格式化 into <code>application/x-www-form-urlencoded</code> String
+     *
+     * @param parameters 需编码的参数
+     * @param charset    编码格式
+     * @return Translated string
+     * @throws java.io.UnsupportedEncodingException
+     *
+     */
+    public static String format(final Collection<? extends Map.Entry<String, Object>> parameters,
+                                final String charset) {
+        final StringBuilder result = new StringBuilder();
+        for (final Map.Entry<String, Object> parameter : parameters) {
+            String value = parameter.getValue() == null ? null : String.valueOf(parameter
+                    .getValue());
+            if (!StringUtils.isEmpty(parameter.getKey()) && !StringUtils.isEmpty(value)) {
+                final String encodedName = Coder.encode(parameter.getKey(), charset);
+                final String encodedValue = value != null ? Coder.encode(value, charset) : "";
+                if (result.length() > 0) {
+                    result.append("&");
+                }
+                result.append(encodedName);
+                result.append("=");
+                result.append(encodedValue);
+            }
+        }
+        return result.toString();
     }
 
 	/* ------------------------- cookie ------------------------- */
@@ -60,7 +108,7 @@ public class ServletUtil {
     // QTZBNjVEMzJCRjFFOTI5Njc3RTc4REUyOXxyZWZuaWNrOjE4OiVFNSU4QSVBMCVFNyU5QiU5Rnw;
     //
     // domain=.hao.qq.com; path=/; expires=Fri, 17-Jan-2014 06:45:45 GMT
-    public static void setHttpOnlyCookie(HttpServletResponse response, String key, String value, String domain,long expires) {
+    public static void setHttpOnlyCookie(HttpServletResponse response, String key, String value, String domain, long expires) {
         StringBuffer sb = new StringBuffer();
         sb.append(key).append("=").append(value).append("; ");
         sb.append("domain=").append(domain).append("; ");
@@ -71,7 +119,7 @@ public class ServletUtil {
         response.addHeader("Set-Cookie", cookieValue);
     }
 
-    public static void setExpireCookie(HttpServletResponse response, String key, String value, String domain,long expires) {
+    public static void setExpireCookie(HttpServletResponse response, String key, String value, String domain, long expires) {
         StringBuffer sb = new StringBuffer();
         sb.append(key).append("=").append(value).append("; ");
         sb.append("domain=").append(domain).append("; ");
@@ -108,7 +156,7 @@ public class ServletUtil {
         clearCookie(response, key, 0, "/", defaultDomain);
     }
 
-    public static void clearCookie(HttpServletResponse response, String key,String domain) {
+    public static void clearCookie(HttpServletResponse response, String key, String domain) {
         clearCookie(response, key, 0, "/", domain);
     }
 

@@ -21,13 +21,6 @@ public interface WapLoginManager {
     public Result accountLogin(WapLoginParams parameters, String ip);
 
     /**
-     * wap端校验token，验证成功则返回passportId
-     * @param token
-     * @return
-     */
-    public Result authtoken(String token);
-
-    /**
      * wap端应用检查验证码是否正确
      * @param username
      * @param ip

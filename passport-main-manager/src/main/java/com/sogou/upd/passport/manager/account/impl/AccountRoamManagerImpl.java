@@ -2,13 +2,11 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountRoamManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
@@ -16,6 +14,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountRoamInfo;
 import com.sogou.upd.passport.service.account.AccountRoamService;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,39 +33,30 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
 
     @Autowired
     private CookieManager cookieManager;
-
     @Autowired
     private AccountService accountService;
-
     @Autowired
     private AccountRoamService accountRoamService;
+    @Autowired
+    private TokenService tokenService;
 
-    /**
-     * 支持：搜狗域、搜狐域、第三方账号 3类账号漫游
-     * <p/>
-     * 不支持：外域、手机账号漫游
-     * <p/>
-     * 账号策略： 因支持漫游测试阶段，搜狐并没有停掉漫游，所以需要做兼容逻辑处理。
-     * <p/>
-     * (1)对于漫游过来的手机、外域邮箱账号、直接清掉cookie
-     * (2)账号在sg不存在:
-     * 1、对搜狗域账号、第三方账号、直接清除掉cookie
-     * 2、搜狐域账号、初始化Account、AccountInfo
-     * <p/>
-     * <p/>
-     * 签名数据存储
-     * key:sgId
-     * value: version:xxxx|userid:xxxx|status:xxxx（登录状态）|ct:xxxx(请求时间)|ip:xxxx(用户真实ip)
-     *
-     * @param response
-     * @param sgLogin    搜狗是否登录
-     * @param sgLgUserId 搜狗登录用户userid
-     * @param r_key      签名信息
-     * @param ru         调整地址
-     * @param clientId   应用id
-     * @return
-     * @throws ServiceException
-     */
+    @Override
+    public Result roamGo(String sLoginPassportId) {
+        Result result = new APIResultSupport(false);
+        if (Strings.isNullOrEmpty(sLoginPassportId)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            return result;
+        }
+        String r_key = tokenService.saveWebRoamToken(sLoginPassportId);
+        if(!Strings.isNullOrEmpty(r_key)){
+            result.setSuccess(true);
+            result.setDefaultModel("r_key",r_key);
+        }else{
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+        }
+        return result;
+    }
+
     @Override
     public Result webRoam(HttpServletResponse response, boolean sgLogin, String sgLgUserId, String r_key, String ru, int clientId) throws ServiceException {
         Result result = new APIResultSupport(false);

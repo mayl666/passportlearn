@@ -1,9 +1,10 @@
 package com.sogou.upd.passport.web;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.Map;
 
 public class BaseController {
 
@@ -111,7 +113,6 @@ public class BaseController {
         }
     }
 
-
     /**
      * 跳转到回跳地址
      *
@@ -125,7 +126,11 @@ public class BaseController {
         if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_INDEX_URL;
         }
-        response.sendRedirect(ru + "?errorCode=" + errorCode + "&errorMsg=" + Coder.encodeUTF8(errorMsg));
+        Map paramMap = Maps.newHashMap();
+        paramMap.put("errorCode", errorCode);
+        paramMap.put("errorMsg", errorMsg);
+        ru = ServletUtil.applyOAuthParametersString(ru, paramMap);
+        response.sendRedirect(ru);
         return;
     }
 
