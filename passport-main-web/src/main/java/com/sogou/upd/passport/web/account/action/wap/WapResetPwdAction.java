@@ -36,7 +36,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 /**
  * 移动端找回密码
@@ -398,7 +397,7 @@ public class WapResetPwdAction extends BaseController {
         urlStr.append("username=" + params.getUsername());
         urlStr.append("&client_id=" + client_id);
         urlStr.append("&ru=" + ru);
-        urlStr.append("&message=" + URLEncoder.encode(result.getMessage(),"GBK"));
+        urlStr.append("&message=" + result.getMessage());
         urlStr.append("&skin=" + params.getSkin());
         urlStr.append("&v=" + params.getV());
         return urlStr.toString();
