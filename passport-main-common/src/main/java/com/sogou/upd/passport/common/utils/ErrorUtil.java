@@ -548,6 +548,9 @@ public class ErrorUtil {
 
         //RSA
         ERR_CODE_MSG_MAP.put(ERR_CODE_RSA_DECRYPT, "解密错误");
+
+        //漫游
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ROAM_INFO_NOT_EXIST, "漫游用户信息不存在");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

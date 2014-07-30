@@ -100,7 +100,8 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                 //若账号不存在、搜狗域、第三方账号 清cookie
                 if (accountDomain == AccountDomainEnum.SOGOU || accountDomain == AccountDomainEnum.THIRD) {
                     //搜狗域、第三方账号在搜狗不存在 记录Log
-                    LOGGER.info("roam account sg not exist. userId:{},accountDomain:{}", roamPassportId, accountDomain.getValue());
+                    LOGGER.warn("roam account sg not exist. userId:{},accountDomain:{}", roamPassportId, accountDomain.getValue());
+
                     //返回result
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                     return result;
@@ -113,6 +114,9 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                         return result;
                     }
                 }
+            } else if (accountDomain == AccountDomainEnum.PHONE || accountDomain == AccountDomainEnum.OTHER) {
+                result.setSuccess(true);
+                return result;
             }
 
             //漫游用户在搜狗未登录、设置搜狗登录状态
