@@ -80,7 +80,6 @@ public class WebRoamController extends BaseController {
                 Map params = Maps.newHashMap();
                 params.put("client_id", clientId);
                 params.put("r_key", r_key);
-//                params.put("ru", URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET));
                 params.put("ru", ru);
                 response.sendRedirect(ServletUtil.applyOAuthParametersString(SG_WEB_ROAM_URL, params));
                 return;
