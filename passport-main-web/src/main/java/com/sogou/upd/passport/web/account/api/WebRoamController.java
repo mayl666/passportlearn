@@ -87,8 +87,6 @@ public class WebRoamController extends BaseController {
             }
             return;
         } catch (Exception e) {
-            //array > 2 use format new Object[]{}
-//            LOGGER.error("web_roam_go error.shUserId:{},clientId:{},ru:{}", sLoginPassportId, clientId, ru, e);
             LOGGER.error("web_roam_go error.shUserId:{},clientId:{},ru:{}", new Object[]{sLoginPassportId, clientId, ru}, e);
         } finally {
             //记录用户操作日志
@@ -120,13 +118,13 @@ public class WebRoamController extends BaseController {
             if (hostHolder.isLogin()) {
                 sgLgUserId = hostHolder.getPassportId();
             }
-            // todo isLogin not need && not service exception
             result = accountRoamManager.webRoam(response, sgLgUserId, r_key, ru, createIp, Integer.parseInt(clientId));
             if (result.isSuccess()) {
                 response.sendRedirect(ru);
                 return;
             } else {
                 returnErrMsg(response, ru, result.getCode(), result.getMessage());
+                return;
             }
         } catch (Exception e) {
             LOGGER.error(" web_roam error.userId:{},r_key:{},ru", new Object[]{result.getModels().get("userId"), r_key, ru}, e);

@@ -167,6 +167,6 @@ public class CacheConstant {
 
 
     /*==================漫游相关=====================================*/
-    public static final String CACHE_KEY_WEB_ROAM = "SP.WEB:ROAM_"; //漫游key
+    public static final String CACHE_KEY_WEB_ROAM = "SP.RKEY:VALUE_"; //漫游key
 
 }

@@ -73,7 +73,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                 tokenService.deleteWebRoamDoByToken(CacheConstant.CACHE_KEY_WEB_ROAM + r_key);
             } else {
                 //漫游用户信息取不到 返回对应状态码的Result
-                result.setCode(ErrorUtil.ERR_CODE_ROAM_INFO_NOT_EXIST);
+                result.setCode(ErrorUtil.ERR_CODE_SIGNATURE_ERROR);
                 return result;
             }
 
@@ -94,7 +94,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                 return result;
             }
 
-
             //判断账号是否存在
             Account account = accountService.queryAccountByPassportId(roamPassportId);
             if (account == null) {
@@ -102,7 +101,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                 if (accountDomain == AccountDomainEnum.SOGOU || accountDomain == AccountDomainEnum.THIRD) {
                     //搜狗域、第三方账号在搜狗不存在 记录Log
                     LOGGER.info("roam account sg not exist. userId:{},accountDomain:{}", roamPassportId, accountDomain.getValue());
-
                     //返回result
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                     return result;
