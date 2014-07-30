@@ -370,7 +370,7 @@ public class WapResetPwdAction extends BaseController {
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
             result = resetPwdManager.checkEmailResetPwd(passportId, clientId, params.getScode());
-            url = buildSendRedirectUrl(result, params);
+            url = buildSendRedirectUrl(params);
             if (result.isSuccess()) {
                 String scode = (String) result.getModels().get("scode");
                 url = url + "&scode=" + scode + "&code=0";
@@ -388,7 +388,7 @@ public class WapResetPwdAction extends BaseController {
     }
 
     //验证完邮件跳转至页面提示重置密码页
-    private String buildSendRedirectUrl(Result result, WapCheckEmailParams params) throws UnsupportedEncodingException {
+    private String buildSendRedirectUrl(WapCheckEmailParams params) throws UnsupportedEncodingException {
         String ru = Strings.isNullOrEmpty(params.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(params.getRu());
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         StringBuilder urlStr = new StringBuilder();
@@ -396,7 +396,6 @@ public class WapResetPwdAction extends BaseController {
         urlStr.append("username=" + params.getUsername());
         urlStr.append("&client_id=" + client_id);
         urlStr.append("&ru=" + ru);
-        urlStr.append("&message=" + result.getMessage());
         urlStr.append("&skin=" + params.getSkin());
         urlStr.append("&v=" + params.getV());
         return urlStr.toString();
@@ -411,12 +410,12 @@ public class WapResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/vm/reset", method = RequestMethod.GET)
     public String findResetView(String ru, Model model, String client_id, String scode, String username, String
-            code, String message, String skin) throws Exception {
+            code, String skin) throws Exception {
         Result result = new APIResultSupport(false);
         ru = Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(ru);
         client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
         result.setCode(code);
-        result.setMessage(message);
+        result.setMessage(ErrorUtil.getERR_CODE_MSG(code));
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
         result.setDefaultModel("userid", username);
