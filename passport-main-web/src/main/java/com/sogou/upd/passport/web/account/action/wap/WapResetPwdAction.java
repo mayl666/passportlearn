@@ -68,7 +68,6 @@ public class WapResetPwdAction extends BaseController {
     /**
      * 找回密码
      *
-     * @param ru
      * @param model
      * @param redirectAttributes
      * @return
