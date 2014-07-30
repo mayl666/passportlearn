@@ -74,7 +74,7 @@ public class WebRoamController extends BaseController {
                 returnErrMsg(response, ru, result.getCode(), result.getMessage());
                 return;
             }
-            result = accountRoamManager.roamGo(sLoginPassportId);
+            result = accountRoamManager.roamGo(sLoginPassportId, ip);
             if (result.isSuccess()) {
                 String r_key = (String) result.getModels().get("r_key");
                 Map params = Maps.newHashMap();
@@ -87,7 +87,9 @@ public class WebRoamController extends BaseController {
             }
             return;
         } catch (Exception e) {
-            LOGGER.error("web_roam_go error.shUserId:{},clientId:{},ru:{}", sLoginPassportId, clientId, ru, e);
+            //array > 2 use format new Object[]{}
+//            LOGGER.error("web_roam_go error.shUserId:{},clientId:{},ru:{}", sLoginPassportId, clientId, ru, e);
+            LOGGER.error("web_roam_go error.shUserId:{},clientId:{},ru:{}", new Object[]{sLoginPassportId, clientId, ru}, e);
         } finally {
             //记录用户操作日志
             UserOperationLog userOperationLog = new UserOperationLog(sLoginPassportId, request.getRequestURI(), clientId, result.getCode(), ip);
@@ -120,13 +122,13 @@ public class WebRoamController extends BaseController {
             // todo isLogin not need && not service exception
             result = accountRoamManager.webRoam(response, hostHolder.isLogin(), sgLgUserId, r_key, ru, Integer.parseInt(clientId));
             if (result.isSuccess()) {
-                if (!Strings.isNullOrEmpty(ru)) {
-                    response.sendRedirect(ru);
-                    return;
-                }  //todo else?
-            }   //todo else?
+                response.sendRedirect(ru);
+                return;
+            } else {
+                returnErrMsg(response, ru, result.getCode(), result.getMessage());
+            }
         } catch (Exception e) {
-            LOGGER.error(" web_roam error.userId:{},r_key:{}", result.getModels().get("userId"), r_key, e);
+            LOGGER.error(" web_roam error.userId:{},r_key:{},ru", new Object[]{result.getModels().get("userId"), r_key, ru}, e);
         } finally {
             String resultCode = StringUtils.defaultIfEmpty(result.getCode(), "0");
             String userId = StringUtils.defaultString(String.valueOf(result.getModels().get("userId")));

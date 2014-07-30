@@ -26,9 +26,10 @@ public interface TokenService {
      * key:根据passportId算出的MD5值；value:“v:xxxx|passportId:xxxx|status:xxxx（登录状态）|ct:xxxx(请求时间)”
      *
      * @param passportId
+     * @param createIp
      * @throws ServiceException
      */
-    public String saveWebRoamToken(String passportId) throws ServiceException;
+    public String saveWebRoamToken(String passportId, String createIp) throws ServiceException;
 
     /**
      * 通过waptoken获取passportId

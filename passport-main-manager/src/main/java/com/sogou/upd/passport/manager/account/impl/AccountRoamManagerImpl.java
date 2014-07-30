@@ -12,6 +12,7 @@ import com.sogou.upd.passport.manager.account.AccountRoamManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountRoamInfo;
+import com.sogou.upd.passport.model.account.WebRoamDO;
 import com.sogou.upd.passport.service.account.AccountRoamService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.TokenService;
@@ -41,17 +42,17 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     private TokenService tokenService;
 
     @Override
-    public Result roamGo(String sLoginPassportId) {
+    public Result roamGo(String sLoginPassportId, String createIp) {
         Result result = new APIResultSupport(false);
         if (Strings.isNullOrEmpty(sLoginPassportId)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             return result;
         }
-        String r_key = tokenService.saveWebRoamToken(sLoginPassportId);
-        if(!Strings.isNullOrEmpty(r_key)){
+        String r_key = tokenService.saveWebRoamToken(sLoginPassportId, createIp);
+        if (!Strings.isNullOrEmpty(r_key)) {
             result.setSuccess(true);
-            result.setDefaultModel("r_key",r_key);
-        }else{
+            result.setDefaultModel("r_key", r_key);
+        } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
         }
         return result;
@@ -66,13 +67,18 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             //检查签名正确性
             //TODO 验证 r_key
 
-
+            WebRoamDO webRoamDO = tokenService.getWebRoamDOByToken(r_key);
+            if (webRoamDO != null) {
+                roamPassportId = webRoamDO.getPassportId();
+                createIp = webRoamDO.getCreateIp();
+            }
             //根据sgId 取出存储在缓存的漫游用户信息
-            AccountRoamInfo accountRoamInfo = accountRoamService.getAccountRoamInfoBySgId(r_key);
+            /*AccountRoamInfo accountRoamInfo = accountRoamService.getAccountRoamInfoBySgId(r_key);
             if (accountRoamInfo != null) {
                 roamPassportId = accountRoamInfo.getUserId();
                 createIp = accountRoamInfo.getRequestIp();
-            } else {
+            }*/
+            else {
                 //漫游用户信息取不到 返回对应状态码的Result
                 result.setCode(ErrorUtil.ERR_CODE_ROAM_INFO_NOT_EXIST);
                 return result;
@@ -128,7 +134,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                 cookieManager.setCookie(response, roamPassportId, clientId, createIp, ru, (int) DateAndNumTimesConstant.TWO_WEEKS);
             }
         } catch (Exception e) {
-            LOGGER.error("SupportAccountRoam error. roamPassportId:{},r_key:{}", roamPassportId, r_key, e);
+            LOGGER.error("webRoam error. roamPassportId:{},r_key:{},ru:{}", new Object[]{roamPassportId, r_key, ru}, e);
             throw new ServiceException(e);
         }
         result.setDefaultModel("userId", roamPassportId);
