@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account.impl;
 
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -38,7 +39,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public String saveWebRoamToken(String passportId, String createIp) throws ServiceException {
+    public String saveWebRoamToken(String passportId) throws ServiceException {
         try {
             String token = TokenGenerator.generatorMappToken(passportId);
             WebRoamDO webRoamDO = new WebRoamDO();
@@ -46,8 +47,7 @@ public class TokenServiceImpl implements TokenService {
             webRoamDO.setPassportId(passportId);
             webRoamDO.setStatus(1);
             webRoamDO.setCt(System.currentTimeMillis());
-            webRoamDO.setCreateIp(createIp);
-            redisUtils.setWithinSeconds(token, webRoamDO.toString(), DateAndNumTimesConstant.TIME_FIVEMINUTES);
+            redisUtils.setWithinSeconds(buildWebRoamCacheKey(token), webRoamDO.toString(), DateAndNumTimesConstant.TIME_FIVEMINUTES);
             return token;
         } catch (Exception e) {
             logger.error("saveWebRoamToken Fail, passportId:" + passportId, e);
@@ -68,13 +68,34 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public WebRoamDO getWebRoamDOByToken(String token) throws ServiceException {
         try {
-            String str = redisUtils.get(token);
+            String str = redisUtils.get(buildWebRoamCacheKey(token));
             return WebRoamDO.getWebRoamDO(str);
         } catch (Exception e) {
             logger.error("getWebRoamDOByToken Fail, token:" + token, e);
             throw new ServiceException(e);
         }
 
+    }
+
+    @Override
+    public void deleteWebRoamDoByToken(String token) throws ServiceException {
+        try {
+            redisUtils.delete(buildWebRoamCacheKey(token));
+        } catch (Exception e) {
+            logger.error("deleteWebRoamDoByToken error. token:" + token, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    /**
+     * 生成web_roam 缓存key
+     *
+     * @param token
+     * @return
+     * @throws ServiceException
+     */
+    private String buildWebRoamCacheKey(String token) throws ServiceException {
+        return CacheConstant.CACHE_KEY_WEB_ROAM + token;
     }
 
 }

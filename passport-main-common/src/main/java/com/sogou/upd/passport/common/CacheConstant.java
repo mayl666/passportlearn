@@ -82,10 +82,10 @@ public class CacheConstant {
 
 
     //内部接口 检查用户是否存在次数前缀
-    public static final String CACHE_PREFIX_CHECK_USER_INTERNAL_USERNAME_NUM ="SP.EXIST.INTERNAL.USERNAME_NUM_";
+    public static final String CACHE_PREFIX_CHECK_USER_INTERNAL_USERNAME_NUM = "SP.EXIST.INTERNAL.USERNAME_NUM_";
 
     //内部接口 检查用户是否存在次数前缀
-    public static final String CACHE_PREFIX_CHECK_USER_INTERNAL_IP_NUM ="SP.EXIST.INTERNAL.IP_NUM_";
+    public static final String CACHE_PREFIX_CHECK_USER_INTERNAL_IP_NUM = "SP.EXIST.INTERNAL.IP_NUM_";
 
     // 检查账号是否存在在黑名单的前缀
     public static final String CACHE_PREFIX_GETPAIRTOKEN_USERNAME_BLACK_ = "SP.GETPAIRTOKEN.USERNAME:BLACK_";
@@ -164,5 +164,9 @@ public class CacheConstant {
 
     /*==================找回密码相关缓存常量========================*/
     public static final String CACHE_PREFIX_PASSPORTID_FINDPWDTIMES = "SP.PASSPORTID:FINDPWDTIMES_"; // passportId与找回密码次数之间的映射
+
+
+    /*==================漫游相关=====================================*/
+    public static final String CACHE_KEY_WEB_ROAM = "SP.WEB:ROAM_"; //漫游key
 
 }

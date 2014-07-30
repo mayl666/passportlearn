@@ -9,6 +9,7 @@ import com.sogou.upd.passport.service.account.AccountRoamService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import java.util.Map;
  * Date: 14-7-29
  * Time: 上午11:44
  */
+@Service
 public class AccountRoamServiceImpl implements AccountRoamService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountRoamServiceImpl.class);

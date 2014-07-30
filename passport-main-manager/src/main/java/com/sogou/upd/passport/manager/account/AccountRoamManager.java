@@ -17,11 +17,10 @@ public interface AccountRoamManager {
      * 漫游起始端解析登录态
      *
      * @param sLoginPassportId 漫游起始端解析出来的登录userid
-     * @param createIp         用户真实IP
      * @return
      * @throws ServiceException
      */
-    Result roamGo(String sLoginPassportId, String createIp);
+    Result roamGo(String sLoginPassportId);
 
     /**
      * 支持：搜狗域、搜狐域、第三方账号 3类账号漫游
@@ -45,9 +44,10 @@ public interface AccountRoamManager {
      * @param sgLgUserId 搜狗登录用户userid
      * @param r_key      签名信息
      * @param ru         调整地址
+     * @param createIp   用户IP
      * @param clientId   应用id
      * @return
      * @throws ServiceException
      */
-    Result webRoam(HttpServletResponse response, boolean sgLogin, String sgLgUserId, String r_key, String ru, int clientId) throws ServiceException;
+    Result webRoam(HttpServletResponse response, boolean sgLogin, String sgLgUserId, String r_key, String ru, String createIp, int clientId) throws ServiceException;
 }

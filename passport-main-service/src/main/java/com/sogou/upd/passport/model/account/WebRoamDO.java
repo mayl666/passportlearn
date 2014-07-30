@@ -20,16 +20,12 @@ public class WebRoamDO {
     public static String PASSPORTID = "passportId";
     public static String STATUS = "status";
     public static String CT = "ct";
-    public static String CREATEIP = "ip";
 
 
     private String v; //值的版本
     private String passportId;  //外域的用户ID
     private int status; //状态，目前只有1--登录
     private long ct;  //漫游起始时刻点
-
-
-    private String createIp;//漫游账号真实ip
 
     public String getV() {
         return v;
@@ -63,14 +59,6 @@ public class WebRoamDO {
         this.ct = ct;
     }
 
-    public String getCreateIp() {
-        return createIp;
-    }
-
-    public void setCreateIp(String createIp) {
-        this.createIp = createIp;
-    }
-
     //str的格式为v:xxxx(版本号)|passportId:xxxx|status:xxxx（登录状态）|ct:xxxx(请求时间)
     public static WebRoamDO getWebRoamDO(String str) {
 //        Map<String, String> webRoamMap = strToMap(str);
@@ -82,7 +70,6 @@ public class WebRoamDO {
                 webRoamDO.setPassportId(webRoamMap.get(PASSPORTID));
                 webRoamDO.setStatus(Integer.parseInt(webRoamMap.get(STATUS)));
                 webRoamDO.setCt(Long.parseLong(webRoamMap.get(CT)));
-                webRoamDO.setCreateIp(webRoamMap.get(CREATEIP));
                 return webRoamDO;
             } catch (Exception e) {
                 return null;
@@ -97,15 +84,14 @@ public class WebRoamDO {
         sb.append(V).append(VALUE_SEP).append(this.v).append(KEY_SEP);
         sb.append(PASSPORTID).append(VALUE_SEP).append(this.passportId).append(KEY_SEP);
         sb.append(STATUS).append(VALUE_SEP).append(this.status).append(KEY_SEP);
-        sb.append(CT).append(VALUE_SEP).append(this.ct).append(KEY_SEP);
-        sb.append(CREATEIP).append(VALUE_SEP).append(this.createIp);
+        sb.append(CT).append(VALUE_SEP).append(this.ct);
         return sb.toString();
     }
 
     private static Map<String, String> strToMap(String str) {
         Map<String, String> keyValueMap = Maps.newHashMap();
         String[] keyArray = str.split(KEY_SEP);
-        if (keyArray.length >= 5) {
+        if (keyArray.length >= 4) {
             for (String keyValueStr : keyArray) {
                 String[] keyValueArray = keyValueStr.split(VALUE_SEP);
                 if (keyValueArray.length >= 2) {

@@ -74,7 +74,7 @@ public class WebRoamController extends BaseController {
                 returnErrMsg(response, ru, result.getCode(), result.getMessage());
                 return;
             }
-            result = accountRoamManager.roamGo(sLoginPassportId, ip);
+            result = accountRoamManager.roamGo(sLoginPassportId);
             if (result.isSuccess()) {
                 String r_key = (String) result.getModels().get("r_key");
                 Map params = Maps.newHashMap();
@@ -105,6 +105,7 @@ public class WebRoamController extends BaseController {
         String ru = webRoamParams.getRu();
         String r_key = webRoamParams.getR_key();
         String clientId = webRoamParams.getClient_id();
+        String createIp = getIp(request);
         try {
             //参数验证
             String validateResult = ControllerHelper.validateParams(webRoamParams);
@@ -120,7 +121,7 @@ public class WebRoamController extends BaseController {
                 sgLgUserId = hostHolder.getPassportId();
             }
             // todo isLogin not need && not service exception
-            result = accountRoamManager.webRoam(response, hostHolder.isLogin(), sgLgUserId, r_key, ru, Integer.parseInt(clientId));
+            result = accountRoamManager.webRoam(response, hostHolder.isLogin(), sgLgUserId, r_key, ru, createIp, Integer.parseInt(clientId));
             if (result.isSuccess()) {
                 response.sendRedirect(ru);
                 return;
@@ -132,7 +133,6 @@ public class WebRoamController extends BaseController {
         } finally {
             String resultCode = StringUtils.defaultIfEmpty(result.getCode(), "0");
             String userId = StringUtils.defaultString(String.valueOf(result.getModels().get("userId")));
-            String createIp = StringUtils.defaultString(String.valueOf(result.getModels().get("createIp")));
 
             //记录用户操作日志
             UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), clientId, resultCode, createIp);

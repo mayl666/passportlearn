@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -11,7 +12,6 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountRoamManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountRoamInfo;
 import com.sogou.upd.passport.model.account.WebRoamDO;
 import com.sogou.upd.passport.service.account.AccountRoamService;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -42,13 +42,13 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     private TokenService tokenService;
 
     @Override
-    public Result roamGo(String sLoginPassportId, String createIp) {
+    public Result roamGo(String sLoginPassportId) {
         Result result = new APIResultSupport(false);
         if (Strings.isNullOrEmpty(sLoginPassportId)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             return result;
         }
-        String r_key = tokenService.saveWebRoamToken(sLoginPassportId, createIp);
+        String r_key = tokenService.saveWebRoamToken(sLoginPassportId);
         if (!Strings.isNullOrEmpty(r_key)) {
             result.setSuccess(true);
             result.setDefaultModel("r_key", r_key);
@@ -59,26 +59,20 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     }
 
     @Override
-    public Result webRoam(HttpServletResponse response, boolean sgLogin, String sgLgUserId, String r_key, String ru, int clientId) throws ServiceException {
+    public Result webRoam(HttpServletResponse response, boolean sgLogin, String sgLgUserId, String r_key, String ru, String createIp, int clientId) throws ServiceException {
         Result result = new APIResultSupport(false);
         String roamPassportId = null;
-        String createIp = null;
         try {
             //检查签名正确性
             //TODO 验证 r_key
 
+            //根据r_key 取出存储在缓存的漫游用户信息
             WebRoamDO webRoamDO = tokenService.getWebRoamDOByToken(r_key);
             if (webRoamDO != null) {
                 roamPassportId = webRoamDO.getPassportId();
-                createIp = webRoamDO.getCreateIp();
-            }
-            //根据sgId 取出存储在缓存的漫游用户信息
-            /*AccountRoamInfo accountRoamInfo = accountRoamService.getAccountRoamInfoBySgId(r_key);
-            if (accountRoamInfo != null) {
-                roamPassportId = accountRoamInfo.getUserId();
-                createIp = accountRoamInfo.getRequestIp();
-            }*/
-            else {
+                //安全启见、根据 r_key 清除 缓存中 漫游用户信息、仅供使用一次!
+                tokenService.deleteWebRoamDoByToken(CacheConstant.CACHE_KEY_WEB_ROAM + r_key);
+            } else {
                 //漫游用户信息取不到 返回对应状态码的Result
                 result.setCode(ErrorUtil.ERR_CODE_ROAM_INFO_NOT_EXIST);
                 return result;
@@ -138,7 +132,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             throw new ServiceException(e);
         }
         result.setDefaultModel("userId", roamPassportId);
-        result.setDefaultModel("createIp", createIp);
         result.setSuccess(true);
         return result;
     }
