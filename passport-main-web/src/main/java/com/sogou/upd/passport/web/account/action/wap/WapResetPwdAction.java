@@ -75,8 +75,8 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
-    public String findPwdView(String ru, Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams) throws Exception {
-        ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
+    public String findPwdView(Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams) throws Exception {
+        String ru = Strings.isNullOrEmpty(wapIndexParams.getRu()) ? CommonConstant.DEFAULT_WAP_URL : wapIndexParams.getRu();
         if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             Result result = new APIResultSupport(false);
             String client_id = Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : wapIndexParams.getClient_id();
@@ -92,15 +92,15 @@ public class WapResetPwdAction extends BaseController {
     /**
      * 其它方式找回时跳转到其它页面
      *
-     * @param ru
+     * @param params
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/other", method = RequestMethod.GET)
-    public String findPwdOtherView(String ru, Model model, String client_id) throws Exception {
+    public String findPwdOtherView(Model model, BaseWebRuParams params) throws Exception {
         Result result = new APIResultSupport(false);
-        ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
-        client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
+        String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
+        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
         model.addAttribute("token", RandomStringUtils.randomAlphanumeric(48));
@@ -112,15 +112,15 @@ public class WapResetPwdAction extends BaseController {
     /**
      * 其它方式找回时跳转到其它页面
      *
-     * @param ru
+     * @param params
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/kefu", method = RequestMethod.GET)
-    public String findPwdKefuView(String ru, Model model, String client_id) throws Exception {
+    public String findPwdKefuView(Model model, BaseWebRuParams params) throws Exception {
         Result result = new APIResultSupport(false);
-        ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
-        client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
+        String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
+        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
         model.addAttribute("data", result.toString());
