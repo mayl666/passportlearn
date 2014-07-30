@@ -87,7 +87,11 @@ public class LoginAction extends BaseController {
                 //todo 上线观察几天后，此兼容逻辑可删除
                 if (!AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username)) && ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT.equals(result.getCode())) {
                     result = regManager.checkUserFromSohu(username, clientId);
-                    if (!result.isSuccess()) {
+                    if (!result.isSuccess() && (ErrorUtil.ERR_CODE_USER_ID_EXIST.equals(result.getCode()) || ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode()))) {
+                        result.setSuccess(true);
+                    }
+                    if (result.isSuccess()) {
+                        result.setSuccess(false);
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                     }
                 }
