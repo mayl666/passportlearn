@@ -127,6 +127,7 @@ public class WebRoamController extends BaseController {
                 return;
             } else {
                 returnErrMsg(response, ru, result.getCode(), result.getMessage());
+                return;
             }
         } catch (Exception e) {
             LOGGER.error(" web_roam error.userId:{},r_key:{},ru", new Object[]{result.getModels().get("userId"), r_key, ru}, e);

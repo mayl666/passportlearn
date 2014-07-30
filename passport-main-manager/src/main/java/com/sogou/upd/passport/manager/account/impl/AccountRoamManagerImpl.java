@@ -39,8 +39,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     @Autowired
     private AccountService accountService;
     @Autowired
-    private AccountRoamService accountRoamService;
-    @Autowired
     private TokenService tokenService;
 
     @Override
