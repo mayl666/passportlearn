@@ -58,15 +58,15 @@ public class ResetPwdAction extends BaseController {
     /**
      * 找回密码主页跳转
      *
-     * @param ru
+     * @param params
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
-    public String findPwdView(String ru, Model model, String client_id) throws Exception {
+    public String findPwdView(BaseWebRuParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
-        ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
-        client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
+        String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_INDEX_URL : params.getRu();
+        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
         model.addAttribute("data", result.toString());
