@@ -106,9 +106,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                     //搜狗域、第三方账号在搜狗不存在 记录Log
                     LOGGER.info("roam account sg not exist. userId:{},accountDomain:{}", roamPassportId, accountDomain.getValue());
 
-                    //清cookie
-                    cookieManager.clearCookie(response);
-
                     //返回result
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                     return result;
