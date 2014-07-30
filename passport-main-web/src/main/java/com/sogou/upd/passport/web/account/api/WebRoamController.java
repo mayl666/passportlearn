@@ -121,7 +121,7 @@ public class WebRoamController extends BaseController {
                 sgLgUserId = hostHolder.getPassportId();
             }
             // todo isLogin not need && not service exception
-            result = accountRoamManager.webRoam(response, hostHolder.isLogin(), sgLgUserId, r_key, ru, createIp, Integer.parseInt(clientId));
+            result = accountRoamManager.webRoam(response, sgLgUserId, r_key, ru, createIp, Integer.parseInt(clientId));
             if (result.isSuccess()) {
                 response.sendRedirect(ru);
                 return;
