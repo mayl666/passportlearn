@@ -58,6 +58,9 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
     $.uuiForm.addType('personalid', function(value) {
         return (value == "") || idTester.valid(value);
     });
+    $.uuiForm.addType('nonempty', function(value) {
+        return !!$.trim(value);
+    });
     
     //yinyong#sogou-inc.com:Copied from Internet.
     var idTester = {
@@ -117,6 +120,9 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
         require: function($el){
             var label= $el.parent().prev().html();
             return '请填写' + label.replace('：', '');
+        },
+        nonempty: function($el){
+            return '不能为空';
         },
         email: function(){
             return '邮箱格式不正确';
