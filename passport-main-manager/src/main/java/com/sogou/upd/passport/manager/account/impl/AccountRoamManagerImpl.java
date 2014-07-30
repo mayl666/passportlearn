@@ -19,6 +19,7 @@ import com.sogou.upd.passport.service.account.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
  * Date: 14-7-29
  * Time: 上午10:28
  */
+@Component
 public class AccountRoamManagerImpl implements AccountRoamManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountRoamManagerImpl.class);
@@ -59,7 +61,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     }
 
     @Override
-    public Result webRoam(HttpServletResponse response, boolean sgLogin, String sgLgUserId, String r_key, String ru, String createIp, int clientId) throws ServiceException {
+    public Result webRoam(HttpServletResponse response, String sgLgUserId, String r_key, String ru, String createIp, int clientId) throws ServiceException {
         Result result = new APIResultSupport(false);
         String roamPassportId = null;
         try {
@@ -79,11 +81,9 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             }
 
             //判断漫游用户与目前搜狗登录的用户是否一致、如果搜狗已登录、以搜狗为准
-            if (!Strings.isNullOrEmpty(sgLgUserId)) {
-                if (sgLogin && !sgLgUserId.equalsIgnoreCase(roamPassportId)) {
-                    result.setSuccess(true);
-                    return result;
-                }
+            if (!Strings.isNullOrEmpty(sgLgUserId) && !sgLgUserId.equalsIgnoreCase(roamPassportId)) {
+                result.setSuccess(true);
+                return result;
             }
 
             //获取用户账号类型
@@ -124,7 +124,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             }
 
             //漫游用户在搜狗未登录、设置搜狗登录状态
-            if (!sgLogin) {
+            if (Strings.isNullOrEmpty(sgLgUserId)) {
                 cookieManager.setCookie(response, roamPassportId, clientId, createIp, ru, (int) DateAndNumTimesConstant.TWO_WEEKS);
             }
         } catch (Exception e) {

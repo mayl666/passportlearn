@@ -40,7 +40,6 @@ public interface AccountRoamManager {
      * value: version:xxxx|userid:xxxx|status:xxxx（登录状态）|ct:xxxx(请求时间)|ip:xxxx(用户真实ip)
      *
      * @param response
-     * @param sgLogin    搜狗是否登录
      * @param sgLgUserId 搜狗登录用户userid
      * @param r_key      签名信息
      * @param ru         调整地址
@@ -49,5 +48,5 @@ public interface AccountRoamManager {
      * @return
      * @throws ServiceException
      */
-    Result webRoam(HttpServletResponse response, boolean sgLogin, String sgLgUserId, String r_key, String ru, String createIp, int clientId) throws ServiceException;
+    Result webRoam(HttpServletResponse response,String sgLgUserId, String r_key, String ru, String createIp, int clientId) throws ServiceException;
 }
