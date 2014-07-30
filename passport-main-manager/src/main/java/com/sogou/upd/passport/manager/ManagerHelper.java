@@ -25,8 +25,8 @@ public class ManagerHelper {
      * @return
      */
     public static boolean isDoubleCheckUserLogin() {
-//        return true;
-        return false;
+        return true;
+//        return false;
     }
 
     /**
