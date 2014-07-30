@@ -13,7 +13,6 @@ import com.sogou.upd.passport.manager.account.AccountRoamManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.WebRoamDO;
-import com.sogou.upd.passport.service.account.AccountRoamService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.TokenService;
 import org.slf4j.Logger;
@@ -38,8 +37,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     private CookieManager cookieManager;
     @Autowired
     private AccountService accountService;
-    @Autowired
-    private AccountRoamService accountRoamService;
     @Autowired
     private TokenService tokenService;
 
