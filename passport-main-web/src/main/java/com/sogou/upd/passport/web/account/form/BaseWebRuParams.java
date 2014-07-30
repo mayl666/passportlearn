@@ -21,7 +21,7 @@ public class BaseWebRuParams {
     @Min(0)
     protected String client_id = String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID);
 
-    @URL
+//    @URL
     @Ru
     protected String ru = CommonConstant.DEFAULT_INDEX_URL;
 
