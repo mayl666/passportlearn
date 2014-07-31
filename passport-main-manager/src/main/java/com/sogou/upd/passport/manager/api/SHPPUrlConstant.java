@@ -72,19 +72,19 @@ public class SHPPUrlConstant {
     /*================================安全中心操作URL=======================================*/
     // 修改密码
 //    public static final String SOHU_RESETPWD_URL = BASE_URL + "web/updateInfo.action?modifyType=password";
-    public static final String SOHU_RESETPWD_URL = BASE_URL + "security/manage_password";
+    public static final String SOHU_RESETPWD_URL = BASE_URL + "security/manage_password"; //sohu新页面
     // 修改密保邮箱
 //    public static final String SOHU_BINDEMAIL_URL = BASE_URL + "web/requestModifyEmailAction.action";
-    public static final String SOHU_BINDEMAIL_URL = BASE_URL + "security/bind_email";
+    public static final String SOHU_BINDEMAIL_URL = BASE_URL + "security/bind_email";    //sohu新页面
     // 修改密保手机
 //    public static final String SOHU_BINDMOBILE_URL = BASE_URL + "web/requestBindMobileAction.action";
-    public static final String SOHU_BINDMOBILE_URL = BASE_URL + "security/bind_mobile";
+    public static final String SOHU_BINDMOBILE_URL = BASE_URL + "security/bind_mobile";  //sohu新页面
     // 修改密保问题
 //    public static final String SOHU_BINDQUES_URL = BASE_URL + "web/updateInfo.action?modifyType=question";
-    public static final String SOHU_BINDQUES_URL = BASE_URL + "security/questions";
+    public static final String SOHU_BINDQUES_URL = BASE_URL + "security/questions";      //sohu新页面
     // 找回密码
 //    public static final String SOHU_FINDPWD_URL = BASE_URL + "web/RecoverPwdInput.action";
-    public static final String SOHU_FINDPWD_URL = BASE_URL + "password/forget";
+    public static final String SOHU_FINDPWD_URL = BASE_URL + "password/forget";          //sohu新页面
 
 
     /*================================第三方开放平台相关url=======================================*/
