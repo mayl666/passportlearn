@@ -51,7 +51,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
         return  nicknameReg.test(value)&&(invalidNicknameKey.indexOf(value)<0);
     });    
 
-    $.uuiForm.addType('username' , function(value){
+    $.uuiForm.addType('fullname' , function(value){
         return   value.length<=50&&(value==''||/^[a-z\u4e00-\u9fa5]+$/i.test(value));
     });
 
@@ -162,7 +162,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
             }
             return '昵称不合法';
         },
-        username:function($el){
+        fullname:function($el){
             if ($el.val().length > 50)
                 return "不能超过50个字符"
             else return "真实姓名仅允许输入英文字母和汉字";

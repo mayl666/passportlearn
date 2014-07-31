@@ -117,9 +117,9 @@
                         <hr color="#f3f3f3" height="1"/>
                         <div class="tip">补充以下信息，当您的帐号丢失时，我们可以帮你找回</div>
                         <div class="form-item">
-    <label for="UsernameIpt">真实姓名：</label>
+    <label for="FullnameIpt">真实姓名：</label>
     <span class="form-el">
-        <input autocomplete="off"uui-type="username"type="text" name="username" id="UsernameIpt" value="" data-desc="请输入您的真实姓名" value=""/>
+        <input autocomplete="off"uui-type="fullname"type="text" name="fullname" id="FullnameIpt" value="" data-desc="请输入您的真实姓名" value=""/>
     </span>
 </div>
                         <div class="form-item">
@@ -154,7 +154,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/person.js?t=2014073046"></script>
+    <script type="text/javascript" src="/./static/js/person.js?t=2014073121"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
