@@ -123,7 +123,7 @@ public class BaseController {
      * @throws Exception
      */
     public void returnErrMsg(HttpServletResponse response, String ru, String errorCode, String errorMsg) throws Exception {
-        if (Strings.isNullOrEmpty(ru)) {
+        if (Strings.isNullOrEmpty(ru) || "域名不正确".equals(errorMsg)) {
             ru = CommonConstant.DEFAULT_INDEX_URL;
         }
         Map paramMap = Maps.newHashMap();
