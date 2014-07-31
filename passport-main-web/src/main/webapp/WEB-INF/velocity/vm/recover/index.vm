@@ -45,7 +45,7 @@
                     <div class="form-item">
     <label for="UsernameIpt">帐号名：</label>
     <span class="form-el">
-        <input autocomplete="off" uui-type="require username" type="text" name="username" id="UsernameIpt" value="" data-desc="" class="" placeholder=""/>
+        <input autocomplete="off" uui-type="require nonempty" type="text" name="username" id="UsernameIpt" value="" data-desc="" class="" placeholder=""/>
     </span>
 </div>
                     <div class="form-item form-item-vcode">
@@ -71,7 +71,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/recover.js?t=2014072939"></script>
+    <script type="text/javascript" src="/./static/js/recover.js?t=2014073117"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

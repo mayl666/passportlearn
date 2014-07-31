@@ -51,12 +51,15 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
         return  nicknameReg.test(value)&&(invalidNicknameKey.indexOf(value)<0);
     });    
 
-    $.uuiForm.addType('username' , function(value){
+    $.uuiForm.addType('fullname' , function(value){
         return   value.length<=50&&(value==''||/^[a-z\u4e00-\u9fa5]+$/i.test(value));
     });
 
     $.uuiForm.addType('personalid', function(value) {
         return (value == "") || idTester.valid(value);
+    });
+    $.uuiForm.addType('nonempty', function(value) {
+        return !!$.trim(value);
     });
     
     //yinyong#sogou-inc.com:Copied from Internet.
@@ -118,6 +121,9 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
             var label= $el.parent().prev().html();
             return '请填写' + label.replace('：', '');
         },
+        nonempty: function($el){
+            return '不能为空';
+        },
         email: function(){
             return '邮箱格式不正确';
         },
@@ -156,7 +162,7 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
             }
             return '昵称不合法';
         },
-        username:function($el){
+        fullname:function($el){
             if ($el.val().length > 50)
                 return "不能超过50个字符"
             else return "真实姓名仅允许输入英文字母和汉字";

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.form;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.WapConstant;
+import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.common.validation.constraints.Skin;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
@@ -25,7 +26,7 @@ public class WapIndexParams {
 
     @NotBlank(message = "ru is null")
     @URL
-//    @Ru
+    @Ru
     private String ru = WapConstant.WAP_INDEX;//登陆来源
     @Skin
     private String skin;

@@ -44,18 +44,12 @@ public class WapRegAction extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(WapRegAction.class);
 
-    private static final String LOGIN_INDEX_URL = "";
-
     @Autowired
     private RegManager regManager;
     @Autowired
     private SecureManager secureManager;
     @Autowired
     private SessionServerManager sessionServerManager;
-
-
-    @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
 
@@ -98,14 +92,9 @@ public class WapRegAction extends BaseController {
             if (result.isSuccess()) {
                 //第三方获取个人资料
                 String userid = result.getModels().get("userid").toString();
-                AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userid);
                 // 调用内部接口
                 GetUserInfoApiparams userInfoApiparams = new GetUserInfoApiparams(userid, "uniqname,avatarurl,gender");
-                if (domain == AccountDomainEnum.THIRD) {
-                    result = sgUserInfoApiManager.getUserInfo(userInfoApiparams);
-                } else {
-                    result = proxyUserInfoApiManager.getUserInfo(userInfoApiparams);
-                }
+                result = sgUserInfoApiManager.getUserInfo(userInfoApiparams);
                 logger.info("wap reg userinfo result:" + result);
                 Result sessionResult = sessionServerManager.createSession(userid);
                 String sgid;

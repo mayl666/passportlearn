@@ -35,6 +35,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 
 /**
  * 移动端找回密码
@@ -67,15 +68,14 @@ public class WapResetPwdAction extends BaseController {
     /**
      * 找回密码
      *
-     * @param ru
      * @param model
      * @param redirectAttributes
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
-    public String findPwdView(String ru, Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams) throws Exception {
-        ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
+    public String findPwdView(Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams) throws Exception {
+        String ru = Strings.isNullOrEmpty(wapIndexParams.getRu()) ? CommonConstant.DEFAULT_WAP_URL : wapIndexParams.getRu();
         if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             Result result = new APIResultSupport(false);
             String client_id = Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : wapIndexParams.getClient_id();
@@ -91,15 +91,15 @@ public class WapResetPwdAction extends BaseController {
     /**
      * 其它方式找回时跳转到其它页面
      *
-     * @param ru
+     * @param params
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/other", method = RequestMethod.GET)
-    public String findPwdOtherView(String ru, Model model, String client_id) throws Exception {
+    public String findPwdOtherView(Model model, BaseWebRuParams params) throws Exception {
         Result result = new APIResultSupport(false);
-        ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
-        client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
+        String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
+        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
         model.addAttribute("token", RandomStringUtils.randomAlphanumeric(48));
@@ -111,15 +111,15 @@ public class WapResetPwdAction extends BaseController {
     /**
      * 其它方式找回时跳转到其它页面
      *
-     * @param ru
+     * @param params
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/kefu", method = RequestMethod.GET)
-    public String findPwdKefuView(String ru, Model model, String client_id) throws Exception {
+    public String findPwdKefuView(Model model, BaseWebRuParams params) throws Exception {
         Result result = new APIResultSupport(false);
-        ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru;
-        client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
+        String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
+        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
         model.addAttribute("data", result.toString());
@@ -370,7 +370,7 @@ public class WapResetPwdAction extends BaseController {
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
             result = resetPwdManager.checkEmailResetPwd(passportId, clientId, params.getScode());
-            url = buildSendRedirectUrl(result, params);
+            url = buildSendRedirectUrl(params);
             if (result.isSuccess()) {
                 String scode = (String) result.getModels().get("scode");
                 url = url + "&scode=" + scode + "&code=0";
@@ -388,7 +388,7 @@ public class WapResetPwdAction extends BaseController {
     }
 
     //验证完邮件跳转至页面提示重置密码页
-    private String buildSendRedirectUrl(Result result, WapCheckEmailParams params) {
+    private String buildSendRedirectUrl(WapCheckEmailParams params) throws UnsupportedEncodingException {
         String ru = Strings.isNullOrEmpty(params.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(params.getRu());
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         StringBuilder urlStr = new StringBuilder();
@@ -396,7 +396,6 @@ public class WapResetPwdAction extends BaseController {
         urlStr.append("username=" + params.getUsername());
         urlStr.append("&client_id=" + client_id);
         urlStr.append("&ru=" + ru);
-        urlStr.append("&message=" + result.getMessage());
         urlStr.append("&skin=" + params.getSkin());
         urlStr.append("&v=" + params.getV());
         return urlStr.toString();
@@ -411,12 +410,12 @@ public class WapResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/vm/reset", method = RequestMethod.GET)
     public String findResetView(String ru, Model model, String client_id, String scode, String username, String
-            code, String message, String skin) throws Exception {
+            code, String skin) throws Exception {
         Result result = new APIResultSupport(false);
         ru = Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(ru);
         client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
         result.setCode(code);
-        result.setMessage(message);
+        result.setMessage(ErrorUtil.getERR_CODE_MSG(code));
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
         result.setDefaultModel("userid", username);
