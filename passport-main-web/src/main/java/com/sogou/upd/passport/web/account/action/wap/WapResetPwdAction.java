@@ -95,7 +95,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/other", method = RequestMethod.GET)
+    @RequestMapping(value = "/findpwd/email", method = RequestMethod.GET)
     public String findPwdOtherView(Model model, BaseWebRuParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
@@ -115,7 +115,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/kefu", method = RequestMethod.GET)
+    @RequestMapping(value = "/findpwd/customer", method = RequestMethod.GET)
     public String findPwdKefuView(Model model, BaseWebRuParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
@@ -408,7 +408,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/vm/reset", method = RequestMethod.GET)
+    @RequestMapping(value = "/findpwd/page/reset", method = RequestMethod.GET)
     public String findResetView(String ru, Model model, String client_id, String scode, String username, String
             code, String skin) throws Exception {
         Result result = new APIResultSupport(false);
