@@ -12,7 +12,7 @@
 .form-item .form-el-fuck{background: none;width: 400px;}
 .form-item .form-el-fuck span{height: 26px;line-height: 26px;padding: 1px;}
 .form-item .form-el-fuck .head, .form-item .form-el-fuck .tail{float: left;padding: 1px;}
-.form-item .form-el-fuck input{float: left;height: 26px;width: 90px;background: #fff url(/./static/img/input-s.png?t=280018) no-repeat 0 0;line-height: 26px;}
+.form-item .form-el-fuck input{float: left;height: 26px;width: 91px;background: #fff url(/./static/img/input-s.png?t=280018) no-repeat 0 0;line-height: 26px;}
 .hide{display: none;}
 .other-msg{padding-top: 1em;}
 .other-msg p{line-height: 2;}
