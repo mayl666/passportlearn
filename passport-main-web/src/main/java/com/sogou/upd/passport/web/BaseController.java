@@ -1,7 +1,10 @@
 package com.sogou.upd.passport.web;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang3.StringUtils;
@@ -10,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.Map;
 
 public class BaseController {
 
@@ -106,6 +111,27 @@ public class BaseController {
             logger.error("isAccessAccept error, api:" + apiName, e);
             return false;
         }
+    }
+
+    /**
+     * 跳转到回跳地址
+     *
+     * @param response
+     * @param ru
+     * @param errorCode
+     * @param errorMsg
+     * @throws Exception
+     */
+    public void returnErrMsg(HttpServletResponse response, String ru, String errorCode, String errorMsg) throws Exception {
+        if (Strings.isNullOrEmpty(ru) || "域名不正确".equals(errorMsg)) {
+            ru = CommonConstant.DEFAULT_INDEX_URL;
+        }
+        Map paramMap = Maps.newHashMap();
+        paramMap.put("errorCode", errorCode);
+        paramMap.put("errorMsg", errorMsg);
+        ru = ServletUtil.applyOAuthParametersString(ru, paramMap);
+        response.sendRedirect(ru);
+        return;
     }
 
 }

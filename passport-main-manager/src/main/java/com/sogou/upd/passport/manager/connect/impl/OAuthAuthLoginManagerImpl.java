@@ -33,7 +33,7 @@ import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAcce
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
-import com.sogou.upd.passport.service.account.MappTokenService;
+import com.sogou.upd.passport.service.account.TokenService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -68,7 +68,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
-    private MappTokenService mappTokenService;
+    private TokenService tokenService;
     @Autowired
     private SessionServerManager sessionServerManager;
     @Autowired
@@ -191,7 +191,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         String url = buildSSOSuccessRu(ru, sgid, uniqname, sex, avatarLarge, avatarMiddle, avatarSmall, userId);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                     } else {
-                        String token = mappTokenService.saveToken(userId);
+                        String token = tokenService.saveWapToken(userId);
                         String url = buildMAppSuccessRu(ru, userId, token, uniqname);
                         result.setSuccess(true);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, url);

@@ -142,4 +142,8 @@ public class CacheConstant {
     /*==================找回密码相关缓存常量========================*/
     public static final String CACHE_PREFIX_PASSPORTID_FINDPWDTIMES = "SP.PASSPORTID:FINDPWDTIMES_"; // passportId与找回密码次数之间的映射
 
+
+    /*==================漫游相关=====================================*/
+    public static final String CACHE_KEY_WEB_ROAM = "SP.RKEY:VALUE_"; //漫游key
+
 }

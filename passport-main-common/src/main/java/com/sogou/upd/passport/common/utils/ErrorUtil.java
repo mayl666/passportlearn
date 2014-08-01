@@ -353,21 +353,18 @@ public class ErrorUtil {
 
     //cookie值无效
     public static final String ERR_CODE_ERROR_COOKIE = "30710";
-
     //个人信息修改失败
     public static final String ERR_CODE_UPDATE_USERINFO = "30801";
     //获取个人资料失败
     public static final String ERR_OBTAIN_ACCOUNT_INFO = "30802";
-
     //解除绑定邮箱失败 错误码定义需要有一些跨度 方便扩展！！！
     public static final String ERR_CODE_EMAIL_UNBIND_FAIL = "40001";
-
-
-    /**
-     * RAS加解密错误
-     */
-    //解密错误
+    // RAS加解密错误
     public static final String ERR_CODE_RSA_DECRYPT = "31000";
+     // 验证漫游签名错误
+    public static final String ERR_CODE_SIGNATURE_ERROR = "41000";
+     //漫游用户 签名错误
+    public static final String ERR_CODE_ROAM_INFO_NOT_EXIST = "41001";
 
 
     public ErrorUtil() {
@@ -557,6 +554,9 @@ public class ErrorUtil {
 
         //RSA
         ERR_CODE_MSG_MAP.put(ERR_CODE_RSA_DECRYPT, "解密错误");
+
+        //漫游
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ROAM_INFO_NOT_EXIST, "漫游用户信息不存在");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

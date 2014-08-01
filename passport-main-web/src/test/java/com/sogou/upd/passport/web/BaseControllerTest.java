@@ -1,27 +1,20 @@
-//package com.sogou.upd.passport.web;
-//
-//import org.apache.struts.mock.MockHttpServletRequest;
-//import org.apache.struts.mock.MockHttpServletResponse;
-//import org.junit.BeforeClass;
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.HttpMethod;
-//import org.springframework.test.context.ContextConfiguration;
-//import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-//import org.springframework.web.method.HandlerMethod;
-//import org.springframework.web.servlet.ModelAndView;
-//import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-//
-///**
-// * User: ligang201716@sogou-inc.com
-// * Date: 13-6-17
-// * Time: 下午2:08
-// */
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(locations = {"file:/resources/spring-config.xml"})
-//public class BaseControllerTest  {
-//
+package com.sogou.upd.passport.web;
+
+import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.utils.ServletUtil;
+import junit.framework.Assert;
+import org.junit.Test;
+
+import java.util.Map;
+
+/**
+ * User: ligang201716@sogou-inc.com
+ * Date: 13-6-17
+ * Time: 下午2:08
+ */
+public class BaseControllerTest {
+
 //    @Autowired
 //    public RequestMappingHandlerAdapter handlerAdapter;
 ////    @Autowired
@@ -37,16 +30,34 @@
 //        request.setCharacterEncoding("UTF-8");
 //        response = new MockHttpServletResponse();
 //    }
-//
-//    @Test
-//    public void testList() {
-////        request.set;
-////        request.setMethod(HttpMethod.POST.name());
-////        ModelAndView mv = null;
-////        try {
-////            mv = handlerAdapter.handle(request, response, new HandlerMethod(jobController, "list"));
-////        } catch (Exception e) {
-////            e.printStackTrace();
-////        }
-//    }
-//}
+
+    @Test
+    public void testList() {
+//        request.set;
+//        request.setMethod(HttpMethod.POST.name());
+//        ModelAndView mv = null;
+//        try {
+//            mv = handlerAdapter.handle(request, response, new HandlerMethod(jobController, "list"));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    @Test
+    public void testReturnErrMsg() {
+        String ru = "";
+        String errorCode = "10003";
+        String errorMsg = "手动阀噶生个娃气而去";
+        ru = ru + "?errorCode=" + errorCode + "&errorMsg=" + Coder.encodeUTF8(errorMsg);
+
+        String ru1 = "";
+        Map paramMap = Maps.newHashMap();
+        paramMap.put("errorCode", errorCode);
+        paramMap.put("errorMsg", errorMsg);
+        ru1 = ServletUtil.applyOAuthParametersString(ru1, paramMap);
+
+        Assert.assertEquals(ru, ru1);
+
+
+    }
+}

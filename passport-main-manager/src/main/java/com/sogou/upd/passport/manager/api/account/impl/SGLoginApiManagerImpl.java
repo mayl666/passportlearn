@@ -18,7 +18,7 @@ import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.MappTokenService;
+import com.sogou.upd.passport.service.account.TokenService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -68,7 +68,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     private AccountService accountService;
 
     @Autowired
-    private MappTokenService mappTokenService;
+    private TokenService tokenService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
 
@@ -107,7 +107,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {
         Result result = new APIResultSupport(false);
         try {
-            String passportId = mappTokenService.getPassprotIdByToken(appAuthTokenApiParams.getToken());
+            String passportId = tokenService.getPassprotIdByWapToken(appAuthTokenApiParams.getToken());
             if (!Strings.isNullOrEmpty(passportId)) {
                 result.setSuccess(true);
                 result.setMessage("操作成功");

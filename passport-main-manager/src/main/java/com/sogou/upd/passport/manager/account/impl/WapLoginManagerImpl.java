@@ -19,7 +19,6 @@ import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
-import com.sogou.upd.passport.service.account.WapTokenService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -41,8 +40,6 @@ public class WapLoginManagerImpl implements WapLoginManager {
 
     @Autowired
     private LoginManager loginManager;
-    @Autowired
-    private WapTokenService wapTokenService;
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -94,22 +91,6 @@ public class WapLoginManagerImpl implements WapLoginManager {
             return result;
         }
         return result;
-    }
-
-    @Override
-    public Result authtoken(String token) {
-        Result result = new APIResultSupport(false);
-        try {
-            String passportId = wapTokenService.getPassprotIdByToken(token);
-            if (!Strings.isNullOrEmpty(passportId)) {
-                result.setSuccess(true);
-                result.setDefaultModel("userid", passportId);
-            }
-            return result;
-        } catch (Exception e) {
-            result.setSuccess(false);
-            return result;
-        }
     }
 
     @Override

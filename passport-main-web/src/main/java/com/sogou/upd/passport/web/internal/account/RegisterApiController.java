@@ -254,10 +254,8 @@ public class RegisterApiController extends BaseController {
             }
             // 调用内部接口
             String userid = params.getUserid();
-
             //业务线 用户真实IP、目前游戏已经加上、待推动其他业务线增加限制
             String createIp = params.getCreateip();
-
             //增加安全限制
             if (regManager.checkUserExistInBlack(userid, createIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
@@ -278,8 +276,7 @@ public class RegisterApiController extends BaseController {
             UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), params.getCreateip());
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage("serverip", getIp(request));
-            userOperationLog.putOtherMessage("userid", params.getUserid());
+            userOperationLog.putOtherMessage("createip", params.getCreateip());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();

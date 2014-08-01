@@ -23,7 +23,7 @@ public class BaseWebRuParams {
 
     @URL
     @Ru
-    protected String ru;
+    protected String ru = CommonConstant.DEFAULT_INDEX_URL;
 
     public String getClient_id() {
         return client_id;

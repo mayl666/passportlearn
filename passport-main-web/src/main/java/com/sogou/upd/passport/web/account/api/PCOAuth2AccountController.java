@@ -8,7 +8,6 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.LoginTypeUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
@@ -247,7 +246,7 @@ public class PCOAuth2AccountController extends BaseController {
                     result = new APIResultSupport(true);
                     result.setCode("0");
                     String passportId = accountToken.getPassportId();
-                    ManagerHelper.setModelForOAuthResult(result, defaultUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
+                    ManagerHelper.setModelForOAuthResult(result, defaultUniqname(passportId), accountToken, "sogou");
                 }
             }
         } catch (Exception e) {
