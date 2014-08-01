@@ -194,7 +194,7 @@ public class WapResetPwdAction extends BaseController {
     //手机与短信验证码验证成功后，给前端生成下一步跳转的url
     private String buildRedirectUrl(Result result) {
         StringBuilder urlStr = new StringBuilder();
-        urlStr.append("/wap/findpwd/vm/reset?");
+        urlStr.append("/wap/findpwd/page/reset?");
         String userid = (String) result.getModels().get("userid");
         urlStr.append("username=" + userid);
         String scode = (String) result.getModels().get("scode");
@@ -364,7 +364,7 @@ public class WapResetPwdAction extends BaseController {
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/vm/reset?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&message=" + Coder.encodeUTF8(validateResult));
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/page/reset?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&message=" + Coder.encodeUTF8(validateResult));
                 return;
             }
             String passportId = params.getUsername();
@@ -392,7 +392,7 @@ public class WapResetPwdAction extends BaseController {
         String ru = Strings.isNullOrEmpty(params.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(params.getRu());
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         StringBuilder urlStr = new StringBuilder();
-        urlStr.append("/wap/findpwd/vm/reset?");
+        urlStr.append("/wap/findpwd/page/reset?");
         urlStr.append("username=" + params.getUsername());
         urlStr.append("&client_id=" + client_id);
         urlStr.append("&ru=" + ru);
