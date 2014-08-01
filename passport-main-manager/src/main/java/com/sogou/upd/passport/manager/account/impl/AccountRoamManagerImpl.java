@@ -69,8 +69,10 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             WebRoamDO webRoamDO = tokenService.getWebRoamDOByToken(r_key);
             if (webRoamDO != null) {
                 roamPassportId = webRoamDO.getPassportId();
+                result.setDefaultModel("userId", roamPassportId);
                 //安全启见、根据 r_key 清除 缓存中 漫游用户信息、仅供使用一次!
                 tokenService.deleteWebRoamDoByToken(CacheConstant.CACHE_KEY_WEB_ROAM + r_key);
+
             } else {
                 //漫游用户信息取不到 返回对应状态码的Result
                 result.setCode(ErrorUtil.ERR_CODE_SIGNATURE_ERROR);
@@ -127,7 +129,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             LOGGER.error("webRoam error. roamPassportId:{},r_key:{},ru:{}", new Object[]{roamPassportId, r_key, ru}, e);
             throw new ServiceException(e);
         }
-        result.setDefaultModel("userId", roamPassportId);
         result.setSuccess(true);
         return result;
     }
