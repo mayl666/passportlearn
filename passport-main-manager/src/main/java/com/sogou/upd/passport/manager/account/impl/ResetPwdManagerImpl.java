@@ -170,11 +170,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 return result;
             }
             AccountModuleEnum module = AccountModuleEnum.RESETPWD;
-            //校验安全码
-            if (!accountSecureService.checkSecureCodeResetPwd(passportId, clientId, scode)) {
-                result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
-                return result;
-            }
             ActiveEmailDO activeEmailDO = new ActiveEmailDO(passportId, clientId, ru, module, null, false);
             if (useRegEmail) {
                 // 使用注册邮箱
