@@ -198,7 +198,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
                 if (scode.equals(secureCode)) {
                     flag = true;
                 }
-                redisUtils.delete(scode);
+                redisUtils.delete(cacheKey);
             }
             return flag;
         } catch (Exception e) {
