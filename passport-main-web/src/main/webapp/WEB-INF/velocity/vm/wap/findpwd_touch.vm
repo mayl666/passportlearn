@@ -49,10 +49,10 @@
     </div>
     <div class="links f-f f-vc">
         <div class="f-1 h-fil f-f f-vc f-hl">
-            <a href="/wap/findpwd/other">其他方式</a>
+            <a href="/wap/findpwd/email">其他方式</a>
         </div>
         <div class="f-1 h-fil f-f f-vc f-hr">
-            <a href="/wap/findpwd/kefu" class="rules">联系客服</a>
+            <a href="/wap/findpwd/customer" class="rules">联系客服</a>
         </div>
     </div>
     <div class="f-f">
@@ -66,7 +66,7 @@
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=742932" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=583347" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"

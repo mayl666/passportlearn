@@ -78,7 +78,7 @@ define(['./interface','../lib/tpl', './utils',  './skin' , './common'], function
                                 self.__confirmData = data;
                                 self.__currentStep = 2;
                             }else {
-                                location.href = '/wap/findpwd/kefu?' + passParamsStr;
+                                location.href = '/wap/findpwd/customer?' + passParamsStr;
                             }
 					    } else {
 						    self.showMsg(data.statusText);
