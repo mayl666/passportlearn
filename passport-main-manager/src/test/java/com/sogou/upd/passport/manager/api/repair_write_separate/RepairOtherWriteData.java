@@ -31,7 +31,6 @@ import com.sogou.upd.passport.model.repairdata.IncUserOtherInfo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +77,7 @@ public class RepairOtherWriteData extends BaseTest {
     @Test
     public void checkIsSogouExistDate() {
         List<String> contentList = Lists.newArrayList();
-        List<String> passportList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\xao");
+        List<String> passportList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_sogou_userid_0801");
         String content;
         int count = 0;
         String sgPassportId;
@@ -128,7 +127,7 @@ public class RepairOtherWriteData extends BaseTest {
         content = "total:" + passportList.size() + ",count:" + count;
         contentList.add(content);
         try {
-            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_sogou_userid_0526_0722_xao", contentList);
+            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_sogou_userid_0801", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -194,7 +193,7 @@ public class RepairOtherWriteData extends BaseTest {
     @Test
     public void fillSogouWriteSGDB() {
         List<String> contentList = Lists.newArrayList();
-        List<String> dataList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_sogou_userid_0526_0722_xaa");
+        List<String> dataList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\userlog_sogou_userid_0526_0722_result");
         String content;
         int count = 0;
         long start = System.currentTimeMillis();
@@ -210,9 +209,6 @@ public class RepairOtherWriteData extends BaseTest {
                 continue;
             }
             passportId = passportId.toLowerCase();
-            if (accountDAO.getAccountByPassportId(passportId) != null) {
-                continue;
-            }
             try {
                 IncUserInfo incUserInfo = incUserInfoHisDAO.getIncUserInfo(passportId);
                 if (incUserInfo == null || ("0".equals(incUserInfo.getFlag()) | Strings.isNullOrEmpty(incUserInfo.getPassword()))) {
@@ -267,7 +263,35 @@ public class RepairOtherWriteData extends BaseTest {
                 accountInfo.setUpdateTime(new Date());
                 accountInfo.setCreateTime(reg_time);
 
-                fillSGDB(uniqname, mobile, passportId, account, accountInfo, count, contentList);
+                int mobileMapSucc = 1, accountSucc = 1, accountInfoSucc = 1, uniqMapSucc = 1;
+                if (!Strings.isNullOrEmpty(mobile)) {
+                    try{
+                    mobileMapSucc = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
+                    }catch (Exception e){
+                        account.setMobile(null);
+                    }
+                }
+                if (!Strings.isNullOrEmpty(uniqname)) {
+                    try{
+                    uniqMapSucc = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
+                    }catch (Exception e){
+                        account.setUniqname(null);
+                    }
+                }
+                try{
+                accountSucc = accountDAO.insertAccount(passportId, account);
+                }catch (Exception e){
+                }
+                try{
+                accountInfoSucc = accountInfoDAO.saveInfoOrInsert(passportId, accountInfo);
+                }catch (Exception e){
+                }
+                if (mobileMapSucc == 1 && accountSucc == 1 && accountInfoSucc == 1) {
+                    count++;
+                } else {
+                    content = passportId + ",mobileMap-" + mobileMapSucc + ",uniqMap-" + uniqMapSucc + ",account-" + accountSucc + ",accountInfo-" + accountInfoSucc;
+                    contentList.add(content);
+                }
             } catch (Exception e) {
                 content = passportId + ",getUserInfoFromSohu OR insertSogouDB Error," + e.getMessage();
                 contentList.add(content);
@@ -279,7 +303,7 @@ public class RepairOtherWriteData extends BaseTest {
         content = "use time:" + (end - start) / 1000 / 60 + "m";
         contentList.add(content);
         try {
-            com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\fill_sogou_userid_0526_0725_xaa", contentList);
+            com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\fill_sogou_userid_0526_0725_result", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -293,7 +317,7 @@ public class RepairOtherWriteData extends BaseTest {
     @Test
     public void sohuBindMobileWriteSGDB() {
         List<String> contentList = Lists.newArrayList();
-        List<String> mobileList = FileUtil.readFileByLines("D:\\数据迁移\\用搜狐域绑定的手机号登录\\userlog_phone_userid_end_0725_xab_xae");
+        List<String> mobileList = FileUtil.readFileByLines("D:\\数据迁移\\用搜狐域绑定的手机号登录\\userlog_phone_userid_end_0725_result_bak");
         String content;
         int count = 0;
         long start = System.currentTimeMillis();
@@ -355,7 +379,9 @@ public class RepairOtherWriteData extends BaseTest {
                             accountInfo.setUpdateTime(new Date());
                             accountInfo.setCreateTime(reg_time);
 
-                            fillSGDB(uniqname, mobile, shPassportId, account, accountInfo, count, contentList);
+                            if (fillSGDB(uniqname, mobile, shPassportId, account, accountInfo, contentList)) {
+                                count++;
+                            }
                         } catch (Exception e) {
                             content = mobile + "," + shPassportId + ",getUserInfoFromSohu OR insertSogouDB Error," + e.getMessage();
                             contentList.add(content);
@@ -373,7 +399,7 @@ public class RepairOtherWriteData extends BaseTest {
         content = "use time:" + (end - start) / 1000 / 60 + "m";
         contentList.add(content);
         try {
-            com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\fill_phone_userid_end_0725_xab_xae", contentList);
+            com.sogou.upd.passport.common.utils.FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\fill_sogou_userid_end_0725_xab_xae", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -390,9 +416,9 @@ public class RepairOtherWriteData extends BaseTest {
         int count = 0;
         long start = System.currentTimeMillis();
         List<String> contentList = Lists.newArrayList();
-        List<String> userInfoList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\waiyu_4097_phone\\passport.user_info.2014-07-28");
-        List<String> userOtherInfoList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\waiyu_4097_phone\\passport.user_other_info.2014-07-28");
-        List<String> userExtInfoList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\waiyu_4097_phone\\passport.user_ext_info.2014-07-28");
+        List<String> userInfoList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\waiyu_4097_phone_0526_0722\\passport.user_info_tmp.2014-07-28");
+        List<String> userOtherInfoList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\waiyu_4097_phone_0526_0722\\passport.user_other_info_tmp.2014-07-28");
+        List<String> userExtInfoList = FileUtil.readFileByLines("D:\\数据迁移\\写分离前需要迁移的账号\\waiyu_4097_phone_0526_0722\\passport.user_ext_info_tmp.2014-07-28");
         Map<String, UserInfoTmp> userInfoMap = Maps.newHashMap();
         for (String data : userInfoList) {
             String[] userInfoArray = data.split(":%:");
@@ -413,8 +439,8 @@ public class RepairOtherWriteData extends BaseTest {
         for (String data : userOtherInfoList) {
             String[] userOtherInfoArray = data.split(":%:");
             String passportId = userOtherInfoArray[0].toLowerCase();
-            if (userOtherInfoArray.length != 9) {
-                content = passportId + ",userOtherInfo length != 9";
+            if (userOtherInfoArray.length < 8) {
+                content = passportId + ",userOtherInfo length < 8";
                 contentList.add(content);
                 continue;
             }
@@ -426,44 +452,36 @@ public class RepairOtherWriteData extends BaseTest {
             userOtherInfoTmp.setEmail(userOtherInfoArray[4]);
             userOtherInfoTmp.setEmailflag(userOtherInfoArray[5]);
             userOtherInfoTmp.setProvince(userOtherInfoArray[6]);
-            try {
-                String uniqStr = userOtherInfoArray[7];
-                if (!Strings.isNullOrEmpty(uniqStr)) {
-                    uniqStr = new String(userOtherInfoArray[7].getBytes(), "utf-8");
-                }
-                userOtherInfoTmp.setUniqname(uniqStr);
-            } catch (UnsupportedEncodingException e) {
-                userOtherInfoTmp.setUniqname("");
+            if (userOtherInfoArray.length >= 9) {
+                userOtherInfoTmp.setCity(userOtherInfoArray[8]);
+            } else {
+                userOtherInfoTmp.setCity("");
             }
-            userOtherInfoTmp.setCity(userOtherInfoArray[8]);
             userOtherInfoMap.put(passportId, userOtherInfoTmp);
         }
         Map<String, UserExtInfoTmp> userExtInfoTmpMap = Maps.newHashMap();
         for (String data : userExtInfoList) {
             String[] userExtInfoArray = data.split(":%:");
             String passportId = userExtInfoArray[0].toLowerCase();
-            if (userExtInfoArray.length != 8) {
-                content = passportId + ",userExtInfo length != 8";
+            if (userExtInfoArray.length < 7) {
+                content = passportId + ",userExtInfo length < 7";
                 contentList.add(content);
                 continue;
             }
             UserExtInfoTmp userExtInfoTmp = new UserExtInfoTmp();
             userExtInfoTmp.setUserid(passportId);
-            try {
-                String quesStr = userExtInfoArray[1];
-                if (!Strings.isNullOrEmpty(quesStr)) {
-                    quesStr = new String(userExtInfoArray[1].getBytes(), "utf-8");
-                }
-                userExtInfoTmp.setQuestion(quesStr);
-            } catch (UnsupportedEncodingException e) {
-                userExtInfoTmp.setQuestion("");
-            }
-            userExtInfoTmp.setAnswer(userExtInfoArray[2]);
             userExtInfoTmp.setUsername(userExtInfoArray[3]);
             userExtInfoTmp.setBirthday(userExtInfoArray[4]);
             userExtInfoTmp.setGender(userExtInfoArray[5]);
-            userExtInfoTmp.setCreatetime(userExtInfoArray[6]);
-            userExtInfoTmp.setCreateip(userExtInfoArray[7]);
+            if (userExtInfoArray.length >= 7) {
+                String createtime = userExtInfoArray[6];
+                if (!"NULL".equals(createtime)) {
+                    userExtInfoTmp.setCreateip(createtime);
+                }
+            }
+            if (userExtInfoArray.length >= 8) {
+                userExtInfoTmp.setCreateip(userExtInfoArray[7]);
+            }
             userExtInfoTmpMap.put(passportId, userExtInfoTmp);
         }
 
@@ -476,13 +494,13 @@ public class RepairOtherWriteData extends BaseTest {
                 continue;
             }
             UserInfoTmp userInfoTmp = userInfoMap.get(passportId);
+            UserOtherInfoTmp userOtherInfoTmp = userOtherInfoMap.get(passportId);
+            UserExtInfoTmp userExtInfoTmp = userExtInfoTmpMap.get(passportId);
             if (userInfoTmp == null || ("0".equals(userInfoTmp.getFlag()) | Strings.isNullOrEmpty(userInfoTmp.getPassword()))) {
                 content = passportId + ",IncUserInfo is empty or flag==0 or password==null";
                 contentList.add(content);
                 continue;
             }
-            UserOtherInfoTmp userOtherInfoTmp = userOtherInfoMap.get(passportId);
-            UserExtInfoTmp userExtInfoTmp = userExtInfoTmpMap.get(passportId);
             try {
                 String email = null, mobile = null, personalId = null, province = "", city = "", uniqname = null;
                 if (userOtherInfoTmp != null) {
@@ -538,7 +556,9 @@ public class RepairOtherWriteData extends BaseTest {
                 accountInfo.setUpdateTime(new Date());
                 accountInfo.setCreateTime(reg_time);
 
-                fillSGDB(uniqname, mobile, passportId, account, accountInfo, count, contentList);
+                if (fillSGDB(uniqname, mobile, passportId, account, accountInfo, contentList)) {
+                    count++;
+                }
             } catch (Exception e) {
                 content = passportId + ",insertSogouDB Error," + e.getMessage();
                 contentList.add(content);
@@ -550,7 +570,7 @@ public class RepairOtherWriteData extends BaseTest {
         content = "use time:" + (end - start) / 1000 / 60 + "m";
         contentList.add(content);
         try {
-            FileUtil.storeFile("D:\\数据迁移\\用搜狐域绑定的手机号登录\\fill_phone_userid_0526_0725", contentList);
+            FileUtil.storeFile("D:\\数据迁移\\写分离前需要迁移的账号\\fill_phone_userid_0526_0725", contentList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -559,9 +579,9 @@ public class RepairOtherWriteData extends BaseTest {
     /*
      * 缺失账号写入搜狗数据库
      */
-    private void fillSGDB(String uniqname, String mobile, String passportId, Account account, AccountInfo accountInfo, int count, List<String> contentList) throws Exception {
+    private boolean fillSGDB(String uniqname, String mobile, String passportId, Account account, AccountInfo accountInfo, List<String> contentList) throws Exception {
         int mobileMapSucc = 1, accountSucc = 1, accountInfoSucc = 1, uniqMapSucc = 1;
-        if (!Strings.isNullOrEmpty(mobile) && mobilePassportMappingDAO.getPassportIdByMobile(mobile) == null) {
+        if (!Strings.isNullOrEmpty(mobile)) {
             String mobilePassportId = mobilePassportMappingDAO.getPassportIdByMobile(mobile);
             if (Strings.isNullOrEmpty(mobilePassportId)) {
                 mobileMapSucc = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
@@ -569,7 +589,7 @@ public class RepairOtherWriteData extends BaseTest {
                 account.setMobile(null);
             }
         }
-        if (!Strings.isNullOrEmpty(uniqname) && uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname) == null) {
+        if (!Strings.isNullOrEmpty(uniqname)) {
             String uniqPassportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
             if (Strings.isNullOrEmpty(uniqPassportId)) {
                 uniqMapSucc = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
@@ -584,10 +604,11 @@ public class RepairOtherWriteData extends BaseTest {
             accountInfoSucc = accountInfoDAO.saveInfoOrInsert(passportId, accountInfo);
         }
         if (mobileMapSucc == 1 && accountSucc == 1 && accountInfoSucc == 1) {
-            count++;
+            return true;
         } else {
             String content = passportId + ",mobileMap-" + mobileMapSucc + ",uniqMap-" + uniqMapSucc + ",account-" + accountSucc + ",accountInfo-" + accountInfoSucc;
             contentList.add(content);
+            return false;
         }
     }
 
@@ -637,10 +658,10 @@ public class RepairOtherWriteData extends BaseTest {
         List<String> passportList = FileUtil.readFileByLines("D:\\phone_diff");
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
         String content;
-        for(String passportId : passportList){
+        for (String passportId : passportList) {
             checkUserApiParams.setUserid("toptxy123@sogou.com");
             Result result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-            if(!result.isSuccess()){
+            if (!result.isSuccess()) {
                 content = passportId + "," + result.toString();
                 contentList.add(content);
             }
