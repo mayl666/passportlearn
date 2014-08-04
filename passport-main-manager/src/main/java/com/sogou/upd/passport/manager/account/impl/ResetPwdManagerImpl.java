@@ -238,7 +238,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     }
 
     @Override
-    public Result sendFindPwdMobileCode(String userId, int clientId, String sec_mobile) throws Exception {
+    public Result sendFindPwdMobileCode(String userId, int clientId, String sec_mobile, String token, String captcha) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
@@ -246,7 +246,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result;
             }
-            result = secureManager.sendMobileCodeAndCheckOldMobile(userId, clientId, AccountModuleEnum.RESETPWD, sec_mobile);
+            result = secureManager.sendMobileCodeAndCheckOldMobile(userId, clientId, AccountModuleEnum.RESETPWD, sec_mobile, token, captcha);
             if (!result.isSuccess()) {
                 return result;
             }
@@ -301,7 +301,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
      *                      （1.发送见sendMobileCode***）
      */
     @Override
-    public Result checkMobileCodeResetPwd(String passportId, int clientId, String smsCode, String token, String captcha)
+    public Result checkMobileCodeResetPwd(String passportId, int clientId, String smsCode)
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
@@ -311,13 +311,6 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 return result;
             }
             String mobile = account.getMobile();
-            result = commonManager.checkMobileSendSMSInBlackList(mobile);
-            if (!result.isSuccess()) {  //如果需要验证页面验证码
-                if (!accountService.checkCaptchaCode(token, captcha)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                    return result;
-                }
-            }
             result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.RESETPWD, smsCode);
             if (result.isSuccess()) {
                 result.setDefaultModel("scode", accountSecureService.getSecureCodeResetPwd(passportId, clientId));

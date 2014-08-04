@@ -20,6 +20,8 @@ public class MoblieCodeParams {
     @Min(0)
     @NotBlank(message = "client_id不允许为空!")
     private String client_id;
+    private String captcha;//验证码
+    private String token;//标识码
 
     public String getMobile() {
         return mobile;
@@ -37,4 +39,19 @@ public class MoblieCodeParams {
         this.client_id = client_id;
     }
 
+    public String getCaptcha() {
+        return captcha;
+    }
+
+    public void setCaptcha(String captcha) {
+        this.captcha = captcha;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

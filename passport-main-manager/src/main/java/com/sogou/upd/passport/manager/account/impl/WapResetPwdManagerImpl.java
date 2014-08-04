@@ -7,12 +7,13 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.WapResetPwdManager;
 import com.sogou.upd.passport.service.account.AccountSecureService;
-import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobileCodeSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,29 +36,22 @@ public class WapResetPwdManagerImpl implements WapResetPwdManager {
     @Autowired
     private CommonManager commonManager;
     @Autowired
+    private RegManager regManager;
+    @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
     @Autowired
     private AccountSecureService accountSecureService;
-    @Autowired
-    private AccountService accountService;
 
     @Override
-    public Result checkMobileCodeResetPwd(String mobile, int clientId, String smsCode, String token, String captcha) throws Exception {
+    public Result checkMobileCodeResetPwd(String mobile, int clientId, String smsCode) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
             if (Strings.isNullOrEmpty(passportId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 return result;
-            }
-            result = commonManager.checkMobileSendSMSInBlackList(mobile);
-            if (!result.isSuccess()) {
-                if (!accountService.checkCaptchaCode(token, captcha)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                    return result;
-                }
             }
             result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.RESETPWD, smsCode);
             if (!result.isSuccess()) {
@@ -77,7 +71,7 @@ public class WapResetPwdManagerImpl implements WapResetPwdManager {
     }
 
     @Override
-    public Result sendMobileCaptcha(String mobile, String client_id) throws Exception {
+    public Result sendMobileCaptcha(String mobile, String client_id, String token, String captcha) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             //检测手机号是否已经注册或绑定
@@ -88,7 +82,19 @@ public class WapResetPwdManagerImpl implements WapResetPwdManager {
             }
             result = commonManager.checkMobileSendSMSInBlackList(mobile);
             if (!result.isSuccess()) {
-                return result;
+                //如果token和captcha都不为空，则校验是否匹配
+                if (!Strings.isNullOrEmpty(token) && !Strings.isNullOrEmpty(captcha)) {
+                    result = regManager.checkCaptchaToken(token, captcha);
+                    //如果验证码校验失败，则提示
+                    if (!result.isSuccess()) {
+                        result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                        return result;
+                    }
+                } else {
+                    result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
+                    return result;
+                }
             }
             result = secureManager.sendMobileCode(mobile, Integer.parseInt(client_id), AccountModuleEnum.RESETPWD);
         } catch (Exception e) {

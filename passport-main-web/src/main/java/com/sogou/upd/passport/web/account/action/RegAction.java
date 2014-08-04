@@ -304,8 +304,19 @@ public class RegAction extends BaseController {
             }
             String mobile = reqParams.getMobile();
             result = commonManager.checkMobileSendSMSInBlackList(mobile);
+            //需要弹出验证码
             if (!result.isSuccess()) {
-                return result.toString();
+                //如果token和captcha都不为空，则校验是否匹配
+                if (!Strings.isNullOrEmpty(reqParams.getToken()) && !Strings.isNullOrEmpty(reqParams.getCaptcha())) {
+                    result = regManager.checkCaptchaToken(reqParams.getToken(), reqParams.getCaptcha());
+                    //如果验证码校验失败，则提示
+                    if (!result.isSuccess()) {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                        return result;
+                    }
+                } else {
+                    return result.toString();
+                }
             }
             //校验用户ip是否中了黑名单
             result = commonManager.checkMobileSendSMSInBlackList(ip);

@@ -144,7 +144,7 @@ public class WapResetPwdAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            result = wapRestPwdManager.sendMobileCaptcha(params.getMobile(), params.getClient_id());
+            result = wapRestPwdManager.sendMobileCaptcha(params.getMobile(), params.getClient_id(), params.getToken(), params.getCaptcha());
         } catch (Exception e) {
             logger.error("sendSmsSecMobile Is Failed,mobile is " + params.getMobile(), e);
         } finally {
@@ -173,7 +173,7 @@ public class WapResetPwdAction extends BaseController {
                 return result.toString();
             }
             int clientId = Integer.parseInt(params.getClient_id());
-            result = wapRestPwdManager.checkMobileCodeResetPwd(params.getMobile(), clientId, params.getSmscode(), params.getToken(), params.getCaptcha());
+            result = wapRestPwdManager.checkMobileCodeResetPwd(params.getMobile(), clientId, params.getSmscode());
             if (result.isSuccess()) {
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 result.setDefaultModel("skin", params.getSkin());

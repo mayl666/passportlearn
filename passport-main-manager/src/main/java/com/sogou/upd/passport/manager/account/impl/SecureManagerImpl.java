@@ -13,6 +13,7 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.account.vo.ActionRecordVO;
@@ -80,6 +81,8 @@ public class SecureManagerImpl implements SecureManager {
     @Autowired
     private CommonManagerImpl commonManager;
     @Autowired
+    private RegManager regManager;
+    @Autowired
     private PhotoUtils photoUtils;
 
     private ExecutorService service = Executors.newFixedThreadPool(10);
@@ -136,7 +139,7 @@ public class SecureManagerImpl implements SecureManager {
     }
 
     @Override
-    public Result sendMobileCodeAndCheckOldMobile(String passportId, int clientId, AccountModuleEnum module, String sec_mobile) throws Exception {
+    public Result sendMobileCodeAndCheckOldMobile(String passportId, int clientId, AccountModuleEnum module, String sec_mobile, String token, String captcha) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             Account account = accountService.queryNormalAccount(passportId);
@@ -151,11 +154,22 @@ public class SecureManagerImpl implements SecureManager {
             }
             if (!Strings.isNullOrEmpty(sec_mobile) && !mobile.equals(sec_mobile)) {
                 result.setCode(ErrorUtil.ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH);
+                return result;
             }
             //检查手机号是否需要弹出验证码
             result = commonManager.checkMobileSendSMSInBlackList(sec_mobile);
             if (!result.isSuccess()) {
-                return result;
+                //如果token和captcha都不为空，则校验是否匹配
+                if (!Strings.isNullOrEmpty(token) && !Strings.isNullOrEmpty(captcha)) {
+                    result = regManager.checkCaptchaToken(token, captcha);
+                    //如果验证码校验失败，则提示
+                    if (!result.isSuccess()) {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                        return result;
+                    }
+                } else {
+                    return result;
+                }
             }
             return sendMobileCode(mobile, clientId, module);
         } catch (ServiceException e) {

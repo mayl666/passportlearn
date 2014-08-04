@@ -17,8 +17,6 @@ public class FindPwdCheckSmscodeParams extends BaseWapResetPwdParams {
     private String mobile;
     @NotBlank(message = "手机验证码不可为空")
     private String smscode;
-    private String captcha;//验证码
-    private String token;//标识码
 
     public String getMobile() {
         return mobile;
@@ -36,19 +34,4 @@ public class FindPwdCheckSmscodeParams extends BaseWapResetPwdParams {
         this.smscode = smscode;
     }
 
-    public String getCaptcha() {
-        return captcha;
-    }
-
-    public void setCaptcha(String captcha) {
-        this.captcha = captcha;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 }

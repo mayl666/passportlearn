@@ -33,7 +33,7 @@ public interface SecureManager {
      * @return
      * @throws Exception
      */
-    public Result sendMobileCodeAndCheckOldMobile(String passportId, int clientId, AccountModuleEnum module, String sec_mobile) throws Exception;
+    public Result sendMobileCodeAndCheckOldMobile(String passportId, int clientId, AccountModuleEnum module, String sec_mobile, String token, String captcha) throws Exception;
 
     /**
      * 为SOHU接口适配，发送短信验证码至原绑定手机

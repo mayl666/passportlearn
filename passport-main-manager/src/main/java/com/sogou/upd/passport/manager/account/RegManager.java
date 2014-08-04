@@ -132,4 +132,13 @@ public interface RegManager {
      */
     public Result registerMobile(String username, String password, int clientId, String captcha, String type) throws Exception;
 
+    /**
+     * 检查验证码是否通过
+     *
+     * @param token
+     * @param captcha
+     * @return
+     */
+    public Result checkCaptchaToken(String token, String captcha);
+
 }
