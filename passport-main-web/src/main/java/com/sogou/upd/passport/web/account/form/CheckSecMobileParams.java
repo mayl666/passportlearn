@@ -16,7 +16,6 @@ public class CheckSecMobileParams extends CheckMobileSmsParams {
     @Phone
     protected String sec_mobile;
 
-
     public String getSec_mobile() {
         return sec_mobile;
     }
@@ -24,4 +23,5 @@ public class CheckSecMobileParams extends CheckMobileSmsParams {
     public void setSec_mobile(String sec_mobile) {
         this.sec_mobile = sec_mobile;
     }
+
 }

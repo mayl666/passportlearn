@@ -385,7 +385,7 @@ public class ResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/sendsms", method = RequestMethod.GET)
+    @RequestMapping(value = "/findpwd/sendsms", method = RequestMethod.POST)
     @ResponseBody
     public Object sendSmsSecMobile(HttpServletRequest request, CheckSecMobileParams params) throws Exception {
         Result result = new APIResultSupport(false);
@@ -433,8 +433,14 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
+            result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
+            if (result.isSuccess()) {  //账号不存在
+                result = buildErrorResult(result, params, null, ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                model.addAttribute("data", result.toString());
+                return "/recover/type";
+            }
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
+            result = resetPwdManager.checkMobileCodeResetPwd(username, clientId, params.getSmscode(), params.getToken(), params.getCaptcha());
             if (result.isSuccess()) {
                 result.setDefaultModel("userid", params.getUsername());
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
@@ -442,12 +448,6 @@ public class ResetPwdAction extends BaseController {
             } else {
                 String message = result.getMessage();
                 result = buildErrorResult(result, params, null, message);
-                model.addAttribute("data", result.toString());
-                return "/recover/type";
-            }
-            result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
-            if (result.isSuccess()) {  //账号不存在
-                result = buildErrorResult(result, params, null, ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }

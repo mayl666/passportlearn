@@ -152,11 +152,18 @@ public class SecureManagerImpl implements SecureManager {
             if (!Strings.isNullOrEmpty(sec_mobile) && !mobile.equals(sec_mobile)) {
                 result.setCode(ErrorUtil.ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH);
             }
+            //检查手机号是否需要弹出验证码
+            result = commonManager.checkMobileSendSMSInBlackList(sec_mobile);
+            if (!result.isSuccess()) {
+                return result;
+            }
             return sendMobileCode(mobile, clientId, module);
         } catch (ServiceException e) {
             logger.error("send mobile code Fail:", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
+        } finally {
+            commonManager.incSendTimesForMobile(sec_mobile);
         }
     }
 
@@ -520,7 +527,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
             Account account = (Account) result.getDefaultModel();
-            if(account == null || !Strings.isNullOrEmpty(account.getMobile())){
+            if (account == null || !Strings.isNullOrEmpty(account.getMobile())) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
                 return result;

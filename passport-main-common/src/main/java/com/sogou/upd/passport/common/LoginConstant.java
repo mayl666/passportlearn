@@ -91,6 +91,11 @@ public class LoginConstant {
     public static final int MOBILE_SEND_SMSCODE_LIMITED = 10; //ip一天限制次数
 
     /**
+     * 一个手机号调用发短信验证码接口时需要弹出验证码的次数限制
+     */
+    public static final int MOBILE_SEND_SMSCODE_NEED_CAPTCHA_LIMITED = 1;
+
+    /**
      * 一天内某一个cookie注册次数限制
      */
     public static final int REGISTER_COOKIE_LIMITED = 5; // cookie一天限制次数

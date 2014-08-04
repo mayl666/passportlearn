@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.model.account.Account;
@@ -48,6 +49,8 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     private OperateTimesService operateTimesService;
     @Autowired
     private SecureManager secureManager;
+    @Autowired
+    private CommonManager commonManager;
 
     @Override
     public Map<String, Object> getEmailAndStatus(String username) throws Exception {
@@ -298,7 +301,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
      *                      （1.发送见sendMobileCode***）
      */
     @Override
-    public Result checkMobileCodeResetPwd(String passportId, int clientId, String smsCode)
+    public Result checkMobileCodeResetPwd(String passportId, int clientId, String smsCode, String token, String captcha)
             throws Exception {
         Result result = new APIResultSupport(false);
         try {
@@ -308,6 +311,13 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 return result;
             }
             String mobile = account.getMobile();
+            result = commonManager.checkMobileSendSMSInBlackList(mobile);
+            if (!result.isSuccess()) {  //如果需要验证页面验证码
+                if (!accountService.checkCaptchaCode(token, captcha)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                    return result;
+                }
+            }
             result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.RESETPWD, smsCode);
             if (result.isSuccess()) {
                 result.setDefaultModel("scode", accountSecureService.getSecureCodeResetPwd(passportId, clientId));

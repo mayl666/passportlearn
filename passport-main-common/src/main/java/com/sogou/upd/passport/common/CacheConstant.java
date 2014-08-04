@@ -41,6 +41,7 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORTID_SENDEMAILNUM = "SP.PASSPORTID:SENDEMAILNUM_"; // passportId与email发送次数的映射
     public static final String CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO = "SP.PASSPORTID:ACCOUNT_BASE_INFO_"; // passportId与sohu+头像昵称映射
     public static final String CACHE_PREFIX_MOBILE_SMSCODE_IPBLACKLIST = "SP.MOBILESMSCODE:IPBLACKLIST_SET_"; // ip与发送手机短信次数映射
+    public static final String CACHE_PREFIX_MOBILE_SENDSMSCODENUM = "SP.MOBILESMSCODE:NUMLIMIT_SET_"; // 手机号与发送手机短信次数映射
 
     /*================账号黑名单、白名单缓存常量=====================*/
     public static final String CACHE_PREFIX_IP_UPDATEPWDNUM = "SP.IP:UPDATEPWDNUM_"; //IP的修改密码限制
@@ -64,9 +65,9 @@ public class CacheConstant {
     //基于cookie检查用户昵称次数限制
     public static final String CACHE_PREFIX_CHECK_NICKNAME_EXIST_COOKIE_NUM = "SP.COOKIE.CHECK_NICKNAME_NUM_";
     //内部接口 检查用户是否存在次数前缀
-    public static final String CACHE_PREFIX_CHECK_USER_INTERNAL_USERNAME_NUM ="SP.EXIST.INTERNAL.USERNAME_NUM_";
+    public static final String CACHE_PREFIX_CHECK_USER_INTERNAL_USERNAME_NUM = "SP.EXIST.INTERNAL.USERNAME_NUM_";
     //内部接口 检查用户是否存在次数前缀
-    public static final String CACHE_PREFIX_CHECK_USER_INTERNAL_IP_NUM ="SP.EXIST.INTERNAL.IP_NUM_";
+    public static final String CACHE_PREFIX_CHECK_USER_INTERNAL_IP_NUM = "SP.EXIST.INTERNAL.IP_NUM_";
     // 检查账号是否存在在黑名单的前缀
     public static final String CACHE_PREFIX_GETPAIRTOKEN_USERNAME_BLACK_ = "SP.GETPAIRTOKEN.USERNAME:BLACK_";
     public static final String CACHE_PREFIX_GETPAIRTOKEN__IP_BLACK_ = "SP.GETPAIRTOKEN.IP:BLACK_";

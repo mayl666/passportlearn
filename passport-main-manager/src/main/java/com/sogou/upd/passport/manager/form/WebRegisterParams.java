@@ -17,7 +17,7 @@ import javax.validation.constraints.Min;
  * User: mayan
  * Date: 13-4-15 Time: 下午5:15
  */
-public class WebRegisterParams extends BaseRegUserNameParams{
+public class WebRegisterParams extends BaseRegUserNameParams {
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
     private String client_id;
@@ -28,6 +28,7 @@ public class WebRegisterParams extends BaseRegUserNameParams{
     private String captcha;//验证码
     //  @NotBlank(message = "标识码不允许为空!")
     private String token;//标识码
+    private String mobile_captcha;//手机注册时，弹出的验证码，第二次获取短信验证码弹出；为了不修改原有的字段名，新增的字段名
     @URL
     @Ru
     private String ru;//回跳url
@@ -103,5 +104,13 @@ public class WebRegisterParams extends BaseRegUserNameParams{
 
     public void setRu(String ru) {
         this.ru = ru;
+    }
+
+    public String getMobile_captcha() {
+        return mobile_captcha;
+    }
+
+    public void setMobile_captcha(String mobile_captcha) {
+        this.mobile_captcha = mobile_captcha;
     }
 }

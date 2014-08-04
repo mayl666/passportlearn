@@ -73,7 +73,6 @@ public class RegManagerImpl implements RegManager {
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
     private static final Logger checkLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothCheckSyncErrorLogger");
 
-    private static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
 
@@ -103,11 +102,9 @@ public class RegManagerImpl implements RegManager {
                 case SOGOU://个性账号直接注册
                 case OTHER://外域邮件注册
                 case INDIVID:
-                    String token = regParams.getToken();
-                    //判断验证码
-                    if (!accountService.checkCaptchaCode(token, captcha)) {
-                        logger.debug("[webRegister captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captcha);
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                    //校验验证码
+                    result = checkCaptchaToken(regParams.getToken(), captcha);
+                    if (!result.isSuccess()) {
                         return result;
                     }
                     ru = Strings.isNullOrEmpty(ru) ? LOGIN_INDEX_URL : ru;
@@ -116,6 +113,13 @@ public class RegManagerImpl implements RegManager {
                     result = sgRegisterApiManager.regMailUser(regEmailApiParams);
                     break;
                 case PHONE://手机号
+                    //校验验证码
+                    if (!Strings.isNullOrEmpty(regParams.getMobile_captcha())) {
+                        result = checkCaptchaToken(regParams.getToken(), regParams.getMobile_captcha());
+                        if (!result.isSuccess()) {
+                            return result;
+                        }
+                    }
                     result = registerMobile(username, password, clientId, captcha, null);
                     if (result.isSuccess()) {
                         username = (String) result.getModels().get("userid");
@@ -132,6 +136,17 @@ public class RegManagerImpl implements RegManager {
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
         }
+        return result;
+    }
+
+    private Result checkCaptchaToken(String token, String captcha) {
+        Result result = new APIResultSupport(false);
+        //判断验证码
+        if (!accountService.checkCaptchaCode(token, captcha)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+            return result;
+        }
+        result.setSuccess(true);
         return result;
     }
 
@@ -447,7 +462,6 @@ public class RegManagerImpl implements RegManager {
 
     @Override
     public Result checkRegInBlackList(String ip, String cookieStr) throws Exception {
-
         Result result = new APIResultSupport(false);
         try {
             //检查账号是否在黑名单中
@@ -472,36 +486,6 @@ public class RegManagerImpl implements RegManager {
             operateTimesService.incRegTimes(ip, cookieStr);
         } catch (ServiceException e) {
             logger.error("register incRegTimes Exception", e);
-            throw new Exception(e);
-        }
-    }
-
-    @Override
-    public Result checkMobileSendSMSInBlackList(String ip) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            //检查ip是否在黑名单中
-            if (operateTimesService.isMobileSendSMSInBlackList(ip)) {
-                //检查ip是否在白名单中
-                if (!operateTimesService.checkRegInWhiteList(ip)) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-                    return result;
-                }
-            }
-        } catch (Exception e) {
-            logger.error("[manager]method isMobileSendSMSInBlackList error", e);
-            throw new Exception(e);
-        }
-        result.setSuccess(true);
-        return result;
-    }
-
-    @Override
-    public void incSendTimesForMobile(String ip) throws Exception {
-        try {
-            operateTimesService.incSendTimesForMobile(ip);
-        } catch (ServiceException e) {
-            logger.error("register incSendTimesForMobile Exception", e);
             throw new Exception(e);
         }
     }

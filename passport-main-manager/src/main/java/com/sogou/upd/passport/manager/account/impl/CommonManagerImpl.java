@@ -4,6 +4,9 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
+import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
@@ -126,6 +129,42 @@ public class CommonManagerImpl implements CommonManager {
         } catch (Exception e) {
             logger.error("isAccessAccept error, api:" + apiName, e);
             return false;
+        }
+    }
+
+    @Override
+    public Result checkMobileSendSMSInBlackList(String ipOrMobile) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            //检查ip或者mobile是否中了限制
+            if (operateTimesService.isMobileSendSMSInBlackList(ipOrMobile)) {
+                if (PhoneUtil.verifyPhoneNumberFormat(ipOrMobile)) {
+                    //如果是手机号，则提示需要输入验证码
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
+                    return result;
+                } else {
+                    //如果是ip，则还需要检查ip是否在白名单中
+                    if (!operateTimesService.checkRegInWhiteList(ipOrMobile)) {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                        return result;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("[manager]method isMobileSendSMSInBlackList error", e);
+            throw new Exception(e);
+        }
+        result.setSuccess(true);
+        return result;
+    }
+
+    @Override
+    public void incSendTimesForMobile(String ipOrMobile) throws Exception {
+        try {
+            operateTimesService.incSendTimesForMobile(ipOrMobile);
+        } catch (ServiceException e) {
+            logger.error("register incSendTimesForMobile Exception", e);
+            throw new Exception(e);
         }
     }
 

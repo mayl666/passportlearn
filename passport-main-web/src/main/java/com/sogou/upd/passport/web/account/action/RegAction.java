@@ -280,7 +280,7 @@ public class RegAction extends BaseController {
      *
      * @param reqParams 传入的参数
      */
-    @RequestMapping(value = {"/sendsms"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/sendsms"}, method = RequestMethod.POST)
     @ResponseBody
     public Object sendMobileCode(MoblieCodeParams reqParams, HttpServletRequest request)
             throws Exception {
@@ -302,18 +302,19 @@ public class RegAction extends BaseController {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result.toString();
             }
-            //校验用户ip是否中了黑名单
-            result = regManager.checkMobileSendSMSInBlackList(ip);
+            String mobile = reqParams.getMobile();
+            result = commonManager.checkMobileSendSMSInBlackList(mobile);
             if (!result.isSuccess()) {
-                if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
-                    finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-                    result.setMessage("发送短信失败");
-                }
                 return result.toString();
             }
-            String mobile = reqParams.getMobile();
-            //为了数据迁移三个阶段，这里需要转换下参数类
+            //校验用户ip是否中了黑名单
+            result = commonManager.checkMobileSendSMSInBlackList(ip);
+            if (!result.isSuccess()) {
+                finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                result.setMessage("发送短信失败");
+                return result.toString();
+            }
             BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
             result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
         } catch (Exception e) {
@@ -331,7 +332,8 @@ public class RegAction extends BaseController {
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
-        regManager.incSendTimesForMobile(ip);
+        commonManager.incSendTimesForMobile(ip);
+        commonManager.incSendTimesForMobile(reqParams.getMobile());
         return result.toString();
     }
 

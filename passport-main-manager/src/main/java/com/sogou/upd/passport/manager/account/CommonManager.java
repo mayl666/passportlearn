@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 
@@ -89,5 +90,22 @@ public interface CommonManager {
      * @return
      */
     public boolean isAccessAccept(int clientId, String requestIp, String apiName);
+
+    /**
+     * 检查手机注册ip是否在发短信超限黑名单中
+     *
+     * @param ipOrMobile
+     * @return
+     * @throws Exception
+     */
+    public Result checkMobileSendSMSInBlackList(String ipOrMobile) throws Exception;
+
+    /**
+     * 手机发短信次数
+     *
+     * @param ipOrMobile
+     * @throws Exception
+     */
+    public void incSendTimesForMobile(String ipOrMobile) throws Exception;
 
 }

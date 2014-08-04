@@ -101,23 +101,6 @@ public interface RegManager {
     public Result checkRegInBlackListByIpForInternal(String ip, int clientId) throws Exception;
 
     /**
-     * 检查手机注册ip是否在发短信超限黑名单中
-     *
-     * @param ip
-     * @return
-     * @throws Exception
-     */
-    public Result checkMobileSendSMSInBlackList(String ip) throws Exception;
-
-    /**
-     * 手机发短信次数
-     *
-     * @param ip
-     * @throws Exception
-     */
-    public void incSendTimesForMobile(String ip) throws Exception;
-
-    /**
      * 检查用户名是否存在调用是否超过频率限制
      *
      * @param username
