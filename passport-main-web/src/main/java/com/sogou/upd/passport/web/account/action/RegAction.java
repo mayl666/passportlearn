@@ -26,6 +26,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import com.sogou.upd.passport.web.account.form.RegUserNameParams;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -311,10 +312,12 @@ public class RegAction extends BaseController {
                     result = regManager.checkCaptchaToken(reqParams.getToken(), reqParams.getCaptcha());
                     //如果验证码校验失败，则提示
                     if (!result.isSuccess()) {
+                        result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                         return result;
                     }
                 } else {
+                    result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
                     return result.toString();
                 }
             }
