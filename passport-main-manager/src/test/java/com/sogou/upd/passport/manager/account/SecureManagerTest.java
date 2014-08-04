@@ -92,37 +92,37 @@ public class SecureManagerTest extends BaseTest {
         int clientId = 1120;
         //搜狗账号获取全属性的个人资料
         String passportId = userid_sogou_1;
-        String expectString = accountInfoManager.getUserUniqName(passportId, clientId);
+        String expectString = accountInfoManager.getUserUniqName(passportId, clientId, true);
         Result result = secureManager.queryAccountSecureInfo(passportId,clientId,false);
         String actualString = (String) result.getModels().get("uniqname");
         Assert.assertTrue(expectString.equals(actualString));
         //个性账号获取全属性的个人资料
         passportId = userid_sogou_1_another;
-        expectString = accountInfoManager.getUserUniqName(passportId, clientId);
+        expectString = accountInfoManager.getUserUniqName(passportId, clientId, true);
         result = secureManager.queryAccountSecureInfo(passportId,clientId,false);
         actualString = (String) result.getModels().get("uniqname");
         Assert.assertTrue(expectString.equals(actualString));
         //手机账号获取全属性的个人资料
         passportId = userid_phone;
-        expectString = accountInfoManager.getUserUniqName(passportId, clientId);
+        expectString = accountInfoManager.getUserUniqName(passportId, clientId, true);
         result = secureManager.queryAccountSecureInfo(passportId,clientId,false);
         actualString = (String) result.getModels().get("uniqname");
         Assert.assertTrue(expectString.equals(actualString));
         //外域邮箱账号获取全属性的个人资料
         passportId = userid_email;
-        expectString = accountInfoManager.getUserUniqName(passportId, clientId);
+        expectString = accountInfoManager.getUserUniqName(passportId, clientId, true);
         result = secureManager.queryAccountSecureInfo(passportId,clientId,false);
         actualString = (String) result.getModels().get("uniqname");
         Assert.assertTrue(expectString.equals(actualString));
         //第三方账号获取全属性的个人资料，且account_info表里没记录
         passportId = userid_connect;
-        expectString = accountInfoManager.getUserUniqName(passportId, clientId);
+        expectString = accountInfoManager.getUserUniqName(passportId, clientId, true);
         result = secureManager.queryAccountSecureInfo(passportId,clientId,false);
         actualString = (String) result.getModels().get("uniqname");
         Assert.assertTrue(expectString.equals(actualString));
         //不存在的账号获取全属性的个人资料，且account_info表里没记录
         passportId = userid_invild;
-        expectString = accountInfoManager.getUserUniqName(passportId, clientId);
+        expectString = accountInfoManager.getUserUniqName(passportId, clientId, true);
         result = secureManager.queryAccountSecureInfo(passportId,clientId,false);
         actualString = (String) result.getModels().get("uniqname");
         Assert.assertTrue(expectString.equals(actualString));

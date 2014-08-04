@@ -113,27 +113,4 @@ public class PCAccountManagerImplTest extends BaseTest {
         }
     }
 
-    @Test
-    public void testGetBrowserBbsUniqname() {
-        String passportId = "shipengzhi1986@sogou.com";
-//        String passportId = "都市捕蛇者"; //都市捕蛇者@focus.cn
-
-        //%E9%83%BD%E5%B8%82%E6%8D%95%E8%9B%87%E8%80%85@focus.cn
-
-        System.out.println(" encode result :" + Coder.encodeUTF8(StringUtils.substringBefore(passportId, "@")));
-
-        Assert.assertEquals("%E9%83%BD%E5%B8%82%E6%8D%95%E8%9B%87%E8%80%85", Coder.encodeUTF8(passportId));
-
-//        String uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
-//        Assert.assertTrue(!StringUtils.isBlank(uniqname));
-    }
-
-
-    @Test
-    public void testGetUniqnameByClientId() {
-        String passportId = "shipengzhi1986@sogou.com";
-        String uniqname = pcAccountManager.getUniqnameByClientId(passportId, 1044);
-        Assert.assertTrue(!StringUtils.isBlank(uniqname));
-    }
-
 }

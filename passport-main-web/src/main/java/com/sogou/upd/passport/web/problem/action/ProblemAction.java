@@ -53,7 +53,7 @@ public class ProblemAction extends BaseController {
         //检测是否登录
         if (hostHolder.isLogin()) {
             String userId = hostHolder.getPassportId();
-            result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, CommonConstant.SGPP_DEFAULT_CLIENTID));
+            result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, CommonConstant.SGPP_DEFAULT_CLIENTID, true));
         }
         //获取问题类型列表
         List<ProblemType> typeList = problemTypeManager.getProblemTypeList();

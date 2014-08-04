@@ -3,13 +3,15 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.parameter.*;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
-import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.account.vo.NickNameAndAvatarVO;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
@@ -51,9 +53,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     private ConnectTokenService connectTokenService;
     @Autowired
     private ConnectConfigService connectConfigService;
-    @Autowired
-    private PCAccountManager pcAccountManager;
-
     @Autowired
     private OperateTimesService operateTimesService;
 
@@ -166,14 +165,13 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
      * <p/>
      * OAuth2ResourceManagerService 中 getEncodedUniqname 方法重构抽取至此
      * <p/>
-     * TODO 项目中调用 OAuth2ResourceManagerService服务 getEncodedUniqname方法统一替换成getUserUniqName方法
      *
      * @param passportId
      * @param clientId
      * @return
      */
     @Override
-    public String getUserUniqName(String passportId, int clientId) {
+    public String getUserUniqName(String passportId, int clientId, boolean isEncode) {
         String uniqname = null;
         try {
             //获取账号类型
@@ -191,21 +189,25 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                     ConnectToken connectToken = getConnectToken(passportId, clientId);
                     if (connectToken != null) {
                         uniqname = connectToken.getConnectUniqname();
-                        //判断uniqname,若为空，则调用 getAndUpdateUniqname 方法
+                        //判断uniqname,若为空，则调用 getDefaultUniqname 方法
                         if (Strings.isNullOrEmpty(uniqname)) {
-                            uniqname = getAndUpdateUniqname(passportId, account, uniqname);
+                            uniqname = getDefaultUniqname(passportId, uniqname);
                         }
                     }
                 }
             } else {
                 //非第三方账号
-                uniqname = getAndUpdateUniqname(passportId, account, uniqname);
+                uniqname = getDefaultUniqname(passportId, uniqname);
             }
-
         } catch (Exception e) {
             logger.error("getUserUniqName error. passportId:" + passportId, e);
         }
-        return Strings.isNullOrEmpty(uniqname) ? passportId : Coder.encode(uniqname, "UTF-8");
+        if (Strings.isNullOrEmpty(uniqname)) {
+            uniqname = passportId;
+        } else if (isEncode) {
+            uniqname = Coder.encode(uniqname, "UTF-8");
+        }
+        return uniqname;
     }
 
     @Override
@@ -231,9 +233,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                         if (connectToken != null) {
                             if (Strings.isNullOrEmpty(uniqname)) {
                                 uniqname = connectToken.getConnectUniqname();
-                                //判断uniqname,若为空，则调用 getAndUpdateUniqname 方法
+                                //判断uniqname,若为空，则调用 getDefaultUniqname 方法
                                 if (Strings.isNullOrEmpty(uniqname)) {
-                                    uniqname = getAndUpdateUniqname(passportId, account, uniqname);
+                                    uniqname = getDefaultUniqname(passportId, uniqname);
                                 }
                             }
                             if (Strings.isNullOrEmpty(avatarurl)) {
@@ -249,7 +251,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                     }
                 } else {
                     //非第三方账号
-                    uniqname = getAndUpdateUniqname(passportId, account, uniqname);
+                    uniqname = getDefaultUniqname(passportId, uniqname);
                     if (!Strings.isNullOrEmpty(avatarurl)) {
                         obtainPhotoSizeUrl(nameAndAvatarVO, avatarurl);
                     }
@@ -340,37 +342,14 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
      * 从浏览器论坛取昵称
      *
      * @param passportId
-     * @param account
      * @param uniqname
      * @return
      */
-    private String getAndUpdateUniqname(String passportId, Account account, String uniqname) {
-        if (!isValidUniqname(passportId, uniqname)) {
-            //从论坛获取昵称
-            uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
-            if (isValidUniqname(passportId, uniqname)) {
-                if (account != null) {
-                    //更新用户昵称信息到account表
-                    //从浏览器论坛获取昵称、更新到account以及u_p_m、先check u_p_m昵称唯一性
-                    boolean updateFlag = accountService.updateUniqName(account, uniqname);
-                    if (!updateFlag) {
-                        uniqname = defaultUniqname(passportId);
-                    }
-                }
-            }
-        }
-        if (!isValidUniqname(passportId, uniqname)) {
+    private String getDefaultUniqname(String passportId, String uniqname) {
+        if (Strings.isNullOrEmpty(uniqname) || uniqname.equals(passportId.substring(0, passportId.indexOf("@")))) {
             uniqname = defaultUniqname(passportId);
         }
         return uniqname;
-    }
-
-
-    private boolean isValidUniqname(String passportId, String uniqname) {
-        if (Strings.isNullOrEmpty(uniqname) || uniqname.equals(passportId.substring(0, passportId.indexOf("@")))) {
-            return false;
-        }
-        return true;
     }
 
     /**

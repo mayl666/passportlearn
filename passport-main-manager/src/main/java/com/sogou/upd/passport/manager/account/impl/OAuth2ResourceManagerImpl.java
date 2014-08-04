@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
@@ -12,11 +11,9 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.PhotoUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
-import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
@@ -27,7 +24,6 @@ import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
-import com.sogou.upd.passport.service.account.AccountBaseInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
@@ -43,7 +39,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.Random;
 
 /**
  * 采用OAuth2协议访问受保护数据
@@ -65,17 +60,11 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     @Autowired
     private LoginApiManager sgLoginApiManager;
     @Autowired
-    private PCAccountManager pcAccountManager;
-    @Autowired
     private UserInfoApiManager shPlusUserInfoApiManager;
     @Autowired
     private PCAccountTokenService pcAccountTokenService;
     @Autowired
-    private PhotoUtils photoUtils;
-    @Autowired
     SnamePassportMappingService snamePassportMappingService;
-    @Autowired
-    private AccountBaseInfoService accountBaseInfoService;
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -182,7 +171,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
-
     }
 
     @Override
@@ -274,7 +262,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 result.setCode(ErrorUtil.ERR_ACCESS_TOKEN);
                 return result;
             }
-
             //取用户昵称、头像信息
 //            Result getUserInfoResult = getUserInfo(passportId, clientId);
 
@@ -340,7 +327,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 if (accountBaseInfo != null) {
                     uniqname = accountBaseInfo.getUniqname();
                 }
-                uniqname = getAndUpdateUniqname(passportId, accountBaseInfo, uniqname);
+                uniqname = getDefaultUniqname(passportId, uniqname);
             }
 
         } catch (Exception e) {
@@ -349,45 +336,21 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         return Strings.isNullOrEmpty(uniqname) ? passportId : uniqname;
     }
 
-    @Override
-    public String defaultUniqname(String passportId) {
-        if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(passportId)) {
-            return "搜狗用户";
-        }
-        return passportId.substring(0, passportId.indexOf("@"));
-    }
-
     /**
      * 从浏览器论坛取昵称
      *
      * @param passportId
-     * @param accountBaseInfo
      * @param uniqname
      * @return
      */
-    private String getAndUpdateUniqname(String passportId, AccountBaseInfo accountBaseInfo, String uniqname) {
-        if (!isValidUniqname(passportId, uniqname)) {
-            //从论坛获取昵称
-            uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
-            if (isValidUniqname(passportId, uniqname)) {
-                if (accountBaseInfo != null) {
-                    accountBaseInfoService.updateUniqname(accountBaseInfo, uniqname);
-                } else {
-                    accountBaseInfoService.insertAccountBaseInfo(passportId, uniqname, "");
-                }
+    private String getDefaultUniqname(String passportId, String uniqname) {
+        if (Strings.isNullOrEmpty(uniqname) || uniqname.equals(passportId.substring(0, passportId.indexOf("@")))) {
+            if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(passportId)) {
+                return "搜狗用户";
             }
-        }
-        if (!isValidUniqname(passportId, uniqname)) {
-            uniqname = defaultUniqname(passportId);
+            return passportId.substring(0, passportId.indexOf("@"));
         }
         return uniqname;
-    }
-
-    private boolean isValidUniqname(String passportId, String uniqname) {
-        if (Strings.isNullOrEmpty(uniqname) || uniqname.equals(passportId.substring(0, passportId.indexOf("@")))) {
-            return false;
-        }
-        return true;
     }
 
     private AccountBaseInfo getBaseInfo(String passportId) {
@@ -404,5 +367,4 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         }
         return null;
     }
-
 }

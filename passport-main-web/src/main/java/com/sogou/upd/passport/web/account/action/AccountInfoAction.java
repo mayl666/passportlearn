@@ -166,7 +166,7 @@ public class AccountInfoAction extends BaseController {
             //获取用户信息
             result = accountInfoManager.getUserInfo(params);
 
-            result.getModels().put("uniqname", accountInfoManager.getUserUniqName(params.getUsername(), clientId));
+            result.getModels().put("uniqname", accountInfoManager.getUserUniqName(params.getUsername(), clientId, true));
 
             //用于记录log
             UserOperationLog userOperationLog = new UserOperationLog(userId, params.getClient_id(), result.getCode(), getIp(request));
