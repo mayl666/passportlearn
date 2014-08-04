@@ -75,6 +75,8 @@ public class PCOAuth2AccountController extends BaseController {
     private PCOAuth2LoginManager pcOAuth2LoginManager;
     @Autowired
     private CookieManager cookieManager;
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
 
     @RequestMapping(value = "/sogou/fastreg", method = RequestMethod.GET)
@@ -317,7 +319,7 @@ public class PCOAuth2AccountController extends BaseController {
             Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
             result.setDefaultModel("autologin", loginParams.getRememberMe());
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-            ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(userId, clientId), accountToken, "sogou");
+            ManagerHelper.setModelForOAuthResult(result, accountInfoManager.getUniqName(userId, clientId, false), accountToken, "sogou");
             loginManager.doAfterLoginSuccess(username, ip, userId, clientId);
         } else {
             loginManager.doAfterLoginFailed(username, ip, result.getCode());

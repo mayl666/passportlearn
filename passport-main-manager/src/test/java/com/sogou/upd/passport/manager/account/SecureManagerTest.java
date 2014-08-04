@@ -73,14 +73,14 @@ public class SecureManagerTest extends BaseTest {
         Assert.assertTrue(expectForm4.equals(actualForm4));
         //第三方账号获取全属性的个人资料，且account_info表里没记录
         userId = userid_connect;
-        String expectString5 = "{\"data\":{\"last_login_loc\":null,\"reg_email\":null,\"sec_ques\":null,\"last_login_time\":\"0\",\"sec_score\":\"0\",\"userid\":\"CFF81AB013A94663D83FEC36AC117933@qq.sohu.com\",\"sec_email\":null,\"sec_mobile\":\"\",\"uniqname\":\"阿沐\",\"avatarurl\":\"http://q.qlogo.cn/qqapp/100294784/CFF81AB013A94663D83FEC36AC117933/100\"},\"statusText\":\"查询成功\",\"status\":\"0\"}";
+        String expectString5 = "{\"data\":{\"last_login_loc\":null,\"reg_email\":null,\"sec_ques\":null,\"last_login_time\":\"0\",\"sec_score\":\"0\",\"userid\":\"CFF81AB013A94663D83FEC36AC117933@qq.sohu.com\",\"sec_email\":null,\"sec_mobile\":\"\",\"uniqname\":\"%E9%98%BF%E6%B2%90\",\"avatarurl\":{\"img_50\":\"http://q.qlogo.cn/qqapp/100294784/CFF81AB013A94663D83FEC36AC117933/100\"}},\"statusText\":\"查询成功\",\"status\":\"0\"}";
         APIResultForm expectForm5 = JacksonJsonMapperUtil.getMapper().readValue(expectString5, APIResultForm.class);
         Result actualResult5 = secureManager.queryAccountSecureInfo(userId, clientId, process);
         APIResultForm actualForm5 = JacksonJsonMapperUtil.getMapper().readValue(actualResult5.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm5.equals(actualForm5));
         //不存在的账号获取全属性的个人资料，且account_info表里没记录
         userId = userid_invild;
-        String expectString6 = "{\"data\":{\"uniqname\":\"null\",\"avatarurl\":{\"img_50\":\"null\"}},\"statusText\":\"账号不存在\",\"status\":\"20205\"}";
+        String expectString6 = "{\"data\":{\"uniqname\":\"osadnfdf4r\"},\"statusText\":\"账号不存在\",\"status\":\"20205\"}";
         APIResultForm expectForm6 = JacksonJsonMapperUtil.getMapper().readValue(expectString6, APIResultForm.class);
         Result actualResult6 = secureManager.queryAccountSecureInfo(userId, clientId, process);
         APIResultForm actualForm6 = JacksonJsonMapperUtil.getMapper().readValue(actualResult6.toString(), APIResultForm.class);
@@ -92,37 +92,37 @@ public class SecureManagerTest extends BaseTest {
         int clientId = 1120;
         //搜狗账号获取全属性的个人资料
         String passportId = userid_sogou_1;
-        String expectString = accountInfoManager.getUserUniqName(passportId, clientId, true);
+        String expectString = accountInfoManager.getUniqName(passportId, clientId, true);
         Result result = secureManager.queryAccountSecureInfo(passportId,clientId,false);
         String actualString = (String) result.getModels().get("uniqname");
         Assert.assertTrue(expectString.equals(actualString));
         //个性账号获取全属性的个人资料
         passportId = userid_sogou_1_another;
-        expectString = accountInfoManager.getUserUniqName(passportId, clientId, true);
+        expectString = accountInfoManager.getUniqName(passportId, clientId, true);
         result = secureManager.queryAccountSecureInfo(passportId,clientId,false);
         actualString = (String) result.getModels().get("uniqname");
         Assert.assertTrue(expectString.equals(actualString));
         //手机账号获取全属性的个人资料
         passportId = userid_phone;
-        expectString = accountInfoManager.getUserUniqName(passportId, clientId, true);
+        expectString = accountInfoManager.getUniqName(passportId, clientId, true);
         result = secureManager.queryAccountSecureInfo(passportId,clientId,false);
         actualString = (String) result.getModels().get("uniqname");
         Assert.assertTrue(expectString.equals(actualString));
         //外域邮箱账号获取全属性的个人资料
         passportId = userid_email;
-        expectString = accountInfoManager.getUserUniqName(passportId, clientId, true);
+        expectString = accountInfoManager.getUniqName(passportId, clientId, true);
         result = secureManager.queryAccountSecureInfo(passportId,clientId,false);
         actualString = (String) result.getModels().get("uniqname");
         Assert.assertTrue(expectString.equals(actualString));
         //第三方账号获取全属性的个人资料，且account_info表里没记录
         passportId = userid_connect;
-        expectString = accountInfoManager.getUserUniqName(passportId, clientId, true);
+        expectString = accountInfoManager.getUniqName(passportId, clientId, true);
         result = secureManager.queryAccountSecureInfo(passportId,clientId,false);
         actualString = (String) result.getModels().get("uniqname");
         Assert.assertTrue(expectString.equals(actualString));
         //不存在的账号获取全属性的个人资料，且account_info表里没记录
         passportId = userid_invild;
-        expectString = accountInfoManager.getUserUniqName(passportId, clientId, true);
+        expectString = accountInfoManager.getUniqName(passportId, clientId, true);
         result = secureManager.queryAccountSecureInfo(passportId,clientId,false);
         actualString = (String) result.getModels().get("uniqname");
         Assert.assertTrue(expectString.equals(actualString));

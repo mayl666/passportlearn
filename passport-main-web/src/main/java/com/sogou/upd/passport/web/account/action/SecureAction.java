@@ -73,7 +73,7 @@ public class SecureAction extends BaseController {
         } else {
             result = secureManager.queryAccountSecureInfo(userId, clientId, true);
         }
-        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId, true));
+        result.setDefaultModel("username", accountInfoManager.getUniqName(userId, clientId, true));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -111,7 +111,7 @@ public class SecureAction extends BaseController {
         }
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
         result.setDefaultModel("username", result.getModels().get("uniqname"));
-//        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
+//        result.setDefaultModel("username", accountInfoManager.getUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -148,7 +148,7 @@ public class SecureAction extends BaseController {
         }
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
         result.setDefaultModel("username", result.getModels().get("uniqname"));
-//        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
+//        result.setDefaultModel("username", accountInfoManager.getUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -183,7 +183,7 @@ public class SecureAction extends BaseController {
         }
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
         result.setDefaultModel("username", result.getModels().get("uniqname"));
-//        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId));
+//        result.setDefaultModel("username", accountInfoManager.getUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -217,7 +217,7 @@ public class SecureAction extends BaseController {
                 return "redirect:/";
         }
         result.setSuccess(true);
-        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId, true));
+        result.setDefaultModel("username", accountInfoManager.getUniqName(userId, clientId, true));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }
@@ -250,7 +250,7 @@ public class SecureAction extends BaseController {
         }
         result = secureManager.queryActionRecords(userId, clientId, AccountModuleEnum.LOGIN);
         result.setSuccess(true);
-        result.setDefaultModel("username", accountInfoManager.getUserUniqName(userId, clientId, true));
+        result.setDefaultModel("username", accountInfoManager.getUniqName(userId, clientId, true));
         if (domain == AccountDomainEnum.PHONE) {
             result.setDefaultModel("actype", "phone");
         }

@@ -24,6 +24,8 @@ public class AccountInfoManagerTest extends BaseTest {
 
     @Autowired
     private AccountInfoManager accountInfoManager;
+    @Autowired
+    private OAuth2ResourceManager oAuth2ResourceManager;
 
     private String uniqname_update = "测试昵称" + new Random().nextInt(1000);
     private String fullname_update = "测试全称" + new Random().nextInt(1000);
@@ -137,13 +139,56 @@ public class AccountInfoManagerTest extends BaseTest {
         //修改fields
         params.setUserid(userid_sogou_1);
         params.setFields("uniqname,sec_email,province");
-        String diffFieldsAccountInfoExpect = "{\"data\":{\"userid\":\"liulingtest01@sogou.com\",\"account\":{\"id\":0,\"password\":\"ol3WcQve$gdwqt9ybb9/IL/v5SA5e0.\",\"uniqname\":\"阿沐测试01\",\"avatar\":\"%s/app/a/%s/Ti78RREtsRL63r64_1395717724516\",\"accountType\":1,\"passportId\":\"liulingtest01@sogou.com\",\"flag\":1,\"mobile\":null,\"regIp\":\"10.129.192.121\",\"regTime\":1395717724000,\"passwordtype\":2},\"uniqname\":\"阿沐测试01\"},\"status\":\"0\",\"statusText\":\"\"}";
+        String diffFieldsAccountInfoExpect = "{\"data\":{\"userid\":\"liulingtest01@sogou.com\",\"account\":{\"id\":0,\"password\":\"ol3WcQve$gdwqt9ybb9/IL/v5SA5e0.\",\"uniqname\":\"阿沐测试01\",\"avatar\":\"%s/app/a/%s/Ti78RREtsRL63r64_1395717724516\",\"accountType\":8,\"passportId\":\"liulingtest01@sogou.com\",\"flag\":1,\"mobile\":null,\"regIp\":\"10.129.192.121\",\"regTime\":1395717724000,\"passwordtype\":2},\"uniqname\":\"阿沐测试01\"},\"status\":\"0\",\"statusText\":\"\"}";
         APIResultForm expect6 = JacksonJsonMapperUtil.getMapper().readValue(diffFieldsAccountInfoExpect, APIResultForm.class);
         String diffFieldsAccountInfoActual = accountInfoManager.getUserNickNameAndAvatar(params).toString();
         APIResultForm actual6 = JacksonJsonMapperUtil.getMapper().readValue(diffFieldsAccountInfoActual, APIResultForm.class);
         Assert.assertEquals(expect6, actual6);
     }
 
+    @Test
+    public void testGetUserUniqName(){
+        int clientId = 1120;
+        String expectStr;
+        String actualStr;
+        //=====================需要encode=============
+        //搜狗账号
+        expectStr = "%E9%98%BF%E6%B2%90%E6%B5%8B%E8%AF%9501";
+        actualStr = accountInfoManager.getUniqName(userid_sogou_1, clientId, true);
+        Assert.assertEquals(expectStr, actualStr);
+        //个性账号
+        expectStr = "%E9%98%BF%E6%B2%90%E6%B5%8B%E8%AF%9501";
+        actualStr = accountInfoManager.getUniqName(userid_sogou_1_another, clientId, true);
+        Assert.assertEquals(expectStr, actualStr);
+        //外域邮箱账号
+        expectStr = "loveerin9460";
+        actualStr = accountInfoManager.getUniqName(userid_email, clientId, true);
+        Assert.assertEquals(expectStr, actualStr);
+        //第三方账号
+        expectStr = "%E9%98%BF%E6%B2%90";
+        actualStr = accountInfoManager.getUniqName(userid_connect, clientId, true);
+        Assert.assertEquals(expectStr, actualStr);
+        //=====================不需要encode=============
+        //搜狗账号
+        expectStr = "阿沐测试01";
+        actualStr = accountInfoManager.getUniqName(userid_sogou_1, clientId, false);
+        Assert.assertEquals(expectStr, actualStr);
+        //外域邮箱账号
+        expectStr = "loveerin9460";
+        actualStr = accountInfoManager.getUniqName(userid_email, clientId, false);
+        Assert.assertEquals(expectStr, actualStr);
+        //第三方账号
+        expectStr = "阿沐";
+        actualStr = accountInfoManager.getUniqName(userid_connect, clientId, false);
+        Assert.assertEquals(expectStr, actualStr);
+        //接口对比
+        expectStr = oAuth2ResourceManager.getUniqname(userid_email, clientId);
+        actualStr = accountInfoManager.getUniqName(userid_email, clientId, false);
+        Assert.assertEquals(expectStr, actualStr);
+        expectStr = oAuth2ResourceManager.getUniqname(userid_connect, clientId);
+        actualStr = accountInfoManager.getUniqName(userid_connect, clientId, false);
+        Assert.assertEquals(expectStr, actualStr);
+    }
 
     //构造更新用户信息参数
     protected AccountInfoParams getAccountInfoParams(String userid, String uniqname, String fullname, String province, String city, String gender, String personalId, String birthday, String username) {

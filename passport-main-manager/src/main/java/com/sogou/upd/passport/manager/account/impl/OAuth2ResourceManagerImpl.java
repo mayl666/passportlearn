@@ -71,7 +71,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     private ConnectTokenService connectTokenService;
     @Autowired
     private ConnectConfigService connectConfigService;
-
     @Autowired
     private AccountInfoManager accountInfoManager;
 
@@ -327,7 +326,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 if (accountBaseInfo != null) {
                     uniqname = accountBaseInfo.getUniqname();
                 }
-                uniqname = getDefaultUniqname(passportId, uniqname);
+                uniqname = getAndUpdateUniqname(passportId, uniqname);
             }
 
         } catch (Exception e) {
@@ -343,7 +342,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
      * @param uniqname
      * @return
      */
-    private String getDefaultUniqname(String passportId, String uniqname) {
+    private String getAndUpdateUniqname(String passportId, String uniqname) {
         if (Strings.isNullOrEmpty(uniqname) || uniqname.equals(passportId.substring(0, passportId.indexOf("@")))) {
             if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(passportId)) {
                 return "搜狗用户";

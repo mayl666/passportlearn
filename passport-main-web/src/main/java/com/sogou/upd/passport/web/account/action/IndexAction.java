@@ -44,7 +44,7 @@ public class IndexAction extends BaseController {
             // 第三方账号、搜狐矩阵账号 不显示安全信息
             Result result = new APIResultSupport(false);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
-            String uniqname = accountInfoManager.getUserUniqName(userId, clientId, true);
+            String uniqname = accountInfoManager.getUniqName(userId, clientId, true);
             if (domain == AccountDomainEnum.THIRD) {
                 result.setDefaultModel("username", uniqname);
                 result.setDefaultModel("disable", true);

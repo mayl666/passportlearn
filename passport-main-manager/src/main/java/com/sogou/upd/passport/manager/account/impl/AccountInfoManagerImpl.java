@@ -171,7 +171,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
      * @return
      */
     @Override
-    public String getUserUniqName(String passportId, int clientId, boolean isEncode) {
+    public String getUniqName(String passportId, int clientId, boolean isEncode) {
         String uniqname = null;
         try {
             //获取账号类型
@@ -200,7 +200,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 uniqname = getDefaultUniqname(passportId, uniqname);
             }
         } catch (Exception e) {
-            logger.error("getUserUniqName error. passportId:" + passportId, e);
+            logger.error("getUniqName error. passportId:" + passportId, e);
         }
         if (Strings.isNullOrEmpty(uniqname)) {
             uniqname = passportId;

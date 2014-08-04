@@ -36,7 +36,7 @@ public interface AccountInfoManager {
      * @param isEncode 昵称是否需要做urlencode，不知道为什么web页面显示昵称都做了urlencode，/oauth2/resource中返回昵称不需要urlencode
      * @return
      */
-    public String getUserUniqName(String passportId, int clientId, boolean isEncode);
+    public String getUniqName(String passportId, int clientId, boolean isEncode);
 
     /**
      * 获取用户昵称、头像信息

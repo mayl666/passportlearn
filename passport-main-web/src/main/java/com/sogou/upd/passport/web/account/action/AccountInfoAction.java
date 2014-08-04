@@ -8,7 +8,6 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhotoUtils;
-import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
@@ -166,7 +165,7 @@ public class AccountInfoAction extends BaseController {
             //获取用户信息
             result = accountInfoManager.getUserInfo(params);
 
-            result.getModels().put("uniqname", accountInfoManager.getUserUniqName(params.getUsername(), clientId, true));
+            result.getModels().put("uniqname", accountInfoManager.getUniqName(params.getUsername(), clientId, true));
 
             //用于记录log
             UserOperationLog userOperationLog = new UserOperationLog(userId, params.getClient_id(), result.getCode(), getIp(request));
@@ -271,7 +270,7 @@ public class AccountInfoAction extends BaseController {
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
-//                result.getModels().put("uniqname", accountInfoManager.getUserUniqName(userId, CommonConstant.SGPP_DEFAULT_CLIENTID));
+//                result.getModels().put("uniqname", accountInfoManager.getUniqName(userId, CommonConstant.SGPP_DEFAULT_CLIENTID));
                 //TODO disable 作用是对于第三方账号，不显示安全信息tab
                 result.setDefaultModel("disable", true);
             }
