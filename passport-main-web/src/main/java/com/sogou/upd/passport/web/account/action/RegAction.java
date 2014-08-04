@@ -26,6 +26,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import com.sogou.upd.passport.web.account.form.RegUserNameParams;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -304,8 +305,21 @@ public class RegAction extends BaseController {
             }
             String mobile = reqParams.getMobile();
             result = commonManager.checkMobileSendSMSInBlackList(mobile);
+            //需要弹出验证码
             if (!result.isSuccess()) {
-                return result.toString();
+                //如果token和captcha都不为空，则校验是否匹配
+                if (!Strings.isNullOrEmpty(reqParams.getToken()) && !Strings.isNullOrEmpty(reqParams.getCaptcha())) {
+                    result = regManager.checkCaptchaToken(reqParams.getToken(), reqParams.getCaptcha());
+                    //如果验证码校验失败，则提示
+                    if (!result.isSuccess()) {
+                        result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                        return result;
+                    }
+                } else {
+                    result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
+                    return result.toString();
+                }
             }
             //校验用户ip是否中了黑名单
             result = commonManager.checkMobileSendSMSInBlackList(ip);

@@ -113,13 +113,6 @@ public class RegManagerImpl implements RegManager {
                     result = sgRegisterApiManager.regMailUser(regEmailApiParams);
                     break;
                 case PHONE://手机号
-                    //校验验证码
-                    if (!Strings.isNullOrEmpty(regParams.getMobile_captcha())) {
-                        result = checkCaptchaToken(regParams.getToken(), regParams.getMobile_captcha());
-                        if (!result.isSuccess()) {
-                            return result;
-                        }
-                    }
                     result = registerMobile(username, password, clientId, captcha, null);
                     if (result.isSuccess()) {
                         username = (String) result.getModels().get("userid");
@@ -139,7 +132,8 @@ public class RegManagerImpl implements RegManager {
         return result;
     }
 
-    private Result checkCaptchaToken(String token, String captcha) {
+    @Override
+    public Result checkCaptchaToken(String token, String captcha) {
         Result result = new APIResultSupport(false);
         //判断验证码
         if (!accountService.checkCaptchaCode(token, captcha)) {

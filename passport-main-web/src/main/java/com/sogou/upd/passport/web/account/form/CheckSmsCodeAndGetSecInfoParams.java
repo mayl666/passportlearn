@@ -13,8 +13,6 @@ public class CheckSmsCodeAndGetSecInfoParams extends CheckSecMobileParams {
 
     @NotBlank(message = "验证码不允许为空!")
     protected String smscode;
-    protected String captcha;//验证码
-    protected String token;//标识码
 
     public String getSmscode() {
         return smscode;
@@ -24,19 +22,4 @@ public class CheckSmsCodeAndGetSecInfoParams extends CheckSecMobileParams {
         this.smscode = smscode;
     }
 
-    public String getCaptcha() {
-        return captcha;
-    }
-
-    public void setCaptcha(String captcha) {
-        this.captcha = captcha;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 }

@@ -20,7 +20,7 @@ public interface WapResetPwdManager {
      * @return
      * @throws Exception
      */
-    public Result checkMobileCodeResetPwd(String mobile, int clientId, String smsCode, String token, String captcha) throws Exception;
+    public Result checkMobileCodeResetPwd(String mobile, int clientId, String smsCode) throws Exception;
 
     /**
      * 给密保手机发送短信验证码。
@@ -29,6 +29,6 @@ public interface WapResetPwdManager {
      * @param client_id
      * @return
      */
-    public Result sendMobileCaptcha(String mobile, String client_id) throws Exception;
+    public Result sendMobileCaptcha(String mobile, String client_id, String token, String captcha) throws Exception;
 
 }
