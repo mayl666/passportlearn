@@ -2,13 +2,12 @@ package com.sogou.upd.passport.common.validator;
 
 import com.sogou.upd.passport.common.validation.constraints.RuValidator;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * Created by denghua on 14-2-24.
  */
-@Ignore
+//@Ignore
 public class RuValidatorTest {
 
     @Test
@@ -94,6 +93,10 @@ public class RuValidatorTest {
         Assert.assertEquals(false, result);
 
         url = "\"><script>alert(/Test_By_t00ls/)</script><img";
+        result = ru.isValid(url, null);
+        Assert.assertEquals(false, result);
+
+        url = "http://www.acunetix.tst";
         result = ru.isValid(url, null);
         Assert.assertEquals(false, result);
 
