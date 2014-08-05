@@ -24,7 +24,7 @@ public class WapIndexParams {
     @Min(0)
     private String client_id = String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID);
 
-    @NotBlank(message = "ru is null")
+//    @NotBlank(message = "ru is null")
     @URL
     @Ru
     private String ru = WapConstant.WAP_INDEX;//登陆来源
