@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseResetPwdApiParams;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
@@ -43,7 +42,7 @@ public class SecureApiController extends BaseController {
     /**
      * 手机发送短信重置密码
      */
-    @RequestMapping(value = "/resetpwd_batch", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(value = "/resetpwd_batch", method = RequestMethod.POST)
     @ResponseBody
     @InterfaceSecurity
     public String resetpwd(HttpServletRequest request, BaseResetPwdApiParams params) throws Exception {
