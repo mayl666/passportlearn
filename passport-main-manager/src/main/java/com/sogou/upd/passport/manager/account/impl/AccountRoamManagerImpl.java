@@ -63,8 +63,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
         String roamPassportId = null;
         try {
             //检查签名正确性
-            //TODO 验证 r_key
-
             //根据r_key 取出存储在缓存的漫游用户信息
             WebRoamDO webRoamDO = tokenService.getWebRoamDOByToken(r_key);
             if (webRoamDO != null) {
@@ -88,19 +86,11 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             //获取用户账号类型
             AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(roamPassportId);
 
-            //对于漫游过来的手机、外域账号、直接清除cookie
-            // TODO 搜狐切断漫游后、去除清cookie逻辑、防止误清缓存的情况
-            if (accountDomain == AccountDomainEnum.PHONE || accountDomain == AccountDomainEnum.OTHER) {
-                cookieManager.clearCookie(response);
-                result.setSuccess(true);
-                return result;
-            }
-
             //判断账号是否存在
             Account account = accountService.queryAccountByPassportId(roamPassportId);
             if (account == null) {
-                //若账号不存在、搜狗域、第三方账号 清cookie
-                if (accountDomain == AccountDomainEnum.SOGOU || accountDomain == AccountDomainEnum.THIRD) {
+                //标注 20140806 对于在sg 数据库不存在的第三方账号、为减少对数据的影响、仍然支持种cookie、此处对于不存在的第三方账号后续要处理。
+                if (accountDomain == AccountDomainEnum.SOGOU) {
                     //搜狗域、第三方账号在搜狗不存在 记录Log
                     LOGGER.warn("roam account sg not exist. userId:{},accountDomain:{}", roamPassportId, accountDomain.getValue());
 
