@@ -140,7 +140,7 @@ define(['./interface', './utils', './local', './skin'], function(Form, Utils, Lo
 				var c = $.trim(self.$sms.val());
 
 				if (!u || !p || !c) {
-					return self.showMsg('请输入用户名/密码/验证码');
+					return self.showMsg('请输入手机号/密码/验证码');
 				}
 
 				if (p.length < 6) {
