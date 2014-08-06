@@ -160,6 +160,7 @@ define(['./interface', './utils', './local', './dialog', '../utils', './skin'], 
 								self.showMsg(data.statusText);
 								if (data.status == '20221' || data.status == '20216') {
 									self.$sms.empty().focus();
+									CaptchaDialog.refreshCaptcha();
 								} else {
 									self.$password.empty().focus();
 								}
