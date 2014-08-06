@@ -33,7 +33,7 @@ public interface SecureManager {
      * @return
      * @throws Exception
      */
-    public Result sendMobileCodeAndCheckOldMobile(String passportId, int clientId, AccountModuleEnum module, String sec_mobile) throws Exception;
+    public Result sendMobileCodeAndCheckOldMobile(String passportId, int clientId, AccountModuleEnum module, String sec_mobile, String token, String captcha) throws Exception;
 
     /**
      * 为SOHU接口适配，发送短信验证码至原绑定手机
@@ -62,7 +62,7 @@ public interface SecureManager {
      * @return result.getData().get("data") // 账户安全信息
      * @throws Exception
      */
-    public Result queryAccountSecureInfo(String passportId, int clientId, boolean doProcess) throws Exception;
+    public Result queryAccountSecureInfo(String passportId, int clientId, boolean doProcess);
 
     /**
      * 修改用户密码（web验证码方式）

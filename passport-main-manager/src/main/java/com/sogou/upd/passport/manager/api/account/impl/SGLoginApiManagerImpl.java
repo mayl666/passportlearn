@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 import com.alibaba.dubbo.common.utils.StringUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSAEncoder;
@@ -84,7 +85,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
                 }
             }
             if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(userId))) {
-                userId = userId + "@sogou.com";
+                userId = userId + CommonConstant.SOGOU_SUFFIX;
             }
             Result verifyUserResult = accountService.verifyUserPwdVaild(userId, authUserApiParams.getPassword(), false);
             if(verifyUserResult.isSuccess()){

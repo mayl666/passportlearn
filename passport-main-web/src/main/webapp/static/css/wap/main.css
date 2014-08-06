@@ -129,10 +129,21 @@ a.trd .r{width: 40px;color: #ccc;}
 .dialog .buttons{height: 44px;border-top: 1px solid #b2b2b2;}
 .dialog .buttons a{color: #157efb;text-decoration: none;}
 .dialog .buttons a:first-child{border-right: 1px solid #b2b2b2;}
-
+.dialog input[type="text"]{
+  border: 1px solid #b2b2b2;
+  border-radius: 3px;
+}
 .findpwd-content{
   padding: 0 10px;
 }
 .findpwd-info{
   padding:0.5em 0 1em;line-height: 1.5;color:#666
 }
+
+.findpwd .links{height:40px;}
+.findpwd .links a{text-decoration:underline;color:#2976d3;}
+.findpwd .notify{color:#666;font-size:12px;padding:5px 0;}
+
+.name-info{ padding:20px 0 5px; line-height:22px; font-size:12px; }
+.name-info .name{padding-bottom:5px;font-size:16px;color:#dc2515;}
+.reset-notify{color:#dc2515;font-size:18px;line-height:24px;-webkit-box-align:center;-webkit-box-pack:center;-webkit-box-flex:1;display:-webkit-box;padding:20px 0;}

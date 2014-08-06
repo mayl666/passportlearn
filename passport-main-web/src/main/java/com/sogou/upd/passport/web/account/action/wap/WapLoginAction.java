@@ -9,7 +9,6 @@ import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -18,8 +17,6 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
-import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.manager.form.WapLogoutParams;
@@ -61,14 +58,10 @@ public class WapLoginAction extends BaseController {
     @Autowired
     private WapLoginManager wapLoginManager;
     @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
-    @Autowired
-    private UserInfoApiManager sgUserInfoApiManager;
-    @Autowired
     private AccountInfoManager accountInfoManager;
 
     private static final Logger logger = LoggerFactory.getLogger(WapLoginAction.class);
-    private static final String SECRETKEY="afE0WZf345@werdm";
+    private static final String SECRETKEY = "afE0WZf345@werdm";
 
 
     @RequestMapping(value = {"/wap/index"})
@@ -135,7 +128,7 @@ public class WapLoginAction extends BaseController {
             String userId = (String) result.getModels().get("userid");
             String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
 
-            WapRegAction.setSgidCookie(response,sgid);
+            WapRegAction.setSgidCookie(response, sgid);
 
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
                 //在返回的数据中导入 json格式，用来给客户端用。
@@ -143,7 +136,7 @@ public class WapLoginAction extends BaseController {
                 String fields = "uniqname,avatarurl,gender";
                 ObtainAccountInfoParams accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), userId, fields);
                 result = accountInfoManager.getUserInfo(accountInfoParams);
-                result.getModels().put(LoginConstant.COOKIE_SGID,sgid);
+                result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                 writeResultToResponse(response, result);
                 wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
                 return "empty";
@@ -153,11 +146,13 @@ public class WapLoginAction extends BaseController {
             return "empty";
         } else {
             int isNeedCaptcha = 0;
-            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip,result.getCode());
+            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
             //校验是否需要验证码
-            if(result.getCode()==ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE){
-                writeResultToResponse(response, result);
-                return "empty";
+            if (result.getCode() == ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE) {
+//                writeResultToResponse(response, result);
+//                return "empty";
+                isNeedCaptcha = 1;
+                return getErrorReturnStr(loginParams, result.getMessage(), isNeedCaptcha);
             }
             boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
             if (needCaptcha) {
@@ -170,12 +165,12 @@ public class WapLoginAction extends BaseController {
 
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
 
-                if(needCaptcha){
-                    if(result.getCode()!=ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR) {
+                if (needCaptcha) {
+                    if (result.getCode() != ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                         result.setMessage("验证码错误或已过期");
                     }
-                }else{
+                } else {
                     result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                     result.setMessage("用户名或者密码错误");
                 }
@@ -204,8 +199,8 @@ public class WapLoginAction extends BaseController {
         String accessToken = null;
         String ru = null;
         String ip = null;
-        String expires_in = null;
-        String data=null;
+        String expires_in;
+        String data;
         try {
             // 校验参数
             ru = req.getParameter(CommonConstant.RESPONSE_RU);
@@ -224,10 +219,10 @@ public class WapLoginAction extends BaseController {
 
             data = params.getData();
             //获取QQ回跳参数
-            byte[] buf= Hex.decodeHex(data.toCharArray());
+            byte[] buf = Hex.decodeHex(data.toCharArray());
             String decryptedValue = new String(AES.decrypt(buf, SECRETKEY), CommonConstant.DEFAULT_CONTENT_CHARSET);
 
-            QQPassthroughParam param= JacksonJsonMapperUtil.getMapper().readValue(decryptedValue,QQPassthroughParam.class);
+            QQPassthroughParam param = JacksonJsonMapperUtil.getMapper().readValue(decryptedValue, QQPassthroughParam.class);
             accessToken = param.getAccess_token();
             openId = param.getOpenid();
             expires_in = param.getExpires_in();
@@ -238,8 +233,8 @@ public class WapLoginAction extends BaseController {
             String sgid = ServletUtil.getCookie(req, LoginConstant.COOKIE_SGID);
 
             //暂时只是sogou小说调用 client_id为 1115
-            int clientId=CommonConstant.XIAOSHUO_CLIENTID;
-            Result result = wapLoginManager.passThroughQQ(clientId,sgid, accessToken, openId, ip, expires_in);
+            int clientId = CommonConstant.XIAOSHUO_CLIENTID;
+            Result result = wapLoginManager.passThroughQQ(clientId, sgid, accessToken, openId, ip, expires_in);
             if (result.isSuccess()) {
                 sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
                 ServletUtil.setCookie(res, LoginConstant.COOKIE_SGID, sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
@@ -287,8 +282,8 @@ public class WapLoginAction extends BaseController {
      */
     @RequestMapping(value = "/wap/logout_redirect", method = RequestMethod.GET)
     public void logoutWithRu(HttpServletRequest request,
-                               HttpServletResponse response,
-                               WapLogoutParams params) {
+                             HttpServletResponse response,
+                             WapLogoutParams params) {
         // 校验参数
         String sgid = null;
         String client_id = null;
@@ -299,11 +294,11 @@ public class WapLoginAction extends BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 ru = buildErrorRu(CommonConstant.DEFAULT_WAP_URL, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 response.sendRedirect(ru);
-                return ;
+                return;
             }
 
             sgid = ServletUtil.getCookie(request, LoginConstant.COOKIE_SGID);
-            sgid = Strings.isNullOrEmpty(sgid)?params.getSgid():sgid;
+            sgid = Strings.isNullOrEmpty(sgid) ? params.getSgid() : sgid;
             client_id = params.getClient_id();
 
             //处理ru
@@ -401,7 +396,8 @@ public class WapLoginAction extends BaseController {
         return returnStr.toString();
     }
 }
-class QQPassthroughParam{
+
+class QQPassthroughParam {
     private String access_token;
     private String openid;
     private String expires_in;

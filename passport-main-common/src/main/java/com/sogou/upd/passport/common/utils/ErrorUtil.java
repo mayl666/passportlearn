@@ -126,7 +126,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED = "20231";
     // 账号已封杀
     public static final String ERR_CODE_ACCOUNT_KILLED = "20232";
-    //TODO 手机号未被绑定
+    //手机号未被绑定
     public static final String ERR_CODE_ACCOUNT_PHONE_NOBIND = "20233";
     //TODO 手机绑定次数超限
     public static final String ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT = "20236";
@@ -171,6 +171,10 @@ public class ErrorUtil {
     /* ============================================================================ */
     /*  密保方式相关的错误代码                                                       */
     /* ============================================================================ */
+    //用户有密保手机，请使用密保手机找回密码
+    public static final String ERR_CODE_USER_HAVA_BIND_MOBILE = "20277";
+    //请联系客服找回密码
+    public static final String ERR_CODE_FIND_KEFU = "20278";
     // 未绑定邮箱
     public static final String ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH = "20279";
     // 未绑定邮箱
@@ -425,7 +429,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "账号未激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_KILLED, "账号已封杀");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_NOTSUPPORT_SOHU_REGISTER, "暂时不支持sohu域内邮箱注册");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_NOTSUPPORT_SOHU_REGISTER, "暂时不支持sohu域内邮箱执行此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_NOTSUPPORT_SOGOU_REGISTER, "暂时不支持搜狗邮箱注册");
         ERR_CODE_MSG_MAP.put(ERR_CODE_UNIQNAME_ALREADY_EXISTS, "用户昵称已经被使用");
         ERR_CODE_MSG_MAP.put(ERR_CODE_UNIQNAME_FORBID, "昵称包含限制词");
@@ -448,6 +452,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTALLOWED, "账号不允许做此操作");
 
         // acount secure info
+        ERR_CODE_MSG_MAP.put(ERR_CODE_USER_HAVA_BIND_MOBILE, "您的帐号已绑定手机，请使用手机找回或联系客服");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FIND_KEFU, "无绑定关系，请联系客服找回您的密码");
         ERR_CODE_MSG_MAP.put(ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH, "原手机号与密保手机不匹配");
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGEMAIL, "未绑定邮箱");
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGQUESTION, "未设置密保问题及答案");
@@ -541,7 +547,7 @@ public class ErrorUtil {
 
         //找回密码相关
         ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_LIMITED, "您一天内提交的找回密码请求次数超过限制");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_SCODE_FAILED, "安全码验证失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_SCODE_FAILED, "您的链接无效或者参数有误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_ACCOUNT_DOMAIN_FAILED, "账号类型不支持");
         ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_TYPE_FAILED, "找回密码方式错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_EMAIL_FAILED, "找回密码邮件已失效");

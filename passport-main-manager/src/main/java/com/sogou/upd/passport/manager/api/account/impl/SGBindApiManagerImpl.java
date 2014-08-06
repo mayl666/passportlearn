@@ -6,12 +6,15 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
+import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.EmailSenderService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +38,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
     @Autowired
     private EmailSenderService emailSenderService;
     @Autowired
-    private LoginApiManagerImpl loginApiManager;
+    private LoginApiManager sgLoginApiManager;
 
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
@@ -46,16 +49,20 @@ public class SGBindApiManagerImpl implements BindApiManager {
         String oldEmail = bindEmailApiParams.getOldbindemail();
         String newEmail = bindEmailApiParams.getNewbindemail();
         AuthUserApiParams authParams = new AuthUserApiParams(clientId, passportId, password);
-        result = loginApiManager.webAuthUser(authParams);    //验证密码
+        result = sgLoginApiManager.webAuthUser(authParams);    //验证密码
         if (!result.isSuccess()) {
             return result;
         }
         String bindEmail = accountInfoService.queryBindEmailByPassportId(passportId);
         if (!Strings.isNullOrEmpty(bindEmail) && !bindEmail.equals(oldEmail)) {   // 验证用户输入原绑定邮箱
-            return new APIResultSupport(false, ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
+            result.setSuccess(false);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
+            return result;
         }
-        if (!emailSenderService.sendEmail(passportId, clientId, AccountModuleEnum.SECURE, newEmail, true, bindEmailApiParams.getRu())) {
-            return new APIResultSupport(false, ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
+        ActiveEmailDO activeEmailDO = new ActiveEmailDO(passportId, clientId, bindEmailApiParams.getRu(), AccountModuleEnum.SECURE, newEmail, true);
+        if (!emailSenderService.sendEmail(activeEmailDO)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
+            return result;
         }
         result.setSuccess(true);
         result.setMessage("绑定邮箱验证邮件发送成功！");
@@ -79,7 +86,7 @@ public class SGBindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result bindMobile(String passportId, String newMobile) {
+    public Result bindMobile(String passportId, String newMobile, Account account) {
         return null;
     }
 

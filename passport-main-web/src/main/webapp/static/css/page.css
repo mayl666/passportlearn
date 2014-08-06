@@ -62,7 +62,7 @@ a:hover{ text-decoration:underline; }
 .form-item .form-el-s{ width:89px;background:#fff url(/./static/img/input-s.png?t=280018) no-repeat 0 0;}
 .form-item .form-el-focus{ background-position:0 -32px; }
 .form-item input{ width:172px;border:0;outline:none; }
-.form-item .form-el-s input{ width:81px;border:none;outline:none; }
+.form-item .form-el-s input{ width:81px;border:0;outline:none; }
 .form .desc,
 .form .error{ float:left;margin-left:11px; width:258px;height:26px;line-height:26px; position:relative; top:10px;padding-left:20px;font-size:12px; }
 .form .desc{ border:1px #e7e7e7 solid;color:#999;background:#f9f9f9 url(/./static/img/desc-arrow.png?t=707808) no-repeat 8px center;  }
@@ -93,6 +93,9 @@ a.short-btn{ width:69px; height:27px; background:url(/./static/img/btn-short.png
 .long-btn,
 a.long-btn{ width:182px; height:36px; background:url(/./static/img/btn-long.png?t=928174) no-repeat 0 0;display:inline-block; *display:inline; *zoom:1; text-align:center; color:#fff;text-decoration:none; font-size:16px;line-height:36px; }
 a.long-btn:hover{ background-position:0 -44px; }
+a.long-btn.disabled{
+    background:url(/./static/img/btn-grey-long.png?t=739356) no-repeat 0 0;    
+}
 .medium-btn,
 a.medium-btn{ width:83px; height:27px; background:url(/./static/img/btn-medium.png?t=475411) no-repeat 0 0;display:inline-block; *display:inline; *zoom:1; text-align:center; color:#fff;text-decoration:none;line-height:27px; }
 

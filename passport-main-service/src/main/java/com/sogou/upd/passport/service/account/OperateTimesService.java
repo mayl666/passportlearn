@@ -261,14 +261,13 @@ public interface OperateTimesService {
      */
     public boolean isMobileSendSMSInBlackList(String ip) throws ServiceException;
 
-
     /**
      * 发短信次数
      *
-     * @param ip
+     * @param ipOrMobile
      * @throws ServiceException
      */
-    public void incSendTimesForMobile(final String ip) throws ServiceException;
+    public void incSendTimesForMobile(final String ipOrMobile) throws ServiceException;
 
     /**
      * 找回密码计数

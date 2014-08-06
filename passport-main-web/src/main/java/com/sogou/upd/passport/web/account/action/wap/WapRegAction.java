@@ -15,7 +15,6 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileParams;
@@ -23,9 +22,6 @@ import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.account.action.RegAction;
-import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
-import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import com.sogou.upd.passport.web.account.form.WapIndexParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +31,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,18 +44,12 @@ public class WapRegAction extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(WapRegAction.class);
 
-    private static final String LOGIN_INDEX_URL = "";
-
     @Autowired
     private RegManager regManager;
     @Autowired
     private SecureManager secureManager;
     @Autowired
     private SessionServerManager sessionServerManager;
-
-
-    @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
 
@@ -68,7 +57,6 @@ public class WapRegAction extends BaseController {
     @RequestMapping(value = "/wap/reguser", method = RequestMethod.POST)
     @ResponseBody
     public Object reguser(HttpServletRequest request, HttpServletResponse response, RegMobileParams regParams, Model model) throws Exception {
-
         Result result = new APIResultSupport(false);
         String ip = null;
         String uuidName = null;
@@ -81,7 +69,6 @@ public class WapRegAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-
             ip = getIp(request);
             //校验用户是否允许注册
             uuidName = ServletUtil.getCookie(request, "uuidName");
@@ -94,7 +81,6 @@ public class WapRegAction extends BaseController {
                 }
                 return result.toString();
             }
-
             // 调用内部接口
             if (PhoneUtil.verifyPhoneNumberFormat(regParams.getUsername())) {
                 result = regManager.registerMobile(regParams.getUsername(), regParams.getPassword(), regParams.getClient_id(), regParams.getCaptcha(), null);
@@ -103,30 +89,21 @@ public class WapRegAction extends BaseController {
                 result.setMessage("只支持手机号注册");
                 return result.toString();
             }
-
-
             if (result.isSuccess()) {
-
                 //第三方获取个人资料
                 String userid = result.getModels().get("userid").toString();
-                AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userid);
                 // 调用内部接口
                 GetUserInfoApiparams userInfoApiparams = new GetUserInfoApiparams(userid, "uniqname,avatarurl,gender");
-                if (domain == AccountDomainEnum.THIRD) {
-                    result = sgUserInfoApiManager.getUserInfo(userInfoApiparams);
-                } else {
-                    result = proxyUserInfoApiManager.getUserInfo(userInfoApiparams);
-                }
+                result = sgUserInfoApiManager.getUserInfo(userInfoApiparams);
                 logger.info("wap reg userinfo result:" + result);
                 Result sessionResult = sessionServerManager.createSession(userid);
-                String sgid = null;
+                String sgid;
                 if (sessionResult.isSuccess()) {
                     sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                     result.getModels().put("userid", userid);
                     if (!Strings.isNullOrEmpty(sgid)) {
                         result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                         setSgidCookie(response, sgid);
-
                     }
                 } else {
                     logger.warn("can't get session result, userid:" + result.getModels().get("userid"));
@@ -135,12 +112,7 @@ public class WapRegAction extends BaseController {
         } catch (Exception e) {
             logger.error("wap reguser:User Register Is Failed,Username is " + regParams.getUsername(), e);
         } finally {
-            String logCode = null;
-            if (!Strings.isNullOrEmpty(finalCode)) {
-                logCode = finalCode;
-            } else {
-                logCode = result.getCode();
-            }
+            String logCode = !Strings.isNullOrEmpty(finalCode) ? finalCode : result.getCode();
             regManager.incRegTimes(ip, uuidName);
             String userId = (String) result.getModels().get("userid");
             if (!Strings.isNullOrEmpty(userId) && AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {
@@ -170,32 +142,8 @@ public class WapRegAction extends BaseController {
     }
 
     /**
-     * 找回密码
-     * @param ru
-     * @param redirectAttributes
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/wap/findpwd",method = RequestMethod.GET)
-    public String findPwdView(String ru, RedirectAttributes redirectAttributes,WapIndexParams wapIndexParams) throws Exception {
-
-        if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
-            return "wap/findpwd_touch";
-        }
-
-
-        if (Strings.isNullOrEmpty(ru)) {
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-        }
-
-
-        redirectAttributes.addAttribute("ru", ru);
-        return "redirect:" + SHPPUrlConstant.SOHU_FINDPWD_URL + "?ru={ru}";
-    }
-
-
-    /**
      * wap注册首页
+     *
      * @param request
      * @param response
      * @param model
@@ -203,7 +151,7 @@ public class WapRegAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/wap/reg",method = RequestMethod.GET)
+    @RequestMapping(value = "/wap/reg", method = RequestMethod.GET)
     public String regist(HttpServletRequest request, HttpServletResponse response, Model model, WapIndexParams wapIndexParams) throws Exception {
 
         if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {

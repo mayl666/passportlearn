@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 
 import java.util.Map;
 
@@ -10,17 +10,6 @@ import java.util.Map;
  * File | Settings | File Templates.
  */
 public interface ResetPwdManager {
-
-    /**
-     * 查询密保信息
-     *
-     * @param username
-     * @param clientId
-     * @param doProcess
-     * @return
-     * @throws Exception
-     */
-    public Result queryAccountSecureInfo(String username, int clientId, boolean doProcess) throws Exception;
 
     /**
      * 为了获取用户绑定邮箱及用户的激活状态
@@ -59,17 +48,12 @@ public interface ResetPwdManager {
     /**
      * 重置密码时发送验证邮件
      *
-     * @param passportId
-     * @param clientId
-     * @param module
-     * @param email
-     * @param ru
+     * @param activeEmailDO
      * @param scode
      * @return
      * @throws Exception
      */
-    public Result sendEmailResetPwd(String passportId, int clientId, AccountModuleEnum module,
-                                    String email, String ru, String scode) throws Exception;
+    public Result sendEmailResetPwd(ActiveEmailDO activeEmailDO, String scode) throws Exception;
 
 
     /**
@@ -131,10 +115,13 @@ public interface ResetPwdManager {
      *
      * @param userId
      * @param clientId
+     * @param sec_mobile
+     * @param token
+     * @param captcha
      * @return
      * @throws Exception
      */
-    public Result sendFindPwdMobileCode(String userId, int clientId,String sec_mobile) throws Exception;
+    public Result sendFindPwdMobileCode(String userId, int clientId, String sec_mobile, String token, String captcha) throws Exception;
 
     /**
      * 重置用户密码（手机验证码方式）——暂不用！！！

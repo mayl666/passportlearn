@@ -1,16 +1,11 @@
 package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
@@ -44,19 +39,14 @@ public class UserInfoApiController extends BaseController {
 
     private static Logger profileErrorLogger = LoggerFactory.getLogger("profileErrorLogger");
 
+    @Autowired
+    private UserInfoApiManager sgUserInfoApiManager;
+
     //TODO 需要改为配置的，但目前配置有问题
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(Date.class, new CustomDateEditor(true));
     }
-
-    @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
-    @Autowired
-    private UserInfoApiManager sgUserInfoApiManager;
-
-    @Autowired
-    private AccountInfoManager accountInfoManager;
 
     /**
      * 获取用户基本信息
@@ -76,22 +66,7 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-        //第三方获取个人资料
-        AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(params.getUserid());
-//        调用内部接口
-        if (domain == AccountDomainEnum.THIRD) {
-            result = sgUserInfoApiManager.getUserInfo(params);
-        } else {
-            result = sgUserInfoApiManager.getUserInfo(params);
-            if (!result.isSuccess()) {
-                result = proxyUserInfoApiManager.getUserInfo(params);
-                if (result.isSuccess()) {
-                    //记录Log 跟踪数据同步延时情况
-                    String passportId = (String) result.getModels().get("userid");
-                    LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "/internal/account/userinfo", CommonConstant.CHECK_SGN_SHY_MESSAGE, params.getUserid(), passportId, result.toString());
-                }
-            }
-        }
+        result = sgUserInfoApiManager.getUserInfo(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("fields", params.getFields());
         userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
@@ -145,7 +120,7 @@ public class UserInfoApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-
+        //调用搜狗接口check用户昵称
         result = sgUserInfoApiManager.checkUniqName(params);
         UserOperationLog userOperationLog = new UserOperationLog(params.getUniqname(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         UserOperationLogUtil.log(userOperationLog);

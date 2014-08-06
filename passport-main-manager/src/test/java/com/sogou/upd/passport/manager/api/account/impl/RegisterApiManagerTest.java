@@ -4,12 +4,14 @@ import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.APIResultForm;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +76,7 @@ public class RegisterApiManagerTest extends BaseTest {
     @Test
     public void testCheckUser_2() throws IOException {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid(username_sogou);
+        checkUserApiParams.setUserid(mobile_2);
 //        Result expectResult = proxyRegisterApiManager.checkUser(checkUserApiParams);
         String expectResult = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + username_sogou + "\"},\"status\":\"20294\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
@@ -106,18 +108,13 @@ public class RegisterApiManagerTest extends BaseTest {
     @Test
     public void testCheckUser_4() throws IOException {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid(mobile_2);
-        BaseMoblieApiParams bmap = new BaseMoblieApiParams();
-        bmap.setMobile(mobile_2);
-        Result expectResult = proxyBindApiManager.getPassportIdByMobile(bmap);
-        Assert.assertEquals("0", expectResult.getCode());
-        Assert.assertEquals(mobile_2 + "@sohu.com", expectResult.getModels().get("userid"));
-//        String expectResult = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + username_mail + "\"},\"status\":\"20294\"}";
+        checkUserApiParams.setUserid(mobile_2 + "@sohu.com");
+//        Result expectResult = proxyRegisterApiManager.checkUser(checkUserApiParams);
+        String expectResult = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + mobile_2 + "@sohu.com\"},\"status\":\"20294\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
         Result actualResult = sgRegisterApiManager.checkUser(checkUserApiParams);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
-        Assert.assertEquals(ErrorUtil.ERR_CODE_ACCOUNT_REGED, actualForm.getStatus());
-        Assert.assertEquals(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_REGED), actualForm.getStatusText());
+        Assert.assertTrue(expectForm.equals(actualForm));
     }
 
     /**
@@ -196,7 +193,7 @@ public class RegisterApiManagerTest extends BaseTest {
         APIResultForm expectForm1 = JacksonJsonMapperUtil.getMapper().readValue(expectResult1.toString(), APIResultForm.class);
         Result actualResult1 = sgRegisterApiManager.sendMobileRegCaptcha(params);
         APIResultForm actualForm1 = JacksonJsonMapperUtil.getMapper().readValue(actualResult1.toString(), APIResultForm.class);
-        Assert.assertEquals(expectForm1, actualForm1);   //todo 手机号注册时还需要写映射表
+        Assert.assertEquals(expectForm1, actualForm1);   //todo 手机号注册时还需要写映射表  done
 
         //手机已经绑定主账号发送验证码 note:线上已经是搜狗发送短信验证码了，所以此处不需要跟sohu接口返回结果做对比，只需跟原有线上返回结果做对比即可
         String code2 = ManagerHelper.generatorCodeGBK(mobile_1, clientId, serverSecret, ct);
@@ -212,19 +209,19 @@ public class RegisterApiManagerTest extends BaseTest {
 
     /**
      * 两边都不存在此外域邮箱的情况下---正式注册搜狗账号和外域邮箱账号
-     * todo 外域邮箱发送激活邮件在manager中无法发送成功 且搜狗的返回值中没有塞userid
+     * todo 外域邮箱发送激活邮件在manager中无法发送成功
      */
     @Test
     public void testRegMailUser_1() throws IOException {
         RegEmailApiParams regEmailApiParams = new RegEmailApiParams(both_no_username_mail, password, ip,
                 clientId, EMAIL_REG_VERIFY_URL);
-//        Result expectResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
-//        System.out.println(expectResult.toString());
-        String expectResult = "{\"statusText\":\"注册成功\",\"data\":{\"userid\":\"" + both_no_username_mail + "\",\"isSetCookie\":false},\"status\":\"0\"}";
+        Result expectResult = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+////        System.out.println(expectResult.toString());
+//        String expectResult = "{\"statusText\":\"注册成功\",\"data\":{\"userid\":\"" + both_no_username_mail + "\",\"isSetCookie\":false},\"status\":\"0\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
         Result actualResult = sgRegisterApiManager.regMailUser(regEmailApiParams);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
-//        Assert.assertTrue(expectForm.equals(actualForm));
+        Assert.assertTrue(expectForm.equals(actualForm));
     }
 
     /**
@@ -293,77 +290,44 @@ public class RegisterApiManagerTest extends BaseTest {
 
 
     /**
-     * 注册手机号@sohu.com的账号----1.手机号已经被注册过,且验证码错误或已经过期    会先报验证码的错误
-     * todo  检查项：1 该手机号是否已经注册过，2 是否已经被绑定，3 是否发送验证码次数超限，4 验证码校验次数是否超限，5 验证码是否错误或过期
-     * 搜狗只做了4，5，其它1，2，3都没做，需要 todo 补充
+     * 手机号注册接口测试用例（不需要验证，发验证码由SG发送）
+     *
+     * @throws IOException
      */
     @Test
-    public void testRegMobileCaptchaUser_1() throws IOException {
-        RegMobileCaptchaApiParams params = new RegMobileCaptchaApiParams();
-        params.setMobile(mobile_2);
-        params.setPassword(password);
-        params.setCaptcha("12x4");
-        long ct = System.currentTimeMillis();
-        params.setCt(ct);
-        params.setClient_id(clientId);
-        String code = ManagerHelper.generatorCodeGBK(mobile_2, clientId, serverSecret, ct);
-        params.setCode(code);
-//        Result expectResult = proxyRegisterApiManager.regMobileCaptchaUser(params);
-        String expectResult = "{\"statusText\":\"验证码错误或已过期\",\"data\":{},\"status\":\"20208\"}";
-        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = sgRegisterApiManager.regMobileCaptchaUser(params);
-        APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
-//        Assert.assertTrue(!expectForm.getStatus().equals(actualForm.getStatus())); //todo 搜狐和搜狗返回错误码不一致，需要修改成一致的
-    }
-
-
-    /**
-     * 注册手机号@sohu.com的账号----1.手机账号验证码正式注册
-     */
-    @Test
-    public void testRegMobileCaptchaUser_2() throws IOException {
-        RegMobileCaptchaApiParams params = new RegMobileCaptchaApiParams();
-        params.setMobile(new_mobile);
-        params.setPassword(password);
-        params.setCaptcha("8824");     //sohu验证码四位数  todo 需要拿到下发的真实验证码
-        long ct = System.currentTimeMillis();
-        params.setCt(ct);
-        params.setClient_id(clientId);
-        String code = ManagerHelper.generatorCodeGBK(new_mobile, clientId, serverSecret, ct);
-        params.setCode(code);
-//        Result expectResult = proxyRegisterApiManager.regMobileCaptchaUser(params);
-        String expectResult = "{\"statusText\":\"注册成功\",\"data\":{\"userid\":\"" + new_mobile + "\",\"isSetCookie\":true},\"status\":\"0\"}";
-        APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        params.setCaptcha("67629");//搜狗验证码五位数   todo 需要拿到下发的真实验证码
-        Result actualResult = sgRegisterApiManager.regMobileCaptchaUser(params);
-        APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
-//        Assert.assertTrue(expectForm.getStatus().equals(actualForm.getStatus()));
-    }
-
-
-    /**
-     * 注册手机号@sohu.com的账号----不需要短信验证码的手机注册
-     * todo  检查项：1 该手机号是否已经注册过，2 是否已经被绑定
-     */
-    @Test
-    public void testRegMobileUser_1() throws IOException {
+    public void testRegMobileUser() throws IOException {
         RegMobileApiParams params = new RegMobileApiParams();
-        params.setMobile(new_mobile);
         params.setPassword(password);
         long ct = System.currentTimeMillis();
         params.setCt(ct);
         params.setClient_id(clientId);
         String code = ManagerHelper.generatorCodeGBK(new_mobile, clientId, serverSecret, ct);
         params.setCode(code);
-        Result expectResult = proxyRegisterApiManager.regMobileUser(params);
-        System.out.println(expectResult.toString());
-//        String expectResult1 = "{\"statusText\":\"参数错误,请输入必填的参数\",\"data\":{},\"status\":\"10002\"}";
-        String expectResult2 = "{\"statusText\":\"注册成功\",\"data\":{\"userid\":\"" + new_mobile + "\",\"isSetCookie\":false},\"status\":\"0\"}";
+        //可以正常注册
+        params.setMobile(new_mobile);
+//        Result expectResult = proxyRegisterApiManager.regMobileUser(params);
+        String expectResult = "{\"statusText\":\"注册成功\",\"data\":{\"userid\":\"" + new_mobile + "@sohu.com\",\"isSetCookie\":false},\"status\":\"0\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-//        Result resultSG = sgRegisterApiManager.regMobileUser(params);
-//        System.out.println(resultSG.toString());
-//        APIResultForm formSG = JacksonJsonMapperUtil.getMapper().readValue(resultSG.toString(), APIResultForm.class);
-//        Assert.assertTrue(expectForm.getStatus().equals(formSG.getStatus()));
+        Result resultSG = sgRegisterApiManager.regMobileUser(params);
+        APIResultForm formSG = JacksonJsonMapperUtil.getMapper().readValue(resultSG.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm.equals(formSG));
+        //手机号格式有误
+        params.setMobile("135xxx3xxx41");
+//        Result expectResult_format = proxyRegisterApiManager.regMobileUser(params);
+        String expectResult_format = "{\"statusText\":\"参数错误,请输入必填的参数\",\"data\":{},\"status\":\"10002\"}";
+        APIResultForm expectForm_format = JacksonJsonMapperUtil.getMapper().readValue(expectResult_format.toString(), APIResultForm.class);
+        Result resultSG_format = sgRegisterApiManager.regMobileUser(params);
+        APIResultForm formSG_format = JacksonJsonMapperUtil.getMapper().readValue(resultSG_format.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm_format.equals(formSG_format));
+        //手机号已注册或绑定
+        params.setMobile("13545210241");
+//        Result expectResult_exist = proxyRegisterApiManager.regMobileUser(params);
+        String expectResult_exist = "{\"data\":{},\"status\":\"20201\",\"statusText\":\"账号已注册\"}";
+        APIResultForm expectForm_exist = JacksonJsonMapperUtil.getMapper().readValue(expectResult_exist.toString(), APIResultForm.class);
+        Result resultSG_exist = sgRegisterApiManager.regMobileUser(params);
+        System.out.println(resultSG_exist.toString());
+        APIResultForm formSG_exist = JacksonJsonMapperUtil.getMapper().readValue(resultSG_exist.toString(), APIResultForm.class);
+        Assert.assertTrue(expectForm_exist.equals(formSG_exist));
     }
 
 }

@@ -7,6 +7,7 @@ import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
+import com.sogou.upd.passport.model.account.Account;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
@@ -43,7 +44,7 @@ public class ProxyBindApiManagerImpl extends BaseProxyManager implements BindApi
     }
 
     @Override
-    public Result bindMobile(String passportId, String newMobile) {
+    public Result bindMobile(String passportId, String newMobile, Account account) {
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.BING_MOBILE, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParam("mobile", newMobile);
         requestModelXml.addParam("userid", passportId);

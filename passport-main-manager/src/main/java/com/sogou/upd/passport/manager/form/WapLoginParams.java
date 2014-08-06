@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.form;
 
 import com.sogou.upd.passport.common.WapConstant;
+import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.common.validation.constraints.V;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
@@ -27,9 +28,9 @@ public class WapLoginParams extends UsernameParams {
     @Min(0)
     private String client_id;
 
-    @NotBlank
+//    @NotBlank
     @URL
-//    @Ru
+    @Ru
     private String ru;//登陆来源
 
 

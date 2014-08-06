@@ -151,7 +151,7 @@
 
     <!--热切换redis-->
     <bean id="monitor" class="com.sogou.upd.passport.zk.Monitor" destroy-method="destory">
-        <constructor-arg name="zks" value="10.134.71.150:2181"/>
+        <constructor-arg name="zks" value="10.136.24.136:2181"/>
     </bean>
     <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">
         <constructor-arg name="monitor" ref="monitor"/>

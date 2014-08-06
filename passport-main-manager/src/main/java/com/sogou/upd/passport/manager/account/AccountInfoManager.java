@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager.account;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.AccountInfoParams;
-import com.sogou.upd.passport.manager.form.CheckNickNameParams;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 
 /**
@@ -23,16 +22,6 @@ public interface AccountInfoManager {
      */
     public Result uploadImg(byte[] byteArr, String passportId, String type, String ip);
 
-    /**
-     * 图片上传
-     *
-     * @return Result格式的返回值，提示上传状态
-     */
-    public Result uploadDefaultImg(String webUrl, String clientId);
-
-    //检查昵称是否重复
-    public Result checkNickName(CheckNickNameParams params);
-
     //修改个人资料
     public Result updateUserInfo(AccountInfoParams infoParams, String ip);
 
@@ -44,9 +33,10 @@ public interface AccountInfoManager {
      *
      * @param passportId
      * @param clientId
+     * @param isEncode 昵称是否需要做urlencode，不知道为什么web页面显示昵称都做了urlencode，/oauth2/resource中返回昵称不需要urlencode
      * @return
      */
-    public String getUserUniqName(String passportId, int clientId);
+    public String getUniqName(String passportId, int clientId, boolean isEncode);
 
     /**
      * 获取用户昵称、头像信息

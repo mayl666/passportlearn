@@ -36,13 +36,9 @@ public class RegisterApiController extends BaseController {
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
-    private RegisterApiManager proxyRegisterApiManager;
-    @Autowired
     private RegManager regManager;
     @Autowired
     private CommonManager commonManager;
-    @Autowired
-    private RegisterApiManager registerApiManager;
 
     /**
      * 注册手机账号时，发送手机验证码
@@ -140,8 +136,7 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = registerApiManager.regMailUser(params);
-//            result = proxyRegisterApiManager.regMailUser(params);
+            result = sgRegisterApiManager.regMailUser(params);
         } catch (Exception e) {
             logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + userid, e);
         } finally {
@@ -178,7 +173,7 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = proxyRegisterApiManager.regMobileUser(params);
+            result = sgRegisterApiManager.regMobileUser(params);
         } catch (Exception e) {
             logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
         } finally {
@@ -206,7 +201,6 @@ public class RegisterApiController extends BaseController {
         Result result = new APIResultSupport(false);
         String createIp = params.getCreateip();
         String mobile = params.getMobile();
-
         try {
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
@@ -250,9 +244,6 @@ public class RegisterApiController extends BaseController {
     @ResponseBody
     public Object checkUser(HttpServletRequest request, CheckUserApiParams params) {
         Result result = new APIResultSupport(false);
-        String userId = params.getUserid();
-        //业务线 用户真实IP、目前游戏已经加上、待推动其他业务线增加限制
-        String createIp = params.getCreateip();
         try {
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
@@ -261,12 +252,16 @@ public class RegisterApiController extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
+            // 调用内部接口
+            String userid = params.getUserid();
+            //业务线 用户真实IP、目前游戏已经加上、待推动其他业务线增加限制
+            String createIp = params.getCreateip();
             //增加安全限制
-            if (regManager.checkUserExistInBlack(userId, createIp)) {
+            if (regManager.checkUserExistInBlack(userid, createIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
             } else {
-                result = regManager.isAccountNotExists(userId, params.getClient_id());
-                if (PhoneUtil.verifyPhoneNumberFormat(userId)) {
+                result = regManager.isAccountNotExists(userid, params.getClient_id());
+                if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
                     if (!result.isSuccess()) {
                         result.setDefaultModel("flag", "1");
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
@@ -275,13 +270,13 @@ public class RegisterApiController extends BaseController {
                 }
             }
         } catch (Exception e) {
-            logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + userId, e);
+            logger.error("checkUser is failed,username is {}", params.getUserid(), e);
         } finally {
             //记录log 业务线传入的用户真实IP
-            UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(params.getClient_id()), result.getCode(), createIp);
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), params.getCreateip());
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage("createip", createIp);
+            userOperationLog.putOtherMessage("createip", params.getCreateip());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();

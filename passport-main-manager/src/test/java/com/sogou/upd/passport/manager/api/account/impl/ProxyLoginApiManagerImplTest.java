@@ -26,13 +26,10 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     public void testAuthUser() {
         try {
             AuthUserApiParams authUserParameters = new AuthUserApiParams();
-//            authUserParameters.setUserid("13621009174");
-            authUserParameters.setUserid("xuweiibm@game.sohu.com");
-//            authUserParameters.setUserid("wangyong0369@game.sohu.com");
+            authUserParameters.setUserid("sandy400@game.sohu.com");
             authUserParameters.setClient_id(1100);
 //            authUserParameters.setIp("10.129.192.193");
-            authUserParameters.setPassword(Coder.encryptMD5("jsjdxuweiibm"));
-//            authUserParameters.setPassword(Coder.encryptMD5("960324"));
+            authUserParameters.setPassword(Coder.encryptMD5("343512729"));
 //            Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
 
 //
@@ -43,7 +40,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
 ////            authUserParameters.setPassword("e355b0428c262b7c883a724a002bf8b8");
 //            authUserParameters.setPassword(Coder.encryptMD5("cd98203213"));
             Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
-            System.out.println("resultStr:" + result);
+            System.out.println("resultStr:"+result);
         } catch (Exception e) {
             e.printStackTrace();
         }

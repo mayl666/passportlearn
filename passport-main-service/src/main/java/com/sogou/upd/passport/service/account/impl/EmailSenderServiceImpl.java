@@ -14,6 +14,8 @@ import com.sogou.upd.passport.common.utils.MailUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.EmailSenderService;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
+import com.sogou.upd.passport.service.account.dataobject.WapActiveEmailDO;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +37,9 @@ import java.util.Map;
 public class EmailSenderServiceImpl implements EmailSenderService {
     private static final Logger logger = LoggerFactory.getLogger(EmailSenderServiceImpl.class);
 
-    // private static final String PASSPORT_RESETPWD_EMAIL_URL="http://account.sogou.com/web/findpwd/checkemail?";
     // TODO:以下PASSPORT_RESETPWD_EMAIL_URL值仅供本机测试用
     // TODO:绑定验证URL待修改，考虑以后其他验证EMAIL的URL
-    private static final String PASSPORT_HOST = "https://account.sogou.com";
-    private static final String PASSPORT_EMAIL_URL_PREFIX = PASSPORT_HOST + "/web/";
+    private static final String PASSPORT_EMAIL_URL_PREFIX = CommonConstant.DEFAULT_INDEX_URL + "/";
     private static final String PASSPORT_EMAIL_URL_SUFFIX = "/checkemail?";
     private static final Map<AccountModuleEnum, String> subjects = AccountModuleEnum.buildEmailSubjects();
 
@@ -52,34 +52,31 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     private MailUtils mailUtils;
 
     @Override
-    public boolean sendEmail(String passportId, int clientId, AccountModuleEnum module, String address, boolean saveEmail, String ru)
+    public boolean sendEmail(ActiveEmailDO activeEmailDO)
             throws ServiceException {
         try {
+            String passportId = activeEmailDO.getPassportId();
+            int clientId = activeEmailDO.getClientId() == 0 ? CommonConstant.SGPP_DEFAULT_CLIENTID : activeEmailDO.getClientId();
             String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
-            String activeUrl = PASSPORT_EMAIL_URL_PREFIX + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
-            activeUrl += "username=" + passportId + "&client_id=" + clientId + "&scode=" + scode + "&ru=";
-            ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
-            activeUrl += Coder.encodeUTF8(ru);
+            String activeUrl = buildActiveUrl(activeEmailDO, scode);
+            AccountModuleEnum module = activeEmailDO.getModule();
+            String address = activeEmailDO.getToEmail();
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();
             activeEmail.setActiveUrl(activeUrl);
-
             //模版中参数替换
             Map<String, Object> map = Maps.newHashMap();
             map.put("activeUrl", activeUrl);
             map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             activeEmail.setMap(map);
-
             activeEmail.setTemplateFile(module.getDirect() + ".vm");
             activeEmail.setSubject(subjects.get(module));
             activeEmail.setCategory(module.getDirect());
             activeEmail.setToEmail(address);
-
             mailUtils.sendEmail(activeEmail);
-
             //连接失效时间
             String cacheKey = buildCacheKeyForScode(passportId, clientId, module);
-            if (saveEmail) {
+            if (activeEmailDO.isSaveEmail()) {
                 Map<String, String> mapResult = new HashMap<>();
                 mapResult.put("email", address);
                 mapResult.put("scode", scode);
@@ -93,6 +90,37 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
+
+    //构建激活邮件中的激活链接public
+    private  String buildActiveUrl(ActiveEmailDO activeEmailDO, String scode) throws Exception {
+        String prefix = activeEmailDO.getPrefix();
+        String passportId = activeEmailDO.getPassportId();
+        String ru = Strings.isNullOrEmpty(activeEmailDO.getRu()) ? prefix : activeEmailDO.getRu();
+
+        StringBuilder activeUrl = new StringBuilder();
+        activeUrl.append(prefix);
+        activeUrl.append("/");
+        if (activeEmailDO instanceof WapActiveEmailDO) {   //一定要先判断子类类型，最后判断父类类型
+            activeUrl.append("wap");
+        } else {
+            activeUrl.append("web");
+        }
+        activeUrl.append("/");
+        activeUrl.append(activeEmailDO.getModule().getDirect());
+        activeUrl.append(PASSPORT_EMAIL_URL_SUFFIX);
+        activeUrl.append("username=" + passportId);
+        activeUrl.append("&client_id=" + activeEmailDO.getClientId());
+        activeUrl.append("&scode=" + scode);
+        if (activeEmailDO instanceof WapActiveEmailDO) {
+            WapActiveEmailDO wapActiveEmailDO = (WapActiveEmailDO) activeEmailDO;
+            if (!Strings.isNullOrEmpty(wapActiveEmailDO.getV()))
+                activeUrl.append("&v=" + wapActiveEmailDO.getV());
+            if (!Strings.isNullOrEmpty(wapActiveEmailDO.getSkin()))
+                activeUrl.append("&skin=" + wapActiveEmailDO.getSkin());
+        }
+        activeUrl.append("&ru=" + Coder.encodeUTF8(ru));
+        return activeUrl.toString();
     }
 
     @Override
@@ -191,7 +219,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             }
             return true;
         } catch (Exception e) {
-            // throw new ServiceException(e);
             logger.error("[Email] service method checkLimitForSendEmail error.", e);
             return true;
         }
@@ -204,7 +231,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             redisUtils.delete(cacheKey);
             return true;
         } catch (Exception e) {
-            // throw new ServiceException(e);
             logger.error("[Email] service method deleteScodeCacheForEmail error.", e);
             return false;
         }

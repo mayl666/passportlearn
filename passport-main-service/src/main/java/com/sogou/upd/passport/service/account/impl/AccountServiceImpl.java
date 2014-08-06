@@ -62,9 +62,9 @@ public class AccountServiceImpl implements AccountService {
     private PCAccountTokenService pcAccountTokenService;
 
     @Override
-    public Account initialWebAccount(String username, String ip) throws ServiceException {
-        Account account = null;
-        String cacheKey = null;
+    public Account initialEmailAccount(String username, String ip) throws ServiceException {
+        Account account;
+        String cacheKey;
         try {
             cacheKey = buildAccountKey(username);
             account = dbShardRedisUtils.getObject(cacheKey, Account.class);
@@ -74,11 +74,6 @@ public class AccountServiceImpl implements AccountService {
                 if (id != 0) {
                     //更新缓存，成为正式账户
                     dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-                    //更新黑名单缓存
-                    cacheKey = buildAccountBlackCacheKey(ip);
-                    redisUtils.increment(cacheKey);
-                    //设置cookie
-                    setCookie();
                     return account;
                 }
             }
@@ -121,7 +116,7 @@ public class AccountServiceImpl implements AccountService {
             }
             account.setMobile(mobile);
             long id;
-            if (AccountTypeEnum.isConnect(provider)) { //第三方使用插入或更新，之前第三方迁移出过一次bug，修复的
+            if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider)) { //第三方或sohu域账号使用插入或更新，之前第三方迁移出过一次bug，修复的
                 id = accountDAO.insertOrUpdateAccount(passportId, account);
             } else {
                 //正式注册到account表中
@@ -347,34 +342,6 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
-    private String buildAccountBlackCacheKey(String ip) {
-        return CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
-    }
-
-    @Override
-    public boolean isInAccountBlackListByIp(String passportId, String ip) throws ServiceException {
-        boolean flag = true;
-        long ipCount = 0;
-        try {
-            String cacheKey = buildAccountBlackCacheKey(ip);
-            String ipValue = redisUtils.get(cacheKey);
-            if (Strings.isNullOrEmpty(ipValue)) {
-                redisUtils.setWithinSeconds(cacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
-            } else {
-                ipCount = Long.parseLong(ipValue);
-                //判断ip注册限制次数（一天20次）
-                if (ipCount < DateAndNumTimesConstant.IP_LIMITED) {
-                    redisUtils.increment(cacheKey);
-                } else {
-                    return false;
-                }
-            }
-        } catch (Exception e) {
-            flag = false;
-        }
-        return flag;
-    }
-
     @Override
     public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException {
         boolean flag = true;
@@ -386,41 +353,34 @@ public class AccountServiceImpl implements AccountService {
                             "&token=" + token;
             if (Strings.isNullOrEmpty(ru)) {
                 ru = CommonConstant.DEFAULT_INDEX_URL;
-                activeUrl += "&ru=" + Coder.encodeUTF8(ru);
             }
-
+            activeUrl += "&ru=" + Coder.encodeUTF8(ru);
             String cacheKey = buildCacheKey(username);
             Map<String, String> mapParam = new HashMap<>();
             //设置连接失效时间
             mapParam.put("token", token);
             //设置ru
             mapParam.put("ru", ru);
-
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();
             activeEmail.setActiveUrl(activeUrl);
-
             //模版中参数替换
             Map<String, Object> map = Maps.newHashMap();
             map.put("activeUrl", activeUrl);
             map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             activeEmail.setMap(map);
-
             activeEmail.setTemplateFile("activemail.vm");
             activeEmail.setSubject("激活您的搜狗通行证帐户");
             activeEmail.setCategory("register");
             activeEmail.setToEmail(username);
-
             mailUtils.sendEmail(activeEmail);
-
             //如果重新发送激活邮件，password是为空的，说明不是注册，否则需要临时注册到缓存
             if (!Strings.isNullOrEmpty(passpord)) {
+                //临时注册到缓存
                 initialAccountToCache(username, passpord, ip);
             }
             redisUtils.hPutAll(cacheKey, mapParam);
             redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
-            //临时注册到缓存
-            initialAccountToCache(username, passpord, ip);
         } catch (Exception e) {
             flag = false;
         }
@@ -657,10 +617,8 @@ public class AccountServiceImpl implements AccountService {
             account.setFlag(AccountStatusEnum.DISABLED.getValue());
             account.setPasswordtype(PasswordTypeEnum.CRYPT.getValue());
             account.setRegIp(ip);
-
             String cacheKey = buildAccountKey(username);
             dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.TIME_TWODAY);
-
         } catch (Exception e) {
             throw new ServiceException(e);
         }

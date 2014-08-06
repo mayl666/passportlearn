@@ -5,9 +5,9 @@ import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.DateUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.black.BlackItem;
@@ -37,7 +37,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
     private static final Logger logger = LoggerFactory.getLogger(OperateTimesServiceImpl.class);
     private static final Logger regBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
-    private static final Logger loginBlackListLogger = LoggerFactory.getLogger("com.sogou.upd.passport.loginBlackListFileAppender");
+
     @Autowired
     private RedisUtils redisUtils;
     @Autowired
@@ -647,29 +647,49 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
-    public boolean isMobileSendSMSInBlackList(String ip) throws ServiceException {
+    public boolean isMobileSendSMSInBlackList(String ipOrMobile) throws ServiceException {
         try {
-            String ipCacheKey = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE_IPBLACKLIST + ip;
+            String ipCacheKey = buildSendSmsTimesCacheKey(ipOrMobile);
             String value = redisUtils.get(ipCacheKey);
             if (!Strings.isNullOrEmpty(value)) {
                 int num = Integer.valueOf(value);
-                if (num >= LoginConstant.MOBILE_SEND_SMSCODE_LIMITED) {
+                int limit;
+                if (PhoneUtil.verifyPhoneNumberFormat(ipOrMobile)) {
+                    //如果是手机号，则检查是否需要弹出验证码
+                    limit = LoginConstant.MOBILE_SEND_SMSCODE_NEED_CAPTCHA_LIMITED;
+                } else {
+                    //如果是ip，则检查是否中了黑名单限制
+                    limit = LoginConstant.MOBILE_SEND_SMSCODE_LIMITED;
+                }
+                if (num >= limit) {
                     return true;
                 }
             }
         } catch (Exception e) {
-            logger.error("isMobileSendSMSInBlackList:ip " + ip, e);
+            logger.error("isMobileSendSMSInBlackList:param is " + ipOrMobile, e);
             throw new ServiceException(e);
         }
         return false;
     }
 
+    private String buildSendSmsTimesCacheKey(final String ipOrMobile) {
+        if (PhoneUtil.verifyPhoneNumberFormat(ipOrMobile)) {
+            return CacheConstant.CACHE_PREFIX_MOBILE_SENDSMSCODENUM + ipOrMobile;
+        }
+        return CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE_IPBLACKLIST + ipOrMobile;
+    }
 
     @Override
-    public void incSendTimesForMobile(final String ip) throws ServiceException {
+    public void incSendTimesForMobile(final String ipOrMobile) throws ServiceException {
         //ip与发短信验证码次数映射
-        String ipCacheKey = CacheConstant.CACHE_PREFIX_MOBILE_SMSCODE_IPBLACKLIST + ip;
-        recordTimes(ipCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+        String ipOrMobileCacheKey = buildSendSmsTimesCacheKey(ipOrMobile);
+        if (PhoneUtil.verifyPhoneNumberFormat(ipOrMobile)) {
+            //手机号的话，次数有效期为3天
+            recordTimes(ipOrMobileCacheKey, DateAndNumTimesConstant.THREE_DAY_INSECONDS);
+        } else {
+            //ip的话，次数有效期为1天
+            recordTimes(ipOrMobileCacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+        }
     }
 
     @Override

@@ -15,7 +15,8 @@ public class CheckSecMobileParams extends CheckMobileSmsParams {
     @NotBlank(message = "密保手机不可为空!")
     @Phone
     protected String sec_mobile;
-
+    protected String captcha;//验证码
+    protected String token;//标识码
 
     public String getSec_mobile() {
         return sec_mobile;
@@ -24,4 +25,22 @@ public class CheckSecMobileParams extends CheckMobileSmsParams {
     public void setSec_mobile(String sec_mobile) {
         this.sec_mobile = sec_mobile;
     }
+
+
+    public String getCaptcha() {
+        return captcha;
+    }
+
+    public void setCaptcha(String captcha) {
+        this.captcha = captcha;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
 }

@@ -6,10 +6,13 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.common.validation.constraints.RuValidator;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.RegManager;
@@ -55,7 +58,6 @@ public class LoginAction extends BaseController {
     @Autowired
     private HostHolder hostHolder;
 
-
     /**
      * 用户登录检查是否显示验证码
      *
@@ -76,16 +78,32 @@ public class LoginAction extends BaseController {
             }
             String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
             int clientId = Integer.valueOf(checkParam.getClient_id());
-            //判断账号是否存在
-            result = regManager.isAccountNotExists(username, clientId);
-            if (!result.isSuccess()) {
+            //判断账号是否存在,存在返回0，否则返回相应错误码
+            result = loginManager.checkUser(username, clientId);
+            if (result.isSuccess()) {
                 //校验是否需要验证码
                 boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
-                result.setSuccess(true);
                 result.setDefaultModel("needCaptcha", needCaptcha);
             } else {
-                result = new APIResultSupport(false);
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                //非sohu域账号登录时校验用户名是否存在，因为要考虑数据可能不完整，登录时不存在的会去sohu校验密码，所以检查用户名时也需要兼容不存在的情况，sogou不存在，去校验sohu
+                //todo 上线观察几天后，若账号缺失严重，再打开开关
+                if (ManagerHelper.isDoubleCheckUserLogin()) {
+                    if (!AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username)) && ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT.equals(result.getCode())) {
+                        result = regManager.checkUserFromSohu(username, clientId);
+                        if (result.isSuccess()) {
+                            result.setSuccess(false);
+                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                            return result.toString();
+                        }
+                        if (!result.isSuccess() && (ErrorUtil.ERR_CODE_USER_ID_EXIST.equals(result.getCode()) || ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode()))) {
+                            result.setSuccess(true);
+                            result.setMessage("操作成功");
+                        }
+                    }
+                } else {
+                    result = new APIResultSupport(false);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                }
             }
         } catch (Exception e) {
             logger.error("checkNeedCaptcha:check user need captcha or not is failed,username is " + checkParam.getUsername(), e);
@@ -108,7 +126,6 @@ public class LoginAction extends BaseController {
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
-
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -120,13 +137,11 @@ public class LoginAction extends BaseController {
         }
         String userId = loginParams.getUsername();
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
-
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
         userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(request, "YYID"));
         UserOperationLogUtil.log(userOperationLog);
-
         if (result.isSuccess()) {
             userId = result.getModels().get("userid").toString();
             int clientId = Integer.parseInt(loginParams.getClient_id());
@@ -142,7 +157,6 @@ public class LoginAction extends BaseController {
                 result.setDefaultModel("userid", userId);
                 loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
             }
-
         } else {
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
             //校验是否需要验证码
@@ -155,7 +169,6 @@ public class LoginAction extends BaseController {
                 result.setMessage("您登陆过于频繁，请稍后再试。");
             }
         }
-
         result.setDefaultModel("xd", loginParams.getXd());
         model.addAttribute("data", result.toString());
         return "/login/api";
@@ -202,8 +215,8 @@ public class LoginAction extends BaseController {
         userOperationLog.putOtherMessage("ref", referer);
         userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
         UserOperationLogUtil.log(userOperationLog);
-
-        if (StringUtil.isBlank(ru)) {
+        RuValidator ruValidator = new RuValidator();
+        if (StringUtil.isBlank(ru) || !ruValidator.isValid(ru, null)) {
             if (StringUtil.isBlank(referer)) {
                 referer = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }

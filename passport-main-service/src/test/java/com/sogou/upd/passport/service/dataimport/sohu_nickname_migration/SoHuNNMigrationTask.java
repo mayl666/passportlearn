@@ -12,7 +12,6 @@ import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.dataimport.datacheck.FullDataCheckApp;
-import com.sogou.upd.passport.service.dataimport.util.ParamUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

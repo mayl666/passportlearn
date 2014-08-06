@@ -1,65 +1,89 @@
 package com.sogou.upd.passport.service.account.dataobject;
 
-import java.util.Map;
+import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 
 /**
- * User: mayan Date: 13-4-15 Time: 下午5:15 To change this template use File | Settings | File
- * Templates.
+ * 构造激活邮件参数对象
+ * 父类以web端为准
+ * User: liuling
+ * Date: 14-7-25
+ * Time: 下午5:28
+ * To change this template use File | Settings | File Templates.
  */
 public class ActiveEmailDO {
 
-  private String activeUrl;
-  private String templateFile;
-  private Map<String,Object> map;
-  private String subject;
-  private String category;
-  private String toEmail;
+    protected String passportId;  //激活邮件中的主账号
 
-  public String getActiveUrl() {
-    return activeUrl;
-  }
+    protected int clientId; //应用id
 
-  public void setActiveUrl(String activeUrl) {
-    this.activeUrl = activeUrl;
-  }
+    protected String ru; //回跳的ru
 
-  public String getTemplateFile() {
-    return templateFile;
-  }
+    protected AccountModuleEnum module;  //模块类型，例如：register、login、findpwd、security、userinfo等
 
-  public void setTemplateFile(String templateFile) {
-    this.templateFile = templateFile;
-  }
+    protected String toEmail;  //发送邮件的对象
 
-  public Map<String, Object> getMap() {
-    return map;
-  }
+    protected boolean saveEmail = false; //是否保存发送邮件对象与scode的对应关系,默认不保存，值为false，绑定邮箱是为true
 
-  public void setMap(Map<String, Object> map) {
-    this.map = map;
-  }
+    public ActiveEmailDO(String passportId, int clientId, String ru, AccountModuleEnum module, String toEmail, boolean saveEmail) {
+        this.passportId = passportId;
+        this.clientId = clientId;
+        this.ru = ru;
+        this.module = module;
+        this.toEmail = toEmail;
+        this.saveEmail = saveEmail;
+    }
 
-  public String getSubject() {
-    return subject;
-  }
+    public String getPrefix() {
+        return CommonConstant.DEFAULT_INDEX_URL;
+    }
 
-  public void setSubject(String subject) {
-    this.subject = subject;
-  }
+    public String getPassportId() {
+        return passportId;
+    }
 
-  public String getCategory() {
-    return category;
-  }
+    public void setPassportId(String passportId) {
+        this.passportId = passportId;
+    }
 
-  public void setCategory(String category) {
-    this.category = category;
-  }
+    public int getClientId() {
+        return clientId;
+    }
 
-  public String getToEmail() {
-    return toEmail;
-  }
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
+    }
 
-  public void setToEmail(String toEmail) {
-    this.toEmail = toEmail;
-  }
+    public String getRu() {
+        return ru;
+    }
+
+    public void setRu(String ru) {
+        this.ru = ru;
+    }
+
+    public AccountModuleEnum getModule() {
+        return module;
+    }
+
+    public void setModule(AccountModuleEnum module) {
+        this.module = module;
+    }
+
+    public String getToEmail() {
+        return toEmail;
+    }
+
+    public void setToEmail(String toEmail) {
+        this.toEmail = toEmail;
+    }
+
+    public boolean isSaveEmail() {
+        return saveEmail;
+    }
+
+    public void setSaveEmail(boolean saveEmail) {
+        this.saveEmail = saveEmail;
+    }
+
 }

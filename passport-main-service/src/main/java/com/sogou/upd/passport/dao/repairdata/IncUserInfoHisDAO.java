@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.dao.repairdata;
 
-import com.sogou.upd.passport.model.repairdata.IncUserOtherInfo;
+import com.sogou.upd.passport.model.account.AccountBaseInfo;
+import com.sogou.upd.passport.model.repairdata.IncUserInfo;
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
@@ -14,17 +15,17 @@ import org.springframework.dao.DataAccessException;
  * To change this template use File | Settings | File Templates.
  */
 @DAO
-public interface IncUserOtherInfoDAO {
+public interface IncUserInfoHisDAO {
 
     /**
      * 对应数据库表名称
      */
-    String TABLE_NAME = " inc_user_other_info_his ";
+    String TABLE_NAME = " inc_user_info_his ";
 
     /**
      * 所有字段列表
      */
-    String ALL_FIELD = " inc_type,userid,personalid,mobile,mobileflag,email,emailflag,province,uniqname,city ";
+    String ALL_FIELD = " inc_type,userid,password,passwordtype,flag ";
 
     /**
      * 根据passportId获取Account
@@ -33,6 +34,6 @@ public interface IncUserOtherInfoDAO {
             ALL_FIELD +
             "from" +
             TABLE_NAME +
-            " where userid=:userid")
-    public IncUserOtherInfo getIncUserOtherInfo(@SQLParam("userid") String userid) throws DataAccessException;
+            " where userid=:userid order by inc_id desc limit 1 ")
+    public IncUserInfo getIncUserInfo(@SQLParam("userid") String userid) throws DataAccessException;
 }

@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -8,6 +9,7 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.validation.constraints.UserNameValidator;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -35,6 +37,7 @@ import java.util.Date;
 @Component("sgRegisterApiManager")
 public class SGRegisterApiManagerImpl extends BaseProxyManager implements RegisterApiManager {
     private static Logger logger = LoggerFactory.getLogger(SGRegisterApiManagerImpl.class);
+    private static final Logger checkWriteLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothWriteSyncErrorLogger");
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -51,6 +54,8 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
     private RegManager regManager;
     @Autowired
     private UserNameValidator userNameValidator;
+    @Autowired
+    private RegisterApiManager proxyRegisterApiManager;
 
     @Override
     public Result regMailUser(RegEmailApiParams params) {
@@ -60,8 +65,13 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             String password = params.getPassword();
             String ip = params.getCreateip();
             int clientId = params.getClient_id();
-            //判断注册账号类型，外域用户还是个性用户
             AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
+            //不支持sohu域账号,第三方账号注册
+            if (AccountDomainEnum.SOHU.equals(emailType) || AccountDomainEnum.THIRD.equals(emailType)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                return result;
+            }
+            //判断注册账号类型，外域用户还是个性用户
             boolean flag = userNameValidator.isValid(username, null);
             if (!flag) {
                 result = new APIResultSupport(false);
@@ -82,19 +92,10 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                     Account account = accountService.initialAccount(username, password, true, ip, AccountTypeEnum
                             .SOGOU.getValue());
                     if (account != null) {
-                        AccountInfo accountInfo = new AccountInfo();
-                        accountInfo.setPassportId(account.getPassportId());
-                        accountInfo.setCreateTime(new Date());
-                        accountInfo.setUpdateTime(new Date());
-                        accountInfo.setModifyip(ip);
-                        boolean isUpdateSuccess = accountInfoService.updateAccountInfo(accountInfo);
-                        if (!isUpdateSuccess) {
-                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-                        } else {
-                            result.setSuccess(true);
-                            result.setDefaultModel("userid", account.getPassportId());
-                            result.setMessage("注册成功");
-                            result.setDefaultModel("isSetCookie", true);
+                        result = insertAccountInfo(account, result, ip);
+                        if (result.isSuccess()) {
+                            Result shResult = proxyRegisterApiManager.regMailUser(params);
+                            LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.REGISTER, "regMailUser", "write_sh", account.getPassportId(), shResult.getCode(), shResult.toString());
                         }
                     } else {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
@@ -105,7 +106,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                     boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip, ru);
                     if (isSendSuccess) {
                         result.setSuccess(true);
-                        result.setMessage("感谢注册，请立即激活账户！");
+                        result.setMessage("注册成功");
                         result.setDefaultModel("userid", username);
                         result.setDefaultModel("isSetCookie", false);
                     } else {
@@ -121,6 +122,23 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
         return result;
     }
 
+    private Result insertAccountInfo(Account account, Result result, String ip) {
+        AccountInfo accountInfo = new AccountInfo(account.getPassportId(), new Date(), new Date());
+        if (!Strings.isNullOrEmpty(ip)) {
+            accountInfo.setModifyip(ip);
+        }
+        boolean isUpdateSuccess = accountInfoService.updateAccountInfo(accountInfo);
+        if (!isUpdateSuccess) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+        } else {
+            result.setSuccess(true);
+            result.setDefaultModel("userid", account.getPassportId());
+            result.setMessage("注册成功");
+            result.setDefaultModel("isSetCookie", true);
+        }
+        return result;
+    }
+
     private CheckUserApiParams buildProxyApiParams(String username, int clientId) {
         CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
         checkUserApiParams.setUserid(username);
@@ -131,15 +149,12 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
 
     @Override
     public Result regMobileCaptchaUser(RegMobileCaptchaApiParams regParams) {
-
         Result result = new APIResultSupport(false);
         try {
-
             int clientId = regParams.getClient_id();
             String mobile = regParams.getMobile();
             String password = regParams.getPassword();
             String ip = regParams.getIp();
-
             String captcha = regParams.getCaptcha();
             //验证手机号码与验证码是否匹配
             result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.REGISTER, captcha);
@@ -147,7 +162,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
                 return result;
             }
-
             Account account = accountService.initialAccount(mobile, password, false, ip, AccountTypeEnum
                     .PHONE.getValue());
             if (account != null) {
@@ -172,10 +186,15 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
         String username = null;
         try {
             username = checkUserApiParams.getUserid();
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
+            if (AccountDomainEnum.SOHU.equals(domain) || AccountDomainEnum.THIRD.equals(domain)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                return result;
+            }
             if (username.indexOf("@") == -1) {
                 //判断是否是手机号注册
                 if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
-                    username = username + "@sogou.com";
+                    username = username + CommonConstant.SOGOU_SUFFIX;
                 }
             }
             //如果是手机账号注册
@@ -243,7 +262,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             if (!result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                result.setMessage("手机号已绑定其他账号");
                 return result;
             }
             result = secureManager.sendMobileCode(params.getMobile(), params.getClient_id(), AccountModuleEnum.REGISTER);
@@ -255,7 +273,32 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
 
     @Override
     public Result regMobileUser(RegMobileApiParams regMobileApiParams) {
-
-        return null;
+        Result result = new APIResultSupport(false);
+        String mobile = regMobileApiParams.getMobile();
+        String password = regMobileApiParams.getPassword();
+        try {
+            if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
+                String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
+                if (!Strings.isNullOrEmpty(passportId)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    return result;
+                }
+                Account account = accountService.initialAccount(mobile, password, true, null, AccountTypeEnum
+                        .PHONE.getValue());
+                if (account != null) {
+                    result = insertAccountInfo(account, result, null);
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+                    return result;
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                return result;
+            }
+        } catch (Exception e) {
+            logger.error("mobile reg without captcha failed,mobile is {} ", mobile, e);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+        }
+        return result;
     }
 }

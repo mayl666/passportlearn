@@ -12,6 +12,7 @@ import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -57,15 +58,15 @@ public class ResetPwdAction extends BaseController {
     /**
      * 找回密码主页跳转
      *
-     * @param ru
+     * @param params
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
-    public String findPwdView(String ru, Model model, String client_id) throws Exception {
+    public String findPwdView(BaseWebRuParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
-        ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
-        client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
+        String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_INDEX_URL : params.getRu();
+        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
         model.addAttribute("data", result.toString());
@@ -99,7 +100,7 @@ public class ResetPwdAction extends BaseController {
             AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
             String passportId = username;
             if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
-                passportId = passportId + "@sogou.com";
+                passportId = passportId + CommonConstant.SOGOU_SUFFIX;
             }
             //查询主账号：@sogou.com/外域/第三方账号返回原样，手机账号返回绑定的主账号，若无主账号则返回手机号+@sohu.com
             passportId = commonManager.getPassportIdByUsername(passportId);
@@ -107,8 +108,6 @@ public class ResetPwdAction extends BaseController {
             switch (domain) {
                 //主账号是sohu域/外域/手机号的去sohu找回密码
                 case SOHU:
-                case OTHER:
-                case PHONE:
                     return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
                 case THIRD:
                     return "redirect:/web/findpwd";
@@ -152,10 +151,15 @@ public class ResetPwdAction extends BaseController {
             //记录找回密码次数
             resetPwdManager.incFindPwdTimes(passportId);
             //如果用户的密保手机和密保邮箱存在，则返回模糊处理的手机号/密保邮箱及完整手机号/邮箱加密后的md5串
-            //todo 外域邮箱找回时也需要模糊处理，目前只是搜狗账号阶段，暂未添加注册邮箱找回
             if (accountSecureInfoVO != null) {
                 String sec_mobile = (String) result.getModels().get("sec_mobile");
                 String sec_email = (String) result.getModels().get("sec_email");
+                if (AccountDomainEnum.OTHER.equals(domain)) {
+                    if (!passportId.equals(sec_email)) { //如果passportId是外域，则注册邮箱是它本身,当注册邮箱和密保邮箱不一样时，才返回注册邮箱
+                        result.setDefaultModel("reg_process_email", accountSecureInfoVO.getReg_email());
+                        result.setDefaultModel("reg_email_md5", DigestUtils.md5Hex(passportId));
+                    }
+                }
                 if (!Strings.isNullOrEmpty(sec_mobile)) {
                     result.setDefaultModel("sec_process_mobile", accountSecureInfoVO.getSec_mobile());
                     result.setDefaultModel("sec_mobile_md5", DigestUtils.md5Hex(sec_mobile.getBytes()));
@@ -190,13 +194,12 @@ public class ResetPwdAction extends BaseController {
      * 发送重置密码申请验证邮件至绑定邮箱
      *
      * @param params
-     * @param model
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/sendbemail", method = RequestMethod.POST)
     @ResponseBody
-    public String sendEmailBindResetPwd(HttpServletRequest request, BaseWebResetPwdParams params, Model model) throws Exception {
+    public String sendEmailBindResetPwd(HttpServletRequest request, BaseWebResetPwdParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -218,6 +221,39 @@ public class ResetPwdAction extends BaseController {
         }
         return result.toString();
     }
+
+
+    /**
+     * 发送重置密码申请验证邮件至注册邮箱
+     *
+     * @param params
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/findpwd/sendremail", method = RequestMethod.POST)
+    @ResponseBody
+    public String sendEmailRegResetPwd(HttpServletRequest request, BaseWebResetPwdParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            String passportId = params.getUsername();
+            int clientId = Integer.parseInt(params.getClient_id());
+            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true, params.getRu(), params.getScode());
+            result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
+            result.setDefaultModel("userid", passportId);
+        } catch (Exception e) {
+            logger.error("sendEmailRegResetPwd Is Failed,Username is " + params.getUsername(), e);
+        } finally {
+            log(request, params.getUsername(), result.getCode());
+        }
+        return result.toString();
+    }
+
 
     /**
      * 重新发送激活邮件
@@ -246,7 +282,8 @@ public class ResetPwdAction extends BaseController {
                 account = (Account) map.get("account");
             }
             if (account != null) {
-                result = resetPwdManager.sendEmailResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id()), AccountModuleEnum.RESETPWD, email, params.getRu(), params.getScode());
+                ActiveEmailDO activeEmailDO = new ActiveEmailDO(params.getUsername(), Integer.parseInt(params.getClient_id()), params.getRu(), AccountModuleEnum.RESETPWD, email, false);
+                result = resetPwdManager.sendEmailResetPwd(activeEmailDO, params.getScode());
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
@@ -348,7 +385,7 @@ public class ResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/sendsms", method = RequestMethod.GET)
+    @RequestMapping(value = "/findpwd/sendsms", method = RequestMethod.POST)
     @ResponseBody
     public Object sendSmsSecMobile(HttpServletRequest request, CheckSecMobileParams params) throws Exception {
         Result result = new APIResultSupport(false);
@@ -360,7 +397,7 @@ public class ResetPwdAction extends BaseController {
                 return result.toString();
             }
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendFindPwdMobileCode(params.getUsername(), clientId, params.getSec_mobile());
+            result = resetPwdManager.sendFindPwdMobileCode(params.getUsername(), clientId, params.getSec_mobile(), params.getToken(), params.getCaptcha());
         } catch (Exception e) {
             logger.error("sendSmsSecMobile Is Failed,Username is " + params.getUsername(), e);
         } finally {
@@ -388,7 +425,7 @@ public class ResetPwdAction extends BaseController {
             String username = params.getUsername();
             String passportId = username;
             if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(username))) {
-                passportId += "@sogou.com";
+                passportId += CommonConstant.SOGOU_SUFFIX;
             }
             passportId = commonManager.getPassportIdByUsername(username);
             if (Strings.isNullOrEmpty(passportId)) {
@@ -396,8 +433,14 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
+            result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
+            if (result.isSuccess()) {  //账号不存在
+                result = buildErrorResult(result, params, null, ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                model.addAttribute("data", result.toString());
+                return "/recover/type";
+            }
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.checkMobileCodeResetPwd(params.getUsername(), clientId, params.getSmscode());
+            result = resetPwdManager.checkMobileCodeResetPwd(username, clientId, params.getSmscode());
             if (result.isSuccess()) {
                 result.setDefaultModel("userid", params.getUsername());
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
@@ -405,12 +448,6 @@ public class ResetPwdAction extends BaseController {
             } else {
                 String message = result.getMessage();
                 result = buildErrorResult(result, params, null, message);
-                model.addAttribute("data", result.toString());
-                return "/recover/type";
-            }
-            result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
-            if (result.isSuccess()) {  //账号不存在
-                result = buildErrorResult(result, params, null, ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
@@ -460,7 +497,6 @@ public class ResetPwdAction extends BaseController {
             result.setCode(queryResult.getCode());
             result.setMessage(queryResult.getMessage());
         }
-        //todo 外域邮箱找回时也需要模糊处理，目前只是搜狗账号阶段，暂未添加注册邮箱找回
         return result;
     }
 
@@ -469,38 +505,6 @@ public class ResetPwdAction extends BaseController {
         UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID), resultCode, getIp(request));
         userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
         UserOperationLogUtil.log(userOperationLog);
-    }
-
-    /**
-     * 发送重置密码申请验证邮件至注册邮箱
-     *
-     * @param params
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/findpwd/sendremail", method = RequestMethod.POST)
-    @ResponseBody
-    public String sendEmailRegResetPwd(HttpServletRequest request, BaseWebResetPwdParams params) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
-            }
-            String passportId = params.getUsername();
-            int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true, params.getRu(), params.getScode());
-            result.setDefaultModel("userid", passportId);
-        } catch (Exception e) {
-            logger.error("sendEmailRegResetPwd Is Failed,Username is " + params.getUsername(), e);
-        } finally {
-            log(request, params.getUsername(), result.getCode());
-        }
-
-        return result.toString();
     }
 
 //    /**

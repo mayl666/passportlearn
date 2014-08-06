@@ -1,13 +1,11 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.LogUtil;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
@@ -41,19 +39,20 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
     @Override
     public Result regMailUser(RegEmailApiParams regEmailApiParams) {
         Result result;
-        if (ManagerHelper.writeSohuSwitcher()) {
-            //回滚操作时，都走写SH流程
-            result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
-        } else {
-            AccountDomainEnum domainType = AccountDomainEnum.getAccountDomain(regEmailApiParams.getUserid());
-            if (AccountDomainEnum.SOGOU.equals(domainType) || AccountDomainEnum.INDIVID.equals(domainType)) {
-                //搜狗账号走双写流程
-                result = bothWriteUser(regEmailApiParams);
-            } else {
-                //其它账号走写SH流程
-                result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
-            }
-        }
+//        if (ManagerHelper.writeSohuSwitcher()) {
+//            //回滚操作时，都走写SH流程
+//            result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+//        } else {
+//            AccountDomainEnum domainType = AccountDomainEnum.getAccountDomain(regEmailApiParams.getUserid());
+//            if (AccountDomainEnum.SOGOU.equals(domainType) || AccountDomainEnum.INDIVID.equals(domainType)) {
+        //搜狗账号走双写流程
+//                result = bothWriteUser(regEmailApiParams);
+        result = sgRegisterApiManager.regMailUser(regEmailApiParams);
+//            } else {
+//                //其它账号走写SH流程
+//                result = proxyRegisterApiManager.regMailUser(regEmailApiParams);
+//            }
+//        }
         return result;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

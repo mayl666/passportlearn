@@ -58,6 +58,9 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
     $.uuiForm.addType('personalid', function(value) {
         return (value == "") || idTester.valid(value);
     });
+    $.uuiForm.addType('nonempty', function(value) {
+        return !!$.trim(value);
+    });
     
     //yinyong#sogou-inc.com:Copied from Internet.
     var idTester = {
@@ -118,6 +121,9 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
             var label= $el.parent().prev().html();
             return '请填写' + label.replace('：', '');
         },
+        nonempty: function($el){
+            return '不能为空';
+        },
         email: function(){
             return '邮箱格式不正确';
         },
@@ -145,7 +151,8 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                 return "含有非法关键字"
             }
             return '昵称不合法';
-        }, uniqname: function($el){
+        }, 
+        uniqname: function($el){
             if($el.val().length <2 || $el.val().length>12 ){
                 return '昵称长度为2-12位';
             }else if(/[^\u4e00-\u9fa5a-zA-Z0-9]/.test($el.val())){
@@ -315,22 +322,36 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                     if( errorSpan.length && errorSpan.css('display') != 'none' )
                         return;
                 }
+
+                var captchaIpt = $('.main-content .form form input[name="code-captcha"]');
                 status = true;
-                var el = $(this);
+                var el = $(this),$form=el.parents('form');
                 oldText = el.html();
                 //el.html(timeout + text);
                 //el.addClass('tel-valid-btn-disable');
 
                 var url = el.attr('action') || '/web/sendsms';
-                $.get(url , {
+                $.post(url , {
                     mobile: usernameIpt.val(),
                     new_mobile: usernameIpt.val(),
                     client_id: conf.client_id,
-                    t: +new Date()
+                    captcha:captchaIpt.val(),
+                    t: +new Date(),
+                    token:$('input[name=token]').val()
                 } , function(data){
                     data = utils.parseResponse(data);
+
                     if( +data.status ){
-                        if( +data.status != 20201 ){
+                        
+                        if(20257==data.status){
+                            //显示验证码
+                            $('.main-content .form form').find('.form-item-vcode').removeClass('hide');
+                        }
+                        else if( +data.status != 20201 ){
+                            if(20221==data.status){
+                                //验证码错误
+                                initToken($form);
+                            }
                             $('.main-content .form form').find('.tel-valid-error').show().html(data.statusText? data.statusText : '系统错误');;
                         }
                         resetBtn();
@@ -366,6 +387,10 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
         },
         freshToken:function($el){
             initToken($el);
+        },
+        initToken:function($el){
+            initToken($el);
+            bindOptEvent($el);
         }
     };
 });

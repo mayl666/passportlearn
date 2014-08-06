@@ -53,6 +53,16 @@ public interface RegManager {
     public Map<String, Object> getCaptchaCode(String code);
 
     /**
+     * 检查用户是否存在去sohu校验
+     *
+     * @param username
+     * @param clientId
+     * @return
+     * @throws Exception
+     */
+    public Result checkUserFromSohu(String username, int clientId) throws Exception;
+
+    /**
      * 判断用户名是否被占用
      *
      * @return 验证码
@@ -91,23 +101,6 @@ public interface RegManager {
     public Result checkRegInBlackListByIpForInternal(String ip, int clientId) throws Exception;
 
     /**
-     * 检查手机注册ip是否在发短信超限黑名单中
-     *
-     * @param ip
-     * @return
-     * @throws Exception
-     */
-    public Result checkMobileSendSMSInBlackList(String ip) throws Exception;
-
-    /**
-     * 手机发短信次数
-     *
-     * @param ip
-     * @throws Exception
-     */
-    public void incSendTimesForMobile(String ip) throws Exception;
-
-    /**
      * 检查用户名是否存在调用是否超过频率限制
      *
      * @param username
@@ -138,5 +131,14 @@ public interface RegManager {
      * @throws Exception
      */
     public Result registerMobile(String username, String password, int clientId, String captcha, String type) throws Exception;
+
+    /**
+     * 检查验证码是否通过
+     *
+     * @param token
+     * @param captcha
+     * @return
+     */
+    public Result checkCaptchaToken(String token, String captcha);
 
 }

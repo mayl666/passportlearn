@@ -59,11 +59,7 @@ public class PCAccountController extends BaseController {
     @Autowired
     private LoginManager loginManager;
     @Autowired
-    private CookieManager cookieManager;
-    @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
-
-    private static final String DEFAULT_URL = "https://account.sogou.com";
 
     @RequestMapping(value = "/act/pclogin", method = RequestMethod.GET)
     public String pcLogin(HttpServletRequest request, PcAccountWebParams pcAccountWebParams, Model model)
@@ -193,8 +189,9 @@ public class PCAccountController extends BaseController {
         String resStr;
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
-            // 浏览器sohu接口昵称先从论坛初始化，为空时使用userid，@前半部分作为昵称, 壁纸、游戏用自己存的
-            String uniqname = pcAccountManager.getUniqnameByClientId(accountToken.getPassportId(), appid);
+            // 浏览器sohu接口昵称使用userid，@前半部分作为昵称, 壁纸、游戏用自己存的
+            String passportId = accountToken.getPassportId();
+            String uniqname = passportId.substring(0, passportId.indexOf("@"));
             //客户端使用getPairToken返回的userid作为唯一标识
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
             if (!CommonHelper.isIePinyinToken(appid)) {

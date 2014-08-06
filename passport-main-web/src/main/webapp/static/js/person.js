@@ -640,7 +640,7 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                             $("#birthday").val(year + "-" + month + "-" + day);//like 1987-01-01
                         }
 
-                        $("#flag").val($("#NicknameIpt").val()==decodeURIComponent(data.uniqname)?0:1);
+                        $("#flag").val($("#UniqnameIpt").val()==decodeURIComponent(data.uniqname)?0:1);
 
                         //Maybe city&province,gender,personalid should be validated again,
                         //as DOM could be modified.
@@ -677,6 +677,9 @@ define("person", ['./common', './tpl', './form', './utils'], function(common, ur
                         }
 
                         return false; //No more submit
+                    },
+                    onformfail:function(){
+                        //console.log(arguments);
                     }
                     /*,
                     onsuccess: function(el) {

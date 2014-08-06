@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=237098" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=961983" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -60,7 +60,29 @@
                 <label for="seg_email">已验证邮箱：</label>
                 <span class="form-el form-el-s form-el-fuck">
                     <span class="head email_head"></span>
-                    <input name="seg_email" id="seg_email" value=""/>
+                    <input name="seg_email" value=""/>
+                    <span class="tail email_tail"></span>
+                </span>
+            </div>
+
+             <div class="form-error"><span></span></div>
+
+             <div class="form-btn">
+    <button type="submit">发送验证邮件</button>
+</div>
+            </form>
+
+            <form action="/web/findpwd/check" class="hide" id="reg_email_form" method="post">
+            <input type="hidden" name="username" value=""/>
+            <input type="hidden" name="reg_email" value=""/>
+            <input type="hidden" name="ru" value=""/>
+            <input type="hidden" name="client_id" value=""/>
+            
+            <div class="form-item">
+                <label for="reg_email">注册邮箱：</label>
+                <span class="form-el form-el-s form-el-fuck">
+                    <span class="head email_head"></span>
+                    <input name="seg_email" value=""/>
                     <span class="tail email_tail"></span>
                 </span>
             </div>
@@ -77,6 +99,7 @@
             <input type="hidden" name="sec_mobile" value=""/>
             <input type="hidden" name="ru" value=""/>
             <input type="hidden" name="client_id" value=""/>
+            <input type="hidden" name="token" class="token" value=""/>
 
             <div class="form-item">
                 <label for="seg_mobile">已验证手机：</label>
@@ -85,6 +108,13 @@
                     <input name="seg_mobile" id="seg_mobile" value=""/>
                     <span class="tail mobile_tail"></span>
                 </span>
+            </div>
+
+            <div class="form-item form-item-vcode hide">
+                <label for="sValidIpt">验证码：</label>
+                <span class="form-el form-el-s"><input type="text" name="code-captcha" id="sValidIpt" value=""/></span>
+                <span class="vpic"><img src="/./static/img/b.gif"/></span>
+                <a href="#" class="change-vpic">看不清，换一张</a>
             </div>
 
              <div class="form-item">
@@ -138,7 +168,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/recover.js?t=2014070722"></script>
+    <script type="text/javascript" src="/./static/js/recover.js?t=2014080638"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

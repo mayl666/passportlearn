@@ -63,24 +63,6 @@ public interface PCAccountManager {
     public String getSig(String passportId, int clientId, String refresh_token, String timestamp) throws Exception;
 
     /**
-     * 从浏览器论坛获取用户昵称
-     * 如果为空，则返回用户名@前面一段
-     *
-     * @param passportId
-     * @return
-     */
-    public String getBrowserBbsUniqname(String passportId);
-
-    /**
-     * 通过clientId获取不同的昵称
-     *
-     * @param passportId
-     * @param clientId
-     * @return
-     */
-    public String getUniqnameByClientId(String passportId, int clientId);
-
-    /**
      * 创建账号account
      *
      * @param passportId
