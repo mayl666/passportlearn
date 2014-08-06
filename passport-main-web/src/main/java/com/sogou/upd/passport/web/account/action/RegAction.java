@@ -314,7 +314,7 @@ public class RegAction extends BaseController {
                     if (!result.isSuccess()) {
                         result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                        return result;
+                        return result.toString();
                     }
                 } else {
                     result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
