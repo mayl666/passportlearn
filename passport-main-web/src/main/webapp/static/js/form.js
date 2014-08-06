@@ -322,22 +322,36 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
                     if( errorSpan.length && errorSpan.css('display') != 'none' )
                         return;
                 }
+
+                var captchaIpt = $('.main-content .form form input[name="code-captcha"]');
                 status = true;
-                var el = $(this);
+                var el = $(this),$form=el.parents('form');
                 oldText = el.html();
                 //el.html(timeout + text);
                 //el.addClass('tel-valid-btn-disable');
 
                 var url = el.attr('action') || '/web/sendsms';
-                $.get(url , {
+                $.post(url , {
                     mobile: usernameIpt.val(),
                     new_mobile: usernameIpt.val(),
                     client_id: conf.client_id,
-                    t: +new Date()
+                    captcha:captchaIpt.val(),
+                    t: +new Date(),
+                    token:$('input[name=token]').val()
                 } , function(data){
                     data = utils.parseResponse(data);
+
                     if( +data.status ){
-                        if( +data.status != 20201 ){
+                        
+                        if(20257==data.status){
+                            //显示验证码
+                            $('.main-content .form form').find('.form-item-vcode').removeClass('hide');
+                        }
+                        else if( +data.status != 20201 ){
+                            if(20221==data.status){
+                                //验证码错误
+                                initToken($form);
+                            }
                             $('.main-content .form form').find('.tel-valid-error').show().html(data.statusText? data.statusText : '系统错误');;
                         }
                         resetBtn();
@@ -373,6 +387,10 @@ define(['./utils','./conf','./uuibase' , './uuiForm'] , function(utils,conf){
         },
         freshToken:function($el){
             initToken($el);
+        },
+        initToken:function($el){
+            initToken($el);
+            bindOptEvent($el);
         }
     };
 });

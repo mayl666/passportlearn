@@ -265,7 +265,7 @@ define(['lib/utils', 'lib/placeholder'], function(utils) {
                                 client_id: _g_client_id,
                                 mobile: $phone.val()
                             },
-                            type: "get",
+                            type: "post",
                             dataType: "json"
                         }).done(function(result) {
                             if (typeof result === 'string' || (result && result.constructor == String)) {
