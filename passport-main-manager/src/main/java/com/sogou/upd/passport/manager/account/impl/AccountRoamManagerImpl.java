@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -110,8 +109,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                 }
                 //若搜狐域账号、初始化一条无密码的搜狐域Account
                 if (accountDomain == AccountDomainEnum.SOHU) {
-                    Account insertSoHuAccount = accountService.initialAccount(roamPassportId, null, false, createIp, AccountTypeEnum.SOHU.getValue());
-                    if (insertSoHuAccount == null) {
+                    if (!accountService.initSOHUAccount(roamPassportId, createIp)) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                         return result;
                     }
