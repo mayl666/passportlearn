@@ -116,7 +116,7 @@ public class AccountServiceImpl implements AccountService {
             }
             account.setMobile(mobile);
             long id;
-            if (AccountTypeEnum.isConnect(provider)) { //第三方使用插入或更新，之前第三方迁移出过一次bug，修复的
+            if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider)) { //第三方或sohu域账号使用插入或更新，之前第三方迁移出过一次bug，修复的
                 id = accountDAO.insertOrUpdateAccount(passportId, account);
             } else {
                 //正式注册到account表中

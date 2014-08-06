@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -15,10 +16,16 @@ import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountInfo;
+import com.sogou.upd.passport.service.account.AccountInfoService;
+import com.sogou.upd.passport.service.account.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,6 +47,10 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private CommonManager commonManager;
+    @Autowired
+    private AccountService accountService;
+    @Autowired
+    private AccountInfoService accountInfoService;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
@@ -60,6 +71,13 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
             if (AccountDomainEnum.SOHU.equals(domain)) {
                 //主账号是sohu域账号调用sohu api校验用户名和密码
                 result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                //sohu域账号校验密码成功后，account，account_info表各自初始化一条无密码的sohu域记录
+                if (result.isSuccess()) {
+                    Account account = accountService.initialAccount(passportId, null, false, authUserApiParams.getIp(), AccountTypeEnum.SOHU.getValue());
+                    if (account != null) {
+                        accountInfoService.updateAccountInfo(new AccountInfo(passportId, new Date(), new Date()));
+                    }
+                }
             } else {
                 result = sgLoginApiManager.webAuthUser(authUserApiParams);
                 if (ManagerHelper.isDoubleCheckUserLogin()) {
