@@ -70,6 +70,12 @@
         <input autocomplete="off" uui-type="require cellphone" type="text" name="username" id="UsernameIpt" value="" data-desc="" class="" placeholder=""/>
     </span>
 </div>
+                    <div class="form-item form-item-vcode hide">
+                        <label for="sValidIpt">验证码：</label>
+                        <span class="form-el form-el-s"><input type="text" name="code-captcha" id="sValidIpt" value="" /></span>
+                        <span class="vpic"><img src="/./static/img/b.gif"/></span>
+                        <a href="#" class="change-vpic">看不清，换一张</a>
+                    </div>
                     <div class="form-item">
     <label >&nbsp;</label>
     <span class="form-el form-el-none">

@@ -23,7 +23,7 @@ define([], function() {
             url: '/web/login/checkNeedCaptcha',
             data: {
                 username: username,
-                client_id:client_id
+                client_id: client_id
             },
             cache: false,
             dataType: 'json',
@@ -33,7 +33,7 @@ define([], function() {
                         data = JSON.parse(data);
                     } catch (e) {}
                 }
-                
+
                 if (data && data.data && data.data.needCaptcha) {
                     return callback(true);
                 } else {
@@ -67,13 +67,15 @@ define([], function() {
             data: options,
             dataType: 'json',
             error: function() {
-                return callback(false,{'statusText':'登录失败'});
+                return callback(false, {
+                    'statusText': '登录失败'
+                });
             },
             success: function(data) {
                 if (data && !+data.status)
                     return callback(true, data.data);
                 else
-                    return callback(false,data);
+                    return callback(false, data);
             }
         });
 
@@ -97,7 +99,12 @@ define([], function() {
                 if ('string' === typeof data) {
                     try {
                         data = JSON.parse(data);
-                    } catch (e) {data = {status:1,statusText:'格式错误'};}
+                    } catch (e) {
+                        data = {
+                            status: 1,
+                            statusText: '格式错误'
+                        };
+                    }
                 }
 
                 if (!!data && !+data.status) {
@@ -109,32 +116,42 @@ define([], function() {
         });
     }
 
-    function sendsms(mobile, callback) {
+    function sendsms(params, callback) {
+        var options = {
+            client_id: client_id
+        };
+
+        $.extend(options, params);
         callback = callback || noop;
 
         return $.ajax({
             url: '/web/sendsms',
-            data: {
-                client_id: client_id,
-                mobile: mobile
-            },
+            data: options,
+            type: 'post',
             dataType: 'json',
             success: function(data) {
 
                 if ('string' === typeof data) {
                     try {
                         data = JSON.parse(data);
-                    } catch (e) {data = {status:1,statusText:'格式错误'};}
+                    } catch (e) {
+                        data = {
+                            status: 1,
+                            statusText: '格式错误'
+                        };
+                    }
                 }
 
                 if (data && !+data.status) {
                     return callback(true);
                 } else {
-                    return callback(false,data);
+                    return callback(false, data);
                 }
             },
             error: function() {
-                return callback(false,{'statusText':'发送失败'});
+                return callback(false, {
+                    'statusText': '发送失败'
+                });
             }
         });
     }
@@ -158,46 +175,64 @@ define([], function() {
                 if ('string' === typeof data) {
                     try {
                         data = JSON.parse(data);
-                    } catch (e) {data = {status:1,statusText:'格式错误'};}
+                    } catch (e) {
+                        data = {
+                            status: 1,
+                            statusText: '格式错误'
+                        };
+                    }
                 }
                 if (data && !+data.status) {
                     return callback(true, data.data);
                 } else {
-                    return callback(false,data);
+                    return callback(false, data);
                 }
             },
             error: function() {
-                return callback(false,{'statusText':'提交失败'});
+                return callback(false, {
+                    'statusText': '提交失败'
+                });
             }
         });
     }
 
-    function findpwdSendsms(mobile, callback) {
+    function findpwdSendsms(params, callback) {
+        var options = {
+            client_id: client_id
+        };
+
+        $.extend(options, params);
+
         callback = callback || noop;
 
         return $.ajax({
             url: '/wap/findpwd/sendsms',
-            data: {
-                client_id: client_id,
-                mobile: mobile
-            },
+            data: options,
+            type: 'post',
             dataType: 'json',
             success: function(data) {
 
                 if ('string' === typeof data) {
                     try {
                         data = JSON.parse(data);
-                    } catch (e) {data = {status:1,statusText:'格式错误'};}
+                    } catch (e) {
+                        data = {
+                            status: 1,
+                            statusText: '格式错误'
+                        };
+                    }
                 }
 
                 if (data && !+data.status) {
                     return callback(true);
                 } else {
-                    return callback(false,data);
+                    return callback(false, data);
                 }
             },
             error: function() {
-                return callback(false,{'statusText':'发送失败'});
+                return callback(false, {
+                    'statusText': '发送失败'
+                });
             }
         });
     }
@@ -221,16 +256,23 @@ define([], function() {
                 if ('string' === typeof data) {
                     try {
                         data = JSON.parse(data);
-                    } catch (e) {data = {status:1,statusText:'格式错误'};}
+                    } catch (e) {
+                        data = {
+                            status: 1,
+                            statusText: '格式错误'
+                        };
+                    }
                 }
                 if (data && !+data.status) {
                     return callback(true, data.data);
                 } else {
-                    return callback(false,data);
+                    return callback(false, data);
                 }
             },
             error: function() {
-                return callback(false,{'statusText':'提交失败'});
+                return callback(false, {
+                    'statusText': '提交失败'
+                });
             }
         });
     }
@@ -253,16 +295,23 @@ define([], function() {
                 if ('string' === typeof data) {
                     try {
                         data = JSON.parse(data);
-                    } catch (e) {data = {status:1,statusText:'格式错误'};}
+                    } catch (e) {
+                        data = {
+                            status: 1,
+                            statusText: '格式错误'
+                        };
+                    }
                 }
                 if (data && !+data.status) {
                     return callback(true, data.data);
                 } else {
-                    return callback(false,data);
+                    return callback(false, data);
                 }
             },
             error: function() {
-                return callback(false,{'statusText':'提交失败'});
+                return callback(false, {
+                    'statusText': '提交失败'
+                });
             }
         });
     }
@@ -285,16 +334,23 @@ define([], function() {
                 if ('string' === typeof data) {
                     try {
                         data = JSON.parse(data);
-                    } catch (e) {data = {status:1,statusText:'格式错误'};}
+                    } catch (e) {
+                        data = {
+                            status: 1,
+                            statusText: '格式错误'
+                        };
+                    }
                 }
                 if (data && !+data.status) {
                     return callback(true, data.data);
                 } else {
-                    return callback(false,data);
+                    return callback(false, data);
                 }
             },
             error: function() {
-                return callback(false,{'statusText':'提交失败'});
+                return callback(false, {
+                    'statusText': '提交失败'
+                });
             }
         });
     }
@@ -317,23 +373,30 @@ define([], function() {
                 if ('string' === typeof data) {
                     try {
                         data = JSON.parse(data);
-                    } catch (e) {data = {status:1,statusText:'格式错误'};}
+                    } catch (e) {
+                        data = {
+                            status: 1,
+                            statusText: '格式错误'
+                        };
+                    }
                 }
 
                 if (data && !+data.status) {
                     return callback(true, data.data);
                 } else {
-                    return callback(false,data);
+                    return callback(false, data);
                 }
             },
             error: function() {
-                return callback(false,{'statusText':'注册失败'});
+                return callback(false, {
+                    'statusText': '注册失败'
+                });
             }
         });
     }
 
     return {
-        client_id:client_id,
+        client_id: client_id,
         checkNeedCaptcha: checkNeedCaptcha,
         getCaptcha: getCaptcha,
         login: login,
@@ -342,7 +405,7 @@ define([], function() {
         checksms: checksms,
         findpwdCheck: findpwdCheck,
         findpwdSendmail: findpwdSendmail,
-        register:register,
+        register: register,
         reset: reset,
         findpwdSendsms: findpwdSendsms
     };

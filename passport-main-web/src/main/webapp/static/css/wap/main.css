@@ -129,7 +129,10 @@ a.trd .r{width: 40px;color: #ccc;}
 .dialog .buttons{height: 44px;border-top: 1px solid #b2b2b2;}
 .dialog .buttons a{color: #157efb;text-decoration: none;}
 .dialog .buttons a:first-child{border-right: 1px solid #b2b2b2;}
-
+.dialog input[type="text"]{
+  border: 1px solid #b2b2b2;
+  border-radius: 3px;
+}
 .findpwd-content{
   padding: 0 10px;
 }

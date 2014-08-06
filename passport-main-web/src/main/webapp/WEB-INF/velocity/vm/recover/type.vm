@@ -99,6 +99,7 @@
             <input type="hidden" name="sec_mobile" value=""/>
             <input type="hidden" name="ru" value=""/>
             <input type="hidden" name="client_id" value=""/>
+            <input type="hidden" name="token" class="token" value=""/>
 
             <div class="form-item">
                 <label for="seg_mobile">已验证手机：</label>
@@ -107,6 +108,13 @@
                     <input name="seg_mobile" id="seg_mobile" value=""/>
                     <span class="tail mobile_tail"></span>
                 </span>
+            </div>
+
+            <div class="form-item form-item-vcode hide">
+                <label for="sValidIpt">验证码：</label>
+                <span class="form-el form-el-s"><input type="text" name="code-captcha" id="sValidIpt" value=""/></span>
+                <span class="vpic"><img src="/./static/img/b.gif"/></span>
+                <a href="#" class="change-vpic">看不清，换一张</a>
             </div>
 
              <div class="form-item">

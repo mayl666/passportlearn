@@ -7,7 +7,7 @@
 <meta name="MobileOptimized" content="320"/>
 <meta name="format-detection" content="telephone=no"/>
 <title>注册-搜狗通行证</title>
-<link rel="stylesheet" href="/./static/css/wap/main.css?t=549844"/>
+<link rel="stylesheet" href="/./static/css/wap/main.css?t=459724"/>
 </head>
 <body>
 
@@ -25,7 +25,7 @@
 
 <!--username-->
 <div class="row f-f f-vc">
-    <label for="username" class="h-fil f-f f-hr f-vc">手机号：</label>
+    <label for="username" class="h-fil f-f f-hr f-vc">帐号：</label>
     <input type="text" name="username" id="username" class="block h-fil f-1" placeholder="11位中国大陆地区手机号" autocomplete="off"/>
     <a href="#" class="block indicator hide" tabindex="1"></a>
 </div>
@@ -36,6 +36,7 @@
     <a href="#" class="sendsms block tc">发送验证码</a>
     <a href="#" class="block indicator hide"></a>
 </div>
+
 <!--password-->
 <div class="row f-f f-vc">
     <label for="password" class="h-fil f-f f-hr f-vc">密码：</label>
@@ -63,7 +64,7 @@
 </div>
 </form>
 <div class="mask hide"></div>
-<div class="dialog hide">
+<div class="dialog hide" id="alertDialog">
     <div class="content">
         <h4 class="tc">温馨提示</h4>
         <p class="tc tip p15">该手机已注册，可直接登录</p>
@@ -74,9 +75,24 @@
     </div>
 </div>
 
+<div class="dialog hide" id="captchaDialog">
+    <div class="content">
+        <h4 class="tc">请输入图片验证码</h4>
+        <div class="tip p15 f-f f-vc row">
+            <input type="text" class="f-1 h-fil"/>
+            <img src="about:blank" id="captcha-img" border="0" class="captcha-img block"/>
+        </div>
+    </div>
+    <div class="buttons f-f f-vc">
+        <a href="#" class="x f-f f-hc f-vc h-fil f-1" style="border-right:0">确定</a>
+    </div>
+</div>
+
+<script>var token = '${token}';</script>
+
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=095783" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=668479" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"
