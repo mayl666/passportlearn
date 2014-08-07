@@ -377,7 +377,7 @@ public class ResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/sendsms"/*, method = RequestMethod.POST*/)
+    @RequestMapping(value = "/findpwd/sendsms", method = RequestMethod.POST)
     @ResponseBody
     public Object sendSmsSecMobile(HttpServletRequest request, CheckSecMobileParams params) throws Exception {
         Result result = new APIResultSupport(false);
