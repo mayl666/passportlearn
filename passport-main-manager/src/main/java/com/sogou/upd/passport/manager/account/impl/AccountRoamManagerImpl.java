@@ -69,7 +69,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                 result.setDefaultModel("userId", roamPassportId);
                 //安全启见、根据 r_key 清除 缓存中 漫游用户信息、仅供使用一次!
                 tokenService.deleteWebRoamDoByToken(CacheConstant.CACHE_KEY_WEB_ROAM + r_key);
-
             } else {
                 //漫游用户信息取不到 返回对应状态码的Result
                 result.setCode(ErrorUtil.ERR_CODE_SIGNATURE_ERROR);
@@ -90,9 +89,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             if (account == null) {
                 //标注 20140806 对于在sg 数据库不存在的第三方账号、为减少对数据的影响、仍然支持种cookie、此处对于不存在的第三方账号后续要处理。
                 if (accountDomain == AccountDomainEnum.SOGOU) {
-                    //搜狗域、第三方账号在搜狗不存在 记录Log
-                    LOGGER.warn("roam account sg not exist. userId:{},accountDomain:{}", roamPassportId, accountDomain.getValue());
-
                     //返回result
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                     return result;
