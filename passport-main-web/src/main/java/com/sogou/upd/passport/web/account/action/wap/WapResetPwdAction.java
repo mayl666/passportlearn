@@ -133,7 +133,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/sendsms", method = RequestMethod.POST)
+    @RequestMapping(value = "/findpwd/sendsms"/*, method = RequestMethod.POST*/)
     @ResponseBody
     public Object sendSmsSecMobile(HttpServletRequest request, MoblieCodeParams params) throws Exception {
         Result result = new APIResultSupport(false);
