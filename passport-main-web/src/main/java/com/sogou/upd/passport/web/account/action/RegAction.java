@@ -281,7 +281,7 @@ public class RegAction extends BaseController {
      *
      * @param reqParams 传入的参数
      */
-    @RequestMapping(value = {"/sendsms"}/*, method = RequestMethod.POST*/)
+    @RequestMapping(value = {"/sendsms"}, method = RequestMethod.POST)
     @ResponseBody
     public Object sendMobileCode(MoblieCodeParams reqParams, HttpServletRequest request)
             throws Exception {
