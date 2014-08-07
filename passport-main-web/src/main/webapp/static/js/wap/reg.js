@@ -168,7 +168,6 @@ define(['./interface', './utils', './local', './dialog', '../utils', './skin'], 
 						});
 					});
 
-
 					return this;
 				},
 				sendSms: function(captcha) {

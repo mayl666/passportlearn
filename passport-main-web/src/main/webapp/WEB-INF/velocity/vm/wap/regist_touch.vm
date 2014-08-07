@@ -25,7 +25,7 @@
 
 <!--username-->
 <div class="row f-f f-vc">
-    <label for="username" class="h-fil f-f f-hr f-vc">帐号：</label>
+    <label for="username" class="h-fil f-f f-hr f-vc">手机号：</label>
     <input type="text" name="username" id="username" class="block h-fil f-1" placeholder="11位中国大陆地区手机号" autocomplete="off"/>
     <a href="#" class="block indicator hide" tabindex="1"></a>
 </div>
@@ -92,7 +92,7 @@
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=668479" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=315770" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"

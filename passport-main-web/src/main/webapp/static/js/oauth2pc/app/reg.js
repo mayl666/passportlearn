@@ -87,7 +87,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                         client_id:_g_client_id,
                         mobile:phoneValue
                     },
-                    type:'get',
+                    type:'post',
                     dataType: "json"
                 }).done(function(result) {
                     result=getJSON(result);

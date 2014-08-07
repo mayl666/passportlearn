@@ -373,7 +373,7 @@ define([/*'jquery', */'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 
                         client_id: _g_client_id,
                         new_mobile: $phone.val()
                     },
-                    type: "get",
+                    type: "post",
                     dataType: "json"
                 }).done(function(result) {
                     if (typeof result === 'string' || (result && result.constructor == String))
