@@ -79,7 +79,7 @@ public class MobileSecureAction extends BaseController {
     /*
      * 首次绑定和修改密保手机，发送短信验证码至新绑定手机
      */
-    @RequestMapping(value = "/sendsmsnew", method = RequestMethod.GET)
+    @RequestMapping(value = "/sendsmsnew", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
     public Object sendSmsNewMobile(WebMobileParams params, HttpServletRequest request) throws Exception {
