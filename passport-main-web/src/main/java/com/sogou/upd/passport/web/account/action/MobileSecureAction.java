@@ -48,7 +48,7 @@ public class MobileSecureAction extends BaseController {
     /*
      * 修改绑定手机，发送短信验证码至原绑定手机
      */
-    @RequestMapping(value = "/sendsms", method = RequestMethod.GET)
+    @RequestMapping(value = "/sendsms", method = RequestMethod.POST)
     @ResponseBody
     @LoginRequired
     public Object sendSmsSecMobile(BaseWebParams params, HttpServletRequest request) throws Exception {
