@@ -157,7 +157,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
             //检查手机号是否需要弹出验证码
-            result = commonManager.checkMobileSendSMSInBlackList(sec_mobile);
+            result = commonManager.checkMobileSendSMSInBlackList(sec_mobile, String.valueOf(clientId));
             if (!result.isSuccess()) {
                 //如果token和captcha都不为空，则校验是否匹配
                 if (!Strings.isNullOrEmpty(token) && !Strings.isNullOrEmpty(captcha)) {

@@ -95,10 +95,11 @@ public interface CommonManager {
      * 检查手机注册ip是否在发短信超限黑名单中
      *
      * @param ipOrMobile
+     * @param client_id
      * @return
      * @throws Exception
      */
-    public Result checkMobileSendSMSInBlackList(String ipOrMobile) throws Exception;
+    public Result checkMobileSendSMSInBlackList(String ipOrMobile, String client_id) throws Exception;
 
     /**
      * 手机发短信次数
