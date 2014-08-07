@@ -287,6 +287,7 @@ public class ResetPwdAction extends BaseController {
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
+            result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id())));
             result.setDefaultModel("userid", params.getUsername());
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());
         } catch (Exception e) {

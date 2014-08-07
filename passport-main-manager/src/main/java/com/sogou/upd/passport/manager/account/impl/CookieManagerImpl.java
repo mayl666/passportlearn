@@ -66,6 +66,8 @@ public class CookieManagerImpl implements CookieManager {
             ServletUtil.setCookie(response, "ppinf", ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
             ServletUtil.setCookie(response, "pprdig", pprdig, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
             response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
+            //response 回去的时候设置一个p3p的header,用来定义IE的跨域问题,解决IE下iframe里无法种cookie的bug。
+            response.setHeader("P3P", "CP=CAO PSA OUR");
             result.setSuccess(true);
         }
         return result;
