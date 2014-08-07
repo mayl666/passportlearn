@@ -11,7 +11,6 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
-import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -23,13 +22,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * User: mayan
@@ -263,7 +260,7 @@ public class ResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/resendmail", method = RequestMethod.POST)
     @ResponseBody
-    public Object resendActiveMail(HttpServletRequest request, BaseWebResetPwdParams params) throws Exception {
+    public Object resendActiveMail(HttpServletRequest request, ResendEmailResetPwdParams params) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             //参数验证
@@ -274,19 +271,13 @@ public class ResetPwdAction extends BaseController {
                 return result.toString();
             }
             String username = params.getUsername();
-            Map<String, Object> map = resetPwdManager.getEmailAndStatus(username);
-            String email = null;
-            Account account = null;
-            if (!CollectionUtils.isEmpty(map) && map.size() > 0) {
-                email = (String) map.get("email");
-                account = (Account) map.get("account");
+            String toEmail = params.getTo_email();
+            result = resetPwdManager.checkEmailCorrect(username, toEmail);
+            if (!result.isSuccess()) {
+                return result.toString();
             }
-            if (account != null) {
-                ActiveEmailDO activeEmailDO = new ActiveEmailDO(params.getUsername(), Integer.parseInt(params.getClient_id()), params.getRu(), AccountModuleEnum.RESETPWD, email, false);
-                result = resetPwdManager.sendEmailResetPwd(activeEmailDO, params.getScode());
-            } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-            }
+            ActiveEmailDO activeEmailDO = new ActiveEmailDO(username, Integer.parseInt(params.getClient_id()), params.getRu(), AccountModuleEnum.RESETPWD, toEmail, false);
+            result = resetPwdManager.sendEmailResetPwd(activeEmailDO, params.getScode());
             result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id())));
             result.setDefaultModel("userid", params.getUsername());
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());

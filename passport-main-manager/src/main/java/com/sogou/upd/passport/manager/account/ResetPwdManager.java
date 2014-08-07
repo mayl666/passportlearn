@@ -3,8 +3,6 @@ package com.sogou.upd.passport.manager.account;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 
-import java.util.Map;
-
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-8 Time: 上午10:46 To change this template use
  * File | Settings | File Templates.
@@ -15,10 +13,12 @@ public interface ResetPwdManager {
      * 为了获取用户绑定邮箱及用户的激活状态
      *
      * @param username
+     * @param to_email
      * @return
      * @throws Exception
+     * @to_email
      */
-    public Map<String, Object> getEmailAndStatus(String username) throws Exception;
+    public Result checkEmailCorrect(String username, String to_email) throws Exception;
 
     /**
      * 修改密码，包括检查修改次数

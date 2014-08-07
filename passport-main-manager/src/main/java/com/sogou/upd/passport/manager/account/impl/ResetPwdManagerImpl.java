@@ -8,7 +8,6 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.model.account.Account;
@@ -21,9 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-6-8 Time: 上午10:46 To change this template use
@@ -49,30 +45,42 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     private OperateTimesService operateTimesService;
     @Autowired
     private SecureManager secureManager;
-    @Autowired
-    private CommonManager commonManager;
 
     @Override
-    public Map<String, Object> getEmailAndStatus(String username) throws Exception {
-        Map<String, Object> map = new HashMap<>();
-        //如果账号存在并且状态为未激活，则重新发送激活邮件
-        Account account = accountService.queryAccountByPassportId(username);
-        String email = null;
-        //发送激活邮件时，如果账号本身是外域，就往注册邮箱发
-        if (AccountDomainEnum.OTHER.equals(AccountDomainEnum.getAccountDomain(username))) {
-            email = username;
-        } else {
-            //如果不是外域账号，则往绑定邮箱发送
-            AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(username);
-            if (accountInfo != null && !Strings.isNullOrEmpty(accountInfo.getEmail())) {
-                email = accountInfo.getEmail();
+    public Result checkEmailCorrect(String username, String to_email) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
+            //不支持第三方和外域
+            if (domain.equals(AccountDomainEnum.THIRD) || domain.equals(AccountDomainEnum.SOHU)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                return result;
             }
+            if (Strings.isNullOrEmpty(to_email)) {
+                result.setCode("发送邮箱不能为空");
+                return result;
+            }
+            String regEmail, bindEmail = null;
+            Account account = accountService.queryNormalAccount(username);
+            if (account != null) {
+                regEmail = AccountDomainEnum.OTHER.equals(AccountDomainEnum.getAccountDomain(username)) ? username : null;
+                AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(username);
+                if (accountInfo != null) {
+                    bindEmail = accountInfo.getEmail();
+                }
+                if (to_email.equals(regEmail) || to_email.equals(bindEmail)) {
+                    result.setSuccess(true);
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                return result;
+            }
+        } catch (Exception e) {
+            logger.error("checkEmailCorrect: username {}", username, e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
         }
-        if (account != null) {
-            map.put("account", account);
-        }
-        map.put("email", email);
-        return map;
+        return result;
     }
 
     @Override
