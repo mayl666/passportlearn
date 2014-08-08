@@ -20,13 +20,13 @@ public class ManagerHelper {
 
 
     /**
-     * 兼容数据不完整的情况，需要双读来校验密码；否则还是只读SG
+     * 搜狐域账号校验用户名和密码时添加开关，当搜狐接口异常时，直接切换开关，返回相应的异常提示
      *
      * @return
      */
-    public static boolean isDoubleCheckUserLogin() {
-        return true;
-//        return false;
+    public static boolean authUserBySOHUSwitcher() {
+        return true;   //表示读SOHU，校验用户名和密码是否匹配
+//        return false;  //表示不读搜狐，返回异常提示
     }
 
     /**

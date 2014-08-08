@@ -11,7 +11,6 @@ import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -392,50 +391,11 @@ public class RegManagerImpl implements RegManager {
     public Result isAccountNotExists(String username, int clientId) throws Exception {
         Result result;
         try {
-//            if (ManagerHelper.readSohuSwitcher()) {
-//                //回滚流程
-//                result = checkUserFromSohu(username, clientId);
-//            } else {
-//                //正常双读流程
-//                result = bothCheck(username, clientId);
-//            }
             CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
             result = sgRegisterApiManager.checkUser(checkUserApiParams);
         } catch (ServiceException e) {
             logger.error("Check account is exists Exception, username:" + username, e);
             throw new Exception(e);
-        }
-        return result;
-    }
-
-    private Result bothCheck(String username, int clientId) throws Exception {
-        Result result = new APIResultSupport(false);
-        //主要是为了查询手机号绑定的主账号是否有修改绑定手机的操作，读写彻底分离后，使用passportId的逻辑可去除
-        String passportId = commonManager.getPassportIdByUsername(username);
-        if (Strings.isNullOrEmpty(passportId)) {
-            result.setSuccess(true);
-            result.setMessage("账户未被占用");
-            return result;
-        }
-        if (AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(username)) &&
-                accountSecureService.getUpdateSuccessFlag(passportId)) {
-            //手机号检查用户名且主账号有更新绑定手机的操作时，调用sohu api检查账号是否可用
-            result = checkUserFromSohu(username, clientId);
-            //存在主账号更新绑定手机去sohu查的情况就记录log
-            String message = CommonConstant.CHECK_MESSAGE;
-            LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.REGISTER, "isAccountNotExists", message, username, passportId, result.toString());
-        } else {
-            //没有更新绑定手机时，走正常的双读检查账号是否可用流程
-            CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
-            result = sgRegisterApiManager.checkUser(checkUserApiParams);
-            if (result.isSuccess()) {  //SG没有，查询SH
-                result = checkUserFromSohu(username, clientId);
-                if (!result.isSuccess()) {
-                    //检查用户名是否存在时，SG不存在，SH存在，全量数据迁移有遗漏或是双读延迟;未激活外域来登录
-                    String message = CommonConstant.CHECK_SGN_SHY_MESSAGE;
-                    LogUtil.buildErrorLog(checkLogger, AccountModuleEnum.REGISTER, "isAccountNotExists", message, username, passportId, result.toString());
-                }
-            }
         }
         return result;
     }

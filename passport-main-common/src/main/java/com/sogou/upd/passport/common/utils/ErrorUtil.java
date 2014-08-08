@@ -164,6 +164,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_RU_ILLEGAL = "20258";
     //账号不允许做此操作
     public static final String ERR_CODE_ACCOUNT_NOTALLOWED = "20259";
+    //搜狐接口异常
+    public static final String ERR_CODE_ACCOUNT_SOHU_API_FAILED = "20260";
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -361,9 +363,9 @@ public class ErrorUtil {
     public static final String ERR_CODE_EMAIL_UNBIND_FAIL = "40001";
     // RAS加解密错误
     public static final String ERR_CODE_RSA_DECRYPT = "31000";
-     // 验证漫游签名错误
+    // 验证漫游签名错误
     public static final String ERR_CODE_SIGNATURE_ERROR = "41000";
-     //漫游用户 签名错误
+    //漫游用户 签名错误
     public static final String ERR_CODE_ROAM_INFO_NOT_EXIST = "41001";
 
 
@@ -450,6 +452,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED, "手机账号不允许此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_UNBIND_FAILED, "手机解除绑定失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTALLOWED, "账号不允许做此操作");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SOHU_API_FAILED, "搜狐接口异常");
+
 
         // acount secure info
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_HAVA_BIND_MOBILE, "您的帐号已绑定手机，请使用手机找回或联系客服");

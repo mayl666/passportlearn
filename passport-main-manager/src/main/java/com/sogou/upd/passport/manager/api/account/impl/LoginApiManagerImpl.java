@@ -2,11 +2,9 @@ package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -32,8 +30,6 @@ import org.springframework.stereotype.Component;
 public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginApiManagerImpl.class);
-
-    private static final Logger checkWriteLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothWriteSyncErrorLogger");
 
     @Autowired
     private LoginApiManager sgLoginApiManager;
@@ -61,23 +57,21 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
             }
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             if (AccountDomainEnum.SOHU.equals(domain)) {
-                //主账号是sohu域账号调用sohu api校验用户名和密码
-                result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                //sohu域账号校验密码成功后，初始化一条sohu域记录
-                if (result.isSuccess()) {
-                    accountService.initSOHUAccount(passportId, authUserApiParams.getIp());
+                //正常时，开关值为true，调用搜狐API校验搜狐域账号用户名和密码;当搜狐接口异常时，开关值false，返回异常；
+                if (ManagerHelper.authUserBySOHUSwitcher()) {
+                    //主账号是sohu域账号调用sohu api校验用户名和密码
+                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                    //sohu域账号校验密码成功后，初始化一条sohu域记录
+                    if (result.isSuccess()) {
+                        accountService.initSOHUAccount(passportId, authUserApiParams.getIp());
+                    }
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_API_FAILED);
+                    return result;
                 }
             } else {
                 result = sgLoginApiManager.webAuthUser(authUserApiParams);
-                if (ManagerHelper.isDoubleCheckUserLogin()) {
-                    if (ErrorUtil.INVALID_ACCOUNT.equals(result.getCode())) { //如果账号不存在，去sohu校验用户名和密码
-                        result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                        LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.LOGIN, "webAuthUser", "check_sh", userId, result.getCode(), result.toString());
-                    }
-                }
-
             }
-
         } catch (Exception e) {
             logger.error("bothAuthUser Exception", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
