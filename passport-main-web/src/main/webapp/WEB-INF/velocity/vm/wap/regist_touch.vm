@@ -7,7 +7,7 @@
 <meta name="MobileOptimized" content="320"/>
 <meta name="format-detection" content="telephone=no"/>
 <title>注册-搜狗通行证</title>
-<link rel="stylesheet" href="/./static/css/wap/main.css?t=459724"/>
+<link rel="stylesheet" href="/./static/css/wap/main.css?t=066672"/>
 </head>
 <body>
 
@@ -79,7 +79,7 @@
     <div class="content">
         <h4 class="tc">请输入图片验证码</h4>
         <div class="tip p15 f-f f-vc row">
-            <input type="text" class="f-1 h-fil"/>
+            <input type="text" class="f-1 h-fil clp"/>
             <img src="about:blank" id="captcha-img" border="0" class="captcha-img block"/>
         </div>
     </div>
