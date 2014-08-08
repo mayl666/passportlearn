@@ -133,15 +133,20 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public Result checkMobileSendSMSInBlackList(String ipOrMobile) throws Exception {
+    public Result checkMobileSendSMSInBlackList(String ipOrMobile, String client_id) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             //检查ip或者mobile是否中了限制
             if (operateTimesService.isMobileSendSMSInBlackList(ipOrMobile)) {
                 if (PhoneUtil.verifyPhoneNumberFormat(ipOrMobile)) {
-                    //如果是手机号，则提示需要输入验证码
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
-                    return result;
+                    //todo 此处暂时将浏览器1044的情况排除掉，不校验是否需要弹出验证码；上完线后此bug是要修复的
+                    if (!Strings.isNullOrEmpty(client_id) && CommonConstant.PC_CLIENTID == Integer.parseInt(client_id)) {
+                         result.setSuccess(true);
+                    } else {
+                        //如果是手机号，则提示需要输入验证码
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
+                        return result;
+                    }
                 } else {
                     //如果是ip，则还需要检查ip是否在白名单中
                     if (!operateTimesService.checkRegInWhiteList(ipOrMobile)) {

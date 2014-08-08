@@ -304,7 +304,7 @@ public class RegAction extends BaseController {
                 return result.toString();
             }
             String mobile = reqParams.getMobile();
-            result = commonManager.checkMobileSendSMSInBlackList(mobile);
+            result = commonManager.checkMobileSendSMSInBlackList(mobile, reqParams.getClient_id());
             //需要弹出验证码
             if (!result.isSuccess()) {
                 //如果token和captcha都不为空，则校验是否匹配
@@ -322,7 +322,7 @@ public class RegAction extends BaseController {
                 }
             }
             //校验用户ip是否中了黑名单
-            result = commonManager.checkMobileSendSMSInBlackList(ip);
+            result = commonManager.checkMobileSendSMSInBlackList(ip, reqParams.getClient_id());
             if (!result.isSuccess()) {
                 finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);

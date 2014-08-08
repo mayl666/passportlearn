@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -70,7 +69,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                 result.setDefaultModel("userId", roamPassportId);
                 //安全启见、根据 r_key 清除 缓存中 漫游用户信息、仅供使用一次!
                 tokenService.deleteWebRoamDoByToken(CacheConstant.CACHE_KEY_WEB_ROAM + r_key);
-
             } else {
                 //漫游用户信息取不到 返回对应状态码的Result
                 result.setCode(ErrorUtil.ERR_CODE_SIGNATURE_ERROR);
@@ -91,17 +89,13 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             if (account == null) {
                 //标注 20140806 对于在sg 数据库不存在的第三方账号、为减少对数据的影响、仍然支持种cookie、此处对于不存在的第三方账号后续要处理。
                 if (accountDomain == AccountDomainEnum.SOGOU) {
-                    //搜狗域、第三方账号在搜狗不存在 记录Log
-                    LOGGER.warn("roam account sg not exist. userId:{},accountDomain:{}", roamPassportId, accountDomain.getValue());
-
                     //返回result
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                     return result;
                 }
                 //若搜狐域账号、初始化一条无密码的搜狐域Account
                 if (accountDomain == AccountDomainEnum.SOHU) {
-                    Account insertSoHuAccount = accountService.initialAccount(roamPassportId, null, false, createIp, AccountTypeEnum.SOHU.getValue());
-                    if (insertSoHuAccount == null) {
+                    if (!accountService.initSOHUAccount(roamPassportId, createIp)) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                         return result;
                     }

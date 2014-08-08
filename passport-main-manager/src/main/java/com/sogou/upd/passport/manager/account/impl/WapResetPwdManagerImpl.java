@@ -80,7 +80,7 @@ public class WapResetPwdManagerImpl implements WapResetPwdManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 return result;
             }
-            result = commonManager.checkMobileSendSMSInBlackList(mobile);
+            result = commonManager.checkMobileSendSMSInBlackList(mobile, client_id);
             if (!result.isSuccess()) {
                 //如果token和captcha都不为空，则校验是否匹配
                 if (!Strings.isNullOrEmpty(token) && !Strings.isNullOrEmpty(captcha)) {
