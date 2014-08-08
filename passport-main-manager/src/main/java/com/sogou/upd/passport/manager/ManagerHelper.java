@@ -30,38 +30,6 @@ public class ManagerHelper {
     }
 
     /**
-     * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
-     *
-     * @param passportId passport内部传输的用户id
-     * @return
-     */
-    public static boolean isInvokeProxyApi(String passportId) {
-        return true;//
-//        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));
-    }
-
-    /**
-     * 是否需要只读SG库。当isBothReadApi方法返回false时：此方法返回true表示只读SG库；返回false表示只读SH线上，相当于回滚操作
-     *
-     * @return
-     */
-    public static boolean readSohuSwitcher() {
-//        return true;   //todo 若非上线后出故障，回滚至SOHU代码，打开此开关，即为回滚
-        return false; //todo 正常线上都应该恒为false
-    }
-
-    /**
-     * 是否需要只写SH。搜狗账号写分离时返回为false
-     *
-     * @return
-     */
-    public static boolean writeSohuSwitcher() {
-//        return true;
-        return false;
-    }
-
-
-    /**
      * 是否使用sohu提供的getcookiinfo接口；返回true代表调用getcookieinfo接口，false代表调用之前的从location拿的接口，为回滚做准备
      *
      * @return

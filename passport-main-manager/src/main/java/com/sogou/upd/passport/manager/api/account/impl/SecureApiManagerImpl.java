@@ -12,6 +12,7 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,33 +33,24 @@ public class SecureApiManagerImpl implements SecureApiManager {
     private SecureApiManager sgSecureApiManager;
     @Autowired
     private SecureApiManager proxySecureApiManager;
+    @Autowired
+    private TaskExecutor discardTaskExecutor;
 
     @Override
-    public Result updatePwd(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
-        Result result;
-        AccountDomainEnum domainType = AccountDomainEnum.getAccountDomain(passportId);
-        //搜狗账号修改密码双写
-        if (AccountDomainEnum.SOGOU.equals(domainType) || AccountDomainEnum.INDIVID.equals(domainType)) {
-            result = bothUpdatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
-        } else {
-            //其它账号修改密码只写SG
-            result = sgSecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
-        }
-        return result;
-    }
-
-    /**
-     * 修改密码双写
-     *
-     * @return
-     */
-    private Result bothUpdatePwd(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
+    public Result updatePwd(final String passportId, final int clientId, final String oldPwd, final String newPwd, final String modifyIp) {
         Result result = sgSecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
-        if (result.isSuccess()) {
-            Result shResult = proxySecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
-            if (!shResult.isSuccess()) {
-                LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.RESETPWD, "updatePwd", CommonConstant.SGSUCCESS_SHERROR, passportId, shResult.getCode(), shResult.toString());
-            }
+        AccountDomainEnum domainType = AccountDomainEnum.getAccountDomain(passportId);
+        //搜狗账号修改密码双写,写入搜狐逻辑为异步，避免搜狐服务不可用影响搜狗
+        if (result.isSuccess() && (AccountDomainEnum.SOGOU.equals(domainType) || AccountDomainEnum.INDIVID.equals(domainType))) {
+            discardTaskExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    Result shResult = proxySecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
+                    if (!shResult.isSuccess()) {
+                        LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.RESETPWD, "updatePwd", CommonConstant.SGSUCCESS_SHERROR, passportId, shResult.getCode(), shResult.toString());
+                    }
+                }
+            });
         }
         return result;
     }

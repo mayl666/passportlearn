@@ -24,6 +24,7 @@ import com.sogou.upd.passport.service.account.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -56,9 +57,11 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
     private UserNameValidator userNameValidator;
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
+    @Autowired
+    private TaskExecutor discardTaskExecutor;
 
     @Override
-    public Result regMailUser(RegEmailApiParams params) {
+    public Result regMailUser(final RegEmailApiParams params) {
         Result result = new APIResultSupport(false);
         try {
             String username = params.getUserid();
@@ -94,8 +97,17 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                     if (account != null) {
                         result = insertAccountInfo(account, result, ip);
                         if (result.isSuccess()) {
-                            Result shResult = proxyRegisterApiManager.regMailUser(params);
-                            LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.REGISTER, "regMailUser", "write_sh", account.getPassportId(), shResult.getCode(), shResult.toString());
+                            final String passportId = account.getPassportId();
+                            //写入搜狐逻辑为异步，避免搜狐服务不可用影响搜狗
+                            discardTaskExecutor.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Result shResult = proxyRegisterApiManager.regMailUser(params);
+                                    if (!shResult.isSuccess()) {
+                                        LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.REGISTER, "regMailUser", "write_sh", passportId, shResult.getCode(), shResult.toString());
+                                    }
+                                }
+                            });
                         }
                     } else {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);

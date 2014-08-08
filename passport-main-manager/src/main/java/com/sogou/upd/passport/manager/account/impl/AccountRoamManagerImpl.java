@@ -71,7 +71,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                 tokenService.deleteWebRoamDoByToken(CacheConstant.CACHE_KEY_WEB_ROAM + r_key);
             } else {
                 //漫游用户信息取不到 返回对应状态码的Result
-                result.setCode(ErrorUtil.ERR_CODE_SIGNATURE_ERROR);
+                result.setCode(ErrorUtil.ERR_CODE_ROAM_INFO_NOT_EXIST);
                 return result;
             }
 

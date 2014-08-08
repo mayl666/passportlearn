@@ -363,11 +363,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_EMAIL_UNBIND_FAIL = "40001";
     // RAS加解密错误
     public static final String ERR_CODE_RSA_DECRYPT = "31000";
-    // 验证漫游签名错误
-    public static final String ERR_CODE_SIGNATURE_ERROR = "41000";
-    //漫游用户 签名错误
+    //漫游用户信息不存在
     public static final String ERR_CODE_ROAM_INFO_NOT_EXIST = "41001";
-
 
     public ErrorUtil() {
         super();
@@ -443,7 +440,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_After_Auth_FAILED, "SSOAfterauth失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_RU_ILLEGAL, "非法的RU参数");
 
-
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED, "该邮箱当日邮件发送次数已达上限");
 
@@ -453,7 +449,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_UNBIND_FAILED, "手机解除绑定失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTALLOWED, "账号不允许做此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SOHU_API_FAILED, "搜狐接口异常");
-
 
         // acount secure info
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_HAVA_BIND_MOBILE, "您的帐号已绑定手机，请使用手机找回或联系客服");
