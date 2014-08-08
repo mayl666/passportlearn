@@ -15,7 +15,7 @@ public class CheckUserApiParams extends BaseRegUserApiParams {
     /**
      * 业务线传过来的用户真实IP
      */
-    @NotBlank(message = "createip不允许为空")
+//    @NotBlank(message = "createip不允许为空")
     private String createip;
 
     public String getCreateip() {
