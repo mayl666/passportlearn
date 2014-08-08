@@ -79,9 +79,6 @@ public class LoginAction extends BaseController {
                 //校验是否需要验证码
                 boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
                 result.setDefaultModel("needCaptcha", needCaptcha);
-            } else {
-                result = new APIResultSupport(false);
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
         } catch (Exception e) {
             logger.error("checkNeedCaptcha:check user need captcha or not is failed,username is " + checkParam.getUsername(), e);

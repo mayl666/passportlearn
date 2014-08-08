@@ -66,11 +66,8 @@ public class RegManagerImpl implements RegManager {
     private OperateTimesService operateTimesService;
     @Autowired
     private SnamePassportMappingService snamePassportMappingService;
-    @Autowired
-    private AccountSecureService accountSecureService;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
-    private static final Logger checkLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothCheckSyncErrorLogger");
 
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
