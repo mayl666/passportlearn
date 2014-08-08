@@ -129,21 +129,6 @@
         <appender-ref ref="bothWriteSyncErrorAppender"/>
     </logger>
 
-    <!--双读检查用户名是否存在时，当SG不存在，SH存在时，记录userid-->
-    <appender name="bothCheckSyncErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/bothCheckUserSyncError/checkusererror.log.%d{yyyy-MM-dd}</fileNamePattern>
-            <!--<maxHistory>14</maxHistory>-->
-        </rollingPolicy>
-        <encoder>
-            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
-            <pattern>%msg%n</pattern>
-        </encoder>
-    </appender>
-    <logger name="com.sogou.upd.passport.bothCheckSyncErrorLogger" level="info" additivity="false">
-        <appender-ref ref="bothCheckSyncErrorAppender"/>
-    </logger>
-
     <appender name="redisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/redisMiss/redisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
