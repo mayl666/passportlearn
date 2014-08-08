@@ -404,8 +404,6 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     redisUtils.setWithinSeconds(ip_black_key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                     return true;
                 }
-            }else {   //todo 如果应用没传createip则不限制，推动游戏大厅修改后再去掉  http://mini.wan.sogou.com/reg/chkname.do
-                return true;
             }
             return false;
         } catch (Exception e) {
