@@ -36,12 +36,12 @@ public interface AccountService {
     /**
      * 初始化sohu域账号：1，密码类型为无密码；2，同时初始化account_info表；3，有则更新，无则插入
      *
-     * @param username 主账号
+     * @param passportId 主账号
      * @param ip
      * @return
      * @throws ServiceException
      */
-    public boolean initSOHUAccount(String username, String ip) throws ServiceException;
+    public boolean initSOHUAccount(String passportId, String ip) throws ServiceException;
 
 
     /**

@@ -166,22 +166,26 @@ public class AccountServiceImpl implements AccountService {
 
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initSOHUAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
-    public boolean initSOHUAccount(String username, String ip) throws ServiceException {
+    public boolean initSOHUAccount(String passportId, String ip) throws ServiceException {
         try {
-            if (!AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
+            if (!AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
                 //只支持sohu域账号初始化操作
                 return false;
             }
-            Account account = initialAccount(username, null, false, ip, AccountTypeEnum.SOHU.getValue());
+            Account account = queryAccountByPassportId(passportId);
             if (account != null) {
-                if (accountInfoService.updateAccountInfo(new AccountInfo(username, new Date(), new Date())))
+                return true;
+            }
+            account = initialAccount(passportId, null, false, ip, AccountTypeEnum.SOHU.getValue());
+            if (account != null) {
+                if (accountInfoService.updateAccountInfo(new AccountInfo(passportId, new Date(), new Date())))
                     return true;
                 return false;
             }
         } catch (Exception e) {
             throw new ServiceException(e);
         }
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
