@@ -13,6 +13,7 @@ import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,10 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                     result = proxyLoginApiManager.webAuthUser(authUserApiParams);
                     //sohu域账号校验密码成功后，初始化一条sohu域记录
                     if (result.isSuccess()) {
-                        accountService.initSOHUAccount(passportId, authUserApiParams.getIp());
+                        Account account = accountService.queryAccountByPassportId(passportId);
+                        if (account != null) {
+                            accountService.initSOHUAccount(passportId, authUserApiParams.getIp());
+                        }
                     }
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_API_FAILED);
