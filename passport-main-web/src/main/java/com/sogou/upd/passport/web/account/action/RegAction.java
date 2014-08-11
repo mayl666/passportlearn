@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -285,6 +286,19 @@ public class RegAction extends BaseController {
     @ResponseBody
     public Object sendMobileCode(MoblieCodeParams reqParams, HttpServletRequest request)
             throws Exception {
+        //sendsms因SDK已经发版，需要兼容， 改个策略，
+        // GET方式中，如果有cinfo参数，并且参数值内容匹配，这样能发验证码，其它的还是POST限制。
+        boolean canProcessGet=false;
+        if("GET".equalsIgnoreCase(request.getMethod())){
+            String cInfo=request.getHeader("cinfo");
+            if(StringUtil.isNotEmpty(cInfo)){
+                canProcessGet=true;
+            }
+        }
+        if(!"POST".equalsIgnoreCase(request.getMethod()) && !canProcessGet){
+            throw new Exception("can't process GET");
+        }
+        ////////end //////////////////
         Result result = new APIResultSupport(false);
         String finalCode = null;
         String ip = getIp(request);
