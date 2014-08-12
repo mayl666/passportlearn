@@ -24,9 +24,9 @@ public class WeiboConnectProxyResultStrategy extends AbstractConnectProxyResultS
     public Result buildCommonResultByPlatform(HashMap<String, Object> maps) {
         Result result = new APIResultSupport(false);
         String ret = maps.get("ret").toString();
-        if (maps.containsKey("ret") && !maps.get("ret").toString().equals(ErrorUtil.SUCCESS)) {
+        if (maps.containsKey("ret") && !ErrorUtil.SUCCESS.equals(maps.get("ret"))) {
             result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
-            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_CONNECT_FAILED));
+            result.setMessage((String) maps.get("msg"));
         } else {
             if (ret.equals(ErrorUtil.SUCCESS)) {
                 if (maps.containsKey("data")) {
