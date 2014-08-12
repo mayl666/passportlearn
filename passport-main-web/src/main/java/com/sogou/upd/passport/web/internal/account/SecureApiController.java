@@ -89,9 +89,9 @@ public class SecureApiController extends BaseController {
     }
 
     /**
-     * 手机发送短信重置密码
+     * module黑名单接口
      */
-    @RequestMapping(value = "/moduleblacklist", method = RequestMethod.POST)
+    @RequestMapping(value = "/moduleblacklist", method = RequestMethod.GET)
     @ResponseBody
     public String moduleBlackList(HttpServletRequest request, ModuleBlackListParams params) throws Exception {
         Result result = new APIResultSupport(false);
