@@ -26,16 +26,16 @@ public class QzoneConnectProxyResultStrategy extends AbstractConnectProxyResultS
     @Override
     public Result buildCommonResultByPlatform(HashMap<String, Object> maps) {
         Result result = new APIResultSupport(false);
-        if (maps.containsKey("ret") && !ErrorUtil.SUCCESS.equals(String.valueOf((int) maps.get("ret")))) {
+        String ret = String.valueOf((int) maps.get("ret"));
+        if (maps.containsKey("ret") && !ErrorUtil.SUCCESS.equals(ret)) {
             result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
-            result.setMessage(String.valueOf((int) maps.get("ret")));
-            logger.error("qqResult:ret {},msg {}", maps.get("ret"), maps.get("msg"));
+            result.setMessage((String) maps.get("msg"));
+//            logger.error("qqResult:ret {},msg {}", maps.get("ret"), maps.get("msg"));
         } else {
             //封装QQ返回请求正确的结果，返回结果中不包含ret或者包含ret且ret值为0的结果封装
             HashMap<String, Object> data;
             //QQ空间未读数结果封装
-            String ret = maps.get("ret").toString();
-            if (ret.equals(ErrorUtil.SUCCESS)) {
+            if (ErrorUtil.SUCCESS.equals(ret)) {
                 result.setCode("0");
                 result.setSuccess(true);
                 result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.SUCCESS));

@@ -27,13 +27,13 @@ public class WeiboConnectProxyResultStrategy extends AbstractConnectProxyResultS
     @Override
     public Result buildCommonResultByPlatform(HashMap<String, Object> maps) {
         Result result = new APIResultSupport(false);
-        String ret = maps.get("ret").toString();
-        if (maps.containsKey("ret") && !ErrorUtil.SUCCESS.equals(maps.get("ret"))) {
+        String ret = String.valueOf((int) maps.get("ret"));
+        if (maps.containsKey("ret") && !ErrorUtil.SUCCESS.equals(ret)) {
             result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
-            result.setMessage((String) maps.get("msg"));
-            logger.error("qqResult:ret {},msg {}", maps.get("ret"), maps.get("msg"));
+            result.setMessage(String.valueOf(maps.get("msg")));
+//            logger.error("qqResult:ret {},msg {}", maps.get("ret"), maps.get("msg"));
         } else {
-            if (ret.equals(ErrorUtil.SUCCESS)) {
+            if (ErrorUtil.SUCCESS.equals(ret)) {
                 if (maps.containsKey("data")) {
                     //封装QQ返回请求正确的结果，返回结果中不包含ret或者包含ret且ret值为0的结果封装
                     HashMap<String, Object> data;
