@@ -403,6 +403,7 @@ public class AccountServiceImpl implements AccountService {
             redisUtils.hPutAll(cacheKey, mapParam);
             redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
         } catch (Exception e) {
+            logger.error("username:{} send email fail!", username, e);
             flag = false;
         }
         return flag;
