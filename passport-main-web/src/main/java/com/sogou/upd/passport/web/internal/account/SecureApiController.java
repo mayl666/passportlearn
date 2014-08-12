@@ -5,8 +5,11 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.account.form.ModuleBlackListParams;
 import com.sogou.upd.passport.manager.api.account.form.BaseResetPwdApiParams;
+import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -38,6 +41,8 @@ public class SecureApiController extends BaseController {
 
     @Autowired
     private SecureManager secureManager;
+    @Autowired
+    private ConfigureManager configureManager;
 
     /**
      * 手机发送短信重置密码
@@ -79,6 +84,36 @@ public class SecureApiController extends BaseController {
             UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), String.valueOf(clientId), result.getCode(), ip);
             userOperationLog.putOtherMessage("lists", lists);
             userOperationLog.putOtherMessage("result", result.toString());
+            UserOperationLogUtil.log(userOperationLog);
+        }
+    }
+
+    /**
+     * 手机发送短信重置密码
+     */
+    @RequestMapping(value = "/moduleblacklist", method = RequestMethod.POST)
+    @ResponseBody
+    public String moduleBlackList(HttpServletRequest request, ModuleBlackListParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        String resultText = "";
+        int clientId = params.getClient_id();
+        String ip = getIp(request);
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                return resultText;
+            }
+            if(configureManager.checkAppIsExist(clientId)){
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return resultText;
+            }
+            resultText = "0 0 30";
+            result.setSuccess(true);
+            return resultText;
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog("", String.valueOf(clientId), result.getCode(), ip);
+            userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
             UserOperationLogUtil.log(userOperationLog);
         }
     }
