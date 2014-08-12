@@ -214,6 +214,8 @@ public class CookieManagerImpl implements CookieManager {
         String domain = ssoCookieParams.getDomain();
         ServletUtil.setCookie(response, LoginConstant.COOKIE_SGINF, sginf, maxAge, domain);
         ServletUtil.setCookie(response, LoginConstant.COOKIE_SGRDIG, sgrdig, maxAge, domain);
+        //response 回去的时候设置一个p3p的header,用来定义IE的跨域问题,解决IE的iframe里跨域无法种cookie的bug。
+        response.setHeader("P3P", "CP=CAO PSA OUR");
         result.setSuccess(true);
         return result;
     }
@@ -272,7 +274,8 @@ public class CookieManagerImpl implements CookieManager {
             ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
             ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN);
         }
-
+        //response 回去的时候设置一个p3p的header,用来定义IE的跨域问题,解决IE的iframe里跨域无法种cookie的bug。
+        response.setHeader("P3P", "CP=CAO PSA OUR");
         result.setSuccess(true);
         return result;
     }
