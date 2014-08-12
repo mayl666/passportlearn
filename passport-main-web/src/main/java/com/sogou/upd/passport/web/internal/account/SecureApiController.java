@@ -104,7 +104,7 @@ public class SecureApiController extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 return resultText;
             }
-            if(configureManager.checkAppIsExist(clientId)){
+            if(!configureManager.checkAppIsExist(clientId)){
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return resultText;
             }
