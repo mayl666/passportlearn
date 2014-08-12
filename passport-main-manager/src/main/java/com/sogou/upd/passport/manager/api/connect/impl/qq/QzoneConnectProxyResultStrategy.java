@@ -26,7 +26,8 @@ public class QzoneConnectProxyResultStrategy extends AbstractConnectProxyResultS
     @Override
     public Result buildCommonResultByPlatform(HashMap<String, Object> maps) {
         Result result = new APIResultSupport(false);
-        if (maps.containsKey("ret") && !ErrorUtil.SUCCESS.equals(maps.get("ret"))) {
+        String qqRet = (String) maps.get("ret");
+        if (maps.containsKey("ret") && !ErrorUtil.SUCCESS.equals(qqRet)) {
             result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
             result.setMessage((String) maps.get("msg"));
             logger.error("qqResult:ret {},msg {}", maps.get("ret"), maps.get("msg"));
