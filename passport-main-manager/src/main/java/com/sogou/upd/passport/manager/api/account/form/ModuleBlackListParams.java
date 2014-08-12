@@ -14,14 +14,14 @@ import javax.validation.constraints.Min;
 public class ModuleBlackListParams {
 
     private String version;
-    private String nginx_version;
+    private String nginx_version;   //nginx版本号
     @Min(0)
     private int client_id;
     @NotBlank(message = "root_domain不能为空")
-    private String root_domain;
-    private String instance_id;
-    private String update_interval;
-    private String update_timestamp;
+    private String root_domain;   //产品所在的域名
+    private String instance_id;   //实例ID
+    private int update_interval;   //获取黑名单的访问间隔,单位s
+    private long update_timestamp;   //黑名单的有效期
 
     public String getVersion() {
         return version;
@@ -63,19 +63,19 @@ public class ModuleBlackListParams {
         this.instance_id = instance_id;
     }
 
-    public String getUpdate_interval() {
+    public int getUpdate_interval() {
         return update_interval;
     }
 
-    public void setUpdate_interval(String update_interval) {
+    public void setUpdate_interval(int update_interval) {
         this.update_interval = update_interval;
     }
 
-    public String getUpdate_timestamp() {
+    public long getUpdate_timestamp() {
         return update_timestamp;
     }
 
-    public void setUpdate_timestamp(String update_timestamp) {
+    public void setUpdate_timestamp(long update_timestamp) {
         this.update_timestamp = update_timestamp;
     }
 }
