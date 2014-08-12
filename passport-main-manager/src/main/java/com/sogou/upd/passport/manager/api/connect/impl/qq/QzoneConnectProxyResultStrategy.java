@@ -4,6 +4,8 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.connect.AbstractConnectProxyResultStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -19,12 +21,15 @@ import java.util.HashMap;
 @Component
 public class QzoneConnectProxyResultStrategy extends AbstractConnectProxyResultStrategy {
 
+    private static final Logger logger = LoggerFactory.getLogger(QzoneConnectProxyResultStrategy.class);
+
     @Override
     public Result buildCommonResultByPlatform(HashMap<String, Object> maps) {
         Result result = new APIResultSupport(false);
         if (maps.containsKey("ret") && !ErrorUtil.SUCCESS.equals(maps.get("ret"))) {
             result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
             result.setMessage((String) maps.get("msg"));
+            logger.error("qqResult:ret {},msg {}", maps.get("ret"), maps.get("msg"));
         } else {
             //封装QQ返回请求正确的结果，返回结果中不包含ret或者包含ret且ret值为0的结果封装
             HashMap<String, Object> data;

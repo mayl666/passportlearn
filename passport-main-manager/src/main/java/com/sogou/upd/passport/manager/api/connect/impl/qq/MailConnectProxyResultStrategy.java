@@ -4,6 +4,8 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.connect.AbstractConnectProxyResultStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -21,12 +23,15 @@ import java.util.List;
 @Component
 public class MailConnectProxyResultStrategy extends AbstractConnectProxyResultStrategy {
 
+    private static final Logger logger = LoggerFactory.getLogger(MailConnectProxyResultStrategy.class);
+
     @Override
     public Result buildCommonResultByPlatform(HashMap<String, Object> maps) {
         Result result = new APIResultSupport(false);
         if (maps.containsKey("ret") && !ErrorUtil.SUCCESS.equals(maps.get("ret"))) {
             result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
             result.setMessage((String) maps.get("msg"));
+            logger.error("qqResult:ret {},msg {}", maps.get("ret"), maps.get("msg"));
         } else {
             if (maps.containsKey("result")) {
                 HashMap<String, Object> resultMap = (HashMap<String, Object>) maps.get("result");
