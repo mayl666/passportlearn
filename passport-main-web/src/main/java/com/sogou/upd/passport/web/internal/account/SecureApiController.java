@@ -108,6 +108,7 @@ public class SecureApiController extends BaseController {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return resultText;
             }
+            //数据格式 数据全量(增量) 黑名单全局有限期 黑名单接口调用间隔(单位秒)
             resultText = "0 0 30";
             result.setSuccess(true);
             return resultText;
