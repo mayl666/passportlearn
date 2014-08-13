@@ -5,10 +5,10 @@
        ">
     <bean id="sendCloud" class="com.sohu.sendcloud.SendCloud">
         <constructor-arg index="0">
-            <value>postmaster@sogou-upd-passport.sendcloud.org</value>
+            <value>${passport.mail.username}</value>
         </constructor-arg>
         <constructor-arg index="1">
-            <value>7miIOEyr</value>
+            <value>${passport.mail.pwd}</value>
         </constructor-arg>
     </bean>
 
