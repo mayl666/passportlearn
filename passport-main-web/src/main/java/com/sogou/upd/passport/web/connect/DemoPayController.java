@@ -24,6 +24,6 @@ public class DemoPayController extends BaseConnectController {
     @RequestMapping("/demo")
     @ResponseBody
     public String pay_demo(HttpServletRequest req, HttpServletResponse res) {
-        return CommonConstant.DEFAULT_INDEX_URL;
+        return CommonConstant.DEFAULT_WAP_INDEX_URL;
     }
 }
