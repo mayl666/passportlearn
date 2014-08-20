@@ -16,10 +16,7 @@ import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
-import com.sogou.upd.passport.oauth2.openresource.request.user.BaiduUserAPIRequest;
-import com.sogou.upd.passport.oauth2.openresource.request.user.QQUserAPIRequest;
-import com.sogou.upd.passport.oauth2.openresource.request.user.RenrenUserAPIRequest;
-import com.sogou.upd.passport.oauth2.openresource.request.user.SinaUserAPIRequest;
+import com.sogou.upd.passport.oauth2.openresource.request.user.*;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
 import com.sogou.upd.passport.oauth2.openresource.response.user.*;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
@@ -120,6 +117,10 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                     .setOauth_Consumer_Key(appKey).setOpenid(openid).setAccessToken(accessToken)
                     .buildQueryMessage(QQUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, QQUserAPIResponse.class);
+        } else if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+            request = WeiXinUserAPIRequest.apiLocation(url, WeiXinUserAPIRequest.WeiXinUserAPIBuilder.class).setAppSecret(appKey).setOpenid(openid)
+                    .setAccessToken(accessToken).buildQueryMessage(WeiXinUserAPIRequest.class);
+            response = OAuthHttpClient.execute(request, WeiXinUserAPIResponse.class);
         } else if (provider == AccountTypeEnum.SINA.getValue()) {
             request = SinaUserAPIRequest.apiLocation(url, SinaUserAPIRequest.SinaUserAPIBuilder.class).setUid(openid)
                     .setAccessToken(accessToken).buildQueryMessage(SinaUserAPIRequest.class);
