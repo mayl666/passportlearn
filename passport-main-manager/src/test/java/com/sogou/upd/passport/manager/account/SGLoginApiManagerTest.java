@@ -8,6 +8,7 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import junit.framework.Assert;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import java.util.Map;
  * Created with IntelliJ IDEA. User: chenjiameng Date: 13-5-15 Time: 下午4:31 To change this template use
  * File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 @ContextConfiguration(locations = {"classpath:spring-config-test.xml"})
 public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
     @Autowired
@@ -54,6 +55,23 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
         Result result = sgLoginApiManager.getCookieInfo(cookieApiParams);
         System.out.println("sginf: " + result.getModels().get("sginf"));
         System.out.println("sgrdig: " + result.getModels().get("sgrdig"));
+    }
+
+
+    @Test
+    public void testGetSGCookie() {
+        String userid = "happytest0814@sogou.com";
+        int client_id = 1120;
+        String refnick = "测试";
+
+        CookieApiParams params = new CookieApiParams(userid, client_id, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, refnick);
+
+        Result result = sgLoginApiManager.getCookieInfo(params);
+
+        System.out.println("==============sginf :" + result.getModels().get("sginf"));
+        System.out.println("==============sgrdig :" + result.getModels().get("sgrdig"));
+
+
     }
 
 

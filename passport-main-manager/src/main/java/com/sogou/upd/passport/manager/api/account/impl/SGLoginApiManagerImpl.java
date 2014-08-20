@@ -88,11 +88,11 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
                 userId = userId + CommonConstant.SOGOU_SUFFIX;
             }
             Result verifyUserResult = accountService.verifyUserPwdVaild(userId, authUserApiParams.getPassword(), false);
-            if(verifyUserResult.isSuccess()){
+            if (verifyUserResult.isSuccess()) {
                 result.setSuccess(true);
                 result.setMessage("操作成功");
                 result.setDefaultModel("userid", userId);
-            }else {
+            } else {
                 result = verifyUserResult;
             }
             return result;
@@ -142,7 +142,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
             //生成sginf
             String infValue = buildCookieInfStr(cookieApiParams);
             StringBuilder sginfValue = new StringBuilder();
-            sginfValue.append(1).append("|");
+            sginfValue.append(5).append("|");//TODO  暂时改一下
             sginfValue.append(createTime).append("|");
             sginfValue.append(expireTime).append("|");
             sginfValue.append(infValue);
