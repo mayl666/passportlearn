@@ -2,8 +2,10 @@ package com.sogou.upd.passport.web.internal.debug;
 
 import com.sogou.upd.passport.common.utils.JsonUtil;
 import com.sogou.upd.passport.web.BaseController;
+import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,9 +28,21 @@ public class DebugNginxModule extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugNginxModule.class);
 
+    @Autowired
+    private HostHolder hostHolder;
+
+
     @RequestMapping(value = "/getRH", method = RequestMethod.GET)
     @ResponseBody
     public String getRequestHeaders(HttpServletRequest request) {
+
+
+        String sLoginPassportId;
+        if (hostHolder.isLogin()) {
+            sLoginPassportId = hostHolder.getPassportId();
+        } else {
+            return "";
+        }
 
         Map<String, String> map = new HashMap<>();
 
