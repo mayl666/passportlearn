@@ -28,22 +28,9 @@ public class DebugNginxModule extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugNginxModule.class);
 
-    @Autowired
-    private HostHolder hostHolder;
-
-
     @RequestMapping(value = "/getRH", method = RequestMethod.GET)
     @ResponseBody
     public String getRequestHeaders(HttpServletRequest request) {
-
-
-        String sLoginPassportId;
-        if (hostHolder.isLogin()) {
-            sLoginPassportId = hostHolder.getPassportId();
-        } else {
-            return "";
-        }
-
         Map<String, String> map = new HashMap<>();
 
         String requestIp = getIp(request);
