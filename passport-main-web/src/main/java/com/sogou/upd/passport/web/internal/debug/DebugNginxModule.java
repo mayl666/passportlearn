@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
@@ -26,6 +27,7 @@ public class DebugNginxModule extends BaseController {
     private static final Logger LOGGER = LoggerFactory.getLogger(DebugNginxModule.class);
 
     @RequestMapping(value = "/getRH", method = RequestMethod.GET)
+    @ResponseBody
     public String getRequestHeaders(HttpServletRequest request) {
 
         Map<String, String> map = new HashMap<>();
