@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.result.APIResultSupport;
-import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.web.BaseConnectController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
