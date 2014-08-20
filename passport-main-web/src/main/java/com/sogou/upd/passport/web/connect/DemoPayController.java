@@ -26,8 +26,6 @@ public class DemoPayController extends BaseConnectController {
     @RequestMapping("/demo")
     @ResponseBody
     public String pay_demo(HttpServletRequest req, HttpServletResponse res) {
-        Result result = new APIResultSupport(true);
-        result.setDefaultModel("callbackurl", CommonConstant.DEFAULT_INDEX_URL);
-        return result.toString();
+        return CommonConstant.DEFAULT_INDEX_URL;
     }
 }
