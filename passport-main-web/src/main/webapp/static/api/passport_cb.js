@@ -7,7 +7,7 @@
     }else{
         passhref = 'http://s.account.sogoucdn.com/u';
     }
-    scr.src= passhref + '/api/sogou.js?t=2014080858';
+    scr.src= passhref + '/api/sogou.js?t=2014081948';
     if(undefined !==window.__sogoujsStartLoading){
         window.__sogoujsStartLoading = + new Date;
     }

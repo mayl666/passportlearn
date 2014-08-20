@@ -139,7 +139,7 @@
 
             <form action="#" class="other-msg">
 <p>如果您无法通过绑定手机或邮箱找回密码，您还可以尝试通过以下途径与我们取得联系！</p>
-<p>浏览器、输入法：<span class="red">ts@sogou-inc.com</span></p>
+<p>浏览器、输入法：<a href="http://ie.sogou.com/bbs/forum.php?mod=viewthread&tid=2589460" target="_blank">请点这里</a></p>
 <p>彩票：<span class="red">kfcp@sogou-inc.com或010-56898998</span></p>
 <p>小说：<span class="red">客服QQ群 263958053</span></p>
 <p>游戏：<span class="red">企业QQ 2851050936</span></p>
@@ -168,7 +168,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/recover.js?t=2014080858"></script>
+    <script type="text/javascript" src="/./static/js/recover.js?t=2014081948"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
