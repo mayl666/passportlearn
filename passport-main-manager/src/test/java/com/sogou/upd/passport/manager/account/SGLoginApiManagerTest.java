@@ -124,4 +124,22 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
     }
 
 
+    @Test
+    public void testStrBlackList() {
+
+        //nanajiaozixian1@sogou.com ~ nanajiaozixian99@sogou.com
+
+        StringBuffer blacklist = new StringBuffer("0 0 30");
+        blacklist.append("\r\n").append("nanajiaozixian1@sogou.com").append("\r\n");
+        blacklist.append("nanajiaozixian1@sogou.com").append("\r\n");
+        blacklist.append("nanajiaozixian1@sogou.com").append("\r\n");
+        blacklist.append("nanajiaozixian1@sogou.com").append("\r\n");
+        blacklist.append("nanajiaozixian1@sogou.com").append("\r\n");
+        blacklist.append("nanajiaozixian1@sogou.com").append("\r\n");
+        System.out.println("=========================");
+        System.out.println(blacklist.toString());
+        System.out.println("=========================");
+    }
+
+
 }

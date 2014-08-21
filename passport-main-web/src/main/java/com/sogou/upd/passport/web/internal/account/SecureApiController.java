@@ -15,6 +15,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
@@ -43,6 +44,9 @@ public class SecureApiController extends BaseController {
     private SecureManager secureManager;
     @Autowired
     private ConfigureManager configureManager;
+
+    //黑名单用户列表分隔符
+    private static final String BLACK_USER_LIST_VALUE_SPLIT = "\r\n";
 
     /**
      * 手机发送短信重置密码
@@ -90,28 +94,48 @@ public class SecureApiController extends BaseController {
 
     /**
      * module黑名单接口
+     * <p/>
+     * 数据格式 数据全量(增量)，获取增量数据的偏移标志位  黑名单接口调用间隔(单位秒)
+     *
+     * @param request
+     * @param params
+     * @return
+     * @throws Exception
      */
     @RequestMapping(value = "/moduleblacklist", method = RequestMethod.GET)
     @ResponseBody
     public String moduleBlackList(HttpServletRequest request, ModuleBlackListParams params) throws Exception {
         Result result = new APIResultSupport(false);
-        String resultText = "";
+        StringBuffer resultText = new StringBuffer("0 0 10");
         int clientId = params.getClient_id();
         String ip = getIp(request);
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                return resultText;
+                return result.toString();
             }
-            if(!configureManager.checkAppIsExist(clientId)){
+            if (!configureManager.checkAppIsExist(clientId)) {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
-                return resultText;
+                return result.toString();
             }
-            //数据格式 数据全量(增量) 黑名单全局有限期 黑名单接口调用间隔(单位秒)
-            resultText = "0 0 30";
+
+            //黑名单测试数据  nanajiaozixian1@sogou.com ~ nanajiaozixian99@sogou.com
+            // TODO 暂写死 便于快速测试、之后改成从db中读取
+
+            resultText.append("BLACK_USER_LIST_VALUE_SPLIT").append("nanajiaozixian1@sogou.com").append("BLACK_USER_LIST_VALUE_SPLIT");
+            resultText.append("BLACK_USER_LIST_VALUE_SPLIT").append("nanajiaozixian2@sogou.com").append("BLACK_USER_LIST_VALUE_SPLIT");
+            resultText.append("BLACK_USER_LIST_VALUE_SPLIT").append("nanajiaozixian3@sogou.com").append("BLACK_USER_LIST_VALUE_SPLIT");
+            resultText.append("BLACK_USER_LIST_VALUE_SPLIT").append("nanajiaozixian4@sogou.com").append("BLACK_USER_LIST_VALUE_SPLIT");
+            resultText.append("BLACK_USER_LIST_VALUE_SPLIT").append("nanajiaozixian5@sogou.com").append("BLACK_USER_LIST_VALUE_SPLIT");
+            resultText.append("BLACK_USER_LIST_VALUE_SPLIT").append("nanajiaozixian6@sogou.com").append("BLACK_USER_LIST_VALUE_SPLIT");
+            resultText.append("BLACK_USER_LIST_VALUE_SPLIT").append("nanajiaozixian7@sogou.com").append("BLACK_USER_LIST_VALUE_SPLIT");
+            resultText.append("BLACK_USER_LIST_VALUE_SPLIT").append("nanajiaozixian8@sogou.com").append("BLACK_USER_LIST_VALUE_SPLIT");
+            resultText.append("BLACK_USER_LIST_VALUE_SPLIT").append("nanajiaozixian9@sogou.com").append("BLACK_USER_LIST_VALUE_SPLIT");
+            resultText.append("BLACK_USER_LIST_VALUE_SPLIT").append("nanajiaozixian10@sogou.com").append("BLACK_USER_LIST_VALUE_SPLIT");
+            resultText.append("BLACK_USER_LIST_VALUE_SPLIT").append("nanajiaozixian11@sogou.com");
             result.setSuccess(true);
-            return resultText;
+            return resultText.toString();
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog("", String.valueOf(clientId), result.getCode(), ip);
             userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
