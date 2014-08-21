@@ -98,4 +98,9 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
     public Result getCookieInfo(CookieApiParams cookieApiParams) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public Result getSGCookieInfoForAdapter(CookieApiParams cookieApiParams) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

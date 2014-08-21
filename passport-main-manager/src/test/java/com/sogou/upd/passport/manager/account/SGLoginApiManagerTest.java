@@ -58,6 +58,9 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
     }
 
 
+    /**
+     * 用于生成 sginf sgrdig
+     */
     @Test
     public void testGetSGCookie() {
         String userid = "happytest0814@sogou.com";
@@ -71,6 +74,28 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
         System.out.println("==============sginf :" + result.getModels().get("sginf"));
         System.out.println("==============sgrdig :" + result.getModels().get("sgrdig"));
 
+
+    }
+
+
+    /**
+     * 用于生成 ver=5 cookie: passport、ppinfo、ppinf、pprdig
+     */
+    @Test
+    public void testVer5SGCookie() {
+
+        //生成种搜狗域下的 ver=5 的 cookie:passport、ppinfo、ppinf、pprdig
+
+        String userid = "happytest0814@sogou.com";
+        int client_id = 1120;
+        String refnick = "测试0821";
+
+        CookieApiParams cookieApiParams = new CookieApiParams(userid, client_id, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, refnick);
+        Result result = sgLoginApiManager.getSGCookieInfoForAdapter(cookieApiParams);
+        System.out.println("========= passport=" + result.getModels().get("passport"));
+        System.out.println("========= ppinfo=" + result.getModels().get("ppinfo"));
+        System.out.println("========= ppinf=" + result.getModels().get("ppinf"));
+        System.out.println("========= pprdig=" + result.getModels().get("pprdig"));
 
     }
 

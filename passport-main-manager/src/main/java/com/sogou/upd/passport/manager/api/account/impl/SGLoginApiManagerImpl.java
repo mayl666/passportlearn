@@ -12,6 +12,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.ToolUUIDUtil;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
@@ -63,6 +64,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
                     "fUGRhtIozClnVriLih6U5/lGMf1B23B/rPtDNdQoGYvZCxfoHvv6OQYiZ5t9yOFnE3qO6nl36YUC" +
                     "QCUkidj2RX7aEGCy24mwYimbF0EKljzPYVbcoTWujGFOLaVIC6SNf95mFwfEO3D7xTs+UEdWVrUC" +
                     "0pOTjeSYPdw=";
+
 
     @Autowired
     private AccountService accountService;
@@ -142,7 +144,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
             //生成sginf
             String infValue = buildCookieInfStr(cookieApiParams);
             StringBuilder sginfValue = new StringBuilder();
-            sginfValue.append(5).append("|");//TODO  暂时改一下
+            sginfValue.append(1).append("|");
             sginfValue.append(createTime).append("|");
             sginfValue.append(expireTime).append("|");
             sginfValue.append(infValue);
@@ -160,6 +162,57 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
         }
         return result;
     }
+
+
+    /**
+     * 关于passport cookie:
+     * 格式: ver|create_time|expire_time|info|hash|rsa
+     * 其中, hash 随便填, 并不使用(但要有), 而 rsa 为 pprdig的值.
+     * 存在passport cookie时, 也需要有ppinfo cookie, 值并不使用(但要有)
+     * <p/>
+     * <p/>
+     * ver=5的 那passport “ver|create_time|expire_time|info” 这些就是按照sginf来生成，hash 可以是随机的字符串 ，
+     * rsa是按照sgrdig方式来生成 ，同时 ppinfo 必须要传，可以是随机生成的字符串吧
+     *
+     * @param cookieApiParams
+     * @return
+     */
+    public Result getSGCookieInfoForAdapter(CookieApiParams cookieApiParams) {
+        Result result = new APIResultSupport(false);
+        Date current = new Date();
+        long createTime = current.getTime() / 1000;
+        long expireTime = DateUtils.addSeconds(current, (int) DateAndNumTimesConstant.TWO_WEEKS).getTime() / 1000;
+
+        try {
+            String infValue = buildCookieInfStr(cookieApiParams);
+            StringBuilder inf_prefix = new StringBuilder();
+            inf_prefix.append(5).append("|");
+            inf_prefix.append(createTime).append("|");
+            inf_prefix.append(expireTime).append("|");
+            inf_prefix.append(infValue);
+            String sginf = inf_prefix.toString();
+
+            RSAEncoder rsaEncoder = new RSAEncoder(PRIVATE_KEY);
+            rsaEncoder.init();
+            String sgrdig = rsaEncoder.sgrdig(sginf);
+
+            //生成passport cookie
+            StringBuilder passportCookie = new StringBuilder();
+            passportCookie.append(sginf).append("|");
+            passportCookie.append(ToolUUIDUtil.genreateUUidWithOutSplit().substring(0, 10)).append("|");
+            passportCookie.append(sgrdig);
+
+            result.setSuccess(true);
+            result.setDefaultModel("ppinf", sginf);
+            result.setDefaultModel("pprdig", sgrdig);
+            result.setDefaultModel("passport", passportCookie.toString());
+            result.setDefaultModel("ppinfo", ToolUUIDUtil.genreateUUidWithOutSplit().substring(10, 20));
+        } catch (Exception e) {
+            logger.error("getSGCookieInfoForAdapter error. userid:" + cookieApiParams.getUserid(), e);
+        }
+        return result;
+    }
+
 
     /*
      * 构造sginf里的value
