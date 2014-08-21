@@ -124,16 +124,16 @@ public class SecureApiController extends BaseController {
             // TODO 暂写死 便于快速测试、之后改成从db中读取
 
             resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian1@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian2@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian3@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian4@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian5@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian6@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian7@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian8@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian9@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian10@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian11@sogou.com");
+            resultText.append("nanajiaozixian2@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian3@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian4@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian5@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian6@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian7@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian8@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian9@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian10@sogou.com").append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian11@sogou.com");
             result.setSuccess(true);
             return resultText.toString();
         } finally {
