@@ -118,7 +118,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                     .buildQueryMessage(QQUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, QQUserAPIResponse.class);
         } else if (provider == AccountTypeEnum.WEIXIN.getValue()) {
-            request = WeiXinUserAPIRequest.apiLocation(url, WeiXinUserAPIRequest.WeiXinUserAPIBuilder.class).setAppSecret(appKey).setOpenid(openid)
+            request = WeiXinUserAPIRequest.apiLocation(url, WeiXinUserAPIRequest.WeiXinUserAPIBuilder.class).setOpenid(openid)
                     .setAccessToken(accessToken).buildQueryMessage(WeiXinUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, WeiXinUserAPIResponse.class);
         } else if (provider == AccountTypeEnum.SINA.getValue()) {
