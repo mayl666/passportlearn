@@ -24,5 +24,10 @@ public class WeiXinOAuth {
     public static final String HEADIMGURL = "headimgurl"; // 用户头像
     public static final String PROVILEGE = "privilege"; //用户特权信息
     public static final String UNIONID = "unionid"; // 用户统一标识
+    public static final String TINY_46 = "46"; // 微信头像46*46
+    public static final String MIDDLE_96 = "96"; // 微信头像96*96
+    public static final String LARGE_0 = "0"; // 微信头像640*640
+    public static final String SIZE_64 = "64"; // 微信头像64*64
+    public static final String SIZE_132 = "132"; // 微信头像132*132
 
 }
