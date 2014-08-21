@@ -12,7 +12,7 @@ import com.sogou.upd.passport.oauth2.openresource.request.WeiXinAbstractAPIReque
  */
 public class WeiXinUserAPIRequest extends WeiXinAbstractAPIRequest {
 
-    protected WeiXinUserAPIRequest(String url) {
+    public WeiXinUserAPIRequest(String url) {
         super(url);
     }
 
