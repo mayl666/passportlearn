@@ -40,9 +40,9 @@ public class WeiXinUserAPIResponse extends UserAPIResponse {
         user.setNickname(getParam(WeiXinOAuth.NICK_NAME));
         String headimgurl = getParam(WeiXinOAuth.HEADIMGURL);
         String imgurl = headimgurl.substring(0, headimgurl.lastIndexOf("/"));
-        user.setAvatarSmall(imgurl + WeiXinOAuth.TINY_46);    // 46*46
-        user.setAvatarMiddle(imgurl + WeiXinOAuth.MIDDLE_96);  // 96*96
-        user.setAvatarLarge(imgurl + WeiXinOAuth.LARGE_0);   // 640*640
+        user.setAvatarSmall(imgurl + "/" + WeiXinOAuth.TINY_46);    // 46*46
+        user.setAvatarMiddle(imgurl + "/" + WeiXinOAuth.MIDDLE_96);  // 96*96
+        user.setAvatarLarge(imgurl + "/" + WeiXinOAuth.LARGE_0);   // 640*640
         user.setGender(formGender(getParam(WeiXinOAuth.SEX)));
         user.setCountry(getParam(WeiXinOAuth.COUNTRY));
         user.setProvince(getParam(WeiXinOAuth.PROVINCE));
