@@ -38,7 +38,7 @@ public class WeixinJSONVerifyAccessTokenResponse extends OAuthClientResponse {
     }
 
     public OAuthTokenVO getOAuthTokenVO() {
-        return new WeixinOAuthTokenVO((String) this.parameters.get(WeiXinOAuthError.ERROR_CODE), (String) this.parameters.get(WeiXinOAuthError.ERROR_MSG));
+        return new WeixinOAuthTokenVO(String.valueOf(this.parameters.get(WeiXinOAuthError.ERROR_CODE)), (String) this.parameters.get(WeiXinOAuthError.ERROR_MSG));
     }
 
 }
