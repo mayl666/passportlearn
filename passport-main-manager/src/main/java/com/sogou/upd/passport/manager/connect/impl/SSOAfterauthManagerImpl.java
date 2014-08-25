@@ -192,6 +192,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
             result = buildErrorResult(ope.getError(), ope.getDescription());
         } catch (Exception exp) {
             logger.error("handle oauth authroize code system error!", exp);
+            result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "handle oauth authroize code system error!");
         }
 
         return result;
