@@ -287,6 +287,10 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND = "30031";
     //只支持第三方平台账号登录
     public static final String ERR_CODE_CONNECT_LOGIN = "30032";
+    //请求方式有错(GET还是POST)
+    public static final String ERR_CODE_CONNECT_ERROR_HTTP = "30033";
+    //需要使用HTTPS
+    public static final String ERR_CODE_CONNECT_NEED_HTTPS = "30034";
 
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
@@ -515,6 +519,10 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST, "refreshToken没有找到");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND, "没有找到此应用对应的第三方平台信息");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_LOGIN, "只支持第三方平台账号登录");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ERROR_HTTP, "请求第三方时请求方式有误");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NEED_HTTPS, "需要使用HTTPS");
+
+
 
         // info
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERID_TYPE_ERROR, "账号非所支持的第三方账号类型");
