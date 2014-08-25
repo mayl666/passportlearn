@@ -175,10 +175,9 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         }
         OAuthAuthzClientRequest request = OAuthAuthzClientRequest.verifyTokenLocation(oAuthConsumer.getWebUserAuthzUrl())
                 .setOpenid(openid).setAccessToken(accessToken).buildQueryMessage(OAuthAuthzClientRequest.class);
-        OAuthAccessTokenResponse response;
         OAuthTokenVO oAuthTokenVO;
         if (provider == AccountTypeEnum.WEIXIN.getValue()) {
-            response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONVerifyAccessTokenResponse.class);
+            WeixinJSONVerifyAccessTokenResponse response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONVerifyAccessTokenResponse.class);
             oAuthTokenVO = response.getOAuthTokenVO();
         } else {
             throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
