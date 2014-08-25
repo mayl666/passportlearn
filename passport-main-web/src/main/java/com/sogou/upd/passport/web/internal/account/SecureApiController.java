@@ -7,15 +7,14 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.SecureManager;
-import com.sogou.upd.passport.manager.api.account.form.ModuleBlackListParams;
 import com.sogou.upd.passport.manager.api.account.form.BaseResetPwdApiParams;
+import com.sogou.upd.passport.manager.api.account.form.ModuleBlackListParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
@@ -47,6 +46,9 @@ public class SecureApiController extends BaseController {
 
     //黑名单用户列表分隔符
     private static final String BLACK_USER_LIST_VALUE_SPLIT = "\r\n";
+
+    //有效期
+    private static final int EXPIRE_TIME = 60;
 
     /**
      * 手机发送短信重置密码
@@ -123,17 +125,20 @@ public class SecureApiController extends BaseController {
             //黑名单测试数据  nanajiaozixian1@sogou.com ~ nanajiaozixian99@sogou.com
             // TODO 暂写死 便于快速测试、之后改成从db中读取 userid 超时时间（单位秒）
 
-            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian1@sogou.com").append(" 60").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian2@sogou.com").append(" 120").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian3@sogou.com").append(" 60").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian4@sogou.com").append(" 60").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian5@sogou.com").append(" 60").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian6@sogou.com").append(" 60").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian7@sogou.com").append(" 60").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian8@sogou.com").append(" 60").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian9@sogou.com").append(" 60").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian10@sogou.com").append(" 60").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian11@sogou.com").append(" 60");
+            //有效期 （当前时间+60秒）
+            long expireTime = System.currentTimeMillis() + EXPIRE_TIME;
+
+            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian1@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian2@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian3@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian4@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian5@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian6@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian7@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian8@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian9@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian10@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian11@sogou.com ").append(expireTime);
             result.setSuccess(true);
             return resultText.toString();
         } finally {

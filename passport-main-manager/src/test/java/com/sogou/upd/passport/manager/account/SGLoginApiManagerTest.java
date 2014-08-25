@@ -139,6 +139,9 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
         System.out.println("=========================");
         System.out.println(blacklist.toString());
         System.out.println("=========================");
+
+
+        System.out.println("unix timestamp " + System.currentTimeMillis());
     }
 
 
