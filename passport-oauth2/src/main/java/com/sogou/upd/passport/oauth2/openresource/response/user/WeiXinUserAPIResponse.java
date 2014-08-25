@@ -5,7 +5,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.parameters.WeiXinOAuth;
-import com.sogou.upd.passport.oauth2.openresource.validator.impl.QQAPIValidator;
+import com.sogou.upd.passport.oauth2.openresource.validator.impl.WeiXinAPIValidator;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 
 import java.util.Map;
@@ -21,7 +21,7 @@ public class WeiXinUserAPIResponse extends UserAPIResponse {
 
     @Override
     public void init(String body, String contentType, int responseCode) throws OAuthProblemException {
-        validator = new QQAPIValidator();
+        validator = new WeiXinAPIValidator();
         super.init(body, contentType, responseCode);
     }
 
