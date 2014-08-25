@@ -36,6 +36,8 @@ public class ErrorUtil {
     public static final String CREATE_TOKEN_FAIL = "10011";
     // 应用没有该API访问权限
     public static final String ACCESS_DENIED_CLIENT = "10012";
+    // 应用没有该API访问权限
+    public static final String ACCESS_TOKEN_EXPIRED = "10013";
 
     /* ============================================================================ */
     /*  OAuth2授权错误码                                                             */
@@ -294,7 +296,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_NEED_HTTPS = "30034";
     //微信返回的不合法的调用凭证
     public static final String ERR_CODE_CONNECT_INVALID_CREDENTIAL = "30035";
-    //微信返回的不合法的调用凭证
+    //不合法的Openid
     public static final String ERR_CODE_CONNECT_INVALID_OPENID = "30036";
 
     /* ============================================================================ */
@@ -393,6 +395,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
         ERR_CODE_MSG_MAP.put(CREATE_TOKEN_FAIL, "生成token失败");
         ERR_CODE_MSG_MAP.put(ACCESS_DENIED_CLIENT, "应用没有该API访问权限");
+        ERR_CODE_MSG_MAP.put(ACCESS_TOKEN_EXPIRED, "accessToken过期");
+
 
         // oauth2授权
         ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");
