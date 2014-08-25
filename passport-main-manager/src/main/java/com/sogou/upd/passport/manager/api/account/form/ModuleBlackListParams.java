@@ -17,7 +17,8 @@ public class ModuleBlackListParams {
     private String nginx_version;   //nginx版本号
     @Min(0)
     private int client_id;
-    @NotBlank(message = "root_domain不能为空")
+//    @NotBlank(message = "root_domain不能为空")
+//    sohu的是全局只有一个root_domain所以可以传过去. 现在我们改成了每个server可以配不同的, 所以没法往后传了
     private String root_domain;   //产品所在的域名
     private String instance_id;   //实例ID
     private int update_interval;   //获取黑名单的访问间隔,单位s
