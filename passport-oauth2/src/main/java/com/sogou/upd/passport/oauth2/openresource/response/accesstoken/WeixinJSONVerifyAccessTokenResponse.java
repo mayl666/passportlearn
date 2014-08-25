@@ -4,6 +4,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.parameters.WeiXinOAuthError;
+import com.sogou.upd.passport.oauth2.openresource.validator.impl.WeiXinAPIValidator;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.WeixinOAuthTokenVO;
 
@@ -17,6 +18,13 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class WeixinJSONVerifyAccessTokenResponse extends OAuthAccessTokenResponse {
+
+    @Override
+    public void init(String body, String contentType, int responseCode) throws OAuthProblemException {
+        validator = new WeiXinAPIValidator();
+        super.init(body, contentType, responseCode);
+    }
+
     @Override
     public void setBody(String body) throws OAuthProblemException {
         this.body = body;
