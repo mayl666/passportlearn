@@ -174,7 +174,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             return null;
         }
         OAuthAuthzClientRequest request = OAuthAuthzClientRequest.verifyTokenLocation(oAuthConsumer.getWebUserAuthzUrl())
-                .setOpenid(openid).setAccessToken(accessToken).buildBodyMessage(OAuthAuthzClientRequest.class);
+                .setOpenid(openid).setAccessToken(accessToken).buildQueryMessage(OAuthAuthzClientRequest.class);
         OAuthAccessTokenResponse response;
         OAuthTokenVO oAuthTokenVO;
         if (provider == AccountTypeEnum.WEIXIN.getValue()) {
