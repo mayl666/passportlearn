@@ -22,6 +22,9 @@ public class WeiXinAPIValidator extends AbstractClientValidator {
     public static Map<String, String> WEIXIN_OAUTH_ERROR_MAP = new HashMap<String, String>();
 
     static {
+
+        WEIXIN_OAUTH_ERROR_MAP.put("40001", ErrorUtil.ERR_CODE_CONNECT_INVALID_CREDENTIAL);
+        WEIXIN_OAUTH_ERROR_MAP.put("40003", ErrorUtil.ERR_CODE_CONNECT_INVALID_CREDENTIAL);
         WEIXIN_OAUTH_ERROR_MAP.put("40014", ErrorUtil.ERR_ACCESS_TOKEN);
         WEIXIN_OAUTH_ERROR_MAP.put("41001", ErrorUtil.ERR_CODE_COM_REQURIE);
         WEIXIN_OAUTH_ERROR_MAP.put("41009", ErrorUtil.ERR_CODE_COM_REQURIE);
