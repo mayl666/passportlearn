@@ -125,8 +125,8 @@ public class SecureApiController extends BaseController {
             //黑名单测试数据  nanajiaozixian1@sogou.com ~ nanajiaozixian99@sogou.com
             // TODO 暂写死 便于快速测试、之后改成从db中读取 userid 超时时间（单位秒）
 
-            //有效期 （当前时间+60秒）
-            long expireTime = System.currentTimeMillis() + EXPIRE_TIME;
+            //有效期 （当前时间+60秒）秒
+            long expireTime = (System.currentTimeMillis() / 1000) + EXPIRE_TIME;
 
             resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian1@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
             resultText.append("nanajiaozixian2@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
