@@ -167,6 +167,26 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
+    public OAuthTokenVO verifyAccessToken(String openid, String accessToken, ConnectConfig connectConfig) throws IOException, OAuthProblemException {
+        int provider = connectConfig.getProvider();
+        OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+        if (oAuthConsumer == null) {
+            return null;
+        }
+        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.verifyTokenLocation(oAuthConsumer.getWebUserAuthzUrl())
+                .setOpenid(openid).setAccessToken(accessToken).buildBodyMessage(OAuthAuthzClientRequest.class);
+        OAuthAccessTokenResponse response;
+        OAuthTokenVO oAuthTokenVO;
+        if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+            response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, WeixinJSONVerifyAccessTokenResponse.class);
+            oAuthTokenVO = response.getOAuthTokenVO();
+        } else {
+            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+        }
+        return oAuthTokenVO;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public boolean initialOrUpdateConnectUserInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) throws ServiceException {
         try {
             String cacheKey = buildConnectUserInfoCacheKey(passportId);

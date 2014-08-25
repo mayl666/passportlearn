@@ -28,6 +28,10 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
         return new TokenRequestBuilder(url);
     }
 
+    public static VerifyAccessTokenRequestBuilder verifyTokenLocation(String url) {
+        return new VerifyAccessTokenRequestBuilder(url);
+    }
+
     /**
      * 用户OAuth授权请求构造器
      *
@@ -74,7 +78,7 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
                 } else if (QQOAuth.XHTML_DISPLAY.equals(display)) {
                     this.parameters.put(OAuth.OAUTH_QQ_WAP_DISPLAY, "2");
                     this.parameters.put(OAuth.OAUTH_DISPLAY, "mobile");
-                } else if(QQOAuth.MOBILE_DISPLAY.equals(display)){
+                } else if (QQOAuth.MOBILE_DISPLAY.equals(display)) {
                     this.parameters.put(OAuth.OAUTH_DISPLAY, "mobile");
                 }
             } else {
@@ -181,6 +185,25 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
             this.parameters.put(OAuth.OAUTH_STATE, state);
             return this;
         }
+    }
+
+    /*验证access_token的有效性*/
+    public static class VerifyAccessTokenRequestBuilder extends OAuthClientRequestBuilder {
+
+        protected VerifyAccessTokenRequestBuilder(String url) {
+            super(url);
+        }
+
+        public VerifyAccessTokenRequestBuilder setOpenid(String openid) {
+            this.parameters.put(OAuth.OAUTH_OPENID, openid);
+            return this;
+        }
+
+        public VerifyAccessTokenRequestBuilder setAccessToken(String accessToken) {
+            this.parameters.put(OAuth.OAUTH_ACCESS_TOKEN, accessToken);
+            return this;
+        }
+
     }
 
 }

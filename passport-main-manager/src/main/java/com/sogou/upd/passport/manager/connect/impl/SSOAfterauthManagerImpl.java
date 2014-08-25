@@ -63,22 +63,17 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
             int client_id = Integer.parseInt(req.getParameter("client_id"));
             int isthird = Integer.parseInt(req.getParameter("isthird"));
 //            String instance_id = req.getParameter("instance_id");
-
             String appidtypeString = req.getParameter("appid_type");
             Integer appidType = appidtypeString == null ? null : Integer.valueOf(appidtypeString);
-
             int provider = AccountTypeEnum.getProvider(providerStr);
-
-
             if (AccountTypeEnum.isConnect(provider)) {
                 OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
                 if (oAuthConsumer == null) {
                     result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                     return result;
                 }
-
                 //根据code值获取access_token
-                ConnectConfig connectConfig = null;
+                ConnectConfig connectConfig;
                 if (appidType == null) {
                     connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
                 } else {
@@ -90,11 +85,16 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                         connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
                     }
                 }
-
-
                 if (connectConfig == null) {
                     result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                     return result;
+                }
+                //微信第三方判断access_token是否过期，如果过期，就使用refresh_token去刷新
+                if (AccountTypeEnum.WEIXIN.getValue() == provider) {
+                    OAuthTokenVO oAuthTokenVO = connectAuthService.verifyAccessToken(openId, accessToken, connectConfig);
+                    if (oAuthTokenVO != null) {
+
+                    }
                 }
                 // 获取第三方个人资料
                 ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
