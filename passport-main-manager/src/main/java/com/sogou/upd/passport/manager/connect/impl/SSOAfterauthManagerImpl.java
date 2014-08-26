@@ -89,13 +89,6 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                     result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                     return result;
                 }
-                //微信第三方判断access_token是否过期，如果过期，就使用refresh_token去刷新
-                if (AccountTypeEnum.WEIXIN.getValue() == provider) {
-                    OAuthTokenVO oAuthTokenVO = connectAuthService.verifyAccessToken(openId, accessToken, connectConfig);
-                    if (oAuthTokenVO != null) {
-
-                    }
-                }
                 // 获取第三方个人资料
                 ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
                 // 创建第三方账号

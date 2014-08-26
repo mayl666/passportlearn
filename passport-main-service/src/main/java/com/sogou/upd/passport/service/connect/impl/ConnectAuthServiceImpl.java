@@ -84,10 +84,16 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         }
         String appKey = connectConfig.getAppKey();
         String appSecret = connectConfig.getAppSecret();
-
-        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getRefreshAccessTokenUrl())
-                .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey).setAppSecret(appSecret)
-                .setRefreshToken(refreshToken).buildBodyMessage(OAuthAuthzClientRequest.class);
+        OAuthAuthzClientRequest request;
+        if (AccountTypeEnum.WEIXIN.getValue() == provider) {
+            //微信的刷新token为GET方式
+            request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getRefreshAccessTokenUrl())
+                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey).setRefreshToken(refreshToken).buildQueryMessage(OAuthAuthzClientRequest.class);
+        } else {
+            request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getRefreshAccessTokenUrl())
+                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey).setAppSecret(appSecret)
+                    .setRefreshToken(refreshToken).buildBodyMessage(OAuthAuthzClientRequest.class);
+        }
         OAuthAccessTokenResponse response;
         if (provider == AccountTypeEnum.QQ.getValue()) {
             response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, QQJSONAccessTokenResponse.class);
@@ -96,6 +102,8 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, RenrenJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.BAIDU.getValue()) {
             response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, BaiduJSONAccessTokenResponse.class);
+        } else if (AccountTypeEnum.WEIXIN.getValue() == provider) {
+            response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONAccessTokenResponse.class);
         } else {
             throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
         }

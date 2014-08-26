@@ -36,7 +36,7 @@ public class ErrorUtil {
     public static final String CREATE_TOKEN_FAIL = "10011";
     // 应用没有该API访问权限
     public static final String ACCESS_DENIED_CLIENT = "10012";
-    // 应用没有该API访问权限
+    // access_token过期
     public static final String ACCESS_TOKEN_EXPIRED = "10013";
 
     /* ============================================================================ */
