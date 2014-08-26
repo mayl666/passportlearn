@@ -148,7 +148,12 @@ public class RegAction extends BaseController {
                 String passportId = (String) result.getModels().get("username");
                 Boolean isSetCookie = (Boolean) result.getModels().get("isSetCookie");
                 if (isSetCookie) {
-                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
+
+                    //TODO 种ver=5 新cookie Module替换
+                    //TODO 暂时注释
+//                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
+                    Boolean setNewCookie = Boolean.TRUE;
+                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1, setNewCookie);
                 }
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
             }
@@ -261,8 +266,14 @@ public class RegAction extends BaseController {
         //邮件激活
         result = regManager.activeEmail(activeParams, ip);
         if (result.isSuccess()) {
-            // 种sogou域cookie
-            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
+
+            //TODO 种ver=5 新cookie module替换
+            // 种sogou域cookie TODO 暂时注释
+//            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
+
+            Boolean setNewCookie = Boolean.TRUE;
+            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1, setNewCookie);
+
             if (result.isSuccess()) {
                 String ru = activeParams.getRu();
                 if (Strings.isNullOrEmpty(ru) || CommonConstant.EMAIL_REG_VERIFY_URL.equals(ru)) {
@@ -288,14 +299,14 @@ public class RegAction extends BaseController {
             throws Exception {
         //sendsms因SDK已经发版，需要兼容， 改个策略，
         // GET方式中，如果有cinfo参数，并且参数值内容匹配，这样能发验证码，其它的还是POST限制。
-        boolean canProcessGet=false;
-        if("GET".equalsIgnoreCase(request.getMethod())){
-            String cInfo=request.getHeader("cinfo");
-            if(StringUtil.isNotEmpty(cInfo)){
-                canProcessGet=true;
+        boolean canProcessGet = false;
+        if ("GET".equalsIgnoreCase(request.getMethod())) {
+            String cInfo = request.getHeader("cinfo");
+            if (StringUtil.isNotEmpty(cInfo)) {
+                canProcessGet = true;
             }
         }
-        if(!"POST".equalsIgnoreCase(request.getMethod()) && !canProcessGet){
+        if (!"POST".equalsIgnoreCase(request.getMethod()) && !canProcessGet) {
             throw new Exception("can't process GET");
         }
         ////////end //////////////////

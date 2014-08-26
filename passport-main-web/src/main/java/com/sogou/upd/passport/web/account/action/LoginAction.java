@@ -126,7 +126,13 @@ public class LoginAction extends BaseController {
             if (Strings.isNullOrEmpty(sogouRu)) {
                 sogouRu = CommonConstant.DEFAULT_INDEX_URL;
             }
-            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
+
+            //TODO 部分用户种新cookie Module替换
+            boolean setNewCookie = Boolean.TRUE;
+            //种cookie  TODO 先注释
+//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
+            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, setNewCookie);
+
             if (result.isSuccess()) {
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
                 result.setDefaultModel("userid", userId);

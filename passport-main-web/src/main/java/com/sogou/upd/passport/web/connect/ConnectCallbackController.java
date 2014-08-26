@@ -93,6 +93,8 @@ public class ConnectCallbackController extends BaseConnectController {
                 return viewUrl;
             } else if (ConnectTypeEnum.WEB.toString().equals(type)) {
                 int clientId = Integer.valueOf(clientIdStr);
+
+                //TODO module 替换 种ver=5 cookie
                 cookieManager.setCookie(res, passportId, clientId, getIp(req), ru, (int) DateAndNumTimesConstant.TWO_WEEKS);
                 String domain = req.getParameter("domain");
                 if (!Strings.isNullOrEmpty(domain)) {

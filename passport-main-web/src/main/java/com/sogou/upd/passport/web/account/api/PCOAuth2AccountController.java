@@ -413,6 +413,8 @@ public class PCOAuth2AccountController extends BaseController {
             response.sendRedirect(redirectUrl);
             return;
         }
+
+        //TODO module 替换 种ver=5 cookie
         cookieManager.setCookie(response, passportId, oauth2PcIndexParams.getClient_id(), getIp(request), CommonConstant.DEFAULT_INDEX_URL, -1);
         response.sendRedirect(redirectUrl);
         return;
