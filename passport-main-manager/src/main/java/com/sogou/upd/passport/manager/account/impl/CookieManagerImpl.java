@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account.impl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
@@ -22,6 +23,7 @@ import com.sogou.upd.passport.manager.form.SSOCookieParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,7 +156,7 @@ public class CookieManagerImpl implements CookieManager {
     }
 
     @Override
-    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge, boolean setNewCookie) {
+    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge, String uniqname, boolean setNewCookie) {
         CookieApiParams cookieApiParams = new CookieApiParams();
         cookieApiParams.setUserid(passportId);
         cookieApiParams.setClient_id(client_id);
@@ -162,6 +164,7 @@ public class CookieManagerImpl implements CookieManager {
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         cookieApiParams.setIp(ip);
+        cookieApiParams.setUniqname(uniqname);
         Result result;
         if (setNewCookie) {
             //种ver=5的新cookie
@@ -404,8 +407,18 @@ public class CookieManagerImpl implements CookieManager {
         infValueMap.put("crt", String.valueOf(System.currentTimeMillis() / 1000));  // TODO 查表拿注册时间，但目前是临时方案且应用不用该字段，暂设定为当前时间
         infValueMap.put("clientid", String.valueOf(cookieApiParams.getClient_id()));
         infValueMap.put("trust", String.valueOf(cookieApiParams.getTrust()));
-        infValueMap.put("uniqname", Coder.encodeUTF8(cookieApiParams.getUniqname()));
-        infValueMap.put("refnick", Coder.encodeUTF8(cookieApiParams.getRefnick()));
+
+        if (!Strings.isNullOrEmpty(cookieApiParams.getUniqname())) {
+            infValueMap.put("uniqname", Coder.encodeUTF8(cookieApiParams.getUniqname()));
+        } else {
+            infValueMap.put("uniqname", StringUtils.EMPTY);
+        }
+        if (!Strings.isNullOrEmpty(Coder.encodeUTF8(cookieApiParams.getRefnick()))) {
+            infValueMap.put("refnick", Coder.encodeUTF8(cookieApiParams.getRefnick()));
+        } else {
+            infValueMap.put("refnick", StringUtils.EMPTY);
+        }
+
         for (Map.Entry<String, String> entry : infValueMap.entrySet()) {
             infValue.append(entry.getKey()).append(":");
             infValue.append(entry.getValue().length()).append(":");

@@ -19,6 +19,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +120,11 @@ public class LoginAction extends BaseController {
         UserOperationLogUtil.log(userOperationLog);
         if (result.isSuccess()) {
             userId = result.getModels().get("userid").toString();
+            String uniqName = StringUtils.EMPTY;
+            if (result.getModels().get("uniqname") != null) {
+                uniqName = result.getModels().get("uniqname").toString();
+            }
+
             int clientId = Integer.parseInt(loginParams.getClient_id());
             int autoLogin = loginParams.getAutoLogin();
             int sogouMaxAge = autoLogin == 0 ? -1 : (int) DateAndNumTimesConstant.TWO_WEEKS;
@@ -131,7 +137,7 @@ public class LoginAction extends BaseController {
             boolean setNewCookie = Boolean.TRUE;
             //种cookie  TODO 先注释
 //            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
-            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, setNewCookie);
+            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName, setNewCookie);
 
             if (result.isSuccess()) {
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);

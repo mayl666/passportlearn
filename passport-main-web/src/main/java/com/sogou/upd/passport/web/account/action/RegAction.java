@@ -27,6 +27,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import com.sogou.upd.passport.web.account.form.RegUserNameParams;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,7 +154,8 @@ public class RegAction extends BaseController {
                     //TODO 暂时注释
 //                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
                     Boolean setNewCookie = Boolean.TRUE;
-                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1, setNewCookie);
+                    //注册的时候并没有昵称信息
+                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1, StringUtils.EMPTY, setNewCookie);
                 }
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
             }
@@ -272,7 +274,7 @@ public class RegAction extends BaseController {
 //            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
 
             Boolean setNewCookie = Boolean.TRUE;
-            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1, setNewCookie);
+            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1, StringUtils.EMPTY, setNewCookie);
 
             if (result.isSuccess()) {
                 String ru = activeParams.getRu();

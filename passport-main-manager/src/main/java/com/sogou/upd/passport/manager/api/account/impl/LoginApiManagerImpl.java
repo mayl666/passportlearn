@@ -76,7 +76,7 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
             logger.error("bothAuthUser Exception", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
-        return result;  //To change body of implemented methods use File | Settings | File Templates.
+        return result;
     }
 
     @Override
