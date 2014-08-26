@@ -413,7 +413,7 @@ public class CookieManagerImpl implements CookieManager {
         } else {
             infValueMap.put("uniqname", StringUtils.EMPTY);
         }
-        if (!Strings.isNullOrEmpty(Coder.encodeUTF8(cookieApiParams.getRefnick()))) {
+        if (!Strings.isNullOrEmpty(cookieApiParams.getRefnick())) {
             infValueMap.put("refnick", Coder.encodeUTF8(cookieApiParams.getRefnick()));
         } else {
             infValueMap.put("refnick", StringUtils.EMPTY);

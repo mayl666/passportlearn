@@ -95,6 +95,7 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
                 result.setMessage("操作成功");
                 result.setDefaultModel("userid", userId);
                 result.setDefaultModel("uniqName", verifyUserResult.getModels().get("uniqName"));
+                result.setDefaultModel("refnick", verifyUserResult.getModels().get("uniqName"));
             } else {
                 result = verifyUserResult;
             }
