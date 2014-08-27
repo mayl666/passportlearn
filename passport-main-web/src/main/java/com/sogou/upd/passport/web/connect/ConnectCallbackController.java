@@ -95,7 +95,13 @@ public class ConnectCallbackController extends BaseConnectController {
                 int clientId = Integer.valueOf(clientIdStr);
 
                 //TODO module 替换 种ver=5 cookie
-                cookieManager.setCookie(res, passportId, clientId, getIp(req), ru, (int) DateAndNumTimesConstant.TWO_WEEKS);
+                Boolean setNewCookie = Boolean.TRUE;
+                if (clientId == 1120) {
+                    cookieManager.setCookie(res, passportId, clientId, getIp(req), ru, (int) DateAndNumTimesConstant.TWO_WEEKS, (String) result.getModels().get("refnick"), setNewCookie);
+                } else {
+                    cookieManager.setCookie(res, passportId, clientId, getIp(req), ru, (int) DateAndNumTimesConstant.TWO_WEEKS);
+                }
+
                 String domain = req.getParameter("domain");
                 if (!Strings.isNullOrEmpty(domain)) {
                     String refnick = (String) result.getModels().get("refnick");

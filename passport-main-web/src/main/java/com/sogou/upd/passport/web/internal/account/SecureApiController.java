@@ -134,10 +134,17 @@ public class SecureApiController extends BaseController {
                 return result.toString();
             }
 */
+            //接口调用频率
+            int update_internal;
+            if (params.getUpdate_interval() == 0) {
+                update_internal = 10;
+            } else {
+                update_internal = params.getUpdate_interval();
+            }
 
 //            StringBuffer resultText = new StringBuffer("0 0 10");
             StringBuffer resultText = new StringBuffer();
-            resultText.append("0").append(" ").append(params.getUpdate_timestamp()).append(" ").append(params.getUpdate_interval());
+            resultText.append("0").append(" ").append(params.getUpdate_timestamp()).append(" ").append(update_internal);
 
             resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian1@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
             resultText.append("nanajiaozixian2@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
