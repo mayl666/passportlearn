@@ -144,24 +144,25 @@ public class SecureApiController extends BaseController {
 
 //            StringBuffer resultText = new StringBuffer("0 0 10");
             StringBuffer resultText = new StringBuffer();
-            resultText.append("0").append(" ").append(params.getUpdate_timestamp()).append(" ").append(update_internal);
+//            resultText.append("0").append(" ").append(params.getUpdate_timestamp()).append(" ").append(update_internal);
+            resultText.append("1").append(" ").append("1409126612").append(" ").append(update_internal);
 
-            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian1@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian2@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian3@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian4@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian5@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian9@sogou.com ").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian10@sogou.com ").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian11@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("F65D19C8B0948244AB0A1CCB5EC792B4@qq.sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("2041210051@sina.sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("3020724549@baidu.sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("583592481@renren.sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("你好123456@focus.cn ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("Daxie@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("18600548420@sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("pp_test@sohu.com ").append(expireTime);
+            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian21@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian22@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian23@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian24@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian25@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("nanajiaozixian9@sogou.com ").append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("nanajiaozixian10@sogou.com ").append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("nanajiaozixian11@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("F65D19C8B0948244AB0A1CCB5EC792B4@qq.sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("2041210051@sina.sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("3020724549@baidu.sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("583592481@renren.sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("你好123456@focus.cn ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("Daxie@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("18600548420@sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("pp_test@sohu.com ").append(expireTime);
 
             result.setSuccess(true);
             return resultText.toString();
