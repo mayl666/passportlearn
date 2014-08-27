@@ -146,7 +146,15 @@ public class SecureApiController extends BaseController {
             resultText.append("nanajiaozixian5@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
             resultText.append("nanajiaozixian9@sogou.com ").append(BLACK_USER_LIST_VALUE_SPLIT);
             resultText.append("nanajiaozixian10@sogou.com ").append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian11@sogou.com ").append(expireTime);
+            resultText.append("nanajiaozixian11@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("F65D19C8B0948244AB0A1CCB5EC792B4@qq.sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("2041210051@sina.sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("3020724549@baidu.sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("583592481@renren.sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("你好123456@focus.cn ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("Daxie@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("18600548420@sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("pp_test@sohu.com ").append(expireTime);
 
             result.setSuccess(true);
             return resultText.toString();
