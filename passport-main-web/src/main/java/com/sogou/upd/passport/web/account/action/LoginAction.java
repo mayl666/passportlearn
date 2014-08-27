@@ -133,7 +133,7 @@ public class LoginAction extends BaseController {
                 sogouRu = CommonConstant.DEFAULT_INDEX_URL;
             }
 
-            //TODO 部分用户种新cookie Module替换
+            //TODO 部分用户种新cookie module 替换
             boolean setNewCookie = Boolean.TRUE;
             //种cookie  TODO 先注释
 //            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);

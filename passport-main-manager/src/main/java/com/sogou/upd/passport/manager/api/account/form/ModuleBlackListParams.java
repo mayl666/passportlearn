@@ -17,12 +17,14 @@ public class ModuleBlackListParams {
     private String nginx_version;   //nginx版本号
     @Min(0)
     private int client_id;
-//    @NotBlank(message = "root_domain不能为空")
+    //    @NotBlank(message = "root_domain不能为空")
 //    sohu的是全局只有一个root_domain所以可以传过去. 现在我们改成了每个server可以配不同的, 所以没法往后传了
-    private String root_domain;   //产品所在的域名
+//    private String root_domain;   //产品所在的域名
     private String instance_id;   //实例ID
     private int update_interval;   //获取黑名单的访问间隔,单位s
     private long update_timestamp;   //黑名单的有效期
+
+    private int is_delta;//全量/增量（0/1）
 
     public String getVersion() {
         return version;
@@ -48,13 +50,13 @@ public class ModuleBlackListParams {
         this.client_id = client_id;
     }
 
-    public String getRoot_domain() {
+ /*   public String getRoot_domain() {
         return root_domain;
     }
 
     public void setRoot_domain(String root_domain) {
         this.root_domain = root_domain;
-    }
+    }*/
 
     public String getInstance_id() {
         return instance_id;
@@ -78,5 +80,13 @@ public class ModuleBlackListParams {
 
     public void setUpdate_timestamp(long update_timestamp) {
         this.update_timestamp = update_timestamp;
+    }
+
+    public int getIs_delta() {
+        return is_delta;
+    }
+
+    public void setIs_delta(int is_delta) {
+        this.is_delta = is_delta;
     }
 }

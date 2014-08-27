@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -108,7 +109,7 @@ public class SecureApiController extends BaseController {
     @ResponseBody
     public String moduleBlackList(HttpServletRequest request, ModuleBlackListParams params) throws Exception {
         Result result = new APIResultSupport(false);
-        StringBuffer resultText = new StringBuffer("0 0 10");
+
         int clientId = params.getClient_id();
         String ip = getIp(request);
         try {
@@ -128,17 +129,25 @@ public class SecureApiController extends BaseController {
             //有效期 （当前时间+60秒）秒
             long expireTime = (System.currentTimeMillis() / 1000) + EXPIRE_TIME;
 
+            if (params.getIs_delta() != 0 || params.getIs_delta() != 1) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                return result.toString();
+            }
+
+
+//            StringBuffer resultText = new StringBuffer("0 0 10");
+            StringBuffer resultText = new StringBuffer();
+            resultText.append(params.getIs_delta()).append(" ").append(params.getUpdate_timestamp()).append(" ").append(params.getUpdate_interval());
+
             resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian1@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
             resultText.append("nanajiaozixian2@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
             resultText.append("nanajiaozixian3@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
             resultText.append("nanajiaozixian4@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
             resultText.append("nanajiaozixian5@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian6@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian7@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian8@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian9@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian10@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian9@sogou.com ").append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("nanajiaozixian10@sogou.com ").append(BLACK_USER_LIST_VALUE_SPLIT);
             resultText.append("nanajiaozixian11@sogou.com ").append(expireTime);
+
             result.setSuccess(true);
             return resultText.toString();
         } finally {
