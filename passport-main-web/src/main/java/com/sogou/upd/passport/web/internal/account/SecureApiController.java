@@ -129,15 +129,15 @@ public class SecureApiController extends BaseController {
             //有效期 （当前时间+60秒）秒
             long expireTime = (System.currentTimeMillis() / 1000) + EXPIRE_TIME;
 
-            if (params.getIs_delta() != 0 || params.getIs_delta() != 1) {
+           /* if (params.getIs_delta() != 0 || params.getIs_delta() != 1) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 return result.toString();
             }
-
+*/
 
 //            StringBuffer resultText = new StringBuffer("0 0 10");
             StringBuffer resultText = new StringBuffer();
-            resultText.append(params.getIs_delta()).append(" ").append(params.getUpdate_timestamp()).append(" ").append(params.getUpdate_interval());
+            resultText.append("0").append(" ").append(params.getUpdate_timestamp()).append(" ").append(params.getUpdate_interval());
 
             resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian1@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
             resultText.append("nanajiaozixian2@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);

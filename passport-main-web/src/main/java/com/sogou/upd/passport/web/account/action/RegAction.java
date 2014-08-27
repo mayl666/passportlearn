@@ -154,8 +154,14 @@ public class RegAction extends BaseController {
                     //TODO 暂时注释
 //                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
                     Boolean setNewCookie = Boolean.TRUE;
-                    //注册的时候并没有昵称信息
-                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1, StringUtils.EMPTY, setNewCookie);
+
+                    if (clientId == 1120) {
+                        //注册的时候并没有昵称信息
+                        result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1, StringUtils.EMPTY, setNewCookie);
+                    } else {
+                        result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
+                    }
+
                 }
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
             }
@@ -274,7 +280,12 @@ public class RegAction extends BaseController {
 //            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
 
             Boolean setNewCookie = Boolean.TRUE;
-            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1, StringUtils.EMPTY, setNewCookie);
+
+            if (clientId == 1120) {
+                result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1, StringUtils.EMPTY, setNewCookie);
+            } else {
+                result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
+            }
 
             if (result.isSuccess()) {
                 String ru = activeParams.getRu();

@@ -24,7 +24,7 @@ public class ModuleBlackListParams {
     private int update_interval;   //获取黑名单的访问间隔,单位s
     private long update_timestamp;   //黑名单的有效期
 
-    private int is_delta;//全量/增量（0/1）
+//    private int is_delta;//全量/增量（0/1）
 
     public String getVersion() {
         return version;
@@ -82,11 +82,11 @@ public class ModuleBlackListParams {
         this.update_timestamp = update_timestamp;
     }
 
-    public int getIs_delta() {
+  /*  public int getIs_delta() {
         return is_delta;
     }
 
     public void setIs_delta(int is_delta) {
         this.is_delta = is_delta;
-    }
+    }*/
 }

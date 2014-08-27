@@ -137,8 +137,12 @@ public class LoginAction extends BaseController {
             boolean setNewCookie = Boolean.TRUE;
             //种cookie  TODO 先注释
 //            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
-            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName, setNewCookie);
 
+            if (clientId == 1120) {
+                result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName, setNewCookie);
+            } else {
+                result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
+            }
             if (result.isSuccess()) {
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
                 result.setDefaultModel("userid", userId);
