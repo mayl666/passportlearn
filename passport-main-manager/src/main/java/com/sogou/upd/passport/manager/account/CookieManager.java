@@ -70,11 +70,10 @@ public interface CookieManager {
      * @param ip
      * @param ru
      * @param maxAge
-     * @param setNewCookie
      * @param uniqname
      * @return
      */
-    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge, String uniqname, boolean setNewCookie);
+    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge, String uniqname);
 
     /**
      * 生成设置sso cookie的url

@@ -149,19 +149,12 @@ public class RegAction extends BaseController {
                 String passportId = (String) result.getModels().get("username");
                 Boolean isSetCookie = (Boolean) result.getModels().get("isSetCookie");
                 if (isSetCookie) {
-
                     //TODO 种ver=5 新cookie Module替换
                     //TODO 暂时注释
 //                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
-                    Boolean setNewCookie = Boolean.TRUE;
 
-                    if (clientId == 1120) {
-                        //注册的时候并没有昵称信息
-                        result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1, StringUtils.EMPTY, setNewCookie);
-                    } else {
-                        result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
-                    }
-
+                    //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie module替换
+                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1, StringUtils.EMPTY);
                 }
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
             }
@@ -279,14 +272,8 @@ public class RegAction extends BaseController {
             // 种sogou域cookie TODO 暂时注释
 //            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
 
-            Boolean setNewCookie = Boolean.TRUE;
-
-            if (clientId == 1120) {
-                result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1, StringUtils.EMPTY, setNewCookie);
-            } else {
-                result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
-            }
-
+            //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie module 替换
+            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1, StringUtils.EMPTY);
             if (result.isSuccess()) {
                 String ru = activeParams.getRu();
                 if (Strings.isNullOrEmpty(ru) || CommonConstant.EMAIL_REG_VERIFY_URL.equals(ru)) {

@@ -134,15 +134,10 @@ public class LoginAction extends BaseController {
             }
 
             //TODO 部分用户种新cookie module 替换
-            boolean setNewCookie = Boolean.TRUE;
             //种cookie  TODO 先注释
 //            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
-
-            if (clientId == 1120) {
-                result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName, setNewCookie);
-            } else {
-                result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
-            }
+            //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie  module 替换
+            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName);
             if (result.isSuccess()) {
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
                 result.setDefaultModel("userid", userId);

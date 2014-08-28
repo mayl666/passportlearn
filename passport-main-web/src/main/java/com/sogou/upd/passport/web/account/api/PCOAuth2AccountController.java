@@ -413,9 +413,11 @@ public class PCOAuth2AccountController extends BaseController {
             response.sendRedirect(redirectUrl);
             return;
         }
-
         //TODO module 替换 种ver=5 cookie
-        cookieManager.setCookie(response, passportId, oauth2PcIndexParams.getClient_id(), getIp(request), CommonConstant.DEFAULT_INDEX_URL, -1);
+        //cookieManager.setCookie(response, passportId, oauth2PcIndexParams.getClient_id(), getIp(request), CommonConstant.DEFAULT_INDEX_URL, -1);
+
+        //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie  module 替换  昵称暂先设置为 ""
+        cookieManager.setCookie(response, passportId, oauth2PcIndexParams.getClient_id(), getIp(request), CommonConstant.DEFAULT_INDEX_URL, -1, StringUtils.EMPTY);
         response.sendRedirect(redirectUrl);
         return;
     }

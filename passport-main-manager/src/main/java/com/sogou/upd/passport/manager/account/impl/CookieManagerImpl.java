@@ -156,7 +156,7 @@ public class CookieManagerImpl implements CookieManager {
     }
 
     @Override
-    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge, String uniqname, boolean setNewCookie) {
+    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge, String uniqname) {
         CookieApiParams cookieApiParams = new CookieApiParams();
         cookieApiParams.setUserid(passportId);
         cookieApiParams.setClient_id(client_id);
@@ -165,10 +165,14 @@ public class CookieManagerImpl implements CookieManager {
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         cookieApiParams.setIp(ip);
         cookieApiParams.setUniqname(uniqname);
-        Result result;
-        if (setNewCookie) {
-            //种ver=5的新cookie
-            result = setSGCookie(response, cookieApiParams, maxAge);
+        Result result = null;
+        //放量的时候在此设置 route（userid）== 00 account_00 表
+        Boolean setNewCookie = Boolean.TRUE;
+        if (client_id == 1100 || client_id == 1120) {
+            if (setNewCookie) {
+                //种ver=5的新cookie
+                result = setSGCookie(response, cookieApiParams, maxAge);
+            }
         } else {
             //仍然通过调用搜狗获取cookie信息接口
             result = setCookie(response, cookieApiParams, maxAge);
