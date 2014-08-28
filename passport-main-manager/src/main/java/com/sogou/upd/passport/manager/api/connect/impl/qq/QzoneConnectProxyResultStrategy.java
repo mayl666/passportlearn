@@ -28,7 +28,12 @@ public class QzoneConnectProxyResultStrategy extends AbstractConnectProxyResultS
         Result result = new APIResultSupport(false);
         String ret = String.valueOf((int) maps.get("ret"));
         if (maps.containsKey("ret") && !ErrorUtil.SUCCESS.equals(ret)) {
-            result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
+            //腾讯会针对输入法用户词库大于5M的做单独处理，返回10005表示此种情况，在此做特殊处理
+            if ("10005".equals(ret)) {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M);
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
+            }
             result.setMessage((String) maps.get("msg"));
 //            logger.error("qqResult:ret {},msg {}", maps.get("ret"), maps.get("msg"));
         } else {

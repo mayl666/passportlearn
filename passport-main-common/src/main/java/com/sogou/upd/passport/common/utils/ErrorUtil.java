@@ -298,6 +298,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_INVALID_CREDENTIAL = "30035";
     //不合法的Openid
     public static final String ERR_CODE_CONNECT_INVALID_OPENID = "30036";
+    //QQ用户词库大小大于5M，请特殊处理
+    public static final String ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M = "30037";
 
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
@@ -532,6 +534,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NEED_HTTPS, "需要使用HTTPS");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_CREDENTIAL, "不合法的调用凭证");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_OPENID, "不合法的Openid");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M, "用户词库大小大于5M，请特殊处理");
+
 
         // info
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERID_TYPE_ERROR, "账号非所支持的第三方账号类型");
