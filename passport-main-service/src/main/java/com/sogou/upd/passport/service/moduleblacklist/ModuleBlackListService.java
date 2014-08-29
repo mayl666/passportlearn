@@ -26,6 +26,15 @@ public interface ModuleBlackListService {
 
 
     /**
+     * 获取黑名单用于测试
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public List<String> getBlackListForTest() throws ServiceException;
+
+
+    /**
      * 获取增量黑名单数据
      *
      * @param update_timestamp

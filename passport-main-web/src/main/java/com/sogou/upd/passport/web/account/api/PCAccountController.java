@@ -61,6 +61,9 @@ public class PCAccountController extends BaseController {
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
 
+    @Autowired
+    private LoginApiManager sgLoginApiManager;
+
     @RequestMapping(value = "/act/pclogin", method = RequestMethod.GET)
     public String pcLogin(HttpServletRequest request, PcAccountWebParams pcAccountWebParams, Model model)
             throws Exception {
@@ -293,7 +296,10 @@ public class PCAccountController extends BaseController {
             }
             createCookieUrlApiParams.setDomain("sogou.com");
             //TODO sogou域账号迁移后cookie生成问题
-            Result getCookieValueResult = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
+//            Result getCookieValueResult = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
+
+            //TODO 采用搜狗算法生成cookie
+            Result getCookieValueResult = sgLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
@@ -379,7 +385,7 @@ public class PCAccountController extends BaseController {
     }
 
     private String buildRedirectUrl(String ru, int status) {
-        if(Strings.isNullOrEmpty(ru)){
+        if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
         if (ru.contains("?")) {

@@ -11,6 +11,7 @@ import com.sogou.upd.passport.manager.api.account.form.BaseResetPwdApiParams;
 import com.sogou.upd.passport.manager.api.account.form.ModuleBlackListParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
+import com.sogou.upd.passport.manager.moduleblacklist.ModuleBlackListManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -21,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -44,6 +44,9 @@ public class SecureApiController extends BaseController {
     private SecureManager secureManager;
     @Autowired
     private ConfigureManager configureManager;
+
+    @Autowired
+    private ModuleBlackListManager moduleBlackListManager;
 
     //黑名单用户列表分隔符
     private static final String BLACK_USER_LIST_VALUE_SPLIT = "\r\n";
@@ -144,14 +147,13 @@ public class SecureApiController extends BaseController {
 
 //            StringBuffer resultText = new StringBuffer("0 0 10");
             StringBuffer resultText = new StringBuffer();
-//            resultText.append("0").append(" ").append(params.getUpdate_timestamp()).append(" ").append(update_internal);
-            resultText.append("1").append(" ").append("1409126612").append(" ").append(update_internal);
-
-            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian21@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian22@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian23@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian24@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
-            resultText.append("nanajiaozixian25@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+            resultText.append("0").append(" ").append(params.getUpdate_timestamp()).append(" ").append(update_internal).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("0").append(" ").append("0").append(" ").append(update_internal);
+//            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian21@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("nanajiaozixian22@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("nanajiaozixian23@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("nanajiaozixian24@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+//            resultText.append("nanajiaozixian25@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
 //            resultText.append("nanajiaozixian9@sogou.com ").append(BLACK_USER_LIST_VALUE_SPLIT);
 //            resultText.append("nanajiaozixian10@sogou.com ").append(BLACK_USER_LIST_VALUE_SPLIT);
 //            resultText.append("nanajiaozixian11@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
@@ -163,6 +165,14 @@ public class SecureApiController extends BaseController {
 //            resultText.append("Daxie@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
 //            resultText.append("18600548420@sohu.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
 //            resultText.append("pp_test@sohu.com ").append(expireTime);
+
+            //为了测试 构造测试数据
+            List<String> blackLists = moduleBlackListManager.getBlackLists();
+            if (blackLists != null && !blackLists.isEmpty()) {
+                for (String userid : blackLists) {
+                    resultText.append(userid).append(" ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
+                }
+            }
 
             result.setSuccess(true);
             return resultText.toString();

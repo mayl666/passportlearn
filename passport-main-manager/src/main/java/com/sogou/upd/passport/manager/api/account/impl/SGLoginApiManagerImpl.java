@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSAEncoder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -13,6 +14,8 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ToolUUIDUtil;
+import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
@@ -27,6 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map;
 
@@ -38,7 +43,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 @Component("sgLoginApiManager")
-public class SGLoginApiManagerImpl implements LoginApiManager {
+public class SGLoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
     private static Logger logger = LoggerFactory.getLogger(SGLoginApiManagerImpl.class);
 
     // 非对称加密算法-公钥
@@ -66,6 +71,9 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
                     "0pOTjeSYPdw=";
 
 
+    private static String PP_COOKIE_URL = "http://account.sogou.com/act/setppcookie";
+
+
     @Autowired
     private AccountService accountService;
 
@@ -73,6 +81,9 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
     private TokenService tokenService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
+
+    @Autowired
+    private CommonManager commonManager;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
@@ -133,7 +144,74 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
 
     @Override
     public Result getCookieInfoWithRedirectUrl(CreateCookieUrlApiParams createCookieUrlApiParams) {
-        return null;
+        //生成cookie
+        String ru = createCookieUrlApiParams.getRu();
+        CookieApiParams cookieApiParams = new CookieApiParams();
+        cookieApiParams.setUserid(createCookieUrlApiParams.getUserid());
+        cookieApiParams.setClient_id(CommonConstant.PC_CLIENTID);
+        cookieApiParams.setRu(ru);
+        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+        cookieApiParams.setPersistentcookie(String.valueOf(1));
+
+//        Result cookieInfoResult = getCookieInfo(cookieApiParams);
+
+        //TODO module替换 采用搜狗算法生成cookie 选取部分用户种新cookie、剩余用户依然种老cookie,调用搜狐接口取cookie
+        Result cookieInfoResult = getSGCookieInfoForAdapter(cookieApiParams);
+
+        //调用sohu接口获取cookie信息
+        //Result cookieInfoResult = getCookieInfoFromSoHu(cookieApiParams);
+
+        Result result = new APIResultSupport(false);
+        if (cookieInfoResult != null) {
+            String ppinf = (String) cookieInfoResult.getModels().get("ppinf");
+            String pprdig = (String) cookieInfoResult.getModels().get("pprdig");
+            String passport = (String) cookieInfoResult.getModels().get("passport");
+            String ppinfo = (String) cookieInfoResult.getModels().get("ppinfo");
+
+            result.setSuccess(true);
+            result.setDefaultModel("ppinf", ppinf);
+            result.setDefaultModel("pprdig", pprdig);
+            result.setDefaultModel("passport", passport);
+            result.setDefaultModel("ppinfo", ppinfo);
+
+            long ct = System.currentTimeMillis();
+            String code1 = "", code2 = "", code3 = "";
+            if (!StringUtil.isBlank(ppinf)) {
+                code1 = commonManager.getCode(ppinf, CommonConstant.PC_CLIENTID, ct);
+            }
+            if (!StringUtil.isBlank(ppinf)) {
+                code2 = commonManager.getCode(pprdig, CommonConstant.PC_CLIENTID, ct);
+            }
+            if (!StringUtil.isBlank(ppinf)) {
+                code3 = commonManager.getCode(passport, CommonConstant.PC_CLIENTID, ct);
+            }
+
+            StringBuilder locationUrlBuilder = new StringBuilder(PP_COOKIE_URL);  // 移动浏览器端使用https域名会有问题
+            locationUrlBuilder.append("?").append("ppinf=").append(ppinf)
+                    .append("&pprdig=").append(pprdig)
+                    .append("&passport=").append(passport)
+                    .append("&code1=").append(code1)
+                    .append("&code2=").append(code2)
+                    .append("&code=").append(code3)
+                    .append("&s=").append(String.valueOf(ct))
+                    .append("&lastdomain=").append(0);
+            if (1 == createCookieUrlApiParams.getPersistentcookie()) {
+                locationUrlBuilder.append("&livetime=1");
+            }
+            ru = buildRedirectUrl(ru, 0);
+            try {
+                // 1105不允许URLEncode，但壁纸需要URLEncode，所以传clientId区分
+                if (!createCookieUrlApiParams.getClientId().equals(String.valueOf(CommonConstant.PINYIN_MAC_CLIENTID))) {
+                    ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                }
+            } catch (UnsupportedEncodingException e) {
+            }
+            locationUrlBuilder.append("&ru=").append(ru);   // 输入法Mac要求Location里的ru不能decode
+            result.setDefaultModel("redirectUrl", locationUrlBuilder.toString());
+        } else {
+            result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+        }
+        return result;
     }
 
     @Override
@@ -235,6 +313,18 @@ public class SGLoginApiManagerImpl implements LoginApiManager {
             infValue.append(entry.getValue()).append("|");
         }
         return Coder.encryptBase64URLSafeString(infValue.toString());
+    }
+
+
+    private String buildRedirectUrl(String ru, int status) {
+        if (Strings.isNullOrEmpty(ru)) {
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
+        if (ru.contains("?")) {
+            return ru + "&status=" + status;
+        } else {
+            return ru + "?status=" + status;
+        }
     }
 
 }
