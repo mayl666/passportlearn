@@ -52,7 +52,7 @@ public class ModuleBlackListServiceImpl implements ModuleBlackListService {
         List<String> blackLists = redisUtils.getList(CACHE_KEY_MODULE_BLACKLIST);
         if (blackLists == null || blackLists.isEmpty()) {
             for (int i = 0; i < BLACK_LIST_SIZE; i++) {
-                blackLists.add(CACHE_KEY_MODULE_BLACKLIST_VALUE_PREFIX + i + "@sogou.com");
+                redisUtils.lPush(CACHE_KEY_MODULE_BLACKLIST, CACHE_KEY_MODULE_BLACKLIST_VALUE_PREFIX + i + "@sogou.com");
             }
         }
         return blackLists;
