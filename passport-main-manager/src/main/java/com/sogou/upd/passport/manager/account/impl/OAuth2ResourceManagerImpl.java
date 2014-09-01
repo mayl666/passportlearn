@@ -90,6 +90,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             String clientSecret = appConfig.getClientSecret();
             String resourceType = params.getResource_type();
             if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_COOKIE)) {
+
+                //TODO  获取cookie
                 result = getCookieValue(accessToken, clientId, clientSecret, instanceId, params.getUsername());
             } else if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_FULL_USERINFO)) {
                 result = getFullUserInfo(accessToken, clientId, clientSecret, instanceId, params.getUsername());
@@ -122,6 +124,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
 
+            //TODO module替换 取cookie
             if (CommonHelper.isBuildNewCookie()) {
                 //生成cookie
                 CookieApiParams cookieApiParams = new CookieApiParams();

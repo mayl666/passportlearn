@@ -3,6 +3,7 @@ package com.sogou.upd.passport.util;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.utils.JsonUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * Time: 下午7:29
  */
 
+@Ignore
 public class RedisUtilTest extends BaseTest {
 
     private static final String cache_key_blacklist = "cache_module_blacklist";
@@ -22,9 +24,11 @@ public class RedisUtilTest extends BaseTest {
     @Autowired
     private RedisUtils redisUtils;
 
+    @Ignore
     @Test
     public void testRedisUtilGetList() {
 
+        //填充数据
         /*for (int i = 0; i < 10; i++) {
             redisUtils.lPush(cache_key_blacklist, "chengang_test_" + i);
         }*/
