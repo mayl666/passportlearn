@@ -25,11 +25,11 @@ public class ModuleBlackListServiceImpl implements ModuleBlackListService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModuleBlackListServiceImpl.class);
 
-    private static final String CACHE_KEY_MODULE_BLACKLIST = "nginx_module_blacklist";
+    private static final String CACHE_KEY_MODULE_BLACKLIST = "nginx_module_blacklist_for_test";
 
     private static final String CACHE_KEY_MODULE_BLACKLIST_VALUE_PREFIX = "module_blacklist_test";
 
-    private static final int BLACK_LIST_SIZE = 10000;
+    private static final int BLACK_LIST_SIZE = 100000;
 
 
     @Autowired

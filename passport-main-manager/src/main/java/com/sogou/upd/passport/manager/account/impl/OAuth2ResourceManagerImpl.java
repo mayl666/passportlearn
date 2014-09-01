@@ -93,6 +93,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
 
                 //TODO  获取cookie
                 result = getCookieValue(accessToken, clientId, clientSecret, instanceId, params.getUsername());
+
             } else if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_FULL_USERINFO)) {
                 result = getFullUserInfo(accessToken, clientId, clientSecret, instanceId, params.getUsername());
             } else {

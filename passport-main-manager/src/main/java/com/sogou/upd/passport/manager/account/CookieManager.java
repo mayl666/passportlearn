@@ -75,6 +75,16 @@ public interface CookieManager {
      */
     public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge, String uniqname);
 
+
+    /**
+     * web端、桌面端生成cookie统一方法
+     *
+     * @param response
+     * @param cookieApiParams
+     * @return
+     */
+    public Result createCookie(HttpServletResponse response, CookieApiParams cookieApiParams);
+
     /**
      * 生成设置sso cookie的url
      *

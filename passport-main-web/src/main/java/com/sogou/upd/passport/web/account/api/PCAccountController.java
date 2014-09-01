@@ -300,6 +300,7 @@ public class PCAccountController extends BaseController {
 
             //TODO 采用搜狗算法生成cookie
             Result getCookieValueResult = sgLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
+
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");

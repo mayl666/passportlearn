@@ -23,6 +23,7 @@ import com.sogou.upd.passport.manager.form.SSOCookieParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -55,6 +56,7 @@ public class CookieManagerImpl implements CookieManager {
 
     //搜狗域cookie 版本
     private static final int SG_COOKIE_VERSION = 5;
+
 
     // 非对称加密算法-私钥
     public static final
@@ -179,6 +181,43 @@ public class CookieManagerImpl implements CookieManager {
         }
         return result;
 
+    }
+
+    @Override
+    public Result createCookie(HttpServletResponse response, CookieApiParams cookieApiParams) {
+        Result result = new APIResultSupport(false);
+
+        //首先根据产品线判断、部分用户种新cookie，剩余用户老cookie
+        //首批应用市场（web端）、壁纸（桌面端）
+        if (cookieApiParams.getClient_id() == 1110 || cookieApiParams.getClient_id() == 2002) {
+            //部分用户种新cookie、剩余用户种老cookie
+
+
+        } else {
+
+        }
+
+
+        return result;
+    }
+
+
+    /**
+     * @param userid
+     * @param shardCount
+     * @param aimCount
+     * @return
+     */
+    private Boolean isSetNewCookie(String userid, int shardCount, int aimCount) {
+        String useridHash = DigestUtils.md5Hex(userid);
+        if (Strings.isNullOrEmpty(useridHash)) {
+            return false;
+        }
+        int tempInt = Integer.parseInt(useridHash.substring(0, 2), 16);
+        if (tempInt % shardCount == aimCount) {
+            return true;
+        }
+        return false;
     }
 
 

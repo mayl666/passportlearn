@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.dao;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.dao.dal.routing.SGStringHashRouter;
 import junit.framework.TestCase;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +56,25 @@ public class SGStringHashRouterTest extends TestCase {
     public void testUpmShard() {
         router = new SGStringHashRouter("id", "uniqname_passportid_mapping_{0}", 32);
         LOGGER.info("u_p_m shard." + router.doRoute("簩龖"));
+    }
+
+
+    @Test
+    public void testModuleShard() {
+        String userid = "gang.chen0505@gmail.com";
+        String userid1 = "nanajiaozixian22@sogou.com";
+        int shardCount = 2;
+        int aimCount = 0;
+
+        String useridHash = DigestUtils.md5Hex(userid1);
+        int tempInt = Integer.parseInt(useridHash.substring(0, 2), 16);
+        int shardValue = tempInt % shardCount;
+
+//        if (shardValue == aimCount) {
+        System.out.println("===== module userid shard reuslt :" + shardValue);
+//        }
+
+
     }
 
 }

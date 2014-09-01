@@ -30,6 +30,9 @@ public class CookieApiParams extends BaseApiParams {
     private String uniqname; // Passport统一的昵称
     private String refnick;  // 第三方昵称
 
+    private int maxAge;
+
+
     public CookieApiParams() {
     }
 
@@ -114,5 +117,13 @@ public class CookieApiParams extends BaseApiParams {
 
     public void setRefnick(String refnick) {
         this.refnick = refnick;
+    }
+
+    public int getMaxAge() {
+        return maxAge;
+    }
+
+    public void setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
     }
 }

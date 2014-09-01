@@ -286,7 +286,7 @@ public class SGLoginApiManagerImpl extends BaseProxyManager implements LoginApiM
             result.setDefaultModel("ppinf", sginf);
             result.setDefaultModel("pprdig", sgrdig);
             result.setDefaultModel("passport", passportCookie.toString());
-            result.setDefaultModel("ppinfo", ToolUUIDUtil.genreateUUidWithOutSplit().substring(10, 20));
+            result.setDefaultModel("ppinfo", ToolUUIDUtil.genreateUUidWithOutSplit().substring(10, 20)); //再次找兰顺确定下？ module是否需要
         } catch (Exception e) {
             logger.error("getSGCookieInfoForAdapter error. userid:" + cookieApiParams.getUserid(), e);
         }
