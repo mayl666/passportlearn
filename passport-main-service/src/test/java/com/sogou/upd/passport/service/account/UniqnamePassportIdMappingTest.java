@@ -25,6 +25,12 @@ public class UniqnamePassportIdMappingTest extends BaseTest {
         String nickName = "KeSyren1234";
         Assert.assertTrue(StringUtils.isNotEmpty(uniqNamePassportMappingService.checkUniqName(nickName)));
         System.out.println("================= testCheckNickName:" + uniqNamePassportMappingService.checkUniqName(nickName));
+    }
 
+    @Test
+    public void testDeleteNickName() throws Exception {
+        String nickName = "甜菜";
+        boolean isSucc = uniqNamePassportMappingService.removeUniqName(nickName);
+        Assert.assertTrue(isSucc);
     }
 }
