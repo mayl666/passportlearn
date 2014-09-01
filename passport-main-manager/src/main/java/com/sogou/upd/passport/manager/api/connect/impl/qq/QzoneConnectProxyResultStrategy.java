@@ -33,8 +33,8 @@ public class QzoneConnectProxyResultStrategy extends AbstractConnectProxyResultS
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M);
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
+                result.setMessage((String) maps.get("msg"));
             }
-            result.setMessage((String) maps.get("msg"));
 //            logger.error("qqResult:ret {},msg {}", maps.get("ret"), maps.get("msg"));
         } else {
             //封装QQ返回请求正确的结果，返回结果中不包含ret或者包含ret且ret值为0的结果封装
