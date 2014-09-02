@@ -26,7 +26,7 @@ public class QzoneConnectProxyResultStrategy extends AbstractConnectProxyResultS
     @Override
     public Result buildCommonResultByPlatform(HashMap<String, Object> maps) {
         Result result = new APIResultSupport(false);
-        String ret = String.valueOf((int) maps.get("ret"));
+        String ret = String.valueOf(maps.get("ret"));
         if (maps.containsKey("ret") && !ErrorUtil.SUCCESS.equals(ret)) {
             //腾讯会针对输入法用户词库大于5M的做单独处理，返回10005表示此种情况，在此做特殊处理
             if ("10005".equals(ret)) {
