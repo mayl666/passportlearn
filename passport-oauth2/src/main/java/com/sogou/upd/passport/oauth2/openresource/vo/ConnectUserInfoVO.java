@@ -30,7 +30,7 @@ public class ConnectUserInfoVO {
     }
 
     public void setNickname(String nickname) {
-        this.nickname = StringUtil.filterSpecialChar(nickname);
+        this.nickname = StringUtil.filterEmoji(nickname);
     }
 
     public String getUserDesc() {

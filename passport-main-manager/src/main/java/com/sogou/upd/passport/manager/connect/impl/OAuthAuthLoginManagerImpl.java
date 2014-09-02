@@ -206,7 +206,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
                         uniqname = (String) connectAccountResult.getModels().get("uniqName");
-                        uniqname = StringUtil.filterSpecialChar(uniqname);  // 昵称需处理,浏览器的js解析不了昵称就会白屏
+                        uniqname = StringUtil.filterEmoji(uniqname);  // 昵称需处理,浏览器的js解析不了昵称就会白屏
                         ManagerHelper.setModelForOAuthResult(result, uniqname, accountToken, providerStr);
                         result.setSuccess(true);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, "/oauth2pc/connectlogin");
