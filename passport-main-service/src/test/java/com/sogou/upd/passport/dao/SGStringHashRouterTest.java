@@ -74,7 +74,7 @@ public class SGStringHashRouterTest extends TestCase {
     public void testModuleShard() {
         String userid = "gang.chen0505@gmail.com";
         String userid1 = "nanajiaozixian22@sogou.com";
-        int shardCount = 32;
+        int shardCount = 2;
         int aimCount = 0;
 
         String useridHash = DigestUtils.md5Hex(userid1);
@@ -86,7 +86,8 @@ public class SGStringHashRouterTest extends TestCase {
 //        }
 
         Map<String, String> shardMap = Maps.newHashMap();
-        String file = "D:\\项目\\module替换\\test_module_shard.sql";
+//        String file = "D:\\项目\\module替换\\test_module_shard.sql";
+        String file = "D:\\项目\\module替换\\bingna_test.txt";
         String line;
         Path dataPath = Paths.get(file);
         try (BufferedReader reader = Files.newBufferedReader(dataPath, Charset.defaultCharset())) {
@@ -94,10 +95,12 @@ public class SGStringHashRouterTest extends TestCase {
                 int tempShard = Integer.parseInt(DigestUtils.md5Hex(line).substring(0, 2), 16);
                 shardMap.put(line, String.valueOf(tempShard % shardCount));
             }
-            FileUtil.storeFileMap2Local("D:\\项目\\module替换\\shard_result_5.txt", shardMap);
+            FileUtil.storeFileMap2Local("D:\\项目\\module替换\\shard_bingna_test_2.txt", shardMap);
         } catch (Exception e) {
             LOGGER.error("testModulesShard error.", e);
         }
+
+
     }
 
 }

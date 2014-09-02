@@ -203,7 +203,8 @@ public class CookieManagerImpl implements CookieManager {
         //首批应用市场（web端）、壁纸（桌面端）
         String ppinf = null;
         String pprdig = null;
-        if (cookieApiParams.getClient_id() == 1110 || cookieApiParams.getClient_id() == 2002) {
+        //增加游戏便于测试
+        if (cookieApiParams.getClient_id() == 1110 || cookieApiParams.getClient_id() == 2002 || cookieApiParams.getClient_id() == 1100) {
             //部分用户种新cookie、剩余用户种老cookie
             if (isSetNewCookie(cookieApiParams.getUserid(), SHARD_COUNT, AIM_RESULT)) {
                 //种新cookie
@@ -223,7 +224,7 @@ public class CookieManagerImpl implements CookieManager {
             LOGGER.info("set old cookie userid:" + cookieApiParams.getUserid());
         }
 
-        //web端生成cookie后、种下cookie 、桌面端不然
+        //web端生成cookie后、种下cookie 、桌面端不同
         if (cookieApiParams.getCreateAndSet() == 0) {
             ServletUtil.setCookie(response, "ppinf", ppinf, cookieApiParams.getMaxAge(), CommonConstant.SOGOU_ROOT_DOMAIN);
             ServletUtil.setCookie(response, "pprdig", pprdig, cookieApiParams.getMaxAge(), CommonConstant.SOGOU_ROOT_DOMAIN);
