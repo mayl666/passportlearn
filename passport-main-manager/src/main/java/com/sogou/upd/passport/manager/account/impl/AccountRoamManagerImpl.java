@@ -105,7 +105,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                 return result;
             }
 
-            //漫游用户在搜狗未登录、设置搜狗登录状态
+            //漫游用户在搜狗未登录、设置搜狗登录状态 //TODO module替换
             if (Strings.isNullOrEmpty(sgLgUserId)) {
                 cookieManager.setCookie(response, roamPassportId, clientId, createIp, ru, (int) DateAndNumTimesConstant.TWO_WEEKS);
             }

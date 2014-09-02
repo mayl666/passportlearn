@@ -17,6 +17,7 @@ import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.ResendActiveMailParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
@@ -149,12 +150,23 @@ public class RegAction extends BaseController {
                 String passportId = (String) result.getModels().get("username");
                 Boolean isSetCookie = (Boolean) result.getModels().get("isSetCookie");
                 if (isSetCookie) {
-                    //TODO 种ver=5 新cookie Module替换
-                    //TODO 暂时注释
+                    //最初版本调用
 //                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
-
                     //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie module替换
-                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1, StringUtils.EMPTY);
+//                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1, StringUtils.EMPTY);
+
+                    CookieApiParams cookieApiParams = new CookieApiParams();
+                    cookieApiParams.setUserid(passportId);
+                    cookieApiParams.setClient_id(clientId);
+                    cookieApiParams.setRu(ru);
+                    cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+                    cookieApiParams.setPersistentcookie(String.valueOf(1));
+                    cookieApiParams.setIp(ip);
+                    cookieApiParams.setUniqname(StringUtils.EMPTY);
+                    cookieApiParams.setMaxAge(-1);
+                    cookieApiParams.setCreateAndSet(0);
+
+                    result = cookieManager.createCookie(response, cookieApiParams);
                 }
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
             }
@@ -267,13 +279,23 @@ public class RegAction extends BaseController {
         //邮件激活
         result = regManager.activeEmail(activeParams, ip);
         if (result.isSuccess()) {
-
-            //TODO 种ver=5 新cookie module替换
-            // 种sogou域cookie TODO 暂时注释
+            //最初版本
 //            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
-
             //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie module 替换
-            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1, StringUtils.EMPTY);
+//            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1, StringUtils.EMPTY);
+
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(activeParams.getPassport_id());
+            cookieApiParams.setClient_id(clientId);
+            cookieApiParams.setRu(activeParams.getRu());
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            cookieApiParams.setPersistentcookie(String.valueOf(1));
+            cookieApiParams.setIp(ip);
+            cookieApiParams.setUniqname(StringUtils.EMPTY);
+            cookieApiParams.setMaxAge(-1);
+            cookieApiParams.setCreateAndSet(0);
+
+            result = cookieManager.createCookie(response, cookieApiParams);
             if (result.isSuccess()) {
                 String ru = activeParams.getRu();
                 if (Strings.isNullOrEmpty(ru) || CommonConstant.EMAIL_REG_VERIFY_URL.equals(ru)) {

@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSAEncoder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -32,6 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map;
 
@@ -56,6 +59,15 @@ public class CookieManagerImpl implements CookieManager {
 
     //搜狗域cookie 版本
     private static final int SG_COOKIE_VERSION = 5;
+
+    //shard数
+    private static final int SHARD_COUNT = 2;
+
+    //目标值
+    private static final int AIM_RESULT = 0;
+
+
+    private static final String PP_COOKIE_URL = "http://account.sogou.com/act/setppcookie";
 
 
     // 非对称加密算法-私钥
@@ -189,15 +201,42 @@ public class CookieManagerImpl implements CookieManager {
 
         //首先根据产品线判断、部分用户种新cookie，剩余用户老cookie
         //首批应用市场（web端）、壁纸（桌面端）
+        String ppinf = null;
+        String pprdig = null;
         if (cookieApiParams.getClient_id() == 1110 || cookieApiParams.getClient_id() == 2002) {
             //部分用户种新cookie、剩余用户种老cookie
-
-
+            if (isSetNewCookie(cookieApiParams.getUserid(), SHARD_COUNT, AIM_RESULT)) {
+                //种新cookie
+                result = createSGCookie(cookieApiParams);
+                if (result.isSuccess()) {
+                    ppinf = (String) result.getModels().get("ppinf");
+                    pprdig = (String) result.getModels().get("pprdig");
+                }
+                LOGGER.info("set new cookie userid:" + cookieApiParams.getUserid());
+            }
         } else {
-
+            result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+            if (result.isSuccess()) {
+                ppinf = (String) result.getModels().get("ppinf");
+                pprdig = (String) result.getModels().get("pprdig");
+            }
+            LOGGER.info("set old cookie userid:" + cookieApiParams.getUserid());
         }
 
+        //web端生成cookie后、种下cookie 、桌面端不然
+        if (cookieApiParams.getCreateAndSet() == 0) {
+            ServletUtil.setCookie(response, "ppinf", ppinf, cookieApiParams.getMaxAge(), CommonConstant.SOGOU_ROOT_DOMAIN);
+            ServletUtil.setCookie(response, "pprdig", pprdig, cookieApiParams.getMaxAge(), CommonConstant.SOGOU_ROOT_DOMAIN);
+            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
+            //response 回去的时候设置一个p3p的header,用来定义IE的跨域问题,解决IE下iframe里无法种cookie的bug。
+            response.setHeader("P3P", "CP=CAO PSA OUR");
+        }
 
+        //构建桌面端获取cookie的跳转地址
+        String redirecturl = buildRedirectUrl(result, cookieApiParams);
+        result.setDefaultModel("redirectUrl", redirecturl);
+
+        result.setSuccess(true);
         return result;
     }
 
@@ -218,6 +257,117 @@ public class CookieManagerImpl implements CookieManager {
             return true;
         }
         return false;
+    }
+
+
+    /**
+     * 关于passport cookie:
+     * 格式: ver|create_time|expire_time|info|hash|rsa
+     * 其中, hash 随便填, 并不使用(但要有), 而 rsa 为 pprdig的值.
+     * 存在passport cookie时, 也需要有ppinfo cookie, 值并不使用(但要有)
+     * <p/>
+     * <p/>
+     * ver=5的 那passport “ver|create_time|expire_time|info” 这些就是按照sginf来生成，hash 可以是随机的字符串 ，
+     * rsa是按照sgrdig方式来生成 ，同时 ppinfo 必须要传，可以是随机生成的字符串吧
+     *
+     * @param cookieApiParams
+     * @return
+     */
+    public Result createSGCookie(CookieApiParams cookieApiParams) {
+        Result result = new APIResultSupport(false);
+        Date current = new Date();
+        long createTime = current.getTime() / 1000;
+        long expireTime = DateUtils.addSeconds(current, (int) DateAndNumTimesConstant.TWO_WEEKS).getTime() / 1000;
+
+        try {
+            String infValue = buildCookieInfStr(cookieApiParams);
+            StringBuilder inf_prefix = new StringBuilder();
+            inf_prefix.append(SG_COOKIE_VERSION).append("|");
+            inf_prefix.append(createTime).append("|");
+            inf_prefix.append(expireTime).append("|");
+            inf_prefix.append(infValue);
+            String ppinf = inf_prefix.toString();
+
+            RSAEncoder rsaEncoder = new RSAEncoder(PRIVATE_KEY);
+            rsaEncoder.init();
+            String pprdig = rsaEncoder.sgrdig(ppinf);
+
+            //生成passport cookie
+            StringBuilder passportCookie = new StringBuilder();
+            passportCookie.append(ppinf).append("|");
+            passportCookie.append(ToolUUIDUtil.genreateUUidWithOutSplit().substring(0, 10)).append("|");
+            passportCookie.append(pprdig);
+
+            result.setSuccess(true);
+            result.setDefaultModel("ppinf", ppinf);
+            result.setDefaultModel("pprdig", pprdig);
+            result.setDefaultModel("passport", passportCookie.toString());
+            result.setDefaultModel("ppinfo", ToolUUIDUtil.genreateUUidWithOutSplit().substring(10, 20)); //再次找兰顺确定下？ module是否需要
+        } catch (Exception e) {
+            LOGGER.error("createSGCookie error. userid:" + cookieApiParams.getUserid(), e);
+        }
+        return result;
+    }
+
+
+    /**
+     * 构建桌面端获取cookie 用的跳转url
+     *
+     * @param result
+     * @return
+     */
+    private String buildRedirectUrl(Result result, CookieApiParams cookieApiParams) {
+
+        String ppinf = (String) result.getModels().get("ppinf");
+        String pprdig = (String) result.getModels().get("pprdig");
+        String passport = (String) result.getModels().get("passport");
+
+        long ct = System.currentTimeMillis();
+        String code1 = "", code2 = "", code3 = "";
+        if (!StringUtil.isBlank(ppinf)) {
+            code1 = commonManager.getCode(ppinf, CommonConstant.PC_CLIENTID, ct);
+        }
+        if (!StringUtil.isBlank(ppinf)) {
+            code2 = commonManager.getCode(pprdig, CommonConstant.PC_CLIENTID, ct);
+        }
+        if (!StringUtil.isBlank(ppinf)) {
+            code3 = commonManager.getCode(passport, CommonConstant.PC_CLIENTID, ct);
+        }
+
+        StringBuilder locationUrlBuilder = new StringBuilder(PP_COOKIE_URL);  // 移动浏览器端使用https域名会有问题
+        locationUrlBuilder.append("?").append("ppinf=").append(ppinf)
+                .append("&pprdig=").append(pprdig)
+                .append("&passport=").append(passport)
+                .append("&code1=").append(code1)
+                .append("&code2=").append(code2)
+                .append("&code=").append(code3)
+                .append("&s=").append(String.valueOf(ct))
+                .append("&lastdomain=").append(0);
+        if ("1".equals(cookieApiParams.getPersistentcookie())) {
+            locationUrlBuilder.append("&livetime=1");
+        }
+        String ru = buildRedirectUrl(cookieApiParams.getRu(), 0);
+        try {
+            // 1105不允许URLEncode，但壁纸需要URLEncode，所以传clientId区分
+            if (cookieApiParams.getClient_id() != CommonConstant.PINYIN_MAC_CLIENTID) {
+                ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            }
+        } catch (UnsupportedEncodingException e) {
+        }
+        locationUrlBuilder.append("&ru=").append(ru);   // 输入法Mac要求Location里的ru不能decode
+        return locationUrlBuilder.toString();
+    }
+
+
+    private String buildRedirectUrl(String ru, int status) {
+        if (Strings.isNullOrEmpty(ru)) {
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
+        if (ru.contains("?")) {
+            return ru + "&status=" + status;
+        } else {
+            return ru + "?status=" + status;
+        }
     }
 
 

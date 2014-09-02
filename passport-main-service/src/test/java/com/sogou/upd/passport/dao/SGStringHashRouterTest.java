@@ -1,12 +1,22 @@
 package com.sogou.upd.passport.dao;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.utils.FileUtil;
 import com.sogou.upd.passport.dao.dal.routing.SGStringHashRouter;
 import junit.framework.TestCase;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -59,11 +69,12 @@ public class SGStringHashRouterTest extends TestCase {
     }
 
 
+    @Ignore
     @Test
     public void testModuleShard() {
         String userid = "gang.chen0505@gmail.com";
         String userid1 = "nanajiaozixian22@sogou.com";
-        int shardCount = 2;
+        int shardCount = 32;
         int aimCount = 0;
 
         String useridHash = DigestUtils.md5Hex(userid1);
@@ -74,7 +85,19 @@ public class SGStringHashRouterTest extends TestCase {
         System.out.println("===== module userid shard reuslt :" + shardValue);
 //        }
 
-
+        Map<String, String> shardMap = Maps.newHashMap();
+        String file = "D:\\项目\\module替换\\test_module_shard.sql";
+        String line;
+        Path dataPath = Paths.get(file);
+        try (BufferedReader reader = Files.newBufferedReader(dataPath, Charset.defaultCharset())) {
+            while ((line = reader.readLine()) != null) {
+                int tempShard = Integer.parseInt(DigestUtils.md5Hex(line).substring(0, 2), 16);
+                shardMap.put(line, String.valueOf(tempShard % shardCount));
+            }
+            FileUtil.storeFileMap2Local("D:\\项目\\module替换\\shard_result_5.txt", shardMap);
+        } catch (Exception e) {
+            LOGGER.error("testModulesShard error.", e);
+        }
     }
 
 }

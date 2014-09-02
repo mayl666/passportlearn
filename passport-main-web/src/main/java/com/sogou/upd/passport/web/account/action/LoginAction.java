@@ -13,6 +13,7 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.common.validation.constraints.RuValidator;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -133,11 +134,23 @@ public class LoginAction extends BaseController {
                 sogouRu = CommonConstant.DEFAULT_INDEX_URL;
             }
 
-            //TODO 部分用户种新cookie module 替换
-            //种cookie  TODO 先注释
+            //最初版本
 //            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
             //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie  module 替换
-            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName);
+//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName);
+
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(userId);
+            cookieApiParams.setClient_id(clientId);
+            cookieApiParams.setRu(sogouRu);
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            cookieApiParams.setPersistentcookie(String.valueOf(1));
+            cookieApiParams.setIp(ip);
+            cookieApiParams.setUniqname(uniqName);
+            cookieApiParams.setMaxAge(sogouMaxAge);
+            cookieApiParams.setCreateAndSet(0);
+
+            result = cookieManager.createCookie(response, cookieApiParams);
             if (result.isSuccess()) {
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
                 result.setDefaultModel("userid", userId);

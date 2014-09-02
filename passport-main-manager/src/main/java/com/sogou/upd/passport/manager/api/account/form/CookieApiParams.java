@@ -32,6 +32,11 @@ public class CookieApiParams extends BaseApiParams {
 
     private int maxAge;
 
+    private String domain;
+
+
+    //是否生成之后就种cookie，0:生成后就种、1:生成后不种
+    private int createAndSet;
 
     public CookieApiParams() {
     }
@@ -125,5 +130,21 @@ public class CookieApiParams extends BaseApiParams {
 
     public void setMaxAge(int maxAge) {
         this.maxAge = maxAge;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public int getCreateAndSet() {
+        return createAndSet;
+    }
+
+    public void setCreateAndSet(int createAndSet) {
+        this.createAndSet = createAndSet;
     }
 }
