@@ -145,9 +145,9 @@ public class SecureApiController extends BaseController {
                 update_internal = params.getUpdate_interval();
             }
 
-//            StringBuffer resultText = new StringBuffer("0 0 10");
-            StringBuffer resultText = new StringBuffer();
-            resultText.append("0").append(" ").append(params.getUpdate_timestamp()).append(" ").append(update_internal).append(BLACK_USER_LIST_VALUE_SPLIT);
+            StringBuffer resultText = new StringBuffer("0 0 10");
+//            StringBuffer resultText = new StringBuffer();
+//            resultText.append("0").append(" ").append(params.getUpdate_timestamp()).append(" ").append(update_internal).append(BLACK_USER_LIST_VALUE_SPLIT);
 //            resultText.append("0").append(" ").append("0").append(" ").append(update_internal);
 //            resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append("nanajiaozixian21@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
 //            resultText.append("nanajiaozixian22@sogou.com ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
@@ -167,12 +167,12 @@ public class SecureApiController extends BaseController {
 //            resultText.append("pp_test@sohu.com ").append(expireTime);
 
             //为了测试 构造测试数据
-            List<String> blackLists = moduleBlackListManager.getBlackLists();
+            /*List<String> blackLists = moduleBlackListManager.getBlackLists();
             if (blackLists != null && !blackLists.isEmpty()) {
                 for (String userid : blackLists) {
                     resultText.append(userid).append(" ").append(expireTime).append(BLACK_USER_LIST_VALUE_SPLIT);
                 }
-            }
+            }*/
 
             result.setSuccess(true);
             return resultText.toString();
