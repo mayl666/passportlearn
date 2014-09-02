@@ -203,8 +203,8 @@ public class CookieManagerImpl implements CookieManager {
         //首批应用市场（web端）、壁纸（桌面端）
         String ppinf = null;
         String pprdig = null;
-        //增加游戏便于测试
-        if (cookieApiParams.getClient_id() == 1110 || cookieApiParams.getClient_id() == 2002 || cookieApiParams.getClient_id() == 1100) {
+        //增加游戏 通行证便于测试
+        if (cookieApiParams.getClient_id() == 1110 || cookieApiParams.getClient_id() == 2002 || cookieApiParams.getClient_id() == 1100 || cookieApiParams.getClient_id() == 1120) {
             //部分用户种新cookie、剩余用户种老cookie
             if (isSetNewCookie(cookieApiParams.getUserid(), SHARD_COUNT, AIM_RESULT)) {
                 //种新cookie
