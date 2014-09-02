@@ -14,7 +14,6 @@ public class TKeyParams {
         return sgid;
     }
 
-    @NotBlank(message = "client_id不允许为空!")
     @Min(0)
     private int client_id;
 
