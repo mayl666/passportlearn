@@ -39,12 +39,6 @@ public interface OAuth2ResourceManager {
      * @return
      */
     public Result queryPassportIdByAccessToken(String token,int clientId,String instanceId,String username);
-    /**
-     * 根据passportId获取昵称
-     * @param passportId
-     * @return
-     */
-    public String getUniqname(String passportId,int clientId);
 
     /**
      * 通过token获取passportId

@@ -39,7 +39,6 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE = "SP.PASSPORTID:MODSECINFOSECURECODE"; // passportId与修改密保内容secureCode映射
     public static final String CACHE_PREFIX_PASSPORTID_EMAILSCODE = "SP.PASSPORTID:EMAILSCODE_"; // passportId与email中scode的映射
     public static final String CACHE_PREFIX_PASSPORTID_SENDEMAILNUM = "SP.PASSPORTID:SENDEMAILNUM_"; // passportId与email发送次数的映射
-    public static final String CACHE_PREFIX_PASSPORTID_ACCOUNT_BASE_INFO = "SP.PASSPORTID:ACCOUNT_BASE_INFO_"; // passportId与sohu+头像昵称映射
     public static final String CACHE_PREFIX_MOBILE_SMSCODE_IPBLACKLIST = "SP.MOBILESMSCODE:IPBLACKLIST_SET_"; // ip与发送手机短信次数映射
     public static final String CACHE_PREFIX_MOBILE_SENDSMSCODENUM = "SP.MOBILESMSCODE:NUMLIMIT_SET_"; // 手机号与发送手机短信次数映射
 
@@ -84,7 +83,6 @@ public class CacheConstant {
     /*================CONNECT 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = "SP.PASSPORTID:CONNECTTOKEN_"; //passportId+provider+appKey与ConnectToken映射
     public static final String CACHE_PREFIX_OPENID_CONNECTRELATION = "SP.OPENID:CONNECTRELATION_";  // openid+provider与ConnectRelation的映射
-    public static final String CACHE_PREFIX_PASSPORTID_ACCESSTOKEN = "SP.PASSPORTID:ACCESSTOKEN_"; //passportId与AccessToken映射
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO = "SP.PASSPORTID:CONNECTUSERINFO_"; //passportId与ConnectUserInfoVO映射
 
 
@@ -95,16 +93,11 @@ public class CacheConstant {
     /*================用户反馈相关缓存常量=====================*/
     public static final String CACHE_PREFIX_ID_PROBLEMTYPE = "SP.ID:PROBLEMTYPE_"; // Id与problem映射 CACHE_PREFIX_PASSPORTID_PROBLEM
     public static final String CACHE_PREFIX_PASSPORTID_PROBLEMLIST = "SP.PASSPORTID:PROBLEMLIST_"; // passortId与问题列表之前的映射
-    public static final String CACHE_PREFIX_PROBLEM_PASSPORTIDINBLACKLIST = "SP.PASSPORTID_:ADDPROBLEMTIMES_"; // passortId与提交反馈次数之间的映射
     public static final String CACHE_PREFIX_PROBLEM_IPINBLACKLIST = "SP.IP_ADDPROBLEMTIMES:_"; // IP与提交反馈次数之间的映射
 
 
     /*==================token缓存常量=====================*/
     public static final String CACHE_PREFIX_SECURECODE = "SP.SECURECODE:SCODE_";
-
-    /*==================proxy相关缓存常量=====================*/
-    // TODO:迁移后，此常量将删除
-    public static final String CACHE_PREFIX_MOBILE_SMSCODE_PROXY = "SP.MOBILE:PROXY_SMSCODE_";
 
     /*-----------------------------------------   KV系统   -----------------------------------------*/
     /*==================核心kv 动作记录相关缓存常量=====================*/
