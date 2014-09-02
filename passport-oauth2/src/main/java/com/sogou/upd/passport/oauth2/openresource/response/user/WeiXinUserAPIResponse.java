@@ -57,9 +57,10 @@ public class WeiXinUserAPIResponse extends UserAPIResponse {
     }
 
     private int formGender(String gender) {
-        int sex = 0;
-        if (gender.equals("男")) {
-            sex = 1;
+        //在微信的性别中：1为男性，2为女性;Passport的1为男性，0为女性
+        int sex = 1;
+        if (gender.equals("2")) {
+            sex = 0;
         }
         return sex;
     }
