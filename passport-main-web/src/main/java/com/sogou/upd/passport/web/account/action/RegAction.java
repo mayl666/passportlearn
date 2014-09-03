@@ -194,16 +194,16 @@ public class RegAction extends BaseController {
                 if (redisUtils.checkKeyIsExist(key)) {
                     int checkNum = Integer.parseInt(redisUtils.get(key));
                     if (checkNum >= 1000) {// 1小时最多注册1000个
-                        return false;
+                        return true;
                     } else {
                         redisUtils.increment(key);
                     }
                 } else {
                     redisUtils.setWithinSeconds(key, "1", DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                 }
-                return true;
+                return false;
             } catch (Exception e) {
-                logger.error("[Email] service method inc limit for send email error.", e);
+                logger.error("[/web/reguser] reguser limit.", e);
                 return false;
             }
         }
