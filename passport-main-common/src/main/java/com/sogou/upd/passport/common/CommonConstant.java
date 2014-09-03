@@ -31,13 +31,8 @@ public class CommonConstant {
     public static final String PC_REDIRECT_PASSWORD = "password"; //跳转到修改密码页面
     //双读异常原因
     public static final String AUTH_MESSAGE = "update-pwd-bindmobile"; //用来读分离时记log时用，主账号有修改绑定手机或密码操作
-    public static final String AUTH_SGE_SHS_MESSAGE = "SoGouError-SoHuSuccess"; //用来读分离时记log时用,检查用户名密码时，SG错，SH对
-    public static final String AUTH_SGE_SHE_MESSAGE = "SoGouError-SoHuError"; //用来读分离时记log时用,检查用户名密码时，SG错，SH错
-    public static final String CHECK_SGN_SHY_MESSAGE = "SoGouNotExist-SoHuExist"; //用来读分离时记log时用,检查用户名是否可用时，SG无，SH有
     public static final String CHECK_MESSAGE = "update-bindmobile"; //用来读分离时记log时用,检查用户名是否可用时，主账号有修改绑定手机操作
     public static final String SG_NOT_EXIST = "SoGouNotExist"; //账号在搜狗不存在
-    public static final String MOBILE_MESSAGE = "mobile-SGNotExist-SHExist"; //用来读分离时记log时用,根据手机号查询主账号
-    public static final String SOGOU_RESETPWD_MESSAGE = "resetpwd-checksg"; //搜狗账号找回密码后，记录log
     //双写异常原因
     public static final String SGSUCCESS_SHERROR = "write_SGSuccess_SHError";//SG写成功，SH写失败
     public static final String SGSUCCESS_SHUNBINDERROR = "write_SGSuccess_SHUnBindError";//SG写成功，SH解除绑定失败
@@ -61,8 +56,6 @@ public class CommonConstant {
     public static final String APP_ID = "appid";
     public static final String RESQUEST_CT = "ct";
     public static final String RESQUEST_CODE = "code";
-    public static final String UNIQNAME = "uniqname";
-    public static final String MESSAGE = "message";
     public static final String HAVE_UPDATE = "true";//用户有修改操作
 
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
@@ -105,19 +98,11 @@ public class CommonConstant {
     public static final String SIGN_IN_BLACKLIST = "1";//黑名单标识
 
     //=============缓存相关配置项====================
-//	public static final int TIMEOUT_ONEHOUR = 60 * 60 * 3;// 3小时, 参考http://stackoverflow.com/questions/967875/memcached-expiration-time
-
     //在request attribut中存在的用于及时的StopWatch的name
     public static final String STOPWATCH = "stopWatch";
 
-    public static boolean IS_USE_IEBBS_UNIQNAME = true;
-
     public static final String HTTPS_HEADER = "X-Https";
     public static final String HTTPS_VALUE = "https";
-
-    public static final String RESQUEST_USERNAME = "username";
-    public static final String RESQUEST_USERID = "userid";
-
 
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
@@ -135,7 +120,19 @@ public class CommonConstant {
 
     static {
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1001, 4));
+
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2001, 4));
+
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1024, 3));
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1024, 4));
+
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2011, 3));
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2011, 4));
+
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2018, 3));
+
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2020, 3));
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2020, 4));
     }
 
 }
