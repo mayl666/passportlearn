@@ -206,8 +206,15 @@ public class CookieManagerImpl implements CookieManager {
             Map<String, String> appsMap = Maps.newConcurrentMap();
             if (!Strings.isNullOrEmpty(appModuleReplace)) {
                 appsMap = Splitter.on(KEY_SPLITER).withKeyValueSeparator(VALUE_SPLITER).split(appModuleReplace);
+            } else {
+                result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+                if (result.isSuccess()) {
+                    ppinf = (String) result.getModels().get("ppinf");
+                    pprdig = (String) result.getModels().get("pprdig");
+                }
+                LOGGER.info("set old cookie userid:" + cookieApiParams.getUserid());
             }
-             //1110:应用市场 2002:壁纸 1100:搜狗游戏 1120:通行证
+            //1110:应用市场 2002:壁纸 1100:搜狗游戏 1120:通行证
 //            if (cookieApiParams.getClient_id() == 1110 || cookieApiParams.getClient_id() == 2002 || cookieApiParams.getClient_id() == 1100 || cookieApiParams.getClient_id() == 1120) {
             if (appsMap.containsKey(cookieApiParams.getClient_id())) {
 
