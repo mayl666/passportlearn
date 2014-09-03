@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
@@ -66,8 +67,8 @@ public class CookieManagerImpl implements CookieManager {
     //目标值
     private static final int AIM_RESULT = 0;
 
-
-    private static final String PP_COOKIE_URL = "http://account.sogou.com/act/setppcookie";
+    //生成cookie并且种cookie
+    private static final int CREATE_COOKIE_AND_SET = 0;
 
 
     // 非对称加密算法-私钥
@@ -214,6 +215,13 @@ public class CookieManagerImpl implements CookieManager {
                     pprdig = (String) result.getModels().get("pprdig");
                 }
                 LOGGER.info("set new cookie userid:" + cookieApiParams.getUserid());
+            } else {
+                result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+                if (result.isSuccess()) {
+                    ppinf = (String) result.getModels().get("ppinf");
+                    pprdig = (String) result.getModels().get("pprdig");
+                }
+                LOGGER.info("set old cookie userid:" + cookieApiParams.getUserid());
             }
         } else {
             result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
@@ -225,7 +233,7 @@ public class CookieManagerImpl implements CookieManager {
         }
 
         //web端生成cookie后、种下cookie 、桌面端不同
-        if (cookieApiParams.getCreateAndSet() == 0) {
+        if (cookieApiParams.getCreateAndSet() == CREATE_COOKIE_AND_SET) {
             ServletUtil.setCookie(response, "ppinf", ppinf, cookieApiParams.getMaxAge(), CommonConstant.SOGOU_ROOT_DOMAIN);
             ServletUtil.setCookie(response, "pprdig", pprdig, cookieApiParams.getMaxAge(), CommonConstant.SOGOU_ROOT_DOMAIN);
             response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
@@ -335,7 +343,7 @@ public class CookieManagerImpl implements CookieManager {
             code3 = commonManager.getCode(passport, CommonConstant.PC_CLIENTID, ct);
         }
 
-        StringBuilder locationUrlBuilder = new StringBuilder(PP_COOKIE_URL);  // 移动浏览器端使用https域名会有问题
+        StringBuilder locationUrlBuilder = new StringBuilder(CommonConstant.PP_COOKIE_URL);  // 移动浏览器端使用https域名会有问题
         locationUrlBuilder.append("?").append("ppinf=").append(ppinf)
                 .append("&pprdig=").append(pprdig)
                 .append("&passport=").append(passport)

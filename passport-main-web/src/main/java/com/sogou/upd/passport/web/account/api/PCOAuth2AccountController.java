@@ -427,7 +427,7 @@ public class PCOAuth2AccountController extends BaseController {
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         cookieApiParams.setIp(getIp(request));
         cookieApiParams.setMaxAge(-1);
-        cookieApiParams.setCreateAndSet(0);
+        cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
         cookieApiParams.setUniqname(StringUtils.EMPTY);
 
         cookieManager.createCookie(response, cookieApiParams);

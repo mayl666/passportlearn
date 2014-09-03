@@ -164,7 +164,7 @@ public class RegAction extends BaseController {
                     cookieApiParams.setIp(ip);
                     cookieApiParams.setUniqname(StringUtils.EMPTY);
                     cookieApiParams.setMaxAge(-1);
-                    cookieApiParams.setCreateAndSet(0);
+                    cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
 
                     result = cookieManager.createCookie(response, cookieApiParams);
                 }
@@ -293,7 +293,7 @@ public class RegAction extends BaseController {
             cookieApiParams.setIp(ip);
             cookieApiParams.setUniqname(StringUtils.EMPTY);
             cookieApiParams.setMaxAge(-1);
-            cookieApiParams.setCreateAndSet(0);
+            cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
 
             result = cookieManager.createCookie(response, cookieApiParams);
             if (result.isSuccess()) {

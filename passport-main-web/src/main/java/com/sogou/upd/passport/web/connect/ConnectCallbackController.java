@@ -107,7 +107,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 cookieApiParams.setPersistentcookie(String.valueOf(1));
                 cookieApiParams.setIp(getIp(req));
                 cookieApiParams.setMaxAge((int) DateAndNumTimesConstant.TWO_WEEKS);
-                cookieApiParams.setCreateAndSet(0);
+                cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
                 cookieApiParams.setUniqname((String) result.getModels().get("refnick"));
 
                 cookieManager.createCookie(res, cookieApiParams);

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.dao;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.utils.FileUtil;
 import com.sogou.upd.passport.dao.dal.routing.SGStringHashRouter;
 import junit.framework.TestCase;
@@ -73,7 +74,8 @@ public class SGStringHashRouterTest extends TestCase {
     @Test
     public void testModuleShard() {
         String userid = "gang.chen0505@gmail.com";
-        String userid1 = "nanajiaozixian22@sogou.com";
+//        String userid1 = "nanajiaozixian22@sogou.com";
+        String userid1 = "wpv5@sogou.com";
         int shardCount = 2;
         int aimCount = 0;
 
@@ -82,10 +84,10 @@ public class SGStringHashRouterTest extends TestCase {
         int shardValue = tempInt % shardCount;
 
 //        if (shardValue == aimCount) {
-        System.out.println("===== module userid shard reuslt :" + shardValue);
+        System.out.println("===== module shard result :" + shardValue);
 //        }
 
-        Map<String, String> shardMap = Maps.newHashMap();
+       /* Map<String, String> shardMap = Maps.newHashMap();
 //        String file = "D:\\项目\\module替换\\test_module_shard.sql";
         String file = "D:\\项目\\module替换\\bingna_test.txt";
         String line;
@@ -98,9 +100,10 @@ public class SGStringHashRouterTest extends TestCase {
             FileUtil.storeFileMap2Local("D:\\项目\\module替换\\shard_bingna_test_2.txt", shardMap);
         } catch (Exception e) {
             LOGGER.error("testModulesShard error.", e);
-        }
+        }*/
 
 
     }
+
 
 }
