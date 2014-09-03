@@ -238,17 +238,6 @@ public class RegManagerImpl implements RegManager {
         return new RegEmailApiParams(username, password, ip, clientId, ru);
     }
 
-
-    private RegMobileCaptchaApiParams buildProxyApiParams(String mobile, String password, String captcha, int clientId, String ip) {
-        RegMobileCaptchaApiParams regMobileCaptchaApiParams = new RegMobileCaptchaApiParams();
-        regMobileCaptchaApiParams.setMobile(mobile);
-        regMobileCaptchaApiParams.setPassword(password);
-        regMobileCaptchaApiParams.setCaptcha(captcha);
-        regMobileCaptchaApiParams.setClient_id(clientId);
-        regMobileCaptchaApiParams.setIp(ip);
-        return regMobileCaptchaApiParams;
-    }
-
     @Override
     public Result activeEmail(ActiveEmailParams activeParams, String ip) throws Exception {
         Result result = new APIResultSupport(false);

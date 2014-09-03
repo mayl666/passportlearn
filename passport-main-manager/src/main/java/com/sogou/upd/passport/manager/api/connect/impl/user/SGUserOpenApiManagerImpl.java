@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.ConnectTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -13,9 +12,11 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.UserOpenApiManager;
 import com.sogou.upd.passport.manager.api.connect.form.user.UserOpenApiParams;
+import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
+import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -40,6 +41,8 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
 
     @Autowired
     private ConnectAuthService connectAuthService;
+    @Autowired
+    private ConnectConfigService connectConfigService;
     @Autowired
     private ConnectApiManager sgConnectApiManager;
 
@@ -93,7 +96,8 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             if (result.isSuccess()) {
                 connectToken = (ConnectToken) result.getModels().get("connectToken");
                 int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-                String appKey = ConnectTypeEnum.getAppKey(provider);
+                ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+                String appKey = connectConfig.getAppKey();
                 //读第三方api获取第三方用户信息,并更新搜狗DB的connect_token表
                 connectUserInfoVO = connectAuthService.getConnectUserInfo(provider, appKey, connectToken);
                 if (connectUserInfoVO != null) {
@@ -115,7 +119,8 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     public Result obtainConnectUserInfo(String passportId, int clientId) throws ServiceException, IOException, OAuthProblemException {
         Result result;
         int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-        String appKey = ConnectTypeEnum.getAppKey(provider);
+        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+        String appKey = connectConfig.getAppKey();
         ConnectUserInfoVO connectUserInfoVO;
         ConnectToken connectToken;
         result = sgConnectApiManager.obtainConnectToken(passportId, clientId);
