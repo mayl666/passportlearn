@@ -75,16 +75,12 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING = "SP.PASSPORTID:IMAGE_HASH_"; //passportId与新旧头像映射
 
     /*================绑定密保限制相关缓存常量=====================*/
-    public static final String CACHE_PREFIX_PASSPORTID_BINDEMAILNUM = "SP.PASSPORTID:BINDEMAILNUM_"; // passportId与当日绑定密保邮箱次数
-    public static final String CACHE_PREFIX_PASSPORTID_BINDMOBILENUM = "SP.PASSPORTID:BINDMOBILENUM_"; // passportId与当日绑定密保手机次数
-    public static final String CACHE_PREFIX_PASSPORTID_BINDQUESNUM = "SP.PASSPORTID:BINDQUESNUM_"; // passportId与当日绑定密保问题次数
     public static final String CACHE_PREFIX_PASSPORTID_BINDNUM = "SP.PASSPORTID:BINDNUM_"; // passportId与当日设置密保次数
 
     /*================CONNECT 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = "SP.PASSPORTID:CONNECTTOKEN_"; //passportId+provider+appKey与ConnectToken映射
     public static final String CACHE_PREFIX_OPENID_CONNECTRELATION = "SP.OPENID:CONNECTRELATION_";  // openid+provider与ConnectRelation的映射
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO = "SP.PASSPORTID:CONNECTUSERINFO_"; //passportId与ConnectUserInfoVO映射
-
 
     /*================CONFIG 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_CLIENTID_APPCONFIG = "SP.CLIENTID:APPCONFIG_";     //clientid与appConfig映射
@@ -94,7 +90,6 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_ID_PROBLEMTYPE = "SP.ID:PROBLEMTYPE_"; // Id与problem映射 CACHE_PREFIX_PASSPORTID_PROBLEM
     public static final String CACHE_PREFIX_PASSPORTID_PROBLEMLIST = "SP.PASSPORTID:PROBLEMLIST_"; // passortId与问题列表之前的映射
     public static final String CACHE_PREFIX_PROBLEM_IPINBLACKLIST = "SP.IP_ADDPROBLEMTIMES:_"; // IP与提交反馈次数之间的映射
-
 
     /*==================token缓存常量=====================*/
     public static final String CACHE_PREFIX_SECURECODE = "SP.SECURECODE:SCODE_";
@@ -116,10 +111,6 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_USERNAME_GETPAIRTOKENNUM = "SP.USERNAME:GETPAIRTOKENNUM_"; //username连续登陆的次数
     public static final String CACHE_PREFIX_IP_GETPAIRTOKENNUM = "SP.IP:GETPAIRTOKENNUM_"; //IP连续登陆的次数
 
-    /*==================内部接口登陆相关缓存常量========================*/
-    public static final String CACHE_PREFIX_USERNAME_AUTHUSER_NUM = "SP.USERNAME:AUTHUSERNNUM_HASH_"; //username连续登陆的次数
-    public static final String CACHE_PREFIX_IP_AUTHUSER_NNUM = "SP.IP:AUTHUSERNUM_HASH_"; //IP连续登陆的次数
-    public static final String CACHE_PREFIX_USERIP_AUTHUSER_NNUM = "SP.USERIP:AUTHUSERNUM_HASH_"; //user IP连续登陆的次数
     /*==================初始化client_id限制接口的调用次数========================*/
     public static final String CACHE_PREFIX_CLIENTID_INTERFACE_LIMITED_INIT = "SP.CLIENTID:INTERFACE_LIMITED_INIT_HASH_"; //client_id与接口初始限制次数，其中包含了应用所对应的接口及其初始限制次数
     /*==================根据client_id修改限制接口的调用次数========================*/

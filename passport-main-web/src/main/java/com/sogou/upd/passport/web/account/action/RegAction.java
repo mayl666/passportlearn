@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -10,6 +11,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
@@ -28,8 +30,6 @@ import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import com.sogou.upd.passport.web.account.form.RegUserNameParams;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,7 +47,6 @@ import java.net.URLDecoder;
 @Controller
 @RequestMapping("/web")
 public class RegAction extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
 
     @Autowired
     private RegManager regManager;
@@ -61,7 +60,8 @@ public class RegAction extends BaseController {
     private CookieManager cookieManager;
     @Autowired
     private CommonManager commonManager;
-
+    @Autowired
+    private RedisUtils redisUtils;
 
     /**
      * 用户注册检查用户名是否存在
@@ -138,6 +138,14 @@ public class RegAction extends BaseController {
                 return result.toString();
             }
             int clientId = Integer.valueOf(regParams.getClient_id());
+            //todo 防止邮箱注册攻击，临时增加接口频次限制
+            if (isSnapBlackList(clientId)) {
+                finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
+                result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
+                result.setMessage("注册失败");
+                return result.toString();
+            }
+
             result = regManager.webRegister(regParams, ip);
             if (result.isSuccess()) {
                 //设置来源
@@ -177,6 +185,29 @@ public class RegAction extends BaseController {
             }
         }
         return result.toString();
+    }
+
+    private boolean isSnapBlackList(int clientId) {
+        if (clientId == 1014) {
+            String key = "SP.CLIENTID:WEBREGISTER_LIMITED_NUM_" + clientId;
+            try {
+                if (redisUtils.checkKeyIsExist(key)) {
+                    int checkNum = Integer.parseInt(redisUtils.get(key));
+                    if (checkNum >= 1000) {// 1小时最多注册1000个
+                        return false;
+                    } else {
+                        redisUtils.increment(key);
+                    }
+                } else {
+                    redisUtils.setWithinSeconds(key, "1", DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
+                }
+                return true;
+            } catch (Exception e) {
+                logger.error("[Email] service method inc limit for send email error.", e);
+                return false;
+            }
+        }
+        return false;
     }
 
     /**
@@ -288,14 +319,14 @@ public class RegAction extends BaseController {
             throws Exception {
         //sendsms因SDK已经发版，需要兼容， 改个策略，
         // GET方式中，如果有cinfo参数，并且参数值内容匹配，这样能发验证码，其它的还是POST限制。
-        boolean canProcessGet=false;
-        if("GET".equalsIgnoreCase(request.getMethod())){
-            String cInfo=request.getHeader("cinfo");
-            if(StringUtil.isNotEmpty(cInfo)){
-                canProcessGet=true;
+        boolean canProcessGet = false;
+        if ("GET".equalsIgnoreCase(request.getMethod())) {
+            String cInfo = request.getHeader("cinfo");
+            if (StringUtil.isNotEmpty(cInfo)) {
+                canProcessGet = true;
             }
         }
-        if(!"POST".equalsIgnoreCase(request.getMethod()) && !canProcessGet){
+        if (!"POST".equalsIgnoreCase(request.getMethod()) && !canProcessGet) {
             throw new Exception("can't process GET");
         }
         ////////end //////////////////
