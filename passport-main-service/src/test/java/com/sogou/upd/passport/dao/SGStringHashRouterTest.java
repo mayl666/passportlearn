@@ -75,8 +75,9 @@ public class SGStringHashRouterTest extends TestCase {
     public void testModuleShard() {
         String userid = "gang.chen0505@gmail.com";
 //        String userid1 = "nanajiaozixian22@sogou.com";
-        String userid1 = "wpv5@sogou.com";
-        int shardCount = 2;
+//        String userid1 = "wpv5@sogou.com";
+        String userid1 = "nanajiaozixian43@sogou.com";
+        int shardCount = 1;
         int aimCount = 0;
 
         String useridHash = DigestUtils.md5Hex(userid1);

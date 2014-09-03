@@ -1,21 +1,16 @@
 package com.sogou.upd.passport.manager.account.impl;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.CommonHelper;
-import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.LoginConstant;
+import com.sogou.upd.passport.common.*;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSAEncoder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.DateUtil;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.common.utils.ToolUUIDUtil;
+import com.sogou.upd.passport.common.utils.*;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -51,12 +46,7 @@ public class CookieManagerImpl implements CookieManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CookieManagerImpl.class);
 
-    private String PPINF = "2|1381822290|1383031890|bG9naW5pZDowOnx1c2VyaWQ6MjU6c2dwcm9jZXNzdGVzdDAxQHNvZ291LmNvbXxzZXJ2aWNldXNlOjIwOjAwMTAwMDAwMDAwMDAwMDAwMDAwfGNydDoxMDoyMDEzLTEwLTE1fGVtdDoxOjB8YXBwaWQ6NDoxMTIwfHRydXN0OjE6MXxwYXJ0bmVyaWQ6MTowfHJlbGF0aW9uOjA6fHV1aWQ6MTY6NTNkNmUwNzFmYTk5NDdic3x1aWQ6MTY6NTNkNmUwNzFmYTk5NDdic3x1bmlxbmFtZTowOnw";
-    private String PPRDIG = "kOdlRIxptgVY2ZRcjKYchIY9JBWkqGM_MjQy11OTC0fB9ACztDrs0lnjzAgHenjfCb8_Bgc6RAxO15TIaR5DeJTTQQUGiz-afCzDU9dYUUfge_WJLfiXjfR7iEGBDlBIQ5eSTV0oyMdLQHE-8UlVLYjbohSOzVVUPqRfoDvLE0w";
-
-    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
     private static final int SG_COOKIE_MIN_LEN = 3;
-
 
     //搜狗域cookie 版本
     private static final int SG_COOKIE_VERSION = 5;
@@ -69,6 +59,10 @@ public class CookieManagerImpl implements CookieManager {
 
     //生成cookie并且种cookie
     private static final int CREATE_COOKIE_AND_SET = 0;
+
+    private static final String KEY_SPLITER = "|";
+
+    private static final String VALUE_SPLITER = ":";
 
 
     // 非对称加密算法-私钥
@@ -97,6 +91,9 @@ public class CookieManagerImpl implements CookieManager {
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginApiManager sgLoginApiManager;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
 
     @Override
@@ -181,7 +178,6 @@ public class CookieManagerImpl implements CookieManager {
         cookieApiParams.setIp(ip);
         cookieApiParams.setUniqname(uniqname);
         Result result = null;
-        //放量的时候在此设置 route（userid）== 00 account_00 表
         Boolean setNewCookie = Boolean.TRUE;
         if (client_id == 1100 || client_id == 1120) {
             if (setNewCookie) {
@@ -204,17 +200,37 @@ public class CookieManagerImpl implements CookieManager {
         //首批应用市场（web端）、壁纸（桌面端）
         String ppinf = null;
         String pprdig = null;
-        //增加游戏 通行证便于测试
-        if (cookieApiParams.getClient_id() == 1110 || cookieApiParams.getClient_id() == 2002 || cookieApiParams.getClient_id() == 1100 || cookieApiParams.getClient_id() == 1120) {
-            //部分用户种新cookie、剩余用户种老cookie
-            if (isSetNewCookie(cookieApiParams.getUserid(), SHARD_COUNT, AIM_RESULT)) {
-                //种新cookie
-                result = createSGCookie(cookieApiParams);
-                if (result.isSuccess()) {
-                    ppinf = (String) result.getModels().get("ppinf");
-                    pprdig = (String) result.getModels().get("pprdig");
+        try {
+            String appModuleReplace = redisUtils.get(CacheConstant.CACHE_KEY_MODULE_APP_REPLACE);
+
+            Map<String, String> appsMap = Maps.newConcurrentMap();
+            if (!Strings.isNullOrEmpty(appModuleReplace)) {
+                appsMap = Splitter.on(KEY_SPLITER).withKeyValueSeparator(VALUE_SPLITER).split(appModuleReplace);
+            }
+             //1110:应用市场 2002:壁纸 1100:搜狗游戏 1120:通行证
+//            if (cookieApiParams.getClient_id() == 1110 || cookieApiParams.getClient_id() == 2002 || cookieApiParams.getClient_id() == 1100 || cookieApiParams.getClient_id() == 1120) {
+            if (appsMap.containsKey(cookieApiParams.getClient_id())) {
+
+                //数据筛选 shard 基数
+                int shard_count = Integer.parseInt(appsMap.get(cookieApiParams.getClient_id()));
+
+                //部分用户种新cookie、剩余用户种老cookie
+                if (isSetNewCookie(cookieApiParams.getUserid(), shard_count, AIM_RESULT)) {
+                    //种新cookie
+                    result = createSGCookie(cookieApiParams);
+                    if (result.isSuccess()) {
+                        ppinf = (String) result.getModels().get("ppinf");
+                        pprdig = (String) result.getModels().get("pprdig");
+                    }
+                    LOGGER.info("set new cookie userid:" + cookieApiParams.getUserid());
+                } else {
+                    result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+                    if (result.isSuccess()) {
+                        ppinf = (String) result.getModels().get("ppinf");
+                        pprdig = (String) result.getModels().get("pprdig");
+                    }
+                    LOGGER.info("set old cookie userid:" + cookieApiParams.getUserid());
                 }
-                LOGGER.info("set new cookie userid:" + cookieApiParams.getUserid());
             } else {
                 result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
                 if (result.isSuccess()) {
@@ -223,29 +239,23 @@ public class CookieManagerImpl implements CookieManager {
                 }
                 LOGGER.info("set old cookie userid:" + cookieApiParams.getUserid());
             }
-        } else {
-            result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-            if (result.isSuccess()) {
-                ppinf = (String) result.getModels().get("ppinf");
-                pprdig = (String) result.getModels().get("pprdig");
+
+            //web端生成cookie后、种下cookie 、桌面端不同
+            if (cookieApiParams.getCreateAndSet() == CREATE_COOKIE_AND_SET) {
+                ServletUtil.setCookie(response, "ppinf", ppinf, cookieApiParams.getMaxAge(), CommonConstant.SOGOU_ROOT_DOMAIN);
+                ServletUtil.setCookie(response, "pprdig", pprdig, cookieApiParams.getMaxAge(), CommonConstant.SOGOU_ROOT_DOMAIN);
+                response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
+                //response 回去的时候设置一个p3p的header,用来定义IE的跨域问题,解决IE下iframe里无法种cookie的bug。
+                response.setHeader("P3P", "CP=CAO PSA OUR");
             }
-            LOGGER.info("set old cookie userid:" + cookieApiParams.getUserid());
+
+            //构建桌面端获取cookie的跳转地址
+            String redirecturl = buildRedirectUrl(result, cookieApiParams);
+            result.setDefaultModel("redirectUrl", redirecturl);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            LOGGER.error("createCookie error. userid:" + cookieApiParams.getUserid(), e);
         }
-
-        //web端生成cookie后、种下cookie 、桌面端不同
-        if (cookieApiParams.getCreateAndSet() == CREATE_COOKIE_AND_SET) {
-            ServletUtil.setCookie(response, "ppinf", ppinf, cookieApiParams.getMaxAge(), CommonConstant.SOGOU_ROOT_DOMAIN);
-            ServletUtil.setCookie(response, "pprdig", pprdig, cookieApiParams.getMaxAge(), CommonConstant.SOGOU_ROOT_DOMAIN);
-            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
-            //response 回去的时候设置一个p3p的header,用来定义IE的跨域问题,解决IE下iframe里无法种cookie的bug。
-            response.setHeader("P3P", "CP=CAO PSA OUR");
-        }
-
-        //构建桌面端获取cookie的跳转地址
-        String redirecturl = buildRedirectUrl(result, cookieApiParams);
-        result.setDefaultModel("redirectUrl", redirecturl);
-
-        result.setSuccess(true);
         return result;
     }
 
@@ -597,6 +607,8 @@ public class CookieManagerImpl implements CookieManager {
 
     /**
      * 生成ppinf中的参数value
+     * <p/>
+     * 数据格式：clientid:4:2009|crt:10:1409652043|refnick:27:%E5%8D%90%E9%99%B6%E5%8D%8D|trust:1:1|userid:44:5EED6E92B98534E2B74020F85C875186@qq.sohu.com|uniqname:27:%E5%8D%90%E9%99%B6%E5%8D%8D|
      *
      * @param cookieApiParams
      * @return

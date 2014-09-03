@@ -48,4 +48,12 @@ public class RedisUtilTest extends BaseTest {
         System.out.println("==========================");
 
     }
+
+
+    @Test
+    public void testRedisUtilsGet() {
+        //测试不存在的key的get操作
+
+
+    }
 }

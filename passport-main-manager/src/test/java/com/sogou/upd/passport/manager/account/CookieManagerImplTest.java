@@ -1,8 +1,13 @@
 package com.sogou.upd.passport.manager.account;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.utils.JsonUtil;
 import org.junit.Test;
+
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,6 +37,29 @@ public class CookieManagerImplTest extends BaseTest {
 
     }
 
+
+    @Test
+    public void testAppModuleReplace() {
+
+        //数据格式： 1100:2|1111:10|1112:10|1113:2
+
+        String demoData = "v:10|1100:2|1111:10|1112:10|1113:2";
+        Map<String, String> splitMap = Splitter.on("|").withKeyValueSeparator(":").split(demoData);
+
+        Map<String, String> testContains = Maps.newHashMap();
+        if (testContains.containsKey("a")) {
+            System.out.println("contains a");
+        } else {
+            System.out.println("not contains a");
+        }
+
+        if (splitMap.containsKey("1118")) {
+            System.out.println("splitMap  contains 1118");
+        } else {
+            System.out.println("splitMap  not contains 1118");
+        }
+        System.out.println("testAppModuleReplace splitMap:" + splitMap.toString());
+    }
 
 
 }
