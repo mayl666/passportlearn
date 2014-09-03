@@ -219,7 +219,7 @@ public class CookieManagerImpl implements CookieManager {
             if (appsMap.containsKey(String.valueOf(cookieApiParams.getClient_id()))) {
 
                 //数据筛选 shard 基数
-                int shard_count = Integer.parseInt(appsMap.get(cookieApiParams.getClient_id()));
+                int shard_count = Integer.parseInt(appsMap.get(String.valueOf(cookieApiParams.getClient_id())));
 
                 //部分用户种新cookie、剩余用户种老cookie
                 if (isSetNewCookie(cookieApiParams.getUserid(), shard_count, AIM_RESULT)) {
