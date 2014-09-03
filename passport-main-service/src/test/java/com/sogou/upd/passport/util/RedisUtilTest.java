@@ -16,7 +16,7 @@ import java.util.List;
  * Time: 下午7:29
  */
 
-@Ignore
+//@Ignore
 public class RedisUtilTest extends BaseTest {
 
     private static final String cache_key_blacklist = "cache_module_blacklist";
@@ -53,6 +53,15 @@ public class RedisUtilTest extends BaseTest {
     @Test
     public void testRedisUtilsGet() {
         //测试不存在的key的get操作
+        String appModule = "1110:2|2002:2|1100:2|1120:2";
+        String appModule_key = "test_app_module_replace";
+        try {
+            redisUtils.setWithinSeconds(appModule_key, appModule, 5*60);
+            String appModuleValue = redisUtils.get(appModule_key);
+            System.out.println("appModulevalue:" + appModuleValue);
+        } catch (Exception e) {
+            e.getMessage();
+        }
 
 
     }

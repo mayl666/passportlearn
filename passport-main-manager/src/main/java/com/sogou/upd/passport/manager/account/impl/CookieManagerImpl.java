@@ -216,7 +216,7 @@ public class CookieManagerImpl implements CookieManager {
             }
             //1110:应用市场 2002:壁纸 1100:搜狗游戏 1120:通行证
 //            if (cookieApiParams.getClient_id() == 1110 || cookieApiParams.getClient_id() == 2002 || cookieApiParams.getClient_id() == 1100 || cookieApiParams.getClient_id() == 1120) {
-            if (appsMap.containsKey(cookieApiParams.getClient_id())) {
+            if (appsMap.containsKey(String.valueOf(cookieApiParams.getClient_id()))) {
 
                 //数据筛选 shard 基数
                 int shard_count = Integer.parseInt(appsMap.get(cookieApiParams.getClient_id()));
