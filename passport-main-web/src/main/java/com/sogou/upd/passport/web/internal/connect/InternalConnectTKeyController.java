@@ -10,6 +10,7 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,7 @@ public class InternalConnectTKeyController extends BaseController {
     @Autowired
     private ConnectApiManager sgConnectApiManager;
 
+    @InterfaceSecurity
     @ResponseBody
     @RequestMapping(value = "/t_key")
     public String tKey(HttpServletRequest req, BaseUserApiParams params) throws Exception {
