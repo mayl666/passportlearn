@@ -218,16 +218,6 @@ public class CookieManagerImpl implements CookieManager {
             Map<String, String> appsMap = Maps.newConcurrentMap();
             if (!Strings.isNullOrEmpty(appModuleReplace)) {
                 appsMap = Splitter.on(KEY_SPLITER).withKeyValueSeparator(VALUE_SPLITER).split(appModuleReplace);
-            } else {
-                result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-                if (result.isSuccess()) {
-                    ppinf = (String) result.getModels().get("ppinf");
-                    pprdig = (String) result.getModels().get("pprdig");
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-                    result.setMessage(ErrorUtil.ERR_CODE_MSG_MAP.get(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED));
-                    return result;
-                }
             }
             //1110:应用市场 2002:壁纸 1100:搜狗游戏 1120:通行证
             if (appsMap.containsKey(String.valueOf(cookieApiParams.getClient_id()))) {
