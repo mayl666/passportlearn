@@ -280,7 +280,7 @@ public class RegAction extends BaseController {
         result = regManager.activeEmail(activeParams, ip);
         if (result.isSuccess()) {
             //最初版本
-//            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
+            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
             //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie module 替换
 //            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1, StringUtils.EMPTY);
 

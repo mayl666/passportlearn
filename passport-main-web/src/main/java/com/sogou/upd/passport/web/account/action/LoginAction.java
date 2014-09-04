@@ -135,7 +135,7 @@ public class LoginAction extends BaseController {
             }
 
             //最初版本
-//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
+            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
             //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie  module 替换
 //            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName);
 

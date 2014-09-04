@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -10,6 +11,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountRoamManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.WebRoamDO;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -107,7 +109,19 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
 
             //漫游用户在搜狗未登录、设置搜狗登录状态 //TODO module替换
             if (Strings.isNullOrEmpty(sgLgUserId)) {
-                cookieManager.setCookie(response, roamPassportId, clientId, createIp, ru, (int) DateAndNumTimesConstant.TWO_WEEKS);
+//                cookieManager.setCookie(response, roamPassportId, clientId, createIp, ru, (int) DateAndNumTimesConstant.TWO_WEEKS);
+
+                CookieApiParams cookieApiParams = new CookieApiParams();
+                cookieApiParams.setUserid(roamPassportId);
+                cookieApiParams.setClient_id(clientId);
+                cookieApiParams.setRu(ru);
+                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+                cookieApiParams.setPersistentcookie(String.valueOf(1));
+                cookieApiParams.setIp(createIp);
+                cookieApiParams.setMaxAge((int) DateAndNumTimesConstant.TWO_WEEKS);
+                cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
+
+                cookieManager.createCookie(response, cookieApiParams);
             }
         } catch (Exception e) {
             LOGGER.error("webRoam error. roamPassportId:{},r_key:{},ru:{}", new Object[]{roamPassportId, r_key, ru}, e);
