@@ -2,7 +2,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -38,6 +38,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Date;
 
+import static com.sogou.upd.passport.common.CommonConstant.SEPARATOR_1;
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -49,6 +51,8 @@ import java.util.Date;
 public class SGConnectApiManagerImpl implements ConnectApiManager {
 
     private static Logger logger = LoggerFactory.getLogger(SGConnectApiManagerImpl.class);
+    public static final String TKEY_VERSION = "01";
+    public static final String TKEY_SECURE_KEY = "adfab231rqwqerq";
 
     @Autowired
     private ConnectConfigService connectConfigService;
@@ -186,10 +190,30 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             result.setSuccess(true);
             result.setDefaultModel("connectToken", connectToken);
         } catch (Exception e) {
-//            logger.error("method[obtainConnectToken] obtain connect token from sogou db error passportId:{}", passportId, e);
             logger.error("obtain connect token from sogou db error.passportId [{}] clientId {}", passportId, clientId, e);
         }
         return result;
+    }
+
+    @Override
+    public Result obtainTKey(String passportId, int clientId) {
+        Result result = new APIResultSupport(false);
+        Result connectTokenResult = obtainConnectToken(passportId, clientId);
+        if (!connectTokenResult.isSuccess()) {
+            return connectTokenResult;
+        }
+        ConnectToken connectToken = (ConnectToken) connectTokenResult.getModels().get("connectToken");
+        try {
+            String tKey = String.format("%s|%s|%s|%s|%s|%s|%s", connectToken.getOpenid(), connectToken.getAccessToken(), connectToken.getExpiresIn(), connectToken.getAppKey(), connectToken.getPassportId(), clientId, System.currentTimeMillis());
+            tKey = TKEY_VERSION + SEPARATOR_1 + AES.encryptURLSafeString(tKey, TKEY_SECURE_KEY);
+            result.setSuccess(true);
+            result.getModels().put("tKey", tKey);
+            return result;
+        } catch (Exception e) {
+            logger.error("obtain tKey AES fail,passportId:{}", passportId, e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
     }
 
     private ConnectToken newConnectToken(String passportId, String appKey, int provider, OAuthTokenVO oAuthTokenVO) {

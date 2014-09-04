@@ -181,13 +181,6 @@ public class AccountInfoManagerTest extends BaseTest {
         expectStr = "阿沐";
         actualStr = accountInfoManager.getUniqName(userid_connect, clientId, false);
         Assert.assertEquals(expectStr, actualStr);
-        //接口对比
-        expectStr = oAuth2ResourceManager.getUniqname(userid_email, clientId);
-        actualStr = accountInfoManager.getUniqName(userid_email, clientId, false);
-        Assert.assertEquals(expectStr, actualStr);
-        expectStr = oAuth2ResourceManager.getUniqname(userid_connect, clientId);
-        actualStr = accountInfoManager.getUniqName(userid_connect, clientId, false);
-        Assert.assertEquals(expectStr, actualStr);
     }
 
     //构造更新用户信息参数

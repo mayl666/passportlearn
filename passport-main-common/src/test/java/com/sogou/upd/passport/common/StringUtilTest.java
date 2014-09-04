@@ -59,11 +59,18 @@ public class StringUtilTest extends TestCase {
                 "(@*$&@(&#!)@*)!&$!)@^%@(!&#. 😄👩👨], ";
         String c = StringUtil.filterEmoji(s);
         assertFalse(s.equals(c));
-        String expected = "<body>213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)" +
-                "!(@*$&@(&#!)@*)!&$!)@^%@(!&#. ], ";
+        String expected = "<body>213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)!(@*$&@(&#!)@*)!&$!)@^%@(!&#. ],";
         assertEquals(expected, c);
-        assertSame(expected, "<body>213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)" +
-                "!(@*$&@(&#!)@*)!&$!)@^%@(!&#. ], ");
+        String s3 = "幸运，。☼△熊。";
+        String actual3 = StringUtil.filterEmoji(s3);
+        assertEquals("幸运，。☼△熊。", actual3);
+        String s4 = "🎒🐱";
+        String actual4 = StringUtil.filterEmoji(s4);
+        assertEquals("", actual4);
+        String s5 = "大H☼△，。好·⒉Θ】 ";
+        String actual5 = StringUtil.filterEmoji(s5);
+        assertEquals("大H☼△，。好·⒉Θ】", actual5);
+
     }
 
     public void testFilterSpecialChar() {
@@ -76,6 +83,10 @@ public class StringUtilTest extends TestCase {
         String s2 = "test string=\" + \"walmart öbama 👽💔";
         String actual2 = StringUtil.filterSpecialChar(s2);
         assertEquals("test string=\" + \"walmart bama ", actual2);
+
+        String s3 = "幸运，。☼△熊。";
+        String actual3 = StringUtil.filterSpecialChar(s3);
+        assertEquals("幸运熊", actual3);
     }
 
 

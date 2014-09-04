@@ -55,8 +55,6 @@ public class CommonConstant {
     public static final String APP_ID = "appid";
     public static final String RESQUEST_CT = "ct";
     public static final String RESQUEST_CODE = "code";
-    public static final String UNIQNAME = "uniqname";
-    public static final String MESSAGE = "message";
     public static final String HAVE_UPDATE = "true";//用户有修改操作
 
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
@@ -99,19 +97,11 @@ public class CommonConstant {
     public static final String SIGN_IN_BLACKLIST = "1";//黑名单标识
 
     //=============缓存相关配置项====================
-//	public static final int TIMEOUT_ONEHOUR = 60 * 60 * 3;// 3小时, 参考http://stackoverflow.com/questions/967875/memcached-expiration-time
-
     //在request attribut中存在的用于及时的StopWatch的name
     public static final String STOPWATCH = "stopWatch";
 
-    public static boolean IS_USE_IEBBS_UNIQNAME = true;
-
     public static final String HTTPS_HEADER = "X-Https";
     public static final String HTTPS_VALUE = "https";
-
-    public static final String RESQUEST_USERNAME = "username";
-    public static final String RESQUEST_USERID = "userid";
-
 
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
@@ -129,7 +119,19 @@ public class CommonConstant {
 
     static {
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1001, 4));
+
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2001, 4));
+
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1024, 3));
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1024, 4));
+
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2011, 3));
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2011, 4));
+
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2018, 3));
+
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2020, 3));
+        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2020, 4));
     }
 
 }

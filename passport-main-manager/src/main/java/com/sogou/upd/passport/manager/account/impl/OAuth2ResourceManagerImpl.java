@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
@@ -15,21 +14,13 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
-import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountBaseInfo;
 import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.model.app.ConnectConfig;
-import com.sogou.upd.passport.model.connect.ConnectToken;
-import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.PCAccountTokenService;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
 import com.sogou.upd.passport.service.app.AppConfigService;
-import com.sogou.upd.passport.service.app.ConnectConfigService;
-import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -60,17 +51,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     @Autowired
     private LoginApiManager sgLoginApiManager;
     @Autowired
-    private UserInfoApiManager shPlusUserInfoApiManager;
-    @Autowired
     private PCAccountTokenService pcAccountTokenService;
     @Autowired
     SnamePassportMappingService snamePassportMappingService;
-    @Autowired
-    private AccountService accountService;
-    @Autowired
-    private ConnectTokenService connectTokenService;
-    @Autowired
-    private ConnectConfigService connectConfigService;
     @Autowired
     private AccountInfoManager accountInfoManager;
 
@@ -262,8 +245,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
             //取用户昵称、头像信息
-//            Result getUserInfoResult = getUserInfo(passportId, clientId);
-
             GetUserInfoApiparams params = new GetUserInfoApiparams();
             params.setClient_id(clientId);
             params.setUserid(passportId);
@@ -294,76 +275,4 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
         return result;
     }
 
-    private ConnectToken getConnectToken(String userId, int clientId) {
-        //从connect_token中获取
-        int provider = AccountTypeEnum.getAccountType(userId).getValue();
-        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-        ConnectToken connectToken = null;
-        if (connectConfig != null) {
-            connectToken = connectTokenService.queryConnectToken(userId, provider, connectConfig.getAppKey());
-        }
-        return connectToken;
-    }
-
-    @Override
-    public String getUniqname(String passportId, int clientId) {
-        String uniqname = null;
-        try {
-            //第三方账户先从account里获取
-            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
-            if (domain == AccountDomainEnum.THIRD) {
-                Account account = accountService.queryAccountByPassportId(passportId);
-                if (account != null && !Strings.isNullOrEmpty(account.getUniqname())) {
-                    uniqname = account.getUniqname();
-                } else {
-                    ConnectToken connectToken = getConnectToken(passportId, clientId);
-                    if (connectToken != null) {
-                        uniqname = connectToken.getConnectUniqname();
-                    }
-                }
-            } else {
-                AccountBaseInfo accountBaseInfo = getBaseInfo(passportId);
-                if (accountBaseInfo != null) {
-                    uniqname = accountBaseInfo.getUniqname();
-                }
-                uniqname = getAndUpdateUniqname(passportId, uniqname);
-            }
-
-        } catch (Exception e) {
-            log.error("getUniqname error! passportId:" + passportId, e);
-        }
-        return Strings.isNullOrEmpty(uniqname) ? passportId : uniqname;
-    }
-
-    /**
-     * 从浏览器论坛取昵称
-     *
-     * @param passportId
-     * @param uniqname
-     * @return
-     */
-    private String getAndUpdateUniqname(String passportId, String uniqname) {
-        if (Strings.isNullOrEmpty(uniqname) || uniqname.equals(passportId.substring(0, passportId.indexOf("@")))) {
-            if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(passportId)) {
-                return "搜狗用户";
-            }
-            return passportId.substring(0, passportId.indexOf("@"));
-        }
-        return uniqname;
-    }
-
-    private AccountBaseInfo getBaseInfo(String passportId) {
-        GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
-        infoApiparams.setUserid(passportId);
-        Result getUserInfoResult = shPlusUserInfoApiManager.getUserInfo(infoApiparams);
-        if (getUserInfoResult.isSuccess()) {
-            Object obj = getUserInfoResult.getModels().get("baseInfo");
-            AccountBaseInfo accountBaseInfo = null;
-            if (obj != null) {
-                accountBaseInfo = (AccountBaseInfo) obj;
-            }
-            return accountBaseInfo;
-        }
-        return null;
-    }
 }
