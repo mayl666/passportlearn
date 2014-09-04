@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang3.StringUtils;
@@ -132,6 +133,29 @@ public class BaseController {
         ru = ServletUtil.applyOAuthParametersString(ru, paramMap);
         response.sendRedirect(ru);
         return;
+    }
+
+
+    /**
+     * 构建 CookieApiParams
+     *
+     * @param userid
+     * @param client_id
+     * @param ru
+     * @param ip
+     * @param maxAge
+     * @return
+     */
+    public CookieApiParams buildCookieApiParams(String userid, int client_id, String ru, String ip, int maxAge) {
+        CookieApiParams cookieApiParams = new CookieApiParams();
+        cookieApiParams.setUserid(userid);
+        cookieApiParams.setClient_id(client_id);
+        cookieApiParams.setRu(ru);
+        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+        cookieApiParams.setPersistentcookie(String.valueOf(1));
+        cookieApiParams.setIp(ip);
+        cookieApiParams.setMaxAge(maxAge);
+        return cookieApiParams;
     }
 
 }
