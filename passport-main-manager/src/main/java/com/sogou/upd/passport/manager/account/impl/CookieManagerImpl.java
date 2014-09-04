@@ -210,6 +210,8 @@ public class CookieManagerImpl implements CookieManager {
         //首批应用市场（web端）、壁纸（桌面端）
         String ppinf = null;
         String pprdig = null;
+        //默认为false
+        boolean setNewCookie = false;
         try {
             String appModuleReplace = redisUtils.get(CacheConstant.CACHE_KEY_MODULE_APP_REPLACE);
 
@@ -221,10 +223,12 @@ public class CookieManagerImpl implements CookieManager {
                 if (result.isSuccess()) {
                     ppinf = (String) result.getModels().get("ppinf");
                     pprdig = (String) result.getModels().get("pprdig");
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+                    result.setMessage(ErrorUtil.ERR_CODE_MSG_MAP.get(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED));
+                    return result;
                 }
             }
-            //默认为false
-            boolean setNewCookie = false;
             //1110:应用市场 2002:壁纸 1100:搜狗游戏 1120:通行证
             if (appsMap.containsKey(String.valueOf(cookieApiParams.getClient_id()))) {
                 //数据筛选 shard 基数
@@ -243,6 +247,10 @@ public class CookieManagerImpl implements CookieManager {
                     if (result.isSuccess()) {
                         ppinf = (String) result.getModels().get("ppinf");
                         pprdig = (String) result.getModels().get("pprdig");
+                    } else {
+                        result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+                        result.setMessage(ErrorUtil.ERR_CODE_MSG_MAP.get(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED));
+                        return result;
                     }
                 }
             } else {
@@ -250,6 +258,10 @@ public class CookieManagerImpl implements CookieManager {
                 if (result.isSuccess()) {
                     ppinf = (String) result.getModels().get("ppinf");
                     pprdig = (String) result.getModels().get("pprdig");
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+                    result.setMessage(ErrorUtil.ERR_CODE_MSG_MAP.get(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED));
+                    return result;
                 }
             }
 
@@ -266,11 +278,11 @@ public class CookieManagerImpl implements CookieManager {
             String redirecturl = buildRedirectUrl(result, cookieApiParams);
             result.setDefaultModel("redirectUrl", redirecturl);
             result.setSuccess(true);
-
-            //记录用户种cookie的log
-            LOGGER.info(buildSetCookieLog(cookieApiParams, setNewCookie, ppinf));
         } catch (Exception e) {
-            LOGGER.error("createCookie error. userid:" + cookieApiParams.getUserid(), e);
+            LOGGER.error("createCookie error. userid:{},client_id:{},setNewCookie:{}", new Object[]{cookieApiParams.getUserid(), cookieApiParams.getClient_id(), setNewCookie}, e);
+        } finally {
+            //记录用户种cookie的log
+            LOGGER.info(buildSetCookieLog(cookieApiParams, setNewCookie, ppinf, result.getCode()));
         }
         return result;
     }
@@ -283,7 +295,7 @@ public class CookieManagerImpl implements CookieManager {
      * @param ppinf
      * @return
      */
-    private String buildSetCookieLog(CookieApiParams cookieApiParams, boolean setNewCookie, String ppinf) {
+    private String buildSetCookieLog(CookieApiParams cookieApiParams, boolean setNewCookie, String ppinf, String resultCode) {
         StringBuilder setCookieLog = new StringBuilder();
         Date date = new Date();
         FastDateFormat fastDateFormat = FastDateFormat.getInstance(DATE_FORMAT);
@@ -291,6 +303,7 @@ public class CookieManagerImpl implements CookieManager {
         setCookieLog.append(DATA_FORMAT_TAB).append(cookieApiParams.getIp());
         setCookieLog.append(DATA_FORMAT_TAB).append(cookieApiParams.getUserid());
         setCookieLog.append(DATA_FORMAT_TAB).append(cookieApiParams.getClient_id());
+        setCookieLog.append(DATA_FORMAT_TAB).append(resultCode);
         setCookieLog.append(DATA_FORMAT_TAB).append(cookieApiParams.getRu());
         setCookieLog.append(DATA_FORMAT_TAB).append(setNewCookie == true ? 0 : 1);
         setCookieLog.append(DATA_FORMAT_TAB).append(ppinf);
@@ -361,7 +374,7 @@ public class CookieManagerImpl implements CookieManager {
             result.setDefaultModel("ppinf", ppinf);
             result.setDefaultModel("pprdig", pprdig);
             result.setDefaultModel("passport", passportCookie.toString());
-            result.setDefaultModel("ppinfo", ToolUUIDUtil.genreateUUidWithOutSplit().substring(10, 20)); //再次找兰顺确定下？ module是否需要
+            result.setDefaultModel("ppinfo", ToolUUIDUtil.genreateUUidWithOutSplit().substring(10, 20));
         } catch (Exception e) {
             LOGGER.error("createSGCookie error. userid:" + cookieApiParams.getUserid(), e);
         }
