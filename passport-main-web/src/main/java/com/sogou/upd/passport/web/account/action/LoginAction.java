@@ -150,6 +150,10 @@ public class LoginAction extends BaseController {
             cookieApiParams.setMaxAge(sogouMaxAge);
             cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
 
+//            CookieApiParams cookieApiParams = buildCookieApiParams(userId, clientId, sogouRu, ip, sogouMaxAge);
+//            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+//            cookieApiParams.setPersistentcookie(String.valueOf(1));
+
             result = cookieManager.createCookie(response, cookieApiParams);
             if (result.isSuccess()) {
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
