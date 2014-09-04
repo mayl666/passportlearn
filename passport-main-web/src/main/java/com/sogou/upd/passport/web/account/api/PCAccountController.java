@@ -292,31 +292,32 @@ public class PCAccountController extends BaseController {
 
         //重定向生成cookie
         if (authTokenResult.isSuccess()) {
-            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-            createCookieUrlApiParams.setUserid(userId);
-            createCookieUrlApiParams.setRu(ru);
-            createCookieUrlApiParams.setClientId(authPcTokenParams.getAppid());
-            if (!"0".equals(authPcTokenParams.getLivetime())) {
-                createCookieUrlApiParams.setPersistentcookie(1);
-            }
-            createCookieUrlApiParams.setDomain("sogou.com");
+
+//            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+//            createCookieUrlApiParams.setUserid(userId);
+//            createCookieUrlApiParams.setRu(ru);
+//            createCookieUrlApiParams.setClientId(authPcTokenParams.getAppid());
+//            if (!"0".equals(authPcTokenParams.getLivetime())) {
+//                createCookieUrlApiParams.setPersistentcookie(1);
+//            }
+//            createCookieUrlApiParams.setDomain("sogou.com");
 
             //TODO sogou域账号迁移后cookie生成问题 最初版本
-            Result getCookieValueResult = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
+//            Result getCookieValueResult = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
 
-//            CookieApiParams cookieApiParams = new CookieApiParams();
-//            cookieApiParams.setUserid(userId);
-//            cookieApiParams.setClient_id(Integer.parseInt(authPcTokenParams.getAppid()));
-//            cookieApiParams.setRu(ru);
-//            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-//            cookieApiParams.setIp(getIp(request));
-//            cookieApiParams.setUniqname(StringUtils.EMPTY); //暂设置为空
-//            cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);
-//            if (!"0".equals(authPcTokenParams.getLivetime())) {
-//                cookieApiParams.setPersistentcookie("1");
-//            }
-//            cookieApiParams.setDomain("sogou.com");
-//            Result getCookieValueResult = cookieManager.createCookie(response, cookieApiParams);
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(userId);
+            cookieApiParams.setClient_id(Integer.parseInt(authPcTokenParams.getAppid()));
+            cookieApiParams.setRu(ru);
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            cookieApiParams.setIp(getIp(request));
+            cookieApiParams.setUniqname(StringUtils.EMPTY); //暂设置为空
+            cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);
+            if (!"0".equals(authPcTokenParams.getLivetime())) {
+                cookieApiParams.setPersistentcookie("1");
+            }
+            cookieApiParams.setDomain("sogou.com");
+            Result getCookieValueResult = cookieManager.createCookie(response, cookieApiParams);
 
 
             if (getCookieValueResult.isSuccess()) {
