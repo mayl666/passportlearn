@@ -292,6 +292,7 @@ public class PCAccountController extends BaseController {
 
         //重定向生成cookie
         if (authTokenResult.isSuccess()) {
+
 //            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
 //            createCookieUrlApiParams.setUserid(userId);
 //            createCookieUrlApiParams.setRu(ru);
@@ -319,12 +320,14 @@ public class PCAccountController extends BaseController {
             }
 
             cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);
+
             if (!"0".equals(authPcTokenParams.getLivetime())) {
                 cookieApiParams.setPersistentcookie("1");
             }
             cookieApiParams.setDomain("sogou.com");
-
             Result getCookieValueResult = cookieManager.createCookie(response, cookieApiParams);
+
+
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");

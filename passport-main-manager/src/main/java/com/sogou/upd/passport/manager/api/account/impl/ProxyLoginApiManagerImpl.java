@@ -116,6 +116,11 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     @Override
     public Result getCookieInfo(CookieApiParams cookieApiParams) {
         Result result = new APIResultSupport(false);
+
+        if (Strings.isNullOrEmpty(cookieApiParams.getPersistentcookie())) {
+            cookieApiParams.setPersistentcookie(String.valueOf(1));
+        }
+
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_COOKIE_VALUE_FROM_SOHU, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
         requestModelXml.addParams(cookieApiParams);
         requestModelXml.getParams().put("result_type", "json");       //sohu 传 xml参数，返回json
@@ -164,6 +169,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         cookieApiParams.setRu(ru);
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
         cookieApiParams.setPersistentcookie(String.valueOf(1));
+
         Result cookieInfoResult = getCookieInfo(cookieApiParams);
         Result result = new APIResultSupport(false);
         if (cookieInfoResult != null) {
