@@ -428,7 +428,14 @@ public class PCOAuth2AccountController extends BaseController {
         cookieApiParams.setIp(getIp(request));
         cookieApiParams.setMaxAge(-1);
         cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
-        cookieApiParams.setUniqname(StringUtils.EMPTY);
+
+        if (!Strings.isNullOrEmpty(passportId)) {
+            if (org.apache.commons.lang3.StringUtils.contains(passportId, "@")) {
+                cookieApiParams.setUniqname(org.apache.commons.lang3.StringUtils.substring(passportId, 0, passportId.indexOf("@")));
+            } else {
+                cookieApiParams.setUniqname(passportId);
+            }
+        }
 
         cookieManager.createCookie(response, cookieApiParams);
 

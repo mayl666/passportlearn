@@ -145,6 +145,14 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             cookieApiParams.setPersistentcookie(String.valueOf(1));
             cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);
 
+            if (!Strings.isNullOrEmpty(passportId)) {
+                if (org.apache.commons.lang3.StringUtils.contains(passportId, "@")) {
+                    cookieApiParams.setUniqname(org.apache.commons.lang3.StringUtils.substring(passportId, 0, passportId.indexOf("@")));
+                } else {
+                    cookieApiParams.setUniqname(passportId);
+                }
+            }
+
             cookieResult = cookieManager.createCookie(response, cookieApiParams);
 
             if (!cookieResult.isSuccess()) {

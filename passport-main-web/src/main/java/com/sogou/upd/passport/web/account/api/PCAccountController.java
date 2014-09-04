@@ -310,7 +310,15 @@ public class PCAccountController extends BaseController {
             cookieApiParams.setRu(ru);
             cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
             cookieApiParams.setIp(getIp(request));
-            cookieApiParams.setUniqname(StringUtils.EMPTY); //暂设置为空
+
+            if (!Strings.isNullOrEmpty(userId)) {
+                if (StringUtils.contains(userId, "@")) {
+                    cookieApiParams.setUniqname(StringUtils.substring(userId, 0, userId.indexOf("@")));
+                } else {
+                    cookieApiParams.setUniqname(userId);
+                }
+            }
+
             cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);
             if (!"0".equals(authPcTokenParams.getLivetime())) {
                 cookieApiParams.setPersistentcookie("1");

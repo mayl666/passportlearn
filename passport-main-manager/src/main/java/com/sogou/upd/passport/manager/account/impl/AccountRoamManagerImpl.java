@@ -16,6 +16,7 @@ import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.WebRoamDO;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.TokenService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,6 +122,19 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                 cookieApiParams.setMaxAge((int) DateAndNumTimesConstant.TWO_WEEKS);
                 cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
 
+                if (account != null) {
+                    if (!Strings.isNullOrEmpty(account.getUniqname())) {
+                        cookieApiParams.setUniqname(account.getUniqname());
+                    } else {
+                        if (!Strings.isNullOrEmpty(roamPassportId)) {
+                            if (StringUtils.contains(roamPassportId, "@")) {
+                                cookieApiParams.setUniqname(StringUtils.substring(roamPassportId, 0, roamPassportId.indexOf("@")));
+                            } else {
+                                cookieApiParams.setUniqname(roamPassportId);
+                            }
+                        }
+                    }
+                }
                 cookieManager.createCookie(response, cookieApiParams);
             }
         } catch (Exception e) {

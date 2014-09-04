@@ -103,7 +103,15 @@ public class LoginApiController extends BaseController {
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
         cookieApiParams.setPersistentcookie(String.valueOf(1));
         cookieApiParams.setIp(ip);
-        cookieApiParams.setUniqname(StringUtils.EMPTY);
+
+        if (!Strings.isNullOrEmpty(passportId)) {
+            if (StringUtils.contains(passportId, "@")) {
+                cookieApiParams.setUniqname(StringUtils.substring(passportId, 0, passportId.indexOf("@")));
+            } else {
+                cookieApiParams.setUniqname(passportId);
+            }
+        }
+
         cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);
         Result getCookieValueResult = cookieManager.createCookie(response, cookieApiParams);
 
