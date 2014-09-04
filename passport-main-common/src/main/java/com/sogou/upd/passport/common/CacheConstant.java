@@ -131,4 +131,7 @@ public class CacheConstant {
     /*==================漫游相关=====================================*/
     public static final String CACHE_KEY_WEB_ROAM = "SP.RKEY:VALUE_"; //漫游key
 
+    /*==================Module相关=====================================*/
+    public static final String CACHE_KEY_MODULE_APP_REPLACE = "SP.MODULE:APP_REPLACE";   //应用module 批次替换
+
 }

@@ -13,12 +13,14 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.common.validation.constraints.RuValidator;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +121,11 @@ public class LoginAction extends BaseController {
         UserOperationLogUtil.log(userOperationLog);
         if (result.isSuccess()) {
             userId = result.getModels().get("userid").toString();
+            String uniqName = StringUtils.EMPTY;
+            if (result.getModels().get("uniqname") != null) {
+                uniqName = result.getModels().get("uniqname").toString();
+            }
+
             int clientId = Integer.parseInt(loginParams.getClient_id());
             int autoLogin = loginParams.getAutoLogin();
             int sogouMaxAge = autoLogin == 0 ? -1 : (int) DateAndNumTimesConstant.TWO_WEEKS;
@@ -126,7 +133,24 @@ public class LoginAction extends BaseController {
             if (Strings.isNullOrEmpty(sogouRu)) {
                 sogouRu = CommonConstant.DEFAULT_INDEX_URL;
             }
+
+            //最初版本
             result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
+            //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie  module 替换
+//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName);
+
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(userId);
+            cookieApiParams.setClient_id(clientId);
+            cookieApiParams.setRu(sogouRu);
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            cookieApiParams.setPersistentcookie(String.valueOf(1));
+            cookieApiParams.setIp(ip);
+            cookieApiParams.setUniqname(uniqName);
+            cookieApiParams.setMaxAge(sogouMaxAge);
+            cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
+
+            result = cookieManager.createCookie(response, cookieApiParams);
             if (result.isSuccess()) {
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
                 result.setDefaultModel("userid", userId);

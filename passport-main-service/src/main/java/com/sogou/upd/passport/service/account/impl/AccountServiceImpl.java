@@ -257,6 +257,7 @@ public class AccountServiceImpl implements AccountService {
                 result.setSuccess(true);
                 result.setMessage("操作成功");
                 result.setDefaultModel("userid", account.getPassportId());
+                result.setDefaultModel("uniqName", account.getUniqname());
                 result.setDefaultModel(account);
                 return result;
             } else {

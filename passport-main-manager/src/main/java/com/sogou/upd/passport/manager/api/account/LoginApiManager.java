@@ -14,6 +14,7 @@ public interface LoginApiManager {
     /**
      * web端校验用户名和密码是否正确
      * 密码必须为MD5
+     *
      * @param authUserApiParams
      * @return
      */
@@ -51,8 +52,20 @@ public interface LoginApiManager {
      * 生成的cookie值
      * sohu的是通过搜狐内部接口getcookieinfo获取ppinf和pprdig
      * sogou的是自己生成sginf和sgrdig
+     *
      * @param cookieApiParams
      * @return
      */
     public Result getCookieInfo(CookieApiParams cookieApiParams);
+
+
+    /**
+     * 生成cookie的值
+     * <p/>
+     * 生成ver=5 版本的 ppinf 、pprdig、passport 、ppinfo
+     *
+     * @param cookieApiParams
+     * @return
+     */
+    public Result getSGCookieInfoForAdapter(CookieApiParams cookieApiParams);
 }

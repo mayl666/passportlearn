@@ -36,6 +36,17 @@ public interface CookieManager {
      */
     public Result setCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int persistentcookie);
 
+
+    /**
+     * 种sg域cookie
+     *
+     * @param response
+     * @param cookieApiParams
+     * @param maxAge
+     * @return
+     */
+    public Result setSGCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int maxAge);
+
     /**
      * 通过参数种cookie;
      *
@@ -48,6 +59,31 @@ public interface CookieManager {
      * @return
      */
     public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge);
+
+
+    /**
+     * 兼容种新老cookie
+     *
+     * @param response
+     * @param passportId
+     * @param client_id
+     * @param ip
+     * @param ru
+     * @param maxAge
+     * @param uniqname
+     * @return
+     */
+    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge, String uniqname);
+
+
+    /**
+     * web端、桌面端生成cookie统一方法
+     *
+     * @param response
+     * @param cookieApiParams
+     * @return
+     */
+    public Result createCookie(HttpServletResponse response, CookieApiParams cookieApiParams);
 
     /**
      * 生成设置sso cookie的url

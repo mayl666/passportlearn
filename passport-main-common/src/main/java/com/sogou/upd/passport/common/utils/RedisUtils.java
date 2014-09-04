@@ -33,7 +33,7 @@ public class RedisUtils {
     * 设置缓存内容
     */
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_set", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    public void set(String key, String value)  {
+    public void set(String key, String value) {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, value);
@@ -49,7 +49,7 @@ public class RedisUtils {
     }
 
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hIncrByTimes", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    public void hIncrByTimes(String cacheKey, String key,long time) {
+    public void hIncrByTimes(String cacheKey, String key, long time) {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
             boundHashOperations.increment(key, time);
@@ -296,22 +296,23 @@ public class RedisUtils {
             boundHashOperations.put(key, value);
         } catch (Exception e) {
             logger.error("[Cache] hPut cache fail, cacheKey:" + cacheKey + " mapKey:" + key
-                         + " mapValue:" + value, e);
+                    + " mapValue:" + value, e);
             try {
                 delete(cacheKey);
             } catch (Exception ex) {
                 logger.error("[Cache] hPut and delete cache fail, cacheKey:" + cacheKey + " mapKey:"
-                             + key + " mapValue:" + value, e);
+                        + key + " mapValue:" + value, e);
                 throw e;
             }
         }
     }
+
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_hPutExpire", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    public void hPutExpire(String cacheKey, String key, String value,long times) throws Exception {
+    public void hPutExpire(String cacheKey, String key, String value, long times) throws Exception {
         try {
             BoundHashOperations<String, String, String> boundHashOperations = redisTemplate.boundHashOps(cacheKey);
             boundHashOperations.put(key, value);
-            boundHashOperations.expire(times,TimeUnit.SECONDS);
+            boundHashOperations.expire(times, TimeUnit.SECONDS);
         } catch (Exception e) {
             logger.error("[Cache] hPut cache fail, cacheKey:" + cacheKey + " mapKey:" + key
                     + " mapValue:" + value, e);
@@ -487,6 +488,7 @@ public class RedisUtils {
 
     /**
      * 从集合中删除一个元素
+     *
      * @param key
      * @param value
      */
@@ -498,6 +500,7 @@ public class RedisUtils {
 
     /**
      * 检查元素是否是集合中的成员
+     *
      * @param key
      * @param value
      * @return
@@ -505,7 +508,7 @@ public class RedisUtils {
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "redies_remStringFromSet", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
     public boolean isMember(String key, String value) {
         SetOperations operations = redisTemplate.opsForSet();
-        return operations.isMember(key,value);
+        return operations.isMember(key, value);
     }
 
     /*
@@ -630,7 +633,7 @@ public class RedisUtils {
     /*
     * 设置缓存内容
     */
-    public void set(String key, Object obj, long timeout, TimeUnit timeUnit)  {
+    public void set(String key, Object obj, long timeout, TimeUnit timeUnit) {
         try {
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(key, jsonMapper.writeValueAsString(obj), timeout, timeUnit);
@@ -642,6 +645,7 @@ public class RedisUtils {
 
     /**
      * 获取key 的剩余时间
+     *
      * @param key
      * @return
      * @throws Exception

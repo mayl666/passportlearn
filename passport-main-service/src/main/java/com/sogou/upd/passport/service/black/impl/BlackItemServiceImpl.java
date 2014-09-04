@@ -8,7 +8,6 @@ import com.sogou.upd.passport.dao.black.BlackItemDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.black.BlackItem;
 import com.sogou.upd.passport.service.black.BlackItemService;
-import net.paoding.rose.jade.annotation.SQLParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

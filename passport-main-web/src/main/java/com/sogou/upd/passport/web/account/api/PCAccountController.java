@@ -15,6 +15,7 @@ import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
 import com.sogou.upd.passport.manager.form.PcGetTokenParams;
@@ -25,6 +26,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.PcAccountWebParams;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
@@ -60,6 +62,12 @@ public class PCAccountController extends BaseController {
     private LoginManager loginManager;
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
+
+    @Autowired
+    private LoginApiManager sgLoginApiManager;
+
+    @Autowired
+    private CookieManager cookieManager;
 
     @RequestMapping(value = "/act/pclogin", method = RequestMethod.GET)
     public String pcLogin(HttpServletRequest request, PcAccountWebParams pcAccountWebParams, Model model)
@@ -284,16 +292,32 @@ public class PCAccountController extends BaseController {
 
         //重定向生成cookie
         if (authTokenResult.isSuccess()) {
-            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-            createCookieUrlApiParams.setUserid(userId);
-            createCookieUrlApiParams.setRu(ru);
-            createCookieUrlApiParams.setClientId(authPcTokenParams.getAppid());
+//            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+//            createCookieUrlApiParams.setUserid(userId);
+//            createCookieUrlApiParams.setRu(ru);
+//            createCookieUrlApiParams.setClientId(authPcTokenParams.getAppid());
+//            if (!"0".equals(authPcTokenParams.getLivetime())) {
+//                createCookieUrlApiParams.setPersistentcookie(1);
+//            }
+//            createCookieUrlApiParams.setDomain("sogou.com");
+            //TODO sogou域账号迁移后cookie生成问题 最初版本
+//            Result getCookieValueResult = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
+//            Result getCookieValueResult = sgLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
+
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(userId);
+            cookieApiParams.setClient_id(Integer.parseInt(authPcTokenParams.getAppid()));
+            cookieApiParams.setRu(ru);
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            cookieApiParams.setIp(getIp(request));
+            cookieApiParams.setUniqname(StringUtils.EMPTY); //暂设置为空
+            cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);
             if (!"0".equals(authPcTokenParams.getLivetime())) {
-                createCookieUrlApiParams.setPersistentcookie(1);
+                cookieApiParams.setPersistentcookie("1");
             }
-            createCookieUrlApiParams.setDomain("sogou.com");
-            //TODO sogou域账号迁移后cookie生成问题
-            Result getCookieValueResult = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
+            cookieApiParams.setDomain("sogou.com");
+
+            Result getCookieValueResult = cookieManager.createCookie(response, cookieApiParams);
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
@@ -379,7 +403,7 @@ public class PCAccountController extends BaseController {
     }
 
     private String buildRedirectUrl(String ru, int status) {
-        if(Strings.isNullOrEmpty(ru)){
+        if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
         if (ru.contains("?")) {

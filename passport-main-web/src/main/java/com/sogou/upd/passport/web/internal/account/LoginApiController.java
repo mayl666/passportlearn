@@ -2,11 +2,13 @@ package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
@@ -52,6 +55,9 @@ public class LoginApiController extends BaseController {
     @Autowired
     private ConfigureManager configureManager;
 
+    @Autowired
+    private CookieManager cookieManager;
+
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
     /**
@@ -64,7 +70,7 @@ public class LoginApiController extends BaseController {
     @InterfaceSecurity
     @RequestMapping(value = "/account/renewcookie")
     @ResponseBody
-    public Object renewcookie(HttpServletRequest request, ReNewCookieApiParams params) {
+    public Object renewcookie(HttpServletRequest request, HttpServletResponse response, ReNewCookieApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         String validateResult = ControllerHelper.validateParams(params);
@@ -87,8 +93,20 @@ public class LoginApiController extends BaseController {
         }
         String passportId = params.getUserid();
         String ip = getIp(request);
-        CookieApiParams cookieApiParams = new CookieApiParams(passportId, clientId, ru, ip);
-        Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+//        CookieApiParams cookieApiParams = new CookieApiParams(passportId, clientId, ru, ip);
+//        Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+
+        CookieApiParams cookieApiParams = new CookieApiParams();
+        cookieApiParams.setUserid(passportId);
+        cookieApiParams.setClient_id(clientId);
+        cookieApiParams.setRu(ru);
+        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+        cookieApiParams.setPersistentcookie(String.valueOf(1));
+        cookieApiParams.setIp(ip);
+        cookieApiParams.setUniqname(StringUtils.EMPTY);
+        cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);
+        Result getCookieValueResult = cookieManager.createCookie(response, cookieApiParams);
+
         if (getCookieValueResult.isSuccess()) {
             String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
             String pprdig = (String) getCookieValueResult.getModels().get("pprdig");

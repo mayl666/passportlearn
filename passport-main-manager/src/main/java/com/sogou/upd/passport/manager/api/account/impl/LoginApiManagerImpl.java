@@ -76,26 +76,31 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
             logger.error("bothAuthUser Exception", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
-        return result;  //To change body of implemented methods use File | Settings | File Templates.
+        return result;
     }
 
     @Override
     public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode, boolean isHttps) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public Result getCookieInfoWithRedirectUrl(CreateCookieUrlApiParams createCookieUrlApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public Result getCookieInfo(CookieApiParams cookieApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
+    }
+
+    @Override
+    public Result getSGCookieInfoForAdapter(CookieApiParams cookieApiParams) {
+        return null;
     }
 }

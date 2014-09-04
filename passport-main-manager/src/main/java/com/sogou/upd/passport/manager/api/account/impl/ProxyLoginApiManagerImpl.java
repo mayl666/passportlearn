@@ -150,6 +150,11 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     @Override
+    public Result getSGCookieInfoForAdapter(CookieApiParams cookieApiParams) {
+        return null;
+    }
+
+    @Override
     public Result getCookieInfoWithRedirectUrl(CreateCookieUrlApiParams createCookieUrlApiParams) {
         //生成cookie
         String ru = createCookieUrlApiParams.getRu();
@@ -212,7 +217,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
     }
 
     private String buildRedirectUrl(String ru, int status) {
-        if (Strings.isNullOrEmpty(ru)){
+        if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
         if (ru.contains("?")) {
@@ -280,5 +285,6 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         }
         return locationUrl;
     }
+
 
 }
