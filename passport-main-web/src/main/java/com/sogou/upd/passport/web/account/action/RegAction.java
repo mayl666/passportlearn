@@ -358,8 +358,7 @@ public class RegAction extends BaseController {
             if (StringUtil.isNotEmpty(cInfo)) {
                 canProcessGet = true;
             }
-        }
-        if (!"POST".equalsIgnoreCase(request.getMethod()) && !canProcessGet) {
+        } else if (!"POST".equalsIgnoreCase(request.getMethod()) && !canProcessGet) {
             throw new Exception("can't process GET");
         }
         ////////end //////////////////
