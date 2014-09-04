@@ -164,6 +164,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         cookieApiParams.setRu(ru);
         cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
         cookieApiParams.setPersistentcookie(String.valueOf(1));
+
         Result cookieInfoResult = getCookieInfo(cookieApiParams);
         Result result = new APIResultSupport(false);
         if (cookieInfoResult != null) {
