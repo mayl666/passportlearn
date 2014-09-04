@@ -301,7 +301,6 @@ public class PCAccountController extends BaseController {
 //                createCookieUrlApiParams.setPersistentcookie(1);
 //            }
 //            createCookieUrlApiParams.setDomain("sogou.com");
-
             //TODO sogou域账号迁移后cookie生成问题 最初版本
 //            Result getCookieValueResult = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
 
@@ -313,6 +312,7 @@ public class PCAccountController extends BaseController {
             cookieApiParams.setIp(getIp(request));
             cookieApiParams.setUniqname(StringUtils.EMPTY); //暂设置为空
             cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);
+
             if (!"0".equals(authPcTokenParams.getLivetime())) {
                 cookieApiParams.setPersistentcookie("1");
             }
