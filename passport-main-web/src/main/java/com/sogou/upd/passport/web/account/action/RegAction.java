@@ -402,7 +402,8 @@ public class RegAction extends BaseController {
                     }
                 }
             } else {
-                if (CommonConstant.PC_CLIENTID != Integer.parseInt(reqParams.getClient_id())) {
+                String host = request.getHeader("Host");
+                if (CommonConstant.PC_CLIENTID != Integer.parseInt(reqParams.getClient_id()) && "account.sogou.com".equals(host)) {
                     //桌面端需要兼容浏览器1044不弹出验证码的情况
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
                     return result.toString();
