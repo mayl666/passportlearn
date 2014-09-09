@@ -156,20 +156,18 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH);
                 return result;
             }
-            //检查手机号是否需要弹出验证码
-            result = commonManager.checkMobileSendSMSInBlackList(sec_mobile, String.valueOf(clientId));
-            if (!result.isSuccess()) {
-                //如果token和captcha都不为空，则校验是否匹配
-                if (!Strings.isNullOrEmpty(token) && !Strings.isNullOrEmpty(captcha)) {
-                    result = regManager.checkCaptchaToken(token, captcha);
-                    //如果验证码校验失败，则提示
-                    if (!result.isSuccess()) {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                        return result;
-                    }
-                } else {
+            //web端手机方式找回密码时需要弹出动态验证码
+            //如果token和captcha都不为空，则校验是否匹配
+            if (!Strings.isNullOrEmpty(token) && !Strings.isNullOrEmpty(captcha)) {
+                result = regManager.checkCaptchaToken(token, captcha);
+                //如果验证码校验失败，则提示
+                if (!result.isSuccess()) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                     return result;
                 }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
+                return result;
             }
             return sendMobileCode(mobile, clientId, module);
         } catch (ServiceException e) {

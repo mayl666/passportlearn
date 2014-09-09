@@ -387,7 +387,7 @@ public class RegAction extends BaseController {
             //只有客户端才会有此"cinfo"参数，web端和桌面端是没有的，故客户端和手机端还走第二次弹出验证码的流程
             if (!Strings.isNullOrEmpty(cInfo) || (userAgent.toLowerCase().contains("android") || userAgent.toLowerCase().contains("iphone"))) {
                 result = commonManager.checkMobileSendSMSInBlackList(mobile, reqParams.getClient_id());
-                if (!result.isSuccess()) {
+                if (!result.isSuccess() && ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE.equals(result.getCode())) {
                     isNeedCaptcha = true;
                 }
             } else {
