@@ -402,12 +402,9 @@ public class RegAction extends BaseController {
                     }
                 }
             } else {
-                String host = request.getRequestURI();
-                String s1 = request.getRemoteHost();
-                String s2 = request.getPathInfo();
-                StringBuffer s3 = request.getRequestURL();
-                String s4 = request.getServletPath();
-                if (CommonConstant.PC_CLIENTID != Integer.parseInt(reqParams.getClient_id()) && "account.sogou.com".equals(host)) {
+                String URL = String.valueOf(request.getRequestURL());
+                String domain = URL.substring(URL.indexOf("//"), URL.length());
+                if (CommonConstant.PC_CLIENTID != Integer.parseInt(reqParams.getClient_id()) && "account.sogou.com".equals(domain)) {
                     //桌面端需要兼容浏览器1044不弹出验证码的情况
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
                     return result.toString();
