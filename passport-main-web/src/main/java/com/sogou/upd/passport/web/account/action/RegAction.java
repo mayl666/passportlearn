@@ -353,8 +353,9 @@ public class RegAction extends BaseController {
         //sendsms因SDK已经发版，需要兼容， 改个策略，
         // GET方式中，如果有cinfo参数，并且参数值内容匹配，这样能发验证码，其它的还是POST限制。
         boolean canProcessGet = false;
+        String cInfo = null;
         if ("GET".equalsIgnoreCase(request.getMethod())) {
-            String cInfo = request.getHeader("cinfo");
+            cInfo = request.getHeader("cinfo");
             if (StringUtil.isNotEmpty(cInfo)) {
                 canProcessGet = true;
             }
@@ -381,20 +382,29 @@ public class RegAction extends BaseController {
                 return result.toString();
             }
             String mobile = reqParams.getMobile();
-            result = commonManager.checkMobileSendSMSInBlackList(mobile, reqParams.getClient_id());
-            //需要弹出验证码
-            if (!result.isSuccess()) {
-                //如果token和captcha都不为空，则校验是否匹配
-                if (!Strings.isNullOrEmpty(reqParams.getToken()) && !Strings.isNullOrEmpty(reqParams.getCaptcha())) {
-                    result = regManager.checkCaptchaToken(reqParams.getToken(), reqParams.getCaptcha());
-                    //如果验证码校验失败，则提示
-                    if (!result.isSuccess()) {
+            //只有客户端才会有此"cinfo"参数，web端和桌面端是没有的，故客户端还走第二次弹出验证码的流程
+            if (!Strings.isNullOrEmpty(cInfo)) {
+                result = commonManager.checkMobileSendSMSInBlackList(mobile, reqParams.getClient_id());
+                //需要弹出验证码
+                if (!result.isSuccess()) {
+                    //如果token和captcha都不为空，则校验是否匹配
+                    if (!Strings.isNullOrEmpty(reqParams.getToken()) && !Strings.isNullOrEmpty(reqParams.getCaptcha())) {
+                        result = regManager.checkCaptchaToken(reqParams.getToken(), reqParams.getCaptcha());
+                        //如果验证码校验失败，则提示
+                        if (!result.isSuccess()) {
+                            result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
+                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                            return result.toString();
+                        }
+                    } else {
                         result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                         return result.toString();
                     }
-                } else {
-                    result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
+                }
+            } else {
+                if (CommonConstant.PC_CLIENTID != Integer.parseInt(reqParams.getClient_id())) {
+                    //桌面端需要兼容浏览器1044不弹出验证码的情况
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
                     return result.toString();
                 }
             }
