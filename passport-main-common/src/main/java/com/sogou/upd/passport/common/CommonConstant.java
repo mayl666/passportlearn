@@ -78,6 +78,8 @@ public class CommonConstant {
     public static final String SOGOU_SUFFIX = "@sogou.com";
     public static final String SOHU_SUFFIX = "@sohu.com";
     public static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
+    public static final String PP_SERVER_NAME_WEB = "account.sogou.com";
+    public static final String PP_SERVER_NAME_WAP = "m.account.sogou.com";
 
     public static final String HAO_CREATE_COOKIE_URL = "http://account.hao.qq.com/sso/setcookie";
     public static final String DAOHANG_CREATE_COOKIE_URL = "http://account.daohang.qq.com/sso/setcookie";
