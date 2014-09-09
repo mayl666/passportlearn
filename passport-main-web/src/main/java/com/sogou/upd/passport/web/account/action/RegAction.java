@@ -402,7 +402,7 @@ public class RegAction extends BaseController {
                     }
                 }
             } else {
-                String URL = String.valueOf(request.getRequestURL());
+                StringBuffer URL = request.getRequestURL();
                 String domain = URL.substring(URL.indexOf("//"), URL.length());
                 if (CommonConstant.PC_CLIENTID != Integer.parseInt(reqParams.getClient_id()) && "account.sogou.com".equals(domain)) {
                     //桌面端需要兼容浏览器1044不弹出验证码的情况
