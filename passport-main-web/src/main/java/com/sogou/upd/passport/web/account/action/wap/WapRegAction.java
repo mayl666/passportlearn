@@ -59,7 +59,6 @@ public class WapRegAction extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(reqParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            model.addAttribute("v", reqParams.getV());
             model.addAttribute("errorMsg", validateResult);
             model.addAttribute("hasError", true);
             model.addAttribute("ru", reqParams.getRu() == null ? CommonConstant.DEFAULT_WAP_INDEX_URL : reqParams.getRu());
