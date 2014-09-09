@@ -66,7 +66,6 @@ public class WapRegAction extends BaseController {
             model.addAttribute("skin", reqParams.getSkin() == null ? "green" : reqParams.getSkin());
             model.addAttribute("needCaptcha", false);
             model.addAttribute("mobile", reqParams.getMobile());
-            model.addAttribute("client_id", reqParams.getClient_id());
             return "wap/regist_wap";
         }
         return null;
