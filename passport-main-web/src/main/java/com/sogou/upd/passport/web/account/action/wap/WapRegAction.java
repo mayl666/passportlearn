@@ -23,6 +23,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.WapIndexParams;
+import com.sogou.upd.passport.web.account.form.wap.WapRegMobileCodeParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,29 @@ public class WapRegAction extends BaseController {
     private SessionServerManager sessionServerManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
+
+    @RequestMapping(value = "/wap/sendsms", method = RequestMethod.POST)
+    public String sendsms(HttpServletRequest request, HttpServletResponse response, WapRegMobileCodeParams reqParams, Model model) throws Exception {
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(reqParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            model.addAttribute("v", reqParams.getV());
+            model.addAttribute("errorMsg", validateResult);
+            model.addAttribute("hasError", true);
+            model.addAttribute("ru", reqParams.getRu() == null ? CommonConstant.DEFAULT_WAP_INDEX_URL : reqParams.getRu());
+            model.addAttribute("skin", reqParams.getSkin() == null ? "green" : reqParams.getSkin());
+            model.addAttribute("needCaptcha", false);
+            return "wap/regist_wap";
+        }
+        return null;
+    }
+
+    private String buildModuleReturnStr(String ru, String errorMsg) {
+        if (!Strings.isNullOrEmpty(ru)) {
+            return (ru + "?errorMsg=" + errorMsg);
+        }
+        return WapConstant.WAP_INDEX + "?errorMsg=" + errorMsg;
+    }
 
 
     @RequestMapping(value = "/wap/reguser", method = RequestMethod.POST)
@@ -160,7 +184,7 @@ public class WapRegAction extends BaseController {
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             return "wap/regist_touch";
         } else {
-            return "wap/regist_color";
+            return "wap/regist_wap";
         }
     }
 }
