@@ -53,10 +53,6 @@ public class SSOCookieController extends BaseController {
             returnErrMsg(response, ssoCookieParams.getRu(), result.getCode(), result.getMessage());
             return;
         }
-
-        //response 回去的时候设置一个p3p的header,用来定义IE的跨域问题。
-        response.setHeader("P3P", "CP=CAO PSA OUR");
-
         result = cookieManager.setSSOCookie(response, ssoCookieParams);
 
         String ru = ssoCookieParams.getRu();
@@ -116,10 +112,6 @@ public class SSOCookieController extends BaseController {
             returnErrMsg(response, ppCookieParams.getRu(), result.getCode(), result.getMessage());
             return;
         }
-        //response 回去的时候设置一个p3p的header
-        //用来定义IE的跨域问题。
-        response.setHeader("P3P", "CP=CAO PSA OUR");
-
         result = cookieManager.setPPCookie(response, ppCookieParams);
 
         String ru = ppCookieParams.getRu();

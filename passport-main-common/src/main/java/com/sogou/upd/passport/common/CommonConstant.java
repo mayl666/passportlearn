@@ -85,6 +85,14 @@ public class CommonConstant {
     public static final String PINYIN_CN_CREATE_COOKIE_URL = "http://account.qq.pinyin.cn/sso/setcookie";
     public static final String TEEMO_CN_CREATE_COOKIE_URL = "http://account.teemo.cn/sso/setcookie";
 
+    public static final String PP_COOKIE_URL = "http://account.sogou.com/act/setppcookie";
+
+    //web端 生成cookie并且种cookie标示
+    public static final int CREATE_COOKIE_AND_SET = 0;
+
+    //桌面端产品 生成cookie 不种标示
+    public static final int CREATE_COOKIE_NOT_SET = 1;
+
 
     public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 1; // 默认种cookie的有效期，1小时
     public static final long API_REQUEST_VAILD_TERM = 500000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒

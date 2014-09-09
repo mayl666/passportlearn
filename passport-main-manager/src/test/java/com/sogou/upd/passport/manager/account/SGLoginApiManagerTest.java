@@ -8,6 +8,7 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import junit.framework.Assert;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import java.util.Map;
  * Created with IntelliJ IDEA. User: chenjiameng Date: 13-5-15 Time: 下午4:31 To change this template use
  * File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 @ContextConfiguration(locations = {"classpath:spring-config-test.xml"})
 public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
     @Autowired
@@ -57,6 +58,48 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
     }
 
 
+    /**
+     * 用于生成 sginf sgrdig
+     */
+    @Test
+    public void testGetSGCookie() {
+        String userid = "happytest0814@sogou.com";
+        int client_id = 1120;
+        String refnick = "测试";
+
+        CookieApiParams params = new CookieApiParams(userid, client_id, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, refnick);
+
+        Result result = sgLoginApiManager.getCookieInfo(params);
+
+        System.out.println("==============sginf :" + result.getModels().get("sginf"));
+        System.out.println("==============sgrdig :" + result.getModels().get("sgrdig"));
+
+
+    }
+
+
+    /**
+     * 用于生成 ver=5 cookie: passport、ppinfo、ppinf、pprdig
+     */
+    @Test
+    public void testVer5SGCookie() {
+
+        //生成种搜狗域下的 ver=5 的 cookie:passport、ppinfo、ppinf、pprdig
+
+        String userid = "happytest0814@sogou.com";
+        int client_id = 1120;
+        String refnick = "测试0821";
+
+        CookieApiParams cookieApiParams = new CookieApiParams(userid, client_id, StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, refnick);
+        Result result = sgLoginApiManager.getSGCookieInfoForAdapter(cookieApiParams);
+        System.out.println("========= passport=" + result.getModels().get("passport"));
+        System.out.println("========= ppinfo=" + result.getModels().get("ppinfo"));
+        System.out.println("========= ppinf=" + result.getModels().get("ppinf"));
+        System.out.println("========= pprdig=" + result.getModels().get("pprdig"));
+
+    }
+
+
     @Test
     public void testVerifyCookie() {
         String passportId = "CFBF0F59AE1029AF7C2F9F1CD4827F96@qq.sohu.com";
@@ -79,6 +122,26 @@ public class SGLoginApiManagerTest extends AbstractJUnit4SpringContextTests {
             Assert.assertTrue(false);
         }
     }
+
+
+    @Test
+    public void testStrBlackList() {
+
+        //nanajiaozixian1@sogou.com ~ nanajiaozixian99@sogou.com
+
+        StringBuffer blacklist = new StringBuffer("0 0 30");
+        blacklist.append("\r\n").append("nanajiaozixian1@sogou.com").append("\r\n");
+        blacklist.append("nanajiaozixian1@sogou.com").append("\r\n");
+        blacklist.append("nanajiaozixian1@sogou.com").append("\r\n");
+        blacklist.append("nanajiaozixian1@sogou.com").append("\r\n");
+        blacklist.append("nanajiaozixian1@sogou.com").append("\r\n");
+        blacklist.append("nanajiaozixian1@sogou.com").append("\r\n");
+        System.out.println("=========================");
+        System.out.println(blacklist.toString());
+        System.out.println("=========================");
+
+    }
+
 
 
 }

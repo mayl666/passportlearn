@@ -13,10 +13,13 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ProxyErrorUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -157,4 +160,5 @@ public class BaseProxyManager {
         }
         map.remove("errmsg");
     }
+
 }

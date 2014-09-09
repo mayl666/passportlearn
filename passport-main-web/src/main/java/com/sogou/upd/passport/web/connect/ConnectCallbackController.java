@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CookieManager;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.web.BaseConnectController;
@@ -93,7 +94,25 @@ public class ConnectCallbackController extends BaseConnectController {
                 return viewUrl;
             } else if (ConnectTypeEnum.WEB.toString().equals(type)) {
                 int clientId = Integer.valueOf(clientIdStr);
-                cookieManager.setCookie(res, passportId, clientId, getIp(req), ru, (int) DateAndNumTimesConstant.TWO_WEEKS);
+
+                //最初版本
+//                cookieManager.setCookie(res, passportId, clientId, getIp(req), ru, (int) DateAndNumTimesConstant.TWO_WEEKS);
+
+                //module 替换
+                CookieApiParams cookieApiParams = new CookieApiParams();
+                cookieApiParams.setUserid(passportId);
+                cookieApiParams.setClient_id(clientId);
+                cookieApiParams.setRu(ru);
+                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+                cookieApiParams.setPersistentcookie(String.valueOf(1));
+                cookieApiParams.setIp(getIp(req));
+                cookieApiParams.setMaxAge((int) DateAndNumTimesConstant.TWO_WEEKS);
+                cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
+                cookieApiParams.setUniqname((String) result.getModels().get("refnick"));
+                cookieApiParams.setRefnick((String) result.getModels().get("refnick"));
+
+                cookieManager.createCookie(res, cookieApiParams);
+
                 String domain = req.getParameter("domain");
                 if (!Strings.isNullOrEmpty(domain)) {
                     String refnick = (String) result.getModels().get("refnick");

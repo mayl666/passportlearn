@@ -12,6 +12,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
+import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.Map;
 
@@ -57,8 +59,11 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     @Autowired
     private AccountInfoManager accountInfoManager;
 
+    @Autowired
+    private CookieManager cookieManager;
+
     @Override
-    public Result resource(PCOAuth2ResourceParams params) {
+    public Result resource(HttpServletResponse response, PCOAuth2ResourceParams params) {
         Result result = new OAuthResultSupport(false);
         int clientId = params.getClient_id();
         String instanceId = params.getInstance_id();
@@ -73,7 +78,8 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             String clientSecret = appConfig.getClientSecret();
             String resourceType = params.getResource_type();
             if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_COOKIE)) {
-                result = getCookieValue(accessToken, clientId, clientSecret, instanceId, params.getUsername());
+                //取cookie
+                result = getCookieValue(response, accessToken, clientId, clientSecret, instanceId, params.getUsername());
             } else if (OAuth2ResourceTypeEnum.isEqual(resourceType, OAuth2ResourceTypeEnum.GET_FULL_USERINFO)) {
                 result = getFullUserInfo(accessToken, clientId, clientSecret, instanceId, params.getUsername());
             } else {
@@ -93,7 +99,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
      * @return
      */
     @Override
-    public Result getCookieValue(String accessToken, int clientId, String clientSecret, String instanceId, String username) {
+    public Result getCookieValue(HttpServletResponse response, String accessToken, int clientId, String clientSecret, String instanceId, String username) {
         Result result = new OAuthResultSupport(false);
         Result cookieResult;
         Map resourceMap = Maps.newHashMap();
@@ -105,31 +111,50 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
 
-            if (CommonHelper.isBuildNewCookie()) {
-                //生成cookie
-                CookieApiParams cookieApiParams = new CookieApiParams();
-                cookieApiParams.setUserid(passportId);
-                cookieApiParams.setClient_id(clientId);
-                cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
-                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-                cookieApiParams.setPersistentcookie(String.valueOf(1));
-                cookieResult = sgLoginApiManager.getCookieInfo(cookieApiParams);
-            } else {
-                //生成cookie
-                CookieApiParams cookieApiParams = new CookieApiParams();
-                cookieApiParams.setUserid(passportId);
-                cookieApiParams.setClient_id(clientId);
-                cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
-                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-                cookieApiParams.setPersistentcookie(String.valueOf(1));
+            //TODO 最早版本
+//            if (CommonHelper.isBuildNewCookie()) {
+//                生成cookie
+//                CookieApiParams cookieApiParams = new CookieApiParams();
+//                cookieApiParams.setUserid(passportId);
+//                cookieApiParams.setClient_id(clientId);
+//                cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
+//                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+//                cookieApiParams.setPersistentcookie(String.valueOf(1));
+//                cookieResult = sgLoginApiManager.getCookieInfo(cookieApiParams);
+//            } else {
+//                生成cookie
+//                CookieApiParams cookieApiParams = new CookieApiParams();
+//                cookieApiParams.setUserid(passportId);
+//                cookieApiParams.setClient_id(clientId);
+//                cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
+//                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+//                cookieApiParams.setPersistentcookie(String.valueOf(1));
 //                Random random = new Random();
 //                int num = random.nextInt(10);
 //                if(num/2 == 0){
 //
 //                }
-                cookieResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+//                cookieResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+//            }
 
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(passportId);
+            cookieApiParams.setClient_id(clientId);
+            cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            cookieApiParams.setPersistentcookie(String.valueOf(1));
+            cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);
+
+            if (!Strings.isNullOrEmpty(passportId)) {
+                if (org.apache.commons.lang3.StringUtils.contains(passportId, "@")) {
+                    cookieApiParams.setUniqname(org.apache.commons.lang3.StringUtils.substring(passportId, 0, passportId.indexOf("@")));
+                } else {
+                    cookieApiParams.setUniqname(passportId);
+                }
             }
+
+            cookieResult = cookieManager.createCookie(response, cookieApiParams);
+
             if (!cookieResult.isSuccess()) {
                 result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
                 return result;
