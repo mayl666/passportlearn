@@ -383,29 +383,31 @@ public class RegAction extends BaseController {
             }
             String mobile = reqParams.getMobile();
             String userAgent = request.getHeader("User-Agent");
+            boolean isNeedCaptcha = false;
             //只有客户端才会有此"cinfo"参数，web端和桌面端是没有的，故客户端和手机端还走第二次弹出验证码的流程
             if (!Strings.isNullOrEmpty(cInfo) || (userAgent.toLowerCase().contains("android") || userAgent.toLowerCase().contains("iphone"))) {
                 result = commonManager.checkMobileSendSMSInBlackList(mobile, reqParams.getClient_id());
-                //需要弹出验证码
                 if (!result.isSuccess()) {
-                    //如果token和captcha都不为空，则校验是否匹配
-                    if (!Strings.isNullOrEmpty(reqParams.getToken()) && !Strings.isNullOrEmpty(reqParams.getCaptcha())) {
-                        result = regManager.checkCaptchaToken(reqParams.getToken(), reqParams.getCaptcha());
-                        //如果验证码校验失败，则提示
-                        if (!result.isSuccess()) {
-                            result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
-                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                            return result.toString();
-                        }
-                    } else {
-                        result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
-                        return result.toString();
-                    }
+                    isNeedCaptcha = true;
                 }
             } else {
                 if (CommonConstant.PC_CLIENTID != Integer.parseInt(reqParams.getClient_id())) {
+                    isNeedCaptcha = true;
+                }
+            }
+            if (isNeedCaptcha) {
+                if (!Strings.isNullOrEmpty(reqParams.getToken()) && !Strings.isNullOrEmpty(reqParams.getCaptcha())) {
+                    result = regManager.checkCaptchaToken(reqParams.getToken(), reqParams.getCaptcha());
+                    //如果验证码校验失败，则提示
+                    if (!result.isSuccess()) {
+                        result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                        return result.toString();
+                    }
+                } else {
                     //桌面端需要兼容浏览器1044不弹出验证码的情况
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
+                    result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
                     return result.toString();
                 }
             }
@@ -419,9 +421,15 @@ public class RegAction extends BaseController {
             }
             BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
             result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
-        } catch (Exception e) {
+        } catch (
+                Exception e
+                )
+
+        {
             logger.error("method[sendMobileCode] send mobile sms error.{}", e);
-        } finally {
+        } finally
+
+        {
             String logCode;
             if (!Strings.isNullOrEmpty(finalCode)) {
                 logCode = finalCode;
@@ -434,6 +442,7 @@ public class RegAction extends BaseController {
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
+
         commonManager.incSendTimesForMobile(ip);
         commonManager.incSendTimesForMobile(reqParams.getMobile());
         return result.toString();
