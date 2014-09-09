@@ -402,10 +402,8 @@ public class RegAction extends BaseController {
                     }
                 }
             } else {
-                StringBuffer URL = request.getRequestURL();
-                String domainTmp = URL.substring(URL.indexOf("//") + 1, URL.length());
-                String domain = domainTmp.split("/")[0];
-                if (CommonConstant.PC_CLIENTID != Integer.parseInt(reqParams.getClient_id()) && CommonConstant.PP_SERVER_NAME_WEB.equals(domain)) {
+                String userAgent = request.getHeader("User-Agent");
+                if (CommonConstant.PC_CLIENTID != Integer.parseInt(reqParams.getClient_id()) && CommonConstant.PP_SERVER_NAME_WEB.equals(userAgent)) {
                     //桌面端需要兼容浏览器1044不弹出验证码的情况
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
                     return result.toString();
