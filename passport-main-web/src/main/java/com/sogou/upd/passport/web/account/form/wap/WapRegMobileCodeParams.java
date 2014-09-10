@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account.form.wap;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.common.validation.constraints.Skin;
 import com.sogou.upd.passport.common.validation.constraints.V;
@@ -21,9 +22,9 @@ public class WapRegMobileCodeParams extends MoblieCodeParams {
     private String v; //版本号
     @URL
     @Ru
-    private String ru; //登录来源
+    private String ru = CommonConstant.DEFAULT_WAP_INDEX_URL; //登录来源
     @Skin
-    private String skin;//皮肤参数
+    private String skin = CommonConstant.WAP_DEFAULT_SKIN;//皮肤参数
     private String errorMsg;//错误信息
     private int needCaptcha;//是否需要输入验证码:0-不需要；1-需要
 
