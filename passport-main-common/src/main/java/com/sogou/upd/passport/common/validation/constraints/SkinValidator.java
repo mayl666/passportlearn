@@ -22,6 +22,7 @@ public class SkinValidator implements ConstraintValidator<Skin, String> {
     //目前wap只有red一种颜色，若不传，默认为绿色.后续有其它颜色再添加
     static {
         SUPPORT_SKIN.add("red");
+        SUPPORT_SKIN.add("green");
     }
 
     @Override
