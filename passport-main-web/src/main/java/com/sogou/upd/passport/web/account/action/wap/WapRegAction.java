@@ -1,11 +1,11 @@
 package com.sogou.upd.passport.web.account.action.wap;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.WapConstant;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * wap的注册接口。基本等同于web的注册接口。
@@ -50,6 +51,7 @@ import javax.servlet.http.HttpServletResponse;
 public class WapRegAction extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(WapRegAction.class);
+    private static Map<String, Object> params = Maps.newHashMap();
 
     @Autowired
     private RegManager regManager;
@@ -151,36 +153,43 @@ public class WapRegAction extends BaseController {
         }
         commonManager.incSendTimesForMobile(ip);
         commonManager.incSendTimesForMobile(reqParams.getMobile());
-        request.setAttribute("errorMsg", ErrorUtil.getERR_CODE_MSG(result.getCode()));
-        request.setAttribute("hasError", false);
-        request.setAttribute("ru", Strings.isNullOrEmpty(reqParams.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_INDEX_URL) : Coder.encodeUTF8(reqParams.getRu()));
-        request.setAttribute("skin", Strings.isNullOrEmpty(reqParams.getSkin()) ? WapConstant.WAP_GREEN : reqParams.getSkin());
-        request.setAttribute("needCaptcha", false);
-        request.setAttribute("v", Strings.isNullOrEmpty(reqParams.getV()) ? WapConstant.WAP_COLOR : reqParams.getV());
-        request.setAttribute("client_id", reqParams.getClient_id());
-        request.setAttribute("mobile", reqParams.getMobile());
-        request.getRequestDispatcher("/wap2/r").forward(request, response);
-        return "empty";
+        buildSendRedirectUrl(Strings.isNullOrEmpty(reqParams.getRu()) ? CommonConstant.DEFAULT_WAP_INDEX_URL : reqParams.getRu(),
+                reqParams.getClient_id(), false, reqParams.getMobile(), Strings.isNullOrEmpty(reqParams.getSkin()) ? WapConstant.WAP_GREEN : reqParams.getSkin(),
+                false, Strings.isNullOrEmpty(reqParams.getV()) ? WapConstant.WAP_COLOR : reqParams.getV(), null);
+        response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/r");
+        return "regist_wap_setpwd";
+    }
+
+    //获取短信验证码校验通过后，需要跳转到一个接口，避免用户刷新导致页面不可用
+    private Map<String, Object> buildSendRedirectUrl(String ru, String client_id, boolean hasError, String mobile, String
+            skin, boolean needCaptcha, String v, String errorMsg) {
+        params.put("client_id", client_id);
+        params.put("errorMsg", errorMsg);
+        params.put("hasError", hasError);
+        params.put("ru", ru);
+        params.put("skin", skin);
+        params.put("needCaptcha", needCaptcha);
+        params.put("v", v);
+        params.put("mobile", mobile);
+        return params;
     }
 
     /**
      * 通过接口跳转到填写验证码和密码页面
      *
-     * @param ru
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/wap2/r", method = RequestMethod.POST)
-    public String regView(String ru, Model model, String client_id, String hasError, String mobile, String
-            skin, String needCaptcha, String v, String errorMsg) throws Exception {
-        model.addAttribute("errorMsg", errorMsg);
-        model.addAttribute("hasError", hasError);
-        model.addAttribute("ru", ru);
-        model.addAttribute("skin", skin);
-        model.addAttribute("needCaptcha", needCaptcha);
-        model.addAttribute("v", v);
-        model.addAttribute("client_id", client_id);
-        model.addAttribute("mobile", mobile);
+    @RequestMapping(value = "/wap2/r", method = RequestMethod.GET)
+    public String regView(Model model) throws Exception {
+        model.addAttribute("errorMsg", params.get("errorMsg"));
+        model.addAttribute("hasError", params.get("hasError"));
+        model.addAttribute("ru", params.get("ru"));
+        model.addAttribute("skin", params.get("skin"));
+        model.addAttribute("needCaptcha", params.get("needCaptcha"));
+        model.addAttribute("v", params.get("v"));
+        model.addAttribute("client_id", params.get("client_id"));
+        model.addAttribute("mobile", params.get("mobile"));
         return "wap/regist_wap_setpwd";
     }
 
