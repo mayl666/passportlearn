@@ -151,7 +151,6 @@ public class WapRegAction extends BaseController {
         }
         commonManager.incSendTimesForMobile(ip);
         commonManager.incSendTimesForMobile(reqParams.getMobile());
-        request.getRequestDispatcher("/wap2/r").forward(request, response);
         request.setAttribute("errorMsg", ErrorUtil.getERR_CODE_MSG(result.getCode()));
         request.setAttribute("hasError", false);
         request.setAttribute("ru", Strings.isNullOrEmpty(reqParams.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_INDEX_URL) : Coder.encodeUTF8(reqParams.getRu()));
@@ -160,6 +159,7 @@ public class WapRegAction extends BaseController {
         request.setAttribute("v", Strings.isNullOrEmpty(reqParams.getV()) ? WapConstant.WAP_COLOR : reqParams.getV());
         request.setAttribute("client_id", reqParams.getClient_id());
         request.setAttribute("mobile", reqParams.getMobile());
+        request.getRequestDispatcher("/wap2/r").forward(request, response);
         return "empty";
     }
 
