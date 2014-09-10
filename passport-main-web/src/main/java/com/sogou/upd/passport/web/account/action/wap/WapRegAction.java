@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.WapConstant;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -146,6 +147,36 @@ public class WapRegAction extends BaseController {
         }
         commonManager.incSendTimesForMobile(ip);
         commonManager.incSendTimesForMobile(reqParams.getMobile());
+        request.getRequestDispatcher("/wap2/r").forward(request, response);
+        request.setAttribute("errorMsg", ErrorUtil.getERR_CODE_MSG(result.getCode()));
+        request.setAttribute("hasError", false);
+        request.setAttribute("ru", Strings.isNullOrEmpty(reqParams.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_INDEX_URL) : Coder.encodeUTF8(reqParams.getRu()));
+        request.setAttribute("skin", Strings.isNullOrEmpty(reqParams.getSkin()) ? WapConstant.WAP_GREEN : reqParams.getSkin());
+        request.setAttribute("needCaptcha", false);
+        request.setAttribute("v", Strings.isNullOrEmpty(reqParams.getV()) ? WapConstant.WAP_COLOR : reqParams.getV());
+        request.setAttribute("client_id", reqParams.getClient_id());
+        request.setAttribute("mobile", reqParams.getMobile());
+        return "empty";
+    }
+
+    /**
+     * 通过接口跳转到填写验证码和密码页面
+     *
+     * @param ru
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/wap2/r", method = RequestMethod.POST)
+    public String regView(String ru, Model model, String client_id, String hasError, String mobile, String
+            skin, String needCaptcha, String v, String errorMsg) throws Exception {
+        model.addAttribute("errorMsg", errorMsg);
+        model.addAttribute("hasError", hasError);
+        model.addAttribute("ru", ru);
+        model.addAttribute("skin", skin);
+        model.addAttribute("needCaptcha", needCaptcha);
+        model.addAttribute("v", v);
+        model.addAttribute("client_id", client_id);
+        model.addAttribute("mobile", mobile);
         return "wap/regist_wap_setpwd";
     }
 
@@ -159,7 +190,7 @@ public class WapRegAction extends BaseController {
     private void buildModuleReturnStr(boolean hasError, String ru, String errorMsg, String client_id, String skin, String v, boolean needCaptcha, Model model) {
         model.addAttribute("errorMsg", errorMsg);
         model.addAttribute("hasError", hasError);
-        model.addAttribute("ru", Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_INDEX_URL : ru);
+        model.addAttribute("ru", Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_INDEX_URL) : Coder.encodeUTF8(ru));
         model.addAttribute("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_GREEN : skin);
         model.addAttribute("needCaptcha", needCaptcha);
         model.addAttribute("v", Strings.isNullOrEmpty(v) ? WapConstant.WAP_COLOR : v);
