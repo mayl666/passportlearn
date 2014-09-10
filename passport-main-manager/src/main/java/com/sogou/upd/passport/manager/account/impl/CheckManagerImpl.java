@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.CheckManager;
@@ -50,7 +51,7 @@ public class CheckManagerImpl implements CheckManager {
 
     @Override
     public String checkEmailScodeReturnStr(String passportId, int clientId, AccountModuleEnum module,
-            String scode){
+                                           String scode) {
         try {
             return emailSenderService.checkScodeForEmail(passportId, clientId, module, scode, true);
         } catch (ServiceException e) {
@@ -61,7 +62,7 @@ public class CheckManagerImpl implements CheckManager {
 
     @Override
     public boolean checkEmailScode(String passportId, int clientId, AccountModuleEnum module,
-                                           String scode) {
+                                   String scode) {
         try {
             String returnStr = emailSenderService.checkScodeForEmail(passportId, clientId, module, scode, false);
             return !Strings.isNullOrEmpty(returnStr);
@@ -74,7 +75,7 @@ public class CheckManagerImpl implements CheckManager {
     @Override
     public boolean checkScodeResetPwd(String passportId, int clientId, String scode) {
         try {
-            return accountSecureService.checkSecureCodeResetPwd(passportId, clientId, scode);
+            return accountSecureService.checkSecureCode(passportId, clientId, scode, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
         } catch (ServiceException e) {
             logger.error("check scode for reset pwd Fail:", e);
             return false;

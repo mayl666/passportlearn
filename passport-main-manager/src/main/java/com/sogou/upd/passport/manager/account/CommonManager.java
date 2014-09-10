@@ -61,14 +61,27 @@ public interface CommonManager {
     public String getPassportIdByUsername(String username) throws Exception;
 
     /**
-     * 获取重置密码时的安全码
+     * 获取安全码
      *
      * @param passportId
      * @param clientId
+     * @param cacheKey
      * @return
      * @throws ServiceException
      */
-    public String getSecureCodeResetPwd(String passportId, int clientId) throws ServiceException;
+    public String getSecureCode(String passportId, int clientId, String cacheKey) throws ServiceException;
+
+    /**
+     * 校验安全码
+     *
+     * @param passportId
+     * @param clientId
+     * @param secureCode
+     * @param cacheKey
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkSecureCode(String passportId, int clientId, String secureCode, String cacheKey) throws ServiceException;
 
     /**
      * 根据passportId查询account

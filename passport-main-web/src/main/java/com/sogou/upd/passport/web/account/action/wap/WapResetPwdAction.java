@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action.wap;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -301,7 +302,7 @@ public class WapResetPwdAction extends BaseController {
                             //主账号是外域，则返回注册邮箱 ;主账号非外域，则返回密保邮箱
                             result.setDefaultModel("sec_email", AccountDomainEnum.OTHER.equals(domain) ? passportId : sec_email);
                             result.setDefaultModel("sec_process_email", AccountDomainEnum.OTHER.equals(domain) ? StringUtil.processEmail(passportId) : StringUtil.processEmail(sec_email));
-                            result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, client_id));      //安全验证码
+                            result.setDefaultModel("scode", commonManager.getSecureCode(passportId, client_id, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));      //安全验证码
                         }
                     }
             }
@@ -339,7 +340,7 @@ public class WapResetPwdAction extends BaseController {
             String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
             ActiveEmailDO activeEmailDO = new WapActiveEmailDO(passportId, clientId, ru, AccountModuleEnum.RESETPWD, params.getEmail(), false, params.getSkin(), params.getV());
             result = resetPwdManager.sendEmailResetPwd(activeEmailDO, params.getScode());
-            result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
+            result.setDefaultModel("scode", commonManager.getSecureCode(passportId, clientId,CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
             result.setDefaultModel("userid", passportId);
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());
         } catch (Exception e) {

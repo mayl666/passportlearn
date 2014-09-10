@@ -100,8 +100,13 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public String getSecureCodeResetPwd(String passportId, int clientId) throws ServiceException {
-        return accountSecureService.getSecureCodeResetPwd(passportId, clientId);  //To change body of implemented methods use File | Settings | File Templates.
+    public String getSecureCode(String passportId, int clientId, String cacheKey) throws ServiceException {
+        return accountSecureService.getSecureCode(passportId, clientId, cacheKey);  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean checkSecureCode(String passportId, int clientId, String secureCode, String cacheKey) throws ServiceException {
+        return accountSecureService.checkSecureCode(passportId, clientId, secureCode, cacheKey);  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -141,7 +146,7 @@ public class CommonManagerImpl implements CommonManager {
                 if (PhoneUtil.verifyPhoneNumberFormat(ipOrMobile)) {
                     //todo 此处暂时将浏览器1044的情况排除掉，不校验是否需要弹出验证码；上完线后此bug是要修复的
                     if (!Strings.isNullOrEmpty(client_id) && CommonConstant.PC_CLIENTID == Integer.parseInt(client_id)) {
-                         result.setSuccess(true);
+                        result.setSuccess(true);
                     } else {
                         //如果是手机号，则提示需要输入验证码
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);

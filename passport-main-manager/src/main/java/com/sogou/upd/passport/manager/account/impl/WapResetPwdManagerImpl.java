@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -60,7 +61,7 @@ public class WapResetPwdManagerImpl implements WapResetPwdManager {
             }
             result.setSuccess(true);
             result.setMessage("手机号与验证码匹配成功");
-            result.setDefaultModel("scode", accountSecureService.getSecureCodeResetPwd(passportId, clientId));
+            result.setDefaultModel("scode", accountSecureService.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
             result.setDefaultModel("userid", passportId);
             return result;
         } catch (ServiceException e) {

@@ -2,10 +2,7 @@ package com.sogou.upd.passport.web.account.action.wap;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.LoginConstant;
-import com.sogou.upd.passport.common.WapConstant;
+import com.sogou.upd.passport.common.*;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -29,6 +26,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.WapIndexParams;
 import com.sogou.upd.passport.web.account.form.wap.WapRegMobileCodeParams;
+import com.sogou.upd.passport.web.account.form.wap.WapV2RegParams;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,12 +154,108 @@ public class WapRegAction extends BaseController {
         buildSendRedirectUrl(Strings.isNullOrEmpty(reqParams.getRu()) ? CommonConstant.DEFAULT_WAP_INDEX_URL : reqParams.getRu(),
                 reqParams.getClient_id(), false, reqParams.getMobile(), Strings.isNullOrEmpty(reqParams.getSkin()) ? WapConstant.WAP_GREEN : reqParams.getSkin(),
                 false, Strings.isNullOrEmpty(reqParams.getV()) ? WapConstant.WAP_COLOR : reqParams.getV(), null);
-        params.put("scode", commonManager.getSecureCodeResetPwd(reqParams.getMobile(), Integer.parseInt(reqParams.getClient_id())));
+        params.put("scode", commonManager.getSecureCode(reqParams.getMobile(), Integer.parseInt(reqParams.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE));
         response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/r");
         return "regist_wap_setpwd";
     }
 
-    //获取短信验证码校验通过后，需要跳转到一个接口，避免用户刷新导致页面不可用
+    @RequestMapping(value = "/wap2/reguser", method = RequestMethod.POST)
+    public String regV2User(HttpServletRequest request, HttpServletResponse response, WapV2RegParams regParams, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        String ip = null;
+        String uuidName = null;
+        String finalCode = null;
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(regParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                buildModuleReturnStr(true, regParams.getRu(), validateResult,
+                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, model);
+                model.addAttribute("username", regParams.getUsername());
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                return "wap/regist_wap_setpwd";
+            }
+            ip = getIp(request);
+            //校验用户是否允许注册
+            uuidName = ServletUtil.getCookie(request, "uuidName");
+            result = regManager.checkRegInBlackList(ip, uuidName);
+            if (!result.isSuccess()) {
+                if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
+                    finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
+                    result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
+                }
+                buildModuleReturnStr(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL),
+                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, model);
+                model.addAttribute("username", regParams.getUsername());
+                return "wap/regist_wap_setpwd";
+            }
+            //校验安全码
+            if (!commonManager.checkSecureCode(regParams.getUsername(), regParams.getClient_id(), regParams.getScode(), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE)) {
+                result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
+                buildModuleReturnStr(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED),
+                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, model);
+                model.addAttribute("username", regParams.getUsername());
+                return "wap/regist_wap_setpwd";
+            }
+            // 调用内部接口
+            if (PhoneUtil.verifyPhoneNumberFormat(regParams.getUsername())) {
+                result = regManager.registerMobile(regParams.getUsername(), regParams.getPassword(), regParams.getClient_id(), regParams.getCaptcha(), null);
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                buildModuleReturnStr(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_COM_REQURIE),
+                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, model);
+                model.addAttribute("username", regParams.getUsername());
+                return "wap/regist_wap_setpwd";
+            }
+            if (result.isSuccess()) {
+                //第三方获取个人资料
+                String userid = result.getModels().get("userid").toString();
+                // 调用内部接口
+                GetUserInfoApiparams userInfoApiparams = new GetUserInfoApiparams(userid, "uniqname,avatarurl,gender");
+                result = sgUserInfoApiManager.getUserInfo(userInfoApiparams);
+                logger.info("wap reg userinfo result:" + result);
+                Result sessionResult = sessionServerManager.createSession(userid);
+                String sgid;
+                if (sessionResult.isSuccess()) {
+                    sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+                    result.getModels().put("userid", userid);
+                    if (!Strings.isNullOrEmpty(sgid)) {
+                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                        setSgidCookie(response, sgid);
+                    }
+                } else {
+                    logger.warn("can't get session result, userid:" + result.getModels().get("userid"));
+                }
+            } else {
+                buildModuleReturnStr(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
+                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, model);
+                model.addAttribute("username", regParams.getUsername());
+                return "wap/regist_wap_setpwd";
+            }
+        } catch (Exception e) {
+            logger.error("wap2 reguser:User Register Is Failed,Username is " + regParams.getUsername(), e);
+        } finally {
+            String logCode = !Strings.isNullOrEmpty(finalCode) ? finalCode : result.getCode();
+            regManager.incRegTimes(ip, uuidName);
+            String userId = (String) result.getModels().get("userid");
+            if (!Strings.isNullOrEmpty(userId) && AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {
+                if (result.isSuccess()) {
+                    int clientId = regParams.getClient_id();
+                    secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
+                }
+            }
+            //用户注册log
+            UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id() + "", logCode, getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
+        }
+        return result.toString();
+    }
+
+    /**
+     * 获取短信验证码校验通过后，需要跳转到一个接口，避免用户刷新导致页面不可用
+     */
     private Map<String, Object> buildSendRedirectUrl(String ru, String client_id, boolean hasError, String mobile, String
             skin, boolean needCaptcha, String v, String errorMsg) {
         params.put("client_id", client_id);

@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -96,7 +97,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 return result;
             }
             //校验安全码
-            if (!accountSecureService.checkSecureCodeResetPwd(passportId, clientId, scode)) {
+            if (!accountSecureService.checkSecureCode(passportId, clientId, scode, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE)) {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
                 return result;
             }
@@ -232,7 +233,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 return result;
             }
             //校验成功，生成scode
-            result.setDefaultModel("scode", accountSecureService.getSecureCodeResetPwd(passportId, clientId));
+            result.setDefaultModel("scode", accountSecureService.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
 
             emailSenderService.deleteScodeCacheForEmail(passportId, clientId, module);
             result.setSuccess(true);
@@ -321,7 +322,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             String mobile = account.getMobile();
             result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.RESETPWD, smsCode);
             if (result.isSuccess()) {
-                result.setDefaultModel("scode", accountSecureService.getSecureCodeResetPwd(passportId, clientId));
+                result.setDefaultModel("scode", accountSecureService.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
             }
             return result;
         } catch (ServiceException e) {
@@ -357,7 +358,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             }
             result.setSuccess(true);
             result.setMessage("验证密保答案成功！");
-            result.setDefaultModel("scode", accountSecureService.getSecureCodeResetPwd(passportId, clientId));
+            result.setDefaultModel("scode", accountSecureService.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
             return result;
         } catch (ServiceException e) {
             logger.error("check secure answer Fail:", e);
@@ -385,7 +386,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 return result;
             }
             //校验安全码
-            if (!accountSecureService.checkSecureCodeResetPwd(passportId, clientId, scode)) {
+            if (!accountSecureService.checkSecureCode(passportId, clientId, scode, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE)) {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
                 return result;
             }
