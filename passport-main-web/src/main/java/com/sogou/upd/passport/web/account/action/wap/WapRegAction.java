@@ -101,7 +101,9 @@ public class WapRegAction extends BaseController {
                     if (!result.isSuccess()) {
                         buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED),
                                 reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), true, model);
-                        model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + RandomStringUtils.randomAlphanumeric(48));
+                        String token = RandomStringUtils.randomAlphanumeric(48);
+                        model.addAttribute("token", token);
+                        model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                         return "wap/regist_wap";
                     }
@@ -109,7 +111,9 @@ public class WapRegAction extends BaseController {
                     //需要弹出验证码
                     buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE),
                             reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), true, model);
-                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + RandomStringUtils.randomAlphanumeric(48));
+                    String token = RandomStringUtils.randomAlphanumeric(48);
+                    model.addAttribute("token", token);
+                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
                     return "wap/regist_wap";
                 }
