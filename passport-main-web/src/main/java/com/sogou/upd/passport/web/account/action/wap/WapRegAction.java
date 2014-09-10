@@ -266,6 +266,7 @@ public class WapRegAction extends BaseController {
         params.put("needCaptcha", needCaptcha);
         params.put("v", v);
         params.put("mobile", mobile);
+        params.put("username", mobile);
         return params;
     }
 
