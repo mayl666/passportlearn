@@ -156,6 +156,7 @@ public class WapRegAction extends BaseController {
         buildSendRedirectUrl(Strings.isNullOrEmpty(reqParams.getRu()) ? CommonConstant.DEFAULT_WAP_INDEX_URL : reqParams.getRu(),
                 reqParams.getClient_id(), false, reqParams.getMobile(), Strings.isNullOrEmpty(reqParams.getSkin()) ? WapConstant.WAP_GREEN : reqParams.getSkin(),
                 false, Strings.isNullOrEmpty(reqParams.getV()) ? WapConstant.WAP_COLOR : reqParams.getV(), null);
+        params.put("scode", commonManager.getSecureCodeResetPwd(reqParams.getMobile(), Integer.parseInt(reqParams.getClient_id())));
         response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/r");
         return "regist_wap_setpwd";
     }
