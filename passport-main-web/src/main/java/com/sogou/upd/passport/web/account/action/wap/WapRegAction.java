@@ -145,7 +145,6 @@ public class WapRegAction extends BaseController {
         }
         commonManager.incSendTimesForMobile(ip);
         commonManager.incSendTimesForMobile(reqParams.getMobile());
-        model.addAttribute("errorMsg", "验证码已发送至" + reqParams.getMobile() + ",如1分钟内未收到，可重新发送");
         return "wap/regist_wap_setpwd";
     }
 
