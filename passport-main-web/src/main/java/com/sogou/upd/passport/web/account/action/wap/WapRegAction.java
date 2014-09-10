@@ -13,17 +13,22 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileParams;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
+import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.WapIndexParams;
 import com.sogou.upd.passport.web.account.form.wap.WapRegMobileCodeParams;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,31 +55,115 @@ public class WapRegAction extends BaseController {
     @Autowired
     private SecureManager secureManager;
     @Autowired
+    private ConfigureManager configureManager;
+    @Autowired
+    private CommonManager commonManager;
+    @Autowired
     private SessionServerManager sessionServerManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
+    @Autowired
+    private RegisterApiManager sgRegisterApiManager;
 
-    @RequestMapping(value = "/wap/sendsms", method = RequestMethod.POST)
+    @RequestMapping(value = "/wap2/sendsms", method = RequestMethod.POST)
     public String sendsms(HttpServletRequest request, HttpServletResponse response, WapRegMobileCodeParams reqParams, Model model) throws Exception {
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(reqParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            model.addAttribute("errorMsg", validateResult);
-            model.addAttribute("hasError", true);
-            model.addAttribute("ru", reqParams.getRu() == null ? CommonConstant.DEFAULT_WAP_INDEX_URL : reqParams.getRu());
-            model.addAttribute("skin", reqParams.getSkin() == null ? "green" : reqParams.getSkin());
-            model.addAttribute("needCaptcha", false);
-            model.addAttribute("mobile", reqParams.getMobile());
-            return "wap/regist_wap";
+        Result result = new APIResultSupport(false);
+        String ip = getIp(request);
+        String finalCode = null;
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(reqParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                buildModuleReturnStr(true, reqParams.getRu(), validateResult,
+                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+                model.addAttribute("mobile", reqParams.getMobile());
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                return "wap/regist_wap";
+            }
+            //验证client_id
+            int clientId = Integer.parseInt(reqParams.getClient_id());
+            //检查client_id是否存在
+            if (!configureManager.checkAppIsExist(clientId)) {
+                buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID),
+                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+                model.addAttribute("mobile", reqParams.getMobile());
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return "wap/regist_wap";
+            }
+            String mobile = reqParams.getMobile();
+            //第二次弹出验证码
+            result = commonManager.checkMobileSendSMSInBlackList(mobile, reqParams.getClient_id());
+            if (!result.isSuccess()) {
+                if (!Strings.isNullOrEmpty(reqParams.getToken()) && !Strings.isNullOrEmpty(reqParams.getCaptcha())) {
+                    result = regManager.checkCaptchaToken(reqParams.getToken(), reqParams.getCaptcha());
+                    //如果验证码校验失败，则提示
+                    if (!result.isSuccess()) {
+                        buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED),
+                                reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), true, model);
+                        model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "?token=" + RandomStringUtils.randomAlphanumeric(48));
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                        return "wap/regist_wap";
+                    }
+                } else {
+                    //需要弹出验证码
+                    buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE),
+                            reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), true, model);
+                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "?token=" + RandomStringUtils.randomAlphanumeric(48));
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
+                    return "wap/regist_wap";
+                }
+            }
+            //校验用户ip是否中了黑名单
+            result = commonManager.checkMobileSendSMSInBlackList(ip, reqParams.getClient_id());
+            if (!result.isSuccess()) {
+                finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND),
+                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+                return result.toString();
+            }
+            BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
+            result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
+            buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
+                    reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+            if (!result.isSuccess()) {
+                return "wap/regist_wap";
+            }
+        } catch (Exception e) {
+            logger.error("wap2.0 reguser:User Register Is Failed,mobile is " + reqParams.getMobile(), e);
+        } finally {
+            String logCode;
+            if (!Strings.isNullOrEmpty(finalCode)) {
+                logCode = finalCode;
+            } else {
+                logCode = result.getCode();
+            }
+            UserOperationLog userOperationLog = new UserOperationLog(reqParams.getMobile(), request.getRequestURI(), reqParams.getClient_id(), logCode, ip);
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
-        return null;
+        commonManager.incSendTimesForMobile(ip);
+        commonManager.incSendTimesForMobile(reqParams.getMobile());
+        model.addAttribute("errorMsg", "验证码已发送至" + reqParams.getMobile() + ",如1分钟内未收到，可重新发送");
+        return "wap/regist_wap_setpwd";
     }
 
-    private String buildModuleReturnStr(String ru, String errorMsg) {
-        if (!Strings.isNullOrEmpty(ru)) {
-            return (ru + "?errorMsg=" + errorMsg);
-        }
-        return WapConstant.WAP_INDEX + "?errorMsg=" + errorMsg;
+    private BaseMoblieApiParams buildProxyApiParams(int clientId, String mobile) {
+        BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
+        baseMoblieApiParams.setMobile(mobile);
+        baseMoblieApiParams.setClient_id(clientId);
+        return baseMoblieApiParams;
+    }
+
+    private void buildModuleReturnStr(boolean hasError, String ru, String errorMsg, String client_id, String skin, String v, boolean needCaptcha, Model model) {
+        model.addAttribute("errorMsg", errorMsg);
+        model.addAttribute("hasError", hasError);
+        model.addAttribute("ru", Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_INDEX_URL : ru);
+        model.addAttribute("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_GREEN : skin);
+        model.addAttribute("needCaptcha", needCaptcha);
+        model.addAttribute("v", Strings.isNullOrEmpty(v) ? WapConstant.WAP_COLOR : v);
+        model.addAttribute("client_id", client_id);
     }
 
 
