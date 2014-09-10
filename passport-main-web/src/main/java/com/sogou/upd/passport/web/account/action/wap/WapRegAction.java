@@ -126,6 +126,7 @@ public class WapRegAction extends BaseController {
             result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
             buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
                     reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+            model.addAttribute("mobile", reqParams.getMobile());
             if (!result.isSuccess()) {
                 return "wap/regist_wap";
             }
