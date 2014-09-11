@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.form.wap;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.common.validation.constraints.Skin;
 import com.sogou.upd.passport.common.validation.constraints.V;
@@ -19,7 +20,7 @@ import org.hibernate.validator.constraints.URL;
 public class WapRegMobileCodeParams extends MoblieCodeParams {
     @V
     @NotBlank(message = "版本号不允许为空!")
-    private String v; //版本号
+    private String v = WapConstant.WAP_TOUCH; //版本号,默认v=5
     @URL
     @Ru
     private String ru = CommonConstant.DEFAULT_WAP_INDEX_URL; //登录来源
