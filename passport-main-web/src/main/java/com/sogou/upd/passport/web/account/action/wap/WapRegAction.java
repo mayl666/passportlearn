@@ -156,7 +156,7 @@ public class WapRegAction extends BaseController {
                 false, Strings.isNullOrEmpty(reqParams.getV()) ? WapConstant.WAP_COLOR : reqParams.getV(), null);
         params.put("scode", commonManager.getSecureCode(reqParams.getMobile(), Integer.parseInt(reqParams.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE));
         response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/r");
-        return "regist_wap_setpwd";
+        return "empty";
     }
 
     @RequestMapping(value = "/wap2/reguser", method = RequestMethod.POST)
