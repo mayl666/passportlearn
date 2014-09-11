@@ -353,7 +353,7 @@ public class RegAction extends BaseController {
         //sendsms因SDK已经发版，需要兼容， 改个策略，
         // GET方式中，如果有cinfo参数，并且参数值内容匹配，这样能发验证码，其它的还是POST限制。
         boolean canProcessGet = false;
-        String cInfo = null;
+        String cInfo;
         if ("GET".equalsIgnoreCase(request.getMethod())) {
             cInfo = request.getHeader("cinfo");
             if (StringUtil.isNotEmpty(cInfo)) {
@@ -382,10 +382,10 @@ public class RegAction extends BaseController {
                 return result.toString();
             }
             String mobile = reqParams.getMobile();
-            String userAgent = request.getHeader("User-Agent");
+            cInfo = request.getHeader("cinfo");
             boolean isNeedCaptcha = false;
             //只有客户端才会有此"cinfo"参数，web端和桌面端是没有的，故客户端和手机端还走第二次弹出验证码的流程
-            if (!Strings.isNullOrEmpty(cInfo) || (userAgent.toLowerCase().contains("android") || userAgent.toLowerCase().contains("iphone"))) {
+            if (!Strings.isNullOrEmpty(cInfo) || (cInfo.toLowerCase().contains("android") || cInfo.toLowerCase().contains("iphone"))) {
                 result = commonManager.checkMobileSendSMSInBlackList(mobile, reqParams.getClient_id());
                 if (!result.isSuccess() && ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE.equals(result.getCode())) {
                     isNeedCaptcha = true;
