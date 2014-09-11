@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -250,7 +251,13 @@ public class WapRegAction extends BaseController {
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
-        return "redirect:" + regParams.getRu();
+        writeResultToResponse(response, result);
+        return "empty";
+    }
+
+    private void writeResultToResponse(HttpServletResponse response, Result result) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(result.toString());
     }
 
     /**
