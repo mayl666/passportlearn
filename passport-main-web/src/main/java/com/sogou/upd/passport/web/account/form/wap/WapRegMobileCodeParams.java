@@ -23,9 +23,7 @@ public class WapRegMobileCodeParams {
     @NotBlank(message = "手机号码不允许为空!")
     private String mobile;
     @V
-    @NotBlank(message = "版本号不可为空!")
     private String v = WapConstant.WAP_TOUCH; //版本号,默认v=5
-    @NotBlank(message = "client_id不可为空!")
     private String client_id = String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID);
     @URL
     @Ru
