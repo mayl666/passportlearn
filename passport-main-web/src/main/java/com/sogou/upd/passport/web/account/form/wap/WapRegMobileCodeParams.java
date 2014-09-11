@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.validation.constraints.Skin;
 import com.sogou.upd.passport.common.validation.constraints.V;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * wap2.0注册参数类
@@ -23,13 +24,17 @@ public class WapRegMobileCodeParams {
     @NotBlank(message = "手机号码不允许为空!")
     private String mobile;
     @V
-    private String v = WapConstant.WAP_TOUCH; //版本号,默认v=5
-    private String client_id = String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID);
+    @Value(value = WapConstant.WAP_TOUCH)
+    private String v; //版本号,默认v=5
+    @Value(value = CommonConstant.SGPP_DEFAULT_CLIENTID + "")
+    private String client_id;
     @URL
     @Ru
-    private String ru = CommonConstant.DEFAULT_WAP_URL; //登录来源
+    @Value(value = CommonConstant.DEFAULT_WAP_URL)
+    private String ru;//登录来源
     @Skin
-    private String skin = CommonConstant.WAP_DEFAULT_SKIN;//皮肤参数
+    @Value(value = CommonConstant.WAP_DEFAULT_SKIN)
+    private String skin;//皮肤参数
     private String errorMsg;//错误信息
     private int needCaptcha;//是否需要输入验证码:0-不需要；1-需要
     private String captcha;//验证码
