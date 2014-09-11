@@ -9,8 +9,6 @@ import com.sogou.upd.passport.common.validation.constraints.V;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
-import javax.validation.constraints.Min;
-
 /**
  * wap2.0注册参数类
  * Created with IntelliJ IDEA.
@@ -29,7 +27,7 @@ public class WapRegMobileCodeParams {
     private String client_id = String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID);
     @URL
     @Ru
-    private String ru = CommonConstant.DEFAULT_WAP_INDEX_URL; //登录来源
+    private String ru = CommonConstant.DEFAULT_WAP_URL; //登录来源
     @Skin
     private String skin = CommonConstant.WAP_DEFAULT_SKIN;//皮肤参数
     private String errorMsg;//错误信息
