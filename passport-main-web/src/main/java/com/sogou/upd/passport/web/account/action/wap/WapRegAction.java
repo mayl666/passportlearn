@@ -184,7 +184,7 @@ public class WapRegAction extends BaseController {
                     finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
                     result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
                 }
-                buildModuleReturnStr(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL),
+                buildModuleReturnStr(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
                         String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, model);
                 model.addAttribute("username", regParams.getUsername());
                 return "wap/regist_wap_setpwd";
