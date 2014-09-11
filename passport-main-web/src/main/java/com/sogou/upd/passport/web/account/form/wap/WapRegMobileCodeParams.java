@@ -27,7 +27,7 @@ public class WapRegMobileCodeParams {
     @V
     private String v = WapConstant.WAP_TOUCH; //版本号,默认v=5
     @Min(0)
-    private String client_id = String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID);
+    private int client_id = CommonConstant.SGPP_DEFAULT_CLIENTID;
     @URL
     @Ru
     private String ru = CommonConstant.DEFAULT_WAP_INDEX_URL; //登录来源
@@ -78,11 +78,11 @@ public class WapRegMobileCodeParams {
         this.v = v;
     }
 
-    public String getClient_id() {
+    public int getClient_id() {
         return client_id;
     }
 
-    public void setClient_id(String client_id) {
+    public void setClient_id(int client_id) {
         this.client_id = client_id;
     }
 
