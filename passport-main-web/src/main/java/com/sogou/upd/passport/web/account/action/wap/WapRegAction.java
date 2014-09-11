@@ -414,6 +414,10 @@ public class WapRegAction extends BaseController {
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             return "wap/regist_touch";
         } else {
+            model.addAttribute("v", WapConstant.WAP_COLOR);
+            model.addAttribute("client_id", Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? CommonConstant.SGPP_DEFAULT_CLIENTID : wapIndexParams.getClient_id());
+            model.addAttribute("ru", Strings.isNullOrEmpty(wapIndexParams.getRu()) ? CommonConstant.DEFAULT_WAP_URL : wapIndexParams.getRu());
+            model.addAttribute("skin", Strings.isNullOrEmpty(wapIndexParams.getSkin()) ? CommonConstant.WAP_DEFAULT_SKIN : wapIndexParams.getSkin());
             return "wap/regist_wap";
         }
     }
