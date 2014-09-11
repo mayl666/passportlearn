@@ -131,16 +131,8 @@ public class CommonConstant {
 
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2001, 4));
 
-        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1024, 3));
-        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1024, 4));
-
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2011, 3));
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2011, 4));
-
-        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2018, 3));
-
-        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2020, 3));
-        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2020, 4));
     }
 
 }
