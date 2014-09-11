@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.action.wap;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.*;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -39,7 +40,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -251,13 +251,16 @@ public class WapRegAction extends BaseController {
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
-        writeResultToResponse(response, result);
+        response.sendRedirect(getSuccessReturnStr(regParams.getRu(), String.valueOf(result.getModels().get("sgid"))));
         return "empty";
     }
 
-    private void writeResultToResponse(HttpServletResponse response, Result result) throws IOException {
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(result.toString());
+    private String getSuccessReturnStr(String ru, String token) {
+        String deRu = Coder.decodeUTF8(ru);
+        if (deRu.contains("?")) {
+            return deRu + "&sgid=" + token;
+        }
+        return deRu + "?sgid=" + token;
     }
 
     /**
