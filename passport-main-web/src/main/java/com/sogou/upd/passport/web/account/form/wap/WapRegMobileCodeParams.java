@@ -9,6 +9,8 @@ import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
+import javax.validation.constraints.Min;
+
 /**
  * wap2.0注册参数类
  * Created with IntelliJ IDEA.
@@ -21,6 +23,9 @@ public class WapRegMobileCodeParams extends MoblieCodeParams {
     @V
     @NotBlank(message = "版本号不允许为空!")
     private String v = WapConstant.WAP_TOUCH; //版本号,默认v=5
+    @Min(0)
+    @NotBlank(message = "client_id不允许为空!")
+    private String client_id = String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID);
     @URL
     @Ru
     private String ru = CommonConstant.DEFAULT_WAP_INDEX_URL; //登录来源
@@ -67,5 +72,13 @@ public class WapRegMobileCodeParams extends MoblieCodeParams {
 
     public void setV(String v) {
         this.v = v;
+    }
+
+    public String getClient_id() {
+        return client_id;
+    }
+
+    public void setClient_id(String client_id) {
+        this.client_id = client_id;
     }
 }
