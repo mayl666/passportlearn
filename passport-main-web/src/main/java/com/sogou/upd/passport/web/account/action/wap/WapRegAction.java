@@ -250,7 +250,7 @@ public class WapRegAction extends BaseController {
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
-        return result.toString();
+        return "redirect:" + regParams.getRu();
     }
 
     /**
