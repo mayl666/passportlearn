@@ -27,6 +27,8 @@ public class WapV2RegParams extends RegMobileParams {
     @URL
     @Ru
     private String ru;
+    private String errorMsg;//错误信息
+    private int needCaptcha;//是否需要输入验证码:0-不需要；1-需要
 
     public String getV() {
         return v;
@@ -58,5 +60,21 @@ public class WapV2RegParams extends RegMobileParams {
 
     public void setRu(String ru) {
         this.ru = ru;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
+
+    public int getNeedCaptcha() {
+        return needCaptcha;
+    }
+
+    public void setNeedCaptcha(int needCaptcha) {
+        this.needCaptcha = needCaptcha;
     }
 }
