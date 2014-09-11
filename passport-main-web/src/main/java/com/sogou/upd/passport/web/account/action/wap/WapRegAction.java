@@ -287,6 +287,7 @@ public class WapRegAction extends BaseController {
         model.addAttribute("client_id", params.get("client_id"));
         model.addAttribute("mobile", params.get("mobile"));
         model.addAttribute("username", params.get("username"));
+        model.addAttribute("scode", params.get("scode"));
         return "wap/regist_wap_setpwd";
     }
 
