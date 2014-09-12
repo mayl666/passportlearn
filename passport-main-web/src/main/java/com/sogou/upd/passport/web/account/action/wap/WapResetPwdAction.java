@@ -47,7 +47,6 @@ import java.io.UnsupportedEncodingException;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-@RequestMapping(value = "/wap")
 public class WapResetPwdAction extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(WapResetPwdAction.class);
@@ -74,14 +73,18 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
+    @RequestMapping(value = {"/wap/findpwd", "/wap2/findpwd"}, method = RequestMethod.GET)
     public String findPwdView(Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams) throws Exception {
         String ru = Strings.isNullOrEmpty(wapIndexParams.getRu()) ? CommonConstant.DEFAULT_WAP_URL : wapIndexParams.getRu();
-        if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
-            Result result = new APIResultSupport(false);
-            String client_id = Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : wapIndexParams.getClient_id();
-            result.setDefaultModel("ru", ru);
-            result.setDefaultModel("client_id", client_id);
+        Result result = new APIResultSupport(false);
+        String client_id = Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : wapIndexParams.getClient_id();
+        result.setDefaultModel("ru", ru);
+        result.setDefaultModel("client_id", client_id);
+        if (WapConstant.WAP_COLOR.equals(wapIndexParams.getV())) {
+            model.addAttribute("client_id", client_id);
+            model.addAttribute("ru", ru);
+            return "wap/findpwd_wap_setpwd";
+        } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             model.addAttribute("data", result.toString());
             return "wap/findpwd_touch";
         }
@@ -96,7 +99,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/email", method = RequestMethod.GET)
+    @RequestMapping(value = "/wap/findpwd/email", method = RequestMethod.GET)
     public String findPwdOtherView(Model model, BaseWebRuParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
@@ -116,7 +119,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/customer", method = RequestMethod.GET)
+    @RequestMapping(value = "/wap/findpwd/customer", method = RequestMethod.GET)
     public String findPwdKefuView(Model model, BaseWebRuParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
@@ -134,7 +137,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/sendsms", method = RequestMethod.POST)
+    @RequestMapping(value = "/wap/findpwd/sendsms", method = RequestMethod.POST)
     @ResponseBody
     public Object sendSmsSecMobile(HttpServletRequest request, MoblieCodeParams params) throws Exception {
         Result result = new APIResultSupport(false);
@@ -161,7 +164,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
+    @RequestMapping(value = "/wap/findpwd/checksms", method = RequestMethod.POST)
     @ResponseBody
     public Object checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params) throws Exception {
         Result result = new APIResultSupport(false);
@@ -221,7 +224,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/check", method = RequestMethod.POST)
+    @RequestMapping(value = "/wap/findpwd/check", method = RequestMethod.POST)
     @ResponseBody
     public Object findpwdother(HttpServletRequest request, RedirectAttributes redirectAttributes, OtherResetPwdParams params, Model model)
             throws Exception {
@@ -324,7 +327,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/sendemail", method = RequestMethod.POST)
+    @RequestMapping(value = "/wap/findpwd/sendemail", method = RequestMethod.POST)
     @ResponseBody
     public String sendEmailResetPwd(HttpServletRequest request, WapSendEmailParams params, Model model) throws Exception {
         Result result = new APIResultSupport(false);
@@ -340,7 +343,7 @@ public class WapResetPwdAction extends BaseController {
             String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
             ActiveEmailDO activeEmailDO = new WapActiveEmailDO(passportId, clientId, ru, AccountModuleEnum.RESETPWD, params.getEmail(), false, params.getSkin(), params.getV());
             result = resetPwdManager.sendEmailResetPwd(activeEmailDO, params.getScode());
-            result.setDefaultModel("scode", commonManager.getSecureCode(passportId, clientId,CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
+            result.setDefaultModel("scode", commonManager.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
             result.setDefaultModel("userid", passportId);
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());
         } catch (Exception e) {
@@ -358,7 +361,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/checkemail", method = RequestMethod.GET)
+    @RequestMapping(value = "/wap/findpwd/checkemail", method = RequestMethod.GET)
     public void checkEmailResetPwd(HttpServletRequest request, WapCheckEmailParams params, HttpServletResponse response, RedirectAttributes redirectAttributes) throws Exception {
         Result result = new APIResultSupport(false);
         String url = null;
@@ -409,7 +412,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/page/reset", method = RequestMethod.GET)
+    @RequestMapping(value = "/wap/findpwd/page/reset", method = RequestMethod.GET)
     public String findResetView(String ru, Model model, String client_id, String scode, String username, String
             code, String skin) throws Exception {
         Result result = new APIResultSupport(false);
@@ -435,7 +438,7 @@ public class WapResetPwdAction extends BaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/findpwd/reset", method = RequestMethod.POST)
+    @RequestMapping(value = "/wap/findpwd/reset", method = RequestMethod.POST)
     @ResponseBody
     public String resetPwd(HttpServletRequest request, WapPwdParams params) throws Exception {
         Result result = new APIResultSupport(false);
