@@ -164,7 +164,7 @@ public class WapV2ResetPwdAction extends BaseController {
         model.addAttribute("mobile", params.get("mobile"));
         model.addAttribute("username", params.get("username"));
         model.addAttribute("scode", params.get("scode"));
-        return "wap/regist_wap_setpwd";
+        return "wap/findpwd_wap_setpwd";
     }
 
     /**
