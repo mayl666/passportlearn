@@ -83,7 +83,7 @@ public class WapResetPwdAction extends BaseController {
         if (WapConstant.WAP_COLOR.equals(wapIndexParams.getV())) {
             model.addAttribute("client_id", client_id);
             model.addAttribute("ru", ru);
-            return "wap/findpwd_wap_setpwd";
+            return "wap/findpwd_wap";
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             model.addAttribute("data", result.toString());
             return "wap/findpwd_touch";
