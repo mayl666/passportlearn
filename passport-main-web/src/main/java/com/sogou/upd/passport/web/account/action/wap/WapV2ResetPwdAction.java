@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.WapResetPwdManager;
@@ -209,7 +210,12 @@ public class WapV2ResetPwdAction extends BaseController {
                         reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
                 return "wap/findpwd_wap_setpwd";
             }
-            String passportId = reqParams.getUsername();
+            if (!PhoneUtil.verifyPhoneNumberFormat(reqParams.getUsername())) {
+                buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR),
+                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+                return "wap/findpwd_wap_setpwd";
+            }
+            String passportId = reqParams.getUsername() + "@sohu.com";
             int clientId = Integer.parseInt(reqParams.getClient_id());
             String password = reqParams.getPassword();
             result = resetPwdManager.resetPasswordByScode(passportId, clientId, password, reqParams.getScode(), getIp(request));
@@ -219,7 +225,7 @@ public class WapV2ResetPwdAction extends BaseController {
                 return "wap/findpwd_wap_setpwd";
             }
         } catch (Exception e) {
-            logger.error("resetPwd Is Failed,Username is " + reqParams.getUsername(), e);
+            logger.error("resetPwd Is Failed,Mobile is " + reqParams.getUsername(), e);
         } finally {
             log(request, reqParams.getUsername(), result.getCode());
         }
