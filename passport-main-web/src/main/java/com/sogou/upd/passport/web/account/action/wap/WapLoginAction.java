@@ -92,7 +92,7 @@ public class WapLoginAction extends BaseController {
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             return "wap/index_touch";
         } else {
-            return "wap/index_color";
+            return "wap/login_wap";
         }
     }
 
