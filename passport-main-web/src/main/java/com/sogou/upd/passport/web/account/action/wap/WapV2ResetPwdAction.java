@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.web.account.action.wap;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.math.Coder;
@@ -8,18 +10,17 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.WapResetPwdManager;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
+import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.account.form.BaseWebRuParams;
 import com.sogou.upd.passport.web.account.form.FindPwdCheckSmscodeParams;
-import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
-import com.sogou.upd.passport.web.account.form.WapIndexParams;
 import com.sogou.upd.passport.web.account.form.wap.WapCheckEmailParams;
 import com.sogou.upd.passport.web.account.form.wap.WapPwdParams;
+import com.sogou.upd.passport.web.account.form.wap.WapRegMobileCodeParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +29,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 /**
  * wap2.0找回密码
@@ -46,80 +48,150 @@ public class WapV2ResetPwdAction extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(WapV2ResetPwdAction.class);
 
+    private static Map<String, Object> params = Maps.newHashMap();
+
     @Autowired
     private WapResetPwdManager wapRestPwdManager;
     @Autowired
     private ResetPwdManager resetPwdManager;
+    @Autowired
+    private ConfigureManager configureManager;
+    @Autowired
+    private CommonManager commonManager;
 
     /**
-     * 找回密码
+     * 找回密码，发送短信验证码至绑定手机
      *
-     * @param model
-     * @param redirectAttributes
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/wap2/findpwd", method = RequestMethod.GET)
-    public String findPwdView(Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams) throws Exception {
-        String ru = Strings.isNullOrEmpty(wapIndexParams.getRu()) ? CommonConstant.DEFAULT_WAP_URL : wapIndexParams.getRu();
-        Result result = new APIResultSupport(false);
-        String client_id = Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : wapIndexParams.getClient_id();
-        result.setDefaultModel("ru", ru);
-        result.setDefaultModel("client_id", client_id);
-        if (WapConstant.WAP_COLOR.equals(wapIndexParams.getV())) {
-            model.addAttribute("client_id", client_id);
-            model.addAttribute("ru", ru);
-            return "wap/findpwd_wap";
-        } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
-            model.addAttribute("data", result.toString());
-            return "wap/findpwd_touch";
-        }
-        redirectAttributes.addAttribute("ru", ru);
-        return "redirect:" + SHPPUrlConstant.SOHU_WAP_FINDPWD_URL + "?ru={ru}";
-    }
-
-
-    /**
-     * 其它方式找回时跳转到其它页面
-     *
-     * @param params
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/wap2/findpwd/customer", method = RequestMethod.GET)
-    public String findPwdKefuView(Model model, BaseWebRuParams params) throws Exception {
-        String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
-        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
-        model.addAttribute("ru", ru);
-        model.addAttribute("client_id", client_id);
-        return "/wap/findpwd_contact_touch";
-    }
-
-    /**
-     * 找回密码，发送短信验证码至原绑定手机
-     *
-     * @param params
-     * @return
+     * @param reqParams@return
      * @throws Exception
      */
     @RequestMapping(value = "/wap2/findpwd/sendsms", method = RequestMethod.POST)
-    @ResponseBody
-    public Object sendSmsSecMobile(HttpServletRequest request, MoblieCodeParams params) throws Exception {
+    public String sendSmsSecMobile(HttpServletRequest request, HttpServletResponse response, WapRegMobileCodeParams reqParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
+        String ip = getIp(request);
+        String finalCode = null;
         try {
-            String validateResult = ControllerHelper.validateParams(params);
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(reqParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
+                buildModuleReturnStr(true, reqParams.getRu(), validateResult,
+                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+                model.addAttribute("mobile", reqParams.getMobile());
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
+                return "wap/findpwd_wap";
             }
-            result = wapRestPwdManager.sendMobileCaptcha(params.getMobile(), params.getClient_id(), params.getToken(), params.getCaptcha());
+            //验证client_id
+            int clientId = Integer.parseInt(reqParams.getClient_id());
+            if (!configureManager.checkAppIsExist(clientId)) {
+                buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID),
+                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+                model.addAttribute("mobile", reqParams.getMobile());
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return "wap/findpwd_wap";
+            }
+            //校验用户ip是否中了黑名单
+            result = commonManager.checkMobileSendSMSInBlackList(ip, reqParams.getClient_id());
+            if (!result.isSuccess()) {
+                finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND),
+                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+                return "wap/findpwd_wap";
+            }
+            result = wapRestPwdManager.sendMobileCaptcha(reqParams.getMobile(), reqParams.getClient_id(), reqParams.getToken(), reqParams.getCaptcha());
+            //如果是
+            if (!result.isSuccess()) {
+                if (ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED.equals(result.getCode())
+                        || ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE.equals(result.getCode())) {
+                    String token = String.valueOf(result.getModels().get("token"));
+                    buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
+                            reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), true, model);
+                    model.addAttribute("token", token);
+                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                    return "wap/findpwd_wap";
+                } else {
+                    buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
+                            reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), true, model);
+                    return "wap/findpwd_wap";
+                }
+            }
+            buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
+                    reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+            model.addAttribute("mobile", reqParams.getMobile());
+            if (!result.isSuccess()) {
+                return "wap/findpwd_wap";
+            }
         } catch (Exception e) {
-            logger.error("sendSmsSecMobile Is Failed,mobile is " + params.getMobile(), e);
+            logger.error("wap2.0 reguser:User Register Is Failed,mobile is " + reqParams.getMobile(), e);
         } finally {
-            log(request, params.getMobile(), result.getCode());
+            String logCode;
+            if (!Strings.isNullOrEmpty(finalCode)) {
+                logCode = finalCode;
+            } else {
+                logCode = result.getCode();
+            }
+            UserOperationLog userOperationLog = new UserOperationLog(reqParams.getMobile(), request.getRequestURI(), reqParams.getClient_id(), logCode, ip);
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
-        return result.toString();
+        commonManager.incSendTimesForMobile(ip);
+        commonManager.incSendTimesForMobile(reqParams.getMobile());
+        buildSendRedirectUrl(Strings.isNullOrEmpty(reqParams.getRu()) ? CommonConstant.DEFAULT_WAP_INDEX_URL : reqParams.getRu(),
+                reqParams.getClient_id(), false, reqParams.getMobile(), Strings.isNullOrEmpty(reqParams.getSkin()) ? WapConstant.WAP_GREEN : reqParams.getSkin(),
+                false, Strings.isNullOrEmpty(reqParams.getV()) ? WapConstant.WAP_COLOR : reqParams.getV(), null);
+        params.put("scode", commonManager.getSecureCode(reqParams.getMobile(), Integer.parseInt(reqParams.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
+        response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/f");
+        return "empty";
+    }
+
+    /**
+     * 通过接口跳转到填写验证码和密码页面
+     *
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/wap2/f", method = RequestMethod.GET)
+    public String regView(Model model) throws Exception {
+        model.addAttribute("errorMsg", params.get("errorMsg"));
+        model.addAttribute("hasError", params.get("hasError"));
+        model.addAttribute("ru", params.get("ru"));
+        model.addAttribute("skin", params.get("skin"));
+        model.addAttribute("needCaptcha", params.get("needCaptcha"));
+        model.addAttribute("v", params.get("v"));
+        model.addAttribute("client_id", params.get("client_id"));
+        model.addAttribute("mobile", params.get("mobile"));
+        model.addAttribute("username", params.get("username"));
+        model.addAttribute("scode", params.get("scode"));
+        return "wap/findpwd_wap_setpwd";
+    }
+
+    /**
+     * 获取短信验证码校验通过后，需要跳转到一个接口，避免用户刷新导致页面不可用
+     */
+    private Map<String, Object> buildSendRedirectUrl(String ru, String client_id, boolean hasError, String mobile, String
+            skin, boolean needCaptcha, String v, String errorMsg) {
+        params.put("client_id", client_id);
+        params.put("errorMsg", errorMsg);
+        params.put("hasError", hasError);
+        params.put("ru", ru);
+        params.put("skin", skin);
+        params.put("needCaptcha", needCaptcha);
+        params.put("v", v);
+        params.put("mobile", mobile);
+        params.put("username", mobile);
+        return params;
+    }
+
+    private void buildModuleReturnStr(boolean hasError, String ru, String errorMsg, String client_id, String skin, String v, boolean needCaptcha, Model model) {
+        model.addAttribute("errorMsg", errorMsg);
+        model.addAttribute("hasError", hasError);
+        model.addAttribute("ru", Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_INDEX_URL : ru);
+        model.addAttribute("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_GREEN : skin);
+        model.addAttribute("needCaptcha", needCaptcha);
+        model.addAttribute("v", Strings.isNullOrEmpty(v) ? WapConstant.WAP_COLOR : v);
+        model.addAttribute("client_id", client_id);
     }
 
     /**

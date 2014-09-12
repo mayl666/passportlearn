@@ -76,11 +76,14 @@ public class WapResetPwdAction extends BaseController {
     @RequestMapping(value = "/wap/findpwd", method = RequestMethod.GET)
     public String findPwdView(Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams) throws Exception {
         String ru = Strings.isNullOrEmpty(wapIndexParams.getRu()) ? CommonConstant.DEFAULT_WAP_URL : wapIndexParams.getRu();
+        String v = Strings.isNullOrEmpty(wapIndexParams.getV()) ? WapConstant.WAP_TOUCH : wapIndexParams.getV();
         Result result = new APIResultSupport(false);
         String client_id = Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : wapIndexParams.getClient_id();
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
+        result.setDefaultModel("v", v);
         if (WapConstant.WAP_COLOR.equals(wapIndexParams.getV())) {
+            model.addAttribute("v", v);
             model.addAttribute("client_id", client_id);
             model.addAttribute("ru", ru);
             return "wap/findpwd_wap";

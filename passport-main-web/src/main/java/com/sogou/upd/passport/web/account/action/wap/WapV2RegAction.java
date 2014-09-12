@@ -129,7 +129,7 @@ public class WapV2RegAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                 buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND),
                         reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
-                return result.toString();
+                return "wap/regist_wap";
             }
             BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
             result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
