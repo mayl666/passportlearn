@@ -23,13 +23,11 @@ public class RSA extends Coder {
 
     //RSA最大加密明文大小
     private static final int MAX_ENCRYPT_BLOCK = 53;
+//    private static final int MAX_ENCRYPT_BLOCK = 117;
 
     //RSA最大解密密文大小
     private static final int MAX_DECRYPT_BLOCK = 64;
-
-    // 公钥
-    public static final String PUBLIC_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKg+nmc1UwpMGKHQP58jhJg/hLucm4oLBTBMyRBmCAKK\n" +
-            "7rU/9UWJqy8li64i5bYtx7rE8+I4EdC00To5kz6D61UCAwEAAQ==";
+//    private static final int MAX_DECRYPT_BLOCK = 128;
 
     /**
      * 加密<br>
@@ -193,7 +191,7 @@ public class RSA extends Coder {
      * @return
      * @throws Exception
      */
-    private static byte[] segmentCoder(byte[] data, Cipher cipher, int maxBlock) throws Exception {
+    public static byte[] segmentCoder(byte[] data, Cipher cipher, int maxBlock) throws Exception {
         byte[] encodedByteArray = new byte[]{};
 
         int inputLen = data.length;
@@ -238,20 +236,5 @@ public class RSA extends Coder {
         keyMap.put("RSAPrivateKey", privateKey);
         return keyMap;
     }
-
-    /**
-     * 提供给T3使用的access_token解密方法
-     * 构成格式 passportID|appkey|vaild_timestamp(过期时间点)|6位随机数
-     * 解密完成后需要验证appKey是否正确，vaild_timestamp是否大于当前时刻
-     * @param accessToken
-     * @return
-     * @throws Exception
-     */
-    public static String[] decryptAccessToken(String accessToken) throws Exception {
-        byte[] tokenByte = Coder.decryptBASE64(accessToken);
-        String decryTokenStr = RSA.decryptByPublicKey(tokenByte, PUBLIC_KEY);
-        return decryTokenStr.split("|");
-    }
-
 
 }
