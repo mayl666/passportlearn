@@ -171,12 +171,19 @@ public class WapV2ResetPwdAction extends BaseController {
                 response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
                 return "empty";
             }
-            String passportId = reqParams.getUsername() + "@sohu.com";
             int clientId = Integer.parseInt(reqParams.getClient_id());
             String password = reqParams.getPassword();
+            result = wapRestPwdManager.checkMobileCodeResetPwd(reqParams.getUsername(), clientId, reqParams.getCaptcha());
+            if (!result.isSuccess()) {
+                buildErrorUrl(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
+                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, reqParams.getUsername(), reqParams.getScode());
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                return "empty";
+            }
+            String scode = String.valueOf(result.getModels().get("scode"));
+            String passportId = String.valueOf(result.getModels().get("userid"));
             result = resetPwdManager.resetPasswordByScode(passportId, clientId, password, reqParams.getScode(), getIp(request));
             if (!result.isSuccess()) {
-                String scode = commonManager.getSecureCode(reqParams.getUsername(), Integer.parseInt(reqParams.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
                 buildErrorUrl(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
                         reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, reqParams.getUsername(), scode);
                 response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
