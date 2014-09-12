@@ -172,7 +172,7 @@ public class WapV2ResetPwdAction extends BaseController {
             }
             int clientId = Integer.parseInt(reqParams.getClient_id());
             String password = reqParams.getPassword();
-            result = wapRestPwdManager.checkMobileCodeResetPwd(reqParams.getUsername(), clientId, reqParams.getCaptcha());
+            result = wapRestPwdManager.checkMobileCodeResetPwd(reqParams.getUsername(), clientId, reqParams.getCaptcha(), false);
             if (!result.isSuccess()) {
                 buildErrorUrl(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
                         reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, reqParams.getUsername(), reqParams.getScode());

@@ -46,7 +46,7 @@ public class WapResetPwdManagerImpl implements WapResetPwdManager {
     private AccountSecureService accountSecureService;
 
     @Override
-    public Result checkMobileCodeResetPwd(String mobile, int clientId, String smsCode) throws Exception {
+    public Result checkMobileCodeResetPwd(String mobile, int clientId, String smsCode, boolean needScode) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
@@ -61,7 +61,9 @@ public class WapResetPwdManagerImpl implements WapResetPwdManager {
             }
             result.setSuccess(true);
             result.setMessage("手机号与验证码匹配成功");
-            result.setDefaultModel("scode", accountSecureService.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
+            if (needScode) {
+                result.setDefaultModel("scode", accountSecureService.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
+            }
             result.setDefaultModel("userid", passportId);
             return result;
         } catch (ServiceException e) {
