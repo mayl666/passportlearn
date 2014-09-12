@@ -179,7 +179,7 @@ public class WapV2RegAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 buildErrorUrl(true, regParams.getRu(), validateResult,
                         String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), regParams.getScode());
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/page/reg");
                 return "empty";
             }
             ip = getIp(request);
@@ -193,13 +193,13 @@ public class WapV2RegAction extends BaseController {
                 }
                 buildErrorUrl(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
                         String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), regParams.getScode());
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/page/reg");
                 return "empty";
             }
             if (!PhoneUtil.verifyPhoneNumberFormat(regParams.getUsername())) {
                 buildErrorUrl(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR),
                         String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), regParams.getScode());
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/page/reg");
                 return "empty";
             }
             //校验安全码
@@ -207,7 +207,7 @@ public class WapV2RegAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
                 buildErrorUrl(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED),
                         String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), regParams.getScode());
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/page/reg");
                 return "empty";
             }
             result = regManager.registerMobile(regParams.getUsername(), regParams.getPassword(), regParams.getClient_id(), regParams.getCaptcha(), null);
@@ -235,7 +235,7 @@ public class WapV2RegAction extends BaseController {
                         regParams.getClient_id(), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
                 buildErrorUrl(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
                         String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), scode);
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/page/reg");
                 return "empty";
             }
         } catch (Exception e) {
