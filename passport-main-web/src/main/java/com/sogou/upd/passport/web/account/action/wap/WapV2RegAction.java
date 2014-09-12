@@ -69,6 +69,8 @@ public class WapV2RegAction extends BaseController {
 
     private static Map<String, Object> params = Maps.newHashMap();
 
+    private static Map<String, Object> regParams = Maps.newHashMap();
+
 
     @RequestMapping(value = "/wap2/sendsms", method = RequestMethod.POST)
     public String sendsms(HttpServletRequest request, HttpServletResponse response, WapRegMobileCodeParams reqParams, Model model) throws Exception {
@@ -158,7 +160,8 @@ public class WapV2RegAction extends BaseController {
         buildSendRedirectUrl(Strings.isNullOrEmpty(reqParams.getRu()) ? CommonConstant.DEFAULT_WAP_INDEX_URL : reqParams.getRu(),
                 reqParams.getClient_id(), false, reqParams.getMobile(), Strings.isNullOrEmpty(reqParams.getSkin()) ? WapConstant.WAP_GREEN : reqParams.getSkin(),
                 false, Strings.isNullOrEmpty(reqParams.getV()) ? WapConstant.WAP_COLOR : reqParams.getV(), null);
-        params.put("scode", commonManager.getSecureCode(reqParams.getMobile(), Integer.parseInt(reqParams.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE));
+        String passportId = reqParams.getMobile() + "@sohu.com";
+        params.put("scode", commonManager.getSecureCode(passportId, Integer.parseInt(reqParams.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE));
         response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/r");
         return "empty";
     }
@@ -173,11 +176,11 @@ public class WapV2RegAction extends BaseController {
             //参数验证
             String validateResult = ControllerHelper.validateParams(regParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                buildModuleReturnStr(true, regParams.getRu(), validateResult,
-                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, model);
-                model.addAttribute("username", regParams.getUsername());
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                return "wap/regist_wap_setpwd";
+                buildErrorUrl(true, regParams.getRu(), validateResult,
+                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), regParams.getScode());
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                return "empty";
             }
             ip = getIp(request);
             //校验用户是否允许注册
@@ -188,29 +191,26 @@ public class WapV2RegAction extends BaseController {
                     finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
                     result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
                 }
-                buildModuleReturnStr(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
-                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, model);
-                model.addAttribute("username", regParams.getUsername());
-                return "wap/regist_wap_setpwd";
+                buildErrorUrl(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
+                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), regParams.getScode());
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                return "empty";
+            }
+            if (!PhoneUtil.verifyPhoneNumberFormat(regParams.getUsername())) {
+                buildErrorUrl(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR),
+                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), regParams.getScode());
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                return "empty";
             }
             //校验安全码
             if (!commonManager.checkSecureCode(regParams.getUsername(), regParams.getClient_id(), regParams.getScode(), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE)) {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
-                buildModuleReturnStr(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED),
-                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, model);
-                model.addAttribute("username", regParams.getUsername());
-                return "wap/regist_wap_setpwd";
+                buildErrorUrl(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED),
+                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), regParams.getScode());
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                return "empty";
             }
-            // 调用内部接口
-            if (PhoneUtil.verifyPhoneNumberFormat(regParams.getUsername())) {
-                result = regManager.registerMobile(regParams.getUsername(), regParams.getPassword(), regParams.getClient_id(), regParams.getCaptcha(), null);
-            } else {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                buildModuleReturnStr(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_COM_REQURIE),
-                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, model);
-                model.addAttribute("username", regParams.getUsername());
-                return "wap/regist_wap_setpwd";
-            }
+            result = regManager.registerMobile(regParams.getUsername(), regParams.getPassword(), regParams.getClient_id(), regParams.getCaptcha(), null);
             if (result.isSuccess()) {
                 //第三方获取个人资料
                 String userid = result.getModels().get("userid").toString();
@@ -231,10 +231,12 @@ public class WapV2RegAction extends BaseController {
                     logger.warn("can't get session result, userid:" + result.getModels().get("userid"));
                 }
             } else {
-                buildModuleReturnStr(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
-                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, model);
-                model.addAttribute("username", regParams.getUsername());
-                return "wap/regist_wap_setpwd";
+                String scode = commonManager.getSecureCode(regParams.getUsername(),
+                        regParams.getClient_id(), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
+                buildErrorUrl(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
+                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), scode);
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                return "empty";
             }
         } catch (Exception e) {
             logger.error("wap2 reguser:User Register Is Failed,Username is " + regParams.getUsername(), e);
@@ -302,6 +304,46 @@ public class WapV2RegAction extends BaseController {
         model.addAttribute("username", params.get("username"));
         model.addAttribute("scode", params.get("scode"));
         return "wap/regist_wap_setpwd";
+    }
+
+    /**
+     * 通过接口跳转到reset页面
+     *
+     * @param model
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/wap2/page/reg", method = RequestMethod.GET)
+    public String findResetView(Model model) throws Exception {
+        model.addAttribute("hasError", regParams.get("hasError"));
+        model.addAttribute("ru", regParams.get("ru"));
+        model.addAttribute("errorMsg", regParams.get("errorMsg"));
+        model.addAttribute("client_id", regParams.get("client_id"));
+        model.addAttribute("scode", regParams.get("scode"));
+        model.addAttribute("v", regParams.get("v"));
+        model.addAttribute("skin", regParams.get("skin"));
+        model.addAttribute("needCaptcha", regParams.get("needCaptcha"));
+        model.addAttribute("mobile", regParams.get("mobile"));
+        model.addAttribute("username", regParams.get("mobile"));
+        return "/wap/regist_wap_setpwd";
+    }
+
+    /**
+     * 构造返回错误里的跳转链接
+     */
+    private Map<String, Object> buildErrorUrl(boolean hasError, String ru, String errorMsg, String client_id,
+                                              String skin, String v, boolean needCaptcha, String mobile, String scode) {
+        regParams.put("client_id", client_id);
+        regParams.put("errorMsg", errorMsg);
+        regParams.put("hasError", hasError);
+        regParams.put("ru", ru);
+        regParams.put("skin", skin);
+        regParams.put("needCaptcha", needCaptcha);
+        regParams.put("v", v);
+        regParams.put("mobile", mobile);
+        regParams.put("scode", scode);
+        regParams.put("username", mobile);
+        return regParams;
     }
 
     private BaseMoblieApiParams buildProxyApiParams(int clientId, String mobile) {
