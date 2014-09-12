@@ -98,6 +98,9 @@ public class WapResetPwdManagerImpl implements WapResetPwdManager {
                 }
             }
             result = secureManager.sendMobileCode(mobile, Integer.parseInt(client_id), AccountModuleEnum.RESETPWD);
+            if (result.isSuccess()) {
+                result.setDefaultModel("userid", passportId);
+            }
         } catch (Exception e) {
             logger.error("send mobile code Fail, mobile:" + mobile, e);
         } finally {

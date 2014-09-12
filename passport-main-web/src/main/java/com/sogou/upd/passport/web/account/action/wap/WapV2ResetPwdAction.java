@@ -97,7 +97,6 @@ public class WapV2ResetPwdAction extends BaseController {
                 return "wap/findpwd_wap";
             }
             result = wapRestPwdManager.sendMobileCaptcha(reqParams.getMobile(), reqParams.getClient_id(), reqParams.getToken(), reqParams.getCaptcha());
-            //如果是
             if (!result.isSuccess()) {
                 if (ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED.equals(result.getCode())
                         || ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE.equals(result.getCode())) {
@@ -139,7 +138,7 @@ public class WapV2ResetPwdAction extends BaseController {
         buildSendRedirectUrl(Strings.isNullOrEmpty(reqParams.getRu()) ? CommonConstant.DEFAULT_WAP_INDEX_URL : reqParams.getRu(),
                 reqParams.getClient_id(), false, reqParams.getMobile(), Strings.isNullOrEmpty(reqParams.getSkin()) ? WapConstant.WAP_GREEN : reqParams.getSkin(),
                 false, Strings.isNullOrEmpty(reqParams.getV()) ? WapConstant.WAP_COLOR : reqParams.getV(), null);
-        params.put("scode", commonManager.getSecureCode(reqParams.getMobile(), Integer.parseInt(reqParams.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
+        params.put("scode", commonManager.getSecureCode(String.valueOf(result.getModels().get("userid")), Integer.parseInt(reqParams.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
         response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/f");
         return "empty";
     }
