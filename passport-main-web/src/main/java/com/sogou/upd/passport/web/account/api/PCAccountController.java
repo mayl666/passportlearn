@@ -374,7 +374,7 @@ public class PCAccountController extends BaseController {
             case ErrorUtil.INVALID_CLIENTID:
                 errStr = "1"; //参数错误
                 break;
-            case ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND:
+            case ErrorUtil.INVALID_ACCOUNT:
                 errStr = "2";  //用户名不存在
                 break;
             case ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST:
