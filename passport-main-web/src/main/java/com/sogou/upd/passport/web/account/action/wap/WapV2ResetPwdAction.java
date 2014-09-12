@@ -256,6 +256,7 @@ public class WapV2ResetPwdAction extends BaseController {
         model.addAttribute("skin", resetParamsMap.get("skin"));
         model.addAttribute("needCaptcha", resetParamsMap.get("needCaptcha"));
         model.addAttribute("mobile", resetParamsMap.get("mobile"));
+        model.addAttribute("username", resetParamsMap.get("mobile"));
         return "/wap/findpwd_wap_setpwd";
     }
 
@@ -273,6 +274,7 @@ public class WapV2ResetPwdAction extends BaseController {
         resetParamsMap.put("v", v);
         resetParamsMap.put("mobile", mobile);
         resetParamsMap.put("scode", scode);
+        resetParamsMap.put("username", mobile);
         return resetParamsMap;
     }
 
