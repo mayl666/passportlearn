@@ -112,7 +112,7 @@ public class WapV2ResetPwdAction extends BaseController {
                     return "wap/findpwd_wap";
                 } else {
                     buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
-                            reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), true, model);
+                            reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
                     return "wap/findpwd_wap";
                 }
             }
