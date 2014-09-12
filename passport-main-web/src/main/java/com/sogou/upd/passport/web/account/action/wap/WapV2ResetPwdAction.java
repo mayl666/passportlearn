@@ -145,6 +145,52 @@ public class WapV2ResetPwdAction extends BaseController {
     }
 
     /**
+     * 重设密码
+     *
+     * @param request
+     * @param reqParams
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/wap2/findpwd/reset", method = RequestMethod.POST)
+    public String resetPwd(HttpServletRequest request, HttpServletResponse response, WapPwdParams reqParams, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            String validateResult = ControllerHelper.validateParams(reqParams);
+            if (!Strings.isNullOrEmpty(validateResult) || Strings.isNullOrEmpty(reqParams.getCaptcha())) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                buildErrorUrl(true, reqParams.getRu(), Strings.isNullOrEmpty(validateResult) ? "短信验证码不能为空" : validateResult,
+                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, reqParams.getUsername(), reqParams.getScode());
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                return "empty";
+            }
+            if (!PhoneUtil.verifyPhoneNumberFormat(reqParams.getUsername())) {
+                buildErrorUrl(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR),
+                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, reqParams.getUsername(), reqParams.getScode());
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                return "empty";
+            }
+            String passportId = reqParams.getUsername() + "@sohu.com";
+            int clientId = Integer.parseInt(reqParams.getClient_id());
+            String password = reqParams.getPassword();
+            result = resetPwdManager.resetPasswordByScode(passportId, clientId, password, reqParams.getScode(), getIp(request));
+            if (!result.isSuccess()) {
+                String scode = commonManager.getSecureCode(reqParams.getUsername(), Integer.parseInt(reqParams.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
+                buildErrorUrl(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
+                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, reqParams.getUsername(), scode);
+                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
+                return "empty";
+            }
+        } catch (Exception e) {
+            logger.error("resetPwd Is Failed,Mobile is " + reqParams.getUsername(), e);
+        } finally {
+            log(request, reqParams.getUsername(), result.getCode());
+        }
+        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/index?v=2";
+    }
+
+    /**
      * 通过接口跳转到填写验证码和密码页面
      *
      * @return
@@ -228,52 +274,6 @@ public class WapV2ResetPwdAction extends BaseController {
         resetParamsMap.put("mobile", mobile);
         resetParamsMap.put("scode", scode);
         return resetParamsMap;
-    }
-
-    /**
-     * 重设密码
-     *
-     * @param request
-     * @param reqParams
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/wap2/findpwd/reset", method = RequestMethod.POST)
-    public String resetPwd(HttpServletRequest request, HttpServletResponse response, WapPwdParams reqParams, Model model) throws Exception {
-        Result result = new APIResultSupport(false);
-        try {
-            String validateResult = ControllerHelper.validateParams(reqParams);
-            if (!Strings.isNullOrEmpty(validateResult) || Strings.isNullOrEmpty(reqParams.getCaptcha())) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                buildErrorUrl(true, reqParams.getRu(), Strings.isNullOrEmpty(validateResult) ? "短信验证码不能为空" : validateResult,
-                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, reqParams.getUsername(), reqParams.getScode());
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
-                return "empty";
-            }
-            if (!PhoneUtil.verifyPhoneNumberFormat(reqParams.getUsername())) {
-                buildErrorUrl(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR),
-                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, reqParams.getUsername(), reqParams.getScode());
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
-                return "empty";
-            }
-            String passportId = reqParams.getUsername() + "@sohu.com";
-            int clientId = Integer.parseInt(reqParams.getClient_id());
-            String password = reqParams.getPassword();
-            result = resetPwdManager.resetPasswordByScode(passportId, clientId, password, reqParams.getScode(), getIp(request));
-            if (!result.isSuccess()) {
-                String scode = commonManager.getSecureCode(reqParams.getUsername(), Integer.parseInt(reqParams.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
-                buildErrorUrl(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
-                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, reqParams.getUsername(), scode);
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
-                return "empty";
-            }
-        } catch (Exception e) {
-            logger.error("resetPwd Is Failed,Mobile is " + reqParams.getUsername(), e);
-        } finally {
-            log(request, reqParams.getUsername(), result.getCode());
-        }
-        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/index?v=2";
     }
 
     private void log(HttpServletRequest request, String passportId, String resultCode) {
