@@ -92,6 +92,11 @@ public class WapLoginAction extends BaseController {
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             return "wap/index_touch";
         } else {
+            if (!Strings.isNullOrEmpty(wapIndexParams.getErrorMsg())) {
+                model.addAttribute("hasError", true);
+            } else {
+                model.addAttribute("hasError",false);
+            }
             return "wap/login_wap";
         }
     }
