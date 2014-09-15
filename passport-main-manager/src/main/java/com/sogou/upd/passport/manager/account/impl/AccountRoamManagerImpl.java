@@ -99,6 +99,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             return result;
         } else {
             String uniqname = Strings.isNullOrEmpty(account.getUniqname()) ? passportId : account.getUniqname();
+            result.setSuccess(true);
             result.setDefaultModel("uniqname", uniqname);
             result.setDefaultModel("userid", passportId);
             result.setDefaultModel("r_key", r_key);
