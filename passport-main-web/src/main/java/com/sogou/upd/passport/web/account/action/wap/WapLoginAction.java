@@ -168,17 +168,17 @@ public class WapLoginAction extends BaseController {
             boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
             if (needCaptcha) {
                 isNeedCaptcha = 1;
-            }
-            //不直接返回直接的文案告诉用户中了安全限制
-            if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
-                result.setMessage("您登陆过于频繁，请稍后再试。");
                 if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
                     buildModuleReturnStr(true, loginParams.getRu(), "您登陆过于频繁，请稍后再试。",
                             loginParams.getClient_id(), null, loginParams.getV(), false, model);
                     model.addAttribute("isNeedCaptcha", 0);
                     return "wap/login_wap";
                 }
+            }
+            //不直接返回直接的文案告诉用户中了安全限制
+            if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
+                result.setMessage("您登陆过于频繁，请稍后再试。");
             }
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
                 if (needCaptcha) {
