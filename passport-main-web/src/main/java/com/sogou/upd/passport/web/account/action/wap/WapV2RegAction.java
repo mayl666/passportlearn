@@ -87,7 +87,7 @@ public class WapV2RegAction extends BaseController {
                 if (reqParams.getNeedCaptcha() == 1) {
                     String token = RandomStringUtils.randomAlphanumeric(48);
                     model.addAttribute("token", token);
-                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("needCaptcha", true);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                 }
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
@@ -103,7 +103,7 @@ public class WapV2RegAction extends BaseController {
                 if (reqParams.getNeedCaptcha() == 1) {
                     String token = RandomStringUtils.randomAlphanumeric(48);
                     model.addAttribute("token", token);
-                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("needCaptcha", true);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                 }
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
@@ -146,7 +146,7 @@ public class WapV2RegAction extends BaseController {
                 if (reqParams.getNeedCaptcha() == 1) {
                     String token = RandomStringUtils.randomAlphanumeric(48);
                     model.addAttribute("token", token);
-                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("needCaptcha", true);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                 }
                 return "wap/regist_wap";
@@ -160,7 +160,7 @@ public class WapV2RegAction extends BaseController {
                 if (reqParams.getNeedCaptcha() == 1) {
                     String token = RandomStringUtils.randomAlphanumeric(48);
                     model.addAttribute("token", token);
-                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("needCaptcha", true);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                 }
                 return "wap/regist_wap";

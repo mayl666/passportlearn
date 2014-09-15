@@ -78,7 +78,7 @@ public class WapV2ResetPwdAction extends BaseController {
                 if (reqParams.getNeedCaptcha() == 1) {
                     String token = RandomStringUtils.randomAlphanumeric(48);
                     model.addAttribute("token", token);
-                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("needCaptcha", true);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                 }
                 model.addAttribute("mobile", reqParams.getMobile());
@@ -94,7 +94,7 @@ public class WapV2ResetPwdAction extends BaseController {
                 if (reqParams.getNeedCaptcha() == 1) {
                     String token = RandomStringUtils.randomAlphanumeric(48);
                     model.addAttribute("token", token);
-                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("needCaptcha", true);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                 }
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
@@ -110,7 +110,7 @@ public class WapV2ResetPwdAction extends BaseController {
                 if (reqParams.getNeedCaptcha() == 1) {
                     String token = RandomStringUtils.randomAlphanumeric(48);
                     model.addAttribute("token", token);
-                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("needCaptcha", true);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                 }
                 return "wap/findpwd_wap";
@@ -132,7 +132,7 @@ public class WapV2ResetPwdAction extends BaseController {
                     if (reqParams.getNeedCaptcha() == 1) {
                         String token = RandomStringUtils.randomAlphanumeric(48);
                         model.addAttribute("token", token);
-                        model.addAttribute("isNeedCaptcha", 1);
+                        model.addAttribute("needCaptcha", true);
                         model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                     }
                     return "wap/findpwd_wap";
@@ -145,7 +145,7 @@ public class WapV2ResetPwdAction extends BaseController {
                 if (reqParams.getNeedCaptcha() == 1) {
                     String token = RandomStringUtils.randomAlphanumeric(48);
                     model.addAttribute("token", token);
-                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("needCaptcha", true);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                 }
                 return "wap/findpwd_wap";
