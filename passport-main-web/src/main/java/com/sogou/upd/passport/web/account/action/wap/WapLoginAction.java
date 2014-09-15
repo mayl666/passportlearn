@@ -98,6 +98,10 @@ public class WapLoginAction extends BaseController {
                 model.addAttribute("hasError", false);
             }
             model.addAttribute("ru", wapIndexParams.getRu());
+            if (wapIndexParams.getNeedCaptcha() == 1) {
+                model.addAttribute("isNeedCaptcha", 1);
+                model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+            }
             return "wap/login_wap";
         }
     }
