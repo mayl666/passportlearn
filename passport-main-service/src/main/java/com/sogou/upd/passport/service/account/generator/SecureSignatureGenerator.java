@@ -71,7 +71,7 @@ public class SecureSignatureGenerator {
         baseBuilderString.append(secureSignatureDO.getServerName());
         String baseString = baseBuilderString.toString();
         try {
-            String signature = Coder.encryptBase64URLSafeString(Coder.encryptHMAC(baseString, secret.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET)));
+            String signature = Coder.encryptBase64URLSafeString(Coder.encryptHMAC(baseString, secret.getBytes(CommonConstant.DEFAULT_CHARSET)));
             return signature;
         } catch (Exception e) {
             logger.error("Mac Signature generate fail", e);

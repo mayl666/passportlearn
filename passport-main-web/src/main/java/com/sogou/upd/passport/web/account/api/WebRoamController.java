@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.api;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -13,6 +14,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.BaseWebRuParams;
+import com.sogou.upd.passport.web.account.form.PcRoamGoParams;
 import com.sogou.upd.passport.web.account.form.WebRoamParams;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.apache.commons.lang.StringUtils;
@@ -20,13 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -74,7 +76,7 @@ public class WebRoamController extends BaseController {
                 returnErrMsg(response, ru, result.getCode(), result.getMessage());
                 return;
             }
-            result = accountRoamManager.roamGo(sLoginPassportId);
+            result = accountRoamManager.createRoamKey(sLoginPassportId);
             if (result.isSuccess()) {
                 String r_key = (String) result.getModels().get("r_key");
                 Map params = Maps.newHashMap();
@@ -143,38 +145,32 @@ public class WebRoamController extends BaseController {
         }
     }
 
-    @ResponseBody
     @RequestMapping(value = "/sso/pc_roam_go", method = RequestMethod.GET)
-    public void pcRoam(HttpServletRequest request, HttpServletResponse response, WebRoamParams webRoamParams) throws Exception {
+    public String pcRoamGo(HttpServletRequest request, HttpServletResponse response, Model model, PcRoamGoParams pcRoamGoParams) throws Exception {
         Result result = new APIResultSupport(false);
-        String ru = webRoamParams.getRu();
-        String r_key = webRoamParams.getR_key();
-        String clientId = webRoamParams.getClient_id();
+        String clientId = pcRoamGoParams.getClient_id();
+        String xd = pcRoamGoParams.getXd();
         String createIp = getIp(request);
         try {
             //参数验证
-            String validateResult = ControllerHelper.validateParams(webRoamParams);
+            String validateResult = ControllerHelper.validateParams(pcRoamGoParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
-                returnErrMsg(response, ru, result.getCode(), result.getMessage());
-                return;
+                result.setDefaultModel("xd", xd);
+                model.addAttribute("data", result.toString());
+                return "/login/api";
             }
 
-            String sgLgUserId = StringUtils.EMPTY;
-            if (hostHolder.isLogin()) {
-                sgLgUserId = hostHolder.getPassportId();
-            }
-            result = accountRoamManager.webRoam(response, sgLgUserId, r_key, ru, createIp, Integer.parseInt(clientId));
+            result = accountRoamManager.pcRoamGo(pcRoamGoParams.getType(), pcRoamGoParams.getS());
             if (result.isSuccess()) {
-                response.sendRedirect(ru);
-                return;
-            } else {
-                returnErrMsg(response, ru, result.getCode(), result.getMessage());
-                return;
+                result.setDefaultModel("r_key", result.getModels().get("r_key"));
+                String uniqname =  Coder.encode((String) result.getModels().get("uniqname"), CommonConstant.DEFAULT_CHARSET);
+                result.setDefaultModel("uniqname", uniqname);
             }
-        } catch (Exception e) {
-            LOGGER.error(" web_roam error.userId:{},r_key:{},ru", new Object[]{result.getModels().get("userId"), r_key, ru}, e);
+            result.setDefaultModel("xd", xd);
+            model.addAttribute("data", result.toString());
+            return "/login/api";
         } finally {
             String resultCode = StringUtils.defaultIfEmpty(result.getCode(), "0");
             String userId = StringUtils.defaultString(String.valueOf(result.getModels().get("userId")));

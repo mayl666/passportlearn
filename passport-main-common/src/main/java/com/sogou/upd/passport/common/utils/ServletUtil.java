@@ -36,7 +36,7 @@ public class ServletUtil {
         boolean isContainsQuery = messageUrl.contains("?");
         StringBuilder url = new StringBuilder(messageUrl);
         StringBuilder query = new StringBuilder(format(params.entrySet(),
-                CommonConstant.DEFAULT_CONTENT_CHARSET));
+                CommonConstant.DEFAULT_CHARSET));
         if (!Strings.isNullOrEmpty(query.toString())) {
             if (isContainsQuery) {
                 url.append("&").append(query);

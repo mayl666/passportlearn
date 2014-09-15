@@ -4,11 +4,8 @@ import com.sogou.upd.passport.common.CommonConstant;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
-import java.security.SecureRandom;
 
 /**
  * The AES 对称加密算法
@@ -33,7 +30,7 @@ public class AES {
         Key key = generateKey(secKey);
         Cipher c = Cipher.getInstance(KEY_ALGORITHM);
         c.init(Cipher.ENCRYPT_MODE, key);
-        byte[] encVal = c.doFinal(data.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+        byte[] encVal = c.doFinal(data.getBytes(CommonConstant.DEFAULT_CHARSET));
 //        String encryptedValue = Coder.encryptBase64URLSafeString(encVal);
         String encryptedValue = Base62.encodeBase62(encVal).toString();
         return encryptedValue;
@@ -54,12 +51,12 @@ public class AES {
         byte[] decordedValue = Base62.decodeBase62(encryptedData.toCharArray());//Base64.decodeBase64(encryptedData);
         byte[] decValue = c.doFinal(decordedValue);
 
-        String decryptedValue = new String(decValue,CommonConstant.DEFAULT_CONTENT_CHARSET);
+        String decryptedValue = new String(decValue,CommonConstant.DEFAULT_CHARSET);
         return decryptedValue;
     }
 
     public static byte[] decrypt(byte[] data, String key) throws Exception {
-        Key k = new SecretKeySpec(key.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET), KEY_ALGORITHM);
+        Key k = new SecretKeySpec(key.getBytes(CommonConstant.DEFAULT_CHARSET), KEY_ALGORITHM);
         byte[] raw = k.getEncoded();
         SecretKeySpec secretKeySpec = new SecretKeySpec(raw, KEY_ALGORITHM);
         Cipher cipher = Cipher.getInstance(KEY_ALGORITHM);
@@ -74,7 +71,7 @@ public class AES {
         byte[] decordedValue = Base64.decodeBase64(encryptedData);
         byte[] decValue = c.doFinal(decordedValue);
 
-        String decryptedValue = new String(decValue,CommonConstant.DEFAULT_CONTENT_CHARSET);
+        String decryptedValue = new String(decValue,CommonConstant.DEFAULT_CHARSET);
         return decryptedValue;
     }
 

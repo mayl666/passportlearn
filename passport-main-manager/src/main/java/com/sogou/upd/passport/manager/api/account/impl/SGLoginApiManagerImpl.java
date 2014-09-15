@@ -202,7 +202,7 @@ public class SGLoginApiManagerImpl extends BaseProxyManager implements LoginApiM
             try {
                 // 1105不允许URLEncode，但壁纸需要URLEncode，所以传clientId区分
                 if (!createCookieUrlApiParams.getClientId().equals(String.valueOf(CommonConstant.PINYIN_MAC_CLIENTID))) {
-                    ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                    ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CHARSET);
                 }
             } catch (UnsupportedEncodingException e) {
             }

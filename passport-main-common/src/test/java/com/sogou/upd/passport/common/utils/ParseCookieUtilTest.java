@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.math.Coder;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +36,7 @@ public class ParseCookieUtilTest {
         }
         System.out.println(maps);
         String nickname = maps.get(ParseCookieUtil.PPINF_UNIQNAME);
-        nickname = URLDecoder.decode(nickname, CommonConstant.DEFAULT_CONTENT_CHARSET);
+        nickname = URLDecoder.decode(nickname, CommonConstant.DEFAULT_CHARSET);
         System.out.println(nickname);
     }
 }

@@ -205,7 +205,7 @@ public class WapLoginAction extends BaseController {
             // 校验参数
             ru = req.getParameter(CommonConstant.RESPONSE_RU);
             try {
-                ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
                 String validateResult = ControllerHelper.validateParams(params);
                 if (!Strings.isNullOrEmpty(validateResult)) {
                     ru = buildErrorRu(ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
@@ -220,7 +220,7 @@ public class WapLoginAction extends BaseController {
             data = params.getData();
             //获取QQ回跳参数
             byte[] buf = Hex.decodeHex(data.toCharArray());
-            String decryptedValue = new String(AES.decrypt(buf, SECRETKEY), CommonConstant.DEFAULT_CONTENT_CHARSET);
+            String decryptedValue = new String(AES.decrypt(buf, SECRETKEY), CommonConstant.DEFAULT_CHARSET);
 
             QQPassthroughParam param = JacksonJsonMapperUtil.getMapper().readValue(decryptedValue, QQPassthroughParam.class);
             accessToken = param.getAccess_token();
@@ -265,7 +265,7 @@ public class WapLoginAction extends BaseController {
     private String buildSuccessRu(String ru, String sgid) {
         Map params = Maps.newHashMap();
         try {
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (Exception e) {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_WAP_URL;
