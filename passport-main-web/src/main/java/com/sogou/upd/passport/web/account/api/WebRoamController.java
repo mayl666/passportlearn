@@ -38,6 +38,7 @@ import java.util.Map;
  * Time: 下午4:28
  */
 @Controller
+@RequestMapping("/sso")
 public class WebRoamController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebRoamController.class);
@@ -53,7 +54,7 @@ public class WebRoamController extends BaseController {
      * 目前支持搜狐漫游到搜狗，sg.passport.sohu.com
      */
     @ResponseBody
-    @RequestMapping(value = "/sso/web_roam_go", method = RequestMethod.GET)
+    @RequestMapping(value = "/web_roam_go", method = RequestMethod.GET)
     public void webRoamGo(HttpServletRequest request, HttpServletResponse response, BaseWebRuParams baseWebRuParams) throws Exception {
         Result result = new APIResultSupport(false);
         String clientId = baseWebRuParams.getClient_id();
@@ -103,7 +104,7 @@ public class WebRoamController extends BaseController {
      * 验证搜狐侧登录态生成的r_key，验证通过则在搜狗侧种登录态,
      */
     @ResponseBody
-    @RequestMapping(value = "/sso/web_roam", method = RequestMethod.GET)
+    @RequestMapping(value = "/web_roam", method = RequestMethod.GET)
     public void webRoam(HttpServletRequest request, HttpServletResponse response, WebRoamParams webRoamParams) throws Exception {
         Result result = new APIResultSupport(false);
         String ru = webRoamParams.getRu();
@@ -145,7 +146,7 @@ public class WebRoamController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/sso/pc_roam_go", method = RequestMethod.GET)
+    @RequestMapping(value = "/pc_roam_go", method = RequestMethod.GET)
     public String pcRoamGo(HttpServletRequest request, HttpServletResponse response, Model model, PcRoamGoParams pcRoamGoParams) throws Exception {
         Result result = new APIResultSupport(false);
         String clientId = pcRoamGoParams.getClient_id();
