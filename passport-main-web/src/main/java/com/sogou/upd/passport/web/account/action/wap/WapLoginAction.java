@@ -97,6 +97,7 @@ public class WapLoginAction extends BaseController {
             } else {
                 model.addAttribute("hasError", false);
             }
+            model.addAttribute("ru", Coder.encodeUTF8(wapIndexParams.getRu()));
             return "wap/login_wap";
         }
     }
