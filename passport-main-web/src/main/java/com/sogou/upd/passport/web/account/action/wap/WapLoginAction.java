@@ -110,7 +110,7 @@ public class WapLoginAction extends BaseController {
 
 
     @RequestMapping(value = "/wap/login", method = RequestMethod.POST)
-    public String login(HttpServletRequest request, HttpServletResponse response, WapLoginParams loginParams)
+    public String login(HttpServletRequest request, HttpServletResponse response, WapLoginParams loginParams,Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
@@ -154,7 +154,6 @@ public class WapLoginAction extends BaseController {
             if (result.getCode() == ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE) {
                 if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
                     String token = RandomStringUtils.randomAlphanumeric(48);
-                    Model model = null;
                     buildModuleReturnStr(true, loginParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE),
                             loginParams.getClient_id(), null, loginParams.getV(), true, model);
                     model.addAttribute("token", token);
@@ -175,7 +174,6 @@ public class WapLoginAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("您登陆过于频繁，请稍后再试。");
                 if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
-                    Model model = null;
                     buildModuleReturnStr(true, loginParams.getRu(), "您登陆过于频繁，请稍后再试。",
                             loginParams.getClient_id(), null, loginParams.getV(), false, model);
                     model.addAttribute("isNeedCaptcha", 0);
