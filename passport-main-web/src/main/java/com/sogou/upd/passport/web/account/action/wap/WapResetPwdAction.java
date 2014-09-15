@@ -86,6 +86,12 @@ public class WapResetPwdAction extends BaseController {
             model.addAttribute("v", v);
             model.addAttribute("client_id", client_id);
             model.addAttribute("ru", ru);
+            if (wapIndexParams.getNeedCaptcha() == 1) {
+                String token = RandomStringUtils.randomAlphanumeric(48);
+                model.addAttribute("token", token);
+                model.addAttribute("needCaptcha", true);
+                model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+            }
             return "wap/findpwd_wap";
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             model.addAttribute("data", result.toString());
