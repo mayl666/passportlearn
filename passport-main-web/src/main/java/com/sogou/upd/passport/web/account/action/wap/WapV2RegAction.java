@@ -84,6 +84,12 @@ public class WapV2RegAction extends BaseController {
                 buildModuleReturnStr(true, reqParams.getRu(), validateResult,
                         reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
                 model.addAttribute("mobile", reqParams.getMobile());
+                if (reqParams.getNeedCaptcha() == 1) {
+                    String token = RandomStringUtils.randomAlphanumeric(48);
+                    model.addAttribute("token", token);
+                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+                }
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 return "wap/regist_wap";
             }
@@ -94,6 +100,12 @@ public class WapV2RegAction extends BaseController {
                 buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID),
                         reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
                 model.addAttribute("mobile", reqParams.getMobile());
+                if (reqParams.getNeedCaptcha() == 1) {
+                    String token = RandomStringUtils.randomAlphanumeric(48);
+                    model.addAttribute("token", token);
+                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+                }
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return "wap/regist_wap";
             }
@@ -131,6 +143,12 @@ public class WapV2RegAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                 buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND),
                         reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+                if (reqParams.getNeedCaptcha() == 1) {
+                    String token = RandomStringUtils.randomAlphanumeric(48);
+                    model.addAttribute("token", token);
+                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+                }
                 return "wap/regist_wap";
             }
             BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
@@ -139,6 +157,12 @@ public class WapV2RegAction extends BaseController {
                     reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
             model.addAttribute("mobile", reqParams.getMobile());
             if (!result.isSuccess()) {
+                if (reqParams.getNeedCaptcha() == 1) {
+                    String token = RandomStringUtils.randomAlphanumeric(48);
+                    model.addAttribute("token", token);
+                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+                }
                 return "wap/regist_wap";
             }
         } catch (Exception e) {

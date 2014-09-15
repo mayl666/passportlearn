@@ -19,6 +19,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.wap.WapPwdParams;
 import com.sogou.upd.passport.web.account.form.wap.WapRegMobileCodeParams;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,12 @@ public class WapV2ResetPwdAction extends BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 buildModuleReturnStr(true, reqParams.getRu(), validateResult,
                         reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+                if (reqParams.getNeedCaptcha() == 1) {
+                    String token = RandomStringUtils.randomAlphanumeric(48);
+                    model.addAttribute("token", token);
+                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+                }
                 model.addAttribute("mobile", reqParams.getMobile());
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 return "wap/findpwd_wap";
@@ -84,6 +91,12 @@ public class WapV2ResetPwdAction extends BaseController {
                 buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID),
                         reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
                 model.addAttribute("mobile", reqParams.getMobile());
+                if (reqParams.getNeedCaptcha() == 1) {
+                    String token = RandomStringUtils.randomAlphanumeric(48);
+                    model.addAttribute("token", token);
+                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+                }
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return "wap/findpwd_wap";
             }
@@ -94,6 +107,12 @@ public class WapV2ResetPwdAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                 buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND),
                         reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+                if (reqParams.getNeedCaptcha() == 1) {
+                    String token = RandomStringUtils.randomAlphanumeric(48);
+                    model.addAttribute("token", token);
+                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+                }
                 return "wap/findpwd_wap";
             }
             result = wapRestPwdManager.sendMobileCaptcha(reqParams.getMobile(), reqParams.getClient_id(), reqParams.getToken(), reqParams.getCaptcha());
@@ -110,6 +129,12 @@ public class WapV2ResetPwdAction extends BaseController {
                 } else {
                     buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
                             reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+                    if (reqParams.getNeedCaptcha() == 1) {
+                        String token = RandomStringUtils.randomAlphanumeric(48);
+                        model.addAttribute("token", token);
+                        model.addAttribute("isNeedCaptcha", 1);
+                        model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+                    }
                     return "wap/findpwd_wap";
                 }
             }
@@ -117,6 +142,12 @@ public class WapV2ResetPwdAction extends BaseController {
                     reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
             model.addAttribute("mobile", reqParams.getMobile());
             if (!result.isSuccess()) {
+                if (reqParams.getNeedCaptcha() == 1) {
+                    String token = RandomStringUtils.randomAlphanumeric(48);
+                    model.addAttribute("token", token);
+                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+                }
                 return "wap/findpwd_wap";
             }
         } catch (Exception e) {
