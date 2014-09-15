@@ -97,9 +97,55 @@ public class WebRoamController extends BaseController {
         }
     }
 
+    /*
+     * 验证搜狐侧登录态生成的r_key，验证通过则在搜狗侧种登录态,
+     */
     @ResponseBody
     @RequestMapping(value = "/sso/web_roam", method = RequestMethod.GET)
     public void webRoam(HttpServletRequest request, HttpServletResponse response, WebRoamParams webRoamParams) throws Exception {
+        Result result = new APIResultSupport(false);
+        String ru = webRoamParams.getRu();
+        String r_key = webRoamParams.getR_key();
+        String clientId = webRoamParams.getClient_id();
+        String createIp = getIp(request);
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(webRoamParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                returnErrMsg(response, ru, result.getCode(), result.getMessage());
+                return;
+            }
+
+            String sgLgUserId = StringUtils.EMPTY;
+            if (hostHolder.isLogin()) {
+                sgLgUserId = hostHolder.getPassportId();
+            }
+            result = accountRoamManager.webRoam(response, sgLgUserId, r_key, ru, createIp, Integer.parseInt(clientId));
+            if (result.isSuccess()) {
+                response.sendRedirect(ru);
+                return;
+            } else {
+                returnErrMsg(response, ru, result.getCode(), result.getMessage());
+                return;
+            }
+        } catch (Exception e) {
+            LOGGER.error(" web_roam error.userId:{},r_key:{},ru", new Object[]{result.getModels().get("userId"), r_key, ru}, e);
+        } finally {
+            String resultCode = StringUtils.defaultIfEmpty(result.getCode(), "0");
+            String userId = StringUtils.defaultString(String.valueOf(result.getModels().get("userId")));
+
+            //记录用户操作日志
+            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), clientId, resultCode, createIp);
+            userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+            UserOperationLogUtil.log(userOperationLog);
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/sso/pc_roam_go", method = RequestMethod.GET)
+    public void pcRoam(HttpServletRequest request, HttpServletResponse response, WebRoamParams webRoamParams) throws Exception {
         Result result = new APIResultSupport(false);
         String ru = webRoamParams.getRu();
         String r_key = webRoamParams.getR_key();

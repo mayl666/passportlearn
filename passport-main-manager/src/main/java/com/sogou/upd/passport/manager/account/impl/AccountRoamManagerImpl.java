@@ -70,8 +70,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             if (webRoamDO != null) {
                 roamPassportId = webRoamDO.getPassportId();
                 result.setDefaultModel("userId", roamPassportId);
-                //安全启见、根据 r_key 清除 缓存中 漫游用户信息、仅供使用一次!
-                tokenService.deleteWebRoamDoByToken(CacheConstant.CACHE_KEY_WEB_ROAM + r_key);
             } else {
                 //漫游用户信息取不到 返回对应状态码的Result
                 result.setCode(ErrorUtil.ERR_CODE_ROAM_INFO_NOT_EXIST);
