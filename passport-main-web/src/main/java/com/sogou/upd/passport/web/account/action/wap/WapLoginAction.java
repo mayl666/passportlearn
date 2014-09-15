@@ -95,7 +95,7 @@ public class WapLoginAction extends BaseController {
             if (!Strings.isNullOrEmpty(wapIndexParams.getErrorMsg())) {
                 model.addAttribute("hasError", true);
             } else {
-                model.addAttribute("hasError",false);
+                model.addAttribute("hasError", false);
             }
             return "wap/login_wap";
         }
@@ -121,20 +121,17 @@ public class WapLoginAction extends BaseController {
             result.setMessage(validateResult);
             return getErrorReturnStr(loginParams, validateResult, 0);
         }
-
         result = wapLoginManager.accountLogin(loginParams, ip);  //wap端ip做安全限制
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), ip);
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
-
+        //如果校验用户名和密码成功，则生成登录态sgid
         if (result.isSuccess()) {
             String userId = (String) result.getModels().get("userid");
             String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
-
             WapRegAction.setSgidCookie(response, sgid);
-
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
                 //在返回的数据中导入 json格式，用来给客户端用。
                 //第三方获取个人资料
@@ -150,26 +147,42 @@ public class WapLoginAction extends BaseController {
             response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
             return "empty";
         } else {
+            //如果校验用户名和密码失败，且是因为需要验证码，则置验证码为1，即需要验证码
             int isNeedCaptcha = 0;
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
             //校验是否需要验证码
             if (result.getCode() == ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE) {
-//                writeResultToResponse(response, result);
-//                return "empty";
+                if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
+                    String token = RandomStringUtils.randomAlphanumeric(48);
+                    Model model = null;
+                    buildModuleReturnStr(true, loginParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE),
+                            loginParams.getClient_id(), null, loginParams.getV(), true, model);
+                    model.addAttribute("token", token);
+                    model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+                    return "wap/login_wap";
+                }
                 isNeedCaptcha = 1;
                 return getErrorReturnStr(loginParams, result.getMessage(), isNeedCaptcha);
             }
+            //否则，还需要校验是否需要弹出验证码
             boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
             if (needCaptcha) {
                 isNeedCaptcha = 1;
             }
+            //不直接返回直接的文案告诉用户中了安全限制
             if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("您登陆过于频繁，请稍后再试。");
+                if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
+                    Model model = null;
+                    buildModuleReturnStr(true, loginParams.getRu(), "您登陆过于频繁，请稍后再试。",
+                            loginParams.getClient_id(), null, loginParams.getV(), false, model);
+                    model.addAttribute("isNeedCaptcha", 0);
+                    return "wap/login_wap";
+                }
             }
-
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
-
                 if (needCaptcha) {
                     if (result.getCode() != ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
@@ -182,10 +195,18 @@ public class WapLoginAction extends BaseController {
                 writeResultToResponse(response, result);
                 return "empty";
             }
-
             return getErrorReturnStr(loginParams, "用户名或者密码错误", isNeedCaptcha);
-
         }
+    }
+
+    private void buildModuleReturnStr(boolean hasError, String ru, String errorMsg, String client_id, String skin, String v, boolean needCaptcha, Model model) {
+        model.addAttribute("errorMsg", errorMsg);
+        model.addAttribute("hasError", hasError);
+        model.addAttribute("ru", Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_INDEX_URL : ru);
+        model.addAttribute("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_GREEN : skin);
+        model.addAttribute("needCaptcha", needCaptcha);
+        model.addAttribute("v", Strings.isNullOrEmpty(v) ? WapConstant.WAP_COLOR : v);
+        model.addAttribute("client_id", client_id);
     }
 
     private void writeResultToResponse(HttpServletResponse response, Result result) throws IOException {
