@@ -146,7 +146,7 @@ public class WebRoamController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/pc_roam_go", method = RequestMethod.GET)
+    @RequestMapping(value = "/pc_roam_go", method = RequestMethod.POST)
     public String pcRoamGo(HttpServletRequest request, HttpServletResponse response, Model model, PcRoamGoParams pcRoamGoParams) throws Exception {
         Result result = new APIResultSupport(false);
         String clientId = pcRoamGoParams.getClient_id();
