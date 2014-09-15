@@ -110,7 +110,7 @@ public class WapLoginAction extends BaseController {
 
 
     @RequestMapping(value = "/wap/login", method = RequestMethod.POST)
-    public String login(HttpServletRequest request, HttpServletResponse response, WapLoginParams loginParams,Model model)
+    public String login(HttpServletRequest request, HttpServletResponse response, WapLoginParams loginParams, Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
@@ -169,9 +169,9 @@ public class WapLoginAction extends BaseController {
             if (needCaptcha) {
                 isNeedCaptcha = 1;
                 if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
-                    buildModuleReturnStr(true, loginParams.getRu(), "您登陆过于频繁，请稍后再试。",
-                            loginParams.getClient_id(), null, loginParams.getV(), false, model);
-                    model.addAttribute("isNeedCaptcha", 0);
+                    buildModuleReturnStr(true, loginParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE),
+                            loginParams.getClient_id(), null, loginParams.getV(), true, model);
+                    model.addAttribute("isNeedCaptcha", 1);
                     return "wap/login_wap";
                 }
             }
