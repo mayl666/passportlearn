@@ -23,6 +23,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.WapIndexParams;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,6 +164,12 @@ public class WapRegAction extends BaseController {
             model.addAttribute("client_id", Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? CommonConstant.SGPP_DEFAULT_CLIENTID : wapIndexParams.getClient_id());
             model.addAttribute("ru", Strings.isNullOrEmpty(wapIndexParams.getRu()) ? CommonConstant.DEFAULT_WAP_URL : wapIndexParams.getRu());
             model.addAttribute("skin", Strings.isNullOrEmpty(wapIndexParams.getSkin()) ? CommonConstant.WAP_DEFAULT_SKIN : wapIndexParams.getSkin());
+            if (wapIndexParams.getNeedCaptcha() == 1) {
+                String token = RandomStringUtils.randomAlphanumeric(48);
+                model.addAttribute("token", token);
+                model.addAttribute("needCaptcha", true);
+                model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+            }
             return "wap/regist_wap";
         }
     }
