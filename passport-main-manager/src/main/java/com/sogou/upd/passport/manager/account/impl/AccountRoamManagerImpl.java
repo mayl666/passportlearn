@@ -70,34 +70,41 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     public Result pcRoamGo(String type, String s) {
         Result result = new APIResultSupport(false);
         String passportId = "";
+        // 验证桌面端登录态，解析passportId
         if (PcRoamTypeEnum.iec.getValue().equals(type)) {
-          // TODO
+            // TODO
         } else if (PcRoamTypeEnum.iet.getValue().equals(type)) {
-          // TODO
+            // TODO
         } else if (PcRoamTypeEnum.pinyint.getValue().equals(type)) {
             passportId = getUserIdByPinyinRoamToken(s);
         } else {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage("type类型不支持");
+            return result;
         }
         if (Strings.isNullOrEmpty(passportId)) {
             result.setCode(ErrorUtil.ERR_CODE_RSA_DECRYPT);
             return result;
         }
-        result.setDefaultModel("userid", passportId);
-        result = createRoamKey(passportId);
-        if (result.isSuccess()) {
-            Account account = accountService.queryNormalAccount(passportId);
-            if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
-                return result;
-            } else {
-                String uniqname = Strings.isNullOrEmpty(account.getUniqname()) ? passportId : account.getUniqname();
-                result.setDefaultModel("uniqname", uniqname);
-            }
+        // 生成登录标识
+        String r_key = tokenService.saveWebRoamToken(passportId);
+        if (Strings.isNullOrEmpty(r_key)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            return result;
         }
-        return result;
-    }
+        // 验证账号是否存在，并获取用户信息
+        Account account = accountService.queryNormalAccount(passportId);
+        if (account == null) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            return result;
+        } else {
+            String uniqname = Strings.isNullOrEmpty(account.getUniqname()) ? passportId : account.getUniqname();
+            result.setDefaultModel("uniqname", uniqname);
+            result.setDefaultModel("userid", passportId);
+            result.setDefaultModel("r_key", r_key);
+        }
+    return result;
+}
 
     @Override
     public Result webRoam(HttpServletResponse response, String sgLgUserId, String r_key, String ru, String createIp, int clientId) throws ServiceException {
