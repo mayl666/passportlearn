@@ -171,7 +171,10 @@ public class WapLoginAction extends BaseController {
                 if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
                     buildModuleReturnStr(true, loginParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE),
                             loginParams.getClient_id(), null, loginParams.getV(), true, model);
+                    String token = RandomStringUtils.randomAlphanumeric(48);
+                    model.addAttribute("token", token);
                     model.addAttribute("isNeedCaptcha", 1);
+                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                     return "wap/login_wap";
                 }
             }
