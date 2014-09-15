@@ -170,6 +170,7 @@ public class WapRegAction extends BaseController {
                 model.addAttribute("needCaptcha", true);
                 model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
             }
+            model.addAttribute("mobile",wapIndexParams.getMobile());
             return "wap/regist_wap";
         }
     }

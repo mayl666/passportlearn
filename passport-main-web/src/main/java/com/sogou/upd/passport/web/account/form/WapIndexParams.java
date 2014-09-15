@@ -33,6 +33,7 @@ public class WapIndexParams {
 
     private String errorMsg;//错误信息
     private int needCaptcha;//是否需要输入验证码:0-不需要；1-需要
+    private String mobile;//wap2.0用到
 
     public String getRu() {
         return ru;
@@ -80,5 +81,13 @@ public class WapIndexParams {
 
     public void setSkin(String skin) {
         this.skin = skin;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 }
