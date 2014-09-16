@@ -64,7 +64,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
             int isthird = Integer.parseInt(req.getParameter("isthird"));
 //            String instance_id = req.getParameter("instance_id");
             String appidtypeString = req.getParameter("appid_type");
-            Integer appidType = appidtypeString == null ? 0 : Integer.valueOf(appidtypeString);
+            Integer appidType = appidtypeString == null ? null : Integer.valueOf(appidtypeString);
             int provider = AccountTypeEnum.getProvider(providerStr);
             if (AccountTypeEnum.isConnect(provider)) {
                 OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
@@ -73,10 +73,16 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                     return result;
                 }
                 ConnectConfig connectConfig;
-                if (appidType == 0) {
-                    connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
-                }else{
+                if (appidType == null) {
                     connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
+                } else {
+                    if (appidType == 0) {
+                        connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
+                    } else if (appidType == 1) {
+                        connectConfig = connectConfigService.querySpecifyConnectConfig(client_id, provider);
+                    } else {
+                        connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
+                    }
                 }
                 if (connectConfig == null) {
                     result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);

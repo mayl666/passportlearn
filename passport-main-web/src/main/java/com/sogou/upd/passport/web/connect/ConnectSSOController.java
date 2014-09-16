@@ -138,7 +138,7 @@ public class ConnectSSOController extends BaseConnectController {
     private void buildSpecialResultParams(HttpServletRequest req, Result result, int clientId, String providerStr) {
         if (result.isSuccess()) {
             Map<String, String[]> map = SPECIAL_PARAMS_MAPPING.get(clientId);
-            if (!map.isEmpty()) {
+            if (map != null && !map.isEmpty()) {
                 String[] paramArray = map.get(providerStr);
                 if (paramArray != null) {
                     for (String param : paramArray) {
