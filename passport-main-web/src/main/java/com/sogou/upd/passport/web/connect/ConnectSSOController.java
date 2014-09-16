@@ -104,10 +104,9 @@ public class ConnectSSOController extends BaseConnectController {
                 map.put("isthird", Integer.toString(params.getIsthird()));
             }
             Object refresh_token = req.getParameterMap().get("refresh_token");
-            if (refresh_token != null && !Strings.isNullOrEmpty(refresh_token.toString())) {
+            if (refresh_token != null && !refresh_token.equals("")) {
                 map.put("refresh_token", params.getRefresh_token());
             }
-            String re = refresh_token.toString();
             map.put("instance_id", params.getInstance_id());
             String appidType = req.getParameter("appid_type");
             if (!Strings.isNullOrEmpty(appidType)) {
