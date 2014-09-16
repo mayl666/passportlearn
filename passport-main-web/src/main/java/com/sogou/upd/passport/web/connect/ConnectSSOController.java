@@ -140,10 +140,12 @@ public class ConnectSSOController extends BaseConnectController {
             Map<String, String[]> map = SPECIAL_PARAMS_MAPPING.get(clientId);
             if (!map.isEmpty()) {
                 String[] paramArray = map.get(providerStr);
-                for (String param : paramArray) {
-                    String reqParamValue = req.getParameter(param);
-                    if (!Strings.isNullOrEmpty(reqParamValue)) {
-                        result.setDefaultModel(param, reqParamValue);
+                if (paramArray != null) {
+                    for (String param : paramArray) {
+                        String reqParamValue = req.getParameter(param);
+                        if (!Strings.isNullOrEmpty(reqParamValue)) {
+                            result.setDefaultModel(param, reqParamValue);
+                        }
                     }
                 }
             }
