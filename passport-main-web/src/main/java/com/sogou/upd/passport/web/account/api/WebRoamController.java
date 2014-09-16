@@ -137,7 +137,7 @@ public class WebRoamController extends BaseController {
             LOGGER.error(" web_roam error.userId:{},r_key:{},ru", new Object[]{result.getModels().get("userId"), r_key, ru}, e);
         } finally {
             String resultCode = StringUtils.defaultIfEmpty(result.getCode(), "0");
-            String userId = StringUtils.defaultString(String.valueOf(result.getModels().get("userId")));
+            String userId = StringUtils.defaultString((String) result.getModels().get("userId"));
 
             //记录用户操作日志
             UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), clientId, resultCode, createIp);
