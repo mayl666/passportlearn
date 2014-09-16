@@ -46,8 +46,6 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Autowired
-    private RegisterApiManager proxyRegisterApiManager;
-    @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private AccountService accountService;

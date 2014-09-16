@@ -20,6 +20,14 @@ public interface LoginManager {
      */
     public Result checkUser(String username, int clientId) throws Exception;
 
+    /**
+     * 登录验证
+     * 根据module有密码验证、快速验证
+     * @param parameters
+     * @param ip
+     * @param scheme
+     * @return
+     */
     public Result accountLogin(WebLoginParams parameters, String ip, String scheme);
 
     /**

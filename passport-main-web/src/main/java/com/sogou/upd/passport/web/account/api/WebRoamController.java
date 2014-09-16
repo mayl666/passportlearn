@@ -146,12 +146,17 @@ public class WebRoamController extends BaseController {
         }
     }
 
+    /*
+     * 桌面端产品登录态透传到web端的起始接口
+     * 验证桌面端登录态，并生成已登录标识
+     */
     @RequestMapping(value = "/pc_roam_go", method = RequestMethod.POST)
     public String pcRoamGo(HttpServletRequest request, HttpServletResponse response, Model model, PcRoamGoParams pcRoamGoParams) throws Exception {
         Result result = new APIResultSupport(false);
         String clientId = pcRoamGoParams.getClient_id();
         String xd = pcRoamGoParams.getXd();
         String createIp = getIp(request);
+        String userId = "";
         try {
             //参数验证
             String validateResult = ControllerHelper.validateParams(pcRoamGoParams);
@@ -160,24 +165,22 @@ public class WebRoamController extends BaseController {
                 result.setMessage(validateResult);
                 result.setDefaultModel("xd", xd);
                 model.addAttribute("data", result.toString());
-                return "/login/api";
+                return "/login/roam";
             }
 
             result = accountRoamManager.pcRoamGo(pcRoamGoParams.getType(), pcRoamGoParams.getS());
             if (result.isSuccess()) {
                 result.setDefaultModel("r_key", result.getModels().get("r_key"));
-                String uniqname =  Coder.encode((String) result.getModels().get("uniqname"), CommonConstant.DEFAULT_CHARSET);
+                String uniqname = Coder.encode((String) result.getModels().get("uniqname"), CommonConstant.DEFAULT_CHARSET);
                 result.setDefaultModel("uniqname", uniqname);
+                userId = (String) result.getModels().get("userId");
             }
             result.setDefaultModel("xd", xd);
             model.addAttribute("data", result.toString());
-            return "/login/api";
+            return "/login/roam";
         } finally {
-            String resultCode = StringUtils.defaultIfEmpty(result.getCode(), "0");
-            String userId = StringUtils.defaultString(String.valueOf(result.getModels().get("userId")));
-
             //记录用户操作日志
-            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), clientId, resultCode, createIp);
+            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), clientId, result.getCode(), createIp);
             userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
             UserOperationLogUtil.log(userOperationLog);
         }
