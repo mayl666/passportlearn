@@ -2,7 +2,6 @@ package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -104,13 +103,13 @@ public class ConnectSSOController extends BaseConnectController {
             if (isthird != null) {
                 map.put("isthird", Integer.toString(params.getIsthird()));
             }
-            Object refresh_token = req.getParameterMap().get("refresh_token");
-            if (refresh_token != null) {
+            String refresh_token = (String) req.getParameterMap().get("refresh_token");
+            if (!Strings.isNullOrEmpty(refresh_token)) {
                 map.put("refresh_token", params.getRefresh_token());
             }
             map.put("instance_id", params.getInstance_id());
             String appidType = req.getParameter("appid_type");
-            if (appidType != null) {
+            if (!Strings.isNullOrEmpty(appidType)) {
                 map.put("appid_type", appidType);
             }
             //计算默认的code
