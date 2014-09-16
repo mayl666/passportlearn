@@ -14,9 +14,7 @@ import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
 import com.sogou.upd.passport.manager.form.PcGetTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
@@ -57,15 +55,9 @@ public class PCAccountController extends BaseController {
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
-    private LoginApiManager proxyLoginApiManager;
-    @Autowired
     private LoginManager loginManager;
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
-
-    @Autowired
-    private LoginApiManager sgLoginApiManager;
-
     @Autowired
     private CookieManager cookieManager;
 
