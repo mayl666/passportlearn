@@ -7,7 +7,7 @@
     })(sdata.data.xd,
         [
             'status=' + sdata.status,
-            'r_key =' + (sdata.data.r_key ||''),
+            'r_key=' + (sdata.data.r_key ||''),
             'uniqname=' + (sdata.data.uniqname||''),
             'msg=' + encodeURIComponent(sdata.statusText||'')
         ]
