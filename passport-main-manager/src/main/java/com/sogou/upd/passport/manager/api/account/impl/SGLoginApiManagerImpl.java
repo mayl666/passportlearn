@@ -103,7 +103,7 @@ public class SGLoginApiManagerImpl extends BaseProxyManager implements LoginApiM
             Result verifyUserResult = accountService.verifyUserPwdVaild(userId, authUserApiParams.getPassword(), false);
             if (verifyUserResult.isSuccess()) {
                 result.setSuccess(true);
-                result.setMessage("操作成功");
+                result.setMessage("登录成功");
                 result.setDefaultModel("userid", userId);
                 result.setDefaultModel("uniqName", verifyUserResult.getModels().get("uniqName"));
                 result.setDefaultModel("refnick", verifyUserResult.getModels().get("uniqName"));

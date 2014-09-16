@@ -48,6 +48,8 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     private TokenService tokenService;
     @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
+    @Autowired
+    private LoginManagerImpl loginManager;
 
     @Override
     public Result createRoamKey(String sLoginPassportId) {
@@ -67,7 +69,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     }
 
     @Override
-    public Result pcRoamGo(String type, String s) {
+    public Result pcRoamGo(String type, String s, String ip) {
         Result result = new APIResultSupport(false);
         String passportId = "";
         // 验证桌面端登录态，解析passportId
@@ -84,6 +86,10 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
         }
         if (Strings.isNullOrEmpty(passportId)) {
             result.setCode(ErrorUtil.ERR_CODE_RSA_DECRYPT);
+            return result;
+        }
+        if (loginManager.isLoginUserInBlackList(passportId, ip)) {    //ip是否中了安全限制
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
             return result;
         }
         // 生成登录标识
@@ -112,7 +118,6 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
         Result result = new APIResultSupport(false);
         String roamPassportId = null;
         try {
-            //检查签名正确性
             //根据r_key 取出存储在缓存的漫游用户信息
             WebRoamDO webRoamDO = tokenService.getWebRoamDOByToken(r_key);
             if (webRoamDO != null) {

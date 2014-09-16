@@ -17,6 +17,7 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.manager.form.WapLogoutParams;
@@ -59,6 +60,8 @@ public class WapLoginAction extends BaseController {
     private WapLoginManager wapLoginManager;
     @Autowired
     private AccountInfoManager accountInfoManager;
+    @Autowired
+    private SessionServerManager sessionServerManager;
 
     private static final Logger logger = LoggerFactory.getLogger(WapLoginAction.class);
     private static final String SECRETKEY = "afE0WZf345@werdm";
@@ -138,10 +141,10 @@ public class WapLoginAction extends BaseController {
                 result = accountInfoManager.getUserInfo(accountInfoParams);
                 result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                 writeResultToResponse(response, result);
-                wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
+                loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
                 return "empty";
             }
-            wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
+            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
             response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
             return "empty";
         } else {
@@ -306,7 +309,7 @@ public class WapLoginAction extends BaseController {
                 ru = CommonConstant.DEFAULT_WAP_URL;
             }
             //session server中清除cookie
-            Result result = wapLoginManager.removeSession(sgid);
+            Result result = sessionServerManager.removeSession(sgid);
             if (result.isSuccess()) {
                 //清除cookie
                 ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGID);

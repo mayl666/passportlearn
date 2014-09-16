@@ -168,7 +168,7 @@ public class WebRoamController extends BaseController {
                 return "/login/roam";
             }
 
-            result = accountRoamManager.pcRoamGo(pcRoamGoParams.getType(), pcRoamGoParams.getS());
+            result = accountRoamManager.pcRoamGo(pcRoamGoParams.getType(), pcRoamGoParams.getS(), createIp);
             if (result.isSuccess()) {
                 result.setDefaultModel("r_key", result.getModels().get("r_key"));
                 String uniqname = Coder.encode((String) result.getModels().get("uniqname"), CommonConstant.DEFAULT_CHARSET);

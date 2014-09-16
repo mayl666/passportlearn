@@ -8,7 +8,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SignatureUtils;
 import com.sogou.upd.passport.manager.account.CookieManager;
-import com.sogou.upd.passport.manager.account.WapLoginManager;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -35,9 +35,8 @@ public class MappAction extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(MappAction.class);
 
-
     @Autowired
-    private WapLoginManager wapLoginManager;
+    private SessionServerManager sessionServerManager;
     @Autowired
     private CookieManager cookieManager;
 
@@ -71,7 +70,7 @@ public class MappAction extends BaseController {
             }
 
             //session server中清除cookie
-            result = wapLoginManager.removeSession(sgid);
+            result = sessionServerManager.removeSession(sgid);
             if (result.isSuccess()) {
                 result.setSuccess(true);
                 result.setMessage("logout success!");

@@ -30,7 +30,7 @@ public interface AccountRoamManager {
      * @return
      * @throws ServiceException
      */
-    Result pcRoamGo(String type, String s);
+    Result pcRoamGo(String type, String s, String ip);
 
     /**
      * 支持：搜狗域、搜狐域、第三方账号 3类账号漫游
