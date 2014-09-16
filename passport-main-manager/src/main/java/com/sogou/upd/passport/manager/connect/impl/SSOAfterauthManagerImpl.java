@@ -64,7 +64,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
             int isthird = Integer.parseInt(req.getParameter("isthird"));
 //            String instance_id = req.getParameter("instance_id");
             String appidtypeString = req.getParameter("appid_type");
-            Integer appidType = appidtypeString == null ? null : Integer.valueOf(appidtypeString);
+            Integer appidType = appidtypeString == null ? 0 : Integer.valueOf(appidtypeString);
             int provider = AccountTypeEnum.getProvider(providerStr);
             if (AccountTypeEnum.isConnect(provider)) {
                 OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);

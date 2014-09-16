@@ -79,7 +79,7 @@ public class ConnectSSOController extends BaseConnectController {
             return result.toString();
         } finally {
             String uidStr = AccountTypeEnum.generateThirdPassportId(params.getOpenid(), providerStr);
-            String userId = StringUtil.defaultIfEmpty(String.valueOf(result.getModels().get("userid")), uidStr);
+            String userId = StringUtil.defaultIfEmpty((String) result.getModels().get("userid"), uidStr);
             UserOperationLog userOperationLog = new UserOperationLog(userId, req.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(req));
             UserOperationLogUtil.log(userOperationLog);
         }
@@ -141,8 +141,7 @@ public class ConnectSSOController extends BaseConnectController {
             if (!map.isEmpty()) {
                 String[] paramArray = map.get(providerStr);
                 for (String param : paramArray) {
-                    Map reqParamMap = req.getParameterMap();
-                    String reqParamValue = String.valueOf(reqParamMap.get(param));
+                    String reqParamValue = req.getParameter(param);
                     if (!Strings.isNullOrEmpty(reqParamValue)) {
                         result.setDefaultModel(param, reqParamValue);
                     }
