@@ -36,6 +36,8 @@ public class ErrorUtil {
     public static final String CREATE_TOKEN_FAIL = "10011";
     // 应用没有该API访问权限
     public static final String ACCESS_DENIED_CLIENT = "10012";
+    // access_token过期
+    public static final String ACCESS_TOKEN_EXPIRED = "10013";
 
     /* ============================================================================ */
     /*  OAuth2授权错误码                                                             */
@@ -60,6 +62,7 @@ public class ErrorUtil {
     public static final String INVALID_REFRESH_TOKEN = "109";
     // login/authorize fail,数据库写入失败
     public static final String AUTHORIZE_FAIL = "110";
+
 
     /* ============================================================================ */
     /*  account 服务的错误代码                                                       */
@@ -265,6 +268,14 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND = "30031";
     //只支持第三方平台账号登录
     public static final String ERR_CODE_CONNECT_LOGIN = "30032";
+    //请求方式有错(GET还是POST)
+    public static final String ERR_CODE_CONNECT_ERROR_HTTP = "30033";
+    //需要使用HTTPS
+    public static final String ERR_CODE_CONNECT_NEED_HTTPS = "30034";
+    //微信返回的不合法的调用凭证
+    public static final String ERR_CODE_CONNECT_INVALID_CREDENTIAL = "30035";
+    //不合法的Openid
+    public static final String ERR_CODE_CONNECT_INVALID_OPENID = "30036";
     //QQ用户词库大小大于5M，请特殊处理
     public static final String ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M = "30037";
 
@@ -346,6 +357,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
         ERR_CODE_MSG_MAP.put(CREATE_TOKEN_FAIL, "生成token失败");
         ERR_CODE_MSG_MAP.put(ACCESS_DENIED_CLIENT, "应用没有该API访问权限");
+        ERR_CODE_MSG_MAP.put(ACCESS_TOKEN_EXPIRED, "accessToken过期");
+
 
         // oauth2授权
         ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");
@@ -462,7 +475,12 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_TOKEN_ERROR, "token无效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND, "没有找到此应用对应的第三方平台信息");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_LOGIN, "只支持第三方平台账号登录");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ERROR_HTTP, "请求第三方时请求方式有误");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NEED_HTTPS, "需要使用HTTPS");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_CREDENTIAL, "不合法的调用凭证");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_OPENID, "不合法的Openid");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M, "用户词库大小大于5M，请特殊处理");
+
 
         // info
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_GET_USERINFO_ERROR, "获取第三方用户信息失败");
