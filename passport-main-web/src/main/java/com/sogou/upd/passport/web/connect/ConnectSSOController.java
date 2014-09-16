@@ -16,6 +16,7 @@ import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.AfterAuthParams;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +80,7 @@ public class ConnectSSOController extends BaseConnectController {
             return result.toString();
         } finally {
             String uidStr = AccountTypeEnum.generateThirdPassportId(params.getOpenid(), providerStr);
-            String userId = StringUtil.defaultIfEmpty((String) result.getModels().get("userid"), uidStr);
+            String userId = StringUtils.defaultIfEmpty((String) result.getModels().get("userid"), uidStr);
             UserOperationLog userOperationLog = new UserOperationLog(userId, req.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(req));
             UserOperationLogUtil.log(userOperationLog);
         }
