@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -42,6 +44,15 @@ public class ConnectSSOController extends BaseConnectController {
     private SSOAfterauthManager sSOAfterauthManager;
     @Autowired
     private AppConfigService appConfigService;
+
+    // 个别应用需要获取到特定的第三方返回结果
+    private static Map<Integer, Map<String, String[]>> SPECIAL_PARAMS_MAPPING = Maps.newHashMap();
+
+    private static void initMapping() {
+        Map gameMap = Maps.newHashMap();
+        gameMap.put(AccountTypeEnum.getProviderStr(AccountTypeEnum.QQ.getValue()), new String[]{"pf", "pfkey", "pay_token"});
+        SPECIAL_PARAMS_MAPPING.put(2021, gameMap);
+    }
 
     //登陆后获取登录信息接口
     @RequestMapping("/afterauth/{providerStr}")
@@ -64,6 +75,7 @@ public class ConnectSSOController extends BaseConnectController {
                 return result.toString();
             }
             result = sSOAfterauthManager.handleSSOAfterauth(req, providerStr);
+            buildSpecialResultParams(req, result, params.getClient_id(), providerStr);
             return result.toString();
         } finally {
             String uidStr = AccountTypeEnum.generateThirdPassportId(params.getOpenid(), providerStr);
@@ -118,5 +130,25 @@ public class ConnectSSOController extends BaseConnectController {
             result.setCode(ErrorUtil.INVALID_CLIENTID);
         }
         return result;
+    }
+
+    /*
+     * 根据应用需要，构建应用
+     */
+    private void buildSpecialResultParams(HttpServletRequest req, Result result, int clientId, String providerStr) {
+        if (result.isSuccess()) {
+            Map<String, String[]> map = SPECIAL_PARAMS_MAPPING.get(clientId);
+            if (!map.isEmpty()) {
+                String[] paramArray = map.get(providerStr);
+                for (String param : paramArray) {
+                    Map reqParamMap = req.getParameterMap();
+                    String reqParamValue = String.valueOf(reqParamMap.get(param));
+                    if (!Strings.isNullOrEmpty(reqParamValue)) {
+                        result.setDefaultModel(param, reqParamValue);
+                    }
+                }
+            }
+        }
+        return;
     }
 }
