@@ -48,7 +48,7 @@ public class ConnectSSOController extends BaseConnectController {
     // 个别应用需要获取到特定的第三方返回结果
     private static Map<Integer, Map<String, String[]>> SPECIAL_PARAMS_MAPPING = Maps.newHashMap();
 
-    private static void initMapping() {
+    static {
         Map gameMap = Maps.newHashMap();
         gameMap.put(AccountTypeEnum.getProviderStr(AccountTypeEnum.QQ.getValue()), new String[]{"pf", "pfkey", "pay_token"});
         SPECIAL_PARAMS_MAPPING.put(2021, gameMap);
