@@ -7,8 +7,8 @@
     })(sdata.data.xd,
         [
             'status=' + sdata.status,
-            'skey=' + (sdata.data.skey||''),
-            'uniname=' + (sdata.data.uniname||''),
+            'r_key =' + (sdata.data.r_key ||''),
+            'uniqname=' + (sdata.data.uniqname||''),
             'msg=' + encodeURIComponent(sdata.statusText||'')
         ]
     );
