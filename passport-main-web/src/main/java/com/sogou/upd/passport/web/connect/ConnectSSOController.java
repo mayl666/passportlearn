@@ -75,7 +75,7 @@ public class ConnectSSOController extends BaseConnectController {
                 return result.toString();
             }
             result = sSOAfterauthManager.handleSSOAfterauth(req, providerStr);
-            buildSpecialResultParams(req, result, params.getClient_id(), providerStr);
+//            buildSpecialResultParams(req, result, params.getClient_id(), providerStr);
             return result.toString();
         } finally {
             String uidStr = AccountTypeEnum.generateThirdPassportId(params.getOpenid(), providerStr);
