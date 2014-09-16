@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -10,6 +13,7 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.AfterAuthParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,24 +50,27 @@ public class ConnectSSOController extends BaseConnectController {
                                 @PathVariable("providerStr") String providerStr,
                                 AfterAuthParams params) {
         Result result = new APIResultSupport(false);
-
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            //验证code是否有效
+            result = checkCodeIsCorrect(params, req);
+            if (!result.isSuccess()) {
+                return result.toString();
+            }
+            result = sSOAfterauthManager.handleSSOAfterauth(req, providerStr);
             return result.toString();
+        } finally {
+            String uidStr = AccountTypeEnum.generateThirdPassportId(params.getOpenid(), providerStr);
+            String userId = StringUtil.defaultIfEmpty(String.valueOf(result.getModels().get("userid")), uidStr);
+            UserOperationLog userOperationLog = new UserOperationLog(userId, req.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(req));
+            UserOperationLogUtil.log(userOperationLog);
         }
-
-        //验证code是否有效
-        result = checkCodeIsCorrect(params, req);
-        if (!result.isSuccess()) {
-            return result.toString();
-        }
-
-        result = sSOAfterauthManager.handleSSOAfterauth(req, providerStr);
-
-        return result.toString();
     }
 
     //openid+ client_id +access_token+expires_in+isthird +instance_id+ client _secret

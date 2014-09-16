@@ -72,18 +72,11 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                     result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                     return result;
                 }
-                //根据code值获取access_token
                 ConnectConfig connectConfig;
-                if (appidType == null) {
+                if (appidType == 0) {
+                    connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
+                }else{
                     connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
-                } else {
-                    if (appidType == 0) {
-                        connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
-                    } else if (appidType == 1) {
-                        connectConfig = connectConfigService.querySpecifyConnectConfig(client_id, provider);
-                    } else {
-                        connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
-                    }
                 }
                 if (connectConfig == null) {
                     result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
