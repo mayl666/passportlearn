@@ -80,7 +80,7 @@ public class ConnectSSOController extends BaseConnectController {
             return result.toString();
         } finally {
             String uidStr = AccountTypeEnum.generateThirdPassportId(params.getOpenid(), providerStr);
-            String userId = StringUtils.defaultIfEmpty((String) result.getModels().get("userid"), uidStr);
+            String userId = StringUtils.defaultIfEmpty(String.valueOf(result.getModels().get("userid")), uidStr);
             UserOperationLog userOperationLog = new UserOperationLog(userId, req.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(req));
             UserOperationLogUtil.log(userOperationLog);
         }
