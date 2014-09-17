@@ -42,7 +42,6 @@ public class SHPPUrlConstant {
     public static final String WEB_EMAIL_REG = BASE_INTERNAL_URL + "reguser";  //web端邮箱注册
     public static final String REG_MOBILE_NOCAPTCHA = BASE_INTERNAL_URL + "regmobiled";
 
-    //todo 这个地方的接口名sohu接口开发完会提供，暂时命名
     public static final String GET_COOKIE_VALUE_FROM_SOHU = BASE_INTERNAL_URL + "getcookieinfo";
 
     /*================================手机绑定相关=======================================*/
@@ -50,12 +49,6 @@ public class SHPPUrlConstant {
     public static final String BING_MOBILE = BASE_INTERNAL_URL + "wapbindmobile";
     //解绑手机号
     public static final String UNBING_MOBILE = BASE_INTERNAL_URL + "wapunbindmobile";
-    //发送手机验证码
-    public static final String SEND_CAPTCHA = BASE_INTERNAL_URL + "sendcaptcha";
-    //通过验证码绑定手机号
-    public static final String BIND_MOBILE_CAPTCHA = BASE_INTERNAL_URL + "bindmobile";
-    //通过验证码解绑手机号
-    public static final String UNBIND_MOBILE_CAPTCHA = BASE_INTERNAL_URL + "unbindmobile";
     //查询手机号绑定的账号
     public static final String MOBILE_GET_USERID = BASE_INTERNAL_URL + "wapgetuserid";
 
@@ -77,15 +70,16 @@ public class SHPPUrlConstant {
 
     /*================================安全中心操作URL=======================================*/
     // 修改密码
-    public static final String SOHU_RESETPWD_URL = BASE_URL + "web/updateInfo.action?modifyType=password";
+    public static final String SOHU_RESETPWD_URL = BASE_URL + "security/manage_password"; //sohu新页面
     // 修改密保邮箱
-    public static final String SOHU_BINDEMAIL_URL = BASE_URL + "web/requestModifyEmailAction.action";
+    public static final String SOHU_BINDEMAIL_URL = BASE_URL + "security/bind_email";    //sohu新页面
     // 修改密保手机
-    public static final String SOHU_BINDMOBILE_URL = BASE_URL + "web/requestBindMobileAction.action";
-    // 修改密保问题
-    public static final String SOHU_BINDQUES_URL = BASE_URL + "web/updateInfo.action?modifyType=question";
+    public static final String SOHU_BINDMOBILE_URL = BASE_URL + "security/bind_mobile";  //sohu新页面
+    public static final String SOHU_BINDQUES_URL = BASE_URL + "security/questions";      //sohu新页面
     // 找回密码
-    public static final String SOHU_FINDPWD_URL = BASE_URL + "web/RecoverPwdInput.action";
+    public static final String SOHU_FINDPWD_URL = BASE_URL + "password/forget";          //sohu新页面
+    // 搜狐wap版找回密码
+    public static final String SOHU_WAP_FINDPWD_URL = "http://m.passport.sohu.com/f";
 
     /*================================第三方开放平台相关url=======================================*/
     //第三方发图片微博或分享

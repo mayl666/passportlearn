@@ -43,5 +43,13 @@ public interface ConnectApiManager {
      */
     public Result obtainConnectToken(String passportId, int clientId);
 
+    /**
+     * 获取访问腾讯云服务需验证的connectToken加密串（t_key）
+     *
+     * @param passportId 用户Id
+     * @return
+     */
+    public Result obtainTKey(String passportId, int clientId);
+
 
 }

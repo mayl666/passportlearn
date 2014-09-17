@@ -10,23 +10,23 @@ package com.sogou.upd.passport.manager.form;
  */
 public class UserNamePwdMappingParams {
 
-    private String username;
+    private String mobile;
     private String pwd;
 
     public UserNamePwdMappingParams() {
     }
 
-    public UserNamePwdMappingParams(String username, String pwd) {
-        this.username = username;
+    public UserNamePwdMappingParams(String mobile, String pwd) {
+        this.mobile = mobile;
         this.pwd = pwd;
     }
 
-    public String getUsername() {
-        return username;
+    public String getMobile() {
+        return mobile;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getPwd() {

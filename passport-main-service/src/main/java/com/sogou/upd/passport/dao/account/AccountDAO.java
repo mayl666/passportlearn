@@ -146,15 +146,4 @@ public interface AccountDAO {
                                        @SQLParam("avatar") String avatar,
                                        @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
-    /**
-     * 数据迁移过程中，修复数据使用，以后可删除
-     * @param passport_id
-     * @param reg_time
-     * @return
-     * @throws DataAccessException
-     */
-    @SQL("update " + TABLE_NAME + "set reg_time=:reg_time where passport_id=:passport_id")
-    public int updateRegTime(@ShardBy @SQLParam("passport_id") String passport_id,
-                              @SQLParam("reg_time") Date reg_time)
-            throws DataAccessException;
 }

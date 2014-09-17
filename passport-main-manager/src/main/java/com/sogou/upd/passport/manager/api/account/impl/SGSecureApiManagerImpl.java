@@ -1,12 +1,11 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
@@ -18,6 +17,7 @@ import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,44 +43,19 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
     private OperateTimesService operateTimesService;
 
     @Override
-    public Result updatePwd(UpdatePwdApiParams updatePwdApiParams) {
-        Result result;
-        String userId = updatePwdApiParams.getUserid();
-        String password = updatePwdApiParams.getPassword();
-        String newPassword = updatePwdApiParams.getNewpassword();
-        String modifyIp = updatePwdApiParams.getModifyip();
-        int clientId = updatePwdApiParams.getClient_id();
-        result = accountService.verifyUserPwdVaild(userId, password, false);
+    public Result updatePwd(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
+        Result result = accountService.verifyUserPwdVaild(passportId, oldPwd, true);
         if (!result.isSuccess()) {
-            operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.RESETPWD);
+            operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.RESETPWD);
             return result;
         }
         Account account = (Account) result.getDefaultModel();
-        result.setDefaultModel(null);
-        if (!accountService.resetPassword(account, newPassword, false)) {
+        result.setModels(Maps.newHashMap());
+        if (!accountService.resetPassword(account, newPwd, true)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
+            result.setSuccess(false);
         }
-        result.setSuccess(true);
         return result;
-    }
-
-    @Override
-    public void resetPwd(UpdatePwdApiParams updatePwdApiParams) {
-        Result result = new APIResultSupport(false);
-
-        String mobile = updatePwdApiParams.getUserid();
-        String userId = mobile + "@sohu.com";
-        String newPassword = updatePwdApiParams.getNewpassword();
-        int clientId = updatePwdApiParams.getClient_id();
-
-        Account account = accountService.queryAccountByPassportId(userId);
-        if (account != null && accountService.resetPassword(account, newPassword, true)) {
-            //发送短信
-            String smsText = PREFIX_UPDATE_PWD_SEND_MESSAGE + userId + SUFFIX_UPDATE_PWD_SEND_MESSAGE;
-            if (!Strings.isNullOrEmpty(mobile)) {
-                SMSUtil.sendSMS(mobile, smsText);
-            }
-        }
     }
 
     @Override
@@ -89,24 +64,29 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
         String password = updateQuesApiParams.getPassword();
         String newQues = updateQuesApiParams.getNewquestion();
         String newAnswer = updateQuesApiParams.getNewanswer();
-        String modifyIp = updateQuesApiParams.getModifyip();
         int clientId = updateQuesApiParams.getClient_id();
-
-        Result result = accountService.verifyUserPwdVaild(userId, password, true);
-        result.setDefaultModel(null);
-        if (!result.isSuccess()) {
-            operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
+        Result result = new APIResultSupport(false);
+        try {
+            Result authUserResult = accountService.verifyUserPwdVaild(userId, password, true);
+            authUserResult.setDefaultModel(null);
+            if (!authUserResult.isSuccess()) {
+                operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
+                return authUserResult;
+            }
+            newAnswer = DigestUtils.md5Hex(newAnswer.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+            AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(userId, newQues, newAnswer);
+            if (accountInfo == null) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);
+                return result;
+            }
+            result.setSuccess(true);
+            result.setMessage("操作成功");
+            return result;
+        } catch (Exception e) {
+            logger.error("Update Question fail! passportId:" + userId, e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
-
-        AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(userId, newQues, newAnswer);
-        if (accountInfo == null) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);
-            return result;
-        }
-        result.setSuccess(true);
-        result.setMessage("绑定密保问题成功！");
-        return result;
     }
 
     @Override

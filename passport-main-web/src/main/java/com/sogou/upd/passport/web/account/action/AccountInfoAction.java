@@ -1,13 +1,13 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
-import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
@@ -24,6 +24,7 @@ import com.sogou.upd.passport.web.account.form.CheckOrUpdateNickNameParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +50,6 @@ public class AccountInfoAction extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(AccountInfoAction.class);
 
     @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
-    @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
     @Autowired
     private HostHolder hostHolder;
@@ -60,8 +59,6 @@ public class AccountInfoAction extends BaseController {
     private ConfigureManager configureManager;
     @Autowired
     private SecureManager secureManager;
-    @Autowired
-    private OAuth2ResourceManager oAuth2ResourceManager;
 
     @RequestMapping(value = "/userinfo/checknickname", method = RequestMethod.GET)
     @ResponseBody
@@ -77,7 +74,14 @@ public class AccountInfoAction extends BaseController {
         UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
         updateUserUniqnameApiParams.setUniqname(checkOrUpdateNickNameParams.getNickname());
         updateUserUniqnameApiParams.setClient_id(SHPPUrlConstant.APP_ID);
-        result = sgUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
+
+        //增加安全限制 ip+cookie 暂不做cookie限制，需要前端配合加。
+//        String cookie = ServletUtil.getCookie(request, "uuidName");
+        if (accountInfoManager.checkNickNameExistInBlackList(getIp(request), StringUtils.EMPTY)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+        } else {
+            result = sgUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
+        }
 
         //用于记录log
         UserOperationLog userOperationLog = new UserOperationLog("", String.valueOf(SHPPUrlConstant.APP_ID), result.getCode(), getIp(request));
@@ -114,7 +118,7 @@ public class AccountInfoAction extends BaseController {
         params.setUserid(userId);
         params.setModifyip(getIp(request));
         params.setUniqname(checkOrUpdateNickNameParams.getNickname());
-        result = proxyUserInfoApiManager.updateUserInfo(params);
+        result = sgUserInfoApiManager.updateUserInfo(params);
         return result.toString();
 
     }
@@ -158,7 +162,7 @@ public class AccountInfoAction extends BaseController {
             //获取用户信息
             result = accountInfoManager.getUserInfo(params);
 
-            result.getModels().put("uniqname", accountInfoManager.getUserUniqName(params.getUsername(), clientId));
+            result.getModels().put("uniqname", accountInfoManager.getUniqName(params.getUsername(), clientId, true));
 
             //用于记录log
             UserOperationLog userOperationLog = new UserOperationLog(userId, params.getClient_id(), result.getCode(), getIp(request));
@@ -204,13 +208,10 @@ public class AccountInfoAction extends BaseController {
             infoParams.setUsername(userId);
             result = accountInfoManager.updateUserInfo(infoParams, ip);
             UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(infoParams.getClient_id()), result.getCode(), getIp(request));
-
             UserOperationLogUtil.log(userOperationLog);
         } else {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
         }
-
-
         return result.toString();
     }
 
@@ -238,9 +239,7 @@ public class AccountInfoAction extends BaseController {
             String userId = hostHolder.getPassportId();
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
             CommonsMultipartFile multipartFile = (CommonsMultipartFile) multipartRequest.getFile("Filedata");
-            //TODO 非第三方账号数据迁移 用户更新头像信息
             byte[] byteArr = multipartFile.getBytes();
-
             result = accountInfoManager.uploadImg(byteArr, userId, "0", getIp(request));
 
             //用于记录log
@@ -252,34 +251,6 @@ public class AccountInfoAction extends BaseController {
         return result.toString();
     }
 
-
-    //默认头像上传
-    @RequestMapping(value = "/userinfo/uploadefaultavatar")
-    @ResponseBody
-    public Object uploadDefaultAvatar(HttpServletRequest request, UploadAvatarParams params) {
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        //验证client_id是否存在
-        int clientId = Integer.parseInt(params.getClient_id());
-        if (!configureManager.checkAppIsExist(clientId)) {
-            result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result.toString();
-        }
-        String size = params.getImgsize();
-        result = accountInfoManager.uploadDefaultImg(params.getImgurl(), String.valueOf(clientId));
-        if (result.isSuccess()) {
-            result = accountInfoManager.obtainPhoto(String.valueOf(clientId), size);
-        }
-        return result.toString();
-    }
-
-
     //头像上传
     @RequestMapping(value = "/userinfo/avatarurl", method = RequestMethod.GET)
     @LoginRequired(resultType = ResponseResultType.redirect)
@@ -288,14 +259,7 @@ public class AccountInfoAction extends BaseController {
 
         if (hostHolder.isLogin()) {
             String userId = hostHolder.getPassportId();
-//            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(userId)) ||AccountDomainEnum.PHONE.equals(AccountDomainEnum.getAccountDomain(userId))){
-//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-//                Result result1 = secureManager.queryAccountSecureInfo(userId, 1120, false);
-//                result.setDefaultModel("uniqname",(String)result1.getModels().get("uniqname"));
-//            }else {
-//                result = secureManager.queryAccountSecureInfo(userId, 1120, false);
-//            }
-            result = secureManager.queryAccountSecureInfo(userId, SHPPUrlConstant.APP_ID, false);
+            result = secureManager.queryAccountSecureInfo(userId, CommonConstant.SGPP_DEFAULT_CLIENTID, false);
 
             //用于记录log
             UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(SHPPUrlConstant.APP_ID), result.getCode(), getIp(request));
@@ -303,10 +267,7 @@ public class AccountInfoAction extends BaseController {
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
             if (domain == AccountDomainEnum.THIRD) {
-                //非第三方账号迁移，获取用户昵称信息，统一调用 accountInfoManager 的 getUserUniqName方法
-//                result.getModels().put("uniqname", oAuth2ResourceManager.getEncodedUniqname(userId, 1120));
-
-                result.getModels().put("uniqname", accountInfoManager.getUserUniqName(userId, 1120));
+//                result.getModels().put("uniqname", accountInfoManager.getUniqName(userId, CommonConstant.SGPP_DEFAULT_CLIENTID));
                 //TODO disable 作用是对于第三方账号，不显示安全信息tab
                 result.setDefaultModel("disable", true);
             }

@@ -8,11 +8,11 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.OAuthResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.LoginTypeUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.*;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.PCOAuth2LoginParams;
 import com.sogou.upd.passport.manager.form.PCOAuth2RegisterParams;
@@ -63,8 +63,6 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private ConfigureManager configureManager;
     @Autowired
-    private PCOAuth2RegManager pcoAuth2RegManager;
-    @Autowired
     private LoginManager loginManager;
     @Autowired
     private PCAccountManager pcAccountManager;
@@ -78,6 +76,8 @@ public class PCOAuth2AccountController extends BaseController {
     private PCOAuth2LoginManager pcOAuth2LoginManager;
     @Autowired
     private CookieManager cookieManager;
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
 
     @RequestMapping(value = "/sogou/fastreg", method = RequestMethod.GET)
@@ -138,7 +138,7 @@ public class PCOAuth2AccountController extends BaseController {
 
     @RequestMapping(value = "/oauth2/resource/")
     @ResponseBody
-    public Object resource(HttpServletRequest request, PCOAuth2ResourceParams params) throws Exception {
+    public Object resource(HttpServletRequest request, HttpServletResponse response, PCOAuth2ResourceParams params) throws Exception {
         Result result = new OAuthResultSupport(false);
         //参数验证
         String validateResult = ControllerHelper.validateParams(params);
@@ -148,7 +148,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result.toString();
         }
 
-        result = oAuth2ResourceManager.resource(params);
+        result = oAuth2ResourceManager.resource(response, params);
 
         if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {
             result.setCode("0");
@@ -249,7 +249,7 @@ public class PCOAuth2AccountController extends BaseController {
                     result = new APIResultSupport(true);
                     result.setCode("0");
                     String passportId = accountToken.getPassportId();
-                    ManagerHelper.setModelForOAuthResult(result, defaultUniqname(passportId), accountToken, LoginTypeUtil.SOGOU);
+                    ManagerHelper.setModelForOAuthResult(result, defaultUniqname(passportId), accountToken, "sogou");
                 }
             }
         } catch (Exception e) {
@@ -320,7 +320,7 @@ public class PCOAuth2AccountController extends BaseController {
             Result tokenResult = pcAccountManager.createAccountToken(userId, loginParams.getInstanceid(), clientId);
             result.setDefaultModel("autologin", loginParams.getRememberMe());
             AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
-            ManagerHelper.setModelForOAuthResult(result, oAuth2ResourceManager.getUniqname(userId, clientId), accountToken, "sogou");
+            ManagerHelper.setModelForOAuthResult(result, accountInfoManager.getUniqName(userId, clientId, false), accountToken, "sogou");
             loginManager.doAfterLoginSuccess(username, ip, userId, clientId);
         } else {
             loginManager.doAfterLoginFailed(username, ip, result.getCode());
@@ -414,7 +414,31 @@ public class PCOAuth2AccountController extends BaseController {
             response.sendRedirect(redirectUrl);
             return;
         }
-        cookieManager.setCookie(response, passportId, oauth2PcIndexParams.getClient_id(), getIp(request), CommonConstant.DEFAULT_INDEX_URL, -1);
+        //最初版本 module替换
+//        cookieManager.setCookie(response, passportId, oauth2PcIndexParams.getClient_id(), getIp(request), CommonConstant.DEFAULT_INDEX_URL, -1);
+        //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie  module 替换  昵称暂先设置为 ""
+//        cookieManager.setCookie(response, passportId, oauth2PcIndexParams.getClient_id(), getIp(request), CommonConstant.DEFAULT_INDEX_URL, -1, StringUtils.EMPTY);
+
+        CookieApiParams cookieApiParams = new CookieApiParams();
+        cookieApiParams.setUserid(passportId);
+        cookieApiParams.setClient_id(oauth2PcIndexParams.getClient_id());
+        cookieApiParams.setRu(CommonConstant.DEFAULT_INDEX_URL);
+        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+        cookieApiParams.setPersistentcookie(String.valueOf(1));
+        cookieApiParams.setIp(getIp(request));
+        cookieApiParams.setMaxAge(-1);
+        cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
+
+        if (!Strings.isNullOrEmpty(passportId)) {
+            if (org.apache.commons.lang3.StringUtils.contains(passportId, "@")) {
+                cookieApiParams.setUniqname(org.apache.commons.lang3.StringUtils.substring(passportId, 0, passportId.indexOf("@")));
+            } else {
+                cookieApiParams.setUniqname(passportId);
+            }
+        }
+
+        cookieManager.createCookie(response, cookieApiParams);
+
         response.sendRedirect(redirectUrl);
         return;
     }

@@ -2,7 +2,6 @@ package com.sogou.upd.passport.common;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
 import junit.framework.TestCase;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -11,7 +10,6 @@ import java.io.UnsupportedEncodingException;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-22 Time: 下午5:34 To change this template use
  * File | Settings | File Templates.
  */
-@Ignore
 public class StringUtilTest extends TestCase {
     private static final String STR1 = "hello";
     private static final String STR2 = " world";
@@ -61,11 +59,35 @@ public class StringUtilTest extends TestCase {
                 "(@*$&@(&#!)@*)!&$!)@^%@(!&#. 😄👩👨], ";
         String c = StringUtil.filterEmoji(s);
         assertFalse(s.equals(c));
-        String expected = "<body>213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)" +
-                "!(@*$&@(&#!)@*)!&$!)@^%@(!&#. ], ";
+        String expected = "<body>213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)!(@*$&@(&#!)@*)!&$!)@^%@(!&#. ],";
         assertEquals(expected, c);
-        assertSame(expected, "<body>213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)" +
-                "!(@*$&@(&#!)@*)!&$!)@^%@(!&#. ], ");
+        String s3 = "幸运，。☼△熊。";
+        String actual3 = StringUtil.filterEmoji(s3);
+        assertEquals("幸运，。☼△熊。", actual3);
+        String s4 = "🎒🐱";
+        String actual4 = StringUtil.filterEmoji(s4);
+        assertEquals("", actual4);
+        String s5 = "大H☼△，。好·⒉Θ】 ";
+        String actual5 = StringUtil.filterEmoji(s5);
+        assertEquals("大H☼△，。好·⒉Θ】", actual5);
+
     }
+
+    public void testFilterSpecialChar() {
+        //包含emoji标签
+        String s1 = "<body>😄213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)!" +
+                "(@*$&@(&#!)@*)!&$!)@^%@(!&#. 😄👩👨], ";
+        String actual1 = StringUtil.filterSpecialChar(s1);
+        assertEquals("<body>213这是一个有各种内容的消息,  Hia Hia Hia !!!! xxxx@@@...*)!(@*$&@(&#!)@*)!&$!)@^%@(!&#. ],",actual1);
+        //包含字符，unicode字符转成utf8编码长度大于3的，写入数据库会失败
+        String s2 = "test string=\" + \"walmart öbama 👽💔";
+        String actual2 = StringUtil.filterSpecialChar(s2);
+        assertEquals("test string=\" + \"walmart bama ", actual2);
+
+        String s3 = "幸运，。☼△熊。";
+        String actual3 = StringUtil.filterSpecialChar(s3);
+        assertEquals("幸运熊", actual3);
+    }
+
 
 }

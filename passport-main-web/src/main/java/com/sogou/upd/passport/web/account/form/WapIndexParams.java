@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
+import com.sogou.upd.passport.common.validation.constraints.Skin;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
@@ -16,16 +18,18 @@ import javax.validation.constraints.Min;
  */
 public class WapIndexParams {
     @NotBlank(message = "v is null")
-    private String v = WapConstant.WAP_COLOR;//wap版本:1-简易版；2-炫彩版；5-触屏版
+    private String v = WapConstant.WAP_TOUCH;//wap版本:1-简易版；2-炫彩版；5-触屏版
 
     @NotBlank(message = "client_id is null")
     @Min(0)
-    private String client_id;
+    private String client_id = String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID);
 
-    @NotBlank(message = "ru is null")
+//    @NotBlank(message = "ru is null")
     @URL
-//    @Ru
+    @Ru
     private String ru = WapConstant.WAP_INDEX;//登陆来源
+    @Skin
+    private String skin;
 
     private String errorMsg;//错误信息
     private int needCaptcha;//是否需要输入验证码:0-不需要；1-需要
@@ -68,5 +72,13 @@ public class WapIndexParams {
 
     public void setNeedCaptcha(int needCaptcha) {
         this.needCaptcha = needCaptcha;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
     }
 }

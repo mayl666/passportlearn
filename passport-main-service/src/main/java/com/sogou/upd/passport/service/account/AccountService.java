@@ -15,19 +15,13 @@ public interface AccountService {
     /**
      * 初始化web用户账号
      */
-    public Account initialWebAccount(String username, String ip)
+    public Account initialEmailAccount(String username, String ip)
             throws ServiceException;
 
     /**
      * 初始化非第三方用户账号
      */
     public Account initialAccount(String username, String password, boolean needMD5, String ip, int provider)
-            throws ServiceException;
-
-    /**
-     * 初始化第三方用户账号
-     */
-    public Account initialConnectAccount(String passportId, String ip, int provider)
             throws ServiceException;
 
     /**
@@ -38,6 +32,16 @@ public interface AccountService {
      * @throws ServiceException
      */
     public boolean initAccount(Account account) throws ServiceException;
+
+    /**
+     * 初始化sohu域账号：1，密码类型为无密码；2，同时初始化account_info表；3，有则更新，无则插入
+     *
+     * @param passportId 主账号
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean initSOHUAccount(String passportId, String ip) throws ServiceException;
 
 
     /**
@@ -74,15 +78,18 @@ public interface AccountService {
     public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException;
 
     /**
+     * 根据passportId删除Account表缓存和数据库
+     *
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public boolean deleteAccountByPassportId(String passportId) throws ServiceException;
+
+    /**
      * 重置密码
      */
     public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException;
-
-    /**
-     * 根据ip看是否在黑名单中
-     */
-    public boolean isInAccountBlackListByIp(String passportId, String ip)
-            throws ServiceException;
 
     /**
      * 激活验证邮件
@@ -119,13 +126,45 @@ public interface AccountService {
 
     /**
      * 修改绑定手机
+     * 只修改account表
      *
      * @param account
      * @param newMobile
      * @return
      * @throws ServiceException
      */
-    public boolean modifyMobile(Account account, String newMobile);
+    public boolean modifyMobileByAccount(Account account, String newMobile);
+
+    /**
+     * 首次绑定
+     * 修改account和mobile_passportId_mapping
+     *
+     * @param account
+     * @param newMobile
+     * @return
+     */
+    public boolean bindMobile(Account account, String newMobile) throws ServiceException;
+
+    /**
+     * 修改绑定手机
+     * 修改account和mobile_passportId_mapping
+     *
+     * @param account
+     * @param newMobile
+     * @return
+     */
+    public boolean modifyBindMobile(Account account, String newMobile) throws ServiceException;
+
+    /**
+     * 删除或解绑手机
+     * 修改account和mobile_passportId_mapping
+     *
+     * @param mobile
+     * @return
+     * @throws ServiceException
+     */
+    public boolean deleteOrUnbindMobile(String mobile) throws ServiceException;
+
 
     /**
      * 解禁或封禁用户
@@ -141,8 +180,7 @@ public interface AccountService {
     /*
      *检查验证码
      */
-    public boolean checkCaptchaCode(String token, String captchaCode) throws Exception;
-
+    public boolean checkCaptchaCode(String token, String captchaCode) throws ServiceException;
 
     /**
      * 更新昵称
@@ -153,7 +191,6 @@ public interface AccountService {
      */
     public boolean updateUniqName(Account account, String nickname);
 
-
     /**
      * 更新头像
      *
@@ -162,25 +199,6 @@ public interface AccountService {
      * @return
      */
     public boolean updateAvatar(Account account, String avatar);
-
-
-    /**
-     * 删除昵称
-     *
-     * @param nickname
-     * @return
-     * @throws ServiceException
-     */
-    public boolean removeUniqName(String nickname) throws ServiceException;
-
-    /**
-     * 检查昵称是否存在
-     *
-     * @param nickname
-     * @return
-     * @throws Exception
-     */
-    public String checkUniqName(String nickname) throws ServiceException;
 
     /*
     *获取激活信息

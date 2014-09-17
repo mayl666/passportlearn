@@ -4,6 +4,8 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.connect.AbstractConnectProxyResultStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -20,15 +22,18 @@ import java.util.HashMap;
 @Component
 public class WeiboConnectProxyResultStrategy extends AbstractConnectProxyResultStrategy {
 
+    private static final Logger logger = LoggerFactory.getLogger(WeiboConnectProxyResultStrategy.class);
+
     @Override
     public Result buildCommonResultByPlatform(HashMap<String, Object> maps) {
         Result result = new APIResultSupport(false);
-        String ret = maps.get("ret").toString();
-        if (maps.containsKey("ret") && !maps.get("ret").toString().equals(ErrorUtil.SUCCESS)) {
+        String ret = String.valueOf((int) maps.get("ret"));
+        if (maps.containsKey("ret") && !ErrorUtil.SUCCESS.equals(ret)) {
             result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
-            result.setMessage(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_CONNECT_FAILED));
+            result.setMessage(String.valueOf(maps.get("msg")));
+//            logger.error("qqResult:ret {},msg {}", maps.get("ret"), maps.get("msg"));
         } else {
-            if (ret.equals(ErrorUtil.SUCCESS)) {
+            if (ErrorUtil.SUCCESS.equals(ret)) {
                 if (maps.containsKey("data")) {
                     //封装QQ返回请求正确的结果，返回结果中不包含ret或者包含ret且ret值为0的结果封装
                     HashMap<String, Object> data;

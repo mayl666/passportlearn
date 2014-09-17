@@ -55,7 +55,7 @@ public class SGConnectApiManagerImplTest extends BaseTest {
     public void testObtainConnectToken() throws Exception {
         int clientId = 1120;
         //用户的openId/openKey
-        String passportId = "CFF81AB013A94663D83FEC36AC117933@qq.sohu.com";
+        String passportId = "11F6FCBA1952F737D0CD9B7CAE014318@qq.sohu.com";
         BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
         baseOpenApiParams.setUserid(passportId);
         baseOpenApiParams.setOpenid(passportId);

@@ -122,21 +122,6 @@ public interface UniqNamePassportMappingDAO {
 
 
     /**
-     * 更新mobile和passportId的映射关系
-     *
-     * @param uniqname
-     * @param passport_id
-     * @return
-     * @throws org.springframework.dao.DataAccessException
-     *
-     */
-    @SQL("update " +
-            TABLE_NAME +
-            " set passport_id=:passport_id where uniqname=:uniqname")
-    public int updateUniqNamePassportMapping(@SQLParam("uniqname") String uniqname, @SQLParam("passport_id") String passport_id)
-            throws DataAccessException;
-
-    /**
      * 删除nickname和passportId的映射关系
      *
      * @param uniqname

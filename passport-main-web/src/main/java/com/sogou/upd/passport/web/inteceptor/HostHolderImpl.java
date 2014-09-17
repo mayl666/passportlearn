@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.inteceptor;
 
+import com.google.common.base.Strings;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -15,49 +16,43 @@ import javax.servlet.http.HttpServletRequest;
 public class HostHolderImpl implements HostHolder {
 
     //用户passportid
-    private static final String PASSPORTID ="host_holder_passport_id";
+    private static final String PASSPORTID = "host_holder_passport_id";
 
     //用户昵称
-    private static final String NICKNAME="host_holder_nickname";
+    private static final String NICKNAME = "host_holder_nickname";
 
 
     @Override
     public boolean isLogin() {
-        return this.getPassportId()!=null;
+        return !Strings.isNullOrEmpty(this.getPassportId());
     }
 
     @Override
     public void setPassportId(String passportId) {
-          this.setAttribute(PASSPORTID,passportId);
+        this.setAttribute(PASSPORTID, passportId);
     }
 
     @Override
     public String getPassportId() {
-          return this.getAttribute(PASSPORTID);
+        return this.getAttribute(PASSPORTID);
     }
 
     @Override
     public void setNickName(String nickName) {
-        this.setAttribute(NICKNAME,nickName);
+        this.setAttribute(NICKNAME, nickName);
     }
 
-    @Override
-    public String getNickName() {
-        return this.getAttribute(NICKNAME);
-    }
-
-
-    private void setAttribute(String name,String value){
-        HttpServletRequest request =((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+    private void setAttribute(String name, String value) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                 .getRequest();
         request.setAttribute(name, value);
     }
 
-    private String getAttribute(String name){
-        HttpServletRequest request =((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+    private String getAttribute(String name) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                 .getRequest();
-        Object value=request.getAttribute(name);
-        if(value!=null){
+        Object value = request.getAttribute(name);
+        if (value != null) {
             return value.toString();
         }
         return null;

@@ -32,7 +32,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
     @Autowired
     private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
 
-    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_checkUniqName", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_getPassportIdByUniqName", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public String checkUniqName(String uniqname) throws ServiceException {
         String passportId = null;
@@ -52,18 +52,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
         return passportId;
     }
 
-    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_checkAndInsertUniqName", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
-    @Override
-    public boolean checkAndInsertUniqName(String passportId, String uniqname) throws ServiceException {
-        String existPassportId = checkUniqName(uniqname);
-        if (!Strings.isNullOrEmpty(existPassportId)) {
-            return false;      // 如果昵称重复则置为空
-        } else {
-            return insertUniqName(passportId, uniqname);
-        }
-    }
-
-    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_insertUniqName", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_insertUniqNameMapping", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean insertUniqName(String passportId, String uniqname) throws ServiceException {
         try {
@@ -80,41 +69,7 @@ public class UniqNamePassportMappingServiceImpl implements UniqNamePassportMappi
         return false;
     }
 
-    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updateUniqName", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
-    @Override
-    public boolean updateUniqName(/*Account account,*/String passportId, String oldNickName, String nickname) throws ServiceException {
-        try {
-            //sogou分支需要修改此逻辑，在account主表中修改昵称
-//            String oldNickName = account.getUniqname();
-//            String passportId = account.getPassportId();
-//            //更新数据库
-//            int row = accountDAO.updateNickName(nickname, passportId);
-//            if (row > 0) {
-//                String cacheKey = buildAccountKey(passportId);
-//                account.setUniqname(nickname);
-//                dbRedisUtils.set(cacheKey, account);
-
-            //移除原来映射表
-            if (removeUniqName(oldNickName)) {
-                //更新新的映射表
-                int row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(nickname, passportId);
-                if (row > 0) {
-                    String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + nickname;
-                    dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
-                    return true;
-                }
-            } else {
-                return false;
-            }
-
-//            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        return false;
-    }
-
-    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_removeUniqName", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_removeUniqNameMapping", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean removeUniqName(String uniqname) throws ServiceException {
         try {

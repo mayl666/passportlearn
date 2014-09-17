@@ -10,15 +10,17 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.common.validation.constraints.RuValidator;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
-import com.sogou.upd.passport.manager.account.RegManager;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,12 +51,9 @@ public class LoginAction extends BaseController {
     @Autowired
     private LoginManager loginManager;
     @Autowired
-    private RegManager regManager;
-    @Autowired
     private CookieManager cookieManager;
     @Autowired
     private HostHolder hostHolder;
-
 
     /**
      * 用户登录检查是否显示验证码
@@ -76,16 +75,12 @@ public class LoginAction extends BaseController {
             }
             String username = URLDecoder.decode(checkParam.getUsername(), "utf-8");
             int clientId = Integer.valueOf(checkParam.getClient_id());
-            //判断账号是否存在
-            result = regManager.isAccountNotExists(username, clientId);
-            if (!result.isSuccess()) {
+            //判断账号是否存在,存在返回0，否则返回相应错误码
+            result = loginManager.checkUser(username, clientId);
+            if (result.isSuccess()) {
                 //校验是否需要验证码
                 boolean needCaptcha = loginManager.needCaptchaCheck(checkParam.getClient_id(), username, getIp(request));
-                result.setSuccess(true);
                 result.setDefaultModel("needCaptcha", needCaptcha);
-            } else {
-                result = new APIResultSupport(false);
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
         } catch (Exception e) {
             logger.error("checkNeedCaptcha:check user need captcha or not is failed,username is " + checkParam.getUsername(), e);
@@ -108,7 +103,6 @@ public class LoginAction extends BaseController {
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
-
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -120,15 +114,18 @@ public class LoginAction extends BaseController {
         }
         String userId = loginParams.getUsername();
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
-
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
         userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(request, "YYID"));
         UserOperationLogUtil.log(userOperationLog);
-
         if (result.isSuccess()) {
             userId = result.getModels().get("userid").toString();
+            String uniqName = StringUtils.EMPTY;
+            if (result.getModels().get("uniqname") != null) {
+                uniqName = result.getModels().get("uniqname").toString();
+            }
+
             int clientId = Integer.parseInt(loginParams.getClient_id());
             int autoLogin = loginParams.getAutoLogin();
             int sogouMaxAge = autoLogin == 0 ? -1 : (int) DateAndNumTimesConstant.TWO_WEEKS;
@@ -136,13 +133,33 @@ public class LoginAction extends BaseController {
             if (Strings.isNullOrEmpty(sogouRu)) {
                 sogouRu = CommonConstant.DEFAULT_INDEX_URL;
             }
-            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
+
+            //最初版本
+//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
+            //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie  module 替换
+//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName);
+
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(userId);
+            cookieApiParams.setClient_id(clientId);
+            cookieApiParams.setRu(sogouRu);
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            cookieApiParams.setPersistentcookie(String.valueOf(1));
+            cookieApiParams.setIp(ip);
+            cookieApiParams.setUniqname(uniqName);
+            cookieApiParams.setMaxAge(sogouMaxAge);
+            cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
+
+//            CookieApiParams cookieApiParams = buildCookieApiParams(userId, clientId, sogouRu, ip, sogouMaxAge);
+//            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+//            cookieApiParams.setPersistentcookie(String.valueOf(1));
+
+            result = cookieManager.createCookie(response, cookieApiParams);
             if (result.isSuccess()) {
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
                 result.setDefaultModel("userid", userId);
                 loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
             }
-
         } else {
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
             //校验是否需要验证码
@@ -155,7 +172,6 @@ public class LoginAction extends BaseController {
                 result.setMessage("您登陆过于频繁，请稍后再试。");
             }
         }
-
         result.setDefaultModel("xd", loginParams.getXd());
         model.addAttribute("data", result.toString());
         return "/login/api";
@@ -202,8 +218,8 @@ public class LoginAction extends BaseController {
         userOperationLog.putOtherMessage("ref", referer);
         userOperationLog.putOtherMessage(CommonConstant.RESPONSE_RU, ru);
         UserOperationLogUtil.log(userOperationLog);
-
-        if (StringUtil.isBlank(ru)) {
+        RuValidator ruValidator = new RuValidator();
+        if (StringUtil.isBlank(ru) || !ruValidator.isValid(ru, null)) {
             if (StringUtil.isBlank(referer)) {
                 referer = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }

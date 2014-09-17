@@ -1,12 +1,22 @@
 package com.sogou.upd.passport.web;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.Map;
 
 public class BaseController {
 
@@ -16,6 +26,9 @@ public class BaseController {
             "api.id.sogou.com.z.sogou-op.org;dev01.id.sogou.com;test01.id.sogou.com";
 
     protected static Logger logger = LoggerFactory.getLogger(BaseController.class);
+
+    @Autowired
+    private AppConfigService appConfigService;
 
     /**
      * 判断是否是服务端签名
@@ -75,6 +88,74 @@ public class BaseController {
             return true;
         }
         return false;
+    }
+
+    public boolean isAccessAccept(int clientId, HttpServletRequest request) {
+        String apiName = request.getRequestURI();
+        apiName = apiName.substring(apiName.lastIndexOf("/") + 1, apiName.length());
+        String requestIp = getIp(request);
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                return false;
+            }
+            String scope = appConfig.getScope();
+            if (!Strings.isNullOrEmpty(apiName) && !StringUtil.splitStringContains(scope, ",", apiName)) {
+                return false;
+            }
+            String serverIp = appConfig.getServerIp();
+            if (!Strings.isNullOrEmpty(requestIp) && !StringUtil.splitStringContains(serverIp, ",", requestIp)) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error("isAccessAccept error, api:" + apiName, e);
+            return false;
+        }
+    }
+
+    /**
+     * 跳转到回跳地址
+     *
+     * @param response
+     * @param ru
+     * @param errorCode
+     * @param errorMsg
+     * @throws Exception
+     */
+    public void returnErrMsg(HttpServletResponse response, String ru, String errorCode, String errorMsg) throws Exception {
+        if (Strings.isNullOrEmpty(ru) || "域名不正确".equals(errorMsg)) {
+            ru = CommonConstant.DEFAULT_INDEX_URL;
+        }
+        Map paramMap = Maps.newHashMap();
+        paramMap.put("errorCode", errorCode);
+        paramMap.put("errorMsg", errorMsg);
+        ru = ServletUtil.applyOAuthParametersString(ru, paramMap);
+        response.sendRedirect(ru);
+        return;
+    }
+
+
+    /**
+     * 构建 CookieApiParams
+     *
+     * @param userid
+     * @param client_id
+     * @param ru
+     * @param ip
+     * @param maxAge
+     * @return
+     */
+    public CookieApiParams buildCookieApiParams(String userid, int client_id, String ru, String ip, int maxAge) {
+        CookieApiParams cookieApiParams = new CookieApiParams();
+        cookieApiParams.setUserid(userid);
+        cookieApiParams.setClient_id(client_id);
+        cookieApiParams.setRu(ru);
+        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+        cookieApiParams.setPersistentcookie(String.valueOf(1));
+        cookieApiParams.setIp(ip);
+        cookieApiParams.setMaxAge(maxAge);
+        return cookieApiParams;
     }
 
 }

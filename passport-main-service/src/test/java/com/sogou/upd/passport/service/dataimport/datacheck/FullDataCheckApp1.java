@@ -17,6 +17,7 @@ import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.dataimport.util.FileUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.junit.Ignore;
 import org.perf4j.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ import java.util.concurrent.RecursiveTask;
  * Date: 14-5-13
  * Time: 下午2:50
  */
+@Ignore
 //public class FullDataCheckApp extends RecursiveTask<List<String>> {
 public class FullDataCheckApp1 extends RecursiveTask<Map<String, String>> {
 

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta id="viewport" name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="MobileOptimized" content="320"/>
+<meta name="format-detection" content="telephone=no"/>
+<title>找回密码-搜狗通行证</title>
+<link rel="stylesheet" href="/./static/css/wap/main.css?t=443027"/>
+</head>
+<body>
+
+<nav class="f-f f-vc">
+    <a href="#" class="backlink f-f f-hc f-vc">〈</a>
+    <div class="f-1 f-f f-hc f-vc">找回密码</div>
+    <a href="/wap/reg" class="f-f f-vc f-hc reglink">注册</a>
+</nav>
+
+<div class="findpwd-content">
+<p style="padding:2em 0;">如果您无法通过手机或邮箱找回密码，您还可以尝试通过以下途径与我们取得联系！</p>
+<p class="findpwd-info">浏览器、输入法：<a href="http://ie.sogou.com/bbs/forum.php?mod=viewthread&tid=2589460" target="_blank">请点这里</a></p>
+<p class="findpwd-info">彩票：<span class="red">kfcp@sogou-inc.com或010-56898998</span></p>
+<p class="findpwd-info">小说：<span class="red">客服QQ群 263958053</span></p>
+<p class="findpwd-info">游戏：<span class="red">企业QQ 2851050936</span></p>
+<p class="findpwd-info">壁纸：<span class="red">客服QQ群 227986177</span></p>
+<p class="findpwd-info">其他：<span class="red">passportkf@sogou-inc.com</span></p>
+
+
+
+    
+
+</body>
+<script src="/static/js/lib/mursa.js?t=140248"></script>
+<script src="/./static/js/wap.js?t=039091" charset="utf-8"></script>
+<script>
+    require.config({
+    baseUrl:"/./static/js"
+});
+
+require(['wap'] , function(module){
+    module['findpwd_contact_touch']();
+});
+</script>
+</html>

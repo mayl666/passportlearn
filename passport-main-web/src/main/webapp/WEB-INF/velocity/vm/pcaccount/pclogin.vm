@@ -70,10 +70,10 @@
     </form>
 #else
 <div id="main" onclick="hideComplete()">
-    <div id="wel">${userid},欢迎您！<br/>点击登录后继续使用网络账户</div>
+    <div id="wel">${userid},欢迎您！<br/>点击登录后继续使用网络帐户</div>
     <div id="btn"  onclick="getAutoToken()"></div>
     <div id="tips">
-        <a href="http://account.sogou.com/act/pclogin?userid=${userid}&ts=${ts}&v=${version}">用其他搜狗账号登录</a>
+        <a href="http://account.sogou.com/act/pclogin?userid=${userid}&ts=${ts}&v=${version}">用其他搜狗帐号登录</a>
     </div>
     <form id = "autoLoginForm" onsubmit="getAutoToken()">
        <input type="hidden" name="userid" id="userid" value="${userid}"/>   

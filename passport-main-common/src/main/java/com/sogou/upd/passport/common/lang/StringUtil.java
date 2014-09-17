@@ -137,6 +137,7 @@ public class StringUtil {
 
     /**
      * 判断一个由split分隔的字符串中是否包含targetStr
+     *
      * @param initStr
      * @param split
      * @param targetStr
@@ -148,17 +149,6 @@ public class StringUtil {
             return Arrays.asList(strArray).contains(targetStr);
         }
         return false;
-    }
-
-    /**
-     * 输入为map 输出为：appid=xxx&openid=xxx&...
-     */
-    public static String formRequestParam(Map<String, String> params) {
-        String requestParam = params.toString();
-        requestParam = requestParam.substring(1, requestParam.length() - 1);
-        requestParam = requestParam.replace(", ", "&");
-
-        return requestParam;
     }
 
     /**
@@ -210,44 +200,26 @@ public class StringUtil {
     }
 
     /**
-     * 过滤第三方用户昵称，包含：
-     * strToUTF8 & filterEmoji
-     *
-     * @param str
-     * @return
-     */
-    public static String filterConnectUniqname(String str) {
-        try {
-            str = filterEmoji(strToUTF8(str));
-        } catch (UnsupportedEncodingException e) {
-            return "";
-        }
-        return str;
-    }
-
-    /**
-     * 是否包含emoji表情
+     * 检测是否有emoji字符
      *
      * @param source
-     * @return 包含返回true，不包含返回false
+     * @return 一旦含有就抛出
      */
     public static boolean containsEmoji(String source) {
-        if (Strings.isNullOrEmpty(source)) {
+        if (StringUtils.isBlank(source)) {
             return false;
         }
         int len = source.length();
         for (int i = 0; i < len; i++) {
             char codePoint = source.charAt(i);
-            if (isNotEmojiCharacter(codePoint)) {
+            if (!isNotEmojiCharacter(codePoint)) {
+                //do nothing，判断到了这里表明，确认有表情字符
                 return true;
             }
         }
         return false;
     }
 
-    /*
-     * 没有emoji表情返回true，有则返回false
-     */
     private static boolean isNotEmojiCharacter(char codePoint) {
         return (codePoint == 0x0) ||
                 (codePoint == 0x9) ||
@@ -264,34 +236,44 @@ public class StringUtil {
      * @param source
      * @return
      */
-
     public static String filterEmoji(String source) {
+        source += " "; // 在传入的source后面加上一个空字符。返回的时候trim掉就OK了
         if (!containsEmoji(source)) {
-            return source;//如果不包含，直接返回
+            return StringUtils.trim(source);    // 如果不包含，直接返回
         }
-        StringBuilder buf = new StringBuilder();
+        // 到这里铁定包含
+        StringBuilder buf = null;
         int len = source.length();
         for (int i = 0; i < len; i++) {
             char codePoint = source.charAt(i);
             if (isNotEmojiCharacter(codePoint)) {
+                if (buf == null) {
+                    buf = new StringBuilder(source.length());
+                }
                 buf.append(codePoint);
             }
         }
-        return buf.toString();
+        if (buf == null) {
+            return StringUtils.trim(source);    // 如果没有找到 emoji表情，则返回源字符串
+        } else {
+            if (buf.length() == len) {    // 这里的意义在于尽可能少的toString，因为会重新生成字符串
+                return StringUtils.trim(source);
+            } else {
+                return StringUtils.trim(buf.toString());
+            }
+        }
     }
 
     /**
-     * 过滤特殊字符，只保留 中文、英文大小写字母、空格、-、_
+     * 过滤特殊字符，只保留 中文、英文大小写字母、字符
      */
     public static String filterSpecialChar(String str) {
         StringBuilder sb = new StringBuilder();
         if (StringUtils.isNotBlank(str)) {
             str = str.trim();
-
             for (int i = 0; i < str.length(); i++) {
                 String ch = String.valueOf(str.charAt(i));
-
-                boolean isDigest = Pattern.matches("[a-zA-Z0-9_\\-\\s]", ch);
+                boolean isDigest = StringUtils.isAsciiPrintable(ch);
                 if (!isDigest) {
                     boolean isChinese = Pattern.matches("[\\u4e00-\\u9fa5]", ch);
                     if (isChinese) {
@@ -302,7 +284,6 @@ public class StringUtil {
                 }
             }
         }
-
         return sb.toString();
     }
 
@@ -466,10 +447,5 @@ public class StringUtil {
         } catch (UnsupportedEncodingException e) {
         }
         return value;
-    }
-
-    public static void main(String[] args) {
-        String a = "中国China";
-        System.out.println("isChinese:" + containChinese(a));
     }
 }

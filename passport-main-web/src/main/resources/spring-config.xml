@@ -89,6 +89,7 @@
                 <value>text/plain;charset=UTF-8</value>
             </list>
         </property>
+        <property name="writeAcceptCharset" value="false"/>  <!--解决响应头Accept-Charset很大，耗费流量的问题-->
     </bean>
 
 

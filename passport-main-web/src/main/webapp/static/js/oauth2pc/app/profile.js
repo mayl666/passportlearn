@@ -259,9 +259,9 @@ define([/*'jquery', */'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 
                         var codes = {
                             "10001": " 未知错误 ",
                             "10002": "参数错误,请输入必填的参数或参数验证失败",
-                            "20229": "账号未登录，请先登录 ",
+                            "20229": "帐号未登录，请先登录 ",
                             "20243": "SOHU域用户不允许此操作",
-                            "20244": "第三方账号不允许此操作",
+                            "20244": "第三方帐号不允许此操作",
                             "20295": "今日绑定次数超限，请明日再试",
                             "20210": "今日密码验证失败次数超过上限",
                             "20223": "当日邮件发送次数已达上限",
@@ -373,7 +373,7 @@ define([/*'jquery', */'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 
                         client_id: _g_client_id,
                         new_mobile: $phone.val()
                     },
-                    type: "get",
+                    type: "post",
                     dataType: "json"
                 }).done(function(result) {
                     if (typeof result === 'string' || (result && result.constructor == String))
@@ -389,16 +389,16 @@ define([/*'jquery', */'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 
                             $vcodeError.html("参数错误").show().addClass("red");
                             break;
                         case 20229:
-                            $vcodeError.html("账号未登录，请先登录").show().addClass("red");
+                            $vcodeError.html("帐号未登录，请先登录").show().addClass("red");
                             break;
                         case 20243:
                             $vcodeError.html("SOHU域用户不允许此操作").show().addClass("red");
                             break;
                         case 20244:
-                            $vcodeError.html("第三方账号不允许此操作").show().addClass("red");
+                            $vcodeError.html("第三方帐号不允许此操作").show().addClass("red");
                             break;
                         case 20225:
-                            $vcodeError.html("手机号已绑定其他账号").show().addClass("red")
+                            $vcodeError.html("手机号已绑定其他帐号").show().addClass("red")
                             break
                         case 20209:
                             $vcodeError.html("今日验证码校验错误次数已超过上限").show().addClass("red")
@@ -462,14 +462,14 @@ define([/*'jquery', */'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 
                             "10001": " 未知错误  ",
                             "10002": " 参数错误,请输入必填的参数或参数验证失败 ",
                             "20208":"新手机验证码错误或已过期",
-                            "20229": "账号未登录，请先登录 ",
+                            "20229": "帐号未登录，请先登录 ",
                             "20243": " SOHU域用户不允许此操作",
-                            "20244": " 第三方账号不允许此操作",
-                            "20245": " 手机账号不允许此操作",
+                            "20244": " 第三方帐号不允许此操作",
+                            "20245": " 手机帐号不允许此操作",
                             "20295": " 今日绑定次数超限，请明日再试",
                             "20210": " 今日密码验证失败次数超过上限",
                             "20206": " 用户名或密码不正确",
-                            "20225": " 手机号已绑定其他账号",
+                            "20225": " 手机号已绑定其他帐号",
                             "20209": " 今日验证码校验错误次数已超过上限",
                             "20216": " 验证码错误或已过期",
                             "20289": " 绑定手机失败"
@@ -596,7 +596,7 @@ define([/*'jquery', */'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 
                         var codes = {
                             "10001": "未知错误 ",
                             "10002": "参数错误,请输入必填的参数或参数验证失败  ",
-                            "10009": "账号不存在或异常 ",
+                            "10009": "帐号不存在或异常 ",
                             "10010":  "client_id不存在",
                             "20198": "当日用户原密码校验错误次数已达上限 ",
                             "20205": "帐号不存在 ",
@@ -605,7 +605,7 @@ define([/*'jquery', */'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 
                             "20221": "验证码验证失败 ",
                             "20222": "当日修改或重置密码次数已达上限 ",
                             "20230": "登陆用户或者ip在黑名单中 ",
-                            "20244": "第三方账号不允许此操作 "
+                            "20244": "第三方帐号不允许此操作 "
                         };
                             switch (true) {
                                 case ("0"==code):
@@ -742,7 +742,7 @@ define([/*'jquery', */'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 
 
             })
 
-            //账号绑定时如果遇到失败则会弹窗提示
+            //帐号绑定时如果遇到失败则会弹窗提示
             if (splus && splus.bind_tipmsg) {
                 dialog.alert(splus.bind_tipmsg)
             }

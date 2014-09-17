@@ -4,27 +4,27 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.common.validation.constraints.RuValidator;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
-import com.sogou.upd.passport.manager.form.*;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
+import com.sogou.upd.passport.manager.form.PcGetTokenParams;
+import com.sogou.upd.passport.manager.form.PcPairTokenParams;
+import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.PcAccountWebParams;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
@@ -55,15 +55,11 @@ public class PCAccountController extends BaseController {
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
-    private LoginApiManager proxyLoginApiManager;
-    @Autowired
     private LoginManager loginManager;
     @Autowired
-    private CookieManager cookieManager;
-    @Autowired
     private OAuth2ResourceManager oAuth2ResourceManager;
-
-    private static final String DEFAULT_URL = "https://account.sogou.com";
+    @Autowired
+    private CookieManager cookieManager;
 
     @RequestMapping(value = "/act/pclogin", method = RequestMethod.GET)
     public String pcLogin(HttpServletRequest request, PcAccountWebParams pcAccountWebParams, Model model)
@@ -127,9 +123,12 @@ public class PCAccountController extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             return "1";
         }
-        String ip = getIp(request);
         String userId = pcGetTokenParams.getUserid();
-
+        //不允许第三方格式的账号登录
+        if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(userId))) {
+            return "1";
+        }
+        String ip = getIp(request);
         String appId = pcGetTokenParams.getAppid();
         String ts = pcGetTokenParams.getTs();
         PcPairTokenParams pcPairTokenParams = new PcPairTokenParams();
@@ -169,6 +168,10 @@ public class PCAccountController extends BaseController {
             return getReturnStr(cb, "1");
         }
         String userId = reqParams.getUserid();
+        //不允许第三方格式的账号登录
+        if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(userId))) {
+            return "1";
+        }
         //getpairtoken允许个性账号、手机号登陆；gettoken不允许
         userId = loginManager.getIndividPassportIdByUsername(userId);
         reqParams.setUserid(userId);
@@ -186,8 +189,9 @@ public class PCAccountController extends BaseController {
         String resStr;
         if (result.isSuccess()) {
             AccountToken accountToken = (AccountToken) result.getDefaultModel();
-            // 浏览器sohu接口昵称先从论坛初始化，为空时使用userid，@前半部分作为昵称, 壁纸、游戏用自己存的
-            String uniqname = pcAccountManager.getUniqnameByClientId(accountToken.getPassportId(), appid);
+            // 浏览器sohu接口昵称使用userid，@前半部分作为昵称, 壁纸、游戏用自己存的
+            String passportId = accountToken.getPassportId();
+            String uniqname = passportId.substring(0, passportId.indexOf("@"));
             //客户端使用getPairToken返回的userid作为唯一标识
             resStr = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" + accountToken.getPassportId() + "|" + uniqname;   //0|token|refreshToken|userid|nick
             if (!CommonHelper.isIePinyinToken(appid)) {
@@ -280,16 +284,42 @@ public class PCAccountController extends BaseController {
 
         //重定向生成cookie
         if (authTokenResult.isSuccess()) {
-            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-            createCookieUrlApiParams.setUserid(userId);
-            createCookieUrlApiParams.setRu(ru);
-            createCookieUrlApiParams.setClientId(authPcTokenParams.getAppid());
-            if (!"0".equals(authPcTokenParams.getLivetime())) {
-                createCookieUrlApiParams.setPersistentcookie(1);
+
+//            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
+//            createCookieUrlApiParams.setUserid(userId);
+//            createCookieUrlApiParams.setRu(ru);
+//            createCookieUrlApiParams.setClientId(authPcTokenParams.getAppid());
+//            if (!"0".equals(authPcTokenParams.getLivetime())) {
+//                createCookieUrlApiParams.setPersistentcookie(1);
+//            }
+//            createCookieUrlApiParams.setDomain("sogou.com");
+            //TODO sogou域账号迁移后cookie生成问题 最初版本
+//            Result getCookieValueResult = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
+
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(userId);
+            cookieApiParams.setClient_id(Integer.parseInt(authPcTokenParams.getAppid()));
+            cookieApiParams.setRu(ru);
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            cookieApiParams.setIp(getIp(request));
+
+            if (!Strings.isNullOrEmpty(userId)) {
+                if (StringUtils.contains(userId, "@")) {
+                    cookieApiParams.setUniqname(StringUtils.substring(userId, 0, userId.indexOf("@")));
+                } else {
+                    cookieApiParams.setUniqname(userId);
+                }
             }
-            createCookieUrlApiParams.setDomain("sogou.com");
-            //TODO sogou域账号迁移后cookie生成问题
-            Result getCookieValueResult = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
+
+            cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);
+
+            if (!"0".equals(authPcTokenParams.getLivetime())) {
+                cookieApiParams.setPersistentcookie("1");
+            }
+            cookieApiParams.setDomain("sogou.com");
+            Result getCookieValueResult = cookieManager.createCookie(response, cookieApiParams);
+
+
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
@@ -309,60 +339,10 @@ public class PCAccountController extends BaseController {
         return;
     }
 
-
-    @RequestMapping(value = "/act/setppcookie", method = RequestMethod.GET)
-    public void setPPCookie(HttpServletRequest request, HttpServletResponse response, PPCookieParams ppCookieParams)
-            throws Exception {
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(ppCookieParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            returnErrMsg(response, ppCookieParams.getRu(),result.getCode(), result.getMessage());
-            return;
-        }
-        //response 回去的时候设置一个p3p的header
-        //用来定义IE的跨域问题。
-        response.setHeader("P3P","CP=CAO PSA OUR");
-
-        result = cookieManager.setPPCookie(response,ppCookieParams);
-
-        String ru = ppCookieParams.getRu();
-        if(!result.isSuccess()){
-            log(request,"pp_setcookie",ru,result.getCode());
-            returnErrMsg(response,ru,result.getCode(),result.getMessage());
-            return;
-        }
-        if (!StringUtils.isBlank(ru)) {
-            response.sendRedirect(ru);
-        }
-        log(request, "pp_setcookie", ru, "0");
-        return;
-    }
-
     @RequestMapping(value = "/act/errorMsg")
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
-    }
-
-    private void log(HttpServletRequest request, String passportId, String ru, String resultCode) {
-        //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), "", resultCode, getIp(request));
-        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
-        userOperationLog.putOtherMessage("ru", ru);
-        UserOperationLogUtil.log(userOperationLog);
-    }
-
-    private void returnErrMsg(HttpServletResponse response, String ru, String errorCode, String errorMsg) throws Exception {
-        RuValidator ruValidator = new RuValidator();
-        boolean isValid = ruValidator.isValid(ru, null);
-        if (Strings.isNullOrEmpty(ru) || !isValid) {
-            ru = DEFAULT_URL;
-        }
-        response.sendRedirect(ru + "?errorCode=" + errorCode + "&errorMsg=" + Coder.encodeUTF8(errorMsg));
-        return;
     }
 
     private boolean isCleanString(String cb) {
@@ -386,7 +366,7 @@ public class PCAccountController extends BaseController {
             case ErrorUtil.INVALID_CLIENTID:
                 errStr = "1"; //参数错误
                 break;
-            case ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND:
+            case ErrorUtil.INVALID_ACCOUNT:
                 errStr = "2";  //用户名不存在
                 break;
             case ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST:
@@ -425,6 +405,9 @@ public class PCAccountController extends BaseController {
     }
 
     private String buildRedirectUrl(String ru, int status) {
+        if (Strings.isNullOrEmpty(ru)) {
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
         if (ru.contains("?")) {
             return ru + "&status=" + status;
         } else {

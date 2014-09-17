@@ -7,7 +7,6 @@ import com.sogou.upd.passport.common.utils.JsonUtil;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.codehaus.jackson.type.TypeReference;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -22,7 +21,7 @@ import java.util.Map;
  * Time: 下午5:46
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 public class JacksonTest extends TestCase {
 
     public void testWriteValueAsString() {
@@ -54,10 +53,23 @@ public class JacksonTest extends TestCase {
     public void testReadValueJsonUtil() {
         try {
             String jsonString = "{\"map\":{\"nickname\":\"spz\"},\"toEmail\":\"shipengzhi@sogou-inc.com\",\"subject\":\"Send Active Email\",\"category\":\"aaa\",\"activeUrl\":\"http://www.sogou.com\",\"templateFile\":null}";
-            ActiveEmail activeEmail = JsonUtil.jsonToBean(jsonString,ActiveEmail.class);
+            ActiveEmail activeEmail = JsonUtil.jsonToBean(jsonString, ActiveEmail.class);
             System.out.println("Read Object:" + activeEmail);
             Assert.assertTrue(true);
         } catch (RuntimeException e) {
+            e.printStackTrace();
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testMapToJson() {
+        try {
+            Map map = Maps.newHashMap();
+            map.put("ret", 0);
+            map.put("ret", 1);
+            System.out.println(map.get("ret"));
+        } catch (Exception e) {
             e.printStackTrace();
             Assert.assertTrue(true);
         }
@@ -88,31 +100,31 @@ public class JacksonTest extends TestCase {
     }
 
 
-  /*
- * 测试JSON转换List<Object>
- */
-  @Test
-  public void testJacksonGetNullObject() {
-    try {
-      ActiveEmail jsonObject = new ActiveEmail();
-      jsonObject.setActiveUrl("http://www.sogou.com");
-      jsonObject.setCategory("aaa");
+    /*
+   * 测试JSON转换List<Object>
+   */
+    @Test
+    public void testJacksonGetNullObject() {
+        try {
+            ActiveEmail jsonObject = new ActiveEmail();
+            jsonObject.setActiveUrl("http://www.sogou.com");
+            jsonObject.setCategory("aaa");
 //      jsonObject.setSubject("");
 
-      ActiveEmail activeEmail = jsonObject;
-      String jsonString = JacksonJsonMapperUtil.getMapper().writeValueAsString(activeEmail);
+            ActiveEmail activeEmail = jsonObject;
+            String jsonString = JacksonJsonMapperUtil.getMapper().writeValueAsString(activeEmail);
 
 
-      ActiveEmail newActiveEmail =  JacksonJsonMapperUtil.getMapper().readValue(jsonString, ActiveEmail.class);
-      System.out.println("activeEmail.getActiveUrl(): " + activeEmail.getActiveUrl());
-      System.out.println("activeEmail.getCategory(): " + activeEmail.getCategory());
+            ActiveEmail newActiveEmail = JacksonJsonMapperUtil.getMapper().readValue(jsonString, ActiveEmail.class);
+            System.out.println("activeEmail.getActiveUrl(): " + activeEmail.getActiveUrl());
+            System.out.println("activeEmail.getCategory(): " + activeEmail.getCategory());
 
-      Assert.assertTrue(true);
-    } catch (IOException e) {
-      e.printStackTrace();
-      Assert.assertTrue(true);
+            Assert.assertTrue(true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Assert.assertTrue(true);
+        }
     }
-  }
 
     private ActiveEmail buildJsonObject() {
         ActiveEmail jsonObject = new ActiveEmail();

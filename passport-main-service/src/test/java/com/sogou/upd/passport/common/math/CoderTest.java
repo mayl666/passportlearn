@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.common.math;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import junit.framework.Assert;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -35,6 +37,16 @@ public class CoderTest {
         byte[] encryByte = Coder.encryptHMAC(str, Coder.decryptBASE64(PwdGenerator.HMAC_SHA_KEY));
         String str1 = Coder.toHexString(encryByte);
         System.out.println("str1:" + str1);
+
+    }
+
+    @Test
+    public void testMD5() throws Exception {
+        String userCard = "532325198607162010";
+        String userCardActual ="210727198707280311";
+        System.out.println("testMD5 :"+DigestUtils.md5Hex(userCard.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET)));
+        System.out.println("testMD5 userCardActual :"+DigestUtils.md5Hex(userCardActual.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET)));
+        Assert.assertEquals("92f5f778c2d4cb187563a4aace84dd6acf854cdc", DigestUtils.md5Hex(userCard.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET)));
 
     }
 }

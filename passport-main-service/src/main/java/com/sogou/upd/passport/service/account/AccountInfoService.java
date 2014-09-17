@@ -15,23 +15,45 @@ public interface AccountInfoService {
     public AccountInfo queryAccountInfoByPassportId(String passportId) throws ServiceException;
 
     /**
+     * 根据passportId获取绑定密保邮箱
+     */
+    public String queryBindEmailByPassportId(String passportId) throws ServiceException;
+
+    /**
      * 修改绑定邮箱
      */
-    public AccountInfo modifyEmailByPassportId(String passportId, String email) throws ServiceException;
+    public AccountInfo modifyBindEmailByPassportId(String passportId, String email) throws ServiceException;
 
     /**
      * 修改密保问题和答案
      */
     public AccountInfo modifyQuesByPassportId(String passportId, String question, String answer) throws ServiceException;
+
     /**
      * 修改个人信息
      */
     public boolean updateAccountInfo(AccountInfo accountInfo);
+
     /**
      * 根据passportId删除AccountInfo表缓存，增量数据迁移的内部debug接口使用
      */
     public boolean deleteAccountInfoCacheByPassportId(String passportId) throws ServiceException;
 
+    /**
+     * 解除绑定的密保邮箱
+     */
+    public boolean deleteBindEmailByPassportId(String passportId) throws ServiceException;
+
+
+    /**
+     * 修改绑定邮箱
+     *
+     * @param accountInfo
+     * @param email
+     * @return
+     * @throws ServiceException
+     */
+    public boolean updateBindMEmail(AccountInfo accountInfo, String email) throws ServiceException;
 
 
 }

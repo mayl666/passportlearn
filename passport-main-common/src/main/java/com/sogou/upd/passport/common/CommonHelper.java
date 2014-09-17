@@ -68,17 +68,6 @@ public class CommonHelper {
     }
 
     /**
-     * clientId=1105为输入法MAC
-     *
-     * @param clientId
-     * @return
-     */
-    public static boolean isWANOrYuedu(int clientId) {
-        return clientId == CommonConstant.WAN_CLIENTID || clientId == CommonConstant.XIAOSHUO_CLIENTID;
-    }
-
-
-    /**
      * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
      * @param passportId passport内部传输的用户id
      * @return
@@ -117,12 +106,4 @@ public class CommonHelper {
         boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
         return timeRight;
     }
-
-    /*public static void recordTimestamp(long start, String msg) {
-        long end = System.currentTimeMillis();
-        long costTime = end -start;
-        if(costTime > 50){
-            logger.info(msg +" " +costTime);
-        }
-    } */
 }

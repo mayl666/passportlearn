@@ -6,21 +6,19 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.CoreKvUtils;
-import com.sogou.upd.passport.common.utils.KvUtils;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.ActionRecord;
 import com.sogou.upd.passport.service.account.AccountSecureService;
 import com.sogou.upd.passport.service.account.dataobject.ActionStoreRecordDO;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+
 
 /**
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-21 Time: 上午11:52 To change this template
@@ -33,14 +31,8 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     private static final String CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE = CacheConstant.CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE;
     private static final String CACHE_PREFIX_SECURECODE = CacheConstant.CACHE_PREFIX_SECURECODE;
 
-    private static final String KV_PREFIX_PASSPORTID_ACTIONRECORD = CacheConstant.KV_PREFIX_PASSPORTID_ACTIONRECORD;
-
-    private static final Logger logger = LoggerFactory.getLogger(AccountSecureServiceImpl.class);
-
     @Autowired
     private RedisUtils redisUtils;
-    @Autowired
-    private KvUtils kvUtils;
     @Autowired
     private CoreKvUtils coreKvUtils;
     @Autowired
@@ -60,6 +52,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
             throw new ServiceException(e);
         }
     }
+
 
     @Override
     public boolean updateSuccessFlag(String passportId) throws ServiceException {
@@ -134,11 +127,6 @@ public class AccountSecureServiceImpl implements AccountSecureService {
             public void run() {
                 // 获取实际需要存储的参数类，节省存储空间
                 ActionStoreRecordDO storeRecordDO = new ActionStoreRecordDO(clientId, System.currentTimeMillis(), ip);
-
-                //去掉老集群kv"写"操作 edit by chengang 2014-04-01
-//                String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
-//                storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
-
                 //保存用户行为记录到核心kv
                 String coreKvKey = buildCoreKvKeyForActionRecord(userId, action);
                 coreKvStoreRecord(coreKvKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
@@ -161,11 +149,6 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
                 // 获取实际需要存储的参数类，节省存储空间
                 ActionStoreRecordDO storeRecordDO = actionRecord.obtainStoreRecord();
-
-                //去掉老集群kv"写"操作 edit by chengang 2014-04-01
-//                String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
-//                storeRecord(cacheKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
-
                 //保存用户行为记录到核心kv
                 String coreKvKey = buildCoreKvKeyForActionRecord(userId, action);
                 coreKvStoreRecord(coreKvKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
@@ -186,9 +169,6 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
     @Override
     public List<ActionStoreRecordDO> getActionStoreRecords(String userId, int clientId, AccountModuleEnum action) {
-//        String cacheKey = buildCacheKeyForActionRecord(userId, clientId, action);
-
-        //kv迁移，获取用户登录行为数据切换到核心新kv edit by chengang 2014-04-01
         String cacheKey = buildCoreKvKeyForActionRecord(userId, action);
         List<ActionStoreRecordDO> records = queryRecords(cacheKey, ActionStoreRecordDO.class);
 
@@ -218,7 +198,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
                 if (scode.equals(secureCode)) {
                     flag = true;
                 }
-                redisUtils.delete(scode);
+                redisUtils.delete(cacheKey);
             }
             return flag;
         } catch (Exception e) {
@@ -227,11 +207,6 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     }
 
     /*-------------------------------采用K-V系统-------------------------------*/
-    // 方便以后修改存储方式
-    private <T> void storeRecord(String key, T record, int maxLen) {
-        // redisUtils.lPushObjectWithMaxLen(key, record, maxLen);
-        kvUtils.pushObjectWithMaxLen(key, record, maxLen);
-    }
 
     /**
      * 保存用户操作行为到核心kv集群
@@ -247,25 +222,11 @@ public class AccountSecureServiceImpl implements AccountSecureService {
 
     // 方便以后修改存储方式
     private <T> List<T> queryRecords(String key, Class<T> clazz) {
-        // return redisUtils.getList(key, clazz);
-
-        //kv迁移，读操作切换到核新kv edit by chengang 2014-04-01
-//        return kvUtils.getList(key, clazz);
-
         return coreKvUtils.getList(key, clazz);
     }
 
     private <T> T queryLastRecord(String key, Class<T> clazz) {
-        // return redisUtils.lTop(key, clazz);
-
-        //kv迁移，读操作切换到核新kv edit by chengang 2014-04-01
-//        return kvUtils.top(key, clazz);
-
         return coreKvUtils.top(key, clazz);
-    }
-
-    private String buildCacheKeyForActionRecord(String userId, int clientId, AccountModuleEnum action) {
-        return KV_PREFIX_PASSPORTID_ACTIONRECORD + action + "_" + userId;
     }
 
     /**

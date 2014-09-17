@@ -3,6 +3,7 @@ package com.sogou.upd.passport;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.FileUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
@@ -33,7 +34,7 @@ public class VerifySgrdigCookieTest extends BaseTest {
     @Test
     public void testVerifySgrdig() {
         try {
-            List<String> openidList = FileIOUtil.readFileByLines("D:\\daohang_openid_100w.txt");
+            List<String> openidList = FileUtil.readFileByLines("D:\\daohang_openid_100w.txt");
             FileOutputStream fos = new FileOutputStream("d:/verify_sgrdig_error.txt");
             OutputStreamWriter osw = new OutputStreamWriter(fos);
             BufferedWriter bw = new BufferedWriter(osw);

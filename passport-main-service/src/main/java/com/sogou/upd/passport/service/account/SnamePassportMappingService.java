@@ -29,15 +29,6 @@ public interface SnamePassportMappingService {
     public String queryPassportIdBySname(String sname) throws ServiceException;
 
     /**
-     * 根据sid获取passportId
-     *
-     * @param sid
-     * @return
-     * @throws ServiceException
-     */
-    public String queryPassportIdBySid(String sid) throws ServiceException;
-
-    /**
      * 根据mobile获取passportId
      *
      * @param mobile

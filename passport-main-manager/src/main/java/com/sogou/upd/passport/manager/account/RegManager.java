@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.api.account.form.ResendActiveMailParams;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
 
@@ -28,10 +29,11 @@ public interface RegManager {
      * 2.判断手机号是否被绑定或已被注册；
      * 3.生成手机账号，并发送验证码；
      * 4.如果是wap端注册，额外返回sgid
-     * @param mobile 要注册的手机号
+     *
+     * @param mobile   要注册的手机号
      * @param clientId 应用ID
      * @param createip 用户真实ip
-     * @param type wap端注册时才用到此字段，值为wap
+     * @param type     wap端注册时才用到此字段，值为wap
      * @return Result格式的返回值，提示注册成功信息
      */
     public Result fastRegisterPhone(String mobile, int clientId, String createip, String type);
@@ -49,6 +51,16 @@ public interface RegManager {
      * @return 验证码
      */
     public Map<String, Object> getCaptchaCode(String code);
+
+    /**
+     * 检查用户是否存在去sohu校验
+     *
+     * @param username
+     * @param clientId
+     * @return
+     * @throws Exception
+     */
+    public Result checkUserFromSohu(String username, int clientId) throws Exception;
 
     /**
      * 判断用户名是否被占用
@@ -72,6 +84,14 @@ public interface RegManager {
     public void incRegTimes(String ip, String cookieStr) throws Exception;
 
     /**
+     * 邮箱注册后，用户没有激活邮件，直接登录时，提示重新发送激活邮件接口
+     *
+     * @param resendActiveMailParams
+     * @return
+     */
+    public Result resendActiveMail(ResendActiveMailParams resendActiveMailParams);
+
+    /**
      * 注册内部接口ip安全限制
      *
      * @param ip
@@ -81,23 +101,6 @@ public interface RegManager {
     public Result checkRegInBlackListByIpForInternal(String ip, int clientId) throws Exception;
 
     /**
-     * 检查手机注册ip是否在发短信超限黑名单中
-     *
-     * @param ip
-     * @return
-     * @throws Exception
-     */
-    public Result checkMobileSendSMSInBlackList(String ip) throws Exception;
-
-    /**
-     * 手机发短信次数
-     *
-     * @param ip
-     * @throws Exception
-     */
-    public void incSendTimesForMobile(String ip) throws Exception;
-
-    /**
      * 检查用户名是否存在调用是否超过频率限制
      *
      * @param username
@@ -105,6 +108,16 @@ public interface RegManager {
      * @return
      */
     public boolean isUserInExistBlackList(final String username, final String ip);
+
+
+    /**
+     * 内部接口 检查用户是否存在 是否中黑名单限制
+     *
+     * @param username
+     * @param ip
+     * @return
+     */
+    public boolean checkUserExistInBlack(final String username, final String ip);
 
     /**
      * 校验sogou验证码，并注册手机号账号
@@ -118,5 +131,14 @@ public interface RegManager {
      * @throws Exception
      */
     public Result registerMobile(String username, String password, int clientId, String captcha, String type) throws Exception;
+
+    /**
+     * 检查验证码是否通过
+     *
+     * @param token
+     * @param captcha
+     * @return
+     */
+    public Result checkCaptchaToken(String token, String captcha);
 
 }

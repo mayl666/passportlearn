@@ -4,12 +4,8 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.model.account.AccountToken;
-import com.sogou.upd.passport.model.connect.ConnectRelation;
-import com.sogou.upd.passport.model.connect.ConnectToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,55 +18,16 @@ public class ManagerHelper {
 
     private static Logger log = LoggerFactory.getLogger(ManagerHelper.class);
 
-    /**
-     * 创建一个第三方账户对象
-     */
-    public static ConnectToken buildConnectToken(String passportId, int provider, String appKey, String openid, String accessToken, long expiresIn, String refreshToken) {
-        ConnectToken connect = new ConnectToken();
-        connect.setPassportId(passportId);
-        connect.setProvider(provider);
-        connect.setAppKey(appKey);
-        connect.setOpenid(openid);
-        connect.setAccessToken(accessToken);
-        connect.setExpiresIn(expiresIn);
-        connect.setRefreshToken(refreshToken);
-        connect.setUpdateTime(new Date());
-        return connect;
-    }
 
     /**
-     * 创建一个第三方关系关系（反查表）对象
-     */
-    public static ConnectRelation buildConnectRelation(String openid, int provider, String passportId, String appKey) {
-        ConnectRelation connectRelation = new ConnectRelation();
-        connectRelation.setOpenid(openid);
-        connectRelation.setProvider(provider);
-        connectRelation.setPassportId(passportId);
-        connectRelation.setAppKey(appKey);
-        return connectRelation;
-    }
-
-    /**
-     * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
-     *
-     * @param passportId passport内部传输的用户id
-     * @return
-     */
-    public static boolean isInvokeProxyApi(String passportId) {
-        return true;//
-//        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));
-    }
-
-    /**
-     * 是否需要只读SG库。当isBothReadApi方法返回false时：此方法返回true表示只读SG库；返回false表示只读SH线上，相当于回滚操作
+     * 搜狐域账号校验用户名和密码时添加开关，当搜狐接口异常时，直接切换开关，返回相应的异常提示
      *
      * @return
      */
-    public static boolean readSohuSwitcher() {
-//        return true;   //todo 若非上线后出故障，回滚至SOHU代码，打开此开关，即为回滚
-        return false; //todo 正常线上都应该恒为false
+    public static boolean authUserBySOHUSwitcher() {
+        return true;   //表示读SOHU，校验用户名和密码是否匹配
+//        return false;  //表示不读搜狐，返回异常提示
     }
-
 
     /**
      * 是否使用sohu提供的getcookiinfo接口；返回true代表调用getcookieinfo接口，false代表调用之前的从location拿的接口，为回滚做准备

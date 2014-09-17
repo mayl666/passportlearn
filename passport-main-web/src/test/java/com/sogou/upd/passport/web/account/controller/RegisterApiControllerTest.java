@@ -6,12 +6,12 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.web.BaseActionTest;
 import com.sogou.upd.passport.web.account.form.APIResultForm;
 import junit.framework.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,7 +20,7 @@ import java.util.Map;
  * Time: 下午3:09
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 public class RegisterApiControllerTest extends BaseActionTest {
 
     private static final String SG_BASE_PATH_URL = "http://localhost";
@@ -41,10 +41,10 @@ public class RegisterApiControllerTest extends BaseActionTest {
     private static final String createip = "65.132.11.120";
     private static final String ru = "http://account.sogou.com";
     //搜狗账号、外域邮箱账号正式注册
-    private static final String reg_sogou = "qwerasf4r56@sogou.com";
-    private static final String reg_format_sogou1 = "qwer>?asf4r56@sogou.com";
-    private static final String reg_format_sogou2 = "contact@sogou.com";
-    private static final String reg_mail = "wehreujew@163.com";
+    private static final String reg_sogou = "testliuling" + new Random().nextInt(1000) + "@sogou.com";
+    private static final String reg_format_sogou1 = "er>?asf" + new Random().nextInt(2000) + "@sogou.com"; //含非法字符
+    private static final String reg_format_sogou2 = "contact" + new Random().nextInt(2000) + "@sogou.com"; //含限制字符
+    private static final String both_no_username_mail = "testmail" + new Random().nextInt(100) + "@163.com";
     //注册手机号，不需短信验证码
     private static final String reg_mobile = "13926415207";
     private static final String bind_mobile = "15737126381";
@@ -201,10 +201,10 @@ public class RegisterApiControllerTest extends BaseActionTest {
         Assert.assertTrue(expectFormOne.equals(actualFormOne));
 
         //外域邮箱账号正式注册
-        Map<String, String> params_reg_mail = getRegEmailApiParams(reg_mail, password, createip, ru, "1");
+        Map<String, String> params_reg_mail = getRegEmailApiParams(both_no_username_mail, password, createip, ru, "1");
         String actualStringTwo = sendPost(SG_BASE_PATH_URL + apiUrl, params_reg_mail);
         APIResultForm actualFormTwo = JacksonJsonMapperUtil.getMapper().readValue(actualStringTwo, APIResultForm.class);
-        String expectStringTwo = "{\"data\":{\"userid\":\"" + reg_mail + "\",\"isSetCookie\":false},\"status\":\"0\",\"statusText\":\"注册成功\"}";
+        String expectStringTwo = "{\"data\":{\"userid\":\"" + both_no_username_mail + "\",\"isSetCookie\":false},\"status\":\"0\",\"statusText\":\"注册成功\"}";
         APIResultForm expectFormTwo = JacksonJsonMapperUtil.getMapper().readValue(expectStringTwo, APIResultForm.class);
         Assert.assertTrue(expectFormTwo.equals(actualFormTwo));
 
@@ -283,6 +283,7 @@ public class RegisterApiControllerTest extends BaseActionTest {
         APIResultForm expectForm3 = JacksonJsonMapperUtil.getMapper().readValue(expectString3, APIResultForm.class);
         Assert.assertTrue(expectForm3.equals(actualForm3));
     }
+
 
     //构造发送手机验证码接口参数
     private Map<String, String> getSendCaptchaParams(String username) {

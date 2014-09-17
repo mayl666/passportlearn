@@ -6,10 +6,15 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountInfo;
-import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.account.AccountInfoService;
+import com.sogou.upd.passport.service.account.EmailSenderService;
+import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,103 +32,35 @@ public class SGBindApiManagerImpl implements BindApiManager {
     private static Logger logger = LoggerFactory.getLogger(SGBindApiManagerImpl.class);
 
     @Autowired
-    private AccountService accountService;
-    @Autowired
     private AccountInfoService accountInfoService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private EmailSenderService emailSenderService;
     @Autowired
-    private OperateTimesService operateTimesService;
+    private LoginApiManager sgLoginApiManager;
 
-    /*
-     * 首次绑定手机，需要检测是否已绑定手机
-     */
-    @Override
-    public Result bindMobile(BindMobileApiParams bindMobileApiParams) {
-        Result result = new APIResultSupport(false);
-        String userid = bindMobileApiParams.getUserid();
-        String mobile = bindMobileApiParams.getNewMobile();
-        int clientId = bindMobileApiParams.getClient_id();
-
-        Account account = accountService.queryNormalAccount(userid);
-        if (account == null) {
-            result.setCode(ErrorUtil.INVALID_ACCOUNT);
-            return result;
-        }
-
-        if (!mobilePassportMappingService.initialMobilePassportMapping(mobile, userid)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-            return result;
-        }
-
-        if (!accountService.modifyMobile(account, mobile)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
-            return result;
-        }
-
-        result.setSuccess(true);
-        result.setMessage("绑定手机成功！");
-        return result;
-    }
-
-//    @Override
-    public Result updateBindMobile(UpdateBindMobileApiParams updateBindMobileApiParams) {
-        Result result = new APIResultSupport(false);
-        String userId = updateBindMobileApiParams.getUserid();
-        String newMobile = updateBindMobileApiParams.getNewMobile();
-        String oldMobile = updateBindMobileApiParams.getOldMobile();
-        int clientId = updateBindMobileApiParams.getClient_id();
-
-        // String userId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
-
-        Account account = accountService.queryNormalAccount(userId);
-        if (account == null) {
-            result.setCode(ErrorUtil.INVALID_ACCOUNT);
-            return result;
-        }
-
-        if (!mobilePassportMappingService.deleteMobilePassportMapping(oldMobile)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-            return result;
-        }
-
-        if (!accountService.modifyMobile(account, null)) {
-            result.setCode(ErrorUtil.ERR_CODE_PHONE_UNBIND_FAILED);
-            return result;
-        }
-
-        result.setSuccess(true);
-        result.setMessage("解绑手机成功！");
-        return result;
-    }
-
-    // TODO:验证邮件的Manager
     @Override
     public Result bindEmail(BindEmailApiParams bindEmailApiParams) {
-        Result result = new APIResultSupport(false);
-        String userId = bindEmailApiParams.getUserid();
+        Result result;
+        String passportId = bindEmailApiParams.getUserid();
         int clientId = bindEmailApiParams.getClient_id();
         String password = bindEmailApiParams.getPassword();
         String oldEmail = bindEmailApiParams.getOldbindemail();
         String newEmail = bindEmailApiParams.getNewbindemail();
-
-        AccountInfo accountInfo = accountInfoService.queryAccountInfoByPassportId(userId);
-        if (accountInfo != null) {
-            String emailBind = accountInfo.getEmail();
-            if (!Strings.isNullOrEmpty(emailBind) && !emailBind.equals(oldEmail)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
-                return result;
-            }
-        }
-
-        result = accountService.verifyUserPwdVaild(userId, password, true);
-        if(!result.isSuccess()){
+        AuthUserApiParams authParams = new AuthUserApiParams(clientId, passportId, password);
+        result = sgLoginApiManager.webAuthUser(authParams);    //验证密码
+        if (!result.isSuccess()) {
             return result;
         }
-
-        if (!emailSenderService.sendBindEmail(userId, clientId, AccountModuleEnum.SECURE, newEmail, bindEmailApiParams.getRu())) {
+        String bindEmail = accountInfoService.queryBindEmailByPassportId(passportId);
+        if (!Strings.isNullOrEmpty(bindEmail) && !bindEmail.equals(oldEmail)) {   // 验证用户输入原绑定邮箱
+            result.setSuccess(false);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED);
+            return result;
+        }
+        ActiveEmailDO activeEmailDO = new ActiveEmailDO(passportId, clientId, bindEmailApiParams.getRu(), AccountModuleEnum.SECURE, newEmail, true);
+        if (!emailSenderService.sendEmail(activeEmailDO)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED);
             return result;
         }
@@ -149,32 +86,17 @@ public class SGBindApiManagerImpl implements BindApiManager {
     }
 
     @Override
-    public Result sendCaptcha(SendCaptchaApiParams sendCaptchaApiParams) {
-        String mobile = sendCaptchaApiParams.getMobile();
-        int clientId = sendCaptchaApiParams.getClient_id();
-        int type = sendCaptchaApiParams.getType();
-
-
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public boolean cacheOldCaptcha(String mobile, int clientId, String captcha) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public String getOldCaptcha(String mobile, int clientId) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Result bindMobile(String userid,String mobile){
+    public Result bindMobile(String passportId, String newMobile, Account account) {
         return null;
     }
 
     @Override
-    public Result unBindMobile(String mobile){
+    public Result modifyBindMobile(String passportId, String newMobile) {
+        return null;
+    }
+
+    @Override
+    public Result unBindMobile(String mobile) {
         return null;
     }
 

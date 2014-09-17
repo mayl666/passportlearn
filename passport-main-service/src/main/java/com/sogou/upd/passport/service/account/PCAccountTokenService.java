@@ -14,6 +14,7 @@ import com.sogou.upd.passport.model.app.AppConfig;
 public interface PCAccountTokenService {
     /**
      * 初始化token
+     *
      * @param passportId
      * @param instanceId
      * @param appConfig
@@ -23,7 +24,8 @@ public interface PCAccountTokenService {
     public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException;
 
     /**
-     *更新token
+     * 更新token
+     *
      * @param passportId
      * @param instanceId
      * @param appConfig
@@ -34,13 +36,15 @@ public interface PCAccountTokenService {
 
     /**
      * 存储accountToken
+     *
      * @param passportId
      * @param instanceId
      * @param appConfig
      * @param accountToken
      * @throws ServiceException
      */
-    public void saveAccountToken(final String passportId, final String instanceId,AppConfig appConfig,AccountToken accountToken) throws ServiceException;
+    public void saveAccountToken(final String passportId, final String instanceId, AppConfig appConfig, AccountToken accountToken) throws ServiceException;
+
     /**
      * 查询AccountToken
      *
@@ -78,6 +82,7 @@ public interface PCAccountTokenService {
 
     /**
      * 保存浏览器老的refreshtoken
+     *
      * @param passportId
      * @param instanceId
      * @param appConfig
@@ -88,6 +93,7 @@ public interface PCAccountTokenService {
 
     /**
      * 获取浏览器 老的token
+     *
      * @param passportId
      * @param clientId
      * @param instanceId
@@ -98,6 +104,7 @@ public interface PCAccountTokenService {
 
     /**
      * 验证老token
+     *
      * @param passportId
      * @param clientId
      * @param instanceId
@@ -109,20 +116,43 @@ public interface PCAccountTokenService {
 
     /**
      * 根据token来获取passportId
+     *
      * @param token
      * @param clientSecret
      * @return
      * @throws ServiceException
      */
-    public String getPassportIdByToken(String token,String clientSecret) throws ServiceException;
+    public String getPassportIdByToken(String token, String clientSecret) throws ServiceException;
 
     /**
      * 兼容以SG_开头的token
+     *
      * @param token
      * @param clientSecret
      * @return
      * @throws ServiceException
      */
-    public String getPassportIdByOldToken(String token,String clientSecret) throws ServiceException;
+    public String getPassportIdByOldToken(String token, String clientSecret) throws ServiceException;
+
+    /**
+     * 批量清除失效的桌面端Token
+     * 场景：修改密码、封禁账号
+     * @param passportId
+     * @param isAsyn 是否为异步操作
+     * @return
+     * @throws ServiceException
+     */
+    public void batchRemoveAccountToken(final String passportId, boolean isAsyn);
+
+    /**
+     * 清除单条失效的桌面端Token
+     * 场景：修改密码、封禁账号
+     * @param passportId
+     * @param clientId 应用ID
+     * @param instanceId 客户端实例ID
+     * @return
+     * @throws ServiceException
+     */
+    public void removeAccountToken(String passportId, int clientId, String instanceId);
 
 }

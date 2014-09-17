@@ -1,16 +1,12 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.HttpClientUtil;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
@@ -39,7 +35,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
 
     private static final long SIG_EXPIRES = 60 * 60 * 1000; //sig里的timestamp有效期，一小时，单位毫秒
     private static final Logger logger = LoggerFactory.getLogger(PCAccountManagerImpl.class);
-    private static final String BROWSER_BBS_UNIQNAME_URL = "http://ie.sogou.com/passport/nickname_utf8.php";
 
     @Autowired
     private LoginApiManager loginApiManager;
@@ -190,23 +185,6 @@ public class PCAccountManagerImpl implements PCAccountManager {
     }
 
     @Override
-    public Result createConnectToken(int clientId, String passportId, String instanceId) {
-        Result finalResult = new APIResultSupport(false);
-        try {
-            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-            if (appConfig == null) {
-                finalResult.setCode(ErrorUtil.INVALID_CLIENTID);
-                return finalResult;
-            }
-            return initialAccountToken(passportId, instanceId, appConfig);
-        } catch (ServiceException e) {
-            logger.error("createConnectToken fail", e);
-            finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-            return finalResult;
-        }
-    }
-
-    @Override
     public Result createAccountToken(String passportId, String instanceId, int clientId) {
         Result finalResult = new APIResultSupport(false);
         try {
@@ -217,37 +195,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
             }
             return initialAccountToken(passportId, instanceId, appConfig);
         } catch (ServiceException e) {
-            logger.error("createToken fail", e);
+            logger.error("createAccountToken fail", e);
             finalResult.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return finalResult;
         }
-    }
-
-    @Override
-    public String getBrowserBbsUniqname(String passportId) {
-        try {
-            String uniqname = HttpClientUtil.getResponseBodyWget(BROWSER_BBS_UNIQNAME_URL + "?uid=" + passportId);
-            if (StringUtil.isCommonStr(uniqname)) {
-                return uniqname;
-            } else {
-                return "";
-            }
-        } catch (Exception e) {
-            logger.error("Get BrowserBBS Uniqname fail, passportId:" + passportId, e);
-            return "";
-        }
-    }
-
-    @Override
-    public String getUniqnameByClientId(String passportId, int clientId) {
-        if (CommonConstant.IS_USE_IEBBS_UNIQNAME && CommonHelper.isExplorerToken(clientId)) {
-            String uniqname = getBrowserBbsUniqname(passportId);
-            if (Strings.isNullOrEmpty(uniqname)) {
-                uniqname = passportId.substring(0, passportId.indexOf("@"));
-            }
-            return uniqname;
-        }
-        return (passportId.substring(0, passportId.indexOf("@")));
     }
 
     private Result initialAccountToken(String passportId, String instanceId, AppConfig appConfig) {

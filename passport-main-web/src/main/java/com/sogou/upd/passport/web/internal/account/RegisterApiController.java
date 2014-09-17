@@ -9,7 +9,6 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
-import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import com.sogou.upd.passport.web.BaseController;
@@ -36,8 +35,6 @@ public class RegisterApiController extends BaseController {
 
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
-    @Autowired
-    private RegisterApiManager proxyRegisterApiManager;
     @Autowired
     private RegManager regManager;
     @Autowired
@@ -139,7 +136,7 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = proxyRegisterApiManager.regMailUser(params);
+            result = sgRegisterApiManager.regMailUser(params);
         } catch (Exception e) {
             logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + userid, e);
         } finally {
@@ -176,7 +173,7 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = proxyRegisterApiManager.regMobileUser(params);
+            result = sgRegisterApiManager.regMobileUser(params);
         } catch (Exception e) {
             logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
         } finally {
@@ -204,7 +201,6 @@ public class RegisterApiController extends BaseController {
         Result result = new APIResultSupport(false);
         String createIp = params.getCreateip();
         String mobile = params.getMobile();
-
         try {
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
@@ -258,21 +254,29 @@ public class RegisterApiController extends BaseController {
             }
             // 调用内部接口
             String userid = params.getUserid();
-            result = regManager.isAccountNotExists(userid, params.getClient_id());
-            if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
-                if (!result.isSuccess()) {
-                    result.setDefaultModel("flag", "1");
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
-                    result.setMessage("手机号已绑定其他账号");
+            //业务线 用户真实IP、目前游戏已经加上、待推动其他业务线增加限制
+            String createIp = params.getCreateip();
+            //增加安全限制
+            if (regManager.checkUserExistInBlack(userid, createIp)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+            } else {
+                result = regManager.isAccountNotExists(userid, params.getClient_id());
+                if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
+                    if (!result.isSuccess()) {
+                        result.setDefaultModel("flag", "1");
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                        result.setMessage("手机号已绑定其他账号");
+                    }
                 }
             }
         } catch (Exception e) {
-            logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getUserid(), e);
+            logger.error("checkUser is failed,username is {}", params.getUserid(), e);
         } finally {
-            //记录log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            //记录log 业务线传入的用户真实IP
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), params.getCreateip());
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
+            userOperationLog.putOtherMessage("createip", params.getCreateip());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();

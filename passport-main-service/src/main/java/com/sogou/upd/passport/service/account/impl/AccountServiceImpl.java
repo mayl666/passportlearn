@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
@@ -14,14 +15,13 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
 import com.sogou.upd.passport.dao.account.AccountDAO;
-import com.sogou.upd.passport.dao.account.MobilePassportMappingDAO;
-import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.service.account.AccountHelper;
-import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.model.account.AccountInfo;
+import com.sogou.upd.passport.service.account.*;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
+import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
@@ -42,21 +42,12 @@ import java.util.UUID;
 public class AccountServiceImpl implements AccountService {
 
     private static final int expire = 30 * DateAndNumTimesConstant.ONE_DAY_INSECONDS;
-    private static final String CACHE_PREFIX_PASSPORT_ACCOUNT = CacheConstant.CACHE_PREFIX_PASSPORT_ACCOUNT;
-    private static final String CACHE_PREFIX_PASSPORTID_IPBLACKLIST = CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST;
-    private static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN;
-    private static final String CACHE_PREFIX_UUID_CAPTCHA = CacheConstant.CACHE_PREFIX_UUID_CAPTCHA;
-    private static final String CACHE_PREFIX_PASSPORTID_RESETPWDNUM = CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDNUM;
-    private static final String CACHE_PREFIX_NICKNAME_PASSPORTID = CacheConstant.CACHE_PREFIX_NICKNAME_PASSPORTID;
-
 
     private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
 
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Autowired
     private AccountDAO accountDAO;
-    @Autowired
-    private MobilePassportMappingDAO mobilePassportMappingDAO;
     @Autowired
     private RedisUtils redisUtils;
     @Autowired
@@ -66,12 +57,18 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private CaptchaUtils captchaUtils;
     @Autowired
-    private UniqNamePassportMappingDAO uniqNamePassportMappingDAO;
+    private MobilePassportMappingService mobilePassportMappingService;
+    @Autowired
+    private UniqNamePassportMappingService uniqNamePassportMappingService;
+    @Autowired
+    private PCAccountTokenService pcAccountTokenService;
+    @Autowired
+    private AccountInfoService accountInfoService;
 
     @Override
-    public Account initialWebAccount(String username, String ip) throws ServiceException {
-        Account account = null;
-        String cacheKey = null;
+    public Account initialEmailAccount(String username, String ip) throws ServiceException {
+        Account account;
+        String cacheKey;
         try {
             cacheKey = buildAccountKey(username);
             account = dbShardRedisUtils.getObject(cacheKey, Account.class);
@@ -81,11 +78,6 @@ public class AccountServiceImpl implements AccountService {
                 if (id != 0) {
                     //更新缓存，成为正式账户
                     dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-                    //更新黑名单缓存
-                    cacheKey = buildAccountBlackCacheKey(ip);
-                    redisUtils.increment(cacheKey);
-                    //设置cookie
-                    setCookie();
                     return account;
                 }
             }
@@ -127,15 +119,23 @@ public class AccountServiceImpl implements AccountService {
                 mobile = username;
             }
             account.setMobile(mobile);
-            long id = accountDAO.insertOrUpdateAccount(passportId, account);
-            if (id != 0) {
-                //手机注册时，写mobile与passportId映射表
-                if (PhoneUtil.verifyPhoneNumberFormat(passportId.substring(0, passportId.indexOf("@")))) {
-                    int row = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
-                    if (row == 0) {
-                        return null;
+            long id;
+            if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider)) { //第三方或sohu域账号使用插入或更新，之前第三方迁移出过一次bug，修复的
+                id = accountDAO.insertOrUpdateAccount(passportId, account);
+            } else {
+                //正式注册到account表中
+                id = accountDAO.insertAccount(passportId, account);
+                if (id != 0) {
+                    //手机注册时，写mobile与passportId映射表
+                    if (PhoneUtil.verifyPhoneNumberFormat(passportId.substring(0, passportId.indexOf("@")))) {
+                        boolean row = mobilePassportMappingService.initialMobilePassportMapping(mobile, passportId);
+                        if (!row) {
+                            return null;
+                        }
                     }
                 }
+            }
+            if (id != 0) {
                 String cacheKey = buildAccountKey(passportId);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return account;
@@ -146,18 +146,6 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
-    @Override
-    public Account initialConnectAccount(String passportId, String ip, int provider) throws ServiceException {
-        return initialAccount(passportId, null, false, ip, provider);
-    }
-
-    /**
-     * 非第三方账号迁移，新写 初始化 Account 方法
-     *
-     * @param account
-     * @return
-     * @throws ServiceException
-     */
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean initAccount(Account account) throws ServiceException {
@@ -176,13 +164,36 @@ public class AccountServiceImpl implements AccountService {
         return initSuccess;
     }
 
-    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccountByPassportId", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initSOHUAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public boolean initSOHUAccount(String passportId, String ip) throws ServiceException {
+        try {
+            if (!AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+                //只支持sohu域账号初始化操作
+                return false;
+            }
+            Account account = queryAccountByPassportId(passportId);
+            if (account != null) {
+                return true;
+            }
+            account = initialAccount(passportId, null, false, ip, AccountTypeEnum.SOHU.getValue());
+            if (account != null) {
+                if (accountInfoService.updateAccountInfo(new AccountInfo(passportId, new Date(), new Date())))
+                    return true;
+                return false;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public Account queryAccountByPassportId(String passportId) throws ServiceException {
         Account account;
         try {
             String cacheKey = buildAccountKey(passportId);
-
             account = dbShardRedisUtils.getObject(cacheKey, Account.class);
             if (account == null) {
                 account = accountDAO.getAccountByPassportId(passportId);
@@ -191,7 +202,7 @@ public class AccountServiceImpl implements AccountService {
                 }
             }
         } catch (Exception e) {
-            throw new ServiceException();
+            throw new ServiceException(e);
         }
         return account;
     }
@@ -225,7 +236,6 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    @Override
     public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5) {
         Result result = new APIResultSupport(false);
         String passwordType = String.valueOf(account.getPasswordtype());
@@ -247,6 +257,8 @@ public class AccountServiceImpl implements AccountService {
                 result.setSuccess(true);
                 result.setMessage("操作成功");
                 result.setDefaultModel("userid", account.getPassportId());
+                result.setDefaultModel("uniqName", account.getUniqname());
+                result.setDefaultModel(account);
                 return result;
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
@@ -272,6 +284,7 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public Account queryNormalAccount(String passportId) throws ServiceException {
         Account account = queryAccountByPassportId(passportId);
@@ -289,28 +302,26 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException {
         try {
-//            int row = accountDAO.deleteAccountByPassportId(passportId);
-//            if (row != 0) {
             String cacheKey = buildAccountKey(passportId);
             dbShardRedisUtils.delete(cacheKey);
             return true;
-//            }
         } catch (Exception e) {
             throw new ServiceException(e);
         }
     }
 
-    public void setLimitResetPwd(String passportId) throws ServiceException {
-        // 设置密码修改次数限制
-        String resetCacheKey = buildResetPwdCacheKey(passportId);
+    @Override
+    public boolean deleteAccountByPassportId(String passportId) throws ServiceException {
         try {
-            if (redisUtils.checkKeyIsExist(resetCacheKey)) {
-                redisUtils.increment(resetCacheKey);
-            } else {
-                redisUtils.setWithinSeconds(resetCacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
+            int row = accountDAO.deleteAccountByPassportId(passportId);
+            if (row != 0) {
+                String cacheKey = buildAccountKey(passportId);
+                long redisRow = dbShardRedisUtils.delete(cacheKey);
+                return redisRow == 1;
             }
+            return false;
         } catch (Exception e) {
-            redisUtils.delete(resetCacheKey);// DO NOTHING 不作任何处理？
+            throw new ServiceException(e);
         }
     }
 
@@ -333,17 +344,18 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_resetPassword", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException {
         try {
             String passportId = account.getPassportId();
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMD5);
             int row = accountDAO.updatePassword(passwdSign, passportId);
+            pcAccountTokenService.batchRemoveAccountToken(passportId, true);
             if (row != 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPassword(passwdSign);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-
                 return true;
             }
         } catch (Exception e) {
@@ -352,82 +364,47 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
-    private String buildAccountBlackCacheKey(String ip) {
-        return CacheConstant.CACHE_PREFIX_PASSPORTID_IPBLACKLIST + ip;
-    }
-
-    @Override
-    public boolean isInAccountBlackListByIp(String passportId, String ip) throws ServiceException {
-        boolean flag = true;
-        long ipCount = 0;
-        try {
-            String cacheKey = buildAccountBlackCacheKey(ip);
-            String ipValue = redisUtils.get(cacheKey);
-            if (Strings.isNullOrEmpty(ipValue)) {
-                redisUtils.setWithinSeconds(cacheKey, "1", DateAndNumTimesConstant.TIME_ONEDAY);
-            } else {
-                ipCount = Long.parseLong(ipValue);
-                //判断ip注册限制次数（一天20次）
-                if (ipCount < DateAndNumTimesConstant.IP_LIMITED) {
-                    redisUtils.increment(cacheKey);
-                } else {
-                    return false;
-                }
-            }
-        } catch (Exception e) {
-            flag = false;
-        }
-        return flag;
-    }
-
     @Override
     public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException {
         boolean flag = true;
         try {
-            String code = UUID.randomUUID().toString().replaceAll("-", "");
-            String token = Coder.encryptMD5(username + clientId + code);
-            String params =
+            String token = SecureCodeGenerator.generatorSecureCode(username, clientId);
+            String activeUrl =
                     PASSPORT_ACTIVE_EMAIL_URL + "passport_id=" + username +
                             "&client_id=" + clientId +
                             "&token=" + token;
-            if (!Strings.isNullOrEmpty(ru)) {
-                params = params + "&ru=" + Coder.encodeUTF8(ru);
+            if (Strings.isNullOrEmpty(ru)) {
+                ru = CommonConstant.DEFAULT_INDEX_URL;
             }
-            String activeUrl = CommonConstant.PASSPORT_ACTIVE_EMAIL_URL + params;
-
+            activeUrl += "&ru=" + Coder.encodeUTF8(ru);
             String cacheKey = buildCacheKey(username);
             Map<String, String> mapParam = new HashMap<>();
             //设置连接失效时间
             mapParam.put("token", token);
             //设置ru
             mapParam.put("ru", ru);
-
             //发送邮件
             ActiveEmail activeEmail = new ActiveEmail();
             activeEmail.setActiveUrl(activeUrl);
-
             //模版中参数替换
             Map<String, Object> map = Maps.newHashMap();
             map.put("activeUrl", activeUrl);
             map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             activeEmail.setMap(map);
-
             activeEmail.setTemplateFile("activemail.vm");
             activeEmail.setSubject("激活您的搜狗通行证帐户");
             activeEmail.setCategory("register");
             activeEmail.setToEmail(username);
-
             mailUtils.sendEmail(activeEmail);
-
             //如果重新发送激活邮件，password是为空的，说明不是注册，否则需要临时注册到缓存
             if (!Strings.isNullOrEmpty(passpord)) {
+                //临时注册到缓存
                 initialAccountToCache(username, passpord, ip);
             }
             redisUtils.hPutAll(cacheKey, mapParam);
             redisUtils.expire(cacheKey, DateAndNumTimesConstant.TIME_TWODAY);
-            //临时注册到缓存
-            initialAccountToCache(username, passpord, ip);
         } catch (Exception e) {
+            logger.error("username:{} send email fail!", username, e);
             flag = false;
         }
         return flag;
@@ -488,8 +465,6 @@ public class AccountServiceImpl implements AccountService {
                 map.put("token", token);
 
                 redisUtils.setWithinSeconds(cacheKey, captchaCode, DateAndNumTimesConstant.CAPTCHA_INTERVAL);
-                /*redisUtils.set(cacheKey, captchaCode);
-                redisUtils.expire(cacheKey, DateAndNumTimesConstant.CAPTCHA_INTERVAL);*/
             } else {
                 map = Maps.newHashMap();
             }
@@ -521,8 +496,9 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_modifyMobile", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
-    public boolean modifyMobile(Account account, String newMobile) throws ServiceException {
+    public boolean modifyMobileByAccount(Account account, String newMobile) throws ServiceException {
         try {
             String passportId = account.getPassportId();
             int row = accountDAO.updateMobile(newMobile, passportId);
@@ -538,6 +514,81 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
+    @Override
+    public boolean bindMobile(Account account, String newMobile) throws ServiceException {
+        try {
+            String passportId = account.getPassportId();
+            String oldMobile = account.getMobile();
+            String newMobilePassportId = mobilePassportMappingService.queryPassportIdByMobile(newMobile);
+            if (!Strings.isNullOrEmpty(newMobilePassportId)) { //该手机号不允许绑定
+                return false;
+            }
+            if (!Strings.isNullOrEmpty(oldMobile)) { //已绑定过手机的账号不允许再次绑定
+                return false;
+            }
+            //这里要先写account再写mapping，因为根据account的mobile判断是否已绑定手机
+            boolean isModifyAccount = modifyMobileByAccount(account, newMobile);
+            boolean isInitMapping = mobilePassportMappingService.initialMobilePassportMapping(newMobile, passportId);
+            return isInitMapping && isModifyAccount;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean modifyBindMobile(Account account, String newMobile) throws ServiceException {
+        try {
+            String passportId = account.getPassportId();
+            String oldMobile = account.getMobile();
+            String newMobilePassportId = mobilePassportMappingService.queryPassportIdByMobile(newMobile);
+            if (!Strings.isNullOrEmpty(newMobilePassportId)) { //该手机号不允许绑定
+                return false;
+            }
+            if (Strings.isNullOrEmpty(oldMobile)) { //未绑定过手机的账号不允许修改绑定
+                return false;
+            }
+            //修改绑定手机
+            String oldMobilePassportId = mobilePassportMappingService.queryPassportIdByMobile(oldMobile);
+            if (!Strings.isNullOrEmpty(oldMobilePassportId)) {
+                boolean isDeleteMapping = mobilePassportMappingService.deleteMobilePassportMapping(oldMobile);
+                if (!isDeleteMapping) return false;
+            } else { //上一次绑定失败，写account成功，写mapping失败
+                logger.error("before bind account success but mapping fail, passportId:" + passportId + ", newMobile:" + newMobile);
+                return false;
+            }
+            //这里要先写account再写mapping，因为根据account的mobile判断是否已绑定手机
+            boolean isModifyAccount = modifyMobileByAccount(account, newMobile);
+            boolean isInitMapping = mobilePassportMappingService.initialMobilePassportMapping(newMobile, passportId);
+            return isInitMapping && isModifyAccount;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean deleteOrUnbindMobile(String mobile) throws ServiceException {
+        String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
+        try {
+            if (!Strings.isNullOrEmpty(passportId)) {
+                Account account = queryAccountByPassportId(passportId);
+                if (account != null) {
+                    boolean isAccount;
+                    if (passportId.equals(mobile + "@sohu.com")) { //删除注册手机号
+                        isAccount = deleteAccountByPassportId(passportId);
+                    } else { //删除手机号绑定关系
+                        isAccount = modifyMobileByAccount(account, null);
+                    }
+                    boolean isDeleteMapping = mobilePassportMappingService.deleteMobilePassportMapping(mobile);
+                    return isAccount && isDeleteMapping;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updateState", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean updateState(Account account, int newState) throws ServiceException {
         try {
@@ -589,10 +640,8 @@ public class AccountServiceImpl implements AccountService {
             account.setFlag(AccountStatusEnum.DISABLED.getValue());
             account.setPasswordtype(PasswordTypeEnum.CRYPT.getValue());
             account.setRegIp(ip);
-
             String cacheKey = buildAccountKey(username);
             dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.TIME_TWODAY);
-
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -605,7 +654,7 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public boolean checkCaptchaCode(String token, String captchaCode) throws Exception {
+    public boolean checkCaptchaCode(String token, String captchaCode) throws ServiceException {
         try {
             //校验验证码
             if (!checkCaptchaCodeIsVaild(token, captchaCode)) {
@@ -618,29 +667,6 @@ public class AccountServiceImpl implements AccountService {
         return true;
     }
 
-
-    @Override
-    public String checkUniqName(String uniqname) throws ServiceException {
-        String passportId = null;
-        try {
-            String cacheKey = buildUniqnameCacheKey(uniqname);
-            passportId = dbShardRedisUtils.get(cacheKey);
-            if (Strings.isNullOrEmpty(passportId)) {
-                passportId = uniqNamePassportMappingDAO.getPassportIdByUniqName(uniqname);
-                if (!Strings.isNullOrEmpty(passportId)) {
-                    dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("checkUniqName fail", e);
-        }
-        return passportId;
-    }
-
-    private String buildUniqnameCacheKey(String uniqname) {
-        return CacheConstant.CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-    }
-
     @Override
     public boolean updateUniqName(Account account, String uniqname) throws ServiceException {
         try {
@@ -649,7 +675,7 @@ public class AccountServiceImpl implements AccountService {
             //如果新昵称不为空且与原昵称不重复，则更新数据库及缓存
             if (!Strings.isNullOrEmpty(uniqname) && !uniqname.equals(oldUniqName)) {
                 //先检查 u_p_m 中是否存在，如果昵称存在则返回
-                if (!Strings.isNullOrEmpty(checkUniqName(uniqname))) {
+                if (!Strings.isNullOrEmpty(uniqNamePassportMappingService.checkUniqName(uniqname))) {
                     return false;
                 }
                 //更新数据库
@@ -662,24 +688,14 @@ public class AccountServiceImpl implements AccountService {
                     //第一次直接插入
                     if (Strings.isNullOrEmpty(oldUniqName)) {
                         //更新新的映射表
-                        row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
-                        if (row > 0) {
-                            cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                            dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
-                        } else {
-                            return false;
-                        }
+                        boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
+                        if (!isInsert) return false;
                     } else {
                         //移除原来映射表
-                        if (removeUniqName(oldUniqName)) {
+                        if (uniqNamePassportMappingService.removeUniqName(oldUniqName)) {
                             //更新新的映射表
-                            row = uniqNamePassportMappingDAO.insertUniqNamePassportMapping(uniqname, passportId);
-                            if (row > 0) {
-                                cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                                dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
-                            } else {
-                                return false;
-                            }
+                            boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
+                            if (!isInsert) return false;
                         }
                     }
                     return true;
@@ -693,6 +709,7 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updateAvatar", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean updateAvatar(Account account, String avatar) {
         try {
@@ -707,29 +724,6 @@ public class AccountServiceImpl implements AccountService {
             }
         } catch (Exception e) {
             throw new ServiceException(e);
-        }
-        return false;
-    }
-
-
-    //缓存中移除原来昵称
-    @Override
-    public boolean removeUniqName(String uniqname) throws ServiceException {
-        try {
-            if (!Strings.isNullOrEmpty(uniqname)) {
-                //更新映射
-                int row = uniqNamePassportMappingDAO.deleteUniqNamePassportMapping(uniqname);
-                if (row > 0) {
-                    String cacheKey = CACHE_PREFIX_NICKNAME_PASSPORTID + uniqname;
-                    dbShardRedisUtils.delete(cacheKey);
-                    return true;
-                } else if (row == 0) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            logger.error("removeUniqName fail", e);
-            return false;
         }
         return false;
     }

@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
-import com.alibaba.dubbo.common.utils.StringUtils;
+//import com.alibaba.dubbo.common.utils.StringUtils;
+
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
@@ -9,6 +10,7 @@ import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
 import com.sogou.upd.passport.model.account.AccountToken;
 import junit.framework.Assert;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 下午8:57
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 public class PCAccountManagerImplTest extends BaseTest {
     @Autowired
     private PCAccountManager pcAccountManager;
@@ -109,21 +111,6 @@ public class PCAccountManagerImplTest extends BaseTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Test
-    public void testGetBrowserBbsUniqname() {
-        String passportId = "shipengzhi1986@sogou.com";
-        String uniqname = pcAccountManager.getBrowserBbsUniqname(passportId);
-        Assert.assertTrue(!StringUtils.isBlank(uniqname));
-    }
-
-
-    @Test
-    public void testGetUniqnameByClientId() {
-        String passportId = "shipengzhi1986@sogou.com";
-        String uniqname = pcAccountManager.getUniqnameByClientId(passportId, 1044);
-        Assert.assertTrue(!StringUtils.isBlank(uniqname));
     }
 
 }

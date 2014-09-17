@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.connect.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -62,35 +63,27 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
             int client_id = Integer.parseInt(req.getParameter("client_id"));
             int isthird = Integer.parseInt(req.getParameter("isthird"));
 //            String instance_id = req.getParameter("instance_id");
-
             String appidtypeString = req.getParameter("appid_type");
-            Integer appidType= appidtypeString ==null?null:Integer.valueOf(appidtypeString);
-
+            Integer appidType = appidtypeString == null ? null : Integer.valueOf(appidtypeString);
             int provider = AccountTypeEnum.getProvider(providerStr);
-
-
             if (AccountTypeEnum.isConnect(provider)) {
                 OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
                 if (oAuthConsumer == null) {
                     result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                     return result;
                 }
-
-                //根据code值获取access_token
-                ConnectConfig connectConfig = null;
-                if(appidType==null){
+                ConnectConfig connectConfig;
+                if (appidType == null) {
                     connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
-                }else{
-                    if(appidType==0) {
+                } else {
+                    if (appidType == 0) {
                         connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
-                    }else if(appidType==1){
+                    } else if (appidType == 1) {
                         connectConfig = connectConfigService.querySpecifyConnectConfig(client_id, provider);
-                    }else{
+                    } else {
                         connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
                     }
                 }
-
-
                 if (connectConfig == null) {
                     result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                     return result;
@@ -162,9 +155,9 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                     Result sessionResult = sessionServerManager.createSession(passportId);
                     String sgid;
                     if (sessionResult.isSuccess()) {
-                        sgid = (String) sessionResult.getModels().get("sgid");
+                        sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                         if (!Strings.isNullOrEmpty(sgid)) {
-                            result.getModels().put("sgid", sgid);
+                            result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                             result.setSuccess(true);
                             result.setMessage("success");
                             removeParam(result);
@@ -179,7 +172,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_LOGIN);
             }
 
-            result.getModels().put("userid",PassportIDGenerator.generator(openId,provider));
+            result.getModels().put("userid", PassportIDGenerator.generator(openId, provider));
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException");
@@ -191,6 +184,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
             result = buildErrorResult(ope.getError(), ope.getDescription());
         } catch (Exception exp) {
             logger.error("handle oauth authroize code system error!", exp);
+            result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "handle oauth authroize code system error!");
         }
 
         return result;

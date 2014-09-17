@@ -111,7 +111,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.3", ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户名不存在
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.4", ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);//原密码校验失败
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.5", ERR_CODE_ACCOUNT_BIND_NOTEXIST);//手机号绑定的账号不存在
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.6", ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);//修改密码失败
+        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.6", SYSTEM_UNKNOWN_EXCEPTION);//系统异常
         SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.7", ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT);//原密码错误次数超限
 
         //wapgetuserid 查询手机号绑定的账号
@@ -147,7 +147,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         //checkuser 检查用户名是否可以
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.3", ERR_CODE_USERID_ILLEGAL);//非法userid
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.4", ERR_CODE_USER_ID_EXIST);//用户名已经存在
-        SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.6", SYSTEM_UNKNOWN_EXCEPTION);//修改失败
+        SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.6", SYSTEM_UNKNOWN_EXCEPTION);//查找失败
 
         //obtainconnecttokeninfo 调用SOHU接口获取第三方用户的token
         SHPPERRCODE_SGPPERRCODE_MAP.put("get.1001", ERR_CODE_COM_REQURIE);     //缺少必须参数

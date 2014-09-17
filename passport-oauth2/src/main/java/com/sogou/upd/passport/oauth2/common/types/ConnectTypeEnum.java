@@ -46,13 +46,13 @@ public enum ConnectTypeEnum {
      * 是否为移动客户端，type=mapp/mobile
      */
     public static boolean isMobileApp(String type) {
-        return type.equals(ConnectTypeEnum.MAPP.toString());
+        return ConnectTypeEnum.MAPP.toString().equals(type);
     }
     /*
     * 是否为移动客户端，type=mapp/mobile
     */
     public static boolean isMobileWap(String type) {
-        return type.equals(ConnectTypeEnum.WAP.toString());
+        return ConnectTypeEnum.WAP.toString().equals(type);
     }
     /*
     * 是否为web端，type=web或空

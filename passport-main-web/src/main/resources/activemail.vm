@@ -1,6 +1,33 @@
+<!doctype html>
 <html>
-<title>hello！</title>
+<head>
+    <meta charset="utf-8"/>
+    <title>搜狗通行证</title>
+    <base target="_blank"/>
+    <style type="text/css">
+        body {
+            font: 14px/1.666 arial, verdana, sans-serif;
+            padding: 0;
+            margin: 0;
+            white-space: normal;
+            word-wrap: break-word;
+            min-height: 100px
+        }
+        a{color: #003399}
+    </style>
+</head>
 <body>
-亲爱的用户：您好，欢迎您使用搜狐通行证服务，为确保用户注册信息的真实性，我们会验证此邮箱是否属于您。请单击以下链接进行激活：<a href="$activeUrl">"+$activeUrl+"</a>
+<img src="http://account.sogou.com/static/img/index/logo.png" border="0"/>
+<br><br>亲爱的用户：<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;您好，欢迎您使用搜狗通行证服务!
+<br><br>为确保用户注册信息的真实性，我们会验证此邮箱是否属于您,请单击以下链接进行激活:<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="$activeUrl">$activeUrl</a><br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;如果您的邮箱不支持链接点击，请将以上链接地址拷贝到您的浏览器地址栏中。如果该邮件误发给了您，您无需执行任何操作。<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;该链接仅在2日内有效，如果超过2日未激活，请重新注册。<br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;此邮件由系统自动产生，请勿回复。<br><br>
+<div style="text-align:right;padding-right:4em;">
+    &nbsp;&nbsp;&nbsp;&nbsp;搜狗通行证<br><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;$date
+</div>
 </body>
 </html>

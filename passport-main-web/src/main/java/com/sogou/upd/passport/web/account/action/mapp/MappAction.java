@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action.mapp;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -99,7 +100,7 @@ public class MappAction extends BaseController {
             String secret = appConfig.getClientSecret();
 
             TreeMap map = new TreeMap();
-            map.put("sgid", sgid);
+            map.put(LoginConstant.COOKIE_SGID, sgid);
             map.put("client_id", client_id);
             map.put("instance_id", instance_id);
 

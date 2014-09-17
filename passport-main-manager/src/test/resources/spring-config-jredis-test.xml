@@ -28,6 +28,30 @@
         <property name="redisTemplate" ref="cacheTemplate"/>
     </bean>
 
+    <!--<bean id="jedisShardInfo_1" class="redis.clients.jedis.JedisShardInfo">-->
+    <!--<constructor-arg index="0" value="10.146.200.127"/>-->
+    <!--<constructor-arg index="1" value="6369" type="int"/>-->
+    <!--</bean>-->
+    <!--<bean id="jedisShardInfo_2" class="redis.clients.jedis.JedisShardInfo">-->
+    <!--<constructor-arg index="0" value="10.146.200.127"/>-->
+    <!--<constructor-arg index="1" value="6379" type="int"/>-->
+    <!--</bean>-->
+    <!--<bean id="jedisShardInfo_3" class="redis.clients.jedis.JedisShardInfo">-->
+    <!--<constructor-arg index="0" value="10.146.200.127"/>-->
+    <!--<constructor-arg index="1" value="6389" type="int"/>-->
+    <!--</bean>-->
+    <!--<bean id="jedisShardInfo_4" class="redis.clients.jedis.JedisShardInfo">-->
+    <!--<constructor-arg index="0" value="10.146.200.127"/>-->
+    <!--<constructor-arg index="1" value="6399" type="int"/>-->
+    <!--</bean>-->
+    <!--<bean id="jedisShardInfo_5" class="redis.clients.jedis.JedisShardInfo">-->
+    <!--<constructor-arg index="0" value="10.146.24.128"/>-->
+    <!--<constructor-arg index="1" value="6389" type="int"/>-->
+    <!--</bean>-->
+    <!--<bean id="jedisShardInfo_6" class="redis.clients.jedis.JedisShardInfo">-->
+    <!--<constructor-arg index="0" value="10.146.24.129"/>-->
+    <!--<constructor-arg index="1" value="6399" type="int"/>-->
+    <!--</bean>-->
     <bean id="jedisShardInfo_204" class="redis.clients.jedis.JedisShardInfo">
         <constructor-arg index="0" value="10.12.139.204"/>
         <constructor-arg index="1" value="6379" type="int"/>
@@ -42,6 +66,12 @@
             <list>
                 <ref bean="jedisShardInfo_204"/>
                 <ref bean="jedisShardInfo_205"/>
+                <!--<ref bean="jedisShardInfo_1"/>-->
+                <!--<ref bean="jedisShardInfo_2"/>-->
+                <!--<ref bean="jedisShardInfo_3"/>-->
+                <!--<ref bean="jedisShardInfo_4"/>-->
+                <!--<ref bean="jedisShardInfo_5"/>-->
+                <!--<ref bean="jedisShardInfo_6"/>-->
             </list>
         </constructor-arg>
     </bean>
@@ -67,12 +97,6 @@
         <!--<property name="database" value="${redis.default.db}"></property>-->
         <constructor-arg index="0" ref="kvPoolConfig"/>
     </bean>
-    <bean id="kvTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
-          p:connectionFactory-ref="kvConnectionFactory"/>
-    <bean id="kvUtils" class="com.sogou.upd.passport.common.utils.KvUtils">
-        <property name="kvTemplate" ref="kvTemplate"/>
-    </bean>
-
     <bean id="coreKvTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
           p:connectionFactory-ref="kvConnectionFactory"/>
     <bean id="coreKvUtils" class="com.sogou.upd.passport.common.utils.CoreKvUtils">
@@ -127,7 +151,7 @@
 
     <!--热切换redis-->
     <bean id="monitor" class="com.sogou.upd.passport.zk.Monitor" destroy-method="destory">
-        <constructor-arg name="zks" value="10.134.71.150:2181"/>
+        <constructor-arg name="zks" value="10.136.24.136:2181"/>
     </bean>
     <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">
         <constructor-arg name="monitor" ref="monitor"/>

@@ -1,34 +1,28 @@
 package com.sogou.upd.passport.service.dataimport;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
-import com.sogou.upd.passport.common.utils.JsonUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.dao.account.AccountDAO;
 import com.sogou.upd.passport.dao.account.AccountInfoDAO;
 import com.sogou.upd.passport.dao.account.MobilePassportMappingDAO;
 import com.sogou.upd.passport.dao.account.UniqNamePassportMappingDAO;
-import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.model.account.UniqnamePassportMapping;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.perf4j.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.*;
-import java.net.URI;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -266,7 +260,7 @@ public class AppForkJoin extends BaseTest {
         Map<String, String> differenceMap = Maps.newConcurrentMap();
 
 //        String passportId = "joblim@sogou.com";  //返回有昵称
-        String passportId = "wangqingemail@sohu.com";  //返回有昵称
+        String passportId = "alva396@sohu.com";  //返回有昵称
 
 
         /*StopWatch watch = new StopWatch();
@@ -278,14 +272,14 @@ public class AppForkJoin extends BaseTest {
             try {
                 mapB = SGHttpClient.executeBean(requestModelXml, HttpTransformat.xml, Map.class);
 
-                if (mapB.containsKey("birthday")) {
+               /* if (mapB.containsKey("birthday")) {
                     String birthday = String.valueOf(mapB.get("birthday"));
                     if (StringUtils.isNotEmpty(birthday)) {
                         mapB.put("birthday", birthday);
                     } else {
                         mapB.put("birthday", "1900-01-01");
                     }
-                }
+                }*/
 
                 System.out.println("===================mapB:" + mapB.toString());
 

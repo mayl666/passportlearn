@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=837973" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=961983" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -39,27 +39,120 @@
 
 <div class="main-content one-col">
     <div class="inner recover" >
-        <div class="title">
-            找回密码
-        </div>
+        <img src="/./static/img/findpwd/step2.png" border="0"/>
         <div  class="form">
-            <form method="post" id="" action="">
-                <script type="text/tpl" id="Target">
-                    <p class="ptitle">您正要找回的账户是 <{ uname }></p>
-                    <p class="type-title">请选择验证方式</p>
-                    <ul class="type-list">
-                        <% for key,value in verify %>
-                        <li>
-                            <span class="type">
-                                <{ key }><% if value.val %>：<span class="name" title="<{ value.val }>"><{ value.val }></span><%endif%>
-                            </span>
-                            <a href="<{ value.link }>?client_id=1120&userid=<{ uname }>&type=<{ value.tag }>" class="btn short-btn">去验证</a>
-                        </li>
-                        <% endfor %>
-                    </ul>
-                    
-                </script>
+            
+            <div>
+                <div class="form-item">
+                <label for="type">请选择验证方式：</label>
+                <span class="form-el form-el-s form-el-fuck">
+                        <select id="type"></select>
+                </span>
+            </div> 
+            </div>
+            <form action="/web/findpwd/check" class="hide" id="sec_email_form" method="post">
+            <input type="hidden" name="username" value=""/>
+            <input type="hidden" name="sec_email" value=""/>
+            <input type="hidden" name="ru" value=""/>
+            <input type="hidden" name="client_id" value=""/>
+            
+            <div class="form-item">
+                <label for="seg_email">已验证邮箱：</label>
+                <span class="form-el form-el-s form-el-fuck">
+                    <span class="head email_head"></span>
+                    <input name="seg_email" value=""/>
+                    <span class="tail email_tail"></span>
+                </span>
+            </div>
+
+             <div class="form-error"><span></span></div>
+
+             <div class="form-btn">
+    <button type="submit">发送验证邮件</button>
+</div>
             </form>
+
+            <form action="/web/findpwd/check" class="hide" id="reg_email_form" method="post">
+            <input type="hidden" name="username" value=""/>
+            <input type="hidden" name="reg_email" value=""/>
+            <input type="hidden" name="ru" value=""/>
+            <input type="hidden" name="client_id" value=""/>
+            
+            <div class="form-item">
+                <label for="reg_email">注册邮箱：</label>
+                <span class="form-el form-el-s form-el-fuck">
+                    <span class="head email_head"></span>
+                    <input name="seg_email" value=""/>
+                    <span class="tail email_tail"></span>
+                </span>
+            </div>
+
+             <div class="form-error"><span></span></div>
+
+             <div class="form-btn">
+    <button type="submit">发送验证邮件</button>
+</div>
+            </form>
+
+            <form action="/web/findpwd/check" class="hide" method="post" id="sec_mobile_form">
+            <input type="hidden" name="username" value=""/>
+            <input type="hidden" name="sec_mobile" value=""/>
+            <input type="hidden" name="ru" value=""/>
+            <input type="hidden" name="client_id" value=""/>
+            <input type="hidden" name="token" class="token" value=""/>
+
+            <div class="form-item">
+                <label for="seg_mobile">已验证手机：</label>
+                <span class="form-el form-el-s form-el-fuck">
+                    <span class="head mobile_head"></span>
+                    <input name="seg_mobile" id="seg_mobile" value=""/>
+                    <span class="tail mobile_tail"></span>
+                </span>
+            </div>
+
+            <div class="form-item form-item-vcode hide">
+                <label for="sValidIpt">验证码：</label>
+                <span class="form-el form-el-s"><input type="text" name="code-captcha" id="sValidIpt" value=""/></span>
+                <span class="vpic"><img src="/./static/img/b.gif"/></span>
+                <a href="#" class="change-vpic">看不清，换一张</a>
+            </div>
+
+             <div class="form-item">
+    <label for="SmscodeIpt">短信验证码：</label>
+    <span class="form-el">
+        <input autocomplete="off"uui-type="smscode"type="text" name="smscode" id="SmscodeIpt" value="" data-desc="" value=""/>
+    </span>
+</div>
+             <div class="form-item">
+    <label >&nbsp;</label>
+    <span class="form-el form-el-none">
+        <span class="tel-valid-btn" action="" >免费获取短信验证码</span>
+        <span class="tel-valid-error error"></span>
+        <span class="tel-valid-hr" ></span>
+    </span>
+</div>
+             <div class="form-error"><span></span></div>
+             <div class="form-btn">
+    <button type="submit">下一步</button>
+</div>
+            </form>
+
+            <form action="#" class="other-msg">
+<p>如果您无法通过绑定手机或邮箱找回密码，您还可以尝试通过以下途径与我们取得联系！</p>
+<p>浏览器、输入法：<a href="http://ie.sogou.com/bbs/forum.php?mod=viewthread&tid=2589460" target="_blank">请点这里</a></p>
+<p>彩票：<span class="red">kfcp@sogou-inc.com或010-56898998</span></p>
+<p>小说：<span class="red">客服QQ群 263958053</span></p>
+<p>游戏：<span class="red">企业QQ 2851050936</span></p>
+<p>壁纸：<span class="red">客服QQ群 227986177</span></p>
+<p>其他：<span class="red">passportkf@sogou-inc.com</span></p>
+            </form>
+
+        </div>
+        <div class="email-success hide">
+            <div class="line linet">
+                <img src="/./static/img/success.jpg" border="0" class="did"/><span class="tit">邮件发送成功</span>
+            </div>
+            <div class="line re-tip">如您超过10分钟仍未收到邮件，请尝试检查“垃圾邮件”箱或<a href="#" class="resendemail">重新发送</a>邮件。</div>
         </div>
     </div>
 </div>
@@ -75,7 +168,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/recover.js?t=2014061013"></script>
+    <script type="text/javascript" src="/./static/js/recover.js?t=2014091040"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

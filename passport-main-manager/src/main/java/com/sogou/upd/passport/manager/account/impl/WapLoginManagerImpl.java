@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -18,7 +19,6 @@ import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
-import com.sogou.upd.passport.service.account.WapTokenService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -40,8 +40,6 @@ public class WapLoginManagerImpl implements WapLoginManager {
 
     @Autowired
     private LoginManager loginManager;
-    @Autowired
-    private WapTokenService wapTokenService;
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -80,10 +78,10 @@ public class WapLoginManagerImpl implements WapLoginManager {
                 Result sessionResult = sessionServerManager.createSession(passportId);
                 String sgid = null;
                 if (sessionResult.isSuccess()) {
-                    sgid = (String) sessionResult.getModels().get("sgid");
+                    sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                     result.getModels().put("userid", result.getModels().get("userid").toString());
                     if (!Strings.isNullOrEmpty(sgid)) {
-                        result.getModels().put("sgid", sgid);
+                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                     }
                 }
             }
@@ -93,22 +91,6 @@ public class WapLoginManagerImpl implements WapLoginManager {
             return result;
         }
         return result;
-    }
-
-    @Override
-    public Result authtoken(String token) {
-        Result result = new APIResultSupport(false);
-        try {
-            String passportId = wapTokenService.getPassprotIdByToken(token);
-            if (!Strings.isNullOrEmpty(passportId)) {
-                result.setSuccess(true);
-                result.setDefaultModel("userid", passportId);
-            }
-            return result;
-        } catch (Exception e) {
-            result.setSuccess(false);
-            return result;
-        }
     }
 
     @Override
@@ -158,7 +140,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
                         result = bulidSgid(connectConfig.getAppKey(), accessToken, shPassportId, nickname, expires_in);
                     } else if (passportId.equals(shPassportId)) {
                         result.setSuccess(true);
-                        result.getModels().put("sgid", sgid);
+                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                     } else {
                         result = bulidSgid(connectConfig.getAppKey(), accessToken, shPassportId, nickname, expires_in);
                     }
@@ -184,9 +166,9 @@ public class WapLoginManagerImpl implements WapLoginManager {
             Result sessionResult = sessionServerManager.createSession(openId);
             String sgid = null;
             if (sessionResult.isSuccess()) {
-                sgid = (String) sessionResult.getModels().get("sgid");
+                sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                 if (!Strings.isNullOrEmpty(sgid)) {
-                    sessionResult.setDefaultModel("sgid", sgid);
+                    sessionResult.setDefaultModel(LoginConstant.COOKIE_SGID, sgid);
                 }
             }
             return sessionResult;

@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>搜狗通行证</title>
+        <link rel="stylesheet" href="/./static/css/main.css?t=961983" type="text/css" />
+    </head>
+    <body >
+        <div class="header" id="Header">
+    <div class="inner">
+        <h1><a href="/"><img src="/./static/img/logo.png" class="" alt="搜狗通行证" /></a></h1>
+        <ul class="info" style="display:none;">
+            <li>欢迎您，&nbsp;<span class="username"></span>&nbsp;</li>
+            <li class="sep" >|</li>
+            <li class="logout" >
+                <a href="https://account.sogou.com/web/logout_redirect?client_id=1120&ru=https%3A%2F%2Faccount.sogou.com%2F">退出</a>
+            </li>
+        </ul>
+    </div>
+</div>
+        
+        <div class="wrapper">
+            
+
+
+
+<div class="banner">
+    <div class="inner reg">
+        <ul>
+            
+            <li ><a href="/">首页</a></li>
+            
+            <li class="current"><a href="/web/findpwd">找回密码</a></li>
+            
+        </ul>
+    </div>
+    <span class="underline"></span>
+</div>
+
+<div class="main-content one-col">
+    <div class="inner recover recover-end" >
+        <div class="result">
+            <script type="text/tpl" id="Tpl">
+                <%if success%>
+                <div class="caption"><img src="/./static/img/success.jpg" border="0"/>恭喜您，密码重置成功</div>
+                <div class="desc">请牢记您新设置的密码，<a href="/">立即登录</a></div>
+                    <%if ru%>
+                    <div class="desc"><span class="count">60</span>s后跳转至<a href="<{ru}>"><{ru}></a></div>
+                    <%endif%>
+                <%else%>
+                <div class="caption red">密码重置失败</div>
+                 <div class="desc">请您重新<a href="/web/findpwd/">找回</a></div>
+                 <%endif%>
+             </script>
+        </div>
+    </div>
+</div>
+
+
+
+        </div>
+        
+        <div class="footer">
+    <div class="inner">
+        <a href="/web/problem/addProblem">意见反馈</a>&nbsp;&nbsp;Copyright &copy;&nbsp;2014 Sogou.com.&nbsp;All Rights Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
+    </div>
+</div>
+    </body>
+    <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
+    <script type="text/javascript" src="/./static/js/recover.js?t=2014091040"></script>
+    
+    <script type="text/javascript">var _server_data = '${data}';</script>
+    <script type="text/javascript">
+
+var spb_vars = {
+    productid:"passport",
+    ptype:"web",
+    pcode:"recover_end".split('/').join('_')
+};
+
+(function() {
+    var pb = document.createElement('script'); pb.type = 'text/javascript'; pb.async = true;
+    pb.src = '/static/js/pb.580599.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pb, s);
+})();
+
+//Prevent syntax error leads to undefined.
+var server_data = (typeof _server_data==='undefined')?'{"status":"10001"}':_server_data;
+        
+require.config({
+    baseUrl:"/./static/js",
+    shim:{
+        'uuiForm':{deps:['uuibase']}//not AMD style...
+    }
+});
+
+
+require(['recover'] , function(module){
+    module.init('end');
+});
+
+
+    </script>
+</html>
+<!--zly-->

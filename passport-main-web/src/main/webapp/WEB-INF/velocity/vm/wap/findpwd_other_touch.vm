@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta id="viewport" name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="MobileOptimized" content="320"/>
+<meta name="format-detection" content="telephone=no"/>
+<title>找回密码-搜狗通行证</title>
+<link rel="stylesheet" href="/./static/css/wap/main.css?t=443027"/>
+</head>
+<body>
+
+<nav class="f-f f-vc">
+    <a href="#" class="backlink f-f f-hc f-vc">〈</a>
+    <div class="f-1 f-f f-hc f-vc">找回密码</div>
+    <a href="/wap/reg" class="f-f f-vc f-hc reglink">注册</a>
+</nav>
+
+
+<form action="＃" method="post" class="block findpwd">
+    <div class="msg f-f f-vc">
+        <div class="circle red f-f f-hc f-vc hide"><div class="sprite sprite-wrong"></div></div>
+        <div class="info"></div>
+    </div>
+    <div class="rows">
+        <!--username-->
+        <div class="row f-f f-vc">
+            <label for="username" class="h-fil f-f f-hr f-vc">帐号：</label>
+            <input type="text" name="username" id="username" class="block h-fil f-1" placeholder="用户名/邮箱/手机号" autocomplete="off"/>
+            <a href="#" class="block indicator hide" tabindex="1"></a>
+        </div>
+        <!--smscode-->
+        <div class="row f-f f-vc" id="captcha-wrapper">
+            <label for="captcha" class="h-fil f-f f-hr f-vc">验证码：</label>
+            <input type="text" name="captcha" id="captcha" class="block h-fil f-1" placeholder="请输入验证码" autocomplete="off" tabindex="3"/>
+            <img src="about:blank" id="captcha-img" border="0" class="captcha-img block"/>
+            <a href="#" class="block indicator hide"></a>
+        </div>
+    </div>
+    <div class="links f-f f-vc">
+        <div class="f-1 h-fil f-f f-vc f-hl">
+            <a href="/wap/findpwd">手机找回</a>
+        </div>
+        <div class="f-1 h-fil f-f f-vc f-hr">
+            <a href="/wap/findpwd/customer" class="rules">联系客服</a>
+        </div>
+    </div>
+    <div class="f-f">
+        <input type="submit" class="block submit f-1 tc" tabindex="5" value="下一步"/>
+    </div>
+    <div class="notify f-f">
+        如您已绑定手机，请选择手机找回
+    </div>
+</form>
+<script>var token = '${token}';</script>
+
+<script type="text/tpl" id="FindpwdConfirm">
+    <div class="msg f-f f-vc">
+        <div class="circle red f-f f-hc f-vc hide"><div class="sprite sprite-wrong"></div></div>
+        <div class="info"></div>
+    </div>
+    <div class="rows">
+        <!--username-->
+        <div class="row f-f f-vc">
+            <label for="username" class="h-fil f-f f-hr f-vc">邮箱：</label>
+            <input type="text" name="username" id="username" class="block h-fil f-1" placeholder="" autocomplete="off" readonly="true" value="<%=email%>"/>
+            <a href="#" class="block indicator hide" tabindex="1"></a>
+        </div>
+    </div>
+    <div class="f-f f-vc">
+        &nbsp;
+    </div>
+    <div class="f-f">
+        <input type="submit" class="block submit f-1 tc" tabindex="5" value="发送验证邮件"/>
+    </div>
+    
+</script>
+    
+
+</body>
+<script src="/static/js/lib/mursa.js?t=140248"></script>
+<script src="/./static/js/wap.js?t=039091" charset="utf-8"></script>
+<script>
+    require.config({
+    baseUrl:"/./static/js"
+});
+
+require(['wap'] , function(module){
+    module['findpwd_other_touch']();
+});
+</script>
+</html>

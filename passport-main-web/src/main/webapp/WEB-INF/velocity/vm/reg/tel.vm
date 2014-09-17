@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=837973" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=961983" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -70,6 +70,12 @@
         <input autocomplete="off" uui-type="require cellphone" type="text" name="username" id="UsernameIpt" value="" data-desc="" class="" placeholder=""/>
     </span>
 </div>
+                    <div class="form-item form-item-vcode hide">
+                        <label for="sValidIpt">验证码：</label>
+                        <span class="form-el form-el-s"><input type="text" name="code-captcha" id="sValidIpt" value="" /></span>
+                        <span class="vpic"><img src="/./static/img/b.gif"/></span>
+                        <a href="#" class="change-vpic">看不清，换一张</a>
+                    </div>
                     <div class="form-item">
     <label >&nbsp;</label>
     <span class="form-el form-el-none">
@@ -92,7 +98,7 @@
     <button type="submit">注册</button>
 </div>
                     <div class="form-desc">
-        <input type="checkbox" name="" value="1" id="ConfirmChb"  data-target="ConfirmChbSpan" checked/>
+        <input type="checkbox" name="" value="1" id="ConfirmChb"  data-target="ConfirmChbSpan" checked="checked"/>
         <span class="checkbox checkbox-checked" id="ConfirmChbSpan" ></span>
         <label for="ConfirmChb">
             我已阅读并接受<a class="agreelink" target="_blank" href="/static/agreement.html">搜狗服务协议</a>
@@ -115,7 +121,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2014061013"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2014091040"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

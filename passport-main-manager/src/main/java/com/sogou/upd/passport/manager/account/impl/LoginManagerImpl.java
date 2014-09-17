@@ -1,17 +1,21 @@
 package com.sogou.upd.passport.manager.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
@@ -42,17 +46,67 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Autowired
+    private RegisterApiManager proxyRegisterApiManager;
+    @Autowired
+    private RegisterApiManager sgRegisterApiManager;
+    @Autowired
     private AccountService accountService;
     @Autowired
     private OperateTimesService operateTimesService;
     @Autowired
     private LoginApiManager loginApiManager;
     @Autowired
-    private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private LoginApiManager sgLoginApiManager;
-    @Autowired
     private SecureManager secureManager;
+    @Autowired
+    private CommonManager commonManager;
+
+    @Override
+    public Result checkUser(String username, int clientId) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            //sohu域账号去sohu检查用户名，否则走sogou检查用户名的逻辑
+            CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
+            String passportId = commonManager.getPassportIdByUsername(username);
+            if (Strings.isNullOrEmpty(passportId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                return result;
+            }
+            if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+                //搜狐账号登录时不用检查用户名是否存在，尽量减少对搜狐接口的依赖；如有问题再开启调用
+//                result = proxyRegisterApiManager.checkUser(checkUserApiParams);
+                result.setSuccess(false); //表示账号已存在
+                result.setCode(ErrorUtil.ERR_CODE_USER_ID_EXIST);
+            } else {
+                result = sgRegisterApiManager.checkUser(checkUserApiParams);
+            }
+            buildLoginResult(result);
+        } catch (ServiceException e) {
+            logger.error("Check account is exists Exception, username:" + username, e);
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    private Result buildLoginResult(Result result) {
+        //注册的checkuser返回结果为false有可能是账号已存在，当提示账号已存在或已注册时，需要转成登录的结果
+        if (!result.isSuccess() && (ErrorUtil.ERR_CODE_USER_ID_EXIST.equals(result.getCode()) || ErrorUtil.ERR_CODE_ACCOUNT_REGED.equals(result.getCode()))) {
+            result.setSuccess(true);
+            return result;
+        }
+        //注册checkuser返回结果为true，表示账号不存在，需要转成登录的结果
+        if (result.isSuccess()) {
+            result.setSuccess(false);
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+        }
+        return result;
+    }
+
+    private CheckUserApiParams buildProxyApiParams(String username, int clientId) {
+        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
+        checkUserApiParams.setUserid(username);
+        checkUserApiParams.setClient_id(clientId);
+        return checkUserApiParams;
+    }
 
     @Override
     public Result accountLogin(WebLoginParams loginParameters, String ip, String scheme) {
@@ -75,28 +129,11 @@ public class LoginManagerImpl implements LoginManager {
                     return result;
                 }
             }
-
             result = authUser(username, ip, pwdMD5);
-
         } catch (Exception e) {
             logger.error("accountLogin fail,passportId:" + passportId, e);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
             return result;
-        }
-        return result;
-    }
-
-    @Override
-    public Result checkCaptchaVaild(String username, String ip, String clientId, String captchaCode, String token) {
-        Result result = new APIResultSupport(true);
-        //校验验证码
-        if (needCaptchaCheck(clientId, username, ip)) {
-            if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
-                logger.info("[accountLogin captchaCode wrong warn]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captchaCode);
-                result.setSuccess(false);
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                return result;
-            }
         }
         return result;
     }
@@ -117,12 +154,6 @@ public class LoginManagerImpl implements LoginManager {
         authUserApiParams.setPassword(pwdMD5);
         authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
         result = loginApiManager.webAuthUser(authUserApiParams);
-        //根据域名判断是否代理，一期全部走代理
-//        if (ManagerHelper.isInvokeProxyApi(passportId)) {
-//            result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-//        } else {
-//            result = sgLoginApiManager.webAuthUser(authUserApiParams);
-//        }
         return result;
     }
 
@@ -162,7 +193,7 @@ public class LoginManagerImpl implements LoginManager {
     public String getIndividPassportIdByUsername(String username) {
         AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(username);
         if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
-            return (username + "@sogou.com");
+            return (username + CommonConstant.SOGOU_SUFFIX);
         }
         return username;
     }

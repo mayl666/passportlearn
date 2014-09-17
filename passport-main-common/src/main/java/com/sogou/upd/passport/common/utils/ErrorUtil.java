@@ -36,6 +36,8 @@ public class ErrorUtil {
     public static final String CREATE_TOKEN_FAIL = "10011";
     // 应用没有该API访问权限
     public static final String ACCESS_DENIED_CLIENT = "10012";
+    // access_token过期
+    public static final String ACCESS_TOKEN_EXPIRED = "10013";
 
     /* ============================================================================ */
     /*  OAuth2授权错误码                                                             */
@@ -60,6 +62,7 @@ public class ErrorUtil {
     public static final String INVALID_REFRESH_TOKEN = "109";
     // login/authorize fail,数据库写入失败
     public static final String AUTHORIZE_FAIL = "110";
+
 
     /* ============================================================================ */
     /*  account 服务的错误代码                                                       */
@@ -114,7 +117,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED = "20223";
     // 当日注册次数已达上限
     public static final String ERR_CODE_ACCOUNT_REGISTER_LIMITED = "20224";
-    // 手机号已绑定其他账号
+    // 手机号已注册或已被绑定
     public static final String ERR_CODE_ACCOUNT_PHONE_BINDED = "20225";
     // 登录失败
     public static final String ERR_CODE_ACCOUNT_LOGIN_FAILED = "20226";
@@ -126,7 +129,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED = "20231";
     // 账号已封杀
     public static final String ERR_CODE_ACCOUNT_KILLED = "20232";
-    //TODO 手机号未被绑定
+    //手机号未被绑定
     public static final String ERR_CODE_ACCOUNT_PHONE_NOBIND = "20233";
     //TODO 手机绑定次数超限
     public static final String ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT = "20236";
@@ -162,7 +165,10 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE = "20257";
     //非法的RU参数
     public static final String ERR_CODE_RU_ILLEGAL = "20258";
-
+    //账号不允许做此操作
+    public static final String ERR_CODE_ACCOUNT_NOTALLOWED = "20259";
+    //搜狐接口异常
+    public static final String ERR_CODE_ACCOUNT_SOHU_API_FAILED = "20260";
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -170,6 +176,12 @@ public class ErrorUtil {
     /* ============================================================================ */
     /*  密保方式相关的错误代码                                                       */
     /* ============================================================================ */
+    //用户有密保手机，请使用密保手机找回密码
+    public static final String ERR_CODE_USER_HAVA_BIND_MOBILE = "20277";
+    //请联系客服找回密码
+    public static final String ERR_CODE_FIND_KEFU = "20278";
+    // 未绑定邮箱
+    public static final String ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH = "20279";
     // 未绑定邮箱
     public static final String NOTHAS_BINDINGEMAIL = "20280";
     // 未设置密保问题及答案
@@ -278,6 +290,16 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND = "30031";
     //只支持第三方平台账号登录
     public static final String ERR_CODE_CONNECT_LOGIN = "30032";
+    //请求方式有错(GET还是POST)
+    public static final String ERR_CODE_CONNECT_ERROR_HTTP = "30033";
+    //需要使用HTTPS
+    public static final String ERR_CODE_CONNECT_NEED_HTTPS = "30034";
+    //微信返回的不合法的调用凭证
+    public static final String ERR_CODE_CONNECT_INVALID_CREDENTIAL = "30035";
+    //不合法的Openid
+    public static final String ERR_CODE_CONNECT_INVALID_OPENID = "30036";
+    //QQ用户词库大小大于5M，请特殊处理
+    public static final String ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M = "30037";
 
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
@@ -333,13 +355,29 @@ public class ErrorUtil {
     /* ============================================================================ */
     public static final String ERR_CODE_ERROR_ACCOUNT = "30701";
 
+    /* ============================================================================ */
+    /*  找回密码相关错误代码                                                            */
+    /* ============================================================================ */
+    //能提交找回密码请求次数超过限制
+    public static final String ERR_CODE_FINDPWD_LIMITED = "30706";
+    public static final String ERR_CODE_FINDPWD_SCODE_FAILED = "30702";
+    public static final String ERR_CODE_FINDPWD_ACCOUNT_DOMAIN_FAILED = "30703";
+    public static final String ERR_CODE_FINDPWD_TYPE_FAILED = "30704";
+    public static final String ERR_CODE_FINDPWD_EMAIL_FAILED = "30705";
+    /* ============================================================================ */
+
     //cookie值无效
     public static final String ERR_CODE_ERROR_COOKIE = "30710";
-
     //个人信息修改失败
     public static final String ERR_CODE_UPDATE_USERINFO = "30801";
     //获取个人资料失败
     public static final String ERR_OBTAIN_ACCOUNT_INFO = "30802";
+    //解除绑定邮箱失败 错误码定义需要有一些跨度 方便扩展！！！
+    public static final String ERR_CODE_EMAIL_UNBIND_FAIL = "40001";
+    // RAS加解密错误
+    public static final String ERR_CODE_RSA_DECRYPT = "31000";
+    //漫游用户信息不存在
+    public static final String ERR_CODE_ROAM_INFO_NOT_EXIST = "41001";
 
     public ErrorUtil() {
         super();
@@ -359,6 +397,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(INVALID_CLIENTID, "client_id不存在");
         ERR_CODE_MSG_MAP.put(CREATE_TOKEN_FAIL, "生成token失败");
         ERR_CODE_MSG_MAP.put(ACCESS_DENIED_CLIENT, "应用没有该API访问权限");
+        ERR_CODE_MSG_MAP.put(ACCESS_TOKEN_EXPIRED, "accessToken过期");
+
 
         // oauth2授权
         ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");
@@ -403,7 +443,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "账号未激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_KILLED, "账号已封杀");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_NOTSUPPORT_SOHU_REGISTER, "暂时不支持sohu域内邮箱注册");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_NOTSUPPORT_SOHU_REGISTER, "暂时不支持sohu域内邮箱执行此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_NOTSUPPORT_SOGOU_REGISTER, "暂时不支持搜狗邮箱注册");
         ERR_CODE_MSG_MAP.put(ERR_CODE_UNIQNAME_ALREADY_EXISTS, "用户昵称已经被使用");
         ERR_CODE_MSG_MAP.put(ERR_CODE_UNIQNAME_FORBID, "昵称包含限制词");
@@ -415,7 +455,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_After_Auth_FAILED, "SSOAfterauth失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_RU_ILLEGAL, "非法的RU参数");
 
-
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED, "当日修改或重置密码次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED, "该邮箱当日邮件发送次数已达上限");
 
@@ -423,9 +462,13 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_THIRD_NOTALLOWED, "第三方账号不允许此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED, "手机账号不允许此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_UNBIND_FAILED, "手机解除绑定失败");
-
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTALLOWED, "账号不允许做此操作");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SOHU_API_FAILED, "搜狐接口异常");
 
         // acount secure info
+        ERR_CODE_MSG_MAP.put(ERR_CODE_USER_HAVA_BIND_MOBILE, "您的帐号已绑定手机，请使用手机找回或联系客服");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FIND_KEFU, "无绑定关系，请联系客服找回您的密码");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH, "原手机号与密保手机不匹配");
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGEMAIL, "未绑定邮箱");
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGQUESTION, "未设置密保问题及答案");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED, "密保答案错误");
@@ -433,6 +476,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED, "申请邮件发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED, "当前密保邮箱错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED, "绑定密保邮箱失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_EMAIL_UNBIND_FAIL, "解除密保邮箱失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED, "绑定密保邮箱申请链接失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_EMAIL_FAILED, "重置密码申请邮箱不可用");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED, "绑定密保手机失败");
@@ -486,6 +530,12 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_REFRESHTOKEN_NOT_EXIST, "refreshToken没有找到");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND, "没有找到此应用对应的第三方平台信息");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_LOGIN, "只支持第三方平台账号登录");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ERROR_HTTP, "请求第三方时请求方式有误");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NEED_HTTPS, "需要使用HTTPS");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_CREDENTIAL, "不合法的调用凭证");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_OPENID, "不合法的Openid");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M, "用户词库大小大于5M，请特殊处理");
+
 
         // info
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERID_TYPE_ERROR, "账号非所支持的第三方账号类型");
@@ -514,6 +564,19 @@ public class ErrorUtil {
 
         //SSO setcookie接口
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_COOKIE, "cookie值无效");
+
+        //找回密码相关
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_LIMITED, "您一天内提交的找回密码请求次数超过限制");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_SCODE_FAILED, "您的链接无效或者参数有误");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_ACCOUNT_DOMAIN_FAILED, "账号类型不支持");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_TYPE_FAILED, "找回密码方式错误");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_EMAIL_FAILED, "找回密码邮件已失效");
+
+        //RSA
+        ERR_CODE_MSG_MAP.put(ERR_CODE_RSA_DECRYPT, "解密错误");
+
+        //漫游
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ROAM_INFO_NOT_EXIST, "漫游用户信息不存在");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

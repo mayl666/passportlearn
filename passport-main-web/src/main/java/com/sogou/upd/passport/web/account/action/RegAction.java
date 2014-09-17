@@ -2,6 +2,8 @@ package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -9,22 +11,27 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.ResendActiveMailParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import com.sogou.upd.passport.web.account.form.RegUserNameParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,8 +49,6 @@ import java.net.URLDecoder;
 @Controller
 @RequestMapping("/web")
 public class RegAction extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger("com.sogou.upd.passport.regBlackListFileAppender");
-    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
     @Autowired
     private RegManager regManager;
@@ -55,7 +60,10 @@ public class RegAction extends BaseController {
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private CookieManager cookieManager;
-
+    @Autowired
+    private CommonManager commonManager;
+    @Autowired
+    private RedisUtils redisUtils;
 
     /**
      * 用户注册检查用户名是否存在
@@ -119,9 +127,7 @@ public class RegAction extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-
             ip = getIp(request);
-
             //校验用户是否允许注册
             uuidName = ServletUtil.getCookie(request, "uuidName");
             result = regManager.checkRegInBlackList(ip, uuidName);
@@ -133,12 +139,12 @@ public class RegAction extends BaseController {
                 }
                 return result.toString();
             }
-
-            //检验用户名是否存在
-            String username = regParams.getUsername();
             int clientId = Integer.valueOf(regParams.getClient_id());
-            result = checkAccountNotExists(username, clientId);
-            if (!result.isSuccess()) {
+            //todo 防止邮箱注册攻击，临时增加接口频次限制
+            if (isSnapBlackList(clientId)) {
+                finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
+                result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
+                result.setMessage("注册失败");
                 return result.toString();
             }
 
@@ -147,21 +153,35 @@ public class RegAction extends BaseController {
                 //设置来源
                 String ru = regParams.getRu();
                 if (Strings.isNullOrEmpty(ru)) {
-                    ru = LOGIN_INDEX_URL;
+                    ru = CommonConstant.DEFAULT_INDEX_URL;
                 }
                 String passportId = (String) result.getModels().get("username");
-                result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
+                Boolean isSetCookie = (Boolean) result.getModels().get("isSetCookie");
+                if (isSetCookie) {
+                    //最初版本调用
+//                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
+                    //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie module替换
+//                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1, StringUtils.EMPTY);
+
+                    CookieApiParams cookieApiParams = new CookieApiParams();
+                    cookieApiParams.setUserid(passportId);
+                    cookieApiParams.setClient_id(clientId);
+                    cookieApiParams.setRu(ru);
+                    cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+                    cookieApiParams.setPersistentcookie(String.valueOf(1));
+                    cookieApiParams.setIp(ip);
+                    cookieApiParams.setUniqname(StringUtils.EMPTY);
+                    cookieApiParams.setMaxAge(-1);
+                    cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
+
+                    result = cookieManager.createCookie(response, cookieApiParams);
+                }
                 result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
             }
         } catch (Exception e) {
             logger.error("reguser:User Register Is Failed,Username is " + regParams.getUsername(), e);
         } finally {
-            String logCode = null;
-            if (!Strings.isNullOrEmpty(finalCode)) {
-                logCode = finalCode;
-            } else {
-                logCode = result.getCode();
-            }
+            String logCode = !Strings.isNullOrEmpty(finalCode) ? finalCode : result.getCode();
             regManager.incRegTimes(ip, uuidName);
             String userId = (String) result.getModels().get("userid");
             if (!Strings.isNullOrEmpty(userId) && AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {
@@ -172,7 +192,91 @@ public class RegAction extends BaseController {
                 }
             }
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id(), logCode, getIp(request));
+            //验证码信息先输出到warning，不记录到日志中，省得报警
+            if (ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED.equals(logCode)) {
+                logger.warn("ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, username:" + regParams.getUsername() + " clientId:" + regParams.getClient_id() + " ip:" + getIp(request) + " requestURI:" + request.getRequestURI());
+            } else {
+                UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id(), logCode, getIp(request));
+                String referer = request.getHeader("referer");
+                userOperationLog.putOtherMessage("ref", referer);
+                UserOperationLogUtil.log(userOperationLog);
+            }
+        }
+        return result.toString();
+    }
+
+    private boolean isSnapBlackList(int clientId) {
+        if (clientId == 1014) {
+            String key = "SP.CLIENTID:WEBREGISTER_LIMITED_NUM_" + clientId;
+            try {
+                if (redisUtils.checkKeyIsExist(key)) {
+                    int checkNum = Integer.parseInt(redisUtils.get(key));
+                    if (checkNum >= 1000) {// 1小时最多注册1000个
+                        return true;
+                    } else {
+                        redisUtils.increment(key);
+                    }
+                } else {
+                    redisUtils.setWithinSeconds(key, "1", DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
+                }
+                return false;
+            } catch (Exception e) {
+                logger.error("[/web/reguser] reguser limit.", e);
+                return false;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 重新发送激活邮件
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/resendActiveMail", method = RequestMethod.POST)
+    @ResponseBody
+    public Object resendActiveMail(HttpServletRequest request, ResendActiveMailParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            //检查client_id是否存在
+            int clientId = Integer.parseInt(params.getClient_id());
+            if (!configureManager.checkAppIsExist(clientId)) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result;
+            }
+            String username = params.getUsername();
+            //如果账号存在并且状态为未激活，则重新发送激活邮件
+            Account account = commonManager.queryAccountByPassportId(username);
+            if (account != null) {
+                switch (account.getFlag()) {
+                    case 0:
+                        //未激活，发送激活邮件
+                        result = regManager.resendActiveMail(params);
+                        break;
+                    case 1:
+                        //正式用户，可直接登录
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                        break;
+                    case 2:
+                        //用户已经被封杀
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+                        break;
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            }
+        } catch (Exception e) {
+            logger.error("method[resendActiveMail] send mobile sms error.{}", e);
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(params.getUsername(), request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
@@ -186,34 +290,55 @@ public class RegAction extends BaseController {
      * @param activeParams 传入的参数
      */
     @RequestMapping(value = "/activemail", method = RequestMethod.GET)
-    @ResponseBody
-    public Object activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams)
+    public void activeEmail(HttpServletRequest request, HttpServletResponse response, ActiveEmailParams activeParams, Model model)
             throws Exception {
-        Result result = new APIResultSupport(false);
+        Result result;
         //参数验证
         String validateResult = ControllerHelper.validateParams(activeParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result;
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.ERR_CODE_COM_REQURIE);
+            return;
         }
         //验证client_id
         int clientId = Integer.parseInt(activeParams.getClient_id());
-
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
-            result.setCode(ErrorUtil.INVALID_CLIENTID);
-            return result;
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.INVALID_CLIENTID);
+            return;
         }
         String ip = getIp(request);
         //邮件激活
         result = regManager.activeEmail(activeParams, ip);
         if (result.isSuccess()) {
-            // 种sohu域cookie
-            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
-            result.setDefaultModel(CommonConstant.RESPONSE_RU, activeParams.getRu());
+            //最初版本
+//            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1);
+            //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie module 替换
+//            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1, StringUtils.EMPTY);
+
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(activeParams.getPassport_id());
+            cookieApiParams.setClient_id(clientId);
+            cookieApiParams.setRu(activeParams.getRu());
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            cookieApiParams.setPersistentcookie(String.valueOf(1));
+            cookieApiParams.setIp(ip);
+            cookieApiParams.setUniqname(StringUtils.EMPTY);
+            cookieApiParams.setMaxAge(-1);
+            cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
+
+            result = cookieManager.createCookie(response, cookieApiParams);
+            if (result.isSuccess()) {
+                String ru = activeParams.getRu();
+                if (Strings.isNullOrEmpty(ru) || CommonConstant.EMAIL_REG_VERIFY_URL.equals(ru)) {
+                    ru = CommonConstant.DEFAULT_INDEX_URL;
+                }
+                response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=0&ru=" + ru);
+                return;
+            }
         }
-        return result;
+        response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode());
+        return;
+
     }
 
     /**
@@ -221,10 +346,23 @@ public class RegAction extends BaseController {
      *
      * @param reqParams 传入的参数
      */
-    @RequestMapping(value = {"/sendsms"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/sendsms"}/*, method = RequestMethod.POST*/)
     @ResponseBody
     public Object sendMobileCode(MoblieCodeParams reqParams, HttpServletRequest request)
             throws Exception {
+        //sendsms因SDK已经发版，需要兼容， 改个策略，
+        // GET方式中，如果有cinfo参数，并且参数值内容匹配，这样能发验证码，其它的还是POST限制。
+        boolean canProcessGet = false;
+        String cInfo;
+        if ("GET".equalsIgnoreCase(request.getMethod())) {
+            cInfo = request.getHeader("cinfo");
+            if (StringUtil.isNotEmpty(cInfo)) {
+                canProcessGet = true;
+            }
+        } else if (!"POST".equalsIgnoreCase(request.getMethod()) && !canProcessGet) {
+            throw new Exception("can't process GET");
+        }
+        ////////end //////////////////
         Result result = new APIResultSupport(false);
         String finalCode = null;
         String ip = getIp(request);
@@ -243,18 +381,45 @@ public class RegAction extends BaseController {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return result.toString();
             }
-            //校验用户ip是否中了黑名单
-            result = regManager.checkMobileSendSMSInBlackList(ip);
-            if (!result.isSuccess()) {
-                if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
-                    finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-                    result.setMessage("发送短信失败");
+            String mobile = reqParams.getMobile();
+            String userAgent = request.getHeader("User-Agent");
+            cInfo = request.getHeader("cinfo");
+            boolean isNeedCaptcha = false;
+            //只有客户端才会有此"cinfo"参数，web端和桌面端是没有的，故客户端和手机端还走第二次弹出验证码的流程
+            if (!Strings.isNullOrEmpty(cInfo) || (userAgent.toLowerCase().contains("android") || userAgent.toLowerCase().contains("iphone"))) {
+                result = commonManager.checkMobileSendSMSInBlackList(mobile, reqParams.getClient_id());
+                if (!result.isSuccess() && ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE.equals(result.getCode())) {
+                    isNeedCaptcha = true;
                 }
+            } else {
+                if (CommonConstant.PC_CLIENTID != Integer.parseInt(reqParams.getClient_id())) {
+                    isNeedCaptcha = true;
+                }
+            }
+            if (isNeedCaptcha) {
+                if (!Strings.isNullOrEmpty(reqParams.getToken()) && !Strings.isNullOrEmpty(reqParams.getCaptcha())) {
+                    result = regManager.checkCaptchaToken(reqParams.getToken(), reqParams.getCaptcha());
+                    //如果验证码校验失败，则提示
+                    if (!result.isSuccess()) {
+                        result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                        return result.toString();
+                    }
+                } else {
+                    //桌面端需要兼容浏览器1044不弹出验证码的情况
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
+                    result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
+                    return result.toString();
+                }
+            }
+            //校验用户ip是否中了黑名单
+            result = commonManager.checkMobileSendSMSInBlackList(ip, reqParams.getClient_id());
+            if (!result.isSuccess()) {
+                finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
+                result.setMessage("发送短信失败");
                 return result.toString();
             }
-            String mobile = reqParams.getMobile();
-            //为了数据迁移三个阶段，这里需要转换下参数类
             BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
             result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
         } catch (Exception e) {
@@ -272,7 +437,9 @@ public class RegAction extends BaseController {
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
-        regManager.incSendTimesForMobile(ip);
+
+        commonManager.incSendTimesForMobile(ip);
+        commonManager.incSendTimesForMobile(reqParams.getMobile());
         return result.toString();
     }
 
@@ -287,7 +454,6 @@ public class RegAction extends BaseController {
     protected Result checkAccountNotExists(String username, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         //校验是否是搜狐域内用户
-
         if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(username))) {
             result.setCode(ErrorUtil.ERR_CODE_NOTSUPPORT_SOHU_REGISTER);
             return result;
@@ -306,7 +472,15 @@ public class RegAction extends BaseController {
      外域邮箱用户激活成功的页面
    */
     @RequestMapping(value = "/reg/emailverify", method = RequestMethod.GET)
-    public String emailVerifySuccess(HttpServletRequest request) throws Exception {
+    public String emailVerifySuccess(String code, String ru, Model model) throws Exception {
+        Result result = new APIResultSupport(false);
+        if ("0".equals(code)) {
+            result.setSuccess(true);
+            result.setDefaultModel("ru", ru);
+        } else {
+            result.setCode(code);
+        }
+        model.addAttribute("data", result.toString());
         //状态码参数
         return "reg/emailsuccess";
     }

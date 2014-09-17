@@ -37,7 +37,14 @@ public class AccountInfo {
         this.passportId = passportId;
     }
 
-    public AccountInfo() { }
+    public AccountInfo(String passportId, Date createTime, Date updateTime) {
+        this.passportId = passportId;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
+    }
+
+    public AccountInfo() {
+    }
 
 
     public long getId() {

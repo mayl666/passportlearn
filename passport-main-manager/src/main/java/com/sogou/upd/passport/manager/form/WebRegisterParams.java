@@ -17,7 +17,7 @@ import javax.validation.constraints.Min;
  * User: mayan
  * Date: 13-4-15 Time: 下午5:15
  */
-public class WebRegisterParams extends BaseRegUserNameParams{
+public class WebRegisterParams extends BaseRegUserNameParams {
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
     private String client_id;
@@ -104,4 +104,5 @@ public class WebRegisterParams extends BaseRegUserNameParams{
     public void setRu(String ru) {
         this.ru = ru;
     }
+
 }

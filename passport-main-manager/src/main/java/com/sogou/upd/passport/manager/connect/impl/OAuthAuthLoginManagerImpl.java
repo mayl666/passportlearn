@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.connect.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -32,7 +33,7 @@ import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.OAuthAcce
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.QQJSONAccessTokenResponse;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
-import com.sogou.upd.passport.service.account.MappTokenService;
+import com.sogou.upd.passport.service.account.TokenService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -67,7 +68,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
-    private MappTokenService mappTokenService;
+    private TokenService tokenService;
     @Autowired
     private SessionServerManager sessionServerManager;
     @Autowired
@@ -136,8 +137,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     connectAuthService.initialOrUpdateConnectUserInfo(userId, connectUserInfoVO);
                 }
 
-                if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
-                    Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
+                if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
+                    Result tokenResult = pcAccountManager.createAccountToken(userId, instanceId, clientId);
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
                         String value = "0|" + accountToken.getAccessToken() + "|" + accountToken.getRefreshToken() + "|" +
@@ -154,7 +155,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
-                } else if (type.equals(ConnectTypeEnum.MAPP.toString())) {
+                } else if (ConnectTypeEnum.MAPP.toString().equals(type)) {
                     if (!Strings.isNullOrEmpty(from) && "sso".equals(from)) {
                         String sgid = "", avatarSmall = "", avatarMiddle = "", avatarLarge = "", sex = "";
                         Result sessionResult = sessionServerManager.createSession(userId);
@@ -162,9 +163,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
                             return result;
                         }
-                        sgid = (String) sessionResult.getModels().get("sgid");
+                        sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                         result.setSuccess(true);
-                        result.getModels().put("sgid", sgid);
+                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
 
                         if (!Strings.isNullOrEmpty(thirdInfo) && "0".equals(thirdInfo)) {
                             //获取搜狗用户信息
@@ -190,37 +191,37 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         String url = buildSSOSuccessRu(ru, sgid, uniqname, sex, avatarLarge, avatarMiddle, avatarSmall, userId);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                     } else {
-                        String token = mappTokenService.saveToken(userId);
+                        String token = tokenService.saveWapToken(userId);
                         String url = buildMAppSuccessRu(ru, userId, token, uniqname);
                         result.setSuccess(true);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                     }
-                } else if (type.equals(ConnectTypeEnum.MOBILE.toString())) {
+                } else if (ConnectTypeEnum.MOBILE.toString().equals(type)) {
                     String s_m_u = getSMU(userId);
                     String url = buildMOBILESuccessRu(ru, userId, s_m_u, uniqname);
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
-                } else if (type.equals(ConnectTypeEnum.PC.toString())) {
-                    Result tokenResult = pcAccountManager.createConnectToken(clientId, userId, instanceId);
+                } else if (ConnectTypeEnum.PC.toString().equals(type)) {
+                    Result tokenResult = pcAccountManager.createAccountToken(userId, instanceId, clientId);
                     AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
                     if (tokenResult.isSuccess()) {
                         uniqname = (String) connectAccountResult.getModels().get("uniqName");
-                        uniqname = StringUtil.filterSpecialChar(uniqname);  // 昵称需处理,浏览器的js解析不了昵称就会白屏
+                        uniqname = StringUtil.filterEmoji(uniqname);  // 昵称需处理,浏览器的js解析不了昵称就会白屏
                         ManagerHelper.setModelForOAuthResult(result, uniqname, accountToken, providerStr);
                         result.setSuccess(true);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, "/oauth2pc/connectlogin");
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
-                } else if (type.equals(ConnectTypeEnum.WAP.toString())) {
+                } else if (ConnectTypeEnum.WAP.toString().equals(type)) {
                     //写session 数据库
                     Result sessionResult = sessionServerManager.createSession(userId);
                     String sgid = null;
                     if (sessionResult.isSuccess()) {
-                        sgid = (String) sessionResult.getModels().get("sgid");
+                        sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                         if (!Strings.isNullOrEmpty(sgid)) {
                             result.setSuccess(true);
-                            result.getModels().put("sgid", sgid);
+                            result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                             ru = buildWapSuccessRu(ru, sgid);
                         }
                     } else {
@@ -318,7 +319,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             ru = CommonConstant.DEFAULT_WAP_URL;
         }
         //ru后缀一个sgid
-        params.put("sgid", sgid);
+        params.put(LoginConstant.COOKIE_SGID, sgid);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }
@@ -332,13 +333,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             ru = CommonConstant.DEFAULT_WAP_URL;
         }
         //ru后缀一个sgid
-        params.put("sgid", sgid);
+        params.put(LoginConstant.COOKIE_SGID, sgid);
         params.put("uniqname", uniqname);
         params.put("gender", sex);
         params.put("avatarLarge", avatarLarge);
         params.put("avatarMiddle", avatarMiddle);
         params.put("avatarSmall", avatarSmall);
-        params.put("userid",userId);
+        params.put("userid", userId);
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }
@@ -358,9 +359,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             }
             params.put(CommonConstant.RESPONSE_STATUS_TEXT, errorText);
             ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
-        } else if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+        } else if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
             ru = "/pcaccount/connecterr";
-        } else if (type.equals(ConnectTypeEnum.PC.toString())) {
+        } else if (ConnectTypeEnum.PC.toString().equals(type)) {
             ru = "/oauth2pc/pclogin";
         }
         return ru;
@@ -372,7 +373,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         result.setMessage(errorText);
         result.setDefaultModel(CommonConstant.RESPONSE_RU, buildErrorRu(type, ru, errorCode, errorText));
         // type=token返回的错误信息
-        if (type.equals(ConnectTypeEnum.TOKEN.toString())) {
+        if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
             String error = errorCode + "|" + errorText;
             result.setDefaultModel(CommonConstant.RESPONSE_ERROR, error);
         }

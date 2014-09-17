@@ -141,7 +141,7 @@ public class BaseActionTest extends TestCase {
         }
     }
 
-    protected String sendPostLocal(String sendUrl, Map<String, String> params){
+    protected String sendPostLocal(String sendUrl, Map<String, String> params) {
         Result result;
         try {
             String sendUrlFull = "http://localhost/";
@@ -158,7 +158,7 @@ public class BaseActionTest extends TestCase {
         }
     }
 
-    protected String sendGetLocal(String sendUrl, Map<String, String> params){
+    protected String sendGetLocal(String sendUrl, Map<String, String> params) {
         Result result;
         try {
             String sendUrlFull = "http://localhost/";
@@ -191,15 +191,16 @@ public class BaseActionTest extends TestCase {
 
     private static final String key = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
 
+    @Test
     public void testPostXml() throws Exception {
         long ct = System.currentTimeMillis();
-        String code = "shipengzhi1986@sogou.com" + appId + key + ct;
+        String code = "alva396@sohu.com" + appId + key + ct;
         code = Coder.encryptMD5(code);
         String url = "http://internal.passport.sohu.com/interface/getuserinfo";
         StringBuffer sb = new StringBuffer();
         sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
         sb.append("<register>\n"
-                + "    <userid>shipengzhi1986@sogou.com</userid>\n"
+                + "    <userid>alva396@sohu.com</userid>\n"
                 + "    <appid>1100</appid>\n"
                 + "    <ct>" + ct + "</ct>\n"
                 + "    <code>" + code + "</code>\n"
@@ -246,8 +247,18 @@ public class BaseActionTest extends TestCase {
             String code = Coder.encryptMD5(key + ts + secret);
             System.out.println("ts:" + ts);
             System.out.println("code:" + code);
+
+            String cookie = "da3636f186364a30bc132bfb7f87ba0d";
+            String cookie_md5 = Coder.encryptMD5(cookie);
+            System.out.println("=====cookie_md5 :" + cookie_md5 + "======= cookie_md5 length : " + cookie_md5.length() + "=======cookie length : " + cookie.length());
+
+            String cookie_base64 = Coder.encryptBase64(cookie);
+            System.out.println("=====cookie base64 :" + cookie_base64);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
     }
 }

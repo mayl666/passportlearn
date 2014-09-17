@@ -28,22 +28,6 @@ public class ConfigureManagerImpl implements ConfigureManager {
     private ConnectConfigService connectConfigService;
 
     @Override
-    public AppConfig verifyClientVaild(int clientId, String clientSecret) {
-        return appConfigService.verifyClientVaild(clientId, clientSecret);
-    }
-
-    @Override
-    public ConnectConfig obtainConnectConfig(int clientId, int provider) {
-        ConnectConfig connectConfig = null;
-        try {
-            connectConfig = connectConfigService.querySpecifyConnectConfig(clientId, provider);
-        } catch (ServiceException e) {
-            log.error("Obtain ConnectConfig Fail:", e);
-        }
-        return connectConfig;
-    }
-
-    @Override
     public boolean checkAppIsExist(int clientId) {
         AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
         if (appConfig != null) {

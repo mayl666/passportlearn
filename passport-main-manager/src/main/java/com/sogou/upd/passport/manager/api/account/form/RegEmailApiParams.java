@@ -17,7 +17,7 @@ public class RegEmailApiParams extends BaseRegUserApiParams {
     private String password;  //明文密码，需要对格式校验
     @NotBlank(message = "注册IP不允许为空")
     private String createip;  //注册IP
-    private String send_email; //如果是外域账号，是否发生激活邮件，1为发生激活邮件，否则不发生激活邮件
+    private String send_email; //如果是外域账号，是否发送激活邮件，1为发送激活邮件，否则不发送激活邮件
     @Ru
     @URL
     private String ru; //注册成功后需回调到应用的url

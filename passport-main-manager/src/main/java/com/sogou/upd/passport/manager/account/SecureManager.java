@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.MobileModifyPwdParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
 
@@ -17,7 +16,25 @@ public interface SecureManager {
     /**
      * 发送短信验证码（至未注册未绑定手机）
      */
-    public Result sendMobileCode(String mobile, int clientId, AccountModuleEnum module) throws Exception;
+    public Result sendMobileCode(String mobile, int clientId, AccountModuleEnum module);
+
+    /**
+     * 发送短信验证码（根据passportId）
+     */
+    public Result sendMobileCodeByPassportId(String passportId, int clientId, AccountModuleEnum module) throws Exception;
+
+    /**
+     * 无验证原手机号再发送短信验证码
+     *
+     * @param passportId
+     * @param clientId
+     * @param module
+     * @param sec_mobile
+     * @return
+     * @throws Exception
+     */
+    public Result sendMobileCodeAndCheckOldMobile(String passportId, int clientId, AccountModuleEnum module, String sec_mobile, String token, String captcha) throws Exception;
+
     /**
      * 为SOHU接口适配，发送短信验证码至原绑定手机
      *
@@ -26,50 +43,33 @@ public interface SecureManager {
      * @return
      * @throws Exception
      */
-    public Result sendMobileCodeOld(String userId, int clientId) throws Exception;
+    public Result sendMobileCodeOld(String userId, int clientId);
 
-    /**
-     * 发送手机验证码，不检测是否已注册或绑定，暂时供sendMobileCode*方法内部调用
-     *
-     * @param mobile
-     * @param clientId
-     * @return
-     * @throws Exception
-     */
-    // public Result sendSmsCodeToMobile(String mobile, int clientId) throws Exception;
-
-
-    /**
-     * 手机用户找回密码
-     *
-     * @param mobile   手机号码
-     * @param clientId 客户端ID
-     * @return Result格式的返回值，成功则发送验证码；失败，提示失败信息
-     */
-    public Result findPassword(String mobile, int clientId);
 
     /**
      * 手机用户发短信重置密码
      *
      * @return Result格式的返回值, 成功或失败，返回提示信息
      */
-    public void resetPwd(List<UserNamePwdMappingParams> list) throws Exception;
+    public Result resetPwd(List<UserNamePwdMappingParams> list, int clientId) throws Exception;
 
     /**
      * 查询账户安全信息，包括邮箱、手机、密保问题，并模糊处理
      *
      * @param passportId
      * @param clientId
-     * @param doProcess 是否模糊处理，如abcde@sogou.com转换为ab*****e@sogou.com
+     * @param doProcess  是否模糊处理，如abcde@sogou.com转换为ab*****e@sogou.com
      * @return result.getData().get("data") // 账户安全信息
      * @throws Exception
      */
-    public Result queryAccountSecureInfo(String passportId, int clientId, boolean doProcess) throws Exception;
+    public Result queryAccountSecureInfo(String passportId, int clientId, boolean doProcess);
 
     /**
-     * 重置用户密码（web验证码方式）
+     * 修改用户密码（web验证码方式）
+     *
+     * @param updatePwdParameters 注意passport_id需从cookie里获取后赋值、ip需赋值
      */
-    public Result resetWebPassword(UpdatePwdParameters updatePwdParameters, String ip) throws Exception;
+    public Result updateWebPwd(UpdatePwdParameters updatePwdParameters) throws Exception;
 
 
     /* ------------------------------------修改密保Begin------------------------------------ */
@@ -130,7 +130,7 @@ public interface SecureManager {
      * @param clientId
      * @param newMobile 新绑定手机号
      * @param smsCode   新绑定手机号短信验证码
-     * @param scode 验证安全码
+     * @param scode     验证安全码
      * @return
      * @throws Exception
      */
@@ -162,7 +162,7 @@ public interface SecureManager {
      * @return
      * @throws Exception
      */
-    public Result checkMobileCodeByNewMobile(String mobile, int clientId, String smsCode) throws Exception;
+    public Result checkMobileCodeByNewMobile(String mobile, int clientId, String smsCode);
 
     /**
      * 验证手机短信随机码——用于原绑定手机验证，不分业务功能
@@ -180,9 +180,9 @@ public interface SecureManager {
      *
      * @param userId
      * @param clientId
-     * @param action 记录的动作
+     * @param action   记录的动作
      * @param ip
-     * @param note 记录说明
+     * @param note     记录说明
      * @return
      * @throws Exception
      */
@@ -193,7 +193,7 @@ public interface SecureManager {
      *
      * @param userId
      * @param clientId
-     * @param action 查询的动作
+     * @param action   查询的动作
      * @return
      * @throws Exception
      */

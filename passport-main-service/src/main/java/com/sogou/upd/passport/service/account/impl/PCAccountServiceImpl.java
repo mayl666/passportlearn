@@ -6,7 +6,6 @@ import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.utils.CoreKvUtils;
 import com.sogou.upd.passport.common.utils.DateUtil;
-import com.sogou.upd.passport.common.utils.KvUtils;
 import com.sogou.upd.passport.common.utils.TokenRedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -18,7 +17,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Stack;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,20 +35,24 @@ import org.springframework.stereotype.Service;
 public class PCAccountServiceImpl implements PCAccountTokenService {
     private static final Logger logger = LoggerFactory.getLogger(PCAccountServiceImpl.class);
 
-    private static String KEY_PREFIX = CacheConstant.KV_PREFIX_PASSPORTID_TOKEN;
+    private static String CORE_KV_PREFIX_PASSPROTID_TOKEN = CacheConstant.CORE_KV_PREFIX_PASSPROTID_TOKEN;
 
     //kv key 分隔符
     private static final String KEY_KV_SPLIT = "_";
+    //instanceid为空的默认赋值
+    private static final String EMPTY_INSTANCEID_SIGN = "invalid";
+    //允许pc token失效的最大数目
+    private static final int REMOVE_PCTOKEN_MAX_NUM = 50;
     //kv token key 生成规则: KEY_PREFIX + passportId + "_" + clientId + "_" + instanceId
     private static final String KEY_CORE_KV_FORMAT = "%s" + KEY_KV_SPLIT + "%s" + KEY_KV_SPLIT + "%s";
     private static final String KEY_DEFAULT_CORE_KV_FORMAT = "%s" + KEY_KV_SPLIT + "%s";
 
     @Autowired
-    private KvUtils kvUtils;
-    @Autowired
     private TokenRedisUtils tokenRedisUtils;
     @Autowired
     private CoreKvUtils coreKvUtils;
+    @Autowired
+    private ThreadPoolTaskExecutor batchOperateExecutor; //批量操作，并不可丢弃任务线程池
 
     @Override
     public AccountToken initialAccountToken(final String passportId, final String instanceId, AppConfig appConfig) throws ServiceException {
@@ -98,19 +106,15 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     public void saveAccountToken(final String passportId, final String instanceId, AppConfig appConfig, AccountToken accountToken) throws ServiceException {
         final int clientId = appConfig.getClientId();
         try {
-            //去掉老kv集群"写"操作 2014-04-01 edit by chengang
-//            String kvKey = buildKeyStr(passportId, clientId, instanceId);
-//            kvUtils.set(kvKey, accountToken);
-
             //kv 写操作同步至核心kv集群  2014-03-13 add by chengang
-            String coreKvKey = buildCoreKvKey(CacheConstant.CORE_KV_PREFIX_PASSPROTID_TOKEN, passportId, clientId, instanceId);
+            String coreKvKey = buildCoreKvKey(CORE_KV_PREFIX_PASSPROTID_TOKEN, passportId, clientId, instanceId);
             coreKvUtils.set(coreKvKey, accountToken);
 
             //重新设置缓存
             String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
             tokenRedisUtils.setWithinSeconds(redisKey, accountToken, DateAndNumTimesConstant.ONE_MONTH);
             //保存映射关系
-//            kvUtils.pushToSet(buildMappingKeyStr(passportId), buildSecondKeyStr(clientId, instanceId));
+            coreKvUtils.pushStringToLinkedHashSet(buildMappingCoreKvKey(passportId), buildMappingCoreKvValue(clientId, instanceId));
         } catch (Exception e) {
             logger.error("setAccountToken Fail, passportId:" + passportId + ", clientId:" + clientId + ", instanceId:" + instanceId, e);
             throw new ServiceException(e);
@@ -121,18 +125,11 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
     public AccountToken queryAccountToken(String passportId, int clientId, String instanceId) throws ServiceException {
         try {
             String tokenRedisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
-//            long start = System.currentTimeMillis();
-
             AccountToken accountToken = tokenRedisUtils.getObject(tokenRedisKey, AccountToken.class);
-//            CommonHelper.recordTimestamp(start, "queryAccountToken-tokenRedies");
-
             if (accountToken == null) {
-                //切换"读"操作到核心kv集群 edit by chengang 2014-04-01
-//                accountToken = kvUtils.getObject(buildKeyStr(passportId, clientId, instanceId), AccountToken.class);
-
-                accountToken = coreKvUtils.getObject(buildCoreKvKey(CacheConstant.CORE_KV_PREFIX_PASSPROTID_TOKEN, passportId, clientId, instanceId), AccountToken.class);
+                accountToken = coreKvUtils.getObject(buildCoreKvKey(CORE_KV_PREFIX_PASSPROTID_TOKEN, passportId, clientId, instanceId), AccountToken.class);
                 if (accountToken != null) {
-                    tokenRedisUtils.set(tokenRedisKey, accountToken);
+                    tokenRedisUtils.setWithinSeconds(tokenRedisKey, accountToken, DateAndNumTimesConstant.ONE_MONTH);
                 }
             }
             return accountToken;
@@ -174,7 +171,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
     @Override
     public String getPassportIdByToken(String token, String clientSecret) throws ServiceException {
-        String passportId = null;
+        String passportId;
         try {
             passportId = TokenDecrypt.decryptPcToken(token, clientSecret);
             return passportId;
@@ -186,7 +183,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
 
     @Override
     public String getPassportIdByOldToken(String token, String clientSecret) throws ServiceException {
-        String passportId = null;
+        String passportId;
         try {
             passportId = TokenDecrypt.decryptOldPcToken(token, clientSecret);
             return passportId;
@@ -218,16 +215,61 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         }
     }
 
-    /**
-     * 构造PcAccountToken的key
-     * 格式为：passport_clientId_instanceId
-     * passportId_clientId_instanceId：AccountToken的映射
-     */
-    public static String buildKeyStr(String passportId, int clientId, String instanceId) {
-        if (StringUtils.isEmpty(instanceId)) {
-            return KEY_PREFIX + passportId + "_" + clientId;
+    @Override
+    public void batchRemoveAccountToken(final String passportId, boolean isAsyn) {
+        String tokenMappingKey = buildMappingCoreKvKey(passportId);
+        final Set<String> tokenMappingSet = coreKvUtils.pullStringFromLinkedHashSet(tokenMappingKey);
+        if (isAsyn) {
+            batchOperateExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    batchRemoveAccountToken(tokenMappingSet, passportId);
+                }
+            });
+        } else {
+            batchRemoveAccountToken(tokenMappingSet, passportId);
         }
-        return KEY_PREFIX + passportId + "_" + clientId + "_" + instanceId;
+    }
+
+    private void batchRemoveAccountToken(Set<String> tokenMappingSet, String passportId) {
+        Stack<String> tokenStack = new Stack();
+        for (String s : tokenMappingSet) {
+            tokenStack.push(s);
+        }
+        int removeMaxNum = 0;
+        for (Iterator<String> iter = tokenStack.iterator(); iter.hasNext(); ) {
+            String secondTokenKey = tokenStack.pop();
+            String[] secondTokenKeyArray = secondTokenKey.split(KEY_KV_SPLIT);
+            if (removeMaxNum < REMOVE_PCTOKEN_MAX_NUM && secondTokenKeyArray.length >= 1) {
+                String clientIdStr = secondTokenKeyArray[0];
+                String instanceId = "";
+                if (secondTokenKeyArray.length >= 2) {  //可能存在secondTokenKey:1044_ 情况
+                    instanceId = EMPTY_INSTANCEID_SIGN.equals(secondTokenKeyArray[1]) ? "" : secondTokenKeyArray[1];
+                }
+                try {
+                    int clientId = Integer.parseInt(clientIdStr);
+                    removeAccountToken(passportId, clientId, instanceId);
+                    removeMaxNum++;
+                } catch (Exception e) {
+                    logger.error("client not interge, passportId:" + passportId + ", clientId:" + clientIdStr);
+                    continue;
+                }
+            } else {
+                logger.error("Second Token Key less one, passportId:" + passportId + ", secondTokenKey:" + secondTokenKey);
+                continue;
+            }
+        }
+    }
+
+    @Override
+    public void removeAccountToken(String passportId, int clientId, String instanceId) {
+        //重新缓存里的pc token记录
+        String redisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
+        tokenRedisUtils.delete(redisKey);
+
+        //清除kv里的pc token记录
+        String coreKvKey = buildCoreKvKey(CORE_KV_PREFIX_PASSPROTID_TOKEN, passportId, clientId, instanceId);
+        coreKvUtils.delete(coreKvKey);
     }
 
     /**
@@ -245,7 +287,6 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         }
         return String.format(KEY_CORE_KV_FORMAT, kvPrefix + passportId, clientId, instanceId);
     }
-
 
     /**
      * 构造PcAccountToken在redis中的key
@@ -275,8 +316,8 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
      * @param passportId
      * @return
      */
-    private String buildMappingKeyStr(String passportId) {
-        return KEY_PREFIX + passportId;
+    private String buildMappingCoreKvKey(String passportId) {
+        return CORE_KV_PREFIX_PASSPROTID_TOKEN + passportId;
     }
 
     /**
@@ -284,8 +325,15 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
      * 格式为：clientId_instanceId
      * passportId：clientId_instanceId的映射
      */
-    private String buildSecondKeyStr(int clientId, String instanceId) {
-        return clientId + "_" + instanceId;
+    private String buildMappingCoreKvValue(int clientId, String instanceId) {
+        String value;
+        if (Strings.isNullOrEmpty(instanceId)) {
+            //instanceId赋值为NULL便于以后扩展value字段
+            value = clientId + KEY_KV_SPLIT + EMPTY_INSTANCEID_SIGN;
+        } else {
+            value = clientId + KEY_KV_SPLIT + instanceId;
+        }
+        return value;
     }
 
     public static AccountToken newAccountToken(String passportId, String instanceId, AppConfig appConfig) {

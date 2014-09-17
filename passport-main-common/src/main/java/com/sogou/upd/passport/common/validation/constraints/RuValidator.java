@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common.validation.constraints;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.filter.HTMLFilter;
+import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -15,6 +16,7 @@ import java.util.regex.Pattern;
  * Time: 下午6:05
  * To change this template use File | Settings | File Templates.
  */
+@Component
 public class RuValidator implements ConstraintValidator<Ru, String> {
 
     @Override
@@ -37,7 +39,7 @@ public class RuValidator implements ConstraintValidator<Ru, String> {
             return false;
         }
         try {
-            Pattern p = Pattern.compile("^(https?:\\/\\/)?[\\w\\-.]+\\.(sogou\\.com|sohu\\.com|qq\\.com|soso\\.com|go2map\\.com|pinyin\\.cn)($|\\?|\\/|\\\\|:[\\d])", Pattern.CASE_INSENSITIVE);
+            Pattern p = Pattern.compile("^(https?:\\/\\/)?[\\w\\-.]+\\.(sogou\\.com|sohu\\.com|qq\\.com|soso\\.com|go2map\\.com|pinyin\\.cn|teemo\\.cn)($|\\?|\\/|\\\\|:[\\d])", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(value);
             return matcher.find();
         } catch (Exception e) {
