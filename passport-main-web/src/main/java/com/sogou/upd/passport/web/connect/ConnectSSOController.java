@@ -75,7 +75,7 @@ public class ConnectSSOController extends BaseConnectController {
                 return result.toString();
             }
             result = sSOAfterauthManager.handleSSOAfterauth(req, providerStr);
-            buildSpecialResultParams(req, result, params.getClient_id(), providerStr);
+//            buildSpecialResultParams(req, result, params.getClient_id(), providerStr);
             return result.toString();
         } finally {
             String uidStr = AccountTypeEnum.generateThirdPassportId(params.getOpenid(), providerStr);
@@ -104,7 +104,7 @@ public class ConnectSSOController extends BaseConnectController {
                 map.put("isthird", Integer.toString(params.getIsthird()));
             }
             Object refresh_token = req.getParameterMap().get("refresh_token");
-            if (refresh_token != null && !Strings.isNullOrEmpty(String.valueOf(refresh_token))) {
+            if (refresh_token != null && !refresh_token.equals("")) {
                 map.put("refresh_token", params.getRefresh_token());
             }
             map.put("instance_id", params.getInstance_id());
@@ -138,12 +138,14 @@ public class ConnectSSOController extends BaseConnectController {
     private void buildSpecialResultParams(HttpServletRequest req, Result result, int clientId, String providerStr) {
         if (result.isSuccess()) {
             Map<String, String[]> map = SPECIAL_PARAMS_MAPPING.get(clientId);
-            if (!map.isEmpty()) {
+            if (map != null && !map.isEmpty()) {
                 String[] paramArray = map.get(providerStr);
-                for (String param : paramArray) {
-                    String reqParamValue = req.getParameter(param);
-                    if (!Strings.isNullOrEmpty(reqParamValue)) {
-                        result.setDefaultModel(param, reqParamValue);
+                if (paramArray != null) {
+                    for (String param : paramArray) {
+                        String reqParamValue = req.getParameter(param);
+                        if (!Strings.isNullOrEmpty(reqParamValue)) {
+                            result.setDefaultModel(param, reqParamValue);
+                        }
                     }
                 }
             }
