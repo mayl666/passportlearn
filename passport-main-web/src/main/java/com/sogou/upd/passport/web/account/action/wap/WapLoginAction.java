@@ -17,6 +17,7 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.manager.form.WapLogoutParams;
@@ -59,6 +60,8 @@ public class WapLoginAction extends BaseController {
     private WapLoginManager wapLoginManager;
     @Autowired
     private AccountInfoManager accountInfoManager;
+    @Autowired
+    private SessionServerManager sessionServerManager;
 
     private static final Logger logger = LoggerFactory.getLogger(WapLoginAction.class);
     private static final String SECRETKEY = "afE0WZf345@werdm";
@@ -138,10 +141,10 @@ public class WapLoginAction extends BaseController {
                 result = accountInfoManager.getUserInfo(accountInfoParams);
                 result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                 writeResultToResponse(response, result);
-                wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
+                loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
                 return "empty";
             }
-            wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
+            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
             response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
             return "empty";
         } else {
@@ -205,7 +208,7 @@ public class WapLoginAction extends BaseController {
             // 校验参数
             ru = req.getParameter(CommonConstant.RESPONSE_RU);
             try {
-                ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
                 String validateResult = ControllerHelper.validateParams(params);
                 if (!Strings.isNullOrEmpty(validateResult)) {
                     ru = buildErrorRu(ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
@@ -220,7 +223,7 @@ public class WapLoginAction extends BaseController {
             data = params.getData();
             //获取QQ回跳参数
             byte[] buf = Hex.decodeHex(data.toCharArray());
-            String decryptedValue = new String(AES.decrypt(buf, SECRETKEY), CommonConstant.DEFAULT_CONTENT_CHARSET);
+            String decryptedValue = new String(AES.decrypt(buf, SECRETKEY), CommonConstant.DEFAULT_CHARSET);
 
             QQPassthroughParam param = JacksonJsonMapperUtil.getMapper().readValue(decryptedValue, QQPassthroughParam.class);
             accessToken = param.getAccess_token();
@@ -265,7 +268,7 @@ public class WapLoginAction extends BaseController {
     private String buildSuccessRu(String ru, String sgid) {
         Map params = Maps.newHashMap();
         try {
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (Exception e) {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_WAP_URL;
@@ -306,7 +309,7 @@ public class WapLoginAction extends BaseController {
                 ru = CommonConstant.DEFAULT_WAP_URL;
             }
             //session server中清除cookie
-            Result result = wapLoginManager.removeSession(sgid);
+            Result result = sessionServerManager.removeSession(sgid);
             if (result.isSuccess()) {
                 //清除cookie
                 ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGID);

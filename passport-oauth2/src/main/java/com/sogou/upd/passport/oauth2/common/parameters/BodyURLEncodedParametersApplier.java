@@ -15,7 +15,7 @@ public class BodyURLEncodedParametersApplier implements OAuthParametersApplier {
 
     public OAuthMessage applyOAuthParameters(OAuthMessage message, Map<String, Object> params) {
 
-        String body = OAuthUtils.format(params.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET);
+        String body = OAuthUtils.format(params.entrySet(), CommonConstant.DEFAULT_CHARSET);
         message.setBody(body);
         return message;
 

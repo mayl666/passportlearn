@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -111,33 +110,6 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         return false;
     }
 
-    @Override
-    public boolean checkTimesByKeyList(List<String> keyList, List<Integer> maxList) throws ServiceException {
-        if (CollectionUtils.isEmpty(keyList) || CollectionUtils.isEmpty(maxList)) {
-            return false;
-        }
-        try {
-            List<String> valueList = redisUtils.multiGet(keyList);
-            if (!CollectionUtils.isEmpty(keyList)) {
-                int num = 0, valueSize = valueList.size(), maxSize = maxList.size();
-                for (int i = 0; i < valueSize && i < maxSize; i++) {
-                    String value = valueList.get(i);
-                    if (!Strings.isNullOrEmpty(value)) {
-                        num = Integer.valueOf(value);
-                        if (num >= maxList.get(i)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            logger.error("checkNumByKey:" + keyList.toString() + ",maxList:" + maxList.toString(), e);
-            throw new ServiceException(e);
-        }
-        return false;
-    }
-
-
     private void incLoginSuccessTimes(final String username, final String ip) throws ServiceException {
         try {
             discardTaskExecutor.execute(new Runnable() {
@@ -191,31 +163,31 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         try {
             //username
             int num = 0;
-            String userName_hKey = buildUserNameLoginTimesKeyStr(username);
-            Map<String, String> username_hmap = redisUtils.hGetAll(userName_hKey);
-            if (!MapUtils.isEmpty(username_hmap)) {
-                String username_failedNum = username_hmap.get(CacheConstant.CACHE_FAILED_KEY);
-                if (!Strings.isNullOrEmpty(username_failedNum)) {
-                    num = Integer.parseInt(username_failedNum);
-                    if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
-                        blackItemService.addIPOrUsernameToLoginBlackList(username, BlackItem.FAILED_LIMIT, false);
-                        redisUtils.delete(userName_hKey);
-                        return true;
+            if (!Strings.isNullOrEmpty(username)) {
+                String userName_hKey = buildUserNameLoginTimesKeyStr(username);
+                Map<String, String> username_hmap = redisUtils.hGetAll(userName_hKey);
+                if (!MapUtils.isEmpty(username_hmap)) {
+                    String username_failedNum = username_hmap.get(CacheConstant.CACHE_FAILED_KEY);
+                    if (!Strings.isNullOrEmpty(username_failedNum)) {
+                        num = Integer.parseInt(username_failedNum);
+                        if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
+                            blackItemService.addIPOrUsernameToLoginBlackList(username, BlackItem.FAILED_LIMIT, false);
+                            redisUtils.delete(userName_hKey);
+                            return true;
+                        }
+                    }
+                    String username_successNum = username_hmap.get(CacheConstant.CACHE_SUCCESS_KEY);
+                    if (!Strings.isNullOrEmpty(username_successNum)) {
+                        num = Integer.parseInt(username_successNum);
+                        if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
+                            blackItemService.addIPOrUsernameToLoginBlackList(username, BlackItem.SUCCESS_LIMIT, false);
+                            redisUtils.delete(userName_hKey);
+                            return true;
+
+                        }
                     }
                 }
-                String username_successNum = username_hmap.get(CacheConstant.CACHE_SUCCESS_KEY);
-                if (!Strings.isNullOrEmpty(username_successNum)) {
-                    num = Integer.parseInt(username_successNum);
-                    if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
-                        blackItemService.addIPOrUsernameToLoginBlackList(username, BlackItem.SUCCESS_LIMIT, false);
-                        redisUtils.delete(userName_hKey);
-                        return true;
-
-                    }
-                }
-
             }
-
             if (!Strings.isNullOrEmpty(ip)) {      //  根据ip判断是否进入黑名单
                 String ip_hKey = buildIPLoginTimesKeyStr(ip);
                 Map<String, String> ip_hmap = redisUtils.hGetAll(ip_hKey);
@@ -607,14 +579,16 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     @Override
     public boolean isUserInBlackList(String username, String ip) throws ServiceException {
         try {
-            String username_black_key = buildLoginUserNameBlackKeyStr(username);
-            String value = redisUtils.get(username_black_key);
-            if (CommonConstant.LOGIN_IN_BLACKLIST.equals(value)) {
-                return true;
+            if (!Strings.isNullOrEmpty(username)) {
+                String username_black_key = buildLoginUserNameBlackKeyStr(username);
+                String value = redisUtils.get(username_black_key);
+                if (CommonConstant.LOGIN_IN_BLACKLIST.equals(value)) {
+                    return true;
+                }
             }
             if (!StringUtils.isBlank(ip)) {
                 String ip_black_key = buildLoginIPBlackKeyStr(ip);
-                value = redisUtils.get(ip_black_key);
+                String value = redisUtils.get(ip_black_key);
                 if (CommonConstant.LOGIN_IN_BLACKLIST.equals(value)) {
                     return true;
                 }

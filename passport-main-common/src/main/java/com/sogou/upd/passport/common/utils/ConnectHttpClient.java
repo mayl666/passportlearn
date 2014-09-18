@@ -85,7 +85,7 @@ public class ConnectHttpClient extends SGHttpClient {
         try {
             String charset = EntityUtils.getContentCharSet(httpEntity);
             if (StringUtil.isBlank(charset)) {
-                charset = CommonConstant.DEFAULT_CONTENT_CHARSET;
+                charset = CommonConstant.DEFAULT_CHARSET;
             }
             String value = EntityUtils.toString(httpEntity, charset);
             if (!StringUtil.isBlank(value)) {
@@ -140,8 +140,8 @@ public class ConnectHttpClient extends SGHttpClient {
             if (responseCode == RESPONSE_SUCCESS_CODE) {
                 return httpResponse.getEntity();
             }
-            String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CONTENT_CHARSET);
-            String result= EntityUtils.toString(httpResponse.getEntity(),CommonConstant.DEFAULT_CONTENT_CHARSET);
+            String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CHARSET);
+            String result= EntityUtils.toString(httpResponse.getEntity(),CommonConstant.DEFAULT_CHARSET);
             throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:"+result);
         } catch (Exception e) {
             if(in!=null){

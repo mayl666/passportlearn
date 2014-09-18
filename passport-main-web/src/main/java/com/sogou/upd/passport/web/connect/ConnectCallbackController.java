@@ -57,7 +57,7 @@ public class ConnectCallbackController extends BaseConnectController {
         String httpOrHttps = getProtocol(req);
         try {
             ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_CONNECT_REDIRECT_URL : ru;
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (UnsupportedEncodingException e) {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;

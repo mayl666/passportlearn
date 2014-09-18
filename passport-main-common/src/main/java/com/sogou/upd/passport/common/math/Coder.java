@@ -38,7 +38,7 @@ public class Coder {
      */
     public static String encodeUTF8(String params) {
         try {
-            String en = URLEncoder.encode(params, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            String en = URLEncoder.encode(params, CommonConstant.DEFAULT_CHARSET);
             en = en.replace("+", "%20");
             en = en.replace("*", "%2A");
             return en;
@@ -52,7 +52,7 @@ public class Coder {
      */
     public static String encode(String params, String charset) {
         try {
-            String en = URLEncoder.encode(params, charset != null ? charset : CommonConstant.DEFAULT_CONTENT_CHARSET);
+            String en = URLEncoder.encode(params, charset != null ? charset : CommonConstant.DEFAULT_CHARSET);
             en = en.replace("+", "%20");
             en = en.replace("*", "%2A");
             return en;
@@ -66,7 +66,7 @@ public class Coder {
      */
     public static String decodeUTF8(String params) {
         try {
-            String de = URLDecoder.decode(params, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            String de = URLDecoder.decode(params, CommonConstant.DEFAULT_CHARSET);
             return de;
         } catch (UnsupportedEncodingException problem) {
             throw new IllegalArgumentException(problem);
@@ -115,7 +115,7 @@ public class Coder {
      * @throws Exception
      */
     public static String encryptBase64URLSafeString(String key) throws Exception {
-        return Base64.encodeBase64URLSafeString(key.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+        return Base64.encodeBase64URLSafeString(key.getBytes(CommonConstant.DEFAULT_CHARSET));
     }
 
     /**
@@ -126,7 +126,7 @@ public class Coder {
      * @throws Exception
      */
     public static String encryptBase64(String key) throws UnsupportedEncodingException {
-        return Base64.encodeBase64String(key.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+        return Base64.encodeBase64String(key.getBytes(CommonConstant.DEFAULT_CHARSET));
     }
 
     /**
@@ -166,7 +166,7 @@ public class Coder {
     public static byte[] encryptMD5_Byte(String data) throws Exception {
 
         MessageDigest md5 = MessageDigest.getInstance(KEY_MD5);
-        md5.update(data.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+        md5.update(data.getBytes(CommonConstant.DEFAULT_CHARSET));
         return md5.digest();
     }
 
@@ -229,7 +229,7 @@ public class Coder {
         Mac mac = Mac.getInstance(secretKey.getAlgorithm());
         mac.init(secretKey);
 
-        return mac.doFinal(data.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+        return mac.doFinal(data.getBytes(CommonConstant.DEFAULT_CHARSET));
 
     }
 

@@ -256,7 +256,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private String buildMAppSuccessRu(String ru, String userid, String token, String uniqname) {
         Map params = Maps.newHashMap();
         try {
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (UnsupportedEncodingException e) {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
@@ -299,7 +299,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private String buildMOBILESuccessRu(String ru, String userid, String s_m_u, String un) {
         Map params = Maps.newHashMap();
         try {
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (UnsupportedEncodingException e) {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
@@ -313,7 +313,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private String buildWapSuccessRu(String ru, String sgid) {
         Map params = Maps.newHashMap();
         try {
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (Exception e) {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_WAP_URL;
@@ -327,7 +327,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private String buildSSOSuccessRu(String ru, String sgid, String uniqname, String sex, String avatarLarge, String avatarMiddle, String avatarSmall, String userId) {
         Map params = Maps.newHashMap();
         try {
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (Exception e) {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_WAP_URL;

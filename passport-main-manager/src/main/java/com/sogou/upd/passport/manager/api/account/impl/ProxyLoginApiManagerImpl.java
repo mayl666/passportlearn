@@ -210,7 +210,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
             try {
                 // 1105不允许URLEncode，但壁纸需要URLEncode，所以传clientId区分
                 if (!createCookieUrlApiParams.getClientId().equals(String.valueOf(CommonConstant.PINYIN_MAC_CLIENTID))) {
-                    ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                    ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CHARSET);
                 }
             } catch (UnsupportedEncodingException e) {
             }
@@ -283,7 +283,7 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         String ru = (String) paramMap.get("ru");
         if (!Strings.isNullOrEmpty(ru)) {
             try {
-                String decodeRu = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                String decodeRu = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
                 locationUrl = locationUrl.replaceAll(ru, decodeRu);
             } catch (UnsupportedEncodingException e) {
                 log.error("sohu sso setcookie ru encode fail,url:" + ru);
