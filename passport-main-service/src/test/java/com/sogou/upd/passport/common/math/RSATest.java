@@ -84,9 +84,10 @@ public class RSATest {
      */
     @Test
     public void testDecryptBrowerCookie() throws Exception {
-        String data = "aUtCBO1UpnqFQKYQyTgCKnB8HDr2LIcxkOjvi9M50i8kfcjef6OLP2Eno/YRxA9Mp+SbiDMQL5DTowQE/OUgqj0hHJFLncudMBDbf+Fr/q33nAlEaHSzwGWNoKgXngHIWnab2CdsVQ/2ApCn3u3u2HqbkIat7RUEOq0062lFsFYuhKFPIvPUFrDHY04bvUTVuZc6gsDW2GXDI7y7NOWTyGFB2u+izVGUXy25JexFxLgI7ViipK/+GN6KGCSTcPuaxaOwZvKoZr+CkZ8LDhvvf0pbdNV3wUSCCn4tX0EM/pfr1aGKli49tjJBPL92+4WEzdLINF9B7L1DNGcwS4Y5v4TwtZRx9j3p6rcQ9+Zl0TjwUsT1daYkNDVz87UmiTmlNFU7IxXAPpfbPKd7eZW9+dM+12V/MIzzCqK5GX4XrrvJvUljUJ/+5MP2aq7Aim77jPXDEwTphiwiBWzWhi2TMXfu+UHf9lI0bhAOFYeAwzurCMpICNyBUOMomOegnPwqgk4LO/31D3IJjWrXqYyfbJuX+030Hs3OgrrQGeNuD9KkMgi/glofV0eBLpLLSigHXL1DY9jVZm05whV4+LrLz3qhRsvvv+282bp2Q1u5jJ6sj5irdET3q9Y6FPGwYvOqUnlveh2FTWA70+e4rqG03/M5YHAckMAHX51LEOHuaL93bZDMgSAUkrXinZQLRVZR8HPY0fUKo05A/IigiWTK9uxp7qkCTC5Em0IYCy58W5zhANJ2nrYFUxnOMiquzPPy8uB/B722ChwjFs1eQm5cxfTSAJjypJHnf299TAd4ki0xndrMHm6L/crQXVWrZ1Lup7wq/hio4DMsuvAMtf0HPkDB78NlKchgAtrjZbcG1nXJwv/WqilfiYXsqWHDbRfo/u6VMT1bNJ259xECfqYigF1xbKCBXZsB5ihSC8KGddbWUGo0vsyhOHyoEQ93c9cNMqcSmkUcx54zkcsDXkMzR/RpEzTB2tihjOpxeqRHd4UJXLPTmWNIvn1ekJcGhghx";
+        String data = "kWNc4a+CflRkVjCrpCnfZXHM/aZ5aGBbyYjJydrhvUTJUE61RJQrt1a8Ah71uChUYvJTRglXWbsPvUEhwZAzNISU0eB8jNcg/0m3D4CwCt2dNEbJdNFMU6dDhsZe/CsRed+gz0OROpdEuQLvJXiH3+5K0q0issT1XTQKjvrawPgdTjQUqfIpnIJ4yLusbzfcO6G2d44+2doLVhvK/kc75XmU4zaGgJx+0ecocxROGdpk/JPh7dYVhCsmrjeAwz21knBINV9NYrFMNcg10wILt/ljXjxFMtrgQtD/125y6hmO9Hh6XFbaeMHLgSjhAavxfTgVVXjjfRVRxl+Gk4OBdg==";
         byte[] dataByte = Coder.decryptBASE64(data);
         String decryptData = RSA.decryptByPrivateKey(dataByte, BROWER_PRIVATE_KEY);
+
         System.out.println(decryptData);
     }
 
