@@ -117,6 +117,10 @@ public class WapLoginAction extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
+            if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
+                writeResultToResponse(response, result);
+                return "empty";
+            }
             return getErrorReturnStr(loginParams, validateResult, 0);
         }
 
