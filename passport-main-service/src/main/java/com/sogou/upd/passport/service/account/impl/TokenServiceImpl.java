@@ -68,8 +68,14 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public WebRoamDO getWebRoamDOByToken(String token) throws ServiceException {
         try {
-            String str = redisUtils.get(buildWebRoamCacheKey(token));
-            return WebRoamDO.getWebRoamDO(str);
+            String key = buildWebRoamCacheKey(token);
+            String str = redisUtils.get(key);
+            WebRoamDO webRoamDO = WebRoamDO.getWebRoamDO(str);
+            if (webRoamDO != null) {
+                //安全启见、根据 r_key 清除 缓存中 漫游用户信息、仅供使用一次!
+                deleteWebRoamDoByToken(token);
+            }
+            return webRoamDO;
         } catch (Exception e) {
             logger.error("getWebRoamDOByToken Fail, token:" + token, e);
             throw new ServiceException(e);

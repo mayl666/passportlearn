@@ -20,7 +20,7 @@ public class ConnectManagerHelper {
 
     public static String constructRedirectURI(int clientId, String ru, String type, String instanceId, String pCallbackUrl, String ip, String from,String domain,String thirdInfo) {
         try {
-            ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CHARSET);
             Map<String, Object> callbackParams = Maps.newHashMap();
             callbackParams.put(CommonConstant.CLIENT_ID, clientId);
             callbackParams.put(CommonConstant.RESPONSE_RU, ru);
@@ -36,7 +36,7 @@ public class ConnectManagerHelper {
             if(!Strings.isNullOrEmpty(thirdInfo)){
                 callbackParams.put("thirdInfo", thirdInfo);
             }
-            StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CONTENT_CHARSET));
+            StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CHARSET));
             return pCallbackUrl + "?" + query;
         } catch (UnsupportedEncodingException e) {
             return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;

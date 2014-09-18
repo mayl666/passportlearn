@@ -62,7 +62,7 @@ public class CommonConstant {
     public static final String RESPONSE_ERROR = "error"; // 响应结果数据
     public static final String RESPONSE_RU = "ru"; // 响应结果的ru
 
-    public static final String DEFAULT_CONTENT_CHARSET = "UTF-8";
+    public static final String DEFAULT_CHARSET = "UTF-8";
     public static final String SEPARATOR_1 = "|";
 
     public static final String ACCESS_TOKEN = "access_token";

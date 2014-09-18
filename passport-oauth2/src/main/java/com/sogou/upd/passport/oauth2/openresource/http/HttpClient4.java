@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.utils.ConnectHttpClient;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthClientResponse;
@@ -77,7 +76,7 @@ public class HttpClient4 extends ConnectHttpClient {
             HttpEntity entity = response.getEntity();
             if (entity != null) {
                 in = entity.getContent();
-                responseBody = EntityUtils.toString(entity, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                responseBody = EntityUtils.toString(entity, CommonConstant.DEFAULT_CHARSET);
                 contentTypeHeader = entity.getContentType();
             }
             String contentType = null;

@@ -121,6 +121,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     public boolean updateAccountInfo(AccountInfo accountInfo) throws ServiceException {
         try {
             String passportId = accountInfo.getPassportId();
+            accountInfo.setGender(Strings.isNullOrEmpty(accountInfo.getGender()) ? "0" : accountInfo.getGender());  //性别默认值为0
             int row = accountInfoDAO.saveInfoOrInsert(passportId, accountInfo);
             if (row != 0) {
                 // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
@@ -129,7 +130,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
                 if ((accountInfoTmp = (AccountInfo) dbShardRedisUtils.getObject(cacheKey, AccountInfo.class)) != null) {
                     accountInfoTmp.setBirthday(accountInfo.getBirthday());
                     accountInfoTmp.setCity(accountInfo.getCity());
-                    accountInfoTmp.setGender(accountInfo.getGender());
+                    accountInfoTmp.setGender(Strings.isNullOrEmpty(accountInfo.getGender()) ? "0" : accountInfo.getGender());  //性别默认值为0
                     accountInfoTmp.setProvince(accountInfo.getProvince());
                     accountInfoTmp.setFullname(accountInfo.getFullname());
                     accountInfoTmp.setPersonalid(accountInfo.getPersonalid());
@@ -171,6 +172,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
     private String buildAccountInfoKey(String passportId) {
         return CACHE_PREFIX_PASSPORTID_ACCOUNT_INFO + passportId;
     }
+
     public boolean updateBindMEmail(AccountInfo accountInfo, String email) throws ServiceException {
         try {
             String passportId = accountInfo.getPassportId();

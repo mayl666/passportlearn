@@ -51,7 +51,7 @@ public class RSAEncoder {
      */
     public String sgrdig(String sginf) throws Exception {
 
-        byte[] temp = encrypt(DigestUtils.md5Hex(sginf).getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+        byte[] temp = encrypt(DigestUtils.md5Hex(sginf).getBytes(CommonConstant.DEFAULT_CHARSET));
 
         return Base64.encodeBase64URLSafeString(temp);
     }

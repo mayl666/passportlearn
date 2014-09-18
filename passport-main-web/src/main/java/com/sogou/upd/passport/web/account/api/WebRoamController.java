@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.api;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -13,6 +14,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.BaseWebRuParams;
+import com.sogou.upd.passport.web.account.form.PcRoamGoParams;
 import com.sogou.upd.passport.web.account.form.WebRoamParams;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,6 +38,7 @@ import java.util.Map;
  * Time: 下午4:28
  */
 @Controller
+@RequestMapping("/sso")
 public class WebRoamController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebRoamController.class);
@@ -50,7 +54,7 @@ public class WebRoamController extends BaseController {
      * 目前支持搜狐漫游到搜狗，sg.passport.sohu.com
      */
     @ResponseBody
-    @RequestMapping(value = "/sso/web_roam_go", method = RequestMethod.GET)
+    @RequestMapping(value = "/web_roam_go", method = RequestMethod.GET)
     public void webRoamGo(HttpServletRequest request, HttpServletResponse response, BaseWebRuParams baseWebRuParams) throws Exception {
         Result result = new APIResultSupport(false);
         String clientId = baseWebRuParams.getClient_id();
@@ -73,7 +77,7 @@ public class WebRoamController extends BaseController {
                 returnErrMsg(response, ru, result.getCode(), result.getMessage());
                 return;
             }
-            result = accountRoamManager.roamGo(sLoginPassportId);
+            result = accountRoamManager.createRoamKey(sLoginPassportId);
             if (result.isSuccess()) {
                 String r_key = (String) result.getModels().get("r_key");
                 Map params = Maps.newHashMap();
@@ -96,8 +100,11 @@ public class WebRoamController extends BaseController {
         }
     }
 
+    /*
+     * 验证搜狐侧登录态生成的r_key，验证通过则在搜狗侧种登录态,
+     */
     @ResponseBody
-    @RequestMapping(value = "/sso/web_roam", method = RequestMethod.GET)
+    @RequestMapping(value = "/web_roam", method = RequestMethod.GET)
     public void webRoam(HttpServletRequest request, HttpServletResponse response, WebRoamParams webRoamParams) throws Exception {
         Result result = new APIResultSupport(false);
         String ru = webRoamParams.getRu();
@@ -134,6 +141,46 @@ public class WebRoamController extends BaseController {
 
             //记录用户操作日志
             UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), clientId, resultCode, createIp);
+            userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+            UserOperationLogUtil.log(userOperationLog);
+        }
+    }
+
+    /*
+     * 桌面端产品登录态透传到web端的起始接口
+     * 验证桌面端登录态，并生成已登录标识
+     */
+    @RequestMapping(value = "/pc_roam_go", method = RequestMethod.POST)
+    public String pcRoamGo(HttpServletRequest request, HttpServletResponse response, Model model, PcRoamGoParams pcRoamGoParams) throws Exception {
+        Result result = new APIResultSupport(false);
+        String clientId = pcRoamGoParams.getClient_id();
+        String xd = pcRoamGoParams.getXd();
+        String createIp = getIp(request);
+        String userId = "";
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(pcRoamGoParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                result.setDefaultModel("xd", xd);
+                model.addAttribute("data", result.toString());
+                return "/login/roam";
+            }
+
+            result = accountRoamManager.pcRoamGo(pcRoamGoParams.getType(), pcRoamGoParams.getS(), createIp);
+            if (result.isSuccess()) {
+                result.setDefaultModel("r_key", result.getModels().get("r_key"));
+                String uniqname = Coder.encode((String) result.getModels().get("uniqname"), CommonConstant.DEFAULT_CHARSET);
+                result.setDefaultModel("uniqname", uniqname);
+                userId = (String) result.getModels().get("userId");
+            }
+            result.setDefaultModel("xd", xd);
+            model.addAttribute("data", result.toString());
+            return "/login/roam";
+        } finally {
+            //记录用户操作日志
+            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), clientId, result.getCode(), createIp);
             userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
             UserOperationLogUtil.log(userOperationLog);
         }

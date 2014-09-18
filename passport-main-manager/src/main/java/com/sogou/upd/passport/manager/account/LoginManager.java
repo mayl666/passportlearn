@@ -20,6 +20,14 @@ public interface LoginManager {
      */
     public Result checkUser(String username, int clientId) throws Exception;
 
+    /**
+     * 登录验证
+     * 根据module有密码验证、快速验证
+     * @param parameters
+     * @param ip
+     * @param scheme
+     * @return
+     */
     public Result accountLogin(WebLoginParams parameters, String ip, String scheme);
 
     /**
@@ -55,6 +63,7 @@ public interface LoginManager {
     public String getIndividPassportIdByUsername(String username);
 
     /**
+     * 密码登录验证方式
      * 判断用户名是否在黑名单中，并校验用户名、密码
      *
      * @param username
@@ -63,5 +72,14 @@ public interface LoginManager {
      * @return
      */
     public Result authUser(String username, String ip, String pwdMD5);
+
+    /**
+     * 快速登录验证方式
+     * 判断用户名是否在ip黑名单中，并校验已登录标识
+     * @param key
+     * @param ip
+     * @return
+     */
+    public Result quickAuthUser(String key, String ip);
 
 }

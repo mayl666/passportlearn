@@ -37,7 +37,7 @@ public class QueryParameterApplier implements OAuthParametersApplier {
 //        }
 
         StringBuilder query = new StringBuilder(OAuthUtils.format(params.entrySet(),
-                CommonConstant.DEFAULT_CONTENT_CHARSET));
+                CommonConstant.DEFAULT_CHARSET));
 
         //编码后将scope添加到query中
 //        if (query.length() > 0) {

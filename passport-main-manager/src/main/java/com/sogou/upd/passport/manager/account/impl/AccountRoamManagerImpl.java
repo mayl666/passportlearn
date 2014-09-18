@@ -1,21 +1,25 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.math.Base64Coder;
+import com.sogou.upd.passport.common.math.RSA;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.PcRoamTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountRoamManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
+import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.WebRoamDO;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.TokenService;
+import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +37,8 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class AccountRoamManagerImpl implements AccountRoamManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccountRoamManagerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccountRoamManagerImpl.class);
+    public static final int TIME_LIMIT = 60 * 60 * 24 * 1000;
 
     @Autowired
     private CookieManager cookieManager;
@@ -41,9 +46,13 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     private AccountService accountService;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private OAuth2ResourceManager oAuth2ResourceManager;
+    @Autowired
+    private LoginManagerImpl loginManager;
 
     @Override
-    public Result roamGo(String sLoginPassportId) {
+    public Result createRoamKey(String sLoginPassportId) {
         Result result = new APIResultSupport(false);
         if (Strings.isNullOrEmpty(sLoginPassportId)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
@@ -60,18 +69,60 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     }
 
     @Override
+    public Result pcRoamGo(String type, String s, String ip) {
+        Result result = new APIResultSupport(false);
+        String passportId = "";
+        // 验证桌面端登录态，解析passportId
+        if (PcRoamTypeEnum.iec.getValue().equals(type)) {
+            // TODO
+        } else if (PcRoamTypeEnum.iet.getValue().equals(type)) {
+            // TODO
+        } else if (PcRoamTypeEnum.pinyint.getValue().equals(type)) {
+            passportId = getUserIdByPinyinRoamToken(s);
+        } else {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage("type类型不支持");
+            return result;
+        }
+        if (Strings.isNullOrEmpty(passportId)) {
+            result.setCode(ErrorUtil.ERR_CODE_RSA_DECRYPT);
+            return result;
+        }
+        if (loginManager.isLoginUserInBlackList(passportId, ip)) {    //ip是否中了安全限制
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+            return result;
+        }
+        // 生成登录标识
+        String r_key = tokenService.saveWebRoamToken(passportId);
+        if (Strings.isNullOrEmpty(r_key)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            return result;
+        }
+        // 验证账号是否存在，并获取用户信息
+        Account account = accountService.queryNormalAccount(passportId);
+        if (account == null) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            return result;
+        } else {
+            String uniqname = Strings.isNullOrEmpty(account.getUniqname()) ? passportId : account.getUniqname();
+            result.setSuccess(true);
+            result.setDefaultModel("uniqname", uniqname);
+            result.setDefaultModel("userid", passportId);
+            result.setDefaultModel("r_key", r_key);
+        }
+    return result;
+}
+
+    @Override
     public Result webRoam(HttpServletResponse response, String sgLgUserId, String r_key, String ru, String createIp, int clientId) throws ServiceException {
         Result result = new APIResultSupport(false);
         String roamPassportId = null;
         try {
-            //检查签名正确性
             //根据r_key 取出存储在缓存的漫游用户信息
             WebRoamDO webRoamDO = tokenService.getWebRoamDOByToken(r_key);
             if (webRoamDO != null) {
                 roamPassportId = webRoamDO.getPassportId();
                 result.setDefaultModel("userId", roamPassportId);
-                //安全启见、根据 r_key 清除 缓存中 漫游用户信息、仅供使用一次!
-                tokenService.deleteWebRoamDoByToken(CacheConstant.CACHE_KEY_WEB_ROAM + r_key);
             } else {
                 //漫游用户信息取不到 返回对应状态码的Result
                 result.setCode(ErrorUtil.ERR_CODE_ROAM_INFO_NOT_EXIST);
@@ -138,10 +189,51 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                 cookieManager.createCookie(response, cookieApiParams);
             }
         } catch (Exception e) {
-            LOGGER.error("webRoam error. roamPassportId:{},r_key:{},ru:{}", new Object[]{roamPassportId, r_key, ru}, e);
+            logger.error("webRoam error. roamPassportId:{},r_key:{},ru:{}", new Object[]{roamPassportId, r_key, ru}, e);
             throw new ServiceException(e);
         }
         result.setSuccess(true);
         return result;
+    }
+
+    @Override
+    public String getUserIdByPinyinRoamToken(String cipherText) {
+        String clearText;
+        try {
+            clearText = RSA.decryptByPrivateKey(Base64Coder.decode(cipherText), TokenGenerator.PRIVATE_KEY);
+        } catch (Exception e) {
+            logger.error("decrypt error, cipherText:" + cipherText, e);
+            return null;
+        }
+        if (!Strings.isNullOrEmpty(clearText)) {
+            String[] textArray = clearText.split("\\|");
+            if (textArray.length == 4) { //数据组成： userid|clientId|token|timestamp
+                //判断时间有效性
+                long timeStamp = Long.parseLong(textArray[3]);
+                if (Math.abs(timeStamp - System.currentTimeMillis()) > TIME_LIMIT) {
+                    logger.error("time expired, text:" + clearText + " current:" + System.currentTimeMillis());
+                    return null;
+                }
+                //判断用户名是否和token取得的一致
+                Result getUserIdResult = oAuth2ResourceManager.getPassportIdByToken(textArray[2], Integer.parseInt(textArray[1]));
+                if (getUserIdResult.isSuccess()) {
+                    String passportId = (String) getUserIdResult.getDefaultModel();
+                    if (!Strings.isNullOrEmpty(passportId) && passportId.equals(textArray[0])) { //解密后的token得到userid，需要和传入的userid一样，保证安全及toke有效性。
+                        return textArray[0];
+                    }
+                } else {
+                    logger.error("can't get token, text:" + clearText);
+                    return null;
+                }
+            } else {
+                //长度不对。
+                logger.error("text to array  length error, expect 4, text:" + clearText);
+                return null;
+            }
+        } else {
+            logger.error("clearText is empty cipherText:" + cipherText);
+            return null;
+        }
+        return null;
     }
 }

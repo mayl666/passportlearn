@@ -2,14 +2,11 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.*;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSAEncoder;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
@@ -31,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -412,7 +408,7 @@ public class CookieManagerImpl implements CookieManager {
         try {
             // 1105不允许URLEncode，但壁纸需要URLEncode，所以传clientId区分
             if (cookieApiParams.getClient_id() != CommonConstant.PINYIN_MAC_CLIENTID) {
-                ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CHARSET);
             }
         } catch (UnsupportedEncodingException e) {
         }

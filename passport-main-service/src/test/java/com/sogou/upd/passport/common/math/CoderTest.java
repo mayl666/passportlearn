@@ -44,9 +44,9 @@ public class CoderTest {
     public void testMD5() throws Exception {
         String userCard = "532325198607162010";
         String userCardActual ="210727198707280311";
-        System.out.println("testMD5 :"+DigestUtils.md5Hex(userCard.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET)));
-        System.out.println("testMD5 userCardActual :"+DigestUtils.md5Hex(userCardActual.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET)));
-        Assert.assertEquals("92f5f778c2d4cb187563a4aace84dd6acf854cdc", DigestUtils.md5Hex(userCard.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET)));
+        System.out.println("testMD5 :"+DigestUtils.md5Hex(userCard.getBytes(CommonConstant.DEFAULT_CHARSET)));
+        System.out.println("testMD5 userCardActual :"+DigestUtils.md5Hex(userCardActual.getBytes(CommonConstant.DEFAULT_CHARSET)));
+        Assert.assertEquals("92f5f778c2d4cb187563a4aace84dd6acf854cdc", DigestUtils.md5Hex(userCard.getBytes(CommonConstant.DEFAULT_CHARSET)));
 
     }
 }
