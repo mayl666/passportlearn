@@ -250,7 +250,7 @@ public class LoginApiController extends BaseController {
         result = sgLoginApiManager.appAuthToken(params);
         String userId = (String) result.getModels().get("userid");
         //记录log
-        UserOperationLog userOperationLog = new UserOperationLog(StringUtil.defaultIfEmpty(userId, "third"), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+        UserOperationLog userOperationLog = new UserOperationLog(StringUtils.defaultIfEmpty(userId, "third"), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("token", params.getToken());
         UserOperationLogUtil.log(userOperationLog);
 

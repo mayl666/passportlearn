@@ -72,7 +72,6 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                     result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                     return result;
                 }
-                //根据code值获取access_token
                 ConnectConfig connectConfig;
                 if (appidType == null) {
                     connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
