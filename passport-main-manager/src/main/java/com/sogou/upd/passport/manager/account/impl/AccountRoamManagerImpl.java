@@ -200,7 +200,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     public String getUserIdByPinyinRoamToken(String cipherText) {
         String clearText;
         try {
-            clearText = RSA.decryptByPrivateKey(Base64Coder.decode(cipherText), TokenGenerator.PRIVATE_KEY);
+            clearText = RSA.decryptByPrivateKey(Base64Coder.decode(cipherText), TokenGenerator.PINYIN_PRIVATE_KEY);
         } catch (Exception e) {
             logger.error("decrypt error, cipherText:" + cipherText, e);
             return null;
