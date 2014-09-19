@@ -50,7 +50,7 @@ public class ConnectSSOController extends BaseConnectController {
 
     static {
         Map gameMap = Maps.newHashMap();
-        gameMap.put(AccountTypeEnum.getProviderStr(AccountTypeEnum.QQ.getValue()), new String[]{"pf", "pfkey", "pay_token"});
+        gameMap.put(AccountTypeEnum.getProviderStr(AccountTypeEnum.QQ.getValue()), new String[]{"openid", "pf", "pfkey", "pay_token"});
         SPECIAL_PARAMS_MAPPING.put(2021, gameMap);
     }
 
