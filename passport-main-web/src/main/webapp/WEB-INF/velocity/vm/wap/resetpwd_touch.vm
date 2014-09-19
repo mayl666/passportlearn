@@ -14,7 +14,7 @@
 <nav class="f-f f-vc">
     <a href="#" class="backlink f-f f-hc f-vc">〈</a>
     <div class="f-1 f-f f-hc f-vc">找回密码</div>
-    <a href="/wap/reg" class="f-f f-vc f-hc reglink">注册</a>
+    <a href="/wap/reg?v=$!v&skin=$!skin&client_id=$!client_id&ru=$!ru" class="f-f f-vc f-hc reglink">注册</a>
 </nav>
 
 <form action="＃" method="post" class="block resetpwd">
