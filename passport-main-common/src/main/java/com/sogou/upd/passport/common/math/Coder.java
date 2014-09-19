@@ -90,7 +90,7 @@ public class Coder {
      * @param key
      * @return
      */
-    public static String decodeBASE64(String key) {
+    public static String decodeBASE64String(String key) {
         byte[] bytes = Base64.decodeBase64(key);
         return new String(bytes);
     }

@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.parameter.PcRoamTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.ParseCookieUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountRoamManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * 支持搜狗域、搜狐域、第三方账号漫游manager
@@ -73,43 +75,43 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     @Override
     public Result pcRoamGo(String type, String cipherText, String ip) {
         Result result = new APIResultSupport(false);
-        String passportId = "";
+        String userId;
         // 验证桌面端登录态，解析passportId
         if (PcRoamTypeEnum.iec.getValue().equals(type)) {
-            // TODO
+            userId = getUserIdByBrowerRoamCookie(cipherText);
         } else if (PcRoamTypeEnum.iet.getValue().equals(type)) {
-            passportId = getUserIdByBrowerRoamToken(cipherText);
+            userId = getUserIdByBrowerRoamToken(cipherText);
         } else if (PcRoamTypeEnum.pinyint.getValue().equals(type)) {
-            passportId = getUserIdByPinyinRoamToken(cipherText);
+            userId = getUserIdByPinyinRoamToken(cipherText);
         } else {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage("type类型不支持");
             return result;
         }
-        if (Strings.isNullOrEmpty(passportId)) {
+        if (Strings.isNullOrEmpty(userId)) {
             result.setCode(ErrorUtil.ERR_CODE_RSA_DECRYPT);
             return result;
         }
-        if (loginManager.isLoginUserInBlackList(passportId, ip)) {    //ip是否中了安全限制
+        if (loginManager.isLoginUserInBlackList(userId, ip)) {    //ip是否中了安全限制
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
             return result;
         }
         // 生成登录标识
-        String r_key = tokenService.saveWebRoamToken(passportId);
+        String r_key = tokenService.saveWebRoamToken(userId);
         if (Strings.isNullOrEmpty(r_key)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             return result;
         }
         // 验证账号是否存在，并获取用户信息
-        Account account = accountService.queryNormalAccount(passportId);
+        Account account = accountService.queryNormalAccount(userId);
         if (account == null) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             return result;
         } else {
-            String uniqname = Strings.isNullOrEmpty(account.getUniqname()) ? passportId : account.getUniqname();
+            String uniqname = Strings.isNullOrEmpty(account.getUniqname()) ? userId : account.getUniqname();
             result.setSuccess(true);
             result.setDefaultModel("uniqname", uniqname);
-            result.setDefaultModel("userid", passportId);
+            result.setDefaultModel("userid", userId);
             result.setDefaultModel("r_key", r_key);
         }
         return result;
@@ -292,32 +294,24 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             return null;
         }
         if (!Strings.isNullOrEmpty(clearText)) {
-            PcBrowerRoamDO pcBrowerRoamDO = PcBrowerRoamDO.getPcBrowerRoamDO(clearText);
-
-            if (pcBrowerRoamDO != null) {
-                //判断时间有效性
-                long timeStamp = pcBrowerRoamDO.getCt();
-                if (Math.abs(timeStamp - System.currentTimeMillis() / 1000) > TIME_LIMIT) {
-                    logger.error("time expired, text:" + clearText + " current:" + System.currentTimeMillis());
-                    return null;
-                }
-                String passportId = pcBrowerRoamDO.getPassportId();
-                //判断用户名是否和token取得的一致
-                Result getUserIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(pcBrowerRoamDO.getToken(), pcBrowerRoamDO.getClientId(), pcBrowerRoamDO.getInstance_id(), passportId);
-                if (getUserIdResult.isSuccess()) {
-                    return passportId;
-                } else {
-                    logger.error("can't get token, text:" + clearText);
-                    return null;
-                }
-            } else {
-                //长度不对。
-                logger.error("text to array error,text:" + clearText);
-                return null;
-            }
+            return parseUseridFromCookie(clearText);
         } else {
             logger.error("clearText is empty cipherText:" + cipherText);
             return null;
         }
+    }
+
+    private String parseUseridFromCookie(String cookieStr) {
+        if (cookieStr.contains("ppinf") && cookieStr.contains("pprdig")) {
+            String ppinf = cookieStr.substring(cookieStr.indexOf("ppinf=") + 6, cookieStr.indexOf(";path=/;"));
+            if (!Strings.isNullOrEmpty(ppinf)) {
+                Map map = ParseCookieUtil.parsePpinf(ppinf);
+                if (map != null && !map.isEmpty()) {
+                    return (String) map.get("userid");
+
+                }
+            }
+        }
+        return null;
     }
 }

@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.common.math;
 
+import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.utils.ParseCookieUtil;
 import com.sogou.upd.passport.service.account.generator.TokenGenerator;
 import junit.framework.Assert;
 import org.junit.Test;
@@ -72,7 +74,7 @@ public class RSATest {
         String cookieDecryptData = RSA.decryptDesktopByPrivateKey(cookieByte, TokenGenerator.BROWER_PRIVATE_KEY);
         System.out.println(cookieDecryptData);
 
-        String token="kWNc4a+CflRkVjCrpCnfZXHM/aZ5aGBbyYjJydrhvUTJUE61RJQrt1a8Ah71uChUYvJTRglXWbsPvUEhwZAzNISU0eB8jNcg/0m3D4CwCt2dNEbJdNFMU6dDhsZe/CsRed+gz0OROpdEuQLvJXiH3+5K0q0issT1XTQKjvrawPgdTjQUqfIpnIJ4yLusbzfcO6G2d44+2doLVhvK/kc75XmU4zaGgJx+0ecocxROGdpk/JPh7dYVhCsmrjeAwz21knBINV9NYrFMNcg10wILt/ljXjxFMtrgQtD/125y6hmO9Hh6XFbaeMHLgSjhAavxfTgVVXjjfRVRxl+Gk4OBdg==";
+        String token = "kWNc4a+CflRkVjCrpCnfZXHM/aZ5aGBbyYjJydrhvUTJUE61RJQrt1a8Ah71uChUYvJTRglXWbsPvUEhwZAzNISU0eB8jNcg/0m3D4CwCt2dNEbJdNFMU6dDhsZe/CsRed+gz0OROpdEuQLvJXiH3+5K0q0issT1XTQKjvrawPgdTjQUqfIpnIJ4yLusbzfcO6G2d44+2doLVhvK/kc75XmU4zaGgJx+0ecocxROGdpk/JPh7dYVhCsmrjeAwz21knBINV9NYrFMNcg10wILt/ljXjxFMtrgQtD/125y6hmO9Hh6XFbaeMHLgSjhAavxfTgVVXjjfRVRxl+Gk4OBdg==";
         byte[] tokenByte = Coder.decryptBASE64(token);
         RSA.init(128);
         String tokenDecryptData = RSA.decryptDesktopByPrivateKey(tokenByte, TokenGenerator.BROWER_PRIVATE_KEY);
@@ -85,10 +87,25 @@ public class RSATest {
     @Test
     public void testDecryptePinyinToken() throws Exception {
         String data = "JFV1XsoGdu3i817L7JQgMn%2FTb06MJB%2BLPfu%2F6an3RUatPm6dCSRsi4Ar9VERLrluDRFh90Mn4%2FO6YSmMWXTZP1hpqR2cgN0opJliX3xGucciFHNSz%2B2h0I0bmVVN3yj8At6ueV%2BSc0JgZKViu4Hl5jh%2FTL0hiE%2FBxW1U7Qeak9k2ByKefAz29W7nlkwhHCoC%2FmvShcmX0gcyBZxRfEMzu%2Buymn%2FTZA2zGEohMToeS8xIXIK%2BzNma1IhjUw%2BNOP%2F1";
-        data = URLDecoder.decode(data,"UTF-8");
-        byte[]  dataByte = Coder.decryptBASE64(data);
+        data = URLDecoder.decode(data, "UTF-8");
+        byte[] dataByte = Coder.decryptBASE64(data);
         String decryptData = RSA.decryptByPrivateKey(dataByte, TokenGenerator.PINYIN_PRIVATE_KEY);
         System.out.println(decryptData);
+    }
+
+    @Test
+    public void testParseBrowerCookie() {
+        String cookieStr = "[\"ppinf=2|1410335813|1411545413|bG9naW5pZDowOnx1c2VyaWQ6MTY6bG92ZW1kQHNvZ291LmNvbXxzZXJ2aWNldXNlOjMwOjAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMHxjcnQ6MTA6MjAwOC0wMy0xNnxlbXQ6MTowfGFwcGlkOjQ6MTEyMHx0cnVzdDoxOjF8cGFydG5lcmlkOjE6MHxyZWxhdGlvbjowOnx1dWlkOjE2OjI2MDA4MGNiZDc5YTQ4Y3N8dWlkOjk6dTk5MTg4Njk3fHVuaXFuYW1lOjM2OiVFNCVCRCVBMCVFNSVBNiVCOSVFOSVBOSVBQyVFNSVBNCU5QXw;path=/;domain=.sogou.com;expires=Wed Sep 17 15:56:53 CST 2014\",\"pprdig=s8REx1OaOupTwvRRQm0XLp_bEQUzzpTfM9cMJf2eSFECmoYkikYpiSqVy0GHKZCPamvHXBpYGDcpyz2sUB2nuT8O7ns777a_nis2R-HGMu5p65QgXbWMtoNKDkwHhCALxCq0Y8PV_U970wqsmimxdOtwXsEH9fWCetTlIfvYD3M;path=/;domain=.sogou.com;expires=Wed Sep 17 15:56:53 CST 2014\"]";
+        if (cookieStr.contains("ppinf") && cookieStr.contains("pprdig")) {
+            String ppinf = cookieStr.substring(cookieStr.indexOf("ppinf=")+6, cookieStr.indexOf(";path=/;"));
+            if (!Strings.isNullOrEmpty(ppinf)) {
+                Map map = ParseCookieUtil.parsePpinf(ppinf);
+                if(map != null && !map.isEmpty()){
+                    String userid = (String) map.get("userid");
+                    System.out.println("userid:" + userid);
+                }
+            }
+        }
     }
 
 
