@@ -173,7 +173,7 @@ public class WebRoamController extends BaseController {
                 result.setDefaultModel("r_key", result.getModels().get("r_key"));
                 String uniqname = Coder.encode((String) result.getModels().get("uniqname"), CommonConstant.DEFAULT_CHARSET);
                 result.setDefaultModel("uniqname", uniqname);
-                userId = (String) result.getModels().get("userId");
+                userId = (String) result.getModels().get("userid");
             }
             result.setDefaultModel("xd", xd);
             model.addAttribute("data", result.toString());
