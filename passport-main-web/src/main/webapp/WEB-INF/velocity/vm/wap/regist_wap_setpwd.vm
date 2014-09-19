@@ -42,7 +42,7 @@
                         <td><button type="submit" class="sub-btn">注册</button></td>
                     </tr>
                 </table>
-                <p class="agreement"><input type="checkbox" /> 我已同意<a href="/">《注册服务协议》</a></p>
+                <p class="agreement"><input type="checkbox" name="agreement" checked="checked"/> 我已同意<a href="/agreement">《注册服务协议》</a></p>
             </form>
         </div>
         
