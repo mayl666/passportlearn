@@ -26,11 +26,11 @@ public interface AccountRoamManager {
      * 验证桌面端登录态，并生成已登录标识
      *
      * @param type 登录态类型
-     * @param s  登录态加密字符串
+     * @param cipherText  登录态加密字符串
      * @return
      * @throws ServiceException
      */
-    Result pcRoamGo(String type, String s, String ip);
+    Result pcRoamGo(String type, String cipherText, String ip);
 
     /**
      * 支持：搜狗域、搜狐域、第三方账号 3类账号漫游
@@ -66,4 +66,18 @@ public interface AccountRoamManager {
      * @return 解析成功返回userId，解析失败返回null
      */
     public String getUserIdByPinyinRoamToken(String cipherText);
+
+    /**
+     * 解析输入法桌面端Token加密串，返回userid
+     * @param cipherText
+     * @return 解析成功返回userId，解析失败返回null
+     */
+    public String getUserIdByBrowerRoamToken(String cipherText);
+
+    /**
+     * 解析输入法桌面端Cookie加密串，返回userid
+     * @param cipherText
+     * @return 解析成功返回userId，解析失败返回null
+     */
+    public String getUserIdByBrowerRoamCookie(String cipherText);
 }

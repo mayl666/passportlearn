@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Base64Coder;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSA;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.PcRoamTypeEnum;
@@ -16,6 +17,7 @@ import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.PcBrowerRoamDO;
 import com.sogou.upd.passport.model.account.WebRoamDO;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.TokenService;
@@ -38,7 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 public class AccountRoamManagerImpl implements AccountRoamManager {
 
     private static final Logger logger = LoggerFactory.getLogger(AccountRoamManagerImpl.class);
-    public static final int TIME_LIMIT = 60 * 60 * 24 * 1000;
+    public static final int TIME_LIMIT = 60 * 60 * 24 * 1000; //1天
 
     @Autowired
     private CookieManager cookieManager;
@@ -69,16 +71,16 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     }
 
     @Override
-    public Result pcRoamGo(String type, String s, String ip) {
+    public Result pcRoamGo(String type, String cipherText, String ip) {
         Result result = new APIResultSupport(false);
         String passportId = "";
         // 验证桌面端登录态，解析passportId
         if (PcRoamTypeEnum.iec.getValue().equals(type)) {
             // TODO
         } else if (PcRoamTypeEnum.iet.getValue().equals(type)) {
-            // TODO
+            passportId = getUserIdByBrowerRoamToken(cipherText);
         } else if (PcRoamTypeEnum.pinyint.getValue().equals(type)) {
-            passportId = getUserIdByPinyinRoamToken(s);
+            passportId = getUserIdByPinyinRoamToken(cipherText);
         } else {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage("type类型不支持");
@@ -110,8 +112,8 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             result.setDefaultModel("userid", passportId);
             result.setDefaultModel("r_key", r_key);
         }
-    return result;
-}
+        return result;
+    }
 
     @Override
     public Result webRoam(HttpServletResponse response, String sgLgUserId, String r_key, String ru, String createIp, int clientId) throws ServiceException {
@@ -235,5 +237,87 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             return null;
         }
         return null;
+    }
+
+    @Override
+    public String getUserIdByBrowerRoamToken(String cipherText) {
+        String clearText;
+        try {
+            byte[] tokenByte = Coder.decryptBASE64(cipherText);
+            RSA.init(128);
+            clearText = RSA.decryptDesktopByPrivateKey(tokenByte, TokenGenerator.BROWER_PRIVATE_KEY);
+        } catch (Exception e) {
+            logger.error("decrypt error, cipherText:" + cipherText, e);
+            return null;
+        }
+        if (!Strings.isNullOrEmpty(clearText)) {
+            PcBrowerRoamDO pcBrowerRoamDO = PcBrowerRoamDO.getPcBrowerRoamDO(clearText);
+
+            if (pcBrowerRoamDO != null) {
+                //判断时间有效性
+                long timeStamp = pcBrowerRoamDO.getCt();
+                if (Math.abs(timeStamp - System.currentTimeMillis() / 1000) > TIME_LIMIT) {
+                    logger.error("time expired, text:" + clearText + " current:" + System.currentTimeMillis());
+                    return null;
+                }
+                String passportId = pcBrowerRoamDO.getPassportId();
+                //判断用户名是否和token取得的一致
+                Result getUserIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(pcBrowerRoamDO.getToken(), pcBrowerRoamDO.getClientId(), pcBrowerRoamDO.getInstance_id(), passportId);
+                if (getUserIdResult.isSuccess()) {
+                    return passportId;
+                } else {
+                    logger.error("can't get token, text:" + clearText);
+                    return null;
+                }
+            } else {
+                //长度不对。
+                logger.error("text to array error,text:" + clearText);
+                return null;
+            }
+        } else {
+            logger.error("clearText is empty cipherText:" + cipherText);
+            return null;
+        }
+    }
+
+    @Override
+    public String getUserIdByBrowerRoamCookie(String cipherText) {
+        String clearText;
+        try {
+            byte[] cookieByte = Coder.decryptBASE64(cipherText);
+            RSA.init(128);
+            clearText = RSA.decryptDesktopByPrivateKey(cookieByte, TokenGenerator.BROWER_PRIVATE_KEY);
+        } catch (Exception e) {
+            logger.error("decrypt error, cipherText:" + cipherText, e);
+            return null;
+        }
+        if (!Strings.isNullOrEmpty(clearText)) {
+            PcBrowerRoamDO pcBrowerRoamDO = PcBrowerRoamDO.getPcBrowerRoamDO(clearText);
+
+            if (pcBrowerRoamDO != null) {
+                //判断时间有效性
+                long timeStamp = pcBrowerRoamDO.getCt();
+                if (Math.abs(timeStamp - System.currentTimeMillis() / 1000) > TIME_LIMIT) {
+                    logger.error("time expired, text:" + clearText + " current:" + System.currentTimeMillis());
+                    return null;
+                }
+                String passportId = pcBrowerRoamDO.getPassportId();
+                //判断用户名是否和token取得的一致
+                Result getUserIdResult = oAuth2ResourceManager.queryPassportIdByAccessToken(pcBrowerRoamDO.getToken(), pcBrowerRoamDO.getClientId(), pcBrowerRoamDO.getInstance_id(), passportId);
+                if (getUserIdResult.isSuccess()) {
+                    return passportId;
+                } else {
+                    logger.error("can't get token, text:" + clearText);
+                    return null;
+                }
+            } else {
+                //长度不对。
+                logger.error("text to array error,text:" + clearText);
+                return null;
+            }
+        } else {
+            logger.error("clearText is empty cipherText:" + cipherText);
+            return null;
+        }
     }
 }
