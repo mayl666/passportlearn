@@ -75,7 +75,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         }
         String nickname = userinfoMap.get(ParseCookieUtil.PPINF_UNIQNAME);
         try {
-            nickname = URLDecoder.decode(nickname, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            nickname = URLDecoder.decode(nickname, CommonConstant.DEFAULT_CHARSET);
             if(StringUtil.isBlank(nickname)||nickname.startsWith("搜狐网友")){
                 nickname=userinfoMap.get(ParseCookieUtil.PPINF_USERID);
             }

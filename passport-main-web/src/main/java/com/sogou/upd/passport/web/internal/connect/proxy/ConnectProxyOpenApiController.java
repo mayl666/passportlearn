@@ -92,9 +92,6 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, uri, String.valueOf(clientId), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage("connectResult", result.toString());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
@@ -154,9 +151,6 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, uri, String.valueOf(clientId), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage("connectResult", result.toString());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
@@ -210,9 +204,6 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, url, String.valueOf(clientId), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage("connectResult", result.toString());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
@@ -264,9 +255,6 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, uri, String.valueOf(clientId), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage("connectResult", result.toString());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();

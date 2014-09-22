@@ -10,7 +10,6 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.ResetPasswordBySecQuesApiParams;
-import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
@@ -73,7 +72,7 @@ public class SGSecureApiManagerImpl implements SecureApiManager {
                 operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
                 return authUserResult;
             }
-            newAnswer = DigestUtils.md5Hex(newAnswer.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET));
+            newAnswer = DigestUtils.md5Hex(newAnswer.getBytes(CommonConstant.DEFAULT_CHARSET));
             AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(userId, newQues, newAnswer);
             if (accountInfo == null) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);

@@ -193,8 +193,8 @@ public class StringUtil {
     public static String strToUTF8(String str) throws UnsupportedEncodingException {
         String s = "";
         if (!StringUtils.isEmpty(str)) {
-            byte[] bytes = str.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET);
-            s = new String(bytes, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            byte[] bytes = str.getBytes(CommonConstant.DEFAULT_CHARSET);
+            s = new String(bytes, CommonConstant.DEFAULT_CHARSET);
         }
         return s;
     }

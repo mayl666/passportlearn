@@ -437,6 +437,7 @@ public class RegAction extends BaseController {
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
+
         commonManager.incSendTimesForMobile(ip);
         commonManager.incSendTimesForMobile(reqParams.getMobile());
         return result.toString();

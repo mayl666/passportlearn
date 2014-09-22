@@ -25,8 +25,6 @@ public interface OperateTimesService {
 
     public boolean checkTimesByKey(String cacheKey, final int max) throws ServiceException;
 
-    public boolean checkTimesByKeyList(List<String> keyList, List<Integer> maxList) throws ServiceException;
-
     /**
      * 通过hget查询次数是否超出限制
      *

@@ -200,7 +200,7 @@ public class RequestModel {
         if (MapUtils.isEmpty(params)) {
             return getUrl();
         }
-        String charset = CommonConstant.DEFAULT_CONTENT_CHARSET;
+        String charset = CommonConstant.DEFAULT_CHARSET;
         String localUrl = getUrl();
         if(SMSUtil.SMS_PROXY.equals(localUrl)){
             charset = "gbk";

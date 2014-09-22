@@ -16,10 +16,7 @@ import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
-import com.sogou.upd.passport.oauth2.openresource.request.user.BaiduUserAPIRequest;
-import com.sogou.upd.passport.oauth2.openresource.request.user.QQUserAPIRequest;
-import com.sogou.upd.passport.oauth2.openresource.request.user.RenrenUserAPIRequest;
-import com.sogou.upd.passport.oauth2.openresource.request.user.SinaUserAPIRequest;
+import com.sogou.upd.passport.oauth2.openresource.request.user.*;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
 import com.sogou.upd.passport.oauth2.openresource.response.user.*;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
@@ -87,10 +84,16 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         }
         String appKey = connectConfig.getAppKey();
         String appSecret = connectConfig.getAppSecret();
-
-        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getRefreshAccessTokenUrl())
-                .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey).setAppSecret(appSecret)
-                .setRefreshToken(refreshToken).buildBodyMessage(OAuthAuthzClientRequest.class);
+        OAuthAuthzClientRequest request;
+        if (AccountTypeEnum.WEIXIN.getValue() == provider) {
+            //微信的刷新token为GET方式
+            request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getRefreshAccessTokenUrl())
+                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey).setRefreshToken(refreshToken).buildQueryMessage(OAuthAuthzClientRequest.class);
+        } else {
+            request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getRefreshAccessTokenUrl())
+                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey).setAppSecret(appSecret)
+                    .setRefreshToken(refreshToken).buildBodyMessage(OAuthAuthzClientRequest.class);
+        }
         OAuthAccessTokenResponse response;
         if (provider == AccountTypeEnum.QQ.getValue()) {
             response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, QQJSONAccessTokenResponse.class);
@@ -99,6 +102,8 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, RenrenJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.BAIDU.getValue()) {
             response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, BaiduJSONAccessTokenResponse.class);
+        } else if (AccountTypeEnum.WEIXIN.getValue() == provider) {
+            response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONAccessTokenResponse.class);
         } else {
             throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
         }
@@ -120,6 +125,10 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                     .setOauth_Consumer_Key(appKey).setOpenid(openid).setAccessToken(accessToken)
                     .buildQueryMessage(QQUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, QQUserAPIResponse.class);
+        } else if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+            request = WeiXinUserAPIRequest.apiLocation(url, WeiXinUserAPIRequest.WeiXinUserAPIBuilder.class).setOpenid(openid)
+                    .setAccessToken(accessToken).buildQueryMessage(WeiXinUserAPIRequest.class);
+            response = OAuthHttpClient.execute(request, WeiXinUserAPIResponse.class);
         } else if (provider == AccountTypeEnum.SINA.getValue()) {
             request = SinaUserAPIRequest.apiLocation(url, SinaUserAPIRequest.SinaUserAPIBuilder.class).setUid(openid)
                     .setAccessToken(accessToken).buildQueryMessage(SinaUserAPIRequest.class);
@@ -163,6 +172,25 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             }
         }
         return null;
+    }
+
+    @Override
+    public OAuthTokenVO verifyAccessToken(String openid, String accessToken, ConnectConfig connectConfig) throws IOException, OAuthProblemException {
+        int provider = connectConfig.getProvider();
+        OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+        if (oAuthConsumer == null) {
+            return null;
+        }
+        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.verifyTokenLocation(oAuthConsumer.getWebUserAuthzUrl())
+                .setOpenid(openid).setAccessToken(accessToken).buildQueryMessage(OAuthAuthzClientRequest.class);
+        OAuthTokenVO oAuthTokenVO;
+        if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+            WeixinJSONVerifyAccessTokenResponse response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONVerifyAccessTokenResponse.class);
+            oAuthTokenVO = response.getOAuthTokenVO();
+        } else {
+            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+        }
+        return oAuthTokenVO;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

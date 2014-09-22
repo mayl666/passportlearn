@@ -35,7 +35,6 @@ public class CommonConstant {
     public static final String SG_NOT_EXIST = "SoGouNotExist"; //账号在搜狗不存在
     //双写异常原因
     public static final String SGSUCCESS_SHERROR = "write_SGSuccess_SHError";//SG写成功，SH写失败
-    public static final String SGSUCCESS_SHUNBINDERROR = "write_SGSuccess_SHUnBindError";//SG写成功，SH解除绑定失败
 
     public static final String APP_CONNECT_KEY = "100294784";  //搜狗在QQ第三方开放平台的应用id
     public static final String APP_CONNECT_SECRET = "a873ac91cd703bc037e14c2ef47d2021";  //搜狗在QQ第三方开放平台对应的应用密钥
@@ -63,7 +62,7 @@ public class CommonConstant {
     public static final String RESPONSE_ERROR = "error"; // 响应结果数据
     public static final String RESPONSE_RU = "ru"; // 响应结果的ru
 
-    public static final String DEFAULT_CONTENT_CHARSET = "UTF-8";
+    public static final String DEFAULT_CHARSET = "UTF-8";
     public static final String SEPARATOR_1 = "|";
 
     public static final String ACCESS_TOKEN = "access_token";
@@ -132,16 +131,8 @@ public class CommonConstant {
 
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2001, 4));
 
-        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1024, 3));
-        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1024, 4));
-
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2011, 3));
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2011, 4));
-
-        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2018, 3));
-
-        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2020, 3));
-        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2020, 4));
     }
 
 }

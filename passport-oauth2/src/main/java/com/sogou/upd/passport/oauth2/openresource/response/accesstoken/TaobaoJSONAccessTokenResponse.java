@@ -52,7 +52,7 @@ public class TaobaoJSONAccessTokenResponse extends OAuthAccessTokenResponse {
         try {
             TaobaoOAuthTokenVO taobaoOAuthTokenVO = getTaobaoOAuthTokenVO();
             String nickName = taobaoOAuthTokenVO.getTaobao_user_nick();
-            nickName = URLDecoder.decode(nickName, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            nickName = URLDecoder.decode(nickName, CommonConstant.DEFAULT_CHARSET);
             return nickName;
         } catch (Exception e) {
             log.error("Connect OAuthToken Response parse error, connect:taobao, body:" + body, e);
