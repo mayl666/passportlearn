@@ -123,33 +123,31 @@ public class WapLoginAction extends BaseController {
             }
             return getErrorReturnStr(loginParams, validateResult, 0);
         }
-
         result = wapLoginManager.accountLogin(loginParams, ip);  //wap端ip做安全限制
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), ip);
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
-
         if (result.isSuccess()) {
             String userId = (String) result.getModels().get("userid");
             String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
-
             WapRegAction.setSgidCookie(response, sgid);
-
+            //返回第三方的个人资料
+            String fields = "uniqname,avatarurl,gender";
+            ObtainAccountInfoParams accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), userId, fields);
+            result = accountInfoManager.getUserInfo(accountInfoParams);
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
-                //在返回的数据中导入 json格式，用来给客户端用。
-                //第三方获取个人资料
-                String fields = "uniqname,avatarurl,gender";
-                ObtainAccountInfoParams accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), userId, fields);
-                result = accountInfoManager.getUserInfo(accountInfoParams);
                 result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                 writeResultToResponse(response, result);
                 loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
                 return "empty";
             }
             loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
-            response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
+            String uniqname = String.valueOf(result.getModels().get("uniqname"));
+            String avatarurl = String.valueOf(result.getModels().get("avatarurl"));
+            String gender = String.valueOf(result.getModels().get("gender"));
+            response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid, uniqname, avatarurl, gender));
             return "empty";
         } else {
             int isNeedCaptcha = 0;
@@ -169,9 +167,7 @@ public class WapLoginAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("您登陆过于频繁，请稍后再试。");
             }
-
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
-
                 if (needCaptcha) {
                     if (result.getCode() != ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
@@ -184,9 +180,7 @@ public class WapLoginAction extends BaseController {
                 writeResultToResponse(response, result);
                 return "empty";
             }
-
             return getErrorReturnStr(loginParams, "用户名或者密码错误", isNeedCaptcha);
-
         }
     }
 
@@ -376,12 +370,14 @@ public class WapLoginAction extends BaseController {
         return ru;
     }
 
-    private String getSuccessReturnStr(String ru, String token) {
+    private String getSuccessReturnStr(String ru, String token, String uniqname, String avatarurl, String gender) {
         String deRu = Coder.decodeUTF8(ru);
         if (deRu.contains("?")) {
-            return deRu + "&sgid=" + token;
+            deRu += "&sgid=";
+        } else {
+            deRu += "?sgid=";
         }
-        return deRu + "?sgid=" + token;
+        return deRu + token + "&uniqname=" + uniqname + "&avatarurl=" + avatarurl + "&gender=" + gender;
     }
 
     private String getErrorReturnStr(WapLoginParams loginParams, String errorMsg, int isNeedCaptcha) {
