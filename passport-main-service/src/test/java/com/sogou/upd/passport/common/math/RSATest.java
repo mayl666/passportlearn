@@ -58,6 +58,7 @@ public class RSATest {
      */
     @Test
     public void testEncryptByPrivateKey_DecryptByPublicKey() throws Exception {
+        RSA.init(64);
         byte[] encbyte = RSA.encryptByPrivateKey(str.getBytes(), TokenGenerator.PINYIN_PRIVATE_KEY);
         String decStr = RSA.decryptByPublicKey(encbyte, TokenGenerator.PUBLIC_KEY);
         Assert.assertEquals(str, decStr);
@@ -89,6 +90,7 @@ public class RSATest {
         String data = "JFV1XsoGdu3i817L7JQgMn%2FTb06MJB%2BLPfu%2F6an3RUatPm6dCSRsi4Ar9VERLrluDRFh90Mn4%2FO6YSmMWXTZP1hpqR2cgN0opJliX3xGucciFHNSz%2B2h0I0bmVVN3yj8At6ueV%2BSc0JgZKViu4Hl5jh%2FTL0hiE%2FBxW1U7Qeak9k2ByKefAz29W7nlkwhHCoC%2FmvShcmX0gcyBZxRfEMzu%2Buymn%2FTZA2zGEohMToeS8xIXIK%2BzNma1IhjUw%2BNOP%2F1";
         data = URLDecoder.decode(data, "UTF-8");
         byte[] dataByte = Coder.decryptBASE64(data);
+        RSA.init(64);
         String decryptData = RSA.decryptByPrivateKey(dataByte, TokenGenerator.PINYIN_PRIVATE_KEY);
         System.out.println(decryptData);
     }
