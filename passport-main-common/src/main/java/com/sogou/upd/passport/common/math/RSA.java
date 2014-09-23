@@ -27,14 +27,8 @@ public class RSA extends Coder {
 //    private static final int MAX_ENCRYPT_BLOCK = 117;
 
     //RSA最大解密密文大小
-    private static int MAX_DECRYPT_BLOCK = 64;
-//    private static final int MAX_DECRYPT_BLOCK = 128;
-
-    //默认为64，但例如浏览器用C的RSA加密需要128
-    //注意使用解密方法前，必须先初始化该值
-    public static void init(int maxDecryptBlock){
-         MAX_DECRYPT_BLOCK = maxDecryptBlock;
-    }
+    private static int MAX_DECRYPT_BLOCK = 64;  // 输入法RSA解密需要64
+//    private static final int MAX_DECRYPT_BLOCK = 128;   浏览器用C的RSA解密需要128
 
     /**
      * 加密<br>
@@ -95,7 +89,7 @@ public class RSA extends Coder {
      * @return
      * @throws Exception
      */
-    public static String decryptByPrivateKey(byte[] data, String key) throws Exception {
+    public static String decryptByPrivateKey(byte[] data, String key, int maxDecryptBlock) throws Exception {
         // 对密钥解密
         byte[] keyBytes = decryptBASE64(key);
 
@@ -108,7 +102,7 @@ public class RSA extends Coder {
         Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
-        byte[] decryptData = segmentCoder(data, cipher, MAX_DECRYPT_BLOCK);
+        byte[] decryptData = segmentCoder(data, cipher, maxDecryptBlock);
 
         return new String(decryptData);
     }
@@ -123,7 +117,7 @@ public class RSA extends Coder {
      * @return
      * @throws Exception
      */
-    public static String decryptDesktopByPrivateKey(byte[] data, String key) throws Exception {
+    public static String decryptDesktopByPrivateKey(byte[] data, String key, int maxDecryptBlock) throws Exception {
         // 对密钥解密
         byte[] keyBytes = decryptBASE64(key);
 
@@ -136,7 +130,7 @@ public class RSA extends Coder {
         Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
-        byte[] decryptData = segmentOppositeCoder(data, cipher, MAX_DECRYPT_BLOCK);
+        byte[] decryptData = segmentOppositeCoder(data, cipher, maxDecryptBlock);
 
         return new String(decryptData);
     }
@@ -150,7 +144,7 @@ public class RSA extends Coder {
      * @return
      * @throws Exception
      */
-    public static String decryptByPublicKey(byte[] data, String key) throws Exception {
+    public static String decryptByPublicKey(byte[] data, String key, int maxDecryptBlock) throws Exception {
         // 对密钥解密
         byte[] keyBytes = decryptBASE64(key);
 
@@ -163,7 +157,7 @@ public class RSA extends Coder {
         Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
         cipher.init(Cipher.DECRYPT_MODE, publicKey);
 
-        byte[] decryptData = segmentCoder(data, cipher, MAX_DECRYPT_BLOCK);
+        byte[] decryptData = segmentCoder(data, cipher, maxDecryptBlock);
 
         return new String(decryptData);
     }

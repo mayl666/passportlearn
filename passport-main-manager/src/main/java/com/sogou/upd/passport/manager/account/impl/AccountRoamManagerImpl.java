@@ -204,8 +204,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     public String getUserIdByPinyinRoamToken(String cipherText) {
         String clearText;
         try {
-            RSA.init(64);
-            clearText = RSA.decryptByPrivateKey(Base64Coder.decode(cipherText), TokenGenerator.PINYIN_PRIVATE_KEY);
+            clearText = RSA.decryptByPrivateKey(Base64Coder.decode(cipherText), TokenGenerator.PINYIN_PRIVATE_KEY, 64);
         } catch (Exception e) {
             logger.error("decrypt error, cipherText:" + cipherText, e);
             return null;
@@ -247,8 +246,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
         String clearText;
         try {
             byte[] tokenByte = Coder.decryptBASE64(cipherText);
-            RSA.init(128);
-            clearText = RSA.decryptDesktopByPrivateKey(tokenByte, TokenGenerator.BROWER_PRIVATE_KEY);
+            clearText = RSA.decryptDesktopByPrivateKey(tokenByte, TokenGenerator.BROWER_PRIVATE_KEY, 128);
         } catch (Exception e) {
             logger.error("decrypt error, cipherText:" + cipherText, e);
             return null;
@@ -288,8 +286,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
         String clearText;
         try {
             byte[] cookieByte = Coder.decryptBASE64(cipherText);
-            RSA.init(128);
-            clearText = RSA.decryptDesktopByPrivateKey(cookieByte, TokenGenerator.BROWER_PRIVATE_KEY);
+            clearText = RSA.decryptDesktopByPrivateKey(cookieByte, TokenGenerator.BROWER_PRIVATE_KEY, 128);
         } catch (Exception e) {
             logger.error("decrypt error, cipherText:" + cipherText, e);
             return null;
