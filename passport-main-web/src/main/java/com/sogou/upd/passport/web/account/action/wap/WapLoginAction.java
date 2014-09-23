@@ -377,7 +377,8 @@ public class WapLoginAction extends BaseController {
         } else {
             deRu += "?sgid=";
         }
-        return deRu + token + "&uniqname=" + uniqname + "&avatarurl=" + avatarurl + "&gender=" + gender;
+        String url = deRu + token + "&uniqname=" + uniqname + "&avatarurl=" + avatarurl + "&gender=" + gender;
+        return url;
     }
 
     private String getErrorReturnStr(WapLoginParams loginParams, String errorMsg, int isNeedCaptcha) {
