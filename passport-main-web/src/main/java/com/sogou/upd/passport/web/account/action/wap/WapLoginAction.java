@@ -133,7 +133,7 @@ public class WapLoginAction extends BaseController {
             String userId = (String) result.getModels().get("userid");
             String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
             WapRegAction.setSgidCookie(response, sgid);
-            if (WapConstant.WAP_TOUCH.equals(loginParams.getV())) {
+            if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
                 //在返回的数据中导入 json格式，用来给客户端用。
                 //第三方获取个人资料
                 String fields = "uniqname,avatarurl,gender";
