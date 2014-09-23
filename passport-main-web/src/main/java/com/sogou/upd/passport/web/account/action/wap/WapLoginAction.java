@@ -133,20 +133,18 @@ public class WapLoginAction extends BaseController {
             String userId = (String) result.getModels().get("userid");
             String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
             WapRegAction.setSgidCookie(response, sgid);
-            //返回第三方的个人资料
-            String fields = "uniqname,avatarurl,gender";
-            ObtainAccountInfoParams accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), userId, fields);
-            result = accountInfoManager.getUserInfo(accountInfoParams);
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
+                //在返回的数据中导入 json格式，用来给客户端用。
+                //第三方获取个人资料
+                String fields = "uniqname,avatarurl,gender";
+                ObtainAccountInfoParams accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), userId, fields);
+                result = accountInfoManager.getUserInfo(accountInfoParams);
                 result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                 writeResultToResponse(response, result);
                 loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
                 return "empty";
             }
             loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
-//            String uniqname = String.valueOf(result.getModels().get("uniqname"));
-//            String avatarurl = String.valueOf(result.getModels().get("avatarurl"));
-//            String gender = String.valueOf(result.getModels().get("gender"));
             response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
             return "empty";
         } else {
@@ -373,12 +371,9 @@ public class WapLoginAction extends BaseController {
     private String getSuccessReturnStr(String ru, String token) {
         String deRu = Coder.decodeUTF8(ru);
         if (deRu.contains("?")) {
-            deRu += "&sgid=";
-        } else {
-            deRu += "?sgid=";
+            return deRu + "&sgid=" + token;
         }
-        String url = deRu + token;
-        return url.toString();
+        return deRu + "?sgid=" + token;
     }
 
     private String getErrorReturnStr(WapLoginParams loginParams, String errorMsg, int isNeedCaptcha) {
