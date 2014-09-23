@@ -4,7 +4,6 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.math.Coder;
-import com.sogou.upd.passport.common.utils.JsonUtil;
 import org.junit.Test;
 
 import java.util.Map;
@@ -28,12 +27,12 @@ public class CookieManagerImplTest extends BaseTest {
         //sginf=1|1409652043|1410861643|Y2xpZW50aWQ6NDoyMDA5fGNydDoxMDoxNDA5NjUyMDQzfHJlZm5pY2s6Mjc6JUU1JThEJTkwJUU5JTk5JUI2JUU1JThEJThEfHRydXN0OjE6MXx1c2VyaWQ6NDQ6NUVFRDZFOTJCOTg1MzRFMkI3NDAyMEY4NUM4NzUxODZAcXEuc29odS5jb218dW5pcW5hbWU6Mjc6JUU1JThEJTkwJUU5JTk5JUI2JUU1JThEJThEfA
 
         String decryptSGPPinf = "Y2xpZW50aWQ6NDoyMDA5fGNydDoxMDoxNDA5NjUyMDQzfHJlZm5pY2s6Mjc6JUU1JThEJTkwJUU5JTk5JUI2JUU1JThEJThEfHRydXN0OjE6MXx1c2VyaWQ6NDQ6NUVFRDZFOTJCOTg1MzRFMkI3NDAyMEY4NUM4NzUxODZAcXEuc29odS5jb218dW5pcW5hbWU6Mjc6JUU1JThEJTkwJUU5JTk5JUI2JUU1JThEJThEfA";
-        System.out.println("=======decrypt SG PPinf " + Coder.decodeBASE64(decryptSGPPinf));
+        System.out.println("=======decrypt SG PPinf " + Coder.decodeBASE64String(decryptSGPPinf));
 
         //搜狐算法生成的ppinf
         //ppinf=2|1409655301|1410864901|bG9naW5pZDowOnx1c2VyaWQ6NDQ6M0EwQ0U1QUYwQjczNDY2OTMzNjZFQUJDNTQ0NTE1NkRAcXEuc29odS5jb218c2VydmljZXVzZTozMDowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDB8Y3J0OjA6fGVtdDoxOjB8YXBwaWQ6NDoxMTIwfHRydXN0OjE6MXxwYXJ0bmVyaWQ6MTowfHJlbGF0aW9uOjA6fHV1aWQ6MTY6MTFmYWIwYjZmMGU4NDMweHx1aWQ6MTY6MTFmYWIwYjZmMGU4NDMweHx1bmlxbmFtZTozNjolRTYlOTglOUYlRTclOUIlQjQlRTglODclQjMlRTYlODglOTB8cmVmdXNlcmlkOjMyOjNBMENFNUFGMEI3MzQ2NjkzMzY2RUFCQzU0NDUxNTZEfHJlZm5pY2s6NjrilYTihpIg55u06Iez5oiQfA
         String decryptSHPPinf = "bG9naW5pZDowOnx1c2VyaWQ6NDQ6M0EwQ0U1QUYwQjczNDY2OTMzNjZFQUJDNTQ0NTE1NkRAcXEuc29odS5jb218c2VydmljZXVzZTozMDowMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDB8Y3J0OjA6fGVtdDoxOjB8YXBwaWQ6NDoxMTIwfHRydXN0OjE6MXxwYXJ0bmVyaWQ6MTowfHJlbGF0aW9uOjA6fHV1aWQ6MTY6MTFmYWIwYjZmMGU4NDMweHx1aWQ6MTY6MTFmYWIwYjZmMGU4NDMweHx1bmlxbmFtZTozNjolRTYlOTglOUYlRTclOUIlQjQlRTglODclQjMlRTYlODglOTB8cmVmdXNlcmlkOjMyOjNBMENFNUFGMEI3MzQ2NjkzMzY2RUFCQzU0NDUxNTZEfHJlZm5pY2s6NjrilYTihpIg55u06Iez5oiQfA";
-        System.out.println("=======decrypt SH PPinf " + Coder.decodeBASE64(decryptSHPPinf));
+        System.out.println("=======decrypt SH PPinf " + Coder.decodeBASE64String(decryptSHPPinf));
 
     }
 

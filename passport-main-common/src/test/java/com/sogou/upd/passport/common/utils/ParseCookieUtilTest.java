@@ -21,7 +21,7 @@ public class ParseCookieUtilTest {
         String ppinf = "2|1371541233|1372750833|bG9naW5pZDowOnx1c2VyaWQ6MTg6dXBkX3Rlc3RAc29nb3UuY29tfHNlcnZpY2V1c2U6MjA6MDAxMDAwMDAwMDAwMDAwMDAwMDB8Y3J0OjEwOjIwMTMtMDYtMDN8ZW10OjE6MHxhcHBpZDo0Ojk5OTl8dHJ1c3Q6MToxfHBhcnRuZXJpZDoxOjB8cmVsYXRpb246MDp8dXVpZDoxNjoyNmYxNWI1OGQwYzU0ZDVzfHVpZDoxNjoyNmYxNWI1OGQwYzU0ZDVzfHVuaXFuYW1lOjQ0OiVFNiU5MCU5QyVFNyU4QiU5MCVFNyVCRCU5MSVFNSU4RiU4QjU4NDMxMDc4fA";
         String[] ppinfs = ppinf.split("\\|");
         String userInfo = ppinfs[ppinfs.length - 1];
-        String userInfoBase64 = Coder.decodeBASE64(userInfo);
+        String userInfoBase64 = Coder.decodeBASE64String(userInfo);
         System.out.println(userInfoBase64);
         String[] userInfos = userInfoBase64.split("\\|");
         Map<String,String> maps=new HashMap(userInfos.length);

@@ -2,7 +2,6 @@ package com.sogou.upd.passport.common.utils;
 
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
-import org.jboss.netty.handler.codec.base64.Base64Decoder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
@@ -30,12 +29,22 @@ public class ParseCookieUtil {
      */
     public static Map<String, String> parsePpinf(HttpServletRequest request) {
         String ppinf = ServletUtil.getCookie(request, PPINF);
+        return parsePpinf(ppinf);
+    }
+
+    /**
+     * 用于解析sohu矩阵的ppinf cookie
+     *
+     * @param ppinf
+     * @return
+     */
+    public static Map<String, String> parsePpinf(String ppinf) {
         if (StringUtil.isBlank(ppinf)) {
             return Collections.emptyMap();
         }
         String[] ppinfArray = ppinf.split("\\|");
         String userInfo = ppinfArray[ppinfArray.length - 1];
-        String userInfoBase64 = Coder.decodeBASE64(userInfo);
+        String userInfoBase64 = Coder.decodeBASE64String(userInfo);
         String[] userInfoArray = userInfoBase64.split("\\|");
         Map<String, String> maps = new HashMap(userInfoArray.length);
         for (String item : userInfoArray) {
