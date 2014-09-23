@@ -1,11 +1,13 @@
 package com.sogou.upd.passport.manager.form;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.common.validation.constraints.V;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
 
 /**
@@ -28,7 +30,7 @@ public class WapLoginParams extends UsernameParams {
     @Min(0)
     private String client_id;
 
-//    @NotBlank
+    //    @NotBlank
     @URL
     @Ru
     private String ru;//登陆来源
@@ -37,6 +39,14 @@ public class WapLoginParams extends UsernameParams {
     @NotBlank(message = "v is null")
     @V
     private String v = WapConstant.WAP_COLOR;//wap版本:1-简易版；2-炫彩版；5-触屏版
+
+    @AssertTrue(message = "username不能为空")
+    private boolean isUserNameNotAllowedNull() {
+        if (Strings.isNullOrEmpty(username)) {   // wap登录时，username不能为空
+            return false;
+        }
+        return true;
+    }
 
     public String getRu() {
         return ru;

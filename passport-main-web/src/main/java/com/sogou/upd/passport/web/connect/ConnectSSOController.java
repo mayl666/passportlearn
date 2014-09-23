@@ -75,7 +75,9 @@ public class ConnectSSOController extends BaseConnectController {
                 return result.toString();
             }
             result = sSOAfterauthManager.handleSSOAfterauth(req, providerStr);
-//            buildSpecialResultParams(req, result, params.getClient_id(), providerStr);
+            if (result.isSuccess()) {
+                buildSpecialResultParams(req, result, params.getClient_id(), providerStr);
+            }
             return result.toString();
         } finally {
             String uidStr = AccountTypeEnum.generateThirdPassportId(params.getOpenid(), providerStr);
@@ -133,19 +135,17 @@ public class ConnectSSOController extends BaseConnectController {
     }
 
     /*
-     * 根据应用需要，构建应用
+     * 根据应用需要，构建特定返回字段
      */
     private void buildSpecialResultParams(HttpServletRequest req, Result result, int clientId, String providerStr) {
-        if (result.isSuccess()) {
-            Map<String, String[]> map = SPECIAL_PARAMS_MAPPING.get(clientId);
-            if (map != null && !map.isEmpty()) {
-                String[] paramArray = map.get(providerStr);
-                if (paramArray != null) {
-                    for (String param : paramArray) {
-                        String reqParamValue = req.getParameter(param);
-                        if (!Strings.isNullOrEmpty(reqParamValue)) {
-                            result.setDefaultModel(param, reqParamValue);
-                        }
+        Map<String, String[]> map = SPECIAL_PARAMS_MAPPING.get(clientId);
+        if (map != null && !map.isEmpty()) {
+            String[] paramArray = map.get(providerStr);
+            if (paramArray != null) {
+                for (String param : paramArray) {
+                    String reqParamValue = req.getParameter(param);
+                    if (!Strings.isNullOrEmpty(reqParamValue)) {
+                        result.setDefaultModel(param, reqParamValue);
                     }
                 }
             }
