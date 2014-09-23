@@ -118,6 +118,7 @@ public class LoginAction extends BaseController {
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
         userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(request, "YYID"));
+        userOperationLog.putOtherMessage("module", loginParams.getModule());
         UserOperationLogUtil.log(userOperationLog);
         if (result.isSuccess()) {
             userId = result.getModels().get("userid").toString();
