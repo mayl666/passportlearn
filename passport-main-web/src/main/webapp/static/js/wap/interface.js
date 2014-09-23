@@ -53,7 +53,7 @@ define([], function() {
     function login(params, callback) {
         var options = {
             client_id: client_id,
-            v: 0,
+            v: 5,
             ru: 'http://wap.sogou.com'
         };
 
