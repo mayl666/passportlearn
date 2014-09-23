@@ -38,7 +38,7 @@ public class WapLoginParams extends UsernameParams {
 
     @NotBlank(message = "v is null")
     @V
-    private String v = WapConstant.WAP_TOUCH;//wap版本:1-简易版；2-炫彩版；5-触屏版
+    private String v = WapConstant.WAP_COLOR;//wap版本:1-简易版；2-炫彩版；5-触屏版
 
     @AssertTrue(message = "username不能为空")
     private boolean isUserNameNotAllowedNull() {
