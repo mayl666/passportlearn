@@ -144,10 +144,10 @@ public class WapLoginAction extends BaseController {
                 return "empty";
             }
             loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
-            String uniqname = String.valueOf(result.getModels().get("uniqname"));
-            String avatarurl = String.valueOf(result.getModels().get("avatarurl"));
-            String gender = String.valueOf(result.getModels().get("gender"));
-            response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid, uniqname, avatarurl, gender));
+//            String uniqname = String.valueOf(result.getModels().get("uniqname"));
+//            String avatarurl = String.valueOf(result.getModels().get("avatarurl"));
+//            String gender = String.valueOf(result.getModels().get("gender"));
+            response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
             return "empty";
         } else {
             int isNeedCaptcha = 0;
@@ -370,14 +370,14 @@ public class WapLoginAction extends BaseController {
         return ru;
     }
 
-    private String getSuccessReturnStr(String ru, String token, String uniqname, String avatarurl, String gender) {
+    private String getSuccessReturnStr(String ru, String token) {
         String deRu = Coder.decodeUTF8(ru);
         if (deRu.contains("?")) {
             deRu += "&sgid=";
         } else {
             deRu += "?sgid=";
         }
-        String url = deRu + token + "&uniqname=" + uniqname + "&avatarurl=" + avatarurl + "&gender=" + gender;
+        String url = deRu + token;
         return url.toString();
     }
 
