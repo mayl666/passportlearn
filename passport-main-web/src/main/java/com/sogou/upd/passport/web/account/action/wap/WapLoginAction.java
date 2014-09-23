@@ -147,8 +147,8 @@ public class WapLoginAction extends BaseController {
             String uniqname = String.valueOf(result.getModels().get("uniqname"));
             String avatarurl = String.valueOf(result.getModels().get("avatarurl"));
             String gender = String.valueOf(result.getModels().get("gender"));
-            return "redirect:" + getSuccessReturnStr(loginParams.getRu(), sgid, uniqname, avatarurl, gender);
-//            return "empty";
+            response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid, uniqname, avatarurl, gender));
+            return "empty";
         } else {
             int isNeedCaptcha = 0;
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
@@ -378,7 +378,7 @@ public class WapLoginAction extends BaseController {
             deRu += "?sgid=";
         }
         String url = deRu + token + "&uniqname=" + uniqname + "&avatarurl=" + avatarurl + "&gender=" + gender;
-        return url;
+        return url.toString();
     }
 
     private String getErrorReturnStr(WapLoginParams loginParams, String errorMsg, int isNeedCaptcha) {
