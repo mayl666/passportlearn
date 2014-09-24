@@ -85,7 +85,7 @@ public class WapResetPwdAction extends BaseController {
             return "wap/findpwd_touch";
         }
         redirectAttributes.addAttribute("ru", ru);
-        return "redirect:" + SHPPUrlConstant.SOHU_WAP_FINDPWD_URL + "?ru={ru}";
+        return "redirect:" + ru;
     }
 
     /**
