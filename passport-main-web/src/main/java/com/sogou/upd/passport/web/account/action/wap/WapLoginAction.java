@@ -105,7 +105,6 @@ public class WapLoginAction extends BaseController {
                 model.addAttribute("isNeedCaptcha", 1);
                 model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
             }
-            model.addAttribute("username", wapIndexParams.getUsername());
             return "wap/login_wap";
         }
     }
@@ -124,8 +123,6 @@ public class WapLoginAction extends BaseController {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
         loginParams.setRu(Coder.decodeUTF8(loginParams.getRu()));
-        //username和password之所以再传递回去，是因为wap2.0的控制都由后端来做，一刷新页面会导致用户填的数据丢失，用户体验不好，所以后端再返回，填充到前端模板中
-        model.addAttribute("username", loginParams.getUsername());
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
