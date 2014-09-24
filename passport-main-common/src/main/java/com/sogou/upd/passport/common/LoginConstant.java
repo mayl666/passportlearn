@@ -147,12 +147,12 @@ public class LoginConstant {
     /**
      * 内部接口 检查用户是否存在 一小时限制 50
      */
-    public static final int CHECK_USER_EXIST_INTERNAL_USER_LIMIT = 20;
+    public static final int CHECK_USER_EXIST_INTERNAL_USER_LIMIT = 50;
 
     /**
-     * 内部接口 检查用户是否存在 一小时限制某用户IP 20次
+     * 内部接口 检查用户是否存在 一小时限制某用户IP 50次
      */
-    public static final int CHECK_USER_EXIST_INTERNAL_IP_LIMIT = 20;
+    public static final int CHECK_USER_EXIST_INTERNAL_IP_LIMIT = 50;
 
 
 }
