@@ -157,6 +157,7 @@ public class WapV2ResetPwdAction extends BaseController {
     public String resetPwd(HttpServletRequest request, HttpServletResponse response, WapPwdParams reqParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         try {
+            reqParams.setRu(Coder.decodeUTF8(reqParams.getRu()));
             String validateResult = ControllerHelper.validateParams(reqParams);
             if (!Strings.isNullOrEmpty(validateResult) || Strings.isNullOrEmpty(reqParams.getCaptcha())) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
@@ -276,7 +277,7 @@ public class WapV2ResetPwdAction extends BaseController {
         resetParamsMap.put("client_id", client_id);
         resetParamsMap.put("errorMsg", errorMsg);
         resetParamsMap.put("hasError", hasError);
-        resetParamsMap.put("ru", ru);
+        resetParamsMap.put("ru", Coder.encodeUTF8(ru));
         resetParamsMap.put("skin", skin);
         resetParamsMap.put("needCaptcha", needCaptcha);
         resetParamsMap.put("v", v);
