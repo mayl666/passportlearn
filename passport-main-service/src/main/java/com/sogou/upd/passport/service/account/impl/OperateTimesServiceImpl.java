@@ -281,7 +281,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
         //ip与cookie映射
         String ipCookieKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_null";
-        recordTimes(ipCookieKey, DateAndNumTimesConstant.TIME_ONEDAY);
+        recordTimes(ipCookieKey, DateAndNumTimesConstant.TIME_ONEHOUR);
     }
 
     @Override
