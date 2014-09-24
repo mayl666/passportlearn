@@ -196,7 +196,7 @@ public class WapV2ResetPwdAction extends BaseController {
         } finally {
             log(request, reqParams.getUsername(), result.getCode());
         }
-        return "redirect:" + CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/index?v=2";
+        return "redirect:" + reqParams.getRu();
     }
 
     /**
