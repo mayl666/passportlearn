@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.form;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.WapConstant;
+import com.sogou.upd.passport.common.validation.constraints.Password;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.common.validation.constraints.V;
 import org.hibernate.validator.constraints.NotBlank;
@@ -18,6 +19,7 @@ public class WapLoginParams extends UsernameParams {
      * 登陆密码
      */
     @NotBlank(message = "请输入密码！")
+    @Password
     private String password;
 
     /**
