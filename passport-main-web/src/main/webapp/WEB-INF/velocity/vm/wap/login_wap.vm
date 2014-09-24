@@ -35,7 +35,7 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <div class="login-input max-w"><input type="password" name="password" value="$!password"/></div>
+                        <div class="login-input max-w"><input type="password" name="password" /></div>
                     </td>
                 </tr>
                 #if($isNeedCaptcha==1)
