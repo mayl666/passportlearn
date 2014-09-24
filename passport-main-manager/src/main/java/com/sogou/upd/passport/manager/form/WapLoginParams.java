@@ -35,7 +35,7 @@ public class WapLoginParams extends UsernameParams {
     //    @NotBlank
     @URL
     @Ru
-    private String ru;//登陆来源
+    private String ru = WapConstant.WAP_INDEX;//登陆来源
 
 
     @NotBlank(message = "v is null")
