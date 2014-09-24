@@ -70,7 +70,7 @@
 </div>
 
 <div class="footer">
-    &lt; 炫彩版<i>|</i><a href="/wap/index?v=5&skin=$!skin&ru=$!ru">触屏版 &gt;
+    &lt; 炫彩版<i>|</i><a href="/wap/index?v=5&skin=$!skin&client_id=$!client_id&ru=$!ru">触屏版 &gt;
     <p>Copyright &copy;2014 sogou.com</p>
 </div>
 </body>
