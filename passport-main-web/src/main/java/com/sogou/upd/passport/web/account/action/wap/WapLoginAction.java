@@ -122,6 +122,7 @@ public class WapLoginAction extends BaseController {
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
+        loginParams.setRu(Coder.decodeUTF8(loginParams.getRu()));
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
