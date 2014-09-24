@@ -191,10 +191,12 @@ public class WapLoginAction extends BaseController {
                     return "wap/login_wap";
                 }
             }
+            String defaultMessage = "用户名或者密码错误";
             //不直接返回直接的文案告诉用户中了安全限制
             if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("您登陆过于频繁，请稍后再试。");
+                defaultMessage = "您登陆过于频繁，请稍后再试。";
             }
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
                 if (needCaptcha) {
@@ -209,7 +211,8 @@ public class WapLoginAction extends BaseController {
                 writeResultToResponse(response, result);
                 return "empty";
             }
-            return getErrorReturnStr(loginParams, "用户名或者密码错误", isNeedCaptcha);
+
+            return getErrorReturnStr(loginParams, defaultMessage, isNeedCaptcha);
         }
     }
 
