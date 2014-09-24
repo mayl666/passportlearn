@@ -54,7 +54,7 @@
         </div>
         <div class="other-login">
             <p>使用其他账号登录</p>
-            <a href="/connect/login?provider=qq&client_id=$!client_id&ru=$!ru" class="qq-login"><img src="/./static/img/qq.png" height="19" width="17" alt="" />QQ登录</a>
+            <a href="https://account.sogou.com/connect/login?provider=qq&client_id=$!client_id&ru=$!ru" class="qq-login"><img src="/./static/img/qq.png" height="19" width="17" alt="" />QQ登录</a>
         </div>
 
     </div>
