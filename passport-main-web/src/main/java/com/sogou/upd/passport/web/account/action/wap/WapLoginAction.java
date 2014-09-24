@@ -436,6 +436,9 @@ public class WapLoginAction extends BaseController {
             returnStr.append("&errorMsg=" + Coder.encodeUTF8(errorMsg));
         }
         returnStr.append("&needCaptcha=" + isNeedCaptcha);
+        if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
+            returnStr.append("&username=" + loginParams.getUsername());
+        }
         return returnStr.toString();
     }
 }
