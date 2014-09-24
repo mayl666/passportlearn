@@ -100,7 +100,7 @@ public class WapLoginAction extends BaseController {
             } else {
                 model.addAttribute("hasError", false);
             }
-            model.addAttribute("ru", Strings.isNullOrEmpty(wapIndexParams.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : wapIndexParams.getRu());
+            model.addAttribute("ru", Strings.isNullOrEmpty(wapIndexParams.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(wapIndexParams.getRu()));
             if (wapIndexParams.getNeedCaptcha() == 1) {
                 model.addAttribute("isNeedCaptcha", 1);
                 model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
