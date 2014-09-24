@@ -157,7 +157,7 @@ public class WapV2RegAction extends BaseController {
         }
         commonManager.incSendTimesForMobile(ip);
         commonManager.incSendTimesForMobile(reqParams.getMobile());
-        buildSendRedirectUrl(Strings.isNullOrEmpty(reqParams.getRu()) ? CommonConstant.DEFAULT_WAP_INDEX_URL : reqParams.getRu(),
+        buildSendRedirectUrl(Strings.isNullOrEmpty(reqParams.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : reqParams.getRu(),
                 reqParams.getClient_id(), false, reqParams.getMobile(), Strings.isNullOrEmpty(reqParams.getSkin()) ? WapConstant.WAP_GREEN : reqParams.getSkin(),
                 false, Strings.isNullOrEmpty(reqParams.getV()) ? WapConstant.WAP_COLOR : reqParams.getV(), null);
         params.put("scode", commonManager.getSecureCode(reqParams.getMobile(), Integer.parseInt(reqParams.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE));
@@ -355,7 +355,7 @@ public class WapV2RegAction extends BaseController {
     private void buildModuleReturnStr(boolean hasError, String ru, String errorMsg, String client_id, String skin, String v, boolean needCaptcha, Model model) {
         model.addAttribute("errorMsg", errorMsg);
         model.addAttribute("hasError", hasError);
-        model.addAttribute("ru", Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_INDEX_URL : ru);
+        model.addAttribute("ru", Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : ru);
         model.addAttribute("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_GREEN : skin);
         model.addAttribute("needCaptcha", needCaptcha);
         model.addAttribute("v", Strings.isNullOrEmpty(v) ? WapConstant.WAP_COLOR : v);
