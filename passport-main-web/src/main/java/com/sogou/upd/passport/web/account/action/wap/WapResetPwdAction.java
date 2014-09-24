@@ -85,7 +85,7 @@ public class WapResetPwdAction extends BaseController {
         if (WapConstant.WAP_COLOR.equals(wapIndexParams.getV())) {
             model.addAttribute("v", v);
             model.addAttribute("client_id", client_id);
-            model.addAttribute("ru", ru);
+            model.addAttribute("ru", Coder.encodeUTF8(ru));
             if (wapIndexParams.getNeedCaptcha() == 1) {
                 String token = RandomStringUtils.randomAlphanumeric(48);
                 model.addAttribute("token", token);
