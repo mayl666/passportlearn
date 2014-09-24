@@ -3,7 +3,6 @@ package com.sogou.upd.passport.web.internal.account;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -12,7 +11,10 @@ import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
+import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.ReNewCookieApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -44,8 +46,6 @@ public class LoginApiController extends BaseController {
     private static final Logger authEmailUserLogger = LoggerFactory.getLogger("authEmailUserLogger");
     @Autowired
     private PCAccountManager pcAccountManager;
-    @Autowired
-    private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginApiManager sgLoginApiManager;
     @Autowired
