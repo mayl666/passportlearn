@@ -430,7 +430,11 @@ public class WapLoginAction extends BaseController {
             returnStr.append("v=" + loginParams.getV());
         }
         if (!Strings.isNullOrEmpty(loginParams.getRu())) {
-            returnStr.append("&ru=" + loginParams.getRu());
+            if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
+                returnStr.append("&ru=" + Coder.encodeUTF8(loginParams.getRu()));
+            } else {
+                returnStr.append("&ru=" + loginParams.getRu());
+            }
         }
         if (!Strings.isNullOrEmpty(loginParams.getClient_id())) {
             returnStr.append("&client_id=" + loginParams.getClient_id());
