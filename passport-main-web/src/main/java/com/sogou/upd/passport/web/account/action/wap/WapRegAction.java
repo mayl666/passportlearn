@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.WapConstant;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -162,7 +163,7 @@ public class WapRegAction extends BaseController {
         } else {
             model.addAttribute("v", WapConstant.WAP_COLOR);
             model.addAttribute("client_id", Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? CommonConstant.SGPP_DEFAULT_CLIENTID : wapIndexParams.getClient_id());
-            model.addAttribute("ru", Strings.isNullOrEmpty(wapIndexParams.getRu()) ? CommonConstant.DEFAULT_WAP_URL : wapIndexParams.getRu());
+            model.addAttribute("ru", Strings.isNullOrEmpty(wapIndexParams.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(wapIndexParams.getRu()));
             model.addAttribute("skin", Strings.isNullOrEmpty(wapIndexParams.getSkin()) ? CommonConstant.WAP_DEFAULT_SKIN : wapIndexParams.getSkin());
             if (wapIndexParams.getNeedCaptcha() == 1) {
                 String token = RandomStringUtils.randomAlphanumeric(48);
@@ -170,8 +171,8 @@ public class WapRegAction extends BaseController {
                 model.addAttribute("needCaptcha", true);
                 model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
             }
-            model.addAttribute("mobile",wapIndexParams.getMobile());
-            model.addAttribute("username",wapIndexParams.getUsername());
+            model.addAttribute("mobile", wapIndexParams.getMobile());
+            model.addAttribute("username", wapIndexParams.getUsername());
             return "wap/regist_wap";
         }
     }
