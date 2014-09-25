@@ -173,7 +173,7 @@ public class WapV2RegAction extends BaseController {
         String uuidName = null;
         String finalCode = null;
         try {
-            regParams.setRu(Coder.encodeUTF8(regParams.getRu()));
+            regParams.setRu(Coder.decodeUTF8(regParams.getRu()));
             //参数验证
             String validateResult = ControllerHelper.validateParams(regParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
