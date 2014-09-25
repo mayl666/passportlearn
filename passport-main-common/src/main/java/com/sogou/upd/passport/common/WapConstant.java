@@ -24,6 +24,9 @@ public class WapConstant {
      */
     public static final String WAP_TOUCH = "5";
 
+    // wap版颜色为绿色
+    public static final String WAP_SKIN_GREEN = "green";
+
     //默认登录来源
     public static final String WAP_INDEX = "http://wap.sogou.com/";
 

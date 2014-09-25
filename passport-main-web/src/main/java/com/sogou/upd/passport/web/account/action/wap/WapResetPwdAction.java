@@ -389,7 +389,7 @@ public class WapResetPwdAction extends BaseController {
 
     //验证完邮件跳转至页面提示重置密码页
     private String buildSendRedirectUrl(WapCheckEmailParams params) throws UnsupportedEncodingException {
-        String ru = Strings.isNullOrEmpty(params.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(params.getRu());
+        String ru = Coder.encodeUTF8(Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu());
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         StringBuilder urlStr = new StringBuilder();
         urlStr.append("/wap/findpwd/page/reset?");
@@ -421,7 +421,7 @@ public class WapResetPwdAction extends BaseController {
         result.setDefaultModel("userid", username);
         result.setDefaultModel("scode", scode);
         result.setDefaultModel("v", WapConstant.WAP_TOUCH);
-        result.setDefaultModel("skin", skin);
+        result.setDefaultModel("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_SKIN_GREEN : skin);
         model.addAttribute("data", result.toString());
         return "/wap/resetpwd_touch";
     }
