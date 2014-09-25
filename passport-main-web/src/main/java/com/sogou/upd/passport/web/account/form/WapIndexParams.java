@@ -34,7 +34,6 @@ public class WapIndexParams {
     private String errorMsg;//错误信息
     private int needCaptcha;//是否需要输入验证码:0-不需要；1-需要
     private String mobile;//wap2.0用到
-    //测试
     private String username;//wap2.0用到
 
     public String getRu() {

@@ -105,7 +105,6 @@ public class WapLoginAction extends BaseController {
                 model.addAttribute("isNeedCaptcha", 1);
                 model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
             }
-            //测试
             model.addAttribute("username", wapIndexParams.getUsername());
             return "wap/login_wap";
         }

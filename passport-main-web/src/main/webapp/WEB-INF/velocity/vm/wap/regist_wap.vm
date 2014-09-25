@@ -38,7 +38,7 @@
                         <input type="text" name="captcha" value=""/>
                         </div>
                         <img src="$!captchaUrl" class="yzm" height="24" width="53" alt="" />
-                        <a href="/wap/reg?username=$!username&password=$!password&v=$!v&skin=$!skin&client_id=$!client_id&ru=$!ru&needCaptcha=1">换一张</a></td>
+                        <a href="/wap/reg?username=$!username&mobile=$!mobile&password=$!password&v=$!v&skin=$!skin&client_id=$!client_id&ru=$!ru&needCaptcha=1">换一张</a></td>
                         </td>
                     </tr>
                     #end
