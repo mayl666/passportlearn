@@ -86,7 +86,7 @@ public class WapResetPwdAction extends BaseController {
             model.addAttribute("v", v);
             model.addAttribute("client_id", client_id);
             model.addAttribute("ru", Coder.encodeUTF8(ru));
-            model.addAttribute("mobile", wapIndexParams.getMobile());
+            model.addAttribute("mobile", wapIndexParams.getUsername());
             model.addAttribute("username", wapIndexParams.getUsername());
             if (wapIndexParams.getNeedCaptcha() == 1) {
                 String token = RandomStringUtils.randomAlphanumeric(48);
