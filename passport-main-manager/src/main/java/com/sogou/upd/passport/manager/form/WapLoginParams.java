@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager.form;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.WapConstant;
-import com.sogou.upd.passport.common.validation.constraints.PasswordValidator;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.common.validation.constraints.V;
 import org.hibernate.validator.constraints.NotBlank;
@@ -45,16 +44,6 @@ public class WapLoginParams extends UsernameParams {
     private boolean isUserNameNotAllowedNull() {
         if (Strings.isNullOrEmpty(username)) {   // wap登录时，username不能为空
             return false;
-        }
-        return true;
-    }
-
-    @AssertTrue(message = "password格式错误")
-    private boolean isPasswordNotAllowedWrongFormat() {
-        if (WapConstant.WAP_COLOR.equals(v)) {   // wap2.0的密码需要校验；html5的密码是前端做的md5，所以此处不能直接添加validator
-            PasswordValidator pv = new PasswordValidator();
-            boolean flag = pv.isValid(password, null);
-            return flag;
         }
         return true;
     }
