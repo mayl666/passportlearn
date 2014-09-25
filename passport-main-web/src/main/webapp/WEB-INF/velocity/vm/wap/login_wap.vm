@@ -35,7 +35,7 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <div class="login-input max-w"><input type="password" name="password" /></div>
+                        <div class="login-input max-w"><input type="password" name="password"/></div>
                     </td>
                 </tr>
                 #if($isNeedCaptcha==1)
@@ -70,7 +70,7 @@
 </div>
 
 <div class="footer">
-    &lt; 炫彩版<i>|</i><a href="/wap/index?v=5&skin=$!skin&client_id=$!client_id&ru=$!ru">触屏版 &gt;
+    &lt; 炫彩版<i>|</i><a href="/wap/index?v=5&skin=$!skin&client_id=$!client_id&ru=$!ru">触屏版</a> &gt;
     <p>Copyright &copy;2014 sogou.com</p>
 </div>
 </body>
