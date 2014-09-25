@@ -53,7 +53,8 @@ public class WapLoginParams extends UsernameParams {
     private boolean isPasswordNotAllowedWrongFormat() {
         if (WapConstant.WAP_COLOR.equals(v)) {   // wap2.0的密码需要校验；html5的密码是前端做的md5，所以此处不能直接添加validator
             PasswordValidator pv = new PasswordValidator();
-            return pv.isValid(password, null);
+            boolean flag = pv.isValid(password, null);
+            return flag;
         }
         return true;
     }
