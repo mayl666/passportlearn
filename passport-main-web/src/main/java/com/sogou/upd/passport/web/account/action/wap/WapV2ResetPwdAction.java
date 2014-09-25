@@ -77,6 +77,7 @@ public class WapV2ResetPwdAction extends BaseController {
                 buildModuleReturnStr(true, reqParams.getRu(), validateResult,
                         reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
                 model.addAttribute("mobile", reqParams.getMobile());
+                model.addAttribute("username", reqParams.getMobile());
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 return "wap/findpwd_wap";
             }
@@ -86,6 +87,7 @@ public class WapV2ResetPwdAction extends BaseController {
                 buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID),
                         reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
                 model.addAttribute("mobile", reqParams.getMobile());
+                model.addAttribute("username", reqParams.getMobile());
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return "wap/findpwd_wap";
             }
@@ -96,6 +98,8 @@ public class WapV2ResetPwdAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                 buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND),
                         reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+                model.addAttribute("mobile", reqParams.getMobile());
+                model.addAttribute("username", reqParams.getMobile());
                 return "wap/findpwd_wap";
             }
             result = wapRestPwdManager.sendMobileCaptcha(reqParams.getMobile(), reqParams.getClient_id(), reqParams.getToken(), reqParams.getCaptcha());
@@ -105,6 +109,8 @@ public class WapV2ResetPwdAction extends BaseController {
                     String token = String.valueOf(result.getModels().get("token"));
                     buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
                             reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), true, model);
+                    model.addAttribute("mobile", reqParams.getMobile());
+                    model.addAttribute("username", reqParams.getMobile());
                     model.addAttribute("token", token);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
@@ -112,6 +118,8 @@ public class WapV2ResetPwdAction extends BaseController {
                 } else {
                     buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
                             reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
+                    model.addAttribute("mobile", reqParams.getMobile());
+                    model.addAttribute("username", reqParams.getMobile());
                     return "wap/findpwd_wap";
                 }
             }
@@ -119,6 +127,7 @@ public class WapV2ResetPwdAction extends BaseController {
                     reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
             model.addAttribute("mobile", reqParams.getMobile());
             if (!result.isSuccess()) {
+                model.addAttribute("username", reqParams.getMobile());
                 return "wap/findpwd_wap";
             }
         } catch (Exception e) {
