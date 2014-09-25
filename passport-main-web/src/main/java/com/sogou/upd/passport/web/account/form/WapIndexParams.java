@@ -24,7 +24,7 @@ public class WapIndexParams {
     @Min(0)
     private String client_id = String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID);
 
-//    @NotBlank(message = "ru is null")
+    //    @NotBlank(message = "ru is null")
     @URL
     @Ru
     private String ru = WapConstant.WAP_INDEX;//登陆来源
@@ -34,7 +34,8 @@ public class WapIndexParams {
     private String errorMsg;//错误信息
     private int needCaptcha;//是否需要输入验证码:0-不需要；1-需要
     private String mobile;//wap2.0用到
-
+    //测试
+    private String username;//wap2.0用到
 
     public String getRu() {
         return ru;
@@ -92,4 +93,11 @@ public class WapIndexParams {
         this.mobile = mobile;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 }
