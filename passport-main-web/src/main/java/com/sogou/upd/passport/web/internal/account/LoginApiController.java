@@ -3,7 +3,6 @@ package com.sogou.upd.passport.web.internal.account;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -44,8 +43,6 @@ public class LoginApiController extends BaseController {
     private static final Logger authEmailUserLogger = LoggerFactory.getLogger("authEmailUserLogger");
     @Autowired
     private PCAccountManager pcAccountManager;
-    @Autowired
-    private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginApiManager sgLoginApiManager;
     @Autowired
