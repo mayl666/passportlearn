@@ -15,7 +15,7 @@
         <div class="login-msg"><img src="/./static/img/msg-ico.png" height="21" width="21"/>$!errorMsg</div>
         #end
         
-        <div class="orange-skin">短信验证码已发至$mobile，如1分钟内未收到，可<a href="/wap/findpwd?v=$!v&skin=$!skin&client_id=$!client_id&ru=$!ru">重新发送</a></div>
+        <div class="orange-skin">短信验证码已发至$mobile，如1分钟内未收到，可<a href="/wap/findpwd?username=$!username&v=$!v&skin=$!skin&client_id=$!client_id&ru=$!ru">重新发送</a></div>
         <div class="login-table">
             <form action="/wap2/findpwd/reset" method="post">
                 <table>
