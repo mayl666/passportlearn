@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common.validation.constraints;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.sogou.upd.passport.common.WapConstant;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -21,7 +22,8 @@ public class SkinValidator implements ConstraintValidator<Skin, String> {
 
     //目前wap只有red一种颜色，若不传，默认为绿色.后续有其它颜色再添加
     static {
-        SUPPORT_SKIN.add("red");
+        SUPPORT_SKIN.add(WapConstant.WAP_SKIN_RED);
+        SUPPORT_SKIN.add(WapConstant.WAP_SKIN_GREEN);
     }
 
     @Override

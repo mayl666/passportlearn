@@ -101,9 +101,9 @@ public class WapLoginAction extends BaseController {
 
     private String getIndexErrorReturnStr(String ru, String errorMsg) {
         if (!Strings.isNullOrEmpty(ru)) {
-            return (ru + "?errorMsg=" + errorMsg);
+            return (ru + "?errorMsg=" + Coder.encodeUTF8(errorMsg));
         }
-        return WapConstant.WAP_INDEX + "?errorMsg=" + errorMsg;
+        return WapConstant.WAP_INDEX + "?errorMsg=" + Coder.encodeUTF8(errorMsg);
     }
 
 
