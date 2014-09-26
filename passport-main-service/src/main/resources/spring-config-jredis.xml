@@ -47,7 +47,7 @@
         <constructor-arg index="1" value="${passport.dbredis.shard6.port}" type="int"/>
     </bean>
     <bean id="dbShardPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="2400"/>
+        <property name="maxActive" value="1800"/>
         <!-- 由于shard，这里配置一定要注意，过小会导致资源竞争 -->
         <property name="maxIdle" value="600"/>
         <property name="minIdle" value="300"/>
@@ -68,7 +68,7 @@
         <constructor-arg index="0" ref="cachePoolConfig"/>
     </bean>
     <bean id="cachePoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="1000"/>
+        <property name="maxActive" value="800"/>
         <property name="maxIdle" value="100"/>
         <property name="minIdle" value="50"/>
         <property name="maxWait" value="1000"/>
