@@ -221,19 +221,6 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     }
 
     @Override
-    public Map<String, String> getCacheMapByKey(String cacheKey) throws ServiceException {
-        Map<String, String> mapCacheResult = null;
-        try {
-            mapCacheResult = redisUtils.hGetAll(cacheKey);
-        } catch (Exception e) {
-            logger.error("[SMS] service method getCacheMapByKey error.{}", e);
-            new ServiceException(e);
-        }
-
-        return mapCacheResult;
-    }
-
-    @Override
     public Result checkSmsCode(String mobile, int clientId, AccountModuleEnum module, String smsCode) throws ServiceException {
         Result result = new APIResultSupport(false);
         try {

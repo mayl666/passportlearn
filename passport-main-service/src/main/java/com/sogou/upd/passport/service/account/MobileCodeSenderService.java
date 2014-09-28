@@ -54,11 +54,6 @@ public interface MobileCodeSenderService {
     public boolean checkLimitForSmsFail(String account, int clientId, AccountModuleEnum module);
 
     /**
-     * 根据key获取对应的cacheMap
-     */
-    public Map<String, String> getCacheMapByKey(String cacheKey);
-
-    /**
      * 根据手机号检查验证码是否正确，正确则删除验证码
      *
      * @param mobile
