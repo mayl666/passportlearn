@@ -24,24 +24,18 @@ public class UpdateUserInfoApiParams extends BaseUserApiParams {
     //用户生日
 //    @DateTimeFormat(iso=DateTimeFormat.ISO.DATE)
     private String birthday;
-
     //用户性别
     private String gender;
-
     //省份
     private String province;
-
     //省份
     private String city;
-
     //昵称
     private String uniqname;
-
     //搜狗姓名
     private String fullname;
     //搜狐姓名
     private String username;
-
 
     //身份证号
     @IdCard

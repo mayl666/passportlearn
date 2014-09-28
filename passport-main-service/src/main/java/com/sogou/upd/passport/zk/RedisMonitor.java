@@ -28,13 +28,9 @@ public class RedisMonitor {
 
     private NodeCache tokenNodeCache;
 
-    private NodeCache dbCacheNodeCache;
-
     private String cachePath;
 
     private String tokenPath;
-
-    private String dbCachePath;
 
     private Monitor monitor;
 
@@ -42,21 +38,15 @@ public class RedisMonitor {
 
     private JedisConnectionFactory cacheConnectionFactory;  //web接口临时信息存储缓存
 
-    private JedisConnectionFactory dbCacheConnectionFactory;  //web接口临时信息存储缓存
-
-
-    public RedisMonitor(Monitor monitor, String cachePath, String tokenPath,String dbCachePath,JedisConnectionFactory cacheConnectionFactory,
-                        JedisConnectionFactory tokenConnectionFactory, JedisConnectionFactory dbCacheConnectionFactory) {
+    public RedisMonitor(Monitor monitor, String cachePath, String tokenPath, JedisConnectionFactory cacheConnectionFactory,
+                        JedisConnectionFactory tokenConnectionFactory) {
         this.monitor = monitor;
         this.cachePath = cachePath;
         this.tokenPath = tokenPath;
-        this.dbCachePath = dbCachePath;
         this.cacheConnectionFactory = cacheConnectionFactory;
         this.tokenConnectionFactory = tokenConnectionFactory;
-        this.dbCacheConnectionFactory = dbCacheConnectionFactory;
         cacheNodeCache = this.addListener(cachePath, new CacheListenerImpl());
         tokenNodeCache = this.addListener(tokenPath, new TokenListenerImpl());
-        dbCacheNodeCache = this.addListener(dbCachePath,new DbCacheListenerImpl());
     }
 
 
@@ -89,15 +79,6 @@ public class RedisMonitor {
         }
     }
 
-    private class DbCacheListenerImpl implements NodeCacheListener {
-
-        @Override
-        public void nodeChanged() throws Exception {
-            log.warn("redis node changed dbcache");
-            refresh(dbCacheNodeCache, dbCacheConnectionFactory);
-        }
-    }
-
     /**
      * 动态刷新redis连接
      *
@@ -116,7 +97,7 @@ public class RedisMonitor {
                 int port = (Integer) jsonMap.get("port");
                 if (!Strings.isNullOrEmpty(host) && port >= 0) {
 
-                    log.warn("factory info:"+factory.getHostName()+":"+factory.getPort());
+                    log.warn("factory info:" + factory.getHostName() + ":" + factory.getPort());
 
                     if (host.equals(factory.getHostName()) && port == factory.getPort()) {
                         log.warn("redis not need refresh  host:" + host + " ,port:" + port);
@@ -124,7 +105,7 @@ public class RedisMonitor {
                     }
 
 
-                    if(!"localhost".equals(factory.getHostName())){
+                    if (!"localhost".equals(factory.getHostName())) {
                         log.warn("redis node real changed data:" + data);
                     }
 
@@ -139,7 +120,7 @@ public class RedisMonitor {
                     factory.setShardInfo(shardInfo);
                     factory.afterPropertiesSet();
 
-                    log.warn("redis changed succ factory info:"+factory.getHostName()+":"+factory.getPort());
+                    log.warn("redis changed succ factory info:" + factory.getHostName() + ":" + factory.getPort());
                 }
 
             } else {
@@ -161,11 +142,6 @@ public class RedisMonitor {
             if (tokenNodeCache != null) {
                 tokenNodeCache.close();
             }
-
-            if (dbCacheNodeCache != null) {
-                dbCacheNodeCache.close();
-            }
-
         } catch (Exception e) {
             log.error("error when destroy PathChildrenCache in Observer", e);
         }
