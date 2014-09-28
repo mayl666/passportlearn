@@ -2,7 +2,6 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -16,9 +15,11 @@ import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
-import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
+import com.sogou.upd.passport.manager.api.account.form.ResendActiveMailParams;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.form.ActiveEmailParams;
 import com.sogou.upd.passport.manager.form.WebRegisterParams;
@@ -53,10 +54,6 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
-    private RegisterApiManager proxyRegisterApiManager;
-    @Autowired
-    private BindApiManager proxyBindApiManager;
-    @Autowired
     private CommonManager commonManager;
     @Autowired
     private SessionServerManager sessionServerManager;
@@ -64,8 +61,6 @@ public class RegManagerImpl implements RegManager {
     private MobileCodeSenderService mobileCodeSenderService;
     @Autowired
     private OperateTimesService operateTimesService;
-    @Autowired
-    private SnamePassportMappingService snamePassportMappingService;
 
     private static final Logger logger = LoggerFactory.getLogger(RegManagerImpl.class);
 
@@ -334,46 +329,6 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
-    public Result checkUserFromSohu(String username, int clientId) throws Exception {
-        Result result;
-        try {
-            if (username.indexOf("@") == -1) {
-                //判断是否是手机号注册
-                if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
-                    username = username + CommonConstant.SOGOU_SUFFIX;
-                }
-            }
-            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
-                BaseMoblieApiParams params = new BaseMoblieApiParams();
-                params.setMobile(username);
-                //手机号 判断绑定账户
-                result = proxyBindApiManager.getPassportIdByMobile(params);
-                if (result.isSuccess()) {
-                    result.setSuccess(false);
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-                    result.setMessage("账号已注册");
-                    return result;
-                } else if (CommonHelper.isExplorerToken(clientId)) {
-                    result = isSohuplusUser(username, clientId);
-                } else {
-                    result.setSuccess(true);
-                    result.setMessage("账户未被占用");
-                }
-            } else {
-                CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
-                result = proxyRegisterApiManager.checkUser(checkUserApiParams);
-                if (result.isSuccess() && CommonHelper.isExplorerToken(clientId)) {
-                    result = isSohuplusUser(username, clientId);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("check user from sohu error, username:" + username + "clientid:" + clientId, e);
-            throw new Exception(e);
-        }
-        return result;
-    }
-
-    @Override
     public Result isAccountNotExists(String username, int clientId) throws Exception {
         Result result;
         try {
@@ -421,35 +376,12 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
-    public void incRegTimes(String ip, String cookieStr) throws Exception {
+    public void incRegTimes(String ip, String cookieStr) {
         try {
             operateTimesService.incRegTimes(ip, cookieStr);
         } catch (ServiceException e) {
             logger.error("register incRegTimes Exception", e);
-            throw new Exception(e);
         }
-    }
-
-    /*
-     * client=1044的username为个性域名或手机号
-     * 都有可能是sohuplus的账号，需要判断sohuplus映射表
-     * 如果username包含@，则取@前面的
-     */
-
-    private Result isSohuplusUser(String username, int clientId) {
-        Result result = new APIResultSupport(false);
-        if (username.contains("@")) {
-            username = username.substring(0, username.indexOf("@"));
-        }
-        String sohuplus_passportId = snamePassportMappingService.queryPassportIdBySnameOrPhone(username);
-        if (!Strings.isNullOrEmpty(sohuplus_passportId)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
-            return result;
-        } else {
-            result.setSuccess(true);
-            result.setMessage("操作成功");
-        }
-        return result;
     }
 
     private CheckUserApiParams buildProxyApiParams(String username, int clientId) {
@@ -483,5 +415,10 @@ public class RegManagerImpl implements RegManager {
         }
         operateTimesService.incInterCheckUserTimes(username, ip);
         return false;
+    }
+
+    @Override
+    public void incRegTimesForInternal(String ip, int client_id) {
+        operateTimesService.incRegTimesForInternal(ip, client_id);
     }
 }

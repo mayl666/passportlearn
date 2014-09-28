@@ -13,6 +13,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ParseCookieUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.AccountRoamManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
@@ -54,6 +55,8 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     private OAuth2ResourceManager oAuth2ResourceManager;
     @Autowired
     private LoginManagerImpl loginManager;
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
     @Override
     public Result createRoamKey(String sLoginPassportId) {
@@ -108,9 +111,10 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             return result;
         } else {
-            String uniqname = Strings.isNullOrEmpty(account.getUniqname()) ? userId : account.getUniqname();
+            String uniqName = accountInfoManager.getUniqName(userId, CommonConstant.SGPP_DEFAULT_CLIENTID, false);
+            uniqName = Strings.isNullOrEmpty(uniqName) ? userId : uniqName;
             result.setSuccess(true);
-            result.setDefaultModel("uniqname", uniqname);
+            result.setDefaultModel("uniqname", uniqName);
             result.setDefaultModel("userid", userId);
             result.setDefaultModel("r_key", r_key);
         }

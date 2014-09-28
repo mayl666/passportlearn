@@ -114,19 +114,12 @@ public class LoginAction extends BaseController {
         }
         String userId = loginParams.getUsername();
         result = loginManager.accountLogin(loginParams, ip, request.getScheme());
-        //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
-        userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(request, "YYID"));
-        userOperationLog.putOtherMessage("module", loginParams.getModule());
-        UserOperationLogUtil.log(userOperationLog);
         if (result.isSuccess()) {
             userId = result.getModels().get("userid").toString();
             String uniqName = StringUtils.EMPTY;
             if (result.getModels().get("uniqname") != null) {
                 uniqName = result.getModels().get("uniqname").toString();
             }
-
             int clientId = Integer.parseInt(loginParams.getClient_id());
             int autoLogin = loginParams.getAutoLogin();
             int sogouMaxAge = autoLogin == 0 ? -1 : (int) DateAndNumTimesConstant.TWO_WEEKS;
@@ -173,6 +166,13 @@ public class LoginAction extends BaseController {
                 result.setMessage("您登陆过于频繁，请稍后再试。");
             }
         }
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+        userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(request, "YYID"));
+        userOperationLog.putOtherMessage("module", loginParams.getModule());
+        UserOperationLogUtil.log(userOperationLog);
+
         result.setDefaultModel("xd", loginParams.getXd());
         model.addAttribute("data", result.toString());
         return "/login/api";

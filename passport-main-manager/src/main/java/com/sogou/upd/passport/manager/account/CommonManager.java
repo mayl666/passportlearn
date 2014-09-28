@@ -12,20 +12,6 @@ import com.sogou.upd.passport.model.account.Account;
  * To change this template use File | Settings | File Templates.
  */
 public interface CommonManager {
-    /**
-     * 用户注册时ip次数的累加
-     *
-     * @param ip
-     * @param uuidName
-     */
-    public void incRegTimes(String ip, String uuidName);
-
-    /**
-     * 内部接口注册的ip次数累加
-     *
-     * @param ip
-     */
-    public void incRegTimesForInternal(String ip, int client_id);
 
     /**
      * 检验code是否正确

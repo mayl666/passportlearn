@@ -53,16 +53,6 @@ public interface RegManager {
     public Map<String, Object> getCaptchaCode(String code);
 
     /**
-     * 检查用户是否存在去sohu校验
-     *
-     * @param username
-     * @param clientId
-     * @return
-     * @throws Exception
-     */
-    public Result checkUserFromSohu(String username, int clientId) throws Exception;
-
-    /**
      * 判断用户名是否被占用
      *
      * @return 验证码
@@ -140,5 +130,12 @@ public interface RegManager {
      * @return
      */
     public Result checkCaptchaToken(String token, String captcha);
+
+    /**
+     * 内部接口注册的ip次数累加
+     *
+     * @param ip
+     */
+    public void incRegTimesForInternal(String ip, int client_id);
 
 }

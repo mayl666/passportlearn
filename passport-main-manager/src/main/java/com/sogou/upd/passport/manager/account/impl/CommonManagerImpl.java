@@ -65,16 +65,6 @@ public class CommonManagerImpl implements CommonManager {
     }
 
     @Override
-    public void incRegTimesForInternal(String ip, int client_id) {
-        operateTimesService.incRegTimesForInternal(ip, client_id);
-    }
-
-    @Override
-    public void incRegTimes(String ip, String cookieStr) {
-        operateTimesService.incRegTimes(ip, cookieStr);
-    }
-
-    @Override
     public String getPassportIdByUsername(String username) throws Exception {
         //根据username获取passportID
         String passportId = username;
