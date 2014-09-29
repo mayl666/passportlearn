@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.math.Base64Coder;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSA;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -208,7 +207,8 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     public String getUserIdByPinyinRoamToken(String cipherText) {
         String clearText;
         try {
-            clearText = RSA.decryptByPrivateKey(Base64Coder.decode(cipherText), TokenGenerator.PINYIN_PRIVATE_KEY, 64);
+            byte[] tokenByte = Coder.decryptBASE64(cipherText);
+            clearText = RSA.decryptByPrivateKey(tokenByte, TokenGenerator.PINYIN_PRIVATE_KEY, 64);
         } catch (Exception e) {
             logger.error("decrypt error, cipherText:" + cipherText, e);
             return null;
