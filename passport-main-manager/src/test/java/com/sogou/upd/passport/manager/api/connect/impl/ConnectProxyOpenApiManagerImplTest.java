@@ -18,7 +18,7 @@ import java.util.Map;
  * Time: 下午5:40
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 @ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class ConnectProxyOpenApiManagerImplTest extends BaseTest {
     @Autowired
@@ -32,8 +32,8 @@ public class ConnectProxyOpenApiManagerImplTest extends BaseTest {
     @Test
     public void testQzoneConnectProxyOpenApiManager() throws Exception {
         //用户的openId/openKey
-        String openId = "CFF81AB013A94663D83FEC36AC117933";
-        String accessToken = "AC1311EBBADD950C4A1113B4A7C19E31";
+        String openId = "0000CC18B7AB275ABCA5873D7B816348";
+        String accessToken = "C4EB82637FBE93196DDB868BD028B74C";
         int clientId = 1120;
         String sgUrl = "/internal/connect/qq/user/qzone/unread_num";
         Map<String, String> tokenMap = new HashMap<>();
@@ -53,8 +53,8 @@ public class ConnectProxyOpenApiManagerImplTest extends BaseTest {
     @Test
     public void testWeiboConnectProxyOpenApiManager() throws Exception {
         //用户的openId/openKey
-        String openId = "CFF81AB013A94663D83FEC36AC117933";
-        String accessToken = "AC1311EBBADD950C4A1113B4A7C19E31";
+        String openId = "0000CC18B7AB275ABCA5873D7B816348";
+        String accessToken = "C4EB82637FBE93196DDB868BD028B74C";
         int clientId = 1120;
         String sgUrl = "/internal/connect/qq/user/weibo/unread_num";
         Map<String, String> tokenMap = new HashMap<>();
@@ -77,8 +77,8 @@ public class ConnectProxyOpenApiManagerImplTest extends BaseTest {
     @Test
     public void testMailConnectProxyOpenApiManager() throws Exception {
         //用户的openId/openKey
-        String openId = "CFF81AB013A94663D83FEC36AC117933";
-        String accessToken = "AC1311EBBADD950C4A1113B4A7C19E31";
+        String openId = "0000CC18B7AB275ABCA5873D7B816348";
+        String accessToken = "C4EB82637FBE93196DDB868BD028B74C";
         String sgUrl = "/internal/connect/qq/user/mail/unread_num";
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("open_id", openId);
