@@ -70,17 +70,21 @@ public class WapResetPwdAction extends BaseController {
      *
      * @param model
      * @param redirectAttributes
+     * @param display  默认不填，如果为native则隐藏上面的title
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
-    public String findPwdView(Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams) throws Exception {
+    public String findPwdView(Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams, String display) throws Exception {
         String ru = Strings.isNullOrEmpty(wapIndexParams.getRu()) ? CommonConstant.DEFAULT_WAP_URL : wapIndexParams.getRu();
         if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             Result result = new APIResultSupport(false);
             String client_id = Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : wapIndexParams.getClient_id();
             result.setDefaultModel("ru", ru);
             result.setDefaultModel("client_id", client_id);
+            if (!Strings.isNullOrEmpty(display)) {
+                result.setDefaultModel("display", display);
+            }
             model.addAttribute("data", result.toString());
             return "wap/findpwd_touch";
         }
@@ -405,12 +409,13 @@ public class WapResetPwdAction extends BaseController {
      * 通过接口跳转到reset页面
      *
      * @param ru
+     * @param display  默认不填，如果为native则隐藏上面的title
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/page/reset", method = RequestMethod.GET)
     public String findResetView(String ru, Model model, String client_id, String scode, String username, String
-            code, String skin) throws Exception {
+            code, String skin, String display) throws Exception {
         Result result = new APIResultSupport(false);
         ru = Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(ru);
         client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
@@ -422,6 +427,9 @@ public class WapResetPwdAction extends BaseController {
         result.setDefaultModel("scode", scode);
         result.setDefaultModel("v", WapConstant.WAP_TOUCH);
         result.setDefaultModel("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_SKIN_GREEN : skin);
+        if (!Strings.isNullOrEmpty(display)) {
+            result.setDefaultModel("display", display);
+        }
         model.addAttribute("data", result.toString());
         return "/wap/resetpwd_touch";
     }
