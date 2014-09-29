@@ -31,16 +31,6 @@ public class BaseController {
     private AppConfigService appConfigService;
 
     /**
-     * 判断是否是服务端签名
-     */
-    protected boolean isServerSig(String client_signature, String signature) {
-        if (StringUtils.isEmpty(signature)) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * 验证参数是否有空参数
      */
     protected boolean hasEmpty(String... args) {
@@ -133,29 +123,6 @@ public class BaseController {
         ru = ServletUtil.applyOAuthParametersString(ru, paramMap);
         response.sendRedirect(ru);
         return;
-    }
-
-
-    /**
-     * 构建 CookieApiParams
-     *
-     * @param userid
-     * @param client_id
-     * @param ru
-     * @param ip
-     * @param maxAge
-     * @return
-     */
-    public CookieApiParams buildCookieApiParams(String userid, int client_id, String ru, String ip, int maxAge) {
-        CookieApiParams cookieApiParams = new CookieApiParams();
-        cookieApiParams.setUserid(userid);
-        cookieApiParams.setClient_id(client_id);
-        cookieApiParams.setRu(ru);
-        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-        cookieApiParams.setPersistentcookie(String.valueOf(1));
-        cookieApiParams.setIp(ip);
-        cookieApiParams.setMaxAge(maxAge);
-        return cookieApiParams;
     }
 
 }
