@@ -43,6 +43,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
 
     private Logger log = LoggerFactory.getLogger(OAuth2ResourceManagerImpl.class);
     public static final String RESOURCE = "resource";
+    private static final String BROWSER_DEFAULT_LARGE_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140008/browser_default_avatar";
+    private static final String BROWSER_DEFAULT_MID_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140007/browser_default_avatar";
+    private static final String BROWSER_DEFAULT_TINY_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140006/browser_default_avatar";
 
     @Autowired
     private AppConfigService appConfigService;
@@ -273,6 +276,11 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 mid_avatar = (String) getUserInfoResult.getModels().get("img_50");
                 tiny_avatar = (String) getUserInfoResult.getModels().get("img_30");
             }
+            // 浏览器返回头像url时候，如果url为空，返回默认头像的url地址
+            large_avatar = Strings.isNullOrEmpty(large_avatar) ? BROWSER_DEFAULT_LARGE_AVATAR_URL : large_avatar;
+            mid_avatar = Strings.isNullOrEmpty(mid_avatar) ? BROWSER_DEFAULT_MID_AVATAR_URL : mid_avatar;
+            tiny_avatar = Strings.isNullOrEmpty(tiny_avatar) ? BROWSER_DEFAULT_TINY_AVATAR_URL : tiny_avatar;
+
             Map data = Maps.newHashMap();
             data.put("nick", uniqname);
             data.put("large_avatar", large_avatar);
