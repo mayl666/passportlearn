@@ -43,9 +43,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
 
     private Logger log = LoggerFactory.getLogger(OAuth2ResourceManagerImpl.class);
     public static final String RESOURCE = "resource";
-    private static final String BROWSER_DEFAULT_LARGE_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140008/browser_default_avatar";
-    private static final String BROWSER_DEFAULT_MID_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140007/browser_default_avatar";
-    private static final String BROWSER_DEFAULT_TINY_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140006/browser_default_avatar";
+    private static final String BROWSER_DEFAULT_LARGE_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140008/default_avatar";
+    private static final String BROWSER_DEFAULT_MID_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140007/default_avatar";
+    private static final String BROWSER_DEFAULT_TINY_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140006/default_avatar";
 
     @Autowired
     private AppConfigService appConfigService;

@@ -42,7 +42,7 @@ public class ImgTest extends AbstractJUnit4SpringContextTests {
     public void testUploadDefaultAvatar() {
         File file=new File("C:\\Users\\shipengzhi\\Desktop\\Pictures\\default_avatar_large.png");
         try {
-            String imgName = "browser_default_avatar";
+            String imgName = "default_avatar";
             boolean flag = photoUtils.uploadImg(imgName, IOUtils.toByteArray(new FileInputStream(file)), null, "0");
             String imgURL = photoUtils.accessURLTemplate(imgName);
             System.out.println("imgURL:" + imgURL);
