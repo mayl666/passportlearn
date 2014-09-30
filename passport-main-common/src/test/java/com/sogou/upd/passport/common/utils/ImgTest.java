@@ -57,9 +57,9 @@ public class ImgTest extends AbstractJUnit4SpringContextTests {
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-//       Result result = photoUtils.obtainPhoto("%s/app/a/%s/AlEuwHSqD0avxVpM_1385619153085", "30,50,180");
-//        System.out.println(result.getModels().get("img_30"));
-//       System.out.println(result.toString());
+//        private static final String BROWSER_DEFAULT_LARGE_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140008/default_avatar";
+//        private static final String BROWSER_DEFAULT_MID_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140007/default_avatar";
+//        private static final String BROWSER_DEFAULT_TINY_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140006/default_avatar";
     }
 
 }

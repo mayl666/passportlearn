@@ -43,9 +43,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
 
     private Logger log = LoggerFactory.getLogger(OAuth2ResourceManagerImpl.class);
     public static final String RESOURCE = "resource";
-    private static final String BROWSER_DEFAULT_LARGE_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140008/default_avatar";
-    private static final String BROWSER_DEFAULT_MID_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140007/default_avatar";
-    private static final String BROWSER_DEFAULT_TINY_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140006/default_avatar";
+
 
     @Autowired
     private AppConfigService appConfigService;
@@ -108,32 +106,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
 
-            //TODO 最早版本
-//            if (CommonHelper.isBuildNewCookie()) {
-//                生成cookie
-//                CookieApiParams cookieApiParams = new CookieApiParams();
-//                cookieApiParams.setUserid(passportId);
-//                cookieApiParams.setClient_id(clientId);
-//                cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
-//                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-//                cookieApiParams.setPersistentcookie(String.valueOf(1));
-//                cookieResult = sgLoginApiManager.getCookieInfo(cookieApiParams);
-//            } else {
-//                生成cookie
-//                CookieApiParams cookieApiParams = new CookieApiParams();
-//                cookieApiParams.setUserid(passportId);
-//                cookieApiParams.setClient_id(clientId);
-//                cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
-//                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-//                cookieApiParams.setPersistentcookie(String.valueOf(1));
-//                Random random = new Random();
-//                int num = random.nextInt(10);
-//                if(num/2 == 0){
-//
-//                }
-//                cookieResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-//            }
-
             CookieApiParams cookieApiParams = new CookieApiParams();
             cookieApiParams.setUserid(passportId);
             cookieApiParams.setClient_id(clientId);
@@ -157,12 +129,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
             Date expires = DateUtils.addDays(new Date(), 7);
-//            String suffix = ";path=/;domain=.sogou.com;expires=Tuesday, 15-Sep-15 19:02:21 GMT";   // TODO 这里不能写死有效期，要改
             String suffix = ";path=/;domain=.sogou.com;expires=" + expires;
             String ppinf = cookieResult.getModels().get("ppinf") + suffix;
             String pprdig = cookieResult.getModels().get("pprdig") + suffix;
-//            String ppinf = "";
-//            String pprdig = "";
             String[] cookieArray = new String[]{"ppinf=" + ppinf, "pprdig=" + pprdig};
             resourceMap.put("msg", "get cookie success");
             resourceMap.put("code", 0);
@@ -276,11 +245,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 mid_avatar = (String) getUserInfoResult.getModels().get("img_50");
                 tiny_avatar = (String) getUserInfoResult.getModels().get("img_30");
             }
-            // 浏览器返回头像url时候，如果url为空，返回默认头像的url地址
-//            large_avatar = Strings.isNullOrEmpty(large_avatar) ? BROWSER_DEFAULT_LARGE_AVATAR_URL : large_avatar;
-//            mid_avatar = Strings.isNullOrEmpty(mid_avatar) ? BROWSER_DEFAULT_MID_AVATAR_URL : mid_avatar;
-//            tiny_avatar = Strings.isNullOrEmpty(tiny_avatar) ? BROWSER_DEFAULT_TINY_AVATAR_URL : tiny_avatar;
-
             Map data = Maps.newHashMap();
             data.put("nick", uniqname);
             data.put("large_avatar", large_avatar);
