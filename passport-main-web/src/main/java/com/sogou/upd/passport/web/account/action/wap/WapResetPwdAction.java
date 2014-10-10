@@ -70,7 +70,7 @@ public class WapResetPwdAction extends BaseController {
      *
      * @param model
      * @param redirectAttributes
-     * @param display  默认不填，如果为native则隐藏上面的title
+     * @param display            默认不填，如果为native则隐藏上面的title
      * @return
      * @throws Exception
      */
@@ -83,7 +83,7 @@ public class WapResetPwdAction extends BaseController {
             result.setDefaultModel("ru", ru);
             result.setDefaultModel("client_id", client_id);
             if (!Strings.isNullOrEmpty(display)) {
-                result.setDefaultModel("display", display);
+                model.addAttribute("display", display);
             }
             model.addAttribute("data", result.toString());
             return "wap/findpwd_touch";
@@ -409,7 +409,7 @@ public class WapResetPwdAction extends BaseController {
      * 通过接口跳转到reset页面
      *
      * @param ru
-     * @param display  默认不填，如果为native则隐藏上面的title
+     * @param display 默认不填，如果为native则隐藏上面的title
      * @return
      * @throws Exception
      */
