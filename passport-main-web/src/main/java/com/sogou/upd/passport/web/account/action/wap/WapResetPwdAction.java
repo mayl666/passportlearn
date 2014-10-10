@@ -206,7 +206,7 @@ public class WapResetPwdAction extends BaseController {
         String client_id = (String) result.getModels().get("client_id");
         urlStr.append("&client_id=" + client_id);
         String ru = (String) result.getModels().get("ru");
-        urlStr.append("&ru=" + Coder.encodeUTF8(ru));
+        urlStr.append("&ru=" + ru);
         urlStr.append("&code=" + result.getCode());
         urlStr.append("&message=" + result.getMessage());
         urlStr.append("&v=" + WapConstant.WAP_TOUCH);
