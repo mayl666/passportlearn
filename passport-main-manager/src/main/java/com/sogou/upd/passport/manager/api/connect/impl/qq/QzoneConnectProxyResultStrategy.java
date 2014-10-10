@@ -1,9 +1,11 @@
 package com.sogou.upd.passport.manager.api.connect.impl.qq;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.connect.AbstractConnectProxyResultStrategy;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,15 +29,19 @@ public class QzoneConnectProxyResultStrategy extends AbstractConnectProxyResultS
     public Result buildCommonResultByPlatform(HashMap<String, Object> maps) {
         Result result = new APIResultSupport(false);
         String ret = String.valueOf(maps.get("ret"));
+        String msg = StringUtils.EMPTY;
         if (maps.containsKey("ret") && !ErrorUtil.SUCCESS.equals(ret)) {
             //腾讯会针对输入法用户词库大于5M的做单独处理，返回10005表示此种情况，在此做特殊处理
             if ("10005".equals(ret)) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M);
             } else {
+                if (maps.containsKey("msg") && maps.get("msg") != null) {
+                    msg = String.valueOf(maps.get("msg"));
+                }
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
+                result.setMessage(msg);
+                logger.error("qqResult return ret %s and msg %s", ret, msg);
             }
-            result.setMessage((String) maps.get("msg"));
-//            logger.error("qqResult:ret {},msg {}", maps.get("ret"), maps.get("msg"));
         } else {
             //封装QQ返回请求正确的结果，返回结果中不包含ret或者包含ret且ret值为0的结果封装
             HashMap<String, Object> data;
