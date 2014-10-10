@@ -15,6 +15,8 @@
 
 
 
+#if($display!="native")
+
 
 <nav class="f-f f-vc">
     <a href="#" class="backlink f-f f-hc f-vc">〈</a>
@@ -24,6 +26,7 @@
 
 
 
+#end
 
 
 
@@ -79,7 +82,7 @@
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=952172" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=650667" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"
