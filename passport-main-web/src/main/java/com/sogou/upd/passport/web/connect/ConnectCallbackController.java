@@ -118,7 +118,6 @@ public class ConnectCallbackController extends BaseConnectController {
                     String refnick = (String) result.getModels().get("refnick");
                     //uniqname： 对qq导航应用，传qq昵称
                     String creeateSSOCookieUrl = cookieManager.buildCreateSSOCookieUrl(domain, clientId, passportId, refnick, refnick, ru, getIp(req));
-                    logger.debug("create sso cookie url:" + creeateSSOCookieUrl);
                     res.sendRedirect(creeateSSOCookieUrl);
                 } else {
                     res.sendRedirect(ru);
