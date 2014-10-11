@@ -172,7 +172,7 @@ public class WapResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
     @ResponseBody
-    public Object checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params) throws Exception {
+    public Object checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, String display) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -187,7 +187,7 @@ public class WapResetPwdAction extends BaseController {
             if (result.isSuccess()) {
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 result.setDefaultModel("skin", params.getSkin());
-                String param = buildRedirectUrl(result);
+                String param = buildRedirectUrl(result, display);
                 String url = CommonConstant.DEFAULT_WAP_INDEX_URL + param;
                 result.setDefaultModel("url", url);
                 return result.toString();
@@ -202,7 +202,7 @@ public class WapResetPwdAction extends BaseController {
     }
 
     //手机与短信验证码验证成功后，给前端生成下一步跳转的url
-    private String buildRedirectUrl(Result result) {
+    private String buildRedirectUrl(Result result, String display) {
         StringBuilder urlStr = new StringBuilder();
         urlStr.append("/wap/findpwd/page/reset?");
         String userid = (String) result.getModels().get("userid");
@@ -218,6 +218,9 @@ public class WapResetPwdAction extends BaseController {
         urlStr.append("&v=" + WapConstant.WAP_TOUCH);
         String skin = (String) result.getModels().get("skin");
         urlStr.append("&skin=" + skin);
+        if (!Strings.isNullOrEmpty(display)) {
+            urlStr.append("&display=").append(display);
+        }
         return urlStr.toString();
     }
 
