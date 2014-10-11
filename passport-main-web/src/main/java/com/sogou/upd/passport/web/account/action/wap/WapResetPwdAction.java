@@ -100,13 +100,16 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/email", method = RequestMethod.GET)
-    public String findPwdOtherView(Model model, BaseWebRuParams params) throws Exception {
+    public String findPwdOtherView(Model model, BaseWebRuParams params, String display) throws Exception {
         Result result = new APIResultSupport(false);
         String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
         model.addAttribute("token", RandomStringUtils.randomAlphanumeric(48));
+        if (!Strings.isNullOrEmpty(display)) {
+            model.addAttribute("display", display);
+        }
         model.addAttribute("data", result.toString());
         return "/wap/findpwd_other_touch";
     }
@@ -120,12 +123,15 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/customer", method = RequestMethod.GET)
-    public String findPwdKefuView(Model model, BaseWebRuParams params) throws Exception {
+    public String findPwdKefuView(Model model, BaseWebRuParams params, String display) throws Exception {
         Result result = new APIResultSupport(false);
         String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
+        if (!Strings.isNullOrEmpty(display)) {
+            model.addAttribute("display", display);
+        }
         model.addAttribute("data", result.toString());
         return "/wap/findpwd_contact_touch";
     }
