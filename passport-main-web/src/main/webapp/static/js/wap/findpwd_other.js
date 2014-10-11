@@ -107,8 +107,8 @@ define(['./interface','../lib/tpl', './utils',  './skin' , './common'], function
 					    if (result) {
                             $('form').html('<p class="reset-notify">'+ (data.statusText||'找回密码邮件已发送，请尽快查看邮件并修改密码') +'</p>');
                             setTimeout(function(){
-                                location.href = '/wap/index?' + passParamsStr;
-                            },2000);
+                                location.href =  decodeURIComponent(ru);//'/wap/index?' + passParamsStr;
+                            },2e3);
 					    } else {
 						    self.showMsg(data.statusText);
                             self.$captcha.empty();
