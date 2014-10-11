@@ -25,6 +25,19 @@ public class QzoneConnectProxyResultStrategy extends AbstractConnectProxyResultS
 
     private static final Logger logger = LoggerFactory.getLogger(QzoneConnectProxyResultStrategy.class);
 
+    /**
+     * 腾讯接口返回的ret
+     * <p/>
+     * 10001 err_get_result
+     * #10002 err_file_found
+     * 0     err_file_found
+     * 10003 err_proxyfail
+     * 10004 err_parameter
+     * 10005 err_5mlimited
+     *
+     * @param maps 腾讯接口返回结果
+     * @return
+     */
     @Override
     public Result buildCommonResultByPlatform(HashMap<String, Object> maps) {
         Result result = new APIResultSupport(false);
