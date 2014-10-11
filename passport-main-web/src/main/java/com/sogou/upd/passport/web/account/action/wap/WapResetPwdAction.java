@@ -437,7 +437,7 @@ public class WapResetPwdAction extends BaseController {
         result.setDefaultModel("v", WapConstant.WAP_TOUCH);
         result.setDefaultModel("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_SKIN_GREEN : skin);
         if (!Strings.isNullOrEmpty(display)) {
-            result.setDefaultModel("display", display);
+            model.addAttribute("display", display);
         }
         model.addAttribute("data", result.toString());
         return "/wap/resetpwd_touch";
