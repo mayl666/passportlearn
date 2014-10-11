@@ -62,7 +62,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
             logger.error("OpenId Format Is Illegal:", ce);
             result.setCode(ErrorUtil.ERR_CODE_CONNECT_MAKE_SIGNATURE_ERROR);
         } catch (Exception e) {
-            logger.error(String.format("handleConnectOpenApi Is Failed,OpenId %s, origin params %s", tokenMap.get("open_id").toString(), paramsMap.toString()), e);
+            logger.error("handleConnectOpenApi Is Failed,OpenId is" + tokenMap.get("open_id").toString(), e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
