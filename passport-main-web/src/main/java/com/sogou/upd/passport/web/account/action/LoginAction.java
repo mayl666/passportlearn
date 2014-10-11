@@ -117,8 +117,8 @@ public class LoginAction extends BaseController {
         if (result.isSuccess()) {
             userId = result.getModels().get("userid").toString();
             String uniqName = StringUtils.EMPTY;
-            if (result.getModels().get("uniqname") != null) {
-                uniqName = result.getModels().get("uniqname").toString();
+            if (result.getModels().get("uniqName") != null) {
+                uniqName = result.getModels().get("uniqName").toString();
             }
             int clientId = Integer.parseInt(loginParams.getClient_id());
             int autoLogin = loginParams.getAutoLogin();

@@ -155,6 +155,11 @@ public class WapLoginAction extends BaseController {
 //                writeResultToResponse(response, result);
 //                return "empty";
                 isNeedCaptcha = 1;
+                if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
+                    result.setDefaultModel("isNeedCaptcha", 1);
+                    writeResultToResponse(response, result);
+                    return "empty";
+                }
                 return getErrorReturnStr(loginParams, result.getMessage(), isNeedCaptcha);
             }
             boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
