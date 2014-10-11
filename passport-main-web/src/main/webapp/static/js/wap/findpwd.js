@@ -109,7 +109,8 @@ define(['./interface', './utils', './dialog', '../utils', './skin', './common'],
 							smscode: c,
 							mobile: u,
 							skin: Utils.getUrlParams()['skin'],
-							ru: decodeURIComponent(ru)
+							ru: decodeURIComponent(ru),
+							display: Utils.getUrlParams()['display']
 						}, function(result, data) {
 							self.__mFinding = false;
 							if (result) {
