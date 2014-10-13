@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.model.account.ActionRecord;
@@ -30,13 +31,13 @@ public class AccountSecureServiceTest extends AbstractJUnit4SpringContextTests {
     @Test
     public void testGetAndSetSecureCodeResetPwd() {
         System.out.println("测试一");
-        String secureCode = accountSecureService.getSecureCodeResetPwd(PASSPORT_ID, CLIENT_ID);
+        String secureCode = accountSecureService.getSecureCode(PASSPORT_ID, CLIENT_ID, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
         System.out.println("Secure Code is: " + secureCode);
-        boolean checkRes = accountSecureService.checkSecureCodeResetPwd(PASSPORT_ID, CLIENT_ID, secureCode);
-        boolean checkRandom = accountSecureService.checkSecureCodeResetPwd(PASSPORT_ID, CLIENT_ID, "ABC");
+        boolean checkRes = accountSecureService.checkSecureCode(PASSPORT_ID, CLIENT_ID, secureCode,CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
+        boolean checkRandom = accountSecureService.checkSecureCode(PASSPORT_ID, CLIENT_ID, "ABC",CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
         System.out.println("验证结果是：" + checkRes + " _ " + checkRandom);
-        checkRes = accountSecureService.checkSecureCodeResetPwd(PASSPORT_ID, CLIENT_ID, secureCode);
-        checkRandom = accountSecureService.checkSecureCodeResetPwd(PASSPORT_ID, CLIENT_ID, "ABC");
+        checkRes = accountSecureService.checkSecureCode(PASSPORT_ID, CLIENT_ID, secureCode,CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
+        checkRandom = accountSecureService.checkSecureCode(PASSPORT_ID, CLIENT_ID, "ABC",CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
         System.out.println("二次验证结果是：" + checkRes + " _ " + checkRandom);
 
     }
@@ -46,13 +47,13 @@ public class AccountSecureServiceTest extends AbstractJUnit4SpringContextTests {
         System.out.println("测试三");
         String secureCode = accountSecureService.getSecureCodeModSecInfo(PASSPORT_ID, CLIENT_ID);
         System.out.println("Secure Code is: " + secureCode);
-        boolean checkRes = accountSecureService.checkSecureCodeResetPwd(PASSPORT_ID, CLIENT_ID,
-                                                                        secureCode);
+        boolean checkRes = accountSecureService.checkSecureCode(PASSPORT_ID, CLIENT_ID,
+                                                                        secureCode,CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
         boolean checkRandom = accountSecureService.checkSecureCodeModSecInfo(PASSPORT_ID,
                                                                              CLIENT_ID,
                                                                              secureCode);
         System.out.println("验证结果是：" + checkRes + " _ " + checkRandom);
-        checkRes = accountSecureService.checkSecureCodeResetPwd(PASSPORT_ID, CLIENT_ID, secureCode);
+        checkRes = accountSecureService.checkSecureCode(PASSPORT_ID, CLIENT_ID, secureCode,CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
         checkRandom = accountSecureService.checkSecureCodeModSecInfo(PASSPORT_ID, CLIENT_ID,
                                                                      secureCode);
         System.out.println("二次验证结果是：" + checkRes + " _ " + checkRandom);

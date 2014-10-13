@@ -14,6 +14,7 @@ public class WapPwdParams extends WapCheckEmailParams {
     @NotBlank(message = "密码不允许为空!")
     @Password(message = "密码必须为字母、数字、字符且长度为6~16位!")
     protected String password;
+    protected String captcha;  //wap2.0用到的短信验证码
 
     public String getPassword() {
         return password;
@@ -23,4 +24,11 @@ public class WapPwdParams extends WapCheckEmailParams {
         this.password = password;
     }
 
+    public String getCaptcha() {
+        return captcha;
+    }
+
+    public void setCaptcha(String captcha) {
+        this.captcha = captcha;
+    }
 }

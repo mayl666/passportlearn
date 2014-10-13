@@ -20,7 +20,7 @@ public class RegMobileParams {
     protected int client_id; //应用id
 
     @NotBlank(message = "密码不允许为空")
-    private String password; //md5
+    protected String password; //md5
     @NotBlank(message = "手机验证码不允许为空")
     private String captcha;
     private String ip;
