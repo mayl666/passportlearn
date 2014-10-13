@@ -137,8 +137,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
      */
     @Override
     public Result updateUserInfo(AccountInfoParams infoParams, String ip) {
-        UpdateUserInfoApiParams updateUserInfoApiParams = null;
-        updateUserInfoApiParams = buildUpdateUserInfoApiParams(infoParams, ip);
+        UpdateUserInfoApiParams updateUserInfoApiParams = buildUpdateUserInfoApiParams(infoParams, ip);
         Result result = sgUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
         return result;
     }

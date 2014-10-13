@@ -39,7 +39,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
     // TODO:以下PASSPORT_RESETPWD_EMAIL_URL值仅供本机测试用
     // TODO:绑定验证URL待修改，考虑以后其他验证EMAIL的URL
-    private static final String PASSPORT_EMAIL_URL_PREFIX = CommonConstant.DEFAULT_INDEX_URL + "/";
     private static final String PASSPORT_EMAIL_URL_SUFFIX = "/checkemail?";
     private static final Map<AccountModuleEnum, String> subjects = AccountModuleEnum.buildEmailSubjects();
 
@@ -121,43 +120,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         }
         activeUrl.append("&ru=" + Coder.encodeUTF8(ru));
         return activeUrl.toString();
-    }
-
-    @Override
-    public boolean sendBindEmail(String passportId, int clientId, AccountModuleEnum module, String address, String ru)
-            throws ServiceException {
-        try {
-            String scode = SecureCodeGenerator.generatorSecureCode(passportId, clientId);
-            String activeUrl = PASSPORT_EMAIL_URL_PREFIX + module.getDirect() + PASSPORT_EMAIL_URL_SUFFIX;
-            activeUrl += "username=" + passportId + "&client_id=" + clientId + "&scode=" + scode + "&ru=" + ru;
-
-            //发送邮件
-            ActiveEmail activeEmail = new ActiveEmail();
-            activeEmail.setActiveUrl(activeUrl);
-
-            //模版中参数替换
-            Map<String, Object> map = Maps.newHashMap();
-            map.put("activeUrl", activeUrl);
-            activeEmail.setMap(map);
-
-            activeEmail.setTemplateFile(module.getDirect() + ".vm");
-            activeEmail.setSubject(subjects.get(module));
-            activeEmail.setCategory(module.getDirect());
-            activeEmail.setToEmail(address);
-            mailUtils.sendEmail(activeEmail);
-
-            //连接失效时间
-            String cacheKey = buildCacheKeyForScode(passportId, clientId, module);
-            Map<String, String> mapResult = Maps.newHashMap();
-            mapResult.put("email", address);
-            mapResult.put("scode", scode);
-            redisUtils.setWithinSeconds(cacheKey, mapResult, DateAndNumTimesConstant.TIME_TWODAY);
-            return true;
-        } catch (MailException me) {
-            return false;
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
     }
 
     @Override

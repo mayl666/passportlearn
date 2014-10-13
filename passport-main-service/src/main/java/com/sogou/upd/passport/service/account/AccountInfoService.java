@@ -34,26 +34,4 @@ public interface AccountInfoService {
      */
     public boolean updateAccountInfo(AccountInfo accountInfo);
 
-    /**
-     * 根据passportId删除AccountInfo表缓存，增量数据迁移的内部debug接口使用
-     */
-    public boolean deleteAccountInfoCacheByPassportId(String passportId) throws ServiceException;
-
-    /**
-     * 解除绑定的密保邮箱
-     */
-    public boolean deleteBindEmailByPassportId(String passportId) throws ServiceException;
-
-
-    /**
-     * 修改绑定邮箱
-     *
-     * @param accountInfo
-     * @param email
-     * @return
-     * @throws ServiceException
-     */
-    public boolean updateBindMEmail(AccountInfo accountInfo, String email) throws ServiceException;
-
-
 }

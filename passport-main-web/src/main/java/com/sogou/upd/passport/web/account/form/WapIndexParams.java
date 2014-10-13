@@ -29,7 +29,7 @@ public class WapIndexParams {
     @Ru
     private String ru = WapConstant.WAP_INDEX;//登陆来源
     @Skin
-    private String skin;
+    private String skin = WapConstant.WAP_SKIN_GREEN;
 
     private String errorMsg;//错误信息
     private int needCaptcha;//是否需要输入验证码:0-不需要；1-需要

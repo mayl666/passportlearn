@@ -24,16 +24,10 @@ public class WapConstant {
      */
     public static final String WAP_TOUCH = "5";
 
-    /**
-     *红色皮肤值
-     */
-    public static final String WAP_RED = "red";
-
-
-    /**
-     *红色皮肤值
-     */
-    public static final String WAP_GREEN = "green";
+    // wap版颜色为绿色
+    public static final String WAP_SKIN_GREEN = "green";
+    // wap版颜色为红色
+    public static final String WAP_SKIN_RED = "red";
 
     //默认登录来源
     public static final String WAP_INDEX = "http://wap.sogou.com/";

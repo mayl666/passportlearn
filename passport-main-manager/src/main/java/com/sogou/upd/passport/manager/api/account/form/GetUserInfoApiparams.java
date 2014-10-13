@@ -21,6 +21,12 @@ public class GetUserInfoApiparams extends BaseUserApiParams {
         this.fields = fields;
     }
 
+    public GetUserInfoApiparams(String userId, int clientId, String fields) {
+        this.userid = userId;
+        this.client_id = clientId;
+        this.fields = fields;
+    }
+
     public String getFields() {
         return fields;
     }

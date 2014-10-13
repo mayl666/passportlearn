@@ -300,17 +300,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException {
-        try {
-            String cacheKey = buildAccountKey(passportId);
-            dbShardRedisUtils.delete(cacheKey);
-            return true;
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    @Override
     public boolean deleteAccountByPassportId(String passportId) throws ServiceException {
         try {
             int row = accountDAO.deleteAccountByPassportId(passportId);
@@ -322,25 +311,6 @@ public class AccountServiceImpl implements AccountService {
             return false;
         } catch (Exception e) {
             throw new ServiceException(e);
-        }
-    }
-
-    @Override
-    public boolean checkLimitResetPwd(String passportId) throws ServiceException {
-        try {
-            String cacheKey = buildResetPwdCacheKey(passportId);
-            String checkNumStr = redisUtils.get(cacheKey);
-            if (!Strings.isNullOrEmpty(checkNumStr)) {
-                int checkNum = Integer.parseInt(checkNumStr);
-                if (checkNum > DateAndNumTimesConstant.RESETPWD_NUM) {
-                    // 当日验证码输入错误次数不超过上限
-                    return false;
-                }
-            }
-            return true;
-        } catch (Exception e) {
-            // throw new ServiceException(e);
-            return true;
         }
     }
 

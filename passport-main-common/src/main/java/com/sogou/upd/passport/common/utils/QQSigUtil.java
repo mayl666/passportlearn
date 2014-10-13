@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.sogou.upd.passport.common.exception.ConnectException;
-import com.sogou.upd.passport.common.math.Base64Coder;
+import com.sogou.upd.passport.common.math.Coder;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -9,9 +9,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -59,7 +58,7 @@ public class QQSigUtil {
             byte[] hash = mac.doFinal(mk.getBytes(CONTENT_CHARSET));
 
             // base64
-            sig = new String(Base64Coder.encode(hash));
+            sig = new String(Coder.encryptBase64(hash));
         } catch (NoSuchAlgorithmException e) {
             throw new ConnectException(ErrorUtil.ERR_CODE_CONNECT_MAKE_SIGNATURE_ERROR, e);
         } catch (UnsupportedEncodingException e) {

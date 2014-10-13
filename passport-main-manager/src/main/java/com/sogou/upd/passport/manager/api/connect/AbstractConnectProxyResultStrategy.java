@@ -21,7 +21,7 @@ public class AbstractConnectProxyResultStrategy implements ConnectProxyResultStr
 
     @Override
     public Result buildCommonResultByPlatform(HashMap<String, Object> paramMaps) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override

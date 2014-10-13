@@ -21,18 +21,6 @@ public interface EmailSenderService {
             throws ServiceException;
 
     /**
-     * @param passportId
-     * @param clientId
-     * @param module
-     * @param address
-     * @param ru
-     * @return
-     * @throws ServiceException
-     */
-    public boolean sendBindEmail(String passportId, int clientId, AccountModuleEnum module, String address, String ru)
-            throws ServiceException;
-
-    /**
      * 检查邮件链接中的scode
      *
      * @param passportId

@@ -21,51 +21,6 @@ public interface CheckManager {
     public boolean checkCaptcha(String captcha, String token);
 
     /**
-     * 检查重置密码限制
-     *
-     * @param passportId
-     * @param clientId
-     * @return
-     * @throws Exception
-     */
-    public boolean checkLimitResetPwd(String passportId, int clientId);
-
-    /**
-     * 检查邮箱验证scode，并返回存储的邮箱名
-     *
-     * @param passportId
-     * @param clientId
-     * @param module
-     * @param scode
-     * @return
-     * @throws Exception
-     */
-    public String checkEmailScodeReturnStr(String passportId, int clientId, AccountModuleEnum module, String scode);
-
-    /**
-     * 检查邮箱验证scode
-     *
-     * @param passportId
-     * @param clientId
-     * @param module
-     * @param scode
-     * @return
-     * @throws Exception
-     */
-    public boolean checkEmailScode(String passportId, int clientId, AccountModuleEnum module, String scode);
-
-    /**
-     * 检查重置密码时的scode
-     *
-     * @param passportId
-     * @param clientId
-     * @param scode
-     * @return
-     * @throws Exception
-     */
-    public boolean checkScodeResetPwd(String passportId, int clientId, String scode);
-
-    /**
      * 检查token
      *
      * @param scode

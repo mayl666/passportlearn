@@ -71,11 +71,12 @@ public class WapResetPwdAction extends BaseController {
      *
      * @param model
      * @param redirectAttributes
+     * @param display            默认不填，如果为native则隐藏上面的title
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
-    public String findPwdView(Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams) throws Exception {
+    public String findPwdView(Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams, String display) throws Exception {
         String ru = Strings.isNullOrEmpty(wapIndexParams.getRu()) ? CommonConstant.DEFAULT_WAP_URL : wapIndexParams.getRu();
         String v = Strings.isNullOrEmpty(wapIndexParams.getV()) ? WapConstant.WAP_TOUCH : wapIndexParams.getV();
         Result result = new APIResultSupport(false);
@@ -97,6 +98,9 @@ public class WapResetPwdAction extends BaseController {
             }
             return "wap/findpwd_wap";
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
+            if (!Strings.isNullOrEmpty(display)) {
+                model.addAttribute("display", display);
+            }
             model.addAttribute("data", result.toString());
             return "wap/findpwd_touch";
         }
@@ -112,13 +116,16 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/email", method = RequestMethod.GET)
-    public String findPwdOtherView(Model model, BaseWebRuParams params) throws Exception {
+    public String findPwdOtherView(Model model, BaseWebRuParams params, String display) throws Exception {
         Result result = new APIResultSupport(false);
         String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
         model.addAttribute("token", RandomStringUtils.randomAlphanumeric(48));
+        if (!Strings.isNullOrEmpty(display)) {
+            model.addAttribute("display", display);
+        }
         model.addAttribute("data", result.toString());
         return "/wap/findpwd_other_touch";
     }
@@ -132,12 +139,15 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/customer", method = RequestMethod.GET)
-    public String findPwdKefuView(Model model, BaseWebRuParams params) throws Exception {
+    public String findPwdKefuView(Model model, BaseWebRuParams params, String display) throws Exception {
         Result result = new APIResultSupport(false);
         String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
+        if (!Strings.isNullOrEmpty(display)) {
+            model.addAttribute("display", display);
+        }
         model.addAttribute("data", result.toString());
         return "/wap/findpwd_contact_touch";
     }
@@ -178,7 +188,7 @@ public class WapResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
     @ResponseBody
-    public Object checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params) throws Exception {
+    public Object checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, String display) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -193,7 +203,7 @@ public class WapResetPwdAction extends BaseController {
             if (result.isSuccess()) {
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 result.setDefaultModel("skin", params.getSkin());
-                String param = buildRedirectUrl(result);
+                String param = buildRedirectUrl(result, display);
                 String url = CommonConstant.DEFAULT_WAP_INDEX_URL + param;
                 result.setDefaultModel("url", url);
                 return result.toString();
@@ -208,7 +218,7 @@ public class WapResetPwdAction extends BaseController {
     }
 
     //手机与短信验证码验证成功后，给前端生成下一步跳转的url
-    private String buildRedirectUrl(Result result) {
+    private String buildRedirectUrl(Result result, String display) {
         StringBuilder urlStr = new StringBuilder();
         urlStr.append("/wap/findpwd/page/reset?");
         String userid = (String) result.getModels().get("userid");
@@ -218,12 +228,15 @@ public class WapResetPwdAction extends BaseController {
         String client_id = (String) result.getModels().get("client_id");
         urlStr.append("&client_id=" + client_id);
         String ru = (String) result.getModels().get("ru");
-        urlStr.append("&ru=" + Coder.encodeUTF8(ru));
+        urlStr.append("&ru=" + ru);
         urlStr.append("&code=" + result.getCode());
         urlStr.append("&message=" + result.getMessage());
         urlStr.append("&v=" + WapConstant.WAP_TOUCH);
         String skin = (String) result.getModels().get("skin");
         urlStr.append("&skin=" + skin);
+        if (!Strings.isNullOrEmpty(display)) {
+            urlStr.append("&display=").append(display);
+        }
         return urlStr.toString();
     }
 
@@ -421,12 +434,13 @@ public class WapResetPwdAction extends BaseController {
      * 通过接口跳转到reset页面
      *
      * @param ru
+     * @param display 默认不填，如果为native则隐藏上面的title
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/page/reset", method = RequestMethod.GET)
     public String findResetView(String ru, Model model, String client_id, String scode, String username, String
-            code, String skin) throws Exception {
+            code, String skin, String display) throws Exception {
         Result result = new APIResultSupport(false);
         ru = Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(ru);
         client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
@@ -437,7 +451,10 @@ public class WapResetPwdAction extends BaseController {
         result.setDefaultModel("userid", username);
         result.setDefaultModel("scode", scode);
         result.setDefaultModel("v", WapConstant.WAP_TOUCH);
-        result.setDefaultModel("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_GREEN : skin);
+        result.setDefaultModel("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_SKIN_GREEN : skin);
+        if (!Strings.isNullOrEmpty(display)) {
+            model.addAttribute("display", display);
+        }
         model.addAttribute("data", result.toString());
         return "/wap/resetpwd_touch";
     }

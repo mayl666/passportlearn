@@ -28,7 +28,7 @@ public class BaseWapResetPwdParams {
     @V
     protected String v = WapConstant.WAP_TOUCH;
 //    @Skin
-    protected String skin;
+    protected String skin = WapConstant.WAP_SKIN_GREEN;
 
     public String getRu() {
         return ru;

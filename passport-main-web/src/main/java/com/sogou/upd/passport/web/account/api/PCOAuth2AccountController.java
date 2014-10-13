@@ -69,8 +69,6 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private RegManager regManager;
     @Autowired
-    private CommonManager commonManager;
-    @Autowired
     private HostHolder hostHolder;
     @Autowired
     private PCOAuth2LoginManager pcOAuth2LoginManager;
@@ -257,7 +255,7 @@ public class PCOAuth2AccountController extends BaseController {
         } finally {
             writeUserLogForRegister(finalCode, result, request, pcoAuth2RegisterParams);
         }
-        commonManager.incRegTimes(ip, uuidName);
+        regManager.incRegTimes(ip, uuidName);
 
         //注册添加log
         if (StringUtils.isBlank(result.getCode()) && result.isSuccess()) {

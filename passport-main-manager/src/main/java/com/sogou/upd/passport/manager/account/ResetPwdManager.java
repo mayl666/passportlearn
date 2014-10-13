@@ -20,19 +20,7 @@ public interface ResetPwdManager {
      */
     public Result checkEmailCorrect(String username, String to_email) throws Exception;
 
-    /**
-     * 修改密码，包括检查修改次数
-     *
-     * @param passportId
-     * @param clientId
-     * @param password
-     * @return
-     * @throws Exception
-     */
-    public Result resetPassword(String passportId, int clientId, String password) throws Exception;
-
     /* ------------------------------------重置密码Begin------------------------------------ */
-
     /**
      * 重置密码（邮件方式）——1.发送重置密码申请验证邮件
      *
@@ -65,13 +53,6 @@ public interface ResetPwdManager {
     public Result checkEmailResetPwd(String uid, int clientId, String token) throws Exception;
 
     /**
-     * 重置密码（邮件方式）——3.再一次验证token，并修改密码。目前passportId与邮件申请链接中的uid一样
-     */
-    public Result resetPasswordByEmail(String passportId, int clientId, String password, String token)
-            throws Exception;
-
-
-    /**
      * 重置密码（手机方式）——2.检查手机短信码，成功则返回secureCode记录成功标志
      * （1.发送见sendMobileCodeByPassportId）
      *
@@ -81,20 +62,6 @@ public interface ResetPwdManager {
      * @throws Exception
      */
     public Result checkMobileCodeResetPwd(String passportId, int clientId, String smsCode) throws Exception;
-
-    /**
-     * 重置密码（密保方式）——1.验证密保答案及captcha，成功则返回secureCode记录成功标志。(可用于其他功能模块)
-     *
-     * @param passportId
-     * @param clientId
-     * @param answer
-     * @param token
-     * @param captcha
-     * @return
-     * @throws Exception
-     */
-    public Result checkAnswerByPassportId(String passportId, int clientId, String answer, String token,
-                                          String captcha) throws Exception;
 
     /**
      * 重置密码（手机和密保方式）——根据secureCode修改密码（secureCode由上一步验证手机或密保问题成功获取）
@@ -122,12 +89,6 @@ public interface ResetPwdManager {
      * @throws Exception
      */
     public Result sendFindPwdMobileCode(String userId, int clientId, String sec_mobile, String token, String captcha) throws Exception;
-
-    /**
-     * 重置用户密码（手机验证码方式）——暂不用！！！
-     */
-    public Result resetPasswordByMobile(String passportId, int clientId, String password, String smsCode)
-            throws Exception;
 
     /**
      * 统计找回密码次数

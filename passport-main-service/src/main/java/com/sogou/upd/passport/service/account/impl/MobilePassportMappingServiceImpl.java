@@ -83,17 +83,4 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
         }
         return false;
     }
-
-    @Override
-    public boolean deleteMobilePassportMappingCache(String mobile) throws ServiceException {
-        try {
-            String cacheKey = buildMobilePassportMappingKey(mobile);
-            dbShardRedisUtils.delete(cacheKey);
-            return true;
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-
 }

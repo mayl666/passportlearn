@@ -3,7 +3,6 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.OAuth2ResourceTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -14,7 +13,6 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.OAuth2ResourceManager;
-import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.PCOAuth2ResourceParams;
@@ -46,12 +44,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
     private Logger log = LoggerFactory.getLogger(OAuth2ResourceManagerImpl.class);
     public static final String RESOURCE = "resource";
 
+
     @Autowired
     private AppConfigService appConfigService;
-    @Autowired
-    private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private LoginApiManager sgLoginApiManager;
     @Autowired
     private PCAccountTokenService pcAccountTokenService;
     @Autowired
@@ -111,32 +106,6 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
 
-            //TODO 最早版本
-//            if (CommonHelper.isBuildNewCookie()) {
-//                生成cookie
-//                CookieApiParams cookieApiParams = new CookieApiParams();
-//                cookieApiParams.setUserid(passportId);
-//                cookieApiParams.setClient_id(clientId);
-//                cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
-//                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-//                cookieApiParams.setPersistentcookie(String.valueOf(1));
-//                cookieResult = sgLoginApiManager.getCookieInfo(cookieApiParams);
-//            } else {
-//                生成cookie
-//                CookieApiParams cookieApiParams = new CookieApiParams();
-//                cookieApiParams.setUserid(passportId);
-//                cookieApiParams.setClient_id(clientId);
-//                cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
-//                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-//                cookieApiParams.setPersistentcookie(String.valueOf(1));
-//                Random random = new Random();
-//                int num = random.nextInt(10);
-//                if(num/2 == 0){
-//
-//                }
-//                cookieResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-//            }
-
             CookieApiParams cookieApiParams = new CookieApiParams();
             cookieApiParams.setUserid(passportId);
             cookieApiParams.setClient_id(clientId);
@@ -160,12 +129,9 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
             Date expires = DateUtils.addDays(new Date(), 7);
-//            String suffix = ";path=/;domain=.sogou.com;expires=Tuesday, 15-Sep-15 19:02:21 GMT";   // TODO 这里不能写死有效期，要改
             String suffix = ";path=/;domain=.sogou.com;expires=" + expires;
             String ppinf = cookieResult.getModels().get("ppinf") + suffix;
             String pprdig = cookieResult.getModels().get("pprdig") + suffix;
-//            String ppinf = "";
-//            String pprdig = "";
             String[] cookieArray = new String[]{"ppinf=" + ppinf, "pprdig=" + pprdig};
             resourceMap.put("msg", "get cookie success");
             resourceMap.put("code", 0);
@@ -270,10 +236,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
                 return result;
             }
             //取用户昵称、头像信息
-            GetUserInfoApiparams params = new GetUserInfoApiparams();
-            params.setClient_id(clientId);
-            params.setUserid(passportId);
-            params.setFields("uniqname,avatarurl");
+            GetUserInfoApiparams params = new GetUserInfoApiparams(passportId, clientId, "uniqname,avatarurl");
             Result getUserInfoResult = accountInfoManager.getUserNickNameAndAvatar(params);
             String uniqname = "", large_avatar = "", mid_avatar = "", tiny_avatar = "";
             if (getUserInfoResult.isSuccess()) {

@@ -3,7 +3,7 @@ package com.sogou.upd.passport.oauth2.common.utils.qqutils;
 
 // urlencode
 
-import com.sogou.upd.passport.common.math.Base64Coder;
+import com.sogou.upd.passport.common.math.Coder;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -78,7 +78,7 @@ public class SnsSigCheck
             byte[] hash = mac.doFinal(mk.getBytes(CONTENT_CHARSET));
     
             // base64
-            sig = new String(Base64Coder.encode(hash));
+            sig = new String(Coder.encryptBase64(hash));
         }
         catch(NoSuchAlgorithmException e)
         {

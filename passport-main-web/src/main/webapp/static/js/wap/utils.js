@@ -10,15 +10,15 @@
  * @since 0.1.0
  */
 define([], function() {
-    var gParams =null;
+    var gParams = null;
     return {
         getUrlParams: function() {
-            if(gParams)return gParams;
+            if (gParams) return gParams;
             var params = location.search.split('#')[0].split(/[?&]/g);
             var matches;
-            gParams= {};
+            gParams = {};
             params.forEach(function(kv) {
-                if ((matches = kv.match(/^([\w-]+)=([^&=\?#]+)/)) && matches[1] && matches[2]) {
+                if ((matches = kv.match(/^([\w-]+)=([^&]+)/)) && matches[1] && matches[2]) {
                     gParams[matches[1]] = matches[2];
                 }
             });
@@ -33,20 +33,25 @@ define([], function() {
             }
             return ru;
         },
-        getPassThroughParams:function(){
+        getPassThroughParams: function() {
             var p = [];
-            var allp = this.getUrlParams(),ru = this.getRu();
-            if(allp.client_id){
-                p.push('client_id='+allp.client_id);
+            var allp = this.getUrlParams(),
+                ru = this.getRu();
+            if (allp.client_id) {
+                p.push('client_id=' + allp.client_id);
             }
-            if(allp.v){
-                p.push('v='+allp.v);
+            if (allp.v) {
+                p.push('v=' + allp.v);
             }
-            if(allp.skin){
-                p.push('skin='+allp.skin);
+            if (allp.skin) {
+                p.push('skin=' + allp.skin);
             }
-            if(ru){
-                p.push('ru='+ru);
+            if (ru) {
+                p.push('ru=' + ru);
+            }
+
+            if (allp.display) {
+                p.push('display=' + allp.display);
             }
 
             return p.join('&');

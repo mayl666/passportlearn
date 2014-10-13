@@ -155,6 +155,7 @@ public class WebRoamController extends BaseController {
         Result result = new APIResultSupport(false);
         String clientId = pcRoamGoParams.getClient_id();
         String xd = pcRoamGoParams.getXd();
+        String type = pcRoamGoParams.getType();
         String createIp = getIp(request);
         String userId = "";
         try {
@@ -168,7 +169,7 @@ public class WebRoamController extends BaseController {
                 return "/login/roam";
             }
 
-            result = accountRoamManager.pcRoamGo(pcRoamGoParams.getType(), pcRoamGoParams.getS(), createIp);
+            result = accountRoamManager.pcRoamGo(type, pcRoamGoParams.getS(), createIp);
             if (result.isSuccess()) {
                 result.setDefaultModel("r_key", result.getModels().get("r_key"));
                 String uniqname = Coder.encode((String) result.getModels().get("uniqname"), CommonConstant.DEFAULT_CHARSET);
@@ -182,6 +183,7 @@ public class WebRoamController extends BaseController {
             //记录用户操作日志
             UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), clientId, result.getCode(), createIp);
             userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+            userOperationLog.putOtherMessage("type", type);
             UserOperationLogUtil.log(userOperationLog);
         }
     }

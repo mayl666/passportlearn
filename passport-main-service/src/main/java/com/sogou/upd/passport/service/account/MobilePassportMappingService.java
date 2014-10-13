@@ -39,8 +39,4 @@ public interface MobilePassportMappingService {
      */
     public boolean deleteMobilePassportMapping(String mobile) throws ServiceException;
 
-    /**
-     * 根据passportId删除mobile和passportid的映射关系的缓存，增量数据迁移的内部debug接口使用
-     */
-    public boolean deleteMobilePassportMappingCache(String mobile) throws ServiceException;
 }

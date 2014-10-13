@@ -192,15 +192,10 @@ public class RegAction extends BaseController {
                 }
             }
             //用户注册log
-            //验证码信息先输出到warning，不记录到日志中，省得报警
-            if (ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED.equals(logCode)) {
-                logger.warn("ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, username:" + regParams.getUsername() + " clientId:" + regParams.getClient_id() + " ip:" + getIp(request) + " requestURI:" + request.getRequestURI());
-            } else {
-                UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id(), logCode, getIp(request));
-                String referer = request.getHeader("referer");
-                userOperationLog.putOtherMessage("ref", referer);
-                UserOperationLogUtil.log(userOperationLog);
-            }
+            UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id(), logCode, getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
     }

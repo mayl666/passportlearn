@@ -17,7 +17,6 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,6 @@ public class PhotoUtils {
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
     };
-
 
     static final Logger logger = LoggerFactory.getLogger(PhotoUtils.class);
 
@@ -108,27 +106,6 @@ public class PhotoUtils {
         return listCDN.get(RandomUtils.nextInt(listCDN.size()));
     }
 
-    //获取图片尺寸个数
-    public int getImgSizeCount() {
-        return sizeToAppIdMap.size();
-    }
-
-    /**
-     * 根据网络图片的Url，切割图片并上传图片平台
-     *
-     * @param webUrl 网络图片的url
-     * @return imgUrl sg图片Url
-     */
-    public String uploadWebImg(String webUrl) {
-        String imgURL = "";
-        String imgName = generalFileName();
-        // 上传到OP图片平台
-        if (uploadImg(imgName, null, webUrl, "1")) {
-            imgURL = accessURLTemplate(imgName);
-        }
-        return imgURL;
-    }
-
     public boolean uploadImg(String picNameInURL, byte[] picBytes, String webUrl, String uploadType) {
 
         MultipartEntity reqEntity = new MultipartEntity();
@@ -156,8 +133,6 @@ public class PhotoUtils {
                 }
                 break;
         }
-
-
         HttpPost httpPost = new HttpPost(storageEngineURL);
         httpPost.setEntity(reqEntity);
 
@@ -203,10 +178,6 @@ public class PhotoUtils {
         return true;
     }
 
-    public static <T> Set<T> asSet(T... args) {
-        return new HashSet<T>(Arrays.asList(args));
-    }
-
     //拼接url
     public String accessURLTemplate(String picNameInURL) {
         return new StringBuilder("%s").append("/app/a/%s").append("/").append(picNameInURL).toString();
@@ -227,20 +198,6 @@ public class PhotoUtils {
             return true;
         }
         return false;
-    }
-
-    public Result uploadAvatar(String imgUrl) {
-        Result result = new APIResultSupport(false);
-        String imgName = generalFileName();
-        if (uploadImg(imgName, null, imgUrl, "1")) {
-            String[] imgSize = getAllImageSize();
-            StringBuilder sb = new StringBuilder();
-            for (String imgsize : imgSize) {
-                sb.append(imgsize + ",");
-            }
-            result = obtainPhoto(accessURLTemplate(imgName), sb.toString());
-        }
-        return result;
     }
 
     public Result obtainPhoto(String imageUrl, String size) {
@@ -311,7 +268,6 @@ public class PhotoUtils {
         }
         return stringBuilder.toString();
     }
-
 
     public void setStorageEngineURL(String storageEngineURL) {
         this.storageEngineURL = storageEngineURL;

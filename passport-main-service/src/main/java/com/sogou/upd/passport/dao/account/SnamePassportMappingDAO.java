@@ -44,19 +44,6 @@ public interface SnamePassportMappingDAO {
     /**
      * 根据sid获取passportId
      *
-     * @param sid
-     * @return 获取不到则抛出异常
-     * @throws org.springframework.dao.DataAccessException
-     *
-     */
-    @SQL("select passport_id from " +
-            TABLE_NAME +
-            " where sid=:sid")
-    public String getPassportIdBySid(@SQLParam("sid") String sid) throws DataAccessException;
-
-    /**
-     * 根据sid获取passportId
-     *
      * @param mobile
      * @return 获取不到则抛出异常
      * @throws org.springframework.dao.DataAccessException

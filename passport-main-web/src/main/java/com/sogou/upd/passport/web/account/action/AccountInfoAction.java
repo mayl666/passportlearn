@@ -89,40 +89,6 @@ public class AccountInfoAction extends BaseController {
         return result.toString();
     }
 
-
-    /**
-     * TODO 此方法无调用 ，之后可删除
-     *
-     * @param request
-     * @param checkOrUpdateNickNameParams
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/userinfo/updatenickname", method = RequestMethod.POST)
-    @LoginRequired(resultType = ResponseResultType.redirect)
-    @ResponseBody
-    public Object updateNickName(HttpServletRequest request, CheckOrUpdateNickNameParams checkOrUpdateNickNameParams) throws Exception {
-        Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(checkOrUpdateNickNameParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
-        }
-        if (!hostHolder.isLogin()) {
-            return "redirect:/web/webLogin";
-        }
-        String userId = hostHolder.getPassportId();
-        UpdateUserInfoApiParams params = new UpdateUserInfoApiParams();
-        params.setUserid(userId);
-        params.setModifyip(getIp(request));
-        params.setUniqname(checkOrUpdateNickNameParams.getNickname());
-        result = sgUserInfoApiManager.updateUserInfo(params);
-        return result.toString();
-
-    }
-
     /**
      * 获取用户信息
      * <p/>
@@ -189,7 +155,6 @@ public class AccountInfoAction extends BaseController {
         Result result = new APIResultSupport(false);
 
         if (hostHolder.isLogin()) {
-
             //参数验证
             String validateResult = ControllerHelper.validateParams(infoParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
