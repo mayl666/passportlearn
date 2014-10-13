@@ -117,7 +117,16 @@ public class WapLoginAction extends BaseController {
         return WapConstant.WAP_INDEX + "?errorMsg=" + Coder.encodeUTF8(errorMsg);
     }
 
-
+    /**
+     * H5页面登录、SDK登录接口、wap1.0页面登录，V=0、1、5
+     * TODO 后续V=1应该放在/wap2/login里
+     * @param request
+     * @param response
+     * @param loginParams
+     * @param model
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/wap/login", method = RequestMethod.POST)
     public String login(HttpServletRequest request, HttpServletResponse response, WapLoginParams loginParams, Model model)
             throws Exception {
@@ -166,16 +175,6 @@ public class WapLoginAction extends BaseController {
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
             //校验是否需要验证码
             if (result.getCode() == ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE) {
-                if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
-                    String token = RandomStringUtils.randomAlphanumeric(48);
-                    buildModuleReturnStr(true, loginParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE),
-                            loginParams.getClient_id(), null, loginParams.getV(), true, model);
-                    model.addAttribute("token", token);
-                    model.addAttribute("isNeedCaptcha", 1);
-                    model.addAttribute("username", loginParams.getUsername());
-                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
-                    return "wap/login_wap";
-                }
                 isNeedCaptcha = 1;
                 if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
                     writeResultToResponse(response, result);
@@ -187,16 +186,6 @@ public class WapLoginAction extends BaseController {
             boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
             if (needCaptcha) {
                 isNeedCaptcha = 1;
-                if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
-                    buildModuleReturnStr(true, loginParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE),
-                            loginParams.getClient_id(), null, loginParams.getV(), true, model);
-                    String token = RandomStringUtils.randomAlphanumeric(48);
-                    model.addAttribute("token", token);
-                    model.addAttribute("isNeedCaptcha", 1);
-                    model.addAttribute("username", loginParams.getUsername());
-                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
-                    return "wap/login_wap";
-                }
             }
             String defaultMessage = "用户名或者密码错误";
             //不直接返回直接的文案告诉用户中了安全限制
@@ -218,19 +207,8 @@ public class WapLoginAction extends BaseController {
                 writeResultToResponse(response, result);
                 return "empty";
             }
-
             return getErrorReturnStr(loginParams, defaultMessage, isNeedCaptcha);
         }
-    }
-
-    private void buildModuleReturnStr(boolean hasError, String ru, String errorMsg, String client_id, String skin, String v, boolean needCaptcha, Model model) {
-        model.addAttribute("errorMsg", errorMsg);
-        model.addAttribute("hasError", hasError);
-        model.addAttribute("ru", Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_INDEX_URL) : Coder.encodeUTF8(ru));
-        model.addAttribute("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_SKIN_GREEN : skin);
-        model.addAttribute("needCaptcha", needCaptcha);
-        model.addAttribute("v", Strings.isNullOrEmpty(v) ? WapConstant.WAP_COLOR : v);
-        model.addAttribute("client_id", client_id);
     }
 
     private void writeResultToResponse(HttpServletResponse response, Result result) throws IOException {
