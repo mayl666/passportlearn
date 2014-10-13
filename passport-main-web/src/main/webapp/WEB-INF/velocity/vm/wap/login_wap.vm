@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="format-detection" content="telephone=no">
+    <title>登录</title>
+    <link rel="stylesheet" href="/./static/css/wap/wap.css?t=649603" />
+</head>
+<body class="skin_$skin">
+
+    <div class="login-wrap">
+        <div class="header">欢迎登录搜狗通行证</div>
+        #if($hasError)
+        <div class="login-msg"><img src="/./static/img/msg-ico.png" height="21" width="21"/>$!errorMsg</div>
+        #end
+        <div class="login-table">
+            <form action="/wap2/login" method="post">
+                <table>
+                    <tr>
+                        <td colspan="2">账号（手机号/用户名/邮箱）</td>
+                    </tr>
+                    <tr>
+                        <td width="70%"><div class="login-input">
+                           <input type="text" name="username" value="$!username" />
+                           <input type="hidden" name="client_id" value="$!client_id">
+                           <input type="hidden" name="ru" value="$!ru">
+                           <input type="hidden" name="v" value="$!v">
+                           <input type="hidden" name="skin" value="$!skin">
+                        </div></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">密码</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><div class="login-input max-w"><input type="password" name="password"/></div></td>
+                    </tr>
+                    #if($isNeedCaptcha==1)
+                    <tr>
+                        <td colspan="2">验证码</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><div class="login-input wt-92">
+                        <input type="hidden" name="token" value="$!token">
+                        <input type="text" name="captcha"/></div>
+                        <img src="$!captchaUrl" class="yzm" height="24" width="53" alt="" /><a href="/wap/index?username=$!username&password=$!password&v=$!v&skin=$!skin&client_id=$!client_id&ru=$!ru&needCaptcha=1">换一张</a></td>
+                    </tr>
+                    #end
+                    <tr>
+                        <td colspan="2"><button class="sub-btn" type="submit">登录</button>
+                        <a href="/wap/reg?v=$!v&skin=$!skin&client_id=$!client_id&ru=$!ru">快速注册</a><i>|</i><a href="/wap/findpwd?v=$!v&skin=$!skin&client_id=$!client_id&ru=$!ru">忘记密码</a></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div class="other-login">
+            <p>使用其他账号登录</p>
+            <a href="https://account.sogou.com/connect/login?provider=qq&client_id=$!client_id&ru=$!ru" class="qq-login"><img src="/./static/img/qq.png" height="19" width="17" alt="" />QQ登录</a>
+        </div>
+
+    </div>
+
+ <div class="footer">
+&lt; 炫彩版<i>|</i><a href="/wap/index?v=5&skin=$!skin&client_id=$!client_id&ru=$!ru">触屏版</a>  &gt;
+<p>Copyright &copy;2014 sogou.com</p>
+</div>
+</body>
+</html>
