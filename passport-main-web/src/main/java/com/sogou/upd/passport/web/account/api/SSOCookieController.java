@@ -84,7 +84,7 @@ public class SSOCookieController extends BaseController {
         StringBuilder sb = new StringBuilder();
         sb.append("status=").append(status).append("|");
         sb.append("statusText=").append(statusText);
-        return cb + "('" + cb.toString() + "')";
+        return cb + "('" + sb.toString() + "')";
     }
 
     @RequestMapping(value = "/sso/logout_redirect", method = RequestMethod.GET)
