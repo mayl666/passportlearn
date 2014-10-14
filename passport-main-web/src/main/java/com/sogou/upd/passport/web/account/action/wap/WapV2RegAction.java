@@ -164,7 +164,7 @@ public class WapV2RegAction extends BaseController {
         commonManager.incSendTimesForMobile(ip);
         commonManager.incSendTimesForMobile(mobile);
         String scode = commonManager.getSecureCode(mobile, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
-        String rediectUrl = buildSendRedirectUrl(reqParams, scode, false);
+        String rediectUrl = buildSuccessSendRedirectUrl(reqParams, scode);
         response.sendRedirect(rediectUrl);
         return "empty";
     }
@@ -172,14 +172,15 @@ public class WapV2RegAction extends BaseController {
     /**
      * 获取短信验证码校验通过后，需要跳转到一个接口，避免用户刷新导致页面不可用
      */
-    private String buildSendRedirectUrl(WapRegMobileCodeParams params, String scode, boolean hasError) throws UnsupportedEncodingException {
+    private String buildSuccessSendRedirectUrl(WapRegMobileCodeParams params, String scode) throws UnsupportedEncodingException {
         String ru = Coder.encodeUTF8(Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu());
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         String skin = Strings.isNullOrEmpty(params.getSkin()) ? WapConstant.WAP_SKIN_GREEN : params.getSkin();
         String v = Strings.isNullOrEmpty(params.getV()) ? WapConstant.WAP_COLOR : params.getV();
+        String errorMsg = Strings.isNullOrEmpty(params.getErrorMsg()) ? "" : Coder.encodeUTF8(params.getErrorMsg());
         StringBuilder urlStr = new StringBuilder();
         urlStr.append(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/r?");
-        urlStr.append("&client_id=").append(client_id);
+        urlStr.append("client_id=").append(client_id);
         urlStr.append("&ru=").append(ru);
         urlStr.append("&mobile=").append(params.getMobile());
         urlStr.append("&username=").append(params.getMobile());
@@ -187,8 +188,8 @@ public class WapV2RegAction extends BaseController {
         urlStr.append("&v=").append(v);
         urlStr.append("&scode=").append(scode);
         urlStr.append("&needCaptcha=").append(params.getNeedCaptcha());
-        urlStr.append("&hasError=").append(hasError);
-        urlStr.append("&errorMsg=").append(params.getErrorMsg());
+        urlStr.append("&hasError=").append(false);
+        urlStr.append("&errorMsg=").append(errorMsg);
         return urlStr.toString();
     }
 
@@ -206,7 +207,7 @@ public class WapV2RegAction extends BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 regParams.setErrorMsg(validateResult);
-                response.sendRedirect(buildRegErrorUrl(regParams,true));
+                response.sendRedirect(buildRegErrorUrl(regParams));
                 return "empty";
             }
             ip = getIp(request);
@@ -219,19 +220,19 @@ public class WapV2RegAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
                 }
                 regParams.setErrorMsg(ErrorUtil.getERR_CODE_MSG(result.getCode()));
-                response.sendRedirect(buildRegErrorUrl(regParams,true));
+                response.sendRedirect(buildRegErrorUrl(regParams));
                 return "empty";
             }
             if (!PhoneUtil.verifyPhoneNumberFormat(regParams.getUsername())) {
                 regParams.setErrorMsg(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR));
-                response.sendRedirect(buildRegErrorUrl(regParams,true));
+                response.sendRedirect(buildRegErrorUrl(regParams));
                 return "empty";
             }
             //校验安全码
             if (!commonManager.checkSecureCode(regParams.getUsername(), clientId, regParams.getScode(), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE)) {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
                 regParams.setErrorMsg( ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED));
-                response.sendRedirect(buildRegErrorUrl(regParams,true));
+                response.sendRedirect(buildRegErrorUrl(regParams));
                 return "empty";
             }
             result = regManager.registerMobile(regParams.getUsername(), regParams.getPassword(), clientId, regParams.getCaptcha(), null);
@@ -259,7 +260,7 @@ public class WapV2RegAction extends BaseController {
                         clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
                 regParams.setErrorMsg(ErrorUtil.getERR_CODE_MSG(result.getCode()));
                 regParams.setScode(scode);
-                response.sendRedirect(buildRegErrorUrl(regParams,true));
+                response.sendRedirect(buildRegErrorUrl(regParams));
                 return "empty";
             }
         } catch (Exception e) {
@@ -283,13 +284,14 @@ public class WapV2RegAction extends BaseController {
         return "empty";
     }
 
-    private String buildRegErrorUrl(WapV2RegParams params, boolean hasError){
+    private String buildRegErrorUrl(WapV2RegParams params){
         String ru = Coder.encodeUTF8(Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu());
+        String errorMsg = Strings.isNullOrEmpty(params.getErrorMsg()) ? "" : Coder.encodeUTF8(params.getErrorMsg());
         StringBuilder urlStr = new StringBuilder();
         urlStr.append(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/page/reg?");
-        urlStr.append("&client_id=").append(params.getClient_id());
-        urlStr.append("&errorMsg=").append(params.getErrorMsg());
-        urlStr.append("&hasError=").append(hasError);
+        urlStr.append("client_id=").append(params.getClient_id());
+        urlStr.append("&errorMsg=").append(errorMsg);
+        urlStr.append("&hasError=").append(true);
         urlStr.append("&ru=").append(ru);
         urlStr.append("&skin=").append(params.getSkin());
         urlStr.append("&needCaptcha=").append(params.getNeedCaptcha());
