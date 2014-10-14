@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web.account.api;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.LoginConstant;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 
 /**
  * Created with IntelliJ IDEA.
@@ -83,7 +85,7 @@ public class SSOCookieController extends BaseController {
         String statusText = result.getMessage();
         StringBuilder sb = new StringBuilder();
         sb.append("status=").append(status).append("|");
-        sb.append("statusText=").append(statusText);
+        sb.append("statusText=").append(Coder.encodeUTF8(statusText));
         return cb + "('" + sb.toString() + "')";
     }
 
