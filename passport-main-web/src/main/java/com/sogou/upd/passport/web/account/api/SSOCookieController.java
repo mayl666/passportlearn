@@ -3,7 +3,6 @@ package com.sogou.upd.passport.web.account.api;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.LoginConstant;
-import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -37,35 +36,53 @@ public class SSOCookieController extends BaseController {
     @Autowired
     private CookieManager cookieManager;
 
-    private static final String DEFAULT_URL = "https://account.sogou.com";
-
     /*
-     * 非搜狗域下种跨域cookie接口，目前使用产品：导航daohang.qq.com/hao.qq.com、输入法pinyin.qq.com
+     * 非搜狗域下种跨域cookie接口，目前使用产品：导航daohang.qq.com/hao.qq.com、输入法pinyin.qq.com、teemo.cn
+     * 该接口域名为非搜狗域的域名
      */
     @RequestMapping(value = "/sso/setcookie", method = RequestMethod.GET)
-    public void setcookie(HttpServletRequest request, HttpServletResponse response, SSOCookieParams ssoCookieParams) throws Exception {
+    public String setcookie(HttpServletRequest request, HttpServletResponse response, SSOCookieParams ssoCookieParams) throws Exception {
         Result result = new APIResultSupport(false);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(ssoCookieParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            returnErrMsg(response, ssoCookieParams.getRu(), result.getCode(), result.getMessage());
-            return;
-        }
-        result = cookieManager.setSSOCookie(response, ssoCookieParams);
-
+        String cb = ssoCookieParams.getCb();
         String ru = ssoCookieParams.getRu();
-        if (!result.isSuccess()) {
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(ssoCookieParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                //参数验证
+                if (!isCleanString(cb)) {
+                    return buildJsonpResult(cb, result);
+                }
+                returnErrMsg(response, ssoCookieParams.getRu(), result.getCode(), result.getMessage());
+                return "empty";
+            }
+            result = cookieManager.setSSOCookie(response, ssoCookieParams);
+            // 如果cb参数不为空，则返回jsonp函数，不需要重定向
+            if (!Strings.isNullOrEmpty(cb)) {
+                return buildJsonpResult(cb, result);
+            }
+            if (!result.isSuccess()) {
+                returnErrMsg(response, ru, result.getCode(), result.getMessage());
+                return "empty";
+            }
+            if (!StringUtils.isBlank(ru)) {
+                response.sendRedirect(ru);
+            }
+            return "empty";
+        } finally {
             log(request, "sso_setcookie", ru, result.getCode());
-            returnErrMsg(response, ru, result.getCode(), result.getMessage());
-            return;
         }
-        if (!StringUtils.isBlank(ru)) {
-            response.sendRedirect(ru);
-        }
-        log(request, "sso_setcookie", ru, "0");
-        return;
+    }
+
+    private String buildJsonpResult(String cb, Result result) {
+        String status = result.getCode();
+        String statusText = result.getMessage();
+        StringBuilder sb = new StringBuilder();
+        sb.append("status=").append(status).append(",");
+        sb.append("statusText=").append(statusText);
+        return cb + "('" + cb.toString() + "')";
     }
 
     @RequestMapping(value = "/sso/logout_redirect", method = RequestMethod.GET)
@@ -99,6 +116,7 @@ public class SSOCookieController extends BaseController {
 
     /*
      * 桌面端产品种搜狗域cookie接口，由于客户端已写死，所以需要一直保持种ppinf、pprdig
+     * 该接口域名为https;//account.sogou.com
      */
     @RequestMapping(value = "/act/setppcookie", method = RequestMethod.GET)
     public void setPPCookie(HttpServletRequest request, HttpServletResponse response, PPCookieParams ppCookieParams)

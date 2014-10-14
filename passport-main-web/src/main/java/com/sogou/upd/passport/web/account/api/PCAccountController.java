@@ -345,14 +345,6 @@ public class PCAccountController extends BaseController {
         return msg;
     }
 
-    private boolean isCleanString(String cb) {
-        if (Strings.isNullOrEmpty(cb)) {
-            return true;
-        }
-        String cleanValue = Jsoup.clean(cb, Whitelist.none());
-        return cleanValue.equals(cb);
-    }
-
     private String getReturnStr(String cb, String resStr) {
         if (!Strings.isNullOrEmpty(cb)) {
             return cb + "('" + resStr + "')";

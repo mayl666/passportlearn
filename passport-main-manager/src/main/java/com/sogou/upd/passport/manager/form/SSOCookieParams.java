@@ -21,9 +21,10 @@ public class SSOCookieParams {
     protected String code2;
     @NotBlank(message = "domain不允许为空")
     private String domain;       //所种cookie的域
-
     @Ru
     protected String ru;
+
+    private String cb; //非搜狗域种cookie成功后的jsonp回调函数，如果cb不为空，则返回json，不做ru跳转
 
     public String getSginf() {
         return sginf;
@@ -71,5 +72,13 @@ public class SSOCookieParams {
 
     public void setDomain(String domain) {
         this.domain = domain;
+    }
+
+    public String getCb() {
+        return cb;
+    }
+
+    public void setCb(String cb) {
+        this.cb = cb;
     }
 }

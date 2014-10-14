@@ -9,6 +9,8 @@ import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,5 +126,18 @@ public class BaseController {
         response.sendRedirect(ru);
         return;
     }
+
+    /*
+     * jsonp的cb参数相关方法
+     */
+    protected boolean isCleanString(String cb) {
+        if (Strings.isNullOrEmpty(cb)) {
+            return true;
+        }
+        String cleanValue = Jsoup.clean(cb, Whitelist.none());
+        return cleanValue.equals(cb);
+    }
+
+
 
 }
