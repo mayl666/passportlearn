@@ -83,7 +83,7 @@ public class CommonConstant {
     public static final String DAOHANG_CREATE_COOKIE_URL = "http://account.daohang.qq.com/sso/setcookie";
     public static final String SHURUFA_CREATE_COOKIE_URL = "http://account.shurufa.qq.com/sso/setcookie";   //TODO 这个以后改成统一的！！！！！ denghua
     public static final String PINYIN_CN_CREATE_COOKIE_URL = "http://account.qq.pinyin.cn/sso/setcookie";
-    public static final String TEEMO_CN_CREATE_COOKIE_URL = "http://account.teemo.cn/sso/setcookie";
+    public static final String TEEMO_CN_CREATE_COOKIE_URL = "https://account.teemo.cn/sso/setcookie";
 
     public static final String PP_COOKIE_URL = "http://account.sogou.com/act/setppcookie";
 
