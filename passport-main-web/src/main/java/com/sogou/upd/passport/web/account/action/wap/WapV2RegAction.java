@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.account.action.wap;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.*;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -37,7 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
 
 /**
  * wap2.0注册
@@ -67,52 +66,49 @@ public class WapV2RegAction extends BaseController {
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
 
-    private static Map<String, Object> params = Maps.newHashMap();
-
-    private static Map<String, Object> regParams = Maps.newHashMap();
-
-
     @RequestMapping(value = "/wap2/sendsms", method = RequestMethod.POST)
     public String sendsms(HttpServletRequest request, HttpServletResponse response, WapRegMobileCodeParams reqParams, Model model) throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
         String finalCode = null;
+        String mobile = reqParams.getMobile();
+        String clientIdStr = reqParams.getClient_id();
+        int clientId = Integer.parseInt(clientIdStr);
+        String v = reqParams.getV();
+        String skin = reqParams.getSkin();
         try {
             reqParams.setRu(Coder.decodeUTF8(reqParams.getRu()));
             //参数验证
             String validateResult = ControllerHelper.validateParams(reqParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
                 buildModuleReturnStr(true, reqParams.getRu(), validateResult,
-                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
-                model.addAttribute("mobile", reqParams.getMobile());
-                model.addAttribute("username", reqParams.getMobile());
+                        clientIdStr, skin, v, false, model);
+                model.addAttribute("mobile", mobile);
+                model.addAttribute("username", mobile);
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 return "wap/regist_wap";
             }
-            //验证client_id
-            int clientId = Integer.parseInt(reqParams.getClient_id());
             //检查client_id是否存在
             if (!configureManager.checkAppIsExist(clientId)) {
                 buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID),
-                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
-                model.addAttribute("mobile", reqParams.getMobile());
-                model.addAttribute("username", reqParams.getMobile());
+                        clientIdStr, skin, v, false, model);
+                model.addAttribute("mobile", mobile);
+                model.addAttribute("username", mobile);
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return "wap/regist_wap";
             }
-            String mobile = reqParams.getMobile();
             //第二次弹出验证码
-            result = commonManager.checkMobileSendSMSInBlackList(mobile, reqParams.getClient_id());
+            result = commonManager.checkMobileSendSMSInBlackList(mobile, clientIdStr);
             if (!result.isSuccess()) {
                 if (!Strings.isNullOrEmpty(reqParams.getToken()) && !Strings.isNullOrEmpty(reqParams.getCaptcha())) {
                     result = regManager.checkCaptchaToken(reqParams.getToken(), reqParams.getCaptcha());
                     //如果验证码校验失败，则提示
                     if (!result.isSuccess()) {
                         buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED),
-                                reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), true, model);
+                                clientIdStr, skin, v, true, model);
                         String token = RandomStringUtils.randomAlphanumeric(48);
-                        model.addAttribute("mobile", reqParams.getMobile());
-                        model.addAttribute("username", reqParams.getMobile());
+                        model.addAttribute("mobile", mobile);
+                        model.addAttribute("username", mobile);
                         model.addAttribute("token", token);
                         model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
@@ -121,10 +117,10 @@ public class WapV2RegAction extends BaseController {
                 } else {
                     //需要弹出验证码
                     buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE),
-                            reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), true, model);
+                            clientIdStr, skin, v, true, model);
                     String token = RandomStringUtils.randomAlphanumeric(48);
-                    model.addAttribute("mobile", reqParams.getMobile());
-                    model.addAttribute("username", reqParams.getMobile());
+                    model.addAttribute("mobile", mobile);
+                    model.addAttribute("username", mobile);
                     model.addAttribute("token", token);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
@@ -132,27 +128,27 @@ public class WapV2RegAction extends BaseController {
                 }
             }
             //校验用户ip是否中了黑名单
-            result = commonManager.checkMobileSendSMSInBlackList(ip, reqParams.getClient_id());
+            result = commonManager.checkMobileSendSMSInBlackList(ip, clientIdStr);
             if (!result.isSuccess()) {
                 finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                 buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND),
-                        reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
-                model.addAttribute("mobile", reqParams.getMobile());
-                model.addAttribute("username", reqParams.getMobile());
+                        clientIdStr, skin, v, false, model);
+                model.addAttribute("mobile", mobile);
+                model.addAttribute("username", mobile);
                 return "wap/regist_wap";
             }
             BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
             result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
             buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
-                    reqParams.getClient_id(), reqParams.getSkin(), reqParams.getV(), false, model);
-            model.addAttribute("mobile", reqParams.getMobile());
+                    clientIdStr, skin, v, false, model);
+            model.addAttribute("mobile", mobile);
             if (!result.isSuccess()) {
-                model.addAttribute("username", reqParams.getMobile());
+                model.addAttribute("username", mobile);
                 return "wap/regist_wap";
             }
         } catch (Exception e) {
-            logger.error("wap2.0 reguser:User Register Is Failed,mobile is " + reqParams.getMobile(), e);
+            logger.error("wap2.0 reguser:User Register Is Failed,mobile is " + mobile, e);
         } finally {
             String logCode;
             if (!Strings.isNullOrEmpty(finalCode)) {
@@ -160,19 +156,40 @@ public class WapV2RegAction extends BaseController {
             } else {
                 logCode = result.getCode();
             }
-            UserOperationLog userOperationLog = new UserOperationLog(reqParams.getMobile(), request.getRequestURI(), reqParams.getClient_id(), logCode, ip);
+            UserOperationLog userOperationLog = new UserOperationLog(mobile, request.getRequestURI(), clientIdStr, logCode, ip);
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
         commonManager.incSendTimesForMobile(ip);
-        commonManager.incSendTimesForMobile(reqParams.getMobile());
-        buildSendRedirectUrl(Strings.isNullOrEmpty(reqParams.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(reqParams.getRu()),
-                reqParams.getClient_id(), false, reqParams.getMobile(), Strings.isNullOrEmpty(reqParams.getSkin()) ? WapConstant.WAP_SKIN_GREEN : reqParams.getSkin(),
-                false, Strings.isNullOrEmpty(reqParams.getV()) ? WapConstant.WAP_COLOR : reqParams.getV(), null);
-        params.put("scode", commonManager.getSecureCode(reqParams.getMobile(), Integer.parseInt(reqParams.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE));
-        response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/r");
+        commonManager.incSendTimesForMobile(mobile);
+        String scode = commonManager.getSecureCode(mobile, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
+        String rediectUrl = buildSendRedirectUrl(reqParams, scode, false);
+        response.sendRedirect(rediectUrl);
         return "empty";
+    }
+
+    /**
+     * 获取短信验证码校验通过后，需要跳转到一个接口，避免用户刷新导致页面不可用
+     */
+    private String buildSendRedirectUrl(WapRegMobileCodeParams params, String scode, boolean hasError) throws UnsupportedEncodingException {
+        String ru = Coder.encodeUTF8(Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu());
+        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
+        String skin = Strings.isNullOrEmpty(params.getSkin()) ? WapConstant.WAP_SKIN_GREEN : params.getSkin();
+        String v = Strings.isNullOrEmpty(params.getV()) ? WapConstant.WAP_COLOR : params.getV();
+        StringBuilder urlStr = new StringBuilder();
+        urlStr.append(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/r?");
+        urlStr.append("&client_id=").append(client_id);
+        urlStr.append("&ru=").append(ru);
+        urlStr.append("&mobile=").append(params.getMobile());
+        urlStr.append("&username=").append(params.getMobile());
+        urlStr.append("&skin=").append(skin);
+        urlStr.append("&v=").append(v);
+        urlStr.append("&scode=").append(scode);
+        urlStr.append("&needCaptcha=").append(params.getNeedCaptcha());
+        urlStr.append("&hasError=").append(hasError);
+        urlStr.append("&errorMsg=").append(params.getErrorMsg());
+        return urlStr.toString();
     }
 
     @RequestMapping(value = "/wap2/reguser", method = RequestMethod.POST)
@@ -181,15 +198,15 @@ public class WapV2RegAction extends BaseController {
         String ip = null;
         String uuidName = null;
         String finalCode = null;
+        int clientId = regParams.getClient_id();
         try {
             regParams.setRu(Coder.decodeUTF8(regParams.getRu()));
             //参数验证
             String validateResult = ControllerHelper.validateParams(regParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                buildErrorUrl(true, regParams.getRu(), validateResult,
-                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), regParams.getScode());
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/page/reg");
+                regParams.setErrorMsg(validateResult);
+                response.sendRedirect(buildRegErrorUrl(regParams,true));
                 return "empty";
             }
             ip = getIp(request);
@@ -201,26 +218,23 @@ public class WapV2RegAction extends BaseController {
                     finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
                     result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
                 }
-                buildErrorUrl(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
-                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), regParams.getScode());
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/page/reg");
+                regParams.setErrorMsg(ErrorUtil.getERR_CODE_MSG(result.getCode()));
+                response.sendRedirect(buildRegErrorUrl(regParams,true));
                 return "empty";
             }
             if (!PhoneUtil.verifyPhoneNumberFormat(regParams.getUsername())) {
-                buildErrorUrl(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR),
-                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), regParams.getScode());
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/page/reg");
+                regParams.setErrorMsg(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR));
+                response.sendRedirect(buildRegErrorUrl(regParams,true));
                 return "empty";
             }
             //校验安全码
-            if (!commonManager.checkSecureCode(regParams.getUsername(), regParams.getClient_id(), regParams.getScode(), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE)) {
+            if (!commonManager.checkSecureCode(regParams.getUsername(), clientId, regParams.getScode(), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE)) {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
-                buildErrorUrl(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED),
-                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), regParams.getScode());
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/page/reg");
+                regParams.setErrorMsg( ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED));
+                response.sendRedirect(buildRegErrorUrl(regParams,true));
                 return "empty";
             }
-            result = regManager.registerMobile(regParams.getUsername(), regParams.getPassword(), regParams.getClient_id(), regParams.getCaptcha(), null);
+            result = regManager.registerMobile(regParams.getUsername(), regParams.getPassword(), clientId, regParams.getCaptcha(), null);
             if (result.isSuccess()) {
                 //第三方获取个人资料
                 String userid = result.getModels().get("userid").toString();
@@ -242,10 +256,10 @@ public class WapV2RegAction extends BaseController {
                 }
             } else {
                 String scode = commonManager.getSecureCode(regParams.getUsername(),
-                        regParams.getClient_id(), CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
-                buildErrorUrl(true, regParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
-                        String.valueOf(regParams.getClient_id()), regParams.getSkin(), regParams.getV(), false, regParams.getUsername(), scode);
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/page/reg");
+                        clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
+                regParams.setErrorMsg(ErrorUtil.getERR_CODE_MSG(result.getCode()));
+                regParams.setScode(scode);
+                response.sendRedirect(buildRegErrorUrl(regParams,true));
                 return "empty";
             }
         } catch (Exception e) {
@@ -256,18 +270,34 @@ public class WapV2RegAction extends BaseController {
             String userId = (String) result.getModels().get("userid");
             if (!Strings.isNullOrEmpty(userId) && AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {
                 if (result.isSuccess()) {
-                    int clientId = regParams.getClient_id();
                     secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
                 }
             }
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id() + "", logCode, getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), clientId + "", logCode, getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
         response.sendRedirect(getSuccessReturnStr(regParams.getRu(), String.valueOf(result.getModels().get("sgid"))));
         return "empty";
+    }
+
+    private String buildRegErrorUrl(WapV2RegParams params, boolean hasError){
+        String ru = Coder.encodeUTF8(Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu());
+        StringBuilder urlStr = new StringBuilder();
+        urlStr.append(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/page/reg?");
+        urlStr.append("&client_id=").append(params.getClient_id());
+        urlStr.append("&errorMsg=").append(params.getErrorMsg());
+        urlStr.append("&hasError=").append(hasError);
+        urlStr.append("&ru=").append(ru);
+        urlStr.append("&skin=").append(params.getSkin());
+        urlStr.append("&needCaptcha=").append(params.getNeedCaptcha());
+        urlStr.append("&v=").append(params.getV());
+        urlStr.append("&mobile=").append(params.getUsername());
+        urlStr.append("&username=").append(params.getUsername());
+        urlStr.append("&scode=").append(params.getScode());
+        return urlStr.toString();
     }
 
     private String getSuccessReturnStr(String ru, String token) {
@@ -279,40 +309,23 @@ public class WapV2RegAction extends BaseController {
     }
 
     /**
-     * 获取短信验证码校验通过后，需要跳转到一个接口，避免用户刷新导致页面不可用
-     */
-    private Map<String, Object> buildSendRedirectUrl(String ru, String client_id, boolean hasError, String mobile, String
-            skin, boolean needCaptcha, String v, String errorMsg) {
-        params.put("client_id", client_id);
-        params.put("errorMsg", errorMsg);
-        params.put("hasError", hasError);
-        params.put("ru", ru);
-        params.put("skin", skin);
-        params.put("needCaptcha", needCaptcha);
-        params.put("v", v);
-        params.put("mobile", mobile);
-        params.put("username", mobile);
-        return params;
-    }
-
-    /**
      * 通过接口跳转到填写验证码和密码页面
      *
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/wap2/r", method = RequestMethod.GET)
-    public String regView(Model model) throws Exception {
-        model.addAttribute("errorMsg", params.get("errorMsg"));
-        model.addAttribute("hasError", params.get("hasError"));
-        model.addAttribute("ru", params.get("ru"));
-        model.addAttribute("skin", params.get("skin"));
-        model.addAttribute("needCaptcha", params.get("needCaptcha"));
-        model.addAttribute("v", params.get("v"));
-        model.addAttribute("client_id", params.get("client_id"));
-        model.addAttribute("mobile", params.get("mobile"));
-        model.addAttribute("username", params.get("username"));
-        model.addAttribute("scode", params.get("scode"));
+    public String regView(Model model, WapRegMobileCodeParams params, String scode, boolean hasError) throws Exception {
+        model.addAttribute("errorMsg", params.getErrorMsg());
+        model.addAttribute("hasError", hasError);
+        model.addAttribute("ru", params.getRu());
+        model.addAttribute("skin", params.getSkin());
+        model.addAttribute("needCaptcha", params.getNeedCaptcha());
+        model.addAttribute("v", params.getV());
+        model.addAttribute("client_id", params.getClient_id());
+        model.addAttribute("mobile", params.getMobile());
+        model.addAttribute("username", params.getMobile());
+        model.addAttribute("scode", scode);
         return "wap/regist_wap_setpwd";
     }
 
@@ -324,36 +337,18 @@ public class WapV2RegAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/wap2/page/reg", method = RequestMethod.GET)
-    public String findResetView(Model model) throws Exception {
-        model.addAttribute("hasError", regParams.get("hasError"));
-        model.addAttribute("ru", regParams.get("ru"));
-        model.addAttribute("errorMsg", regParams.get("errorMsg"));
-        model.addAttribute("client_id", regParams.get("client_id"));
-        model.addAttribute("scode", regParams.get("scode"));
-        model.addAttribute("v", regParams.get("v"));
-        model.addAttribute("skin", regParams.get("skin"));
-        model.addAttribute("needCaptcha", regParams.get("needCaptcha"));
-        model.addAttribute("mobile", regParams.get("mobile"));
-        model.addAttribute("username", regParams.get("mobile"));
+    public String findResetView(Model model,WapV2RegParams params, boolean hasError) throws Exception {
+        model.addAttribute("hasError", hasError);
+        model.addAttribute("ru", params.getRu());
+        model.addAttribute("errorMsg", params.getErrorMsg());
+        model.addAttribute("client_id", params.getClient_id());
+        model.addAttribute("scode", params.getScode());
+        model.addAttribute("v", params.getV());
+        model.addAttribute("skin", params.getSkin());
+        model.addAttribute("needCaptcha", params.getNeedCaptcha());
+        model.addAttribute("mobile", params.getUsername());
+        model.addAttribute("username", params.getUsername());
         return "/wap/regist_wap_setpwd";
-    }
-
-    /**
-     * 构造返回错误里的跳转链接
-     */
-    private Map<String, Object> buildErrorUrl(boolean hasError, String ru, String errorMsg, String client_id,
-                                              String skin, String v, boolean needCaptcha, String mobile, String scode) {
-        regParams.put("client_id", client_id);
-        regParams.put("errorMsg", errorMsg);
-        regParams.put("hasError", hasError);
-        regParams.put("ru", Coder.encodeUTF8(ru));
-        regParams.put("skin", skin);
-        regParams.put("needCaptcha", needCaptcha);
-        regParams.put("v", v);
-        regParams.put("mobile", mobile);
-        regParams.put("scode", scode);
-        regParams.put("username", mobile);
-        return regParams;
     }
 
     private BaseMoblieApiParams buildProxyApiParams(int clientId, String mobile) {

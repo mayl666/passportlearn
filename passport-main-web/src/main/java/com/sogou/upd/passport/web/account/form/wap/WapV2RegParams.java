@@ -32,7 +32,7 @@ public class WapV2RegParams extends RegMobileParams {
     @Ru
     private String ru;
     private String errorMsg;//错误信息
-    private int needCaptcha;//是否需要输入验证码:0-不需要；1-需要
+    private int needCaptcha = 0;//是否需要输入验证码:0-不需要；1-需要
     @NotBlank(message = "请阅读《注册服务协议》")
     private String agreement;//用户是否同意《注册服务协议》，非空同意，空表示不同意
 
