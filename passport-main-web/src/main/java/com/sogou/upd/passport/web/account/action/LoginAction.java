@@ -150,7 +150,7 @@ public class LoginAction extends BaseController {
                     loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
                     if (!Strings.isNullOrEmpty(domain)) {
                         String creeateSSOCookieUrl = cookieManager.buildCreateSSOCookieUrl(domain, clientId, userId, uniqName, uniqName, sogouRu, ip);
-                        result.setDefaultModel("crossdomain", creeateSSOCookieUrl);
+                        result.setDefaultModel("crossdomainurl", creeateSSOCookieUrl);
                     }
                 }
             } else {

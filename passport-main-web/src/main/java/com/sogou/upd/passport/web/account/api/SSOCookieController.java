@@ -80,7 +80,7 @@ public class SSOCookieController extends BaseController {
         String status = result.getCode();
         String statusText = result.getMessage();
         StringBuilder sb = new StringBuilder();
-        sb.append("status=").append(status).append(",");
+        sb.append("status=").append(status).append("|");
         sb.append("statusText=").append(statusText);
         return cb + "('" + cb.toString() + "')";
     }
