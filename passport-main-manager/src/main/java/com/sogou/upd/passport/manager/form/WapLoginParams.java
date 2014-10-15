@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.form;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
+import com.sogou.upd.passport.common.validation.constraints.Skin;
 import com.sogou.upd.passport.common.validation.constraints.V;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
@@ -19,13 +20,13 @@ public class WapLoginParams extends UsernameParams {
      */
     @NotBlank(message = "请输入密码！")
     private String password;
-
     /**
      * 验证码 用户连续3次登陆失败需要输入验证码
      */
     private String captcha;//验证码
     private String token;//标识码
-
+    @Skin
+    private String skin; //皮肤
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
     private String client_id;
@@ -34,7 +35,6 @@ public class WapLoginParams extends UsernameParams {
     @URL
     @Ru
     private String ru = WapConstant.WAP_INDEX;//登陆来源
-
 
     @NotBlank(message = "v is null")
     @V
@@ -94,5 +94,13 @@ public class WapLoginParams extends UsernameParams {
 
     public void setClient_id(String client_id) {
         this.client_id = client_id;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
     }
 }

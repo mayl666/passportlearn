@@ -42,6 +42,7 @@ public class WapV2LoginAction extends BaseController {
 
     /**
      * wap2.0页面登录，V=2(v值暂时没用到)
+     *
      * @param request
      * @param response
      * @param loginParams
@@ -137,6 +138,9 @@ public class WapV2LoginAction extends BaseController {
         }
         if (!Strings.isNullOrEmpty(loginParams.getClient_id())) {
             returnStr.append("&client_id=" + loginParams.getClient_id());
+        }
+        if (!Strings.isNullOrEmpty(loginParams.getSkin())) {
+            returnStr.append("&skin=" + loginParams.getSkin());
         }
         if (!Strings.isNullOrEmpty(errorMsg)) {
             returnStr.append("&errorMsg=" + Coder.encodeUTF8(errorMsg));
