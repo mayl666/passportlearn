@@ -20,7 +20,6 @@ import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
-import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.wap.WapRegMobileCodeParams;
@@ -47,7 +46,7 @@ import java.io.UnsupportedEncodingException;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-public class WapV2RegAction extends BaseController {
+public class WapV2RegAction extends WapV2BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(WapV2RegAction.class);
 
@@ -81,7 +80,7 @@ public class WapV2RegAction extends BaseController {
             //参数验证
             String validateResult = ControllerHelper.validateParams(reqParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                buildModuleReturnStr(true, reqParams.getRu(), validateResult,
+                addReturnPageModel(true, reqParams.getRu(), validateResult,
                         clientIdStr, skin, v, false, model);
                 model.addAttribute("mobile", mobile);
                 model.addAttribute("username", mobile);
@@ -90,7 +89,7 @@ public class WapV2RegAction extends BaseController {
             }
             //检查client_id是否存在
             if (!configureManager.checkAppIsExist(clientId)) {
-                buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID),
+                addReturnPageModel(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID),
                         clientIdStr, skin, v, false, model);
                 model.addAttribute("mobile", mobile);
                 model.addAttribute("username", mobile);
@@ -104,7 +103,7 @@ public class WapV2RegAction extends BaseController {
                     result = regManager.checkCaptchaToken(reqParams.getToken(), reqParams.getCaptcha());
                     //如果验证码校验失败，则提示
                     if (!result.isSuccess()) {
-                        buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED),
+                        addReturnPageModel(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED),
                                 clientIdStr, skin, v, true, model);
                         String token = RandomStringUtils.randomAlphanumeric(48);
                         model.addAttribute("mobile", mobile);
@@ -116,7 +115,7 @@ public class WapV2RegAction extends BaseController {
                     }
                 } else {
                     //需要弹出验证码
-                    buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE),
+                    addReturnPageModel(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE),
                             clientIdStr, skin, v, true, model);
                     String token = RandomStringUtils.randomAlphanumeric(48);
                     model.addAttribute("mobile", mobile);
@@ -132,7 +131,7 @@ public class WapV2RegAction extends BaseController {
             if (!result.isSuccess()) {
                 finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-                buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND),
+                addReturnPageModel(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND),
                         clientIdStr, skin, v, false, model);
                 model.addAttribute("mobile", mobile);
                 model.addAttribute("username", mobile);
@@ -140,7 +139,7 @@ public class WapV2RegAction extends BaseController {
             }
             BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
             result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
-            buildModuleReturnStr(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
+            addReturnPageModel(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
                     clientIdStr, skin, v, false, model);
             model.addAttribute("mobile", mobile);
             if (!result.isSuccess()) {
@@ -288,7 +287,7 @@ public class WapV2RegAction extends BaseController {
         String ru = Coder.encodeUTF8(Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu());
         String errorMsg = Strings.isNullOrEmpty(params.getErrorMsg()) ? "" : Coder.encodeUTF8(params.getErrorMsg());
         StringBuilder urlStr = new StringBuilder();
-        urlStr.append(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/page/reg?");
+        urlStr.append(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/r?");
         urlStr.append("client_id=").append(params.getClient_id());
         urlStr.append("&errorMsg=").append(errorMsg);
         urlStr.append("&hasError=").append(true);
@@ -311,63 +310,44 @@ public class WapV2RegAction extends BaseController {
     }
 
     /**
-     * 通过接口跳转到填写验证码和密码页面
-     *
+     * 通过接口跳转到填写验证码和密码页面 /wap2/r
+     * 通过接口跳转到reset页面 /wap2/page/reg
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/wap2/r", method = RequestMethod.GET)
     public String regView(Model model, WapRegMobileCodeParams params, String scode, boolean hasError) throws Exception {
-        model.addAttribute("errorMsg", params.getErrorMsg());
-        model.addAttribute("hasError", hasError);
-        model.addAttribute("ru", params.getRu());
-        model.addAttribute("skin", params.getSkin());
-        model.addAttribute("needCaptcha", params.getNeedCaptcha());
-        model.addAttribute("v", params.getV());
-        model.addAttribute("client_id", params.getClient_id());
-        model.addAttribute("mobile", params.getMobile());
-        model.addAttribute("username", params.getMobile());
-        model.addAttribute("scode", scode);
+        addRedirectPageModule(model, params, scode, hasError);
         return "wap/regist_wap_setpwd";
     }
 
-    /**
-     * 通过接口跳转到reset页面
-     *
-     * @param model
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/wap2/page/reg", method = RequestMethod.GET)
-    public String findResetView(Model model,WapV2RegParams params, boolean hasError) throws Exception {
-        model.addAttribute("hasError", hasError);
-        model.addAttribute("ru", params.getRu());
-        model.addAttribute("errorMsg", params.getErrorMsg());
-        model.addAttribute("client_id", params.getClient_id());
-        model.addAttribute("scode", params.getScode());
-        model.addAttribute("v", params.getV());
-        model.addAttribute("skin", params.getSkin());
-        model.addAttribute("needCaptcha", params.getNeedCaptcha());
-        model.addAttribute("mobile", params.getUsername());
-        model.addAttribute("username", params.getUsername());
-        return "/wap/regist_wap_setpwd";
-    }
+//    /**
+//     * 通过接口跳转到reset页面
+//     *
+//     * @param model
+//     * @return
+//     * @throws Exception
+//     */
+//    @RequestMapping(value = "/wap2/page/reg", method = RequestMethod.GET)
+//    public String findResetView(Model model,WapRegMobileCodeParams params, String scode,boolean hasError) throws Exception {
+//        model.addAttribute("hasError", hasError);
+//        model.addAttribute("ru", params.getRu());
+//        model.addAttribute("errorMsg", params.getErrorMsg());
+//        model.addAttribute("client_id", params.getClient_id());
+//        model.addAttribute("scode", params.getScode());
+//        model.addAttribute("v", params.getV());
+//        model.addAttribute("skin", params.getSkin());
+//        model.addAttribute("needCaptcha", params.getNeedCaptcha());
+//        model.addAttribute("mobile", params.getUsername());
+//        model.addAttribute("username", params.getUsername());
+//        return "/wap/regist_wap_setpwd";
+//    }
 
     private BaseMoblieApiParams buildProxyApiParams(int clientId, String mobile) {
         BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
         baseMoblieApiParams.setMobile(mobile);
         baseMoblieApiParams.setClient_id(clientId);
         return baseMoblieApiParams;
-    }
-
-    private void buildModuleReturnStr(boolean hasError, String ru, String errorMsg, String client_id, String skin, String v, boolean needCaptcha, Model model) {
-        model.addAttribute("errorMsg", errorMsg);
-        model.addAttribute("hasError", hasError);
-        model.addAttribute("ru", Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(ru));
-        model.addAttribute("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_SKIN_GREEN : skin);
-        model.addAttribute("needCaptcha", needCaptcha);
-        model.addAttribute("v", Strings.isNullOrEmpty(v) ? WapConstant.WAP_COLOR : v);
-        model.addAttribute("client_id", client_id);
     }
 
     public static void setSgidCookie(HttpServletResponse response, String sgid) {
