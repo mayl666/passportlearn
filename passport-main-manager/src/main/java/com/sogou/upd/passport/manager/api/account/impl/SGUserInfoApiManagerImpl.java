@@ -161,7 +161,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                     }
                                     if ("gender".equals(paramArray[i])) {
                                         String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                        result.setDefaultModel("gender", value);
+                                        result.setDefaultModel("gender", Strings.isNullOrEmpty(value) ? 0 : value);
                                         continue;
                                     }
                                     if ("personalid".equals(paramArray[i])) {
