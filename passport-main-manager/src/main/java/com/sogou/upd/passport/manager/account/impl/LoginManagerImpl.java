@@ -48,6 +48,7 @@ public class LoginManagerImpl implements LoginManager {
         needCaptchaSet.add(String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID));
         needCaptchaSet.add(String.valueOf(CommonConstant.PC_CLIENTID));
         needCaptchaSet.add(String.valueOf(CommonConstant.CAIPIAO_CLIENTID));
+        needCaptchaSet.add(String.valueOf(CommonConstant.TEEMO_CLIENTID));
     }
 
     @Autowired
