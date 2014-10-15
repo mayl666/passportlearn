@@ -85,13 +85,13 @@ public class WapV2RegAction extends WapV2BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
-                addReturnPageModel(model, true, ru, validateResult, clientIdStr, skin, v, false, mobile);
+                addReturnPageModel(model, true, ru, validateResult, clientIdStr, skin, v, 0, mobile);
                 return "wap/regist_wap";
             }
             //检查client_id是否存在
             if (!configureManager.checkAppIsExist(clientId)) {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
-                addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
+                addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 0, mobile);
                 return "wap/regist_wap";
             }
             //第二次弹出验证码
@@ -102,7 +102,7 @@ public class WapV2RegAction extends WapV2BaseController {
                     //如果验证码校验失败，则提示
                     if (!result.isSuccess()) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                        addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, true, mobile);
+                        addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 1, mobile);
                         String token = RandomStringUtils.randomAlphanumeric(48);
                         model.addAttribute("token", token);
                         model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
@@ -111,7 +111,7 @@ public class WapV2RegAction extends WapV2BaseController {
                 } else {
                     //需要弹出验证码
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
-                    addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, true, mobile);
+                    addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 1, mobile);
                     String token = RandomStringUtils.randomAlphanumeric(48);
                     model.addAttribute("token", token);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
@@ -123,12 +123,12 @@ public class WapV2RegAction extends WapV2BaseController {
             if (!result.isSuccess()) {
                 finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-                addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
+                addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 0, mobile);
                 return "wap/regist_wap";
             }
             BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
             result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
-            addReturnPageModel(model, true, ru, result.getMessage(),clientIdStr, skin, v, false, mobile);
+            addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 0, mobile);
             if (!result.isSuccess()) {
                 return "wap/regist_wap";
             }
@@ -141,9 +141,7 @@ public class WapV2RegAction extends WapV2BaseController {
         commonManager.incSendTimesForMobile(ip);
         commonManager.incSendTimesForMobile(mobile);
         String scode = commonManager.getSecureCode(mobile, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
-
-        boolean needCaptcha = reqParams.getNeedCaptcha() == 0 ? false : true;
-        String rediectUrl = buildSuccessRedirectUrl(REG_REDIRECT_URL, reqParams.getRu(), clientIdStr, skin, v, needCaptcha, mobile, scode);
+        String rediectUrl = buildSuccessRedirectUrl(REG_REDIRECT_URL, reqParams.getRu(), clientIdStr, skin, v, reqParams.getNeedCaptcha(), mobile, scode);
 //        String rediectUrl = buildSuccessSendRedirectUrl(REG_REDIRECT_URL, reqParams, scode);
         response.sendRedirect(rediectUrl);
         return "empty";
@@ -171,7 +169,7 @@ public class WapV2RegAction extends WapV2BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
 //                response.sendRedirect(buildRegErrorUrl(regParams));
-                String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, validateResult,clientIdStr, skin, v, username, scode);
+                String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, validateResult, clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
                 return "empty";
             }
@@ -185,14 +183,14 @@ public class WapV2RegAction extends WapV2BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
                 }
 //                response.sendRedirect(buildRegErrorUrl(regParams));
-                String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, result.getMessage(),clientIdStr, skin, v, username, scode);
+                String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, result.getMessage(), clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
                 return "empty";
             }
             if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
 //                response.sendRedirect(buildRegErrorUrl(regParams));
-                String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, result.getMessage(),clientIdStr, skin, v, username, scode);
+                String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, result.getMessage(), clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
                 return "empty";
             }
@@ -200,7 +198,7 @@ public class WapV2RegAction extends WapV2BaseController {
             if (!commonManager.checkSecureCode(username, clientId, scode, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE)) {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
 //                response.sendRedirect(buildRegErrorUrl(regParams));
-                String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, result.getMessage(),clientIdStr, skin, v, username, scode);
+                String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, result.getMessage(), clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
                 return "empty";
             }
@@ -228,7 +226,7 @@ public class WapV2RegAction extends WapV2BaseController {
                 scode = commonManager.getSecureCode(username,
                         clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
 //                response.sendRedirect(buildRegErrorUrl(regParams));
-                String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, result.getMessage(),clientIdStr, skin, v, username, scode);
+                String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, result.getMessage(), clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
                 return "empty";
             }
@@ -284,8 +282,9 @@ public class WapV2RegAction extends WapV2BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/wap2/r", method = RequestMethod.GET)
-    public String regView(Model model, WapRegMobileCodeParams params, String scode, boolean hasError) throws Exception {
-        addRedirectPageModule(model, params, scode, hasError);
+    public String regView(Model model, boolean hasError, String ru, String errorMsg, String clientId,
+                          String skin, String v, int needCaptcha, String mobile, String scode) throws Exception {
+        addRedirectPageModule(model, hasError, ru, errorMsg, clientId, skin, v, needCaptcha, mobile, scode);
         return "wap/regist_wap_setpwd";
     }
 

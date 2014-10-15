@@ -26,7 +26,7 @@ public class WapV2BaseController extends BaseController {
      * 获取短信验证码校验通过后，需要跳转到一个接口，避免用户刷新导致页面不可用
      */
     protected String buildRedirectUrl(String redirectUri, boolean hasError, String ru, String errorMsg, String clientId,
-                                      String skin, String v, boolean needCaptcha, String mobile, String scode) {
+                                      String skin, String v, int needCaptcha, String mobile, String scode) {
         ru = Coder.encodeUTF8(Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru);
         clientId = Strings.isNullOrEmpty(clientId) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : clientId;
         skin = Strings.isNullOrEmpty(skin) ? WapConstant.WAP_SKIN_GREEN : skin;
@@ -48,13 +48,13 @@ public class WapV2BaseController extends BaseController {
     }
     // hasError为false，errorMsg为空
     protected String buildSuccessRedirectUrl(String redirectUri, String ru,String clientId,
-                                             String skin, String v, boolean needCaptcha, String mobile, String scode) {
+                                             String skin, String v, int needCaptcha, String mobile, String scode) {
         return buildRedirectUrl(redirectUri, false, ru, "", clientId, skin, v, needCaptcha, mobile, scode);
     }
     // hasError为true，errorMsg不能为空，needCaptcha为false
     protected String buildErrorRedirectUrl(String redirectUri, String ru, String errorMsg,String clientId,
                                              String skin, String v, String mobile, String scode) {
-        return buildRedirectUrl(redirectUri, true, ru, errorMsg, clientId, skin, v, false, mobile, scode);
+        return buildRedirectUrl(redirectUri, true, ru, errorMsg, clientId, skin, v, 0, mobile, scode);
     }
 
     /**
@@ -68,7 +68,7 @@ public class WapV2BaseController extends BaseController {
      * @param needCaptcha
      * @param model
      */
-    protected void addReturnPageModel(Model model,boolean hasError, String ru, String errorMsg, String clientId, String skin, String v, boolean needCaptcha, String mobile) {
+    protected void addReturnPageModel(Model model,boolean hasError, String ru, String errorMsg, String clientId, String skin, String v, int needCaptcha, String mobile) {
         model.addAttribute("errorMsg", errorMsg);
         model.addAttribute("hasError", hasError);
         model.addAttribute("ru", Coder.encodeUTF8(Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru));
@@ -83,13 +83,12 @@ public class WapV2BaseController extends BaseController {
     /**
      * 在重定向的中间页面增加model的attribute
      * @param model
-     * @param params
      * @param scode
      * @param hasError
      */
-    protected void addRedirectPageModule(Model model, WapRegMobileCodeParams params, String scode, boolean hasError) {
-        boolean needCaptcha = params.getNeedCaptcha() == 0 ? false : true;
-        addReturnPageModel(model, hasError, params.getRu(), params.getErrorMsg(), params.getClient_id(), params.getSkin(), params.getV(), needCaptcha, params.getMobile());
+    protected void addRedirectPageModule(Model model, boolean hasError, String ru, String errorMsg, String clientId,
+                                         String skin, String v, int needCaptcha, String mobile, String scode) {
+        addReturnPageModel(model, hasError, ru, errorMsg, clientId,skin,v, needCaptcha, mobile);
         model.addAttribute("scode", scode);
     }
 

@@ -73,12 +73,12 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
             String validateResult = ControllerHelper.validateParams(reqParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                addReturnPageModel(model, true, ru, validateResult, clientIdStr, skin, v, false, mobile);
+                addReturnPageModel(model, true, ru, validateResult, clientIdStr, skin, v, 0, mobile);
                 return "wap/findpwd_wap";
             }
             if (!configureManager.checkAppIsExist(clientId)) {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
-                addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
+                addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 0, mobile);
                 return "wap/findpwd_wap";
             }
             //校验用户ip是否中了黑名单
@@ -86,7 +86,7 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
             if (!result.isSuccess()) {
                 finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-                addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
+                addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 0, mobile);
                 return "wap/findpwd_wap";
             }
             result = wapRestPwdManager.sendMobileCaptcha(mobile, clientIdStr, reqParams.getToken(), reqParams.getCaptcha());
@@ -95,16 +95,16 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
                         || ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE.equals(result.getCode())) {
                     String token = String.valueOf(result.getModels().get("token"));
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                    addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, true, mobile);
+                    addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 1, mobile);
                     model.addAttribute("token", token);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                     return "wap/findpwd_wap";
                 } else {
-                    addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
+                    addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 0, mobile);
                     return "wap/findpwd_wap";
                 }
             }
-            addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
+            addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 0, mobile);
 //            if (!result.isSuccess()) {
 //                return "wap/findpwd_wap";
 //            }
@@ -118,8 +118,7 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
         commonManager.incSendTimesForMobile(mobile);
         String scode = commonManager.getSecureCode(mobile, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
 //        String rediectUrl = buildSuccessSendRedirectUrl(FINDPWD_REDIRECT_URL, reqParams, scode);
-        boolean needCaptcha = reqParams.getNeedCaptcha() == 0 ? false : true;
-        String rediectUrl = buildSuccessRedirectUrl(FINDPWD_REDIRECT_URL, reqParams.getRu(), clientIdStr, skin, v, needCaptcha, mobile, scode);
+        String rediectUrl = buildSuccessRedirectUrl(FINDPWD_REDIRECT_URL, reqParams.getRu(), clientIdStr, skin, v, reqParams.getNeedCaptcha(), mobile, scode);
         response.sendRedirect(rediectUrl);
         return "empty";
     }
@@ -205,8 +204,9 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/wap2/f", method = RequestMethod.GET)
-    public String regView(Model model, WapRegMobileCodeParams params, String scode, boolean hasError) throws Exception {
-        addRedirectPageModule(model, params, scode, hasError);
+    public String regView(Model model, boolean hasError, String ru, String errorMsg, String clientId,
+                          String skin, String v, int needCaptcha, String mobile, String scode) throws Exception {
+        addRedirectPageModule(model, hasError, ru, errorMsg, clientId, skin, v, needCaptcha, mobile, scode);
         return "wap/findpwd_wap_setpwd";
     }
 
