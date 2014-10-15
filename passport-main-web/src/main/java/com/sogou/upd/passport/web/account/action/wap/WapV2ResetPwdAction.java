@@ -64,11 +64,11 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
         String clientIdStr = reqParams.getClient_id();
         int clientId = Integer.parseInt(clientIdStr);
         String mobile = reqParams.getMobile();
-        String ru = reqParams.getRu();
         String skin = reqParams.getSkin();
         String v = reqParams.getV();
         try {
-            ru = Coder.decodeUTF8(ru);
+            reqParams.setRu(Coder.decodeUTF8(reqParams.getRu()));
+            String ru = reqParams.getRu();
             //参数验证
             String validateResult = ControllerHelper.validateParams(reqParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -119,7 +119,7 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
         String scode = commonManager.getSecureCode(mobile, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
 //        String rediectUrl = buildSuccessSendRedirectUrl(FINDPWD_REDIRECT_URL, reqParams, scode);
         boolean needCaptcha = reqParams.getNeedCaptcha() == 0 ? false : true;
-        String rediectUrl = buildSuccessRedirectUrl(FINDPWD_REDIRECT_URL, ru, clientIdStr, skin, v, needCaptcha, mobile, scode);
+        String rediectUrl = buildSuccessRedirectUrl(FINDPWD_REDIRECT_URL, reqParams.getRu(), clientIdStr, skin, v, needCaptcha, mobile, scode);
         response.sendRedirect(rediectUrl);
         return "empty";
     }
@@ -137,12 +137,12 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
         Result result = new APIResultSupport(false);
         String clientIdStr = reqParams.getClient_id();
         String username = reqParams.getUsername();
-        String ru = reqParams.getRu();
         String skin = reqParams.getSkin();
         String v = reqParams.getV();
         String scode = reqParams.getScode();
         try {
-            ru = Coder.decodeUTF8(ru);
+            reqParams.setRu(Coder.decodeUTF8(reqParams.getRu()));
+            String ru = reqParams.getRu();
             String validateResult = ControllerHelper.validateParams(reqParams);
             if (!Strings.isNullOrEmpty(validateResult) || Strings.isNullOrEmpty(reqParams.getCaptcha())) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
@@ -195,7 +195,7 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
         } finally {
             log(request, username, clientIdStr, result.getCode());
         }
-        return "redirect:" + ru;
+        return "redirect:" + reqParams.getRu();
     }
 
     /**

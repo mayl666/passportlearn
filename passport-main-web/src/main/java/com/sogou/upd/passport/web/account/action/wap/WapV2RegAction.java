@@ -77,9 +77,9 @@ public class WapV2RegAction extends WapV2BaseController {
         int clientId = Integer.parseInt(clientIdStr);
         String v = reqParams.getV();
         String skin = reqParams.getSkin();
-        String ru = reqParams.getRu();
         try {
-            ru = Coder.decodeUTF8(ru);
+            reqParams.setRu(Coder.decodeUTF8(reqParams.getRu()));
+            String ru = reqParams.getRu();
             //参数验证
             String validateResult = ControllerHelper.validateParams(reqParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -143,7 +143,7 @@ public class WapV2RegAction extends WapV2BaseController {
         String scode = commonManager.getSecureCode(mobile, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
 
         boolean needCaptcha = reqParams.getNeedCaptcha() == 0 ? false : true;
-        String rediectUrl = buildSuccessRedirectUrl(REG_REDIRECT_URL, ru, clientIdStr, skin, v, needCaptcha, mobile, scode);
+        String rediectUrl = buildSuccessRedirectUrl(REG_REDIRECT_URL, reqParams.getRu(), clientIdStr, skin, v, needCaptcha, mobile, scode);
 //        String rediectUrl = buildSuccessSendRedirectUrl(REG_REDIRECT_URL, reqParams, scode);
         response.sendRedirect(rediectUrl);
         return "empty";
@@ -159,12 +159,12 @@ public class WapV2RegAction extends WapV2BaseController {
         int clientId = regParams.getClient_id();
         String clientIdStr = String.valueOf(clientId);
         String username = regParams.getUsername();
-        String ru = regParams.getRu();
         String skin = regParams.getSkin();
         String v = regParams.getV();
         String scode = regParams.getScode();
         try {
-            ru = Coder.decodeUTF8(ru);
+            regParams.setRu(Coder.decodeUTF8(regParams.getRu()));
+            String ru = regParams.getRu();
             //参数验证
             String validateResult = ControllerHelper.validateParams(regParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
