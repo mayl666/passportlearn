@@ -4,10 +4,13 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.math.Coder;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.web.BaseController;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.wap.WapRegMobileCodeParams;
 import org.springframework.ui.Model;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -22,25 +25,36 @@ public class WapV2BaseController extends BaseController {
     /**
      * 获取短信验证码校验通过后，需要跳转到一个接口，避免用户刷新导致页面不可用
      */
-    protected String buildSuccessSendRedirectUrl(String redirectUri, WapRegMobileCodeParams params, String scode) throws UnsupportedEncodingException {
-        String ru = Coder.encodeUTF8(Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu());
-        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
-        String skin = Strings.isNullOrEmpty(params.getSkin()) ? WapConstant.WAP_SKIN_GREEN : params.getSkin();
-        String v = Strings.isNullOrEmpty(params.getV()) ? WapConstant.WAP_COLOR : params.getV();
-        String errorMsg = Strings.isNullOrEmpty(params.getErrorMsg()) ? "" : Coder.encodeUTF8(params.getErrorMsg());
+    protected String buildRedirectUrl(String redirectUri, boolean hasError, String ru, String errorMsg, String clientId,
+                                      String skin, String v, boolean needCaptcha, String mobile, String scode) {
+        ru = Coder.encodeUTF8(Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru);
+        clientId = Strings.isNullOrEmpty(clientId) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : clientId;
+        skin = Strings.isNullOrEmpty(skin) ? WapConstant.WAP_SKIN_GREEN : skin;
+        v = Strings.isNullOrEmpty(v) ? WapConstant.WAP_COLOR : v;
+        errorMsg = Strings.isNullOrEmpty(errorMsg) ? "" : Coder.encodeUTF8(errorMsg);
         StringBuilder urlStr = new StringBuilder();
         urlStr.append(redirectUri).append("?");
-        urlStr.append("client_id=").append(client_id);
-        urlStr.append("&ru=").append(ru);
-        urlStr.append("&mobile=").append(params.getMobile());
-        urlStr.append("&username=").append(params.getMobile());
-        urlStr.append("&skin=").append(skin);
-        urlStr.append("&v=").append(v);
-        urlStr.append("&scode=").append(scode);
-        urlStr.append("&needCaptcha=").append(params.getNeedCaptcha());
-        urlStr.append("&hasError=").append(false);
+        urlStr.append("client_id=").append(clientId);
         urlStr.append("&errorMsg=").append(errorMsg);
+        urlStr.append("&hasError=").append(hasError);
+        urlStr.append("&ru=").append(ru);
+        urlStr.append("&skin=").append(skin);
+        urlStr.append("&needCaptcha=").append(needCaptcha);
+        urlStr.append("&v=").append(v);
+        urlStr.append("&mobile=").append(mobile);
+        urlStr.append("&username=").append(mobile);
+        urlStr.append("&scode=").append(scode);
         return urlStr.toString();
+    }
+    // hasError为false，errorMsg为空
+    protected String buildSuccessRedirectUrl(String redirectUri, String ru,String clientId,
+                                             String skin, String v, boolean needCaptcha, String mobile, String scode) {
+        return buildRedirectUrl(redirectUri, false, ru, "", clientId, skin, v, needCaptcha, mobile, scode);
+    }
+    // hasError为true，errorMsg不能为空，needCaptcha为false
+    protected String buildErrorRedirectUrl(String redirectUri, String ru, String errorMsg,String clientId,
+                                             String skin, String v, String mobile, String scode) {
+        return buildRedirectUrl(redirectUri, true, ru, errorMsg, clientId, skin, v, false, mobile, scode);
     }
 
     /**
@@ -48,20 +62,22 @@ public class WapV2BaseController extends BaseController {
      * @param hasError
      * @param ru
      * @param errorMsg
-     * @param client_id
+     * @param clientId
      * @param skin
      * @param v
      * @param needCaptcha
      * @param model
      */
-    protected void addReturnPageModel(boolean hasError, String ru, String errorMsg, String client_id, String skin, String v, boolean needCaptcha, Model model) {
+    protected void addReturnPageModel(Model model,boolean hasError, String ru, String errorMsg, String clientId, String skin, String v, boolean needCaptcha, String mobile) {
         model.addAttribute("errorMsg", errorMsg);
         model.addAttribute("hasError", hasError);
-        model.addAttribute("ru", Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(ru));
+        model.addAttribute("ru", Coder.encodeUTF8(Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru));
         model.addAttribute("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_SKIN_GREEN : skin);
         model.addAttribute("needCaptcha", needCaptcha);
         model.addAttribute("v", Strings.isNullOrEmpty(v) ? WapConstant.WAP_COLOR : v);
-        model.addAttribute("client_id", client_id);
+        model.addAttribute("client_id", Strings.isNullOrEmpty(clientId) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : clientId);
+        model.addAttribute("mobile", mobile);
+        model.addAttribute("username", mobile);
     }
 
     /**
@@ -72,15 +88,15 @@ public class WapV2BaseController extends BaseController {
      * @param hasError
      */
     protected void addRedirectPageModule(Model model, WapRegMobileCodeParams params, String scode, boolean hasError) {
-        model.addAttribute("errorMsg", params.getErrorMsg());
-        model.addAttribute("hasError", hasError);
-        model.addAttribute("ru", params.getRu());
-        model.addAttribute("skin", params.getSkin());
-        model.addAttribute("needCaptcha", params.getNeedCaptcha());
-        model.addAttribute("v", params.getV());
-        model.addAttribute("client_id", params.getClient_id());
-        model.addAttribute("mobile", params.getMobile());
-        model.addAttribute("username", params.getMobile());
+        boolean needCaptcha = params.getNeedCaptcha() == 0 ? false : true;
+        addReturnPageModel(model, hasError, params.getRu(), params.getErrorMsg(), params.getClient_id(), params.getSkin(), params.getV(), needCaptcha, params.getMobile());
         model.addAttribute("scode", scode);
+    }
+
+    protected void log(HttpServletRequest request, String passportId, String clientIdStr, String resultCode) {
+        //用户登录log
+        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), clientIdStr, resultCode, getIp(request));
+        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+        UserOperationLogUtil.log(userOperationLog);
     }
 }
