@@ -45,7 +45,6 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
     private static final Logger logger = LoggerFactory.getLogger(WapV2ResetPwdAction.class);
 
     //防止用户刷新页面时修改参数
-    private static Map<String, Object> params = Maps.newHashMap();
     private static Map<String, Object> resetParamsMap = Maps.newHashMap();
 
     @Autowired
@@ -56,6 +55,8 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
     private ConfigureManager configureManager;
     @Autowired
     private CommonManager commonManager;
+
+    private static String FINDPWD_REDIRECT_URL = CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/f";
 
     /**
      * 找回密码，发送短信验证码至绑定手机
@@ -69,6 +70,8 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
         String ip = getIp(request);
         String finalCode = null;
         String clientIdStr = reqParams.getClient_id();
+        int clientId = Integer.parseInt(clientIdStr);
+        String mobile = reqParams.getMobile();
         try {
             reqParams.setRu(Coder.decodeUTF8(reqParams.getRu()));
             //参数验证
@@ -76,18 +79,16 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 addReturnPageModel(true, reqParams.getRu(), validateResult,
                         clientIdStr, reqParams.getSkin(), reqParams.getV(), false, model);
-                model.addAttribute("mobile", reqParams.getMobile());
-                model.addAttribute("username", reqParams.getMobile());
+                model.addAttribute("mobile", mobile);
+                model.addAttribute("username", mobile);
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 return "wap/findpwd_wap";
             }
-            //验证client_id
-            int clientId = Integer.parseInt(clientIdStr);
             if (!configureManager.checkAppIsExist(clientId)) {
                 addReturnPageModel(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.INVALID_CLIENTID),
                         clientIdStr, reqParams.getSkin(), reqParams.getV(), false, model);
-                model.addAttribute("mobile", reqParams.getMobile());
-                model.addAttribute("username", reqParams.getMobile());
+                model.addAttribute("mobile", mobile);
+                model.addAttribute("username", mobile);
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
                 return "wap/findpwd_wap";
             }
@@ -98,19 +99,19 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
                 addReturnPageModel(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND),
                         clientIdStr, reqParams.getSkin(), reqParams.getV(), false, model);
-                model.addAttribute("mobile", reqParams.getMobile());
-                model.addAttribute("username", reqParams.getMobile());
+                model.addAttribute("mobile", mobile);
+                model.addAttribute("username", mobile);
                 return "wap/findpwd_wap";
             }
-            result = wapRestPwdManager.sendMobileCaptcha(reqParams.getMobile(), clientIdStr, reqParams.getToken(), reqParams.getCaptcha());
+            result = wapRestPwdManager.sendMobileCaptcha(mobile, clientIdStr, reqParams.getToken(), reqParams.getCaptcha());
             if (!result.isSuccess()) {
                 if (ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED.equals(result.getCode())
                         || ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE.equals(result.getCode())) {
                     String token = String.valueOf(result.getModels().get("token"));
                     addReturnPageModel(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
                             clientIdStr, reqParams.getSkin(), reqParams.getV(), true, model);
-                    model.addAttribute("mobile", reqParams.getMobile());
-                    model.addAttribute("username", reqParams.getMobile());
+                    model.addAttribute("mobile", mobile);
+                    model.addAttribute("username", mobile);
                     model.addAttribute("token", token);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
@@ -118,20 +119,20 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
                 } else {
                     addReturnPageModel(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
                             clientIdStr, reqParams.getSkin(), reqParams.getV(), false, model);
-                    model.addAttribute("mobile", reqParams.getMobile());
-                    model.addAttribute("username", reqParams.getMobile());
+                    model.addAttribute("mobile", mobile);
+                    model.addAttribute("username", mobile);
                     return "wap/findpwd_wap";
                 }
             }
             addReturnPageModel(true, reqParams.getRu(), ErrorUtil.getERR_CODE_MSG(result.getCode()),
                     clientIdStr, reqParams.getSkin(), reqParams.getV(), false, model);
-            model.addAttribute("mobile", reqParams.getMobile());
+            model.addAttribute("mobile", mobile);
             if (!result.isSuccess()) {
-                model.addAttribute("username", reqParams.getMobile());
+                model.addAttribute("username", mobile);
                 return "wap/findpwd_wap";
             }
         } catch (Exception e) {
-            logger.error("wap2.0 reguser:User Register Is Failed,mobile is " + reqParams.getMobile(), e);
+            logger.error("wap2.0 reguser:User Register Is Failed,mobile is " + mobile, e);
         } finally {
             String logCode;
             if (!Strings.isNullOrEmpty(finalCode)) {
@@ -139,15 +140,13 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
             } else {
                 logCode = result.getCode();
             }
-            log(request, reqParams.getMobile(), clientIdStr, logCode);
+            log(request, mobile, clientIdStr, logCode);
         }
         commonManager.incSendTimesForMobile(ip);
-        commonManager.incSendTimesForMobile(reqParams.getMobile());
-        buildSendRedirectUrl(Strings.isNullOrEmpty(reqParams.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(reqParams.getRu()),
-                clientIdStr, false, reqParams.getMobile(), Strings.isNullOrEmpty(reqParams.getSkin()) ? WapConstant.WAP_SKIN_GREEN : reqParams.getSkin(),
-                false, Strings.isNullOrEmpty(reqParams.getV()) ? WapConstant.WAP_COLOR : reqParams.getV(), null);
-        params.put("scode", commonManager.getSecureCode(String.valueOf(result.getModels().get("userid")), Integer.parseInt(clientIdStr), CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
-        response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/f");
+        commonManager.incSendTimesForMobile(mobile);
+        String scode = commonManager.getSecureCode(mobile, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
+        String rediectUrl = buildSuccessSendRedirectUrl(FINDPWD_REDIRECT_URL, reqParams, scode);
+        response.sendRedirect(rediectUrl);
         return "empty";
     }
 
@@ -217,25 +216,6 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
         addRedirectPageModule(model, params, scode, hasError);
         return "wap/findpwd_wap_setpwd";
     }
-
-    /**
-     * 获取短信验证码校验通过后，需要跳转到一个接口，避免用户刷新导致页面不可用
-     */
-    private Map<String, Object> buildSendRedirectUrl(String ru, String client_id, boolean hasError, String mobile, String
-            skin, boolean needCaptcha, String v, String errorMsg) {
-        params.put("client_id", client_id);
-        params.put("errorMsg", errorMsg);
-        params.put("hasError", hasError);
-        params.put("ru", ru);
-        params.put("skin", skin);
-        params.put("needCaptcha", needCaptcha);
-        params.put("v", v);
-        params.put("mobile", mobile);
-        params.put("username", mobile);
-        return params;
-    }
-
-
 
     /**
      * 通过接口跳转到reset页面

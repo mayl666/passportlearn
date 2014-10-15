@@ -8,6 +8,8 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.account.form.wap.WapRegMobileCodeParams;
 import org.springframework.ui.Model;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -16,6 +18,30 @@ import org.springframework.ui.Model;
  * To change this template use File | Settings | File Templates.
  */
 public class WapV2BaseController extends BaseController {
+
+    /**
+     * 获取短信验证码校验通过后，需要跳转到一个接口，避免用户刷新导致页面不可用
+     */
+    protected String buildSuccessSendRedirectUrl(String redirectUri, WapRegMobileCodeParams params, String scode) throws UnsupportedEncodingException {
+        String ru = Coder.encodeUTF8(Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu());
+        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
+        String skin = Strings.isNullOrEmpty(params.getSkin()) ? WapConstant.WAP_SKIN_GREEN : params.getSkin();
+        String v = Strings.isNullOrEmpty(params.getV()) ? WapConstant.WAP_COLOR : params.getV();
+        String errorMsg = Strings.isNullOrEmpty(params.getErrorMsg()) ? "" : Coder.encodeUTF8(params.getErrorMsg());
+        StringBuilder urlStr = new StringBuilder();
+        urlStr.append(redirectUri).append("?");
+        urlStr.append("client_id=").append(client_id);
+        urlStr.append("&ru=").append(ru);
+        urlStr.append("&mobile=").append(params.getMobile());
+        urlStr.append("&username=").append(params.getMobile());
+        urlStr.append("&skin=").append(skin);
+        urlStr.append("&v=").append(v);
+        urlStr.append("&scode=").append(scode);
+        urlStr.append("&needCaptcha=").append(params.getNeedCaptcha());
+        urlStr.append("&hasError=").append(false);
+        urlStr.append("&errorMsg=").append(errorMsg);
+        return urlStr.toString();
+    }
 
     /**
      * 在接口渲染VM模板的页面增加model的attribute

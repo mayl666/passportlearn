@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
 
 /**
  * wap2.0注册
@@ -64,6 +63,8 @@ public class WapV2RegAction extends WapV2BaseController {
     private SessionServerManager sessionServerManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
+
+    private static String REG_REDIRECT_URL = CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/r";
 
     @RequestMapping(value = "/wap2/sendsms", method = RequestMethod.POST)
     public String sendsms(HttpServletRequest request, HttpServletResponse response, WapRegMobileCodeParams reqParams, Model model) throws Exception {
@@ -163,34 +164,12 @@ public class WapV2RegAction extends WapV2BaseController {
         commonManager.incSendTimesForMobile(ip);
         commonManager.incSendTimesForMobile(mobile);
         String scode = commonManager.getSecureCode(mobile, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
-        String rediectUrl = buildSuccessSendRedirectUrl(reqParams, scode);
+        String rediectUrl = buildSuccessSendRedirectUrl(REG_REDIRECT_URL, reqParams, scode);
         response.sendRedirect(rediectUrl);
         return "empty";
     }
 
-    /**
-     * 获取短信验证码校验通过后，需要跳转到一个接口，避免用户刷新导致页面不可用
-     */
-    private String buildSuccessSendRedirectUrl(WapRegMobileCodeParams params, String scode) throws UnsupportedEncodingException {
-        String ru = Coder.encodeUTF8(Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu());
-        String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
-        String skin = Strings.isNullOrEmpty(params.getSkin()) ? WapConstant.WAP_SKIN_GREEN : params.getSkin();
-        String v = Strings.isNullOrEmpty(params.getV()) ? WapConstant.WAP_COLOR : params.getV();
-        String errorMsg = Strings.isNullOrEmpty(params.getErrorMsg()) ? "" : Coder.encodeUTF8(params.getErrorMsg());
-        StringBuilder urlStr = new StringBuilder();
-        urlStr.append(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/r?");
-        urlStr.append("client_id=").append(client_id);
-        urlStr.append("&ru=").append(ru);
-        urlStr.append("&mobile=").append(params.getMobile());
-        urlStr.append("&username=").append(params.getMobile());
-        urlStr.append("&skin=").append(skin);
-        urlStr.append("&v=").append(v);
-        urlStr.append("&scode=").append(scode);
-        urlStr.append("&needCaptcha=").append(params.getNeedCaptcha());
-        urlStr.append("&hasError=").append(false);
-        urlStr.append("&errorMsg=").append(errorMsg);
-        return urlStr.toString();
-    }
+
 
     @RequestMapping(value = "/wap2/reguser", method = RequestMethod.POST)
     public String regV2User(HttpServletRequest request, HttpServletResponse response, WapV2RegParams regParams, Model model) throws Exception {
@@ -287,7 +266,7 @@ public class WapV2RegAction extends WapV2BaseController {
         String ru = Coder.encodeUTF8(Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu());
         String errorMsg = Strings.isNullOrEmpty(params.getErrorMsg()) ? "" : Coder.encodeUTF8(params.getErrorMsg());
         StringBuilder urlStr = new StringBuilder();
-        urlStr.append(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/r?");
+        urlStr.append(REG_REDIRECT_URL).append("?");
         urlStr.append("client_id=").append(params.getClient_id());
         urlStr.append("&errorMsg=").append(errorMsg);
         urlStr.append("&hasError=").append(true);
