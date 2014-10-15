@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.form;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
@@ -34,7 +35,7 @@ public class WebLoginParams extends BaseLoginParams {
 
     @AssertTrue(message = "不支持的domain")
     private boolean isSupportDomain() {
-        if (domain != null && !ConnectDomainEnum.isSupportDomain(domain)) {
+        if (!Strings.isNullOrEmpty(domain) && !ConnectDomainEnum.isSupportDomain(domain)) {
             return false;
         }
         return true;

@@ -49,8 +49,8 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     @Override
     public Result getUserInfo(UserOpenApiParams userOpenApiParams) {
         Result result = new APIResultSupport(false);
+        String passportId = userOpenApiParams.getUserid();
         try {
-            String passportId = userOpenApiParams.getUserid();
             int original = userOpenApiParams.getOriginal();
             ConnectUserInfoVO connectUserInfoVO;
             int clientId = userOpenApiParams.getClient_id();
@@ -80,7 +80,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 result = buildErrorResult(errorCode, errMsg);
             }
         } catch (Exception exp) {
-            logger.error("system error!", exp);
+            logger.error("getUserInfo system error! passportId:"+passportId, exp);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "system error!");
         }
         return result;

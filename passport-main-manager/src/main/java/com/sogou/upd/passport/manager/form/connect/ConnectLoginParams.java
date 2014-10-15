@@ -77,7 +77,7 @@ public class ConnectLoginParams {
 
     @AssertTrue(message = "不支持的domain")
     private boolean isSupportDomain() {
-        if (domain != null && !ConnectDomainEnum.isSupportDomain(domain)) {
+        if (!Strings.isNullOrEmpty(domain) && !ConnectDomainEnum.isSupportDomain(domain)) {
             return false;
         }
         return true;

@@ -55,9 +55,9 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
     @Override
     public Result handleSSOAfterauth(HttpServletRequest req, String providerStr) {
         Result result = new APIResultSupport(false);
+        String openId = req.getParameter("openid");
 
         try {
-            String openId = req.getParameter("openid");
             String accessToken = req.getParameter("access_token");
             long expires_in = Long.parseLong(req.getParameter("expires_in"));
             int client_id = Integer.parseInt(req.getParameter("client_id"));
@@ -174,16 +174,16 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
 
             result.getModels().put("userid", PassportIDGenerator.generator(openId, provider));
         } catch (IOException e) {
-            logger.error("read oauth consumer IOException!", e);
+            logger.error("read oauth consumer IOException! openId:" + openId, e);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException");
         } catch (ServiceException se) {
-            logger.error("query connect config Exception!", se);
+            logger.error("query connect config Exception! openId:" + openId, se);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "query connect config Exception");
         } catch (OAuthProblemException ope) {
-            logger.error("handle oauth authroize code error!", ope);
+            logger.error("handle oauth authroize code error! openId:" + openId, ope);
             result = buildErrorResult(ope.getError(), ope.getDescription());
         } catch (Exception exp) {
-            logger.error("handle oauth authroize code system error!", exp);
+            logger.error("handle oauth authroize code system error! openId:" + openId, exp);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "handle oauth authroize code system error!");
         }
 
