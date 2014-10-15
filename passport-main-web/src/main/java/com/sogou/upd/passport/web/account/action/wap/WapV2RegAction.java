@@ -85,13 +85,13 @@ public class WapV2RegAction extends WapV2BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
-                addReturnPageModel(model, true, ru, validateResult, clientIdStr, skin, v, 0, mobile);
+                addReturnPageModel(model, true, ru, validateResult, clientIdStr, skin, v, false, mobile);
                 return "wap/regist_wap";
             }
             //检查client_id是否存在
             if (!configureManager.checkAppIsExist(clientId)) {
                 result.setCode(ErrorUtil.INVALID_CLIENTID);
-                addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 0, mobile);
+                addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
                 return "wap/regist_wap";
             }
             //第二次弹出验证码
@@ -102,7 +102,7 @@ public class WapV2RegAction extends WapV2BaseController {
                     //如果验证码校验失败，则提示
                     if (!result.isSuccess()) {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                        addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 1, mobile);
+                        addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, true, mobile);
                         String token = RandomStringUtils.randomAlphanumeric(48);
                         model.addAttribute("token", token);
                         model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
@@ -111,7 +111,7 @@ public class WapV2RegAction extends WapV2BaseController {
                 } else {
                     //需要弹出验证码
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
-                    addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 1, mobile);
+                    addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, true, mobile);
                     String token = RandomStringUtils.randomAlphanumeric(48);
                     model.addAttribute("token", token);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
@@ -123,12 +123,12 @@ public class WapV2RegAction extends WapV2BaseController {
             if (!result.isSuccess()) {
                 finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SMSCODE_SEND);
-                addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 0, mobile);
+                addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
                 return "wap/regist_wap";
             }
             BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
             result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
-            addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 0, mobile);
+            addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
             if (!result.isSuccess()) {
                 return "wap/regist_wap";
             }
@@ -283,7 +283,7 @@ public class WapV2RegAction extends WapV2BaseController {
      */
     @RequestMapping(value = "/wap2/r", method = RequestMethod.GET)
     public String regView(Model model, boolean hasError, String ru, String errorMsg, String clientId,
-                          String skin, String v, int needCaptcha, String mobile, String scode) throws Exception {
+                          String skin, String v, boolean needCaptcha, String mobile, String scode) throws Exception {
         addRedirectPageModule(model, hasError, ru, errorMsg, clientId, skin, v, needCaptcha, mobile, scode);
         return "wap/regist_wap_setpwd";
     }

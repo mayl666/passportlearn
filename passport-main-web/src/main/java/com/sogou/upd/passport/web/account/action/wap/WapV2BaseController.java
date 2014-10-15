@@ -32,6 +32,7 @@ public class WapV2BaseController extends BaseController {
         skin = Strings.isNullOrEmpty(skin) ? WapConstant.WAP_SKIN_GREEN : skin;
         v = Strings.isNullOrEmpty(v) ? WapConstant.WAP_COLOR : v;
         errorMsg = Strings.isNullOrEmpty(errorMsg) ? "" : Coder.encodeUTF8(errorMsg);
+        boolean isNeedCaptcha = needCaptcha == 0 ? false : true;
         StringBuilder urlStr = new StringBuilder();
         urlStr.append(redirectUri).append("?");
         urlStr.append("client_id=").append(clientId);
@@ -39,7 +40,7 @@ public class WapV2BaseController extends BaseController {
         urlStr.append("&hasError=").append(hasError);
         urlStr.append("&ru=").append(ru);
         urlStr.append("&skin=").append(skin);
-        urlStr.append("&needCaptcha=").append(needCaptcha);
+        urlStr.append("&needCaptcha=").append(isNeedCaptcha);
         urlStr.append("&v=").append(v);
         urlStr.append("&mobile=").append(mobile);
         urlStr.append("&username=").append(mobile);
@@ -68,7 +69,7 @@ public class WapV2BaseController extends BaseController {
      * @param needCaptcha
      * @param model
      */
-    protected void addReturnPageModel(Model model,boolean hasError, String ru, String errorMsg, String clientId, String skin, String v, int needCaptcha, String mobile) {
+    protected void addReturnPageModel(Model model,boolean hasError, String ru, String errorMsg, String clientId, String skin, String v, boolean needCaptcha, String mobile) {
         model.addAttribute("errorMsg", errorMsg);
         model.addAttribute("hasError", hasError);
         model.addAttribute("ru", Coder.encodeUTF8(Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_WAP_URL : ru));
@@ -87,7 +88,7 @@ public class WapV2BaseController extends BaseController {
      * @param hasError
      */
     protected void addRedirectPageModule(Model model, boolean hasError, String ru, String errorMsg, String clientId,
-                                         String skin, String v, int needCaptcha, String mobile, String scode) {
+                                         String skin, String v, boolean needCaptcha, String mobile, String scode) {
         addReturnPageModel(model, hasError, ru, errorMsg, clientId,skin,v, needCaptcha, mobile);
         model.addAttribute("scode", scode);
     }
