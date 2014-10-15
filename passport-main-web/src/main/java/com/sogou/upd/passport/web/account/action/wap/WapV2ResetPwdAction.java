@@ -94,7 +94,7 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
                 if (ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED.equals(result.getCode())
                         || ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE.equals(result.getCode())) {
                     String token = String.valueOf(result.getModels().get("token"));
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
                     addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, 1, mobile);
                     model.addAttribute("token", token);
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
@@ -116,7 +116,8 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
         }
         commonManager.incSendTimesForMobile(ip);
         commonManager.incSendTimesForMobile(mobile);
-        String scode = commonManager.getSecureCode(mobile, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
+        String passportId = String.valueOf(result.getModels().get("userid"));
+        String scode = commonManager.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
 //        String rediectUrl = buildSuccessSendRedirectUrl(FINDPWD_REDIRECT_URL, reqParams, scode);
         String rediectUrl = buildSuccessRedirectUrl(FINDPWD_REDIRECT_URL, reqParams.getRu(), clientIdStr, skin, v, reqParams.getNeedCaptcha(), mobile, scode);
         response.sendRedirect(rediectUrl);
@@ -180,7 +181,7 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
             String passportId = String.valueOf(result.getModels().get("userid"));
             result = resetPwdManager.resetPasswordByScode(passportId, clientId, password, scode, getIp(request));
             if (!result.isSuccess()) {
-                scode = commonManager.getSecureCode(String.valueOf(result.getModels().get("userid")), clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
+                scode = commonManager.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
 //                buildErrorUrl(true, ru, ErrorUtil.getERR_CODE_MSG(result.getCode()),
 //                        clientIdStr, skin, v, false,username, scode);
 //                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
