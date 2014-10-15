@@ -68,7 +68,7 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
         String skin = reqParams.getSkin();
         String v = reqParams.getV();
         try {
-            reqParams.setRu(Coder.decodeUTF8(ru));
+            ru = Coder.decodeUTF8(ru);
             //参数验证
             String validateResult = ControllerHelper.validateParams(reqParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -142,7 +142,7 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
         String v = reqParams.getV();
         String scode = reqParams.getScode();
         try {
-            reqParams.setRu(Coder.decodeUTF8(ru));
+            ru = Coder.decodeUTF8(ru);
             String validateResult = ControllerHelper.validateParams(reqParams);
             if (!Strings.isNullOrEmpty(validateResult) || Strings.isNullOrEmpty(reqParams.getCaptcha())) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);

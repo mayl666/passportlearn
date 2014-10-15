@@ -79,7 +79,7 @@ public class WapV2RegAction extends WapV2BaseController {
         String skin = reqParams.getSkin();
         String ru = reqParams.getRu();
         try {
-            reqParams.setRu(Coder.decodeUTF8(ru));
+            ru = Coder.decodeUTF8(ru);
             //参数验证
             String validateResult = ControllerHelper.validateParams(reqParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -164,7 +164,7 @@ public class WapV2RegAction extends WapV2BaseController {
         String v = regParams.getV();
         String scode = regParams.getScode();
         try {
-            regParams.setRu(Coder.decodeUTF8(ru));
+            ru = Coder.decodeUTF8(ru);
             //参数验证
             String validateResult = ControllerHelper.validateParams(regParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
