@@ -142,7 +142,6 @@ public class WapV2RegAction extends WapV2BaseController {
         commonManager.incSendTimesForMobile(mobile);
         String scode = commonManager.getSecureCode(mobile, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
         String rediectUrl = buildSuccessRedirectUrl(REG_REDIRECT_URL, reqParams.getRu(), clientIdStr, skin, v, reqParams.getNeedCaptcha(), mobile, scode);
-//        String rediectUrl = buildSuccessSendRedirectUrl(REG_REDIRECT_URL, reqParams, scode);
         response.sendRedirect(rediectUrl);
         return "empty";
     }
@@ -168,7 +167,6 @@ public class WapV2RegAction extends WapV2BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
-//                response.sendRedirect(buildRegErrorUrl(regParams));
                 String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, validateResult, clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
                 return "empty";
@@ -182,14 +180,12 @@ public class WapV2RegAction extends WapV2BaseController {
                     finalCode = ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST;
                     result.setCode(ErrorUtil.ERR_CODE_REGISTER_UNUSUAL);
                 }
-//                response.sendRedirect(buildRegErrorUrl(regParams));
                 String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, result.getMessage(), clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
                 return "empty";
             }
             if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
-//                response.sendRedirect(buildRegErrorUrl(regParams));
                 String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, result.getMessage(), clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
                 return "empty";
@@ -197,7 +193,6 @@ public class WapV2RegAction extends WapV2BaseController {
             //校验安全码
             if (!commonManager.checkSecureCode(username, clientId, scode, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE)) {
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_SCODE_FAILED);
-//                response.sendRedirect(buildRegErrorUrl(regParams));
                 String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, result.getMessage(), clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
                 return "empty";
@@ -225,7 +220,6 @@ public class WapV2RegAction extends WapV2BaseController {
             } else {
                 scode = commonManager.getSecureCode(username,
                         clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
-//                response.sendRedirect(buildRegErrorUrl(regParams));
                 String redirectUrl = buildErrorRedirectUrl(REG_REDIRECT_URL, ru, result.getMessage(), clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
                 return "empty";
@@ -248,24 +242,6 @@ public class WapV2RegAction extends WapV2BaseController {
         return "empty";
     }
 
-//    private String buildRegErrorUrl(WapV2RegParams params) {
-//        String ru = Coder.encodeUTF8(Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu());
-//        String errorMsg = Strings.isNullOrEmpty(params.getErrorMsg()) ? "" : Coder.encodeUTF8(params.getErrorMsg());
-//        StringBuilder urlStr = new StringBuilder();
-//        urlStr.append(REG_REDIRECT_URL).append("?");
-//        urlStr.append("client_id=").append(params.getClient_id());
-//        urlStr.append("&errorMsg=").append(errorMsg);
-//        urlStr.append("&hasError=").append(true);
-//        urlStr.append("&ru=").append(ru);
-//        urlStr.append("&skin=").append(params.getSkin());
-//        urlStr.append("&needCaptcha=").append(params.getNeedCaptcha());
-//        urlStr.append("&v=").append(params.getV());
-//        urlStr.append("&mobile=").append(params.getUsername());
-//        urlStr.append("&username=").append(params.getUsername());
-//        urlStr.append("&scode=").append(params.getScode());
-//        return urlStr.toString();
-//    }
-
     private String getSuccessReturnStr(String ru, String token) {
         String deRu = ru;
         if (deRu.contains("?")) {
@@ -276,7 +252,6 @@ public class WapV2RegAction extends WapV2BaseController {
 
     /**
      * 通过接口跳转到填写验证码和密码页面 /wap2/r
-     * 通过接口跳转到reset页面 /wap2/page/reg
      *
      * @return
      * @throws Exception

@@ -105,9 +105,6 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
                 }
             }
             addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
-//            if (!result.isSuccess()) {
-//                return "wap/findpwd_wap";
-//            }
         } catch (Exception e) {
             logger.error("wap2.0 reguser:User Register Is Failed,mobile is " + mobile, e);
         } finally {
@@ -117,8 +114,7 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
         commonManager.incSendTimesForMobile(ip);
         commonManager.incSendTimesForMobile(mobile);
         String passportId = String.valueOf(result.getModels().get("userid"));
-        String scode = commonManager.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE);
-//        String rediectUrl = buildSuccessSendRedirectUrl(FINDPWD_REDIRECT_URL, reqParams, scode);
+        String scode = commonManager.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
         String rediectUrl = buildSuccessRedirectUrl(FINDPWD_REDIRECT_URL, reqParams.getRu(), clientIdStr, skin, v, reqParams.getNeedCaptcha(), mobile, scode);
         response.sendRedirect(rediectUrl);
         return "empty";
@@ -147,20 +143,12 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
             if (!Strings.isNullOrEmpty(validateResult) || Strings.isNullOrEmpty(reqParams.getCaptcha())) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
-//                buildErrorUrl(true, ru, Strings.isNullOrEmpty(validateResult) ? "短信验证码不能为空" : validateResult,
-//                        clientIdStr, skin, v, false,username, scode);
-//                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
-
                 String errorMsg = Strings.isNullOrEmpty(validateResult) ? "短信验证码不能为空" : validateResult;
                 String redirectUrl = buildErrorRedirectUrl(FINDPWD_REDIRECT_URL, ru, errorMsg, clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
                 return "empty";
             }
             if (!PhoneUtil.verifyPhoneNumberFormat(reqParams.getUsername())) {
-//                buildErrorUrl(true, ru, ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR),
-//                        clientIdStr, skin, v, false,username, scode);
-//                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
-
                 String errorMsg = ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONEERROR);
                 String redirectUrl = buildErrorRedirectUrl(FINDPWD_REDIRECT_URL, ru, errorMsg, clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
@@ -170,10 +158,6 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
             String password = reqParams.getPassword();
             result = wapRestPwdManager.checkMobileCodeResetPwd(reqParams.getUsername(), clientId, reqParams.getCaptcha(), false);
             if (!result.isSuccess()) {
-//                buildErrorUrl(true, ru, ErrorUtil.getERR_CODE_MSG(result.getCode()),
-//                        clientIdStr, skin, v, false,username, scode);
-//                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
-
                 String redirectUrl = buildErrorRedirectUrl(FINDPWD_REDIRECT_URL, ru, result.getMessage(), clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
                 return "empty";
@@ -182,10 +166,6 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
             result = resetPwdManager.resetPasswordByScode(passportId, clientId, password, scode, getIp(request));
             if (!result.isSuccess()) {
                 scode = commonManager.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
-//                buildErrorUrl(true, ru, ErrorUtil.getERR_CODE_MSG(result.getCode()),
-//                        clientIdStr, skin, v, false,username, scode);
-//                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap2/findpwd/page/reset");
-
                 String redirectUrl = buildErrorRedirectUrl(FINDPWD_REDIRECT_URL, ru, result.getMessage(), clientIdStr, skin, v, username, scode);
                 response.sendRedirect(redirectUrl);
                 return "empty";
@@ -210,44 +190,4 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
         addRedirectPageModule(model, hasError, ru, errorMsg, client_id, skin, v, needCaptcha, mobile, scode);
         return "wap/findpwd_wap_setpwd";
     }
-
-//    /**
-//     * 通过接口跳转到reset页面
-//     *
-//     * @param model
-//     * @return
-//     * @throws Exception
-//     */
-//    @RequestMapping(value = "/wap2/findpwd/page/reset", method = RequestMethod.GET)
-//    public String findResetView(Model model) throws Exception {
-//        model.addAttribute("hasError", resetParamsMap.get("hasError"));
-//        model.addAttribute("ru", resetParamsMap.get("ru"));
-//        model.addAttribute("errorMsg", resetParamsMap.get("errorMsg"));
-//        model.addAttribute("client_id", resetParamsMap.get("client_id"));
-//        model.addAttribute("scode", resetParamsMap.get("scode"));
-//        model.addAttribute("v", WapConstant.WAP_TOUCH);
-//        model.addAttribute("skin", resetParamsMap.get("skin"));
-//        model.addAttribute("needCaptcha", resetParamsMap.get("needCaptcha"));
-//        model.addAttribute("mobile", resetParamsMap.get("mobile"));
-//        model.addAttribute("username", resetParamsMap.get("mobile"));
-//        return "/wap/findpwd_wap_setpwd";
-//    }
-
-//    /**
-//     * 构造返回错误里的跳转链接
-//     */
-//    private Map<String, Object> buildErrorUrl(boolean hasError, String ru, String errorMsg, String client_id,
-//                                              String skin, String v, boolean needCaptcha, String mobile, String scode) {
-//        resetParamsMap.put("client_id", client_id);
-//        resetParamsMap.put("errorMsg", errorMsg);
-//        resetParamsMap.put("hasError", hasError);
-//        resetParamsMap.put("ru", Coder.encodeUTF8(ru));
-//        resetParamsMap.put("skin", skin);
-//        resetParamsMap.put("needCaptcha", needCaptcha);
-//        resetParamsMap.put("v", v);
-//        resetParamsMap.put("mobile", mobile);
-//        resetParamsMap.put("scode", scode);
-//        resetParamsMap.put("username", mobile);
-//        return resetParamsMap;
-//    }
 }
