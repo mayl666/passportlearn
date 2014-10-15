@@ -205,9 +205,9 @@ public class WapV2ResetPwdAction extends WapV2BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/wap2/f", method = RequestMethod.GET)
-    public String regView(Model model, boolean hasError, String ru, String errorMsg, String clientId,
+    public String regView(Model model, boolean hasError, String ru, String errorMsg, String client_id,
                           String skin, String v, boolean needCaptcha, String mobile, String scode) throws Exception {
-        addRedirectPageModule(model, hasError, ru, errorMsg, clientId, skin, v, needCaptcha, mobile, scode);
+        addRedirectPageModule(model, hasError, ru, errorMsg, client_id, skin, v, needCaptcha, mobile, scode);
         return "wap/findpwd_wap_setpwd";
     }
 

@@ -128,8 +128,8 @@ public class WapV2RegAction extends WapV2BaseController {
             }
             BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
             result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
-            addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
             if (!result.isSuccess()) {
+                addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
                 return "wap/regist_wap";
             }
         } catch (Exception e) {
@@ -282,9 +282,9 @@ public class WapV2RegAction extends WapV2BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/wap2/r", method = RequestMethod.GET)
-    public String regView(Model model, boolean hasError, String ru, String errorMsg, String clientId,
+    public String regView(Model model, boolean hasError, String ru, String errorMsg, String client_id,
                           String skin, String v, boolean needCaptcha, String mobile, String scode) throws Exception {
-        addRedirectPageModule(model, hasError, ru, errorMsg, clientId, skin, v, needCaptcha, mobile, scode);
+        addRedirectPageModule(model, hasError, ru, errorMsg, client_id, skin, v, needCaptcha, mobile, scode);
         return "wap/regist_wap_setpwd";
     }
 

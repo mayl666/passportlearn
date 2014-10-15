@@ -7,9 +7,11 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.account.form.wap.WapRegMobileCodeParams;
 import org.springframework.ui.Model;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -74,7 +76,7 @@ public class WapV2BaseController extends BaseController {
         model.addAttribute("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_SKIN_GREEN : skin);
         model.addAttribute("needCaptcha", needCaptcha);
         model.addAttribute("v", Strings.isNullOrEmpty(v) ? WapConstant.WAP_COLOR : v);
-        model.addAttribute("client_id", clientId);
+        model.addAttribute("client_id", Strings.isNullOrEmpty(clientId) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : clientId);
         model.addAttribute("mobile", mobile);
         model.addAttribute("username", mobile);
     }
