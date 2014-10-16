@@ -59,6 +59,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
         try {
             String openId = req.getParameter("openid");
             String accessToken = req.getParameter("access_token");
+            String refreshToken = req.getParameter("refresh_token");
             long expires_in = Long.parseLong(req.getParameter("expires_in"));
             int client_id = Integer.parseInt(req.getParameter("client_id"));
             int isthird = Integer.parseInt(req.getParameter("isthird"));
@@ -69,7 +70,7 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
             if (AccountTypeEnum.isConnect(provider)) {
                 OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
                 if (oAuthConsumer == null) {
-                    result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                     return result;
                 }
                 ConnectConfig connectConfig;
@@ -85,37 +86,42 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                     }
                 }
                 if (connectConfig == null) {
-                    result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                     return result;
                 }
                 // 获取第三方个人资料
                 ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
-                // 创建第三方账号
-                OAuthTokenVO oAuthTokenVO;
-                String uniqname;
-                ConnectToken connectToken = null;
-                if (connectUserInfoVO != null) {
-                    oAuthTokenVO = new OAuthTokenVO();
-                    uniqname = connectUserInfoVO.getNickname();
-                    oAuthTokenVO.setNickName(uniqname);
-                    oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
-                    oAuthTokenVO.setAccessToken(accessToken);
-                    oAuthTokenVO.setOpenid(openId);
-                    oAuthTokenVO.setExpiresIn(expires_in);
-                    Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
-                    if (connectAccountResult.isSuccess()) {
-                        connectToken = (ConnectToken) connectAccountResult.getModels().get("connectToken");
-                    } else {
-                        result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
-                    }
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
+                if (connectUserInfoVO == null) {
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
+                    return result;
                 }
-
-                boolean isConnectUserInfo = false;  //如果没有从搜狗方(数据库或缓存)获取到第三方的个人信息，则从第三方VO中获取个人头像信息,默认值为false,不从VO中拿
+                // 创建第三方账号
+                ConnectToken connectToken = null;
+                OAuthTokenVO oAuthTokenVO = new OAuthTokenVO();
+                String uniqname = connectUserInfoVO.getNickname();
+                oAuthTokenVO.setNickName(uniqname);
+                oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
+                oAuthTokenVO.setAccessToken(accessToken);
+                oAuthTokenVO.setRefreshToken(refreshToken);
+                oAuthTokenVO.setOpenid(openId);
+                oAuthTokenVO.setExpiresIn(expires_in);
+                oAuthTokenVO.setUnionId(connectUserInfoVO.getUnionid());
+                Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
+                if (connectAccountResult.isSuccess()) {
+                    connectToken = (ConnectToken) connectAccountResult.getModels().get("connectToken");
+                    if (connectToken == null) {
+                        return connectAccountResult;
+                    }
+                }
+                String passportId = connectToken.getPassportId();
+                if (Strings.isNullOrEmpty(passportId)) {
+                    result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
+                    return result;
+                }
+                //如果没有从搜狗方(数据库或缓存)获取到第三方的个人信息，则从第三方VO中获取个人头像信息,默认值为false,不从VO中拿
+                boolean isConnectUserInfo = false;
                 //isthird=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
                 if (isthird == 0) {
-                    String passportId = AccountTypeEnum.generateThirdPassportId(openId, providerStr);
                     ObtainAccountInfoParams params = new ObtainAccountInfoParams();
                     params.setUsername(passportId);
                     params.setClient_id(String.valueOf(client_id));
@@ -148,31 +154,24 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
                         result.getModels().put("gender", connectUserInfoVO.getGender());
                     }
                 }
-                if (connectToken != null) {
-                    String passportId = connectToken.getPassportId();
-//                result.getModels().put("passport_id", passportId);
-                    //写session 数据库
-                    Result sessionResult = sessionServerManager.createSession(passportId);
-                    String sgid;
-                    if (sessionResult.isSuccess()) {
-                        sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
-                        if (!Strings.isNullOrEmpty(sgid)) {
-                            result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
-                            result.setSuccess(true);
-                            result.setMessage("success");
-                            removeParam(result);
-                        }
-                    } else {
-                        result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
+                //写session 数据库
+                Result sessionResult = sessionServerManager.createSession(passportId);
+                String sgid;
+                if (sessionResult.isSuccess()) {
+                    sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+                    if (!Strings.isNullOrEmpty(sgid)) {
+                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                        result.setSuccess(true);
+                        result.setMessage("success");
+                        removeParam(result);
+                    }   else {
+                        result.setCode(ErrorUtil.ERR_CODE_CREATE_SGID_FAILED);
                     }
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
                 }
+                result.getModels().put("userid", passportId);
             } else {
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_LOGIN);
+                result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
             }
-
-            result.getModels().put("userid", PassportIDGenerator.generator(openId, provider));
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException");
@@ -186,7 +185,6 @@ public class SSOAfterauthManagerImpl implements SSOAfterauthManager {
             logger.error("handle oauth authroize code system error!", exp);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "handle oauth authroize code system error!");
         }
-
         return result;
     }
 

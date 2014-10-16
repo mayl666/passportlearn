@@ -16,11 +16,11 @@ public class RenrenAPIValidator extends AbstractClientValidator {
     public static Map<String, String> RENREN_OAUTH_ERROR_MAP = new HashMap<String, String>();
 
     static {
-        RENREN_OAUTH_ERROR_MAP.put("3", ErrorUtil.INVALID_OPENOAUTH_REQUEST);        /*用户没有此api权限*/
-        RENREN_OAUTH_ERROR_MAP.put("200", ErrorUtil.REQUEST_NO_AUTHORITY);
-        RENREN_OAUTH_ERROR_MAP.put("202", ErrorUtil.REQUEST_NO_AUTHORITY);        /*renren access_token无效、过期*/
-        RENREN_OAUTH_ERROR_MAP.put("2001", ErrorUtil.CONNECT_TOKEN_INVALID);
-        RENREN_OAUTH_ERROR_MAP.put("2002", ErrorUtil.CONNECT_TOKEN_INVALID);
+        RENREN_OAUTH_ERROR_MAP.put("3", ErrorUtil.ERR_CODE_CONNECT_INVALID_OAUTH);        /*用户没有此api权限*/
+        RENREN_OAUTH_ERROR_MAP.put("200", ErrorUtil.ERR_CODE_CONNECT_REQUEST_NO_AUTHORITY);
+        RENREN_OAUTH_ERROR_MAP.put("202", ErrorUtil.ERR_CODE_CONNECT_REQUEST_NO_AUTHORITY);        /*renren access_token无效、过期*/
+        RENREN_OAUTH_ERROR_MAP.put("2001", ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID);
+        RENREN_OAUTH_ERROR_MAP.put("2002", ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID);
 
     }
 

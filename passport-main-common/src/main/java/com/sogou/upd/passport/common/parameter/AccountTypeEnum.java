@@ -68,18 +68,6 @@ public enum AccountTypeEnum {
         return false;
     }
 
-    public static boolean isEmail(String account, int provider) {
-        if (Strings.isNullOrEmpty(account)) {
-            return false;
-        }
-        if (account.contains("@")) {
-            if (provider == EMAIL.getValue() || provider == UNKNOWN.getValue()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static boolean isConnect(int provider) {
         if (provider != PHONE.getValue() && provider != EMAIL.getValue() && provider != SOHU.getValue() && provider != SOGOU.getValue()) {
             return true;
@@ -128,17 +116,6 @@ public enum AccountTypeEnum {
         }
 
         return UNKNOWN;
-    }
-
-    /**
-     * 生成第三方账号的passportId
-     *
-     * @param openid
-     * @param provider
-     * @return
-     */
-    public static String generateThirdPassportId(String openid, String provider) {
-        return openid + "@" + provider + ".sohu.com";
     }
 
     /**

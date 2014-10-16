@@ -10,6 +10,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SignatureUtils;
 import com.sogou.upd.passport.manager.connect.SSOAfterauthManager;
 import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -80,7 +81,7 @@ public class ConnectSSOController extends BaseConnectController {
             }
             return result.toString();
         } finally {
-            String uidStr = AccountTypeEnum.generateThirdPassportId(params.getOpenid(), providerStr);
+            String uidStr = PassportIDGenerator.generator(params.getOpenid(), AccountTypeEnum.getProvider(providerStr));
             String userId = StringUtils.defaultIfEmpty((String) result.getModels().get("userid"), uidStr);
             UserOperationLog userOperationLog = new UserOperationLog(userId, req.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(req));
             UserOperationLogUtil.log(userOperationLog);

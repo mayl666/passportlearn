@@ -93,13 +93,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String code = oar.getCode();
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             if (oAuthConsumer == null) {
-                result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                 return result;
             }
             //根据code值获取access_token
             ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
             if (connectConfig == null) {
-                result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                 return result;
             }
             String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain, thirdInfo);

@@ -26,6 +26,7 @@ import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientReques
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectRelationService;
@@ -124,7 +125,16 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
         Result result = new APIResultSupport(false);
         try {
-            String passportId = AccountTypeEnum.generateThirdPassportId(oAuthTokenVO.getOpenid(), AccountTypeEnum.getProviderStr(provider));
+            String unionId = oAuthTokenVO.getOpenid();
+            //由于微信一个开发者账号下多个Appid的unionid一样，所以微信是unionid
+            if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+                unionId = oAuthTokenVO.getUnionId();
+                if (Strings.isNullOrEmpty(unionId)) {
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_WEIXIN_UNIONID);
+                    return result;
+                }
+            }
+            String passportId = PassportIDGenerator.generator(unionId, provider);
             //1.查询account表
             Account account = accountService.queryAccountByPassportId(passportId);
             if (account == null) {

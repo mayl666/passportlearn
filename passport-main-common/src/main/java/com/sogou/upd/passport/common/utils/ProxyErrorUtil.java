@@ -129,7 +129,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.6", SYSTEM_UNKNOWN_EXCEPTION);//取得用户信息失败
         SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.8", SYSTEM_UNKNOWN_EXCEPTION);//用户名uniqname 不合法
         SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.9", SYSTEM_UNKNOWN_EXCEPTION);//用户名uniqname 已存在
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.10", CONNECT_REQUEST_FREQUENCY_LIMIT);//调用超限（5分钟调用超过了1000次）
+        SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.10", ERR_CODE_CONNECT_REQUEST_FREQUENCY_LIMIT);//调用超限（5分钟调用超过了1000次）
         SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.11", SYSTEM_UNKNOWN_EXCEPTION);//加V用户不能修改uniqname
 
         //checkuniqname 检查用户昵称
@@ -153,13 +153,13 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("get.1001", ERR_CODE_COM_REQURIE);     //缺少必须参数
         SHPPERRCODE_SGPPERRCODE_MAP.put("get.1002", INTERNAL_REQUEST_INVALID);     //code值无效
         SHPPERRCODE_SGPPERRCODE_MAP.put("get.1003", ERR_CODE_CONNECT_INVALID_PARAMETER);     //参数无效
-        SHPPERRCODE_SGPPERRCODE_MAP.put("get.1102", CONNECT_TOKEN_INVALID);     //access_token过期
+        SHPPERRCODE_SGPPERRCODE_MAP.put("get.1102", ERR_CODE_CONNECT_TOKEN_INVALID);     //access_token过期
         SHPPERRCODE_SGPPERRCODE_MAP.put("get.1103", ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND); //找不到access_token
         SHPPERRCODE_SGPPERRCODE_MAP.put("get.1104", ERR_CODE_CONNECT_OPENAPI_ERROR); //第三方返回openapi调用失败
         SHPPERRCODE_SGPPERRCODE_MAP.put("get.1109", ERR_CODE_CONNECT_NOT_SUPPORTED); //SOHU暂时不支持此第三方的API调用
 
         //getuserinfo 获取第三方用户信息
-        SHPPERRCODE_SGPPERRCODE_MAP.put("info.1102", CONNECT_TOKEN_INVALID);     //access_token过期
+        SHPPERRCODE_SGPPERRCODE_MAP.put("info.1102", ERR_CODE_CONNECT_TOKEN_INVALID);     //access_token过期
         SHPPERRCODE_SGPPERRCODE_MAP.put("info.1103", ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND); //找不到access_token
         SHPPERRCODE_SGPPERRCODE_MAP.put("info.1104", ERR_CODE_CONNECT_OPENAPI_ERROR); //第三方返回openapi调用失败
 

@@ -24,7 +24,7 @@ public class AuthzCodeValidator extends AbstractClientValidator {
         String error = response.getParam(OAuth.OAUTH_ERROR);
         if (!StringUtils.isEmpty(error)) {
             String errorDesc = response.getParam(OAuth.OAUTH_ERROR_DESCRIPTION);
-            throw OAuthProblemException.error(ErrorUtil.CONNECT_USER_DENIED_LOGIN).description(errorDesc);
+            throw OAuthProblemException.error(ErrorUtil.ERR_CODE_CONNECT_USER_DENIED_LOGIN).description(errorDesc);
         }
         //QQ校验是否是用户取消授权
         String usercancel=response.getParam(QQOAuth.USERCANCEL);

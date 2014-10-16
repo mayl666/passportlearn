@@ -70,7 +70,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         } else if (provider == AccountTypeEnum.BAIDU.getValue()) {
             oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, BaiduJSONAccessTokenResponse.class);
         } else {
-            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+            throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
         }
         return oauthResponse;
     }
@@ -105,7 +105,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         } else if (AccountTypeEnum.WEIXIN.getValue() == provider) {
             response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONAccessTokenResponse.class);
         } else {
-            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+            throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
         }
         OAuthTokenVO oAuthTokenVO = response.getOAuthTokenVO();
         return oAuthTokenVO;
@@ -142,7 +142,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                     .setAccessToken(accessToken).buildQueryMessage(BaiduUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, BaiduUserAPIResponse.class);
         } else {
-            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+            throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
         }
         if (response != null) {
             userProfileFromConnect = response.toUserInfo();
@@ -188,7 +188,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             WeixinJSONVerifyAccessTokenResponse response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONVerifyAccessTokenResponse.class);
             oAuthTokenVO = response.getOAuthTokenVO();
         } else {
-            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+            throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
         }
         return oAuthTokenVO;  //To change body of implemented methods use File | Settings | File Templates.
     }

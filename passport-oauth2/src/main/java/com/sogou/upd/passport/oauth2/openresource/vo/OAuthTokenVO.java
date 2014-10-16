@@ -15,6 +15,7 @@ public class OAuthTokenVO {
     private String openidSecret;  // openid密钥
     private String ip;
     private ConnectUserInfoVO ConnectUserInfoVO; // 第三方用户信息
+    private String unionId; //微信的同一个开发者账号下多Appid对应的用户唯一标识
 
     public OAuthTokenVO() {
     }
@@ -115,5 +116,13 @@ public class OAuthTokenVO {
 
     public void setConnectUserInfoVO(ConnectUserInfoVO connectUserInfoVO) {
         ConnectUserInfoVO = connectUserInfoVO;
+    }
+
+    public String getUnionId() {
+        return unionId;
+    }
+
+    public void setUnionId(String unionId) {
+        this.unionId = unionId;
     }
 }
