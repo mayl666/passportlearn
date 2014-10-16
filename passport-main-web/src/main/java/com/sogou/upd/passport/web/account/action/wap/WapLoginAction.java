@@ -76,7 +76,11 @@ public class WapLoginAction extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            response.sendRedirect(getIndexErrorReturnStr(wapIndexParams.getRu(), result.getMessage()));
+            String ru = wapIndexParams.getRu();
+            if(validateResult.contains("域名不正确")){  // TODO 最好是在RuValidator统一修改
+                ru = CommonConstant.DEFAULT_WAP_URL;
+            }
+            response.sendRedirect(getIndexErrorReturnStr(ru, result.getMessage()));
             return "empty";
         }
 
