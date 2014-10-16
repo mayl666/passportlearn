@@ -125,7 +125,8 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
         Result result = new APIResultSupport(false);
         try {
-            String unionId = oAuthTokenVO.getOpenid();
+            String openId = oAuthTokenVO.getOpenid(); // 第三方返回的openid，并不一定是用户的唯一标识(例如：微信）
+            String unionId = openId;   // 用户的唯一标识
             //由于微信一个开发者账号下多个Appid的unionid一样，所以微信是unionid
             if (provider == AccountTypeEnum.WEIXIN.getValue()) {
                 unionId = oAuthTokenVO.getUnionId();
@@ -138,7 +139,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             //1.查询account表
             Account account = accountService.queryAccountByPassportId(passportId);
             if (account == null) {
-                account = accountService.initialAccount(oAuthTokenVO.getOpenid(), null, false, oAuthTokenVO.getIp(), provider);
+                account = accountService.initialAccount(unionId, null, false, oAuthTokenVO.getIp(), provider);
                 if (account == null) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     return result;
@@ -153,9 +154,9 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 return result;
             }
             //3.connect_relation新增或修改
-            ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
+            ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(openId, provider, appKey);
             if (connectRelation == null) {
-                connectRelation = newConnectRelation(appKey, passportId, oAuthTokenVO.getOpenid(), provider);
+                connectRelation = newConnectRelation(appKey, passportId, openId, provider);
                 isSuccess = connectRelationService.initialConnectRelation(connectRelation);
             }
             if (!isSuccess) {

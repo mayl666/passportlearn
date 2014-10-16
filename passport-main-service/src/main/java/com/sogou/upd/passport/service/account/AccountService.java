@@ -20,6 +20,7 @@ public interface AccountService {
 
     /**
      * 初始化非第三方用户账号
+     * @param username 用户的唯一标识
      */
     public Account initialAccount(String username, String password, boolean needMD5, String ip, int provider)
             throws ServiceException;
