@@ -14,7 +14,7 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 public class UsernameParams {
     @Length(min = 0, max = 100, message = "用户名长度错误")
-//    @NotBlank(message = "账号不允许为空")
+//    @NotBlank(message = "用户名不允许为空")
     protected String username;
 
     public String getUsername() {
