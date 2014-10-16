@@ -13,7 +13,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * To change this template use File | Settings | File Templates.
  */
 public class UsernameParams {
-    @Length(min = 1, max = 100, message = "用户名长度错误")
+    @Length(min = 0, max = 100, message = "用户名长度错误")
 //    @NotBlank(message = "账号不允许为空")
     protected String username;
 
