@@ -249,7 +249,7 @@ public class PCAccountController extends BaseController {
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         String ru = authPcTokenParams.getRu();
         String ua = request.getHeader(CommonConstant.USER_AGENT);
-        ua = ua.equals("sogou_ime") ? ua : ""; //输入法的标识
+        ua = ua.contains(CommonConstant.SOGOU_IME_UA) ? ua : ""; //输入法的标识
         if (!Strings.isNullOrEmpty(validateResult)) {
             if (!Strings.isNullOrEmpty(ru)) {
                 response.sendRedirect(buildRedirectUrl(ru, 1)); //status=1表示参数错误
