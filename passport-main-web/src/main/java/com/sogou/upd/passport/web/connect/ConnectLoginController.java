@@ -16,7 +16,6 @@ import com.sogou.upd.passport.web.UserOperationLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,12 +45,13 @@ public class ConnectLoginController extends BaseConnectController {
         String providerStr = connectLoginParams.getProvider();
         String httpOrHttps = getProtocol(req);
         String ua = req.getHeader(CommonConstant.USER_AGENT);
+        ua = ua.equals("sogou_ime") ? ua : ""; //搜狗输入法需要传递ua参数
         try {
             String validateResult = ControllerHelper.validateParams(connectLoginParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
                 url = buildAppErrorRu(type, providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 res.sendRedirect(url);
-                return ;
+                return;
             }
 
             int provider = AccountTypeEnum.getProvider(providerStr);
@@ -80,6 +80,7 @@ public class ConnectLoginController extends BaseConnectController {
             UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
             userOperationLog.putOtherMessage("ref", connectLoginParams.getRu());
             userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
+            userOperationLog.putOtherMessage("ua", ua);
             UserOperationLogUtil.log(userOperationLog);
         }
     }
