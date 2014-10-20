@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -45,7 +46,7 @@ public class WapResetPwdManagerImpl implements WapResetPwdManager {
     private AccountSecureService accountSecureService;
 
     @Override
-    public Result checkMobileCodeResetPwd(String mobile, int clientId, String smsCode) throws Exception {
+    public Result checkMobileCodeResetPwd(String mobile, int clientId, String smsCode, boolean needScode) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
@@ -60,7 +61,9 @@ public class WapResetPwdManagerImpl implements WapResetPwdManager {
             }
             result.setSuccess(true);
             result.setMessage("手机号与验证码匹配成功");
-            result.setDefaultModel("scode", accountSecureService.getSecureCodeResetPwd(passportId, clientId));
+            if (needScode) {
+                result.setDefaultModel("scode", accountSecureService.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
+            }
             result.setDefaultModel("userid", passportId);
             return result;
         } catch (ServiceException e) {
@@ -97,6 +100,9 @@ public class WapResetPwdManagerImpl implements WapResetPwdManager {
                 }
             }
             result = secureManager.sendMobileCode(mobile, Integer.parseInt(client_id), AccountModuleEnum.RESETPWD);
+            if (result.isSuccess()) {
+                result.setDefaultModel("userid", passportId);
+            }
         } catch (Exception e) {
             logger.error("send mobile code Fail, mobile:" + mobile, e);
         } finally {

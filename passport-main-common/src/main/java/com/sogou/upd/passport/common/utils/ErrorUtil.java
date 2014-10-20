@@ -507,7 +507,7 @@ public class ErrorUtil {
 
         //找回密码相关
         ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_LIMITED, "您一天内提交的找回密码请求次数超过限制");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_SCODE_FAILED, "您的链接无效或者参数有误");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_SCODE_FAILED, "无效链接");
         ERR_CODE_MSG_MAP.put(ERR_CODE_FINDPWD_EMAIL_FAILED, "找回密码邮件已失效");
 
         //RSA

@@ -9,18 +9,13 @@ import javax.validation.constraints.Min;
  * Created by denghua on 14-4-28.
  */
 public class RegMobileParams {
-
-
     @UserName
     @NotBlank(message = "用户名不允许为空")
     protected String username;
-
-
     @Min(0)
     protected int client_id; //应用id
-
     @NotBlank(message = "密码不允许为空")
-    private String password; //md5
+    protected String password; //md5
     @NotBlank(message = "手机验证码不允许为空")
     private String captcha;
     private String ip;

@@ -50,7 +50,7 @@ public class SGHttpClient {
     /**
      * 最大连接数
      */
-    protected final static int MAX_TOTAL_CONNECTIONS = 1000;
+    protected final static int MAX_TOTAL_CONNECTIONS = 1500;
     /**
      * 获取连接的最大等待时间
      */
@@ -58,7 +58,7 @@ public class SGHttpClient {
     /**
      * 每个路由最大连接数
      */
-    protected final static int MAX_ROUTE_CONNECTIONS = 200;
+    protected final static int MAX_ROUTE_CONNECTIONS = 500;
     /**
      * 读取超时时间
      */

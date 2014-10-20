@@ -42,10 +42,10 @@ public class HttpClient4 extends ConnectHttpClient {
         //性能分析
         StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         URI location;
-        String url="";
+        String url = "";
         try {
             location = new URI(request.getLocationUri());
-            url= request.getLocationUri();
+            url = request.getLocationUri();
         } catch (URISyntaxException e) {
             // URL表达式错误
             log.error("[HttpClient4] URL syntax error :", e);
@@ -61,8 +61,8 @@ public class HttpClient4 extends ConnectHttpClient {
                 ((HttpPost) req).setEntity(entity);
             } else {
                 req = new HttpGet(location);
-                if(url.indexOf("?") >0){
-                    url = url.substring(0,url.indexOf("?"));
+                if (url.indexOf("?") > 0) {
+                    url = url.substring(0, url.indexOf("?"));
                 }
             }
             if (headers != null && !headers.isEmpty()) {
@@ -90,7 +90,7 @@ public class HttpClient4 extends ConnectHttpClient {
             stopWatch(stopWatch, url, "failed");
             throw e;
         } catch (Exception e) {
-            log.warn("[HttpClient4] Execute Http Request Exception!", e);
+            log.warn("[HttpClient4] Execute Http Request Exception! RequestBody:" + request.getBody(), e);
             stopWatch(stopWatch, url, "failed");
             throw new OAuthProblemException(ErrorUtil.HTTP_CLIENT_REQEUST_FAIL);
         } finally {
