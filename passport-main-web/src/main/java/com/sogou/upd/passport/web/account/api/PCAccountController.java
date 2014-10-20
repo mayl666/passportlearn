@@ -282,7 +282,7 @@ public class PCAccountController extends BaseController {
         String resultCode = StringUtil.defaultIfEmpty(authTokenResult.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), authPcTokenParams.getAppid(), resultCode, getIp(request));
         userOperationLog.putOtherMessage("accesstoken", authPcTokenParams.getToken());
-        userOperationLog.putOtherMessage("ua", ua);
+        userOperationLog.putOtherMessage(CommonConstant.USER_AGENT, ua);
         UserOperationLogUtil.log(userOperationLog);
 
         //重定向生成cookie

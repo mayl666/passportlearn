@@ -80,7 +80,7 @@ public class ConnectLoginController extends BaseConnectController {
             UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
             userOperationLog.putOtherMessage("ref", connectLoginParams.getRu());
             userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
-            userOperationLog.putOtherMessage("ua", ua);
+            userOperationLog.putOtherMessage(CommonConstant.USER_AGENT, ua);
             UserOperationLogUtil.log(userOperationLog);
         }
     }
