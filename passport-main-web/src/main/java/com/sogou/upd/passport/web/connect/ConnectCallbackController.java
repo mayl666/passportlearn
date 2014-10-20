@@ -78,9 +78,6 @@ public class ConnectCallbackController extends BaseConnectController {
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 model.addAttribute("uniqname", Coder.encode((String) result.getModels().get("uniqname"), "UTF-8"));  //qq的昵称会出现特殊字符需url编码
                 model.addAttribute("result", result.getModels().get("result"));
-                if(!Strings.isNullOrEmpty(ua) && ua.contains(CommonConstant.SOGOU_IME_UA)){     // ua=sogou_ime时，connecterr.vm不需要windows.close()
-                    model.addAttribute("appname",CommonConstant.SOGOU_IME_UA); // vm没有contains函数，只能==
-                }
                 return viewUrl;
             } else if (ConnectTypeEnum.WAP.toString().equals(type)) {
                 String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
@@ -135,6 +132,9 @@ public class ConnectCallbackController extends BaseConnectController {
         } else {
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 model.addAttribute("error", result.getModels().get("error"));
+                if(!Strings.isNullOrEmpty(ua) && ua.contains(CommonConstant.SOGOU_IME_UA)){     // ua=sogou_ime时，connecterr.vm不需要windows.close()
+                    model.addAttribute("appname",CommonConstant.SOGOU_IME_UA); // vm没有contains函数，只能==
+                }
                 return viewUrl;
             } else if (ConnectTypeEnum.PC.toString().equals(type)) {
                 return viewUrl;
