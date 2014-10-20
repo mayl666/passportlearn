@@ -49,6 +49,7 @@ public class ConnectCallbackController extends BaseConnectController {
         String ru = req.getParameter(CommonConstant.RESPONSE_RU);
         String type = Strings.isNullOrEmpty(req.getParameter("type")) ? "web" : req.getParameter("type");
         String clientIdStr = req.getParameter(CommonConstant.CLIENT_ID);
+        String ua = req.getParameter(CommonConstant.USER_AGENT);
         if (Strings.isNullOrEmpty(clientIdStr)) {
             res.sendRedirect(ru);
             return "empty";
@@ -76,6 +77,9 @@ public class ConnectCallbackController extends BaseConnectController {
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 model.addAttribute("uniqname", Coder.encode((String) result.getModels().get("uniqname"), "UTF-8"));  //qq的昵称会出现特殊字符需url编码
                 model.addAttribute("result", result.getModels().get("result"));
+                if(!Strings.isNullOrEmpty(ua)){     // ua=sogou_ime时，connecterr.vm不需要windows.close()
+                    model.addAttribute("appname", ua);
+                }
                 return viewUrl;
             } else if (ConnectTypeEnum.WAP.toString().equals(type)) {
                 String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);

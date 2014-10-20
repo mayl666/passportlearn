@@ -111,6 +111,7 @@ public class CommonConstant {
 
     public static final String HTTPS_HEADER = "X-Https";
     public static final String HTTPS_VALUE = "https";
+    public static final String USER_AGENT = "User-Agent";
 
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();

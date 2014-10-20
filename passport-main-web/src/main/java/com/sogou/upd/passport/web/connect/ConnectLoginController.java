@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -44,6 +45,7 @@ public class ConnectLoginController extends BaseConnectController {
         String ru = connectLoginParams.getRu();
         String providerStr = connectLoginParams.getProvider();
         String httpOrHttps = getProtocol(req);
+        String ua = req.getHeader(CommonConstant.USER_AGENT);
         try {
             String validateResult = ControllerHelper.validateParams(connectLoginParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -66,7 +68,7 @@ public class ConnectLoginController extends BaseConnectController {
             }
 
             String uuid = UUID.randomUUID().toString();
-            url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps);
+            url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps, ua);
             res.sendRedirect(url);
             return;
         } catch (OAuthProblemException e) {
