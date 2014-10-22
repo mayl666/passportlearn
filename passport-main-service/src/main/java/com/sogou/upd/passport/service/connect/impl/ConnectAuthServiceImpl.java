@@ -69,6 +69,8 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, TaobaoJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.BAIDU.getValue()) {
             oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, BaiduJSONAccessTokenResponse.class);
+        } else if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONAccessTokenResponse.class);
         } else {
             throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
         }
@@ -172,25 +174,6 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             }
         }
         return null;
-    }
-
-    @Override
-    public OAuthTokenVO verifyAccessToken(String openid, String accessToken, ConnectConfig connectConfig) throws IOException, OAuthProblemException {
-        int provider = connectConfig.getProvider();
-        OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-        if (oAuthConsumer == null) {
-            return null;
-        }
-        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.verifyTokenLocation(oAuthConsumer.getWebUserAuthzUrl())
-                .setOpenid(openid).setAccessToken(accessToken).buildQueryMessage(OAuthAuthzClientRequest.class);
-        OAuthTokenVO oAuthTokenVO;
-        if (provider == AccountTypeEnum.WEIXIN.getValue()) {
-            WeixinJSONVerifyAccessTokenResponse response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONVerifyAccessTokenResponse.class);
-            oAuthTokenVO = response.getOAuthTokenVO();
-        } else {
-            throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
-        }
-        return oAuthTokenVO;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
