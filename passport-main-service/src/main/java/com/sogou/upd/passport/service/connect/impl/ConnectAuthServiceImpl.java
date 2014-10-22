@@ -56,7 +56,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         String appSecret = connectConfig.getAppSecret();
 
         OAuthAuthzClientRequest request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getAccessTokenUrl())
-                .setAppKey(appKey).setAppSecret(appSecret).setRedirectURI(redirectUrl).setCode(code)
+                .setAppKey(appKey, provider).setAppSecret(appSecret, provider).setRedirectURI(redirectUrl).setCode(code)
                 .setGrantType(GrantTypeEnum.AUTHORIZATION_CODE).buildBodyMessage(OAuthAuthzClientRequest.class);
         OAuthAccessTokenResponse oauthResponse;
         if (provider == AccountTypeEnum.QQ.getValue()) {
@@ -90,10 +90,10 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         if (AccountTypeEnum.WEIXIN.getValue() == provider) {
             //微信的刷新token为GET方式
             request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getRefreshAccessTokenUrl())
-                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey).setRefreshToken(refreshToken).buildQueryMessage(OAuthAuthzClientRequest.class);
+                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey, provider).setRefreshToken(refreshToken).buildQueryMessage(OAuthAuthzClientRequest.class);
         } else {
             request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getRefreshAccessTokenUrl())
-                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey).setAppSecret(appSecret)
+                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey, provider).setAppSecret(appSecret, provider)
                     .setRefreshToken(refreshToken).buildBodyMessage(OAuthAuthzClientRequest.class);
         }
         OAuthAccessTokenResponse response;

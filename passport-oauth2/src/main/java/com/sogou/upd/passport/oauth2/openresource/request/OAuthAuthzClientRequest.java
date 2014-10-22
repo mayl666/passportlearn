@@ -134,13 +134,21 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
             return this;
         }
 
-        public TokenRequestBuilder setAppKey(String appKey) {
-            this.parameters.put(OAuth.OAUTH_CLIENT_ID, appKey);
+        public TokenRequestBuilder setAppKey(String appKey, int provider) {
+            if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+                this.parameters.put(OAuth.OAUTH_WEIXIN_CLIENT_ID, appKey);
+            } else {
+                this.parameters.put(OAuth.OAUTH_CLIENT_ID, appKey);
+            }
             return this;
         }
 
-        public TokenRequestBuilder setAppSecret(String appSecret) {
-            this.parameters.put(OAuth.OAUTH_CLIENT_SECRET, appSecret);
+        public TokenRequestBuilder setAppSecret(String appSecret, int provider) {
+            if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+                this.parameters.put(OAuth.OAUTH_WEIXIN_CLIENT_SECRET, appSecret);
+            } else {
+                this.parameters.put(OAuth.OAUTH_CLIENT_SECRET, appSecret);
+            }
             return this;
         }
 
