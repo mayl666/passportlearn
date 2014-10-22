@@ -19,7 +19,7 @@ public enum ConnectDomainEnum {
     SHURUFA("shurufa.qq.com"), //shurufa.qq.com
     PY("py.qq.com"), //py.qq.com
     PINYIN("pinyin.qq.com"), //pinyin.qq.com
-    WUBI(" wubi.qq.com"), // wubi.qq.com
+    WUBI("wubi.qq.com"), // wubi.qq.com
     SHURU("shuru.qq.com"), //shuru.qq.com
     PINYIN_CN("qq.pinyin.cn"), //qq.pinyin.cn
     TEEMO("teemo.cn"); // www.teemo.cn
