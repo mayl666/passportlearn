@@ -49,6 +49,7 @@ public class ConnectCallbackController extends BaseConnectController {
         String ru = req.getParameter(CommonConstant.RESPONSE_RU);
         String type = Strings.isNullOrEmpty(req.getParameter("type")) ? "web" : req.getParameter("type");
         String clientIdStr = req.getParameter(CommonConstant.CLIENT_ID);
+        String ua = req.getParameter(CommonConstant.USER_AGENT);
         if (Strings.isNullOrEmpty(clientIdStr)) {
             res.sendRedirect(ru);
             return "empty";
@@ -71,6 +72,7 @@ public class ConnectCallbackController extends BaseConnectController {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, req.getRequestURI(), req.getParameter(CommonConstant.CLIENT_ID), result.getCode(), getIp(req));
             userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
             userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(req, "YYID"));
+            userOperationLog.putOtherMessage(CommonConstant.USER_AGENT, ua);
             UserOperationLogUtil.log(userOperationLog);
 
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
@@ -80,7 +82,6 @@ public class ConnectCallbackController extends BaseConnectController {
             } else if (ConnectTypeEnum.WAP.toString().equals(type)) {
                 String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
                 ServletUtil.setCookie(res, LoginConstant.COOKIE_SGID, sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
-
                 res.sendRedirect(viewUrl);
                 return "empty";
             } else if (ConnectTypeEnum.PC.toString().equals(type)) {
@@ -131,6 +132,9 @@ public class ConnectCallbackController extends BaseConnectController {
         } else {
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 model.addAttribute("error", result.getModels().get("error"));
+                if(!Strings.isNullOrEmpty(ua) && ua.contains(CommonConstant.SOGOU_IME_UA)){     // ua=sogou_ime时，connecterr.vm不需要windows.close()
+                    model.addAttribute("appname",CommonConstant.SOGOU_IME_UA); // vm没有contains函数，只能==
+                }
                 return viewUrl;
             } else if (ConnectTypeEnum.PC.toString().equals(type)) {
                 return viewUrl;

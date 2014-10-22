@@ -66,7 +66,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     private ConnectAuthService connectAuthService;
 
     @Override
-    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip, String httpOrHttps) throws OAuthProblemException {
+    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip, String httpOrHttps, String userAgent) throws OAuthProblemException {
         OAuthConsumer oAuthConsumer;
         OAuthAuthzClientRequest request;
         ConnectConfig connectConfig;
@@ -80,7 +80,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             }
 
             String redirectURI = ConnectManagerHelper.constructRedirectURI(clientId, connectLoginParams.getRu(), connectLoginParams.getType(),
-                    connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(), connectLoginParams.getDomain(), connectLoginParams.getThirdInfo());
+                    connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(), connectLoginParams.getDomain(), connectLoginParams.getThirdInfo(), userAgent);
             String scope = connectConfig.getScope();
             String appKey = connectConfig.getAppKey();
             String connectType = connectLoginParams.getType();

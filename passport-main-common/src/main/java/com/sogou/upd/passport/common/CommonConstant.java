@@ -29,6 +29,8 @@ public class CommonConstant {
     public static final String PC_REDIRECT_GETUSERINFO = "getuserinfo"; //跳转到个人中心页面
     public static final String PC_REDIRECT_AVATARURL = "avatarurl"; //跳转到修改头像页面
     public static final String PC_REDIRECT_PASSWORD = "password"; //跳转到修改密码页面
+    public static final String SOGOU_IME_UA = "sogou_ime"; //搜狗输入法header里的User-Agent标识
+
     //双读异常原因
     public static final String AUTH_MESSAGE = "update-pwd-bindmobile"; //用来读分离时记log时用，主账号有修改绑定手机或密码操作
     public static final String CHECK_MESSAGE = "update-bindmobile"; //用来读分离时记log时用,检查用户名是否可用时，主账号有修改绑定手机操作
@@ -111,6 +113,7 @@ public class CommonConstant {
 
     public static final String HTTPS_HEADER = "X-Https";
     public static final String HTTPS_VALUE = "https";
+    public static final String USER_AGENT = "User-Agent";
 
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
