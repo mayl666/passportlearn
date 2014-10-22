@@ -55,22 +55,22 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         String appKey = connectConfig.getAppKey();
         String appSecret = connectConfig.getAppSecret();
 
-        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getAccessTokenUrl())
+        OAuthAuthzClientRequest.TokenRequestBuilder builder = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getAccessTokenUrl())
                 .setAppKey(appKey, provider).setAppSecret(appSecret, provider).setRedirectURI(redirectUrl).setCode(code)
-                .setGrantType(GrantTypeEnum.AUTHORIZATION_CODE).buildBodyMessage(OAuthAuthzClientRequest.class);
+                .setGrantType(GrantTypeEnum.AUTHORIZATION_CODE);
         OAuthAccessTokenResponse oauthResponse;
         if (provider == AccountTypeEnum.QQ.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, QQJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, QQJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.SINA.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, SinaJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, SinaJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.RENREN.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, RenrenJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, RenrenJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.TAOBAO.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, TaobaoJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, TaobaoJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.BAIDU.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, BaiduJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, BaiduJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.WEIXIN.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildQueryMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.GET, WeixinJSONAccessTokenResponse.class);
         } else {
             throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
         }
