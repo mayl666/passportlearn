@@ -1,9 +1,8 @@
 package com.sogou.upd.passport.manager.form;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.validation.constraints.Domain;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
-import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
 import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.AssertTrue;
@@ -25,21 +24,14 @@ public class WebLoginParams extends BaseLoginParams {
     @Ru
     private String ru;//登陆来源
 
+    @Ru
     private String xd; // 跨域通信所用字段，直接返回 TODO 应该加ru限制，需要完备测试后再加
 
     private String module; // 登录类型（非密码型），quicklogin--已检测到登录态的快速登录
 
     private String key; //其他登录类型（非密码型）需验证的登录标识
-
+    @Domain
     private String domain;  // 非sogou.com域名的业务线使用，登录成功后种非sogou.com域的cookie
-
-    @AssertTrue(message = "不支持的domain")
-    private boolean isSupportDomain() {
-        if (!Strings.isNullOrEmpty(domain) && !ConnectDomainEnum.isSupportDomain(domain)) {
-            return false;
-        }
-        return true;
-    }
 
     public int getAutoLogin() {
         return autoLogin;

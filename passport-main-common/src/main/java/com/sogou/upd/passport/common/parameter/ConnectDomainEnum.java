@@ -1,9 +1,10 @@
-package com.sogou.upd.passport.oauth2.common.types;
+package com.sogou.upd.passport.common.parameter;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 第三方登录连接附加域类型
@@ -26,6 +27,7 @@ public enum ConnectDomainEnum {
 
     private String connectType;
     private static final List<String> DOMAIN_LIST = Lists.newArrayList();
+    private static final Map<String, String> DOMAIN_SSOCOOKIE_URL_MAP = Maps.newHashMap();
 
     static {
         DOMAIN_LIST.add(HAO.toString());
@@ -37,6 +39,12 @@ public enum ConnectDomainEnum {
         DOMAIN_LIST.add(SHURU.toString());
         DOMAIN_LIST.add(PINYIN_CN.toString());
         DOMAIN_LIST.add(TEEMO.toString());
+
+        DOMAIN_SSOCOOKIE_URL_MAP.put(HAO.toString(), "http://account.hao.qq.com/sso/setcookie");
+        DOMAIN_SSOCOOKIE_URL_MAP.put(DAOHANG.toString(), "http://account.hao.qq.com/sso/setcookie");
+        DOMAIN_SSOCOOKIE_URL_MAP.put(SHURUFA.toString(), "http://account.shurufa.qq.com/sso/setcookie");
+        DOMAIN_SSOCOOKIE_URL_MAP.put(PINYIN_CN.toString(), "http://account.qq.pinyin.cn/sso/setcookie");
+        DOMAIN_SSOCOOKIE_URL_MAP.put(TEEMO.toString(), "https://account.teemo.cn/sso/setcookie");
     }
 
     ConnectDomainEnum(String connectType) {
@@ -45,6 +53,10 @@ public enum ConnectDomainEnum {
 
     public static boolean isSupportDomain(String domain) {
         return DOMAIN_LIST.contains(domain);
+    }
+
+    public static String getSSOCookieUrl(String domain){
+        return  DOMAIN_SSOCOOKIE_URL_MAP.get(domain);
     }
 
     @Override

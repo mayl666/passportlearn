@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.form;
 
+import com.sogou.upd.passport.common.validation.constraints.Domain;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -20,6 +21,7 @@ public class SSOCookieParams {
     @NotBlank(message = "code2不允许为空")
     protected String code2;
     @NotBlank(message = "domain不允许为空")
+    @Domain
     private String domain;       //所种cookie的域
     @Ru
     protected String ru;
