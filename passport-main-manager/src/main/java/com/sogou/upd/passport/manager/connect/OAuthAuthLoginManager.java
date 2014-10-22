@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.manager.connect;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.oauth2.openresource.response.OAuthSinaSSOTokenRequest;
+import com.sogou.upd.passport.manager.form.connect.AfterAuthParams;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,5 +23,12 @@ public interface OAuthAuthLoginManager {
      * @return
      */
     public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type,String httpOrHttps);
+
+    /**
+     * 处理第三方SSO登录授权回调
+     * @param params
+     * @return
+     */
+    public Result handleSSOAfterauth(HttpServletRequest req, AfterAuthParams params, String providerStr);
 
 }
