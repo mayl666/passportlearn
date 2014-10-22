@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="format-detection" content="telephone=no">
+    <title>设置密码</title>
+    <link rel="stylesheet" href="/./static/css/wap/wap.css?t=649603" />
+</head>
+<body class="skin_$skin">
+
+<div class="login-wrap">
+        <div class="header">免费注册搜狗通行证</div>
+         #if($hasError)
+         <div class="login-msg"><img src="/./static/img/msg-ico.png" height="21" width="21"/>$!errorMsg</div>
+         #end
+        <div class="orange-skin">短信验证码已发至$mobile，如1分钟内未收到，可<a href="/wap/reg?mobile=$!mobile&v=$!v&skin=$!skin&client_id=$!client_id&ru=$!ru">重新发送</a></div>
+        <div class="login-table">
+            <form action="/wap2/reguser" method="post">
+                <table>
+                    <tr>
+                        <td>请输入短信验证码</td>
+                    </tr>
+                    <tr>
+                        <td><div class="login-input max-w"><input type="text" name="captcha" value=""/></div></td>
+                    </tr>
+                    <tr>
+                        <td>请设置帐号密码</td>
+                    </tr>
+                    <tr>
+                        <td><div class="login-input max-w">
+                            <input type="password" name="password"/>
+                            <input type="hidden" name="scode" value="$!scode">
+                            <input type="hidden" name="username" value="$!username">
+                            <input type="hidden" name="v" value="$!v">
+                            <input type="hidden" name="skin" value="$!skin">
+                            <input type="hidden" name="ru" value="$!ru">
+                            <input type="hidden" name="client_id" value="$!client_id">
+                            <input type="hidden" name="errorMsg" value="$!errorMsg">
+                        </div></td>
+                    </tr>
+                    <tr>
+                        <td><button type="submit" class="sub-btn">注册</button></td>
+                    </tr>
+                </table>
+                <p class="agreement"><input type="checkbox" name="agreement" checked="checked"/> 我已同意<a href="/">《注册服务协议》</a></p>
+            </form>
+        </div>
+        
+    </div>
+
+ <div class="footer">
+&lt; 炫彩版<i>|</i><a href="/wap/reg?v=5&skin=$!skin&client_id=$!client_id&ru=$!ru">触屏版</a>  &gt;
+<p>Copyright &copy;2014 sogou.com</p>
+</div>
+</body>
+</html>

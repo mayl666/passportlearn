@@ -11,11 +11,14 @@
 </head>
 <body>
 
+
+#if($display != "native")
 <nav class="f-f f-vc">
     <a href="#" class="backlink f-f f-hc f-vc">〈</a>
     <div class="f-1 f-f f-hc f-vc">找回密码</div>
     <a href="/wap/reg" class="f-f f-vc f-hc reglink">注册</a>
 </nav>
+#end
 
 <div class="findpwd-content">
 <p style="padding:2em 0;">如果您无法通过手机或邮箱找回密码，您还可以尝试通过以下途径与我们取得联系！</p>
@@ -32,7 +35,7 @@
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=952172" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=738285" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"

@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="format-detection" content="telephone=no">
+    <title>重设密码</title>
+    <link rel="stylesheet" href="/./static/css/wap/wap.css?t=649603" />
+</head>
+<body class="skin_$skin">
+
+
+<div class="login-wrap">
+        <div class="header">找回密码</div>
+        #if($hasError)
+        <div class="login-msg"><img src="/./static/img/msg-ico.png" height="21" width="21"/>$!errorMsg</div>
+        #end
+        
+        <div class="orange-skin">短信验证码已发至$mobile，如1分钟内未收到，可<a href="/wap/findpwd?v=$!v&skin=$!skin&client_id=$!client_id&ru=$!ru">重新发送</a></div>
+        <div class="login-table">
+            <form action="/wap2/findpwd/reset" method="post">
+                <table>
+                    <tr>
+                        <td>请输入短信验证：</td>
+                    </tr>
+                    <tr>
+                        <td><div class="login-input max-w"><input type="text" name="captcha" value="" /></div></td>
+                    </tr>
+                    <tr>
+                        <td>重新设置账号密码：</td>
+                    </tr>
+                    <tr>
+                        <td><div class="login-input max-w">
+                        <input type="password" name="password" placeholder="6-16位的字母.数字或字符" value="" />
+                        <input type="hidden" name="scode" value="$!scode">
+                        <input type="hidden" name="username" value="$!username">
+                        <input type="hidden" name="v" value="$!v">
+                        <input type="hidden" name="skin" value="$!skin">
+                        <input type="hidden" name="ru" value="$!ru">
+                        <input type="hidden" name="client_id" value="$!client_id">
+                        <input type="hidden" name="errorMsg" value="$!errorMsg">
+                        
+                        </div></td>
+                    </tr>
+                    <tr>
+                        <td><button type="submit" class="sub-btn msg-btn">重置密码</button></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    
+    </div>
+
+
+ <div class="footer">
+&lt; 炫彩版<i>|</i><a href="/wap/findpwd?v=5&skin=$!skin&client_id=$!client_id&ru=$!ru">触屏版</a>  &gt;
+<p>Copyright &copy;2014 sogou.com</p>
+</div>
+</body>
+</html>

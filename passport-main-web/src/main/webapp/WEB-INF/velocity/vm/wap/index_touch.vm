@@ -11,11 +11,15 @@
 </head>
 <body>
 
+
+#if($display != "native")
 <nav class="f-f f-vc">
     <a href="#" class="backlink f-f f-hc f-vc">〈</a>
     <div class="f-1 f-f f-hc f-vc">登录搜狗帐号</div>
     <a href="/wap/reg" class="f-f f-vc f-hc reglink">注册</a>
 </nav>
+#end
+
 <form action="＃" method="post" class="block">
 <div class="msg f-f f-vc">
     <div class="circle red f-f f-hc f-vc hide"><div class="sprite sprite-wrong"></div></div>
@@ -81,7 +85,7 @@
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=952172" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=738285" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"
