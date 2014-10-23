@@ -317,7 +317,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
      */
     private String fillDisplay(String type, String from, int provider) {
         String display = "";
-        if (ConnectTypeEnum.isMobileApp(type) || isMobileDisplay(type, from)) {
+        if (ConnectTypeEnum.isMobileApp(type) || isMobileDisplay(type, from) || ConnectTypeEnum.isMobileWap(type)) {
             switch (provider) {
                 case 5:  // 人人
                     display = "touch";
