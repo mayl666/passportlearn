@@ -94,6 +94,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String thirdInfo = req.getParameter("thirdInfo"); //用于SDK端请求，返回搜狗用户信息或者低三方用户信息；
             String domain = req.getParameter("domain"); //导航qq登陆，会传此参数
             int provider = AccountTypeEnum.getProvider(providerStr);
+            int appid_type = Integer.valueOf(req.getParameter("appid_type")); //1表示用应用独立appid，0表示用passport的appid
 
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
@@ -104,12 +105,12 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 return result;
             }
             //根据code值获取access_token
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+            ConnectConfig connectConfig = queryConnectConfig(appid_type, clientId, provider);
             if (connectConfig == null) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain, thirdInfo);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain, thirdInfo, appid_type);
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
@@ -163,46 +164,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (ConnectTypeEnum.MAPP.toString().equals(type)) {
-                    if (!Strings.isNullOrEmpty(from) && "sso".equals(from)) {
-                        String sgid = "", avatarSmall = "", avatarMiddle = "", avatarLarge = "", sex = "";
-                        Result sessionResult = sessionServerManager.createSession(userId);
-                        if (!sessionResult.isSuccess()) {
-                            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
-                            return result;
-                        }
-                        sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
-                        result.setSuccess(true);
-                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
-
-                        if (!Strings.isNullOrEmpty(thirdInfo) && "0".equals(thirdInfo)) {
-                            //获取搜狗用户信息
-                            ObtainAccountInfoParams params = new ObtainAccountInfoParams();
-                            params.setUsername(passportId);
-                            params.setClient_id(String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID));
-                            params.setFields("uniqname,sex");
-                            result = accountInfoManager.getUserInfo(params);
-                            if (result.isSuccess()) {
-                                avatarLarge = (String) result.getModels().get("img_180");
-                                avatarMiddle = (String) result.getModels().get("img_50");
-                                avatarSmall = (String) result.getModels().get("img_30");
-                                uniqname = (String) result.getModels().get("uniqname");
-                                sex = (String) result.getModels().get("sex");
-                            }
-                        } else {
-                            avatarLarge = connectUserInfoVO.getAvatarLarge();
-                            avatarMiddle = connectUserInfoVO.getAvatarMiddle();
-                            avatarSmall = connectUserInfoVO.getAvatarSmall();
-                            sex = String.valueOf(connectUserInfoVO.getGender());
-                        }
-
-                        String url = buildSSOSuccessRu(ru, sgid, uniqname, sex, avatarLarge, avatarMiddle, avatarSmall, userId);
-                        result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
-                    } else {
-                        String token = tokenService.saveWapToken(userId);
-                        String url = buildMAppSuccessRu(ru, userId, token, uniqname);
-                        result.setSuccess(true);
-                        result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
-                    }
+                    String token = tokenService.saveWapToken(userId);
+                    String url = buildMAppSuccessRu(ru, userId, token, uniqname);
+                    result.setSuccess(true);
+                    result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
                 } else if (ConnectTypeEnum.MOBILE.toString().equals(type)) {
                     String s_m_u = getSMU(userId);
                     String url = buildMOBILESuccessRu(ru, userId, s_m_u, uniqname);
@@ -223,23 +188,48 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 } else if (ConnectTypeEnum.WAP.toString().equals(type)) {
                     //写session 数据库
                     Result sessionResult = sessionServerManager.createSession(userId);
-                    String sgid = null;
-                    if (sessionResult.isSuccess()) {
-                        sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
-                        if (!Strings.isNullOrEmpty(sgid)) {
-                            result.setSuccess(true);
-                            result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
-                            ru = buildWapSuccessRu(ru, sgid);
-                        }
+                    if (!sessionResult.isSuccess()) {
+                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
+                        return result;
+                    }
+                    String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+                    if (!Strings.isNullOrEmpty(sgid)) {
+                        result.setSuccess(true);
+                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                        ru = buildWapSuccessRu(ru, sgid);
                     } else {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
+                        return result;
+                    }
+                    String avatarSmall = "", avatarMiddle = "", avatarLarge = "", sex = "";
+                    if (!Strings.isNullOrEmpty(thirdInfo)) {
+                        if ("0".equals(thirdInfo)) {
+                            //获取搜狗用户信息
+                            ObtainAccountInfoParams params = new ObtainAccountInfoParams();
+                            params.setUsername(passportId);
+                            params.setClient_id(String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID));
+                            params.setFields("uniqname,sex");
+                            result = accountInfoManager.getUserInfo(params);
+                            if (result.isSuccess()) {
+                                avatarLarge = (String) result.getModels().get("img_180");
+                                avatarMiddle = (String) result.getModels().get("img_50");
+                                avatarSmall = (String) result.getModels().get("img_30");
+                                uniqname = (String) result.getModels().get("uniqname");
+                                sex = (String) result.getModels().get("sex");
+                            }
+                        } else {
+                            avatarLarge = connectUserInfoVO.getAvatarLarge();
+                            avatarMiddle = connectUserInfoVO.getAvatarMiddle();
+                            avatarSmall = connectUserInfoVO.getAvatarSmall();
+                            sex = String.valueOf(connectUserInfoVO.getGender());
+                        }
+                        ru = buildWapUserInfoSuccessRu(ru, sgid, uniqname, sex, avatarLarge, avatarMiddle, avatarSmall, userId);
                     }
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                 } else {
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                     result.setDefaultModel("refnick", uniqname);
-
                 }
             } else {
                 result = buildErrorResult(type, ru, connectAccountResult.getCode(), ErrorUtil.ERR_CODE_MSG_MAP.get(connectAccountResult.getCode()));
@@ -406,9 +396,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         if (appidType == null) {
             connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
         } else {
-            if (appidType == 0) {
-                connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
-            } else if (appidType == 1) {
+            if (appidType == 1) {
                 connectConfig = connectConfigService.querySpecifyConnectConfig(clientId, provider);
             } else {
                 connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
@@ -502,7 +490,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return ru;
     }
 
-    private String buildSSOSuccessRu(String ru, String sgid, String uniqname, String sex, String avatarLarge, String avatarMiddle, String avatarSmall, String userId) {
+    private String buildWapUserInfoSuccessRu(String ru, String sgid, String uniqname, String sex, String avatarLarge, String avatarMiddle, String avatarSmall, String userId) {
         Map params = Maps.newHashMap();
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);

@@ -26,10 +26,8 @@ public class AfterAuthParams {
     private String code;
     //微信SDK未封装code换取token接口，需要服务端封装
     private String tcode; //微信的code，如果不为空，则accesstoken、refreshtoken、openid、code为空
-
     @Min(0)
     private Integer appid_type; //如果appidtype=1，则根据应用传入的client_id查询相关的第三方appid；如果appidtype=0，则使用sogou passport的appid；
-
 
     public String getOpenid() {
         return openid;
