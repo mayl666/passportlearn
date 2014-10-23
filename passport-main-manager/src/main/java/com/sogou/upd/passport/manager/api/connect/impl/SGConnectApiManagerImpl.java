@@ -75,7 +75,8 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             int clientId = Integer.parseInt(connectLoginParams.getClient_id());
             oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             // 获取connect配置
-            connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+            int appid_type = connectLoginParams.getAppid_type();
+            connectConfig = queryConnectConfig(appid_type, clientId, provider);
             if (connectConfig == null) {
                 return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
@@ -120,6 +121,16 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         }
 
         return request.getLocationUri();
+    }
+
+    private ConnectConfig queryConnectConfig(int appidType, int clientId, int provider) {
+        ConnectConfig connectConfig;
+        if (appidType == 1) {
+            connectConfig = connectConfigService.querySpecifyConnectConfig(clientId, provider);
+        } else {
+            connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+        }
+        return connectConfig;
     }
 
     @Override
