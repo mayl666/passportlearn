@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -170,7 +171,7 @@ public class ResetPwdAction extends BaseController {
             }
 //            result.setDefaultModel("userid", passportId);    //用户输入账号的主账号
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-            result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
+            result.setDefaultModel("scode", commonManager.getSecureCode(passportId, clientId,CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
             model.addAttribute("data", result.toString());   //返回的信息包含密保手机、密保邮箱、及密保问题（找回密码不会用到此返回结果）
             passportIdLog = passportId;
         } catch (Exception e) {
@@ -208,7 +209,7 @@ public class ResetPwdAction extends BaseController {
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
             result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false, params.getRu(), params.getScode());
-            result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
+            result.setDefaultModel("scode", commonManager.getSecureCode(passportId, clientId,CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
             result.setDefaultModel("userid", passportId);
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());
         } catch (Exception e) {
@@ -241,7 +242,7 @@ public class ResetPwdAction extends BaseController {
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
             result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, true, params.getRu(), params.getScode());
-            result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
+            result.setDefaultModel("scode", commonManager.getSecureCode(passportId, clientId,CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
             result.setDefaultModel("userid", passportId);
         } catch (Exception e) {
             logger.error("sendEmailRegResetPwd Is Failed,Username is " + params.getUsername(), e);
@@ -278,7 +279,7 @@ public class ResetPwdAction extends BaseController {
             }
             ActiveEmailDO activeEmailDO = new ActiveEmailDO(username, Integer.parseInt(params.getClient_id()), params.getRu(), AccountModuleEnum.RESETPWD, toEmail, false);
             result = resetPwdManager.sendEmailResetPwd(activeEmailDO, params.getScode());
-            result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id())));
+            result.setDefaultModel("scode", commonManager.getSecureCode(params.getUsername(), Integer.parseInt(params.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
             result.setDefaultModel("userid", params.getUsername());
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());
         } catch (Exception e) {
@@ -460,7 +461,7 @@ public class ResetPwdAction extends BaseController {
         result.setMessage(message);
         result.setDefaultModel("userid", params.getUsername());
         result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-        result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(params.getUsername(), Integer.parseInt(params.getClient_id())));
+        result.setDefaultModel("scode", commonManager.getSecureCode(params.getUsername(), Integer.parseInt(params.getClient_id()), CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
         return result;
     }
 

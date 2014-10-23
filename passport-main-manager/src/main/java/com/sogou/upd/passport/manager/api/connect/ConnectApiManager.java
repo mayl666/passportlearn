@@ -21,10 +21,12 @@ public interface ConnectApiManager {
      * @param uuid               防CRSF攻击的唯一值
      * @param provider           第三方平台
      * @param ip                 登录的ip
+     * @param httpOrHttps       由于某些移动浏览器不支持https，所以需要区分
+     * @param userAgent         区分浏览器和输入法的标识，输入法userAgent=sogou_ime
      * @return
      */
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid,
-                                       int provider, String ip, String httpOrHttps) throws OAuthProblemException;
+                                       int provider, String ip, String httpOrHttps, String userAgent) throws OAuthProblemException;
 
     /**
      * 创建第三方账号

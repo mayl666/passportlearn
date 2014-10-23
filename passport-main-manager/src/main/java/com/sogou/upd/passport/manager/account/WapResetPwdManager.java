@@ -17,10 +17,11 @@ public interface WapResetPwdManager {
      * @param mobile
      * @param clientId
      * @param smsCode
+     * @param needScode
      * @return
      * @throws Exception
      */
-    public Result checkMobileCodeResetPwd(String mobile, int clientId, String smsCode) throws Exception;
+    public Result checkMobileCodeResetPwd(String mobile, int clientId, String smsCode, boolean needScode) throws Exception;
 
     /**
      * 给密保手机发送短信验证码。

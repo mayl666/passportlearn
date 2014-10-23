@@ -3,7 +3,9 @@
     <script>
 //        window.external.passport('result', '1|system_exception');
         window.external.passport('error', '${error}');
+        #if(${appname}!="sogou_ime")
         window.close();
+        #end
     </script>
 </head>
 <body></body>

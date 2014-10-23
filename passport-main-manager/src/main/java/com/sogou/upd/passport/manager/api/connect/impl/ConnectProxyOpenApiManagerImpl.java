@@ -54,6 +54,10 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
             QQHttpClient qqHttpClient = new QQHttpClient();
             String resp = qqHttpClient.api(apiUrl, serverName, sigMap, protocol);
             result = buildCommonResultByStrategy(platform, resp);
+            //对第三方API调用失败记录log
+            if (ErrorUtil.ERR_CODE_CONNECT_FAILED.equals(result.getCode()) && apiUrl.contains("get_pinyin")) {
+                logger.warn("handleConnectOpenApi error. apiUrl:{},openId:{},sigMap:{},paramsMap:{}", new Object[]{apiUrl, tokenMap.get("open_id").toString(), sigMap.toString(), paramsMap.toString()});
+            }
         } catch (ConnectException ce) {
             logger.error("OpenId Format Is Illegal:", ce);
             result.setCode(ErrorUtil.ERR_CODE_CONNECT_MAKE_SIGNATURE_ERROR);

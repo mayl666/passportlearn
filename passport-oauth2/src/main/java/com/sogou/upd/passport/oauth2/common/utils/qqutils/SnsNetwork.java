@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.oauth2.common.utils.qqutils;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -97,7 +98,7 @@ public class SnsNetwork {
         }
 
         // 设置User-Agent
-        postMethod.setRequestHeader("User-Agent", "Java OpenApiV3 SDK Client");
+        postMethod.setRequestHeader(CommonConstant.USER_AGENT, "Java OpenApiV3 SDK Client");
 
 /*        // 设置每个路由最大连接数
         httpClient.getHttpConnectionManager().getParams().setDefaultMaxConnectionsPerHost(MAX_ROUTE_CONNECTIONS);

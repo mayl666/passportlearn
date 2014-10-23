@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.WapConstant;
+import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -23,6 +24,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.WapIndexParams;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +54,6 @@ public class WapRegAction extends BaseController {
     private SessionServerManager sessionServerManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
-
 
     @RequestMapping(value = "/wap/reguser", method = RequestMethod.POST)
     @ResponseBody
@@ -160,7 +161,19 @@ public class WapRegAction extends BaseController {
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             return "wap/regist_touch";
         } else {
-            return "wap/regist_color";
+            model.addAttribute("v", WapConstant.WAP_COLOR);
+            model.addAttribute("client_id", Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? CommonConstant.SGPP_DEFAULT_CLIENTID : wapIndexParams.getClient_id());
+            model.addAttribute("ru", Strings.isNullOrEmpty(wapIndexParams.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(wapIndexParams.getRu()));
+            model.addAttribute("skin", Strings.isNullOrEmpty(wapIndexParams.getSkin()) ? CommonConstant.WAP_DEFAULT_SKIN : wapIndexParams.getSkin());
+            if (wapIndexParams.getNeedCaptcha() == 1) {
+                String token = RandomStringUtils.randomAlphanumeric(48);
+                model.addAttribute("token", token);
+                model.addAttribute("needCaptcha", true);
+                model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+            }
+            model.addAttribute("mobile", wapIndexParams.getMobile());
+            model.addAttribute("username", wapIndexParams.getUsername());
+            return "wap/regist_wap";
         }
     }
 }

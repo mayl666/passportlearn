@@ -248,6 +248,8 @@ public class PCAccountController extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         String ru = authPcTokenParams.getRu();
+        String ua = request.getHeader(CommonConstant.USER_AGENT);
+        ua = ua.contains(CommonConstant.SOGOU_IME_UA) ? ua : ""; //输入法的标识
         if (!Strings.isNullOrEmpty(validateResult)) {
             if (!Strings.isNullOrEmpty(ru)) {
                 response.sendRedirect(buildRedirectUrl(ru, 1)); //status=1表示参数错误
@@ -280,6 +282,7 @@ public class PCAccountController extends BaseController {
         String resultCode = StringUtil.defaultIfEmpty(authTokenResult.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), authPcTokenParams.getAppid(), resultCode, getIp(request));
         userOperationLog.putOtherMessage("accesstoken", authPcTokenParams.getToken());
+        userOperationLog.putOtherMessage(CommonConstant.USER_AGENT, ua);
         UserOperationLogUtil.log(userOperationLog);
 
         //重定向生成cookie
