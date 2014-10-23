@@ -28,7 +28,7 @@ public class ErrorUtil {
     public static final String ERR_SIGNATURE_OR_TOKEN = "10007";
     // 接口调用频次超限
     public static final String INVOKE_BEYOND_FREQUENCY_LIMIT = "10008";
-    // 账号不存在或异常或未激活
+    // 账号不存在
     public static final String INVALID_ACCOUNT = "10009";
     // client_id不存在
     public static final String INVALID_CLIENTID = "10010";
@@ -349,7 +349,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数");
         ERR_CODE_MSG_MAP.put(INTERNAL_REQUEST_INVALID, "内部接口code签名错误或请求超时");
-        ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
+        ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在");
         ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT, "接口调用频次超限");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(ERR_REFRESH_TOKEN, "refresh_token错误");
