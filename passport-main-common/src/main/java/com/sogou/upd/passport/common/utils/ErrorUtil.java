@@ -83,7 +83,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_MINUTELIMIT = "20204";
     // 账号不存在
     public static final String ERR_CODE_ACCOUNT_NOTHASACCOUNT = "20205";
-    // 用户名密码不正确
+    // 密码错误
     public static final String ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR = "20206";
     //手机绑定的账号不存在
     public static final String ERR_CODE_ACCOUNT_BIND_NOTEXIST = "20207";
