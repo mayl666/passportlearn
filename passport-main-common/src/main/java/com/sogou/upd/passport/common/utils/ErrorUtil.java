@@ -465,7 +465,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(INVALID_OPENOAUTH_REQUEST, "无效的OAuth2.0授权验证请求");
         ERR_CODE_MSG_MAP.put(REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERCANAEL, "用户取消授权");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NOT_SUPPORTED, "不支持此类第三方账号调用");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NOT_SUPPORTED, "不支持此类账号调用");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_PASSTHROUGH, "透传失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND, "第三方access_token不存在或失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OPENAPI_ERROR, "第三方返回openapi调用失败");
