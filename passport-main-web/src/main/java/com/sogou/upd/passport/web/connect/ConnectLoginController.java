@@ -44,8 +44,7 @@ public class ConnectLoginController extends BaseConnectController {
         String ru = connectLoginParams.getRu();
         String providerStr = connectLoginParams.getProvider();
         String httpOrHttps = getProtocol(req);
-        String ua = req.getHeader(CommonConstant.USER_AGENT);
-        ua = ua.contains(CommonConstant.SOGOU_IME_UA) ? ua : ""; //搜狗输入法需要传递ua参数,参数可能为sogou_ime或sogou_ime/7.4.0.3734
+        String ua = getHeaderUserAgent(req);
         try {
             String validateResult = ControllerHelper.validateParams(connectLoginParams);
             if (!Strings.isNullOrEmpty(validateResult)) {

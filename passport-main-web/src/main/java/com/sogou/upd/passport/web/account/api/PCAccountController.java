@@ -25,8 +25,6 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.PcAccountWebParams;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -248,8 +246,7 @@ public class PCAccountController extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         String ru = authPcTokenParams.getRu();
-        String ua = request.getHeader(CommonConstant.USER_AGENT);
-        ua = ua.contains(CommonConstant.SOGOU_IME_UA) ? ua : ""; //输入法的标识
+        String ua = getHeaderUserAgent(request);
         if (!Strings.isNullOrEmpty(validateResult)) {
             if (!Strings.isNullOrEmpty(ru)) {
                 response.sendRedirect(buildRedirectUrl(ru, 1)); //status=1表示参数错误

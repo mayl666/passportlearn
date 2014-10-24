@@ -138,6 +138,15 @@ public class BaseController {
         return cleanValue.equals(cb);
     }
 
-
+    /**
+     * 获取request header的输入法的UA标识，如果包含sogou_ime，则代表是输入法，否则返回空
+     * @param request
+     * @return
+     */
+    protected String getHeaderUserAgent(HttpServletRequest request){
+        String ua = request.getHeader(CommonConstant.USER_AGENT);
+        ua = !Strings.isNullOrEmpty(ua) && ua.contains(CommonConstant.SOGOU_IME_UA) ? ua : ""; //输入法的标识
+        return ua;
+    }
 
 }
