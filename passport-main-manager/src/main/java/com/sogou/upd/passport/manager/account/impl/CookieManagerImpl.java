@@ -44,8 +44,7 @@ import java.util.Map;
 @Component
 public class CookieManagerImpl implements CookieManager {
 
-    //    private static final Logger LOGGER = LoggerFactory.getLogger(CookieManagerImpl.class);
-    private static final Logger LOGGER = LoggerFactory.getLogger("com.sogou.upd.passport.setCookieFileAppender");
+    private static final Logger LOGGER = LoggerFactory.getLogger(CookieManagerImpl.class);
 
     private static final int SG_COOKIE_MIN_LEN = 3;
 
@@ -215,7 +214,6 @@ public class CookieManagerImpl implements CookieManager {
             if (!Strings.isNullOrEmpty(appModuleReplace)) {
                 appsMap = Splitter.on(KEY_SPLITER).withKeyValueSeparator(VALUE_SPLITER).split(appModuleReplace);
             }
-            //1110:应用市场 2002:壁纸 1100:搜狗游戏 1120:通行证
             if (appsMap.containsKey(String.valueOf(cookieApiParams.getClient_id()))) {
                 //数据筛选 shard 基数
                 int shard_count = Integer.parseInt(appsMap.get(String.valueOf(cookieApiParams.getClient_id())));
@@ -266,34 +264,8 @@ public class CookieManagerImpl implements CookieManager {
             result.setSuccess(true);
         } catch (Exception e) {
             LOGGER.error("createCookie error. userid:{},client_id:{},setNewCookie:{}", new Object[]{cookieApiParams.getUserid(), cookieApiParams.getClient_id(), setNewCookie}, e);
-        } finally {
-            //记录用户种cookie的log
-            LOGGER.info(buildSetCookieLog(cookieApiParams, setNewCookie, ppinf, result.getCode()));
         }
         return result;
-    }
-
-    /**
-     * 构建记录module替换 用户种cookie的日志
-     *
-     * @param cookieApiParams
-     * @param setNewCookie
-     * @param ppinf
-     * @return
-     */
-    private String buildSetCookieLog(CookieApiParams cookieApiParams, boolean setNewCookie, String ppinf, String resultCode) {
-        StringBuilder setCookieLog = new StringBuilder();
-        Date date = new Date();
-        FastDateFormat fastDateFormat = FastDateFormat.getInstance(DATE_FORMAT);
-        setCookieLog.append(fastDateFormat.format(date));
-        setCookieLog.append(DATA_FORMAT_TAB).append(cookieApiParams.getIp());
-        setCookieLog.append(DATA_FORMAT_TAB).append(cookieApiParams.getUserid());
-        setCookieLog.append(DATA_FORMAT_TAB).append(cookieApiParams.getClient_id());
-        setCookieLog.append(DATA_FORMAT_TAB).append(resultCode);
-        setCookieLog.append(DATA_FORMAT_TAB).append(cookieApiParams.getRu());
-        setCookieLog.append(DATA_FORMAT_TAB).append(setNewCookie == true ? 0 : 1);
-        setCookieLog.append(DATA_FORMAT_TAB).append(ppinf);
-        return setCookieLog.toString();
     }
 
     /**

@@ -38,7 +38,6 @@ import java.util.Date;
 @Component("sgRegisterApiManager")
 public class SGRegisterApiManagerImpl extends BaseProxyManager implements RegisterApiManager {
     private static Logger logger = LoggerFactory.getLogger(SGRegisterApiManagerImpl.class);
-    private static final Logger checkWriteLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothWriteSyncErrorLogger");
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -55,10 +54,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
     private RegManager regManager;
     @Autowired
     private UserNameValidator userNameValidator;
-    @Autowired
-    private RegisterApiManager proxyRegisterApiManager;
-    @Autowired
-    private TaskExecutor discardTaskExecutor;
 
     @Override
     public Result regMailUser(final RegEmailApiParams params) {
@@ -96,19 +91,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                             .SOGOU.getValue());
                     if (account != null) {
                         result = insertAccountInfo(account, result, ip);
-                        if (result.isSuccess()) {
-                            final String passportId = account.getPassportId();
-                            //写入搜狐逻辑为异步，避免搜狐服务不可用影响搜狗
-                            discardTaskExecutor.execute(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Result shResult = proxyRegisterApiManager.regMailUser(params);
-                                    if (!shResult.isSuccess()) {
-                                        LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.REGISTER, "regMailUser", "write_sh", passportId, shResult.getCode(), shResult.toString());
-                                    }
-                                }
-                            });
-                        }
                     } else {
                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     }

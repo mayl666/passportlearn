@@ -36,23 +36,6 @@
         <appender-ref ref="loginBlackListFileAppender"/>
     </logger>
 
-
-    <!--种 新老 cookie-->
-    <appender name="setCookieFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/setCookie/setCookie.log.%d{yyyy-MM-dd}</fileNamePattern>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%msg%n</pattern>
-        </encoder>
-    </appender>
-    <logger name="com.sogou.upd.passport.setCookieFileAppender" level="info" additivity="false">
-        <appender-ref ref="setCookieFileAppender"/>
-    </logger>
-
-
-
-
     <appender name="userOperationAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/useroperation/useroperation.log.%d{yyyy-MM-dd}</fileNamePattern>
