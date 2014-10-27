@@ -370,7 +370,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 oAuthTokenVO.setExpiresIn(expiresIn);
                 oAuthTokenVO.setUnionId(connectUserInfoVO.getUnionid());
                 Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
-                if (connectAccountResult.isSuccess()) {
+                if (!connectAccountResult.isSuccess()) {
+                    return connectAccountResult;
+                } else {
                     connectToken = (ConnectToken) connectAccountResult.getModels().get("connectToken");
                     if (connectToken == null) {
                         return connectAccountResult;
