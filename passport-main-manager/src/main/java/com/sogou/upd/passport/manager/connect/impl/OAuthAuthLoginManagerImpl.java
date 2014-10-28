@@ -224,10 +224,16 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
                     }
                 } else if (ConnectTypeEnum.MAPP.toString().equals(type)) {
-                    String token = tokenService.saveWapToken(userId);
-                    String url = buildMAppSuccessRu(ru, userId, token, uniqname);
-                    result.setSuccess(true);
-                    result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
+                    if (!Strings.isNullOrEmpty(from) && "sso".equals(from)) {
+                        // SDK1.08及之前的版本使用type=mapp&from=sso，1.09及之后版本使用type=wap
+                        // TODO 调用量少时去除这块兼容
+                        result = buildWapResult(result, connectUserInfoVO, userId, passportId, type, ru, thirdInfo, uniqname);
+                    } else {
+                        String token = tokenService.saveWapToken(userId);
+                        String url = buildMAppSuccessRu(ru, userId, token, uniqname);
+                        result.setSuccess(true);
+                        result.setDefaultModel(CommonConstant.RESPONSE_RU, url);
+                    }
                 } else if (ConnectTypeEnum.MOBILE.toString().equals(type)) {
                     String s_m_u = getSMU(userId);
                     String url = buildMOBILESuccessRu(ru, userId, s_m_u, uniqname);
@@ -247,45 +253,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     }
                 } else if (ConnectTypeEnum.WAP.toString().equals(type)) {
                     //写session 数据库
-                    Result sessionResult = sessionServerManager.createSession(userId);
-                    if (!sessionResult.isSuccess()) {
-                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
-                        return result;
-                    }
-                    String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
-                    if (!Strings.isNullOrEmpty(sgid)) {
-                        result.setSuccess(true);
-                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
-                        ru = buildWapSuccessRu(ru, sgid);
-                    } else {
-                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
-                        return result;
-                    }
-                    String avatarSmall = "", avatarMiddle = "", avatarLarge = "", sex = "";
-                    if (!Strings.isNullOrEmpty(thirdInfo)) {
-                        if ("0".equals(thirdInfo)) {
-                            //获取搜狗用户信息
-                            ObtainAccountInfoParams params = new ObtainAccountInfoParams();
-                            params.setUsername(passportId);
-                            params.setClient_id(String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID));
-                            params.setFields("uniqname,sex");
-                            result = accountInfoManager.getUserInfo(params);
-                            if (result.isSuccess()) {
-                                avatarLarge = (String) result.getModels().get("img_180");
-                                avatarMiddle = (String) result.getModels().get("img_50");
-                                avatarSmall = (String) result.getModels().get("img_30");
-                                uniqname = (String) result.getModels().get("uniqname");
-                                sex = (String) result.getModels().get("sex");
-                            }
-                        } else {
-                            avatarLarge = connectUserInfoVO.getAvatarLarge();
-                            avatarMiddle = connectUserInfoVO.getAvatarMiddle();
-                            avatarSmall = connectUserInfoVO.getAvatarSmall();
-                            sex = String.valueOf(connectUserInfoVO.getGender());
-                        }
-                        ru = buildWapUserInfoSuccessRu(ru, sgid, uniqname, sex, avatarLarge, avatarMiddle, avatarSmall, userId);
-                    }
-                    result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
+                    result = buildWapResult(result, connectUserInfoVO, userId, passportId, type, ru, thirdInfo, uniqname);
                 } else {
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
@@ -307,6 +275,49 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
 //            logger.error("handle oauth authroize code system error!", exp);
             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "system error!");
         }
+        return result;
+    }
+
+    private Result buildWapResult(Result result, ConnectUserInfoVO connectUserInfoVO, String userId, String passportId, String type, String ru, String thirdInfo, String uniqname) {
+        Result sessionResult = sessionServerManager.createSession(userId);
+        if (!sessionResult.isSuccess()) {
+            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
+            return result;
+        }
+        String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+        if (!Strings.isNullOrEmpty(sgid)) {
+            result.setSuccess(true);
+            result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+            ru = buildWapSuccessRu(ru, sgid);
+        } else {
+            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
+            return result;
+        }
+        String avatarSmall = "", avatarMiddle = "", avatarLarge = "", sex = "";
+        if (!Strings.isNullOrEmpty(thirdInfo)) {
+            if ("0".equals(thirdInfo)) {
+                //获取搜狗用户信息
+                ObtainAccountInfoParams params = new ObtainAccountInfoParams();
+                params.setUsername(passportId);
+                params.setClient_id(String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID));
+                params.setFields("uniqname,sex");
+                result = accountInfoManager.getUserInfo(params);
+                if (result.isSuccess()) {
+                    avatarLarge = (String) result.getModels().get("img_180");
+                    avatarMiddle = (String) result.getModels().get("img_50");
+                    avatarSmall = (String) result.getModels().get("img_30");
+                    uniqname = (String) result.getModels().get("uniqname");
+                    sex = (String) result.getModels().get("sex");
+                }
+            } else {
+                avatarLarge = connectUserInfoVO.getAvatarLarge();
+                avatarMiddle = connectUserInfoVO.getAvatarMiddle();
+                avatarSmall = connectUserInfoVO.getAvatarSmall();
+                sex = String.valueOf(connectUserInfoVO.getGender());
+            }
+            ru = buildWapUserInfoSuccessRu(ru, sgid, uniqname, sex, avatarLarge, avatarMiddle, avatarSmall, userId);
+        }
+        result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
         return result;
     }
 
