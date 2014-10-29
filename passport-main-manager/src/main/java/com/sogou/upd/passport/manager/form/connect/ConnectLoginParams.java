@@ -40,7 +40,7 @@ public class ConnectLoginParams {
 
     private String viewPage; // qq为搜狗产品定制化页面， sgIME为输入法PC端弹泡样式
     private String domain;   // qq导航所用，种附加域的cookie
-
+    @Min(0)
     private String thirdInfo = "";   // thirdInfo=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
     @Min(0)
     private Integer appid_type = 0; //appidtype=1，则根据应用传入的client_id查询相关的第三方appid；appidtype=0，则使用sogou passport的appid；
