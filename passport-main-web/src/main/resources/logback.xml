@@ -114,24 +114,10 @@
         <appender-ref ref="localAsyncAppender"/>
     </logger>
 
-    <!--双读校验用户名和密码时，当SG校验失败，SH校验成功时，记录userid-->
-    <appender name="bothWriteSyncErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/bothWriteUserSyncError/writeusererror.log.%d{yyyy-MM-dd}</fileNamePattern>
-            <!--<maxHistory>14</maxHistory>-->
-        </rollingPolicy>
-        <encoder>
-            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
-            <pattern>%msg%n</pattern>
-        </encoder>
-    </appender>
-    <logger name="com.sogou.upd.passport.bothWriteSyncErrorLogger" level="info" additivity="false">
-        <appender-ref ref="bothWriteSyncErrorAppender"/>
-    </logger>
-
     <appender name="redisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/redisMiss/redisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>14</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%d %msg %n</pattern>
@@ -144,6 +130,7 @@
     <appender name="tokenRedisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/tokenRedisMiss/redisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>14</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%d %msg %n</pattern>
@@ -156,6 +143,7 @@
     <appender name="dBRedisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/dBRedisMiss/redisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>14</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%d %msg %n</pattern>
@@ -182,6 +170,7 @@
     <appender name="httpclientFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/httpclient/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
@@ -201,6 +190,7 @@
     <appender name="webPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/webperf/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
@@ -258,6 +248,7 @@
     <appender name="kvPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/kvperf/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
