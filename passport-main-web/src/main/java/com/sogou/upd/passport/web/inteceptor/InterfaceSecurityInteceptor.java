@@ -12,9 +12,11 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -51,7 +53,11 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
         Result result = new APIResultSupport(false);
         try {
             // read request parameters
-            int clientId = Integer.parseInt(request.getParameter(CommonConstant.CLIENT_ID));
+
+            String client_id = ServletRequestUtils.getRequiredStringParameter(request, CommonConstant.CLIENT_ID);
+            int clientId = Integer.parseInt(StringUtils.trim(client_id));
+
+//            int clientId = Integer.parseInt(request.getParameter(CommonConstant.CLIENT_ID));
             long ct = Long.parseLong(request.getParameter(CommonConstant.RESQUEST_CT));
             String originalCode = request.getParameter(CommonConstant.RESQUEST_CODE);
 
