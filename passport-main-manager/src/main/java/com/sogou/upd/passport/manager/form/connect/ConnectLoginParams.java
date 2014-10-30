@@ -2,9 +2,9 @@ package com.sogou.upd.passport.manager.form.connect;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.validation.constraints.Domain;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDisplay;
-import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
@@ -39,7 +39,8 @@ public class ConnectLoginParams {
     private String ts;   //终端的实例ID
 
     private String viewPage; // qq为搜狗产品定制化页面， sgIME为输入法PC端弹泡样式
-    private String domain;   // qq导航所用，种附加域的cookie
+    @Domain
+    private String domain;   // 非sogou.com域名的业务线使用，登录成功后种非sogou.com域的cookie
     @Min(0)
     private String thirdInfo = "";   // thirdInfo=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
     @Min(0)
@@ -72,14 +73,6 @@ public class ConnectLoginParams {
     @AssertTrue(message = "不支持的type")
     private boolean isSupportType() {
         if (type != null && !ConnectTypeEnum.isSupportType(type)) {
-            return false;
-        }
-        return true;
-    }
-
-    @AssertTrue(message = "不支持的domain")
-    private boolean isSupportDomain() {
-        if (domain != null && !ConnectDomainEnum.isSupportDomain(domain)) {
             return false;
         }
         return true;

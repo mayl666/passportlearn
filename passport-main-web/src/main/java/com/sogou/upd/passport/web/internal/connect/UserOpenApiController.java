@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.internal.connect;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -56,6 +57,11 @@ public class UserOpenApiController extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
                 return result.toString();
+            }
+            int provider = AccountTypeEnum.getAccountType(params.getUserid()).getValue();
+            if(!AccountTypeEnum.isConnect(provider)){
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
+                return result;
             }
             // 调用内部接口
             result =  sgUserOpenApiManager.getUserInfo(params);

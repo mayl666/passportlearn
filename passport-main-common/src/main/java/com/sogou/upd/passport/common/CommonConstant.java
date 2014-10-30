@@ -20,8 +20,8 @@ public class CommonConstant {
     public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
     public static final int XIAOSHUO_CLIENTID = 1115; //小说client_id
     public static final int CAIPIAO_CLIENTID = 2012; //彩票client_id
+    public static final int TEEMO_CLIENTID = 2020; //teemo client_id
 
-    public static final int SOHU_PCTOKEN_LEN = 30; //SOHU token长度为30
     public static final int PWD_TYPE_EXPRESS = 0; //密码类型为明文
     public static final int PWD_TYPE_CIPHER = 1; //密码类型为密文
     public static final String SG_TOKEN_START = "SG"; //4.2版本浏览器token开始标志
@@ -29,6 +29,8 @@ public class CommonConstant {
     public static final String PC_REDIRECT_GETUSERINFO = "getuserinfo"; //跳转到个人中心页面
     public static final String PC_REDIRECT_AVATARURL = "avatarurl"; //跳转到修改头像页面
     public static final String PC_REDIRECT_PASSWORD = "password"; //跳转到修改密码页面
+    public static final String SOGOU_IME_UA = "sogou_ime"; //搜狗输入法header里的User-Agent标识
+
     //双读异常原因
     public static final String AUTH_MESSAGE = "update-pwd-bindmobile"; //用来读分离时记log时用，主账号有修改绑定手机或密码操作
     public static final String CHECK_MESSAGE = "update-bindmobile"; //用来读分离时记log时用,检查用户名是否可用时，主账号有修改绑定手机操作
@@ -80,12 +82,6 @@ public class CommonConstant {
     public static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
     public static final String WAP_DEFAULT_SKIN = "green";
 
-    public static final String HAO_CREATE_COOKIE_URL = "http://account.hao.qq.com/sso/setcookie";
-    public static final String DAOHANG_CREATE_COOKIE_URL = "http://account.daohang.qq.com/sso/setcookie";
-    public static final String SHURUFA_CREATE_COOKIE_URL = "http://account.shurufa.qq.com/sso/setcookie";   //TODO 这个以后改成统一的！！！！！ denghua
-    public static final String PINYIN_CN_CREATE_COOKIE_URL = "http://account.qq.pinyin.cn/sso/setcookie";
-    public static final String TEEMO_CN_CREATE_COOKIE_URL = "http://account.teemo.cn/sso/setcookie";
-
     public static final String PP_COOKIE_URL = "http://account.sogou.com/act/setppcookie";
 
     //web端 生成cookie并且种cookie标示
@@ -111,6 +107,7 @@ public class CommonConstant {
 
     public static final String HTTPS_HEADER = "X-Https";
     public static final String HTTPS_VALUE = "https";
+    public static final String USER_AGENT = "User-Agent";
 
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();

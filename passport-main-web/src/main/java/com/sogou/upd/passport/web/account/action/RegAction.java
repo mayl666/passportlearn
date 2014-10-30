@@ -377,7 +377,7 @@ public class RegAction extends BaseController {
                 return result.toString();
             }
             String mobile = reqParams.getMobile();
-            String userAgent = request.getHeader("User-Agent");
+            String userAgent = request.getHeader(CommonConstant.USER_AGENT);
             cInfo = request.getHeader("cinfo");
             boolean isNeedCaptcha = false;
             //只有客户端才会有此"cinfo"参数，web端和桌面端是没有的，故客户端和手机端还走第二次弹出验证码的流程

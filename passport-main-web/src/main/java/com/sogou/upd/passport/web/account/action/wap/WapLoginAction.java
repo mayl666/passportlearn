@@ -77,7 +77,7 @@ public class WapLoginAction extends BaseController {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
             String ru = wapIndexParams.getRu();
-            if(validateResult.contains("域名不正确")){  // TODO 最好是在RuValidator统一修改
+            if (validateResult.contains("域名不正确")) {  // TODO 最好是在RuValidator统一修改
                 ru = CommonConstant.DEFAULT_WAP_URL;
             }
             response.sendRedirect(getIndexErrorReturnStr(ru, result.getMessage()));
@@ -125,6 +125,7 @@ public class WapLoginAction extends BaseController {
     /**
      * H5页面登录、SDK登录接口、wap1.0页面登录，V=0、1、5
      * TODO 后续V=1应该放在/wap2/login里
+     *
      * @param request
      * @param response
      * @param loginParams
@@ -192,7 +193,7 @@ public class WapLoginAction extends BaseController {
             if (needCaptcha) {
                 isNeedCaptcha = 1;
             }
-            String defaultMessage = "用户名或者密码错误";
+            String defaultMessage = result.getMessage();
             //不直接返回直接的文案告诉用户中了安全限制
             if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
@@ -200,14 +201,9 @@ public class WapLoginAction extends BaseController {
                 defaultMessage = "您登陆过于频繁，请稍后再试。";
             }
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
-                if (needCaptcha) {
-                    if (result.getCode() != ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR) {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                        result.setMessage("验证码错误或已过期");
-                    }
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                    result.setMessage("用户名或者密码错误");
+                if (needCaptcha && result.getCode() != ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                    result.setMessage("验证码错误或已过期");
                 }
                 writeResultToResponse(response, result);
                 return "empty";

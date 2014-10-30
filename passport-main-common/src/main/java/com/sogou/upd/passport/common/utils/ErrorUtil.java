@@ -28,7 +28,7 @@ public class ErrorUtil {
     public static final String ERR_SIGNATURE_OR_TOKEN = "10007";
     // 接口调用频次超限
     public static final String INVOKE_BEYOND_FREQUENCY_LIMIT = "10008";
-    // 账号不存在或异常或未激活
+    // 账号不存在
     public static final String INVALID_ACCOUNT = "10009";
     // client_id不存在
     public static final String INVALID_CLIENTID = "10010";
@@ -83,7 +83,7 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_MINUTELIMIT = "20204";
     // 账号不存在
     public static final String ERR_CODE_ACCOUNT_NOTHASACCOUNT = "20205";
-    // 用户名密码不正确
+    // 密码错误
     public static final String ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR = "20206";
     //手机绑定的账号不存在
     public static final String ERR_CODE_ACCOUNT_BIND_NOTEXIST = "20207";
@@ -353,7 +353,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数");
         ERR_CODE_MSG_MAP.put(INTERNAL_REQUEST_INVALID, "内部接口code签名错误或请求超时");
-        ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在或异常");
+        ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在");
         ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT, "接口调用频次超限");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
         ERR_CODE_MSG_MAP.put(ERR_REFRESH_TOKEN, "refresh_token错误");
@@ -470,7 +470,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_WEIXIN_UNIONID, "获取微信unionid失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERCANAEL, "用户取消授权");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NOT_SUPPORTED, "不支持此类第三方账号调用");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NOT_SUPPORTED, "不支持此类账号调用");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_PASSTHROUGH, "透传失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND, "第三方access_token不存在或失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_OPENAPI_ERROR, "第三方返回openapi调用失败");

@@ -25,8 +25,6 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.PcAccountWebParams;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -248,6 +246,7 @@ public class PCAccountController extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         String ru = authPcTokenParams.getRu();
+        String ua = getHeaderUserAgent(request);
         if (!Strings.isNullOrEmpty(validateResult)) {
             if (!Strings.isNullOrEmpty(ru)) {
                 response.sendRedirect(buildRedirectUrl(ru, 1)); //status=1表示参数错误
@@ -271,38 +270,23 @@ public class PCAccountController extends BaseController {
                 return;
             }
         }
-
         userId = AccountDomainEnum.getAuthtokenCase(userId);
         authPcTokenParams.setUserid(userId);
         Result authTokenResult = pcAccountManager.authToken(authPcTokenParams);
-
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(authTokenResult.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), authPcTokenParams.getAppid(), resultCode, getIp(request));
         userOperationLog.putOtherMessage("accesstoken", authPcTokenParams.getToken());
+        userOperationLog.putOtherMessage(CommonConstant.USER_AGENT, ua);
         UserOperationLogUtil.log(userOperationLog);
-
         //重定向生成cookie
         if (authTokenResult.isSuccess()) {
-
-//            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-//            createCookieUrlApiParams.setUserid(userId);
-//            createCookieUrlApiParams.setRu(ru);
-//            createCookieUrlApiParams.setClientId(authPcTokenParams.getAppid());
-//            if (!"0".equals(authPcTokenParams.getLivetime())) {
-//                createCookieUrlApiParams.setPersistentcookie(1);
-//            }
-//            createCookieUrlApiParams.setDomain("sogou.com");
-            //TODO sogou域账号迁移后cookie生成问题 最初版本
-//            Result getCookieValueResult = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
-
             CookieApiParams cookieApiParams = new CookieApiParams();
             cookieApiParams.setUserid(userId);
             cookieApiParams.setClient_id(Integer.parseInt(authPcTokenParams.getAppid()));
             cookieApiParams.setRu(ru);
             cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
             cookieApiParams.setIp(getIp(request));
-
             if (!Strings.isNullOrEmpty(userId)) {
                 if (StringUtils.contains(userId, "@")) {
                     cookieApiParams.setUniqname(StringUtils.substring(userId, 0, userId.indexOf("@")));
@@ -310,16 +294,12 @@ public class PCAccountController extends BaseController {
                     cookieApiParams.setUniqname(userId);
                 }
             }
-
             cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);
-
             if (!"0".equals(authPcTokenParams.getLivetime())) {
                 cookieApiParams.setPersistentcookie("1");
             }
             cookieApiParams.setDomain("sogou.com");
             Result getCookieValueResult = cookieManager.createCookie(response, cookieApiParams);
-
-
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
@@ -328,7 +308,6 @@ public class PCAccountController extends BaseController {
                 ServletUtil.setHttpOnlyCookie(response, "pprdig", pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
                 ServletUtil.setHttpOnlyCookie(response, "passport", passport, CommonConstant.SOGOU_ROOT_DOMAIN);
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");     // 输入法Mac版需要此字段
-
                 String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
                 response.sendRedirect(redirectUrl);
                 return;  //如果重定向url不是固定的，不可使用springmvc的RedirectView，因为会缓存url
@@ -343,14 +322,6 @@ public class PCAccountController extends BaseController {
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
-    }
-
-    private boolean isCleanString(String cb) {
-        if (Strings.isNullOrEmpty(cb)) {
-            return true;
-        }
-        String cleanValue = Jsoup.clean(cb, Whitelist.none());
-        return cleanValue.equals(cb);
     }
 
     private String getReturnStr(String cb, String resStr) {

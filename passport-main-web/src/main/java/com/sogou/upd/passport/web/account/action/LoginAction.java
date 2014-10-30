@@ -103,79 +103,79 @@ public class LoginAction extends BaseController {
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(loginParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
+        String domain = loginParams.getDomain();
+        String userId = loginParams.getUsername();
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(loginParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                result.setDefaultModel("xd", loginParams.getXd());
+                model.addAttribute("data", result.toString());
+                return "/login/api";
+            }
+            result = loginManager.accountLogin(loginParams, ip, request.getScheme());
+            if (result.isSuccess()) {
+                userId = result.getModels().get("userid").toString();
+                String uniqName = StringUtils.EMPTY;
+                if (result.getModels().get("uniqName") != null) {
+                    uniqName = result.getModels().get("uniqName").toString();
+                }
+                int clientId = Integer.parseInt(loginParams.getClient_id());
+                int autoLogin = loginParams.getAutoLogin();
+                int sogouMaxAge = autoLogin == 0 ? -1 : (int) DateAndNumTimesConstant.TWO_WEEKS;
+                String sogouRu = loginParams.getRu();
+                if (Strings.isNullOrEmpty(sogouRu)) {
+                    sogouRu = CommonConstant.DEFAULT_INDEX_URL;
+                }
+                //最初版本
+//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
+                //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie  module 替换
+//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName);
+                CookieApiParams cookieApiParams = new CookieApiParams();
+                cookieApiParams.setUserid(userId);
+                cookieApiParams.setClient_id(clientId);
+                cookieApiParams.setRu(sogouRu);
+                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+                cookieApiParams.setPersistentcookie(String.valueOf(1));
+                cookieApiParams.setIp(ip);
+                cookieApiParams.setUniqname(uniqName);
+                cookieApiParams.setMaxAge(sogouMaxAge);
+                cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
+                result = cookieManager.createCookie(response, cookieApiParams);
+                if (result.isSuccess()) {
+                    result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
+                    result.setDefaultModel("userid", userId);
+                    loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
+                    if (!Strings.isNullOrEmpty(domain)) {
+                        String creeateSSOCookieUrl = cookieManager.buildCreateSSOCookieUrl(domain, clientId, userId, uniqName, uniqName, sogouRu, ip);
+                        result.setDefaultModel("crossdomainurl", creeateSSOCookieUrl);
+                    }
+                }
+            } else {
+                loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
+                //校验是否需要验证码
+                boolean needCaptcha = loginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
+                if (needCaptcha) {
+                    result.setDefaultModel("needCaptcha", true);
+                }
+                if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
+                    result.setMessage("您登陆过于频繁，请稍后再试。");
+                }
+            }
             result.setDefaultModel("xd", loginParams.getXd());
             model.addAttribute("data", result.toString());
             return "/login/api";
+        } finally {
+            //用户登录log
+            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+            userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+            userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(request, "YYID"));
+            userOperationLog.putOtherMessage("module", loginParams.getModule());
+            UserOperationLogUtil.log(userOperationLog);
         }
-        String userId = loginParams.getUsername();
-        result = loginManager.accountLogin(loginParams, ip, request.getScheme());
-        if (result.isSuccess()) {
-            userId = result.getModels().get("userid").toString();
-            String uniqName = StringUtils.EMPTY;
-            if (result.getModels().get("uniqName") != null) {
-                uniqName = result.getModels().get("uniqName").toString();
-            }
-            int clientId = Integer.parseInt(loginParams.getClient_id());
-            int autoLogin = loginParams.getAutoLogin();
-            int sogouMaxAge = autoLogin == 0 ? -1 : (int) DateAndNumTimesConstant.TWO_WEEKS;
-            String sogouRu = loginParams.getRu();
-            if (Strings.isNullOrEmpty(sogouRu)) {
-                sogouRu = CommonConstant.DEFAULT_INDEX_URL;
-            }
-
-            //最初版本
-//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
-            //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie  module 替换
-//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName);
-
-            CookieApiParams cookieApiParams = new CookieApiParams();
-            cookieApiParams.setUserid(userId);
-            cookieApiParams.setClient_id(clientId);
-            cookieApiParams.setRu(sogouRu);
-            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-            cookieApiParams.setPersistentcookie(String.valueOf(1));
-            cookieApiParams.setIp(ip);
-            cookieApiParams.setUniqname(uniqName);
-            cookieApiParams.setMaxAge(sogouMaxAge);
-            cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
-
-//            CookieApiParams cookieApiParams = buildCookieApiParams(userId, clientId, sogouRu, ip, sogouMaxAge);
-//            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-//            cookieApiParams.setPersistentcookie(String.valueOf(1));
-
-            result = cookieManager.createCookie(response, cookieApiParams);
-            if (result.isSuccess()) {
-                result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
-                result.setDefaultModel("userid", userId);
-                loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
-            }
-        } else {
-            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
-            //校验是否需要验证码
-            boolean needCaptcha = loginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
-            if (needCaptcha) {
-                result.setDefaultModel("needCaptcha", true);
-            }
-            if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
-                result.setMessage("您登陆过于频繁，请稍后再试。");
-            }
-        }
-        //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
-        userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(request, "YYID"));
-        userOperationLog.putOtherMessage("module", loginParams.getModule());
-        UserOperationLogUtil.log(userOperationLog);
-
-        result.setDefaultModel("xd", loginParams.getXd());
-        model.addAttribute("data", result.toString());
-        return "/login/api";
     }
 
     /**

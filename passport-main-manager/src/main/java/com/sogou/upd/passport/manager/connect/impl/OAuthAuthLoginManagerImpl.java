@@ -153,6 +153,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String from = req.getParameter("from"); //手机浏览器会传此参数，响应结果和PC端不一样
             String thirdInfo = req.getParameter("thirdInfo"); //用于SDK端请求，返回搜狗用户信息或者低三方用户信息；
             String domain = req.getParameter("domain"); //导航qq登陆，会传此参数
+            String ua = req.getParameter(CommonConstant.USER_AGENT);
             int provider = AccountTypeEnum.getProvider(providerStr);
             int appid_type = Integer.valueOf(req.getParameter("appid_type")); //1表示用应用独立appid，0表示用passport的appid
 
@@ -161,7 +162,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String code = oar.getCode();
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             if (oAuthConsumer == null) {
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
+                result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
                 return result;
             }
             //根据code值获取access_token
@@ -170,7 +171,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain, thirdInfo, appid_type);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain, thirdInfo, appid_type, ua);
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();

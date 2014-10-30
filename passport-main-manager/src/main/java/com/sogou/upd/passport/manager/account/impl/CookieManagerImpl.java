@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.*;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSAEncoder;
+import com.sogou.upd.passport.common.parameter.ConnectDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
@@ -17,7 +18,6 @@ import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.form.PPCookieParams;
 import com.sogou.upd.passport.manager.form.SSOCookieParams;
 import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
@@ -296,7 +296,6 @@ public class CookieManagerImpl implements CookieManager {
         return setCookieLog.toString();
     }
 
-
     /**
      * 是否中新cookie
      *
@@ -316,7 +315,6 @@ public class CookieManagerImpl implements CookieManager {
         }
         return false;
     }
-
 
     /**
      * 关于passport cookie:
@@ -366,7 +364,6 @@ public class CookieManagerImpl implements CookieManager {
         }
         return result;
     }
-
 
     /**
      * 构建桌面端获取cookie 用的跳转url
@@ -428,74 +425,10 @@ public class CookieManagerImpl implements CookieManager {
         }
     }
 
-
-//    @Override
-//    public boolean setSogouCookie(HttpServletResponse response, String passportId, int client_id, String ip, int maxAge, String ru) {
-//        CookieApiParams cookieApiParams = new CookieApiParams();
-//        cookieApiParams.setUserid(passportId);
-//        cookieApiParams.setClient_id(client_id);
-//        cookieApiParams.setRu(ru);
-//        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-//        cookieApiParams.setPersistentcookie(String.valueOf(1));
-//        cookieApiParams.setIp(ip);
-//        Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-//        if (getCookieValueResult.isSuccess()) {
-//            String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-//            String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-//            ServletUtil.setCookie(response, "ppinf", ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-//            ServletUtil.setCookie(response, "pprdig", pprdig, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-//            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
-//            return true;
-//        }
-//        return false;
-//    }
-//
-//    @Override
-//    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, int sogouMaxAge, String sogouRu, int sohuAutoLogin, String sohuRu) {
-//        Result result = new APIResultSupport(false);
-//        //种搜狗域cookie
-//        boolean setSogouCookieRes = setSogouCookie(response, passportId, client_id, ip, sogouMaxAge, sogouRu);
-//        if (!setSogouCookieRes) {
-//            result.setSuccess(false);
-//            result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-//            result.setMessage("生成cookie失败");
-//            return result;
-//        }
-//
-//        //todo 只有@sogou域 和 sohu矩阵域才种跨域cookie
-//        result = createSohuCookieUrl(passportId, sohuRu, sohuAutoLogin);
-//        return result;
-//
-//    }
-
-
     @Override
     public String buildCreateSSOCookieUrl(String domain, int client_id, String passportId, String uniqname, String refnick, String ru, String ip) {
         StringBuilder urlBuilder = new StringBuilder();
-        String daohangDomain = ConnectDomainEnum.DAOHANG.toString();
-        String haoDomain = ConnectDomainEnum.HAO.toString();
-        String shurufaDomain = ConnectDomainEnum.SHURUFA.toString();
-        String pinyinQQDomain = ConnectDomainEnum.PINYIN_CN.toString();
-        String teemoDomain = ConnectDomainEnum.TEEMO.toString();
-
-        if (domain.equals(daohangDomain)) {
-            urlBuilder.append(CommonConstant.DAOHANG_CREATE_COOKIE_URL).append("?domain=").append(daohangDomain);
-        } else if (domain.equals(haoDomain)) {
-            urlBuilder.append(CommonConstant.HAO_CREATE_COOKIE_URL).append("?domain=").append(haoDomain);
-        }
-        ///////////这块需要修改成统一的， 先加上，以后改。  add by denghua/////////////
-        else if (domain.equals(shurufaDomain)) {
-            urlBuilder.append(CommonConstant.SHURUFA_CREATE_COOKIE_URL).append("?domain=").append(shurufaDomain);
-        }
-        ////////////////////// add by denghua end///////////////
-        else if (domain.equals(pinyinQQDomain)) {
-            urlBuilder.append(CommonConstant.PINYIN_CN_CREATE_COOKIE_URL).append("?domain=").append(pinyinQQDomain);
-        } else if (domain.equals(teemoDomain)) {
-            urlBuilder.append(CommonConstant.TEEMO_CN_CREATE_COOKIE_URL).append("?domain=").append(teemoDomain);
-        } else {
-            return null;
-        }
-
+        urlBuilder.append(ConnectDomainEnum.getSSOCookieUrl(domain)).append("?domain=").append(domain);
         CookieApiParams cookieApiParams = new CookieApiParams(passportId, client_id, ru, ip, uniqname, refnick);
         Result getCookieValueResult = sgLoginApiManager.getCookieInfo(cookieApiParams);
         if (!getCookieValueResult.isSuccess()) {
@@ -560,6 +493,7 @@ public class CookieManagerImpl implements CookieManager {
         //response 回去的时候设置一个p3p的header,用来定义IE的跨域问题,解决IE的iframe里跨域无法种cookie的bug。
         response.setHeader("P3P", "CP=CAO PSA OUR");
         result.setSuccess(true);
+        result.setMessage("登录成功");
         return result;
     }
 

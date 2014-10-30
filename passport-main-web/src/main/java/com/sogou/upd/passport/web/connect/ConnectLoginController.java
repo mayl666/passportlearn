@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -16,7 +17,6 @@ import com.sogou.upd.passport.web.UserOperationLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,12 +45,13 @@ public class ConnectLoginController extends BaseConnectController {
         String ru = connectLoginParams.getRu();
         String providerStr = connectLoginParams.getProvider();
         String httpOrHttps = getProtocol(req);
+        String ua = getHeaderUserAgent(req);
         try {
             String validateResult = ControllerHelper.validateParams(connectLoginParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
                 url = buildAppErrorRu(type, providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 res.sendRedirect(url);
-                return ;
+                return;
             }
 
             int provider = AccountTypeEnum.getProvider(providerStr);
@@ -67,6 +68,7 @@ public class ConnectLoginController extends BaseConnectController {
             }
 
             String uuid = UUID.randomUUID().toString();
+            url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps, ua);
             url = oAuthAuthLoginManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps);
             res.sendRedirect(url);
             return;
@@ -79,6 +81,7 @@ public class ConnectLoginController extends BaseConnectController {
             UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
             userOperationLog.putOtherMessage("ref", connectLoginParams.getRu());
             userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
+            userOperationLog.putOtherMessage(CommonConstant.USER_AGENT, ua);
             UserOperationLogUtil.log(userOperationLog);
         }
     }
