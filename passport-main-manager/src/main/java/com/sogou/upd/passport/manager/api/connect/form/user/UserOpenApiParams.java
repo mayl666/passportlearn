@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.manager.api.connect.form.user;
 
+import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.manager.api.connect.form.BaseOpenApiParams;
 
 import javax.validation.constraints.AssertTrue;
@@ -13,6 +15,16 @@ import javax.validation.constraints.AssertTrue;
  */
 public class UserOpenApiParams extends BaseOpenApiParams {
     private int original;
+
+    @AssertTrue(message = "不支持的账号类型")
+    private boolean isValidUserid() {
+        if (Strings.isNullOrEmpty(this.userid)) {
+            return true;
+        } else {
+            int provider = AccountTypeEnum.getAccountType(this.userid).getValue();
+            return AccountTypeEnum.isConnect(provider);
+        }
+    }
 
     @AssertTrue(message = "请输入正确的original值!")
     private boolean isObtainOriginal() {
