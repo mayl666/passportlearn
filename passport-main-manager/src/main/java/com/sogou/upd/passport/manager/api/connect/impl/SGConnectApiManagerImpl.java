@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -9,23 +8,15 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
-import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
-import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
-import com.sogou.upd.passport.model.OAuthConsumer;
-import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
-import com.sogou.upd.passport.oauth2.common.types.ConnectRequest;
-import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
-import com.sogou.upd.passport.oauth2.common.types.ResponseTypeEnum;
-import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
-import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectRelationService;
@@ -66,69 +57,24 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     private ConnectAuthService connectAuthService;
 
     @Override
-    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip, String httpOrHttps, String userAgent) throws OAuthProblemException {
-        OAuthConsumer oAuthConsumer;
-        OAuthAuthzClientRequest request;
-        ConnectConfig connectConfig;
-        try {
-            int clientId = Integer.parseInt(connectLoginParams.getClient_id());
-            oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-            // 获取connect配置
-            connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-            if (connectConfig == null) {
-                return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-            }
-
-            String redirectURI = ConnectManagerHelper.constructRedirectURI(clientId, connectLoginParams.getRu(), connectLoginParams.getType(),
-                    connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(), connectLoginParams.getDomain(), connectLoginParams.getThirdInfo(), userAgent);
-            String scope = connectConfig.getScope();
-            String appKey = connectConfig.getAppKey();
-            String connectType = connectLoginParams.getType();
-            // 重新填充display，如果display为空，根据终端自动赋值；如果display不为空，则使用display
-            String display = connectLoginParams.getDisplay();
-            display = Strings.isNullOrEmpty(display) ? fillDisplay(connectType, connectLoginParams.getFrom(), provider) : display;
-
-            String requestUrl;
-            // 采用Authorization Code Flow流程
-            //若provider=QQ && display=wml、xhtml调用WAP接口
-            if (ConnectRequest.isQQWapRequest(connectLoginParams.getProvider(), display)) {
-                requestUrl = oAuthConsumer.getWapUserAuthzUrl();
-            } else {
-                requestUrl = oAuthConsumer.getWebUserAuthzUrl();
-            }
-            OAuthAuthzClientRequest.AuthenticationRequestBuilder builder = OAuthAuthzClientRequest
-                    .authorizationLocation(requestUrl).setAppKey(appKey)
-                    .setRedirectURI(redirectURI)
-                    .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
-                    .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
-                    .setState(uuid);
-            if (AccountTypeEnum.QQ.getValue() == provider) {
-                builder.setShowAuthItems(QQOAuth.NO_AUTH_ITEMS);       // qq为搜狗产品定制化页面，隐藏授权信息
-                if (!Strings.isNullOrEmpty(connectLoginParams.getViewPage())) {
-                    builder.setViewPage(connectLoginParams.getViewPage());       // qq为搜狗产品定制化页面--输入法使用
-                }
-            }
-            request = builder.buildQueryMessage(OAuthAuthzClientRequest.class);
-        } catch (IOException e) {
-            logger.error("read oauth consumer IOException!", e);
-            throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException!");
-        } catch (ServiceException se) {
-            logger.error("query connect config Exception!", se);
-            throw new OAuthProblemException(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "query connect config Exception!");
-        }
-
-        return request.getLocationUri();
-    }
-
-    @Override
     public Result buildConnectAccount(String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
         Result result = new APIResultSupport(false);
         try {
-            String passportId = AccountTypeEnum.generateThirdPassportId(oAuthTokenVO.getOpenid(), AccountTypeEnum.getProviderStr(provider));
+            String openId = oAuthTokenVO.getOpenid(); // 第三方返回的openid，并不一定是用户的唯一标识(例如：微信）
+            String unionId = openId;   // 用户的唯一标识
+            //由于微信一个开发者账号下多个Appid的unionid一样，所以微信是unionid
+            if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+                unionId = oAuthTokenVO.getUnionId();
+                if (Strings.isNullOrEmpty(unionId)) {
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_WEIXIN_UNIONID);
+                    return result;
+                }
+            }
+            String passportId = PassportIDGenerator.generator(unionId, provider);
             //1.查询account表
             Account account = accountService.queryAccountByPassportId(passportId);
             if (account == null) {
-                account = accountService.initialAccount(oAuthTokenVO.getOpenid(), null, false, oAuthTokenVO.getIp(), provider);
+                account = accountService.initialAccount(unionId, null, false, oAuthTokenVO.getIp(), provider);
                 if (account == null) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
                     return result;
@@ -143,9 +89,9 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
                 return result;
             }
             //3.connect_relation新增或修改
-            ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(oAuthTokenVO.getOpenid(), provider, appKey);
+            ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(openId, provider, appKey);
             if (connectRelation == null) {
-                connectRelation = newConnectRelation(appKey, passportId, oAuthTokenVO.getOpenid(), provider);
+                connectRelation = newConnectRelation(appKey, passportId, openId, provider);
                 isSuccess = connectRelationService.initialConnectRelation(connectRelation);
             }
             if (!isSuccess) {
@@ -298,32 +244,6 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         long currentTime = System.currentTimeMillis() / (1000);
         long tokenTime = createTime.getTime() / (1000);
         return currentTime < tokenTime + expiresIn;
-    }
-
-    /*
-     * 根据type和provider重新填充display
-     */
-    private String fillDisplay(String type, String from, int provider) {
-        String display = "";
-        if (ConnectTypeEnum.isMobileApp(type) || isMobileDisplay(type, from)) {
-            switch (provider) {
-                case 5:  // 人人
-                    display = "touch";
-                    break;
-                case 6:  // 淘宝
-                    display = "wap";
-                    break;
-                default:
-                    display = "mobile";
-                    break;
-            }
-        }
-        return display;
-    }
-
-    private boolean isMobileDisplay(String type, String from) {
-        return ConnectTypeEnum.TOKEN.toString().equals(type) && "mob".equalsIgnoreCase(from)
-                || ConnectTypeEnum.MOBILE.toString().equals(type);
     }
 
 }

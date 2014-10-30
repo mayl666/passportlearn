@@ -41,11 +41,13 @@ public class ConnectLoginParams {
     private String viewPage; // qq为搜狗产品定制化页面， sgIME为输入法PC端弹泡样式
     @Domain
     private String domain;   // 非sogou.com域名的业务线使用，登录成功后种非sogou.com域的cookie
-
-    private String thirdInfo="";   // thirdInfo=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
+    @Min(0)
+    private String thirdInfo = "";   // thirdInfo=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
+    @Min(0)
+    private Integer appid_type = 0; //appidtype=1，则根据应用传入的client_id查询相关的第三方appid；appidtype=0，则使用sogou passport的appid；
 
     @AssertTrue(message = "Client_id不允许为空")
-    private boolean isEmptyClientId(){
+    private boolean isEmptyClientId() {
         return !Strings.isNullOrEmpty(appid) || !Strings.isNullOrEmpty(client_id);
     }
 
@@ -105,13 +107,13 @@ public class ConnectLoginParams {
     }
 
     public void setDisplay(String display) {
-        if(Strings.isNullOrEmpty(display)){
-            if(ConnectTypeEnum.WAP.toString().equals(getType())){
-                this.display="mobile";
+        if (Strings.isNullOrEmpty(display)) {
+            if (ConnectTypeEnum.WAP.toString().equals(getType())) {
+                this.display = "mobile";
             } else {
-                this.display="page";
+                this.display = "page";
             }
-        }else {
+        } else {
             this.display = display;
         }
     }
@@ -178,5 +180,13 @@ public class ConnectLoginParams {
 
     public void setThirdInfo(String thirdInfo) {
         this.thirdInfo = thirdInfo;
+    }
+
+    public Integer getAppid_type() {
+        return appid_type;
+    }
+
+    public void setAppid_type(Integer appid_type) {
+        this.appid_type = appid_type;
     }
 }

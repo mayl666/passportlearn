@@ -8,7 +8,7 @@ import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.HttpClientUtil;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.common.utils.SessionServerUtil;
@@ -17,7 +17,6 @@ import com.sogou.upd.passport.manager.api.SessionServerUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
-import org.apache.http.entity.mime.content.StringBody;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
     @Autowired
     private AppConfigService appConfigService;
 
-    private Map<String, String> buildHttpSessionParam(String sgid){
+    private Map<String, String> buildHttpSessionParam(String sgid) {
 
         AppConfig appConfig = appConfigService.queryAppConfigByClientId(CommonConstant.SGPP_DEFAULT_CLIENTID);
 
@@ -61,7 +60,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
     }
 
     @Override
-    public Result createSession( String passportId) {
+    public Result createSession(String passportId) {
         Result result = new APIResultSupport(false);
 
         String sgid = null;
@@ -69,24 +68,24 @@ public class SessionServerManagerImpl implements SessionServerManager {
             //创建sgid
             sgid = SessionServerUtil.createSessionSid(passportId);
 
-            Map<String,String> params=buildHttpSessionParam(sgid);
+            Map<String, String> params = buildHttpSessionParam(sgid);
 
             Map<String, String> map = Maps.newHashMap();
             map.put("passport_id", passportId);
             params.put("user_info", jsonMapper.writeValueAsString(map));
 
 //            String resultRequest = HttpClientUtil.postRequest(SessionServerUrlConstant.CREATE_SESSION, params);
-            RequestModel requestModel=new RequestModel(SessionServerUrlConstant.CREATE_SESSION);
+            RequestModel requestModel = new RequestModel(SessionServerUrlConstant.CREATE_SESSION);
 
             Set<Map.Entry<String, String>> set = params.entrySet();
-            for (Iterator<Map.Entry<String, String>> it = set.iterator(); it.hasNext();) {
+            for (Iterator<Map.Entry<String, String>> it = set.iterator(); it.hasNext(); ) {
                 Map.Entry<String, String> entry = it.next();
-                requestModel.addParam(entry.getKey(),entry.getValue());
+                requestModel.addParam(entry.getKey(), entry.getValue());
             }
 
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
 
-            String resultRequest=SGHttpClient.executeStr(requestModel);
+            String resultRequest = SGHttpClient.executeStr(requestModel);
             if (!Strings.isNullOrEmpty(resultRequest)) {
                 SessionResult sessionResult = jsonMapper.readValue(resultRequest, SessionResult.class);
                 if (result != null) {
@@ -102,6 +101,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
                 logger.debug("createSessionSid " + "passportId:" + passportId + ",sid:" + sgid);
             }
         }
+        result.setCode(ErrorUtil.ERR_CODE_CREATE_SGID_FAILED);
         return result;
     }
 
@@ -109,14 +109,14 @@ public class SessionServerManagerImpl implements SessionServerManager {
     public Result removeSession(String sgid) {
         Result result = new APIResultSupport(false);
         try {
-            Map<String,String> params=buildHttpSessionParam(sgid);
+            Map<String, String> params = buildHttpSessionParam(sgid);
 
-            RequestModel requestModel=new RequestModel(SessionServerUrlConstant.REMOVE_SESSION);
+            RequestModel requestModel = new RequestModel(SessionServerUrlConstant.REMOVE_SESSION);
 
             Set<Map.Entry<String, String>> set = params.entrySet();
-            for (Iterator<Map.Entry<String, String>> it = set.iterator(); it.hasNext();) {
+            for (Iterator<Map.Entry<String, String>> it = set.iterator(); it.hasNext(); ) {
                 Map.Entry<String, String> entry = it.next();
-                requestModel.addParam(entry.getKey(),entry.getValue());
+                requestModel.addParam(entry.getKey(), entry.getValue());
             }
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
 
@@ -132,44 +132,44 @@ public class SessionServerManagerImpl implements SessionServerManager {
             }
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("removeSession " + "sgid:" + sgid );
+                logger.debug("removeSession " + "sgid:" + sgid);
             }
         }
         return result;
     }
 
     @Override
-    public Result getPassportIdBySgid(String sgid,String ip) {
+    public Result getPassportIdBySgid(String sgid, String ip) {
         Result result = new APIResultSupport(false);
-        String passportId=null;
+        String passportId = null;
         try {
-            Map<String,String> params=buildHttpSessionParam(sgid);
+            Map<String, String> params = buildHttpSessionParam(sgid);
 
-            RequestModel requestModel=new RequestModel(SessionServerUrlConstant.VERIFY_SID);
+            RequestModel requestModel = new RequestModel(SessionServerUrlConstant.VERIFY_SID);
 
             Set<Map.Entry<String, String>> set = params.entrySet();
-            for (Iterator<Map.Entry<String, String>> it = set.iterator(); it.hasNext();) {
+            for (Iterator<Map.Entry<String, String>> it = set.iterator(); it.hasNext(); ) {
                 Map.Entry<String, String> entry = it.next();
-                requestModel.addParam(entry.getKey(),entry.getValue());
+                requestModel.addParam(entry.getKey(), entry.getValue());
             }
-            requestModel.addParam("user_ip",ip);
+            requestModel.addParam("user_ip", ip);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
 
             String resultRequest = SGHttpClient.executeStr(requestModel);
             if (!Strings.isNullOrEmpty(resultRequest)) {
-                Map mapResult=jsonMapper.readValue(resultRequest, Map.class);
-                String status= (String) mapResult.get("status");
-                if("0".equals(status)){
-                    Map<String,String> mapping= (Map<String, String>) mapResult.get("data");
-                    passportId=mapping.get("passport_id");
+                Map mapResult = jsonMapper.readValue(resultRequest, Map.class);
+                String status = (String) mapResult.get("status");
+                if ("0".equals(status)) {
+                    Map<String, String> mapping = (Map<String, String>) mapResult.get("data");
+                    passportId = mapping.get("passport_id");
                     result.setSuccess(true);
-                    result.getModels().put("passport_id",passportId);
+                    result.getModels().put("passport_id", passportId);
                 }
                 return result;
             }
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("getPassportIdBySgid error! " + "sgid:" + sgid );
+                logger.debug("getPassportIdBySgid error! " + "sgid:" + sgid);
             }
         }
         return result;

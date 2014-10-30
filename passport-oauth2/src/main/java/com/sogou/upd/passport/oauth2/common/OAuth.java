@@ -47,6 +47,8 @@ public class OAuth {
     public static final String OAUTH_RENREN_FORCELOGIN = "x_renew"; // renren强制登录
     public static final String OAUTH_SINA_FORCELOGIN = "forcelogin"; // sina强制登录
     public static final String OAUTH_BAIDU_FORCELOGIN = "force_login";  // baidu强制登录
+    public static final String OAUTH_WEIXIN_CLIENT_ID = "appid";  //weixin的应用ID
+    public static final String OAUTH_WEIXIN_CLIENT_SECRET = "secret"; //weixin的应用密钥
 
     public static final String OAUTH_OPENID = "openid"; // qq 用access_token获取openId
 

@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.web.BaseConnectController;
@@ -31,7 +32,7 @@ import java.util.UUID;
 public class ConnectLoginController extends BaseConnectController {
 
     @Autowired
-    private ConnectApiManager sgConnectApiManager;
+    private OAuthAuthLoginManager oAuthAuthLoginManager;
     @Autowired
     private ConfigureManager configureManager;
 
@@ -67,7 +68,7 @@ public class ConnectLoginController extends BaseConnectController {
             }
 
             String uuid = UUID.randomUUID().toString();
-            url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps, ua);
+            url = oAuthAuthLoginManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps, ua);
             res.sendRedirect(url);
             return;
         } catch (OAuthProblemException e) {

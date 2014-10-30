@@ -43,7 +43,6 @@ public class UpdateUserInfoApiParams extends BaseUserApiParams {
 
     @AssertTrue(message = "用户昵称格式不正确!")
     private boolean isCheckUinqName() {
-
         if (Strings.isNullOrEmpty(uniqname)) {
             return true;
         } else {

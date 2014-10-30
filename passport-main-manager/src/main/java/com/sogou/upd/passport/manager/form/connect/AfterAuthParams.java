@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.account.form;
+package com.sogou.upd.passport.manager.form.connect;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -12,9 +12,7 @@ import javax.validation.constraints.Min;
  * To change this template use File | Settings | File Templates.
  */
 public class AfterAuthParams {
-    @NotBlank(message = "openid不允许为空！")
     private String openid;
-    @NotBlank(message = "access_token不允许为空！")
     private String access_token;
     @Min(0)
     private long expires_in;
@@ -25,12 +23,11 @@ public class AfterAuthParams {
     private String refresh_token;
     @NotBlank(message = "客户端唯一标识不允许为空！")
     private String instance_id;
-    @NotBlank(message = "code不允许为空！")
     private String code;
-
+    //微信SDK未封装code换取token接口，需要服务端封装
+    private String tcode; //微信的code，如果不为空，则accesstoken、refreshtoken、openid、code为空
     @Min(0)
     private Integer appid_type; //如果appidtype=1，则根据应用传入的client_id查询相关的第三方appid；如果appidtype=0，则使用sogou passport的appid；
-
 
     public String getOpenid() {
         return openid;
@@ -102,5 +99,13 @@ public class AfterAuthParams {
 
     public void setAppid_type(Integer appid_type) {
         this.appid_type = appid_type;
+    }
+
+    public String getTcode() {
+        return tcode;
+    }
+
+    public void setTcode(String tcode) {
+        this.tcode = tcode;
     }
 }

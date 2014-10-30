@@ -155,6 +155,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_UNIQNAME_ALREADY_EXISTS = "20248";
     //昵称包含限制词
     public static final String ERR_CODE_UNIQNAME_FORBID = "20249";
+    //sgid生成失败
+    public static final String ERR_CODE_CREATE_SGID_FAILED = "20250";
     // 删除cookie失败
     public static final String ERR_CODE_REMOVE_COOKIE_FAILED = "20255";
     //SSOAfterauth失败
@@ -229,21 +231,23 @@ public class ErrorUtil {
     /*  Connect通用的错误代码                                                        */
     /* ============================================================================ */
     // 访问频率受限
-    public static final String CONNECT_REQUEST_FREQUENCY_LIMIT = "30001";
+    public static final String ERR_CODE_CONNECT_REQUEST_FREQUENCY_LIMIT = "30001";
     // 用户拒绝登录授权
-    public static final String CONNECT_USER_DENIED_LOGIN = "30002";
+    public static final String ERR_CODE_CONNECT_USER_DENIED_LOGIN = "30002";
     // 第三方登录账号Token过期，请重新登录
-    public static final String CONNECT_TOKEN_INVALID = "30004";
+    public static final String ERR_CODE_CONNECT_TOKEN_INVALID = "30004";
     // 发送HTTP请求失败
     public static final String HTTP_CLIENT_REQEUST_FAIL = "30006";
     // 不支持指定第三方
-    public static final String UNSUPPORT_THIRDPARTY = "30007";
+    public static final String ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY = "30007";
     // 无效的登录授权请求
-    public static final String INVALID_OPENOAUTH_REQUEST = "30009";
+    public static final String ERR_CODE_CONNECT_INVALID_OAUTH = "30009";
     // 用户未授权
-    public static final String REQUEST_NO_AUTHORITY = "30010";
+    public static final String ERR_CODE_CONNECT_REQUEST_NO_AUTHORITY = "30010";
     // 第三方自定义错误
     public static final String CONNECT_USER_DEFINED_ERROR = "30011";
+    // 获取微信用户unionid失败
+    public static final String ERR_CODE_CONNECT_WEIXIN_UNIONID = "30012";
     // 用户取消授权
     public static final String ERR_CODE_CONNECT_USERCANAEL = "30016";
     //不支持此类第三方账号
@@ -406,7 +410,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_NOTSUPPORT_SOGOU_REGISTER, "暂时不支持搜狗邮箱注册");
         ERR_CODE_MSG_MAP.put(ERR_CODE_UNIQNAME_ALREADY_EXISTS, "用户昵称已经被使用");
         ERR_CODE_MSG_MAP.put(ERR_CODE_UNIQNAME_FORBID, "昵称包含限制词");
-
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CREATE_SGID_FAILED, "sgid生成失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_APPCONNECT_TOKEN_ERROR, "手机app校验第三方登录的token失败");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_CREATE_COOKIE_FAILED, "生成cookie失败");
@@ -457,13 +461,14 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_UPDATE_USERINFO, "个人信息修改失败");
 
         // connect
-        ERR_CODE_MSG_MAP.put(CONNECT_REQUEST_FREQUENCY_LIMIT, "超过第三方接口的访问限制");
-        ERR_CODE_MSG_MAP.put(CONNECT_USER_DENIED_LOGIN, "用户拒绝登录授权");
-        ERR_CODE_MSG_MAP.put(CONNECT_TOKEN_INVALID, "第三方账号Token过期，请重新登录");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_REQUEST_FREQUENCY_LIMIT, "超过第三方接口的访问限制");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USER_DENIED_LOGIN, "用户拒绝登录授权");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_TOKEN_INVALID, "第三方账号Token过期，请重新登录");
         ERR_CODE_MSG_MAP.put(HTTP_CLIENT_REQEUST_FAIL, "发送HTTP请求失败");
-        ERR_CODE_MSG_MAP.put(UNSUPPORT_THIRDPARTY, "该接口不支持指定第三方");
-        ERR_CODE_MSG_MAP.put(INVALID_OPENOAUTH_REQUEST, "无效的OAuth2.0授权验证请求");
-        ERR_CODE_MSG_MAP.put(REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY, "该接口不支持指定第三方");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_OAUTH, "无效的OAuth2.0授权验证请求");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_REQUEST_NO_AUTHORITY, "用户没有对该api进行授权");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_WEIXIN_UNIONID, "获取微信unionid失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USERCANAEL, "用户取消授权");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NOT_SUPPORTED, "不支持此类账号调用");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_PASSTHROUGH, "透传失败");

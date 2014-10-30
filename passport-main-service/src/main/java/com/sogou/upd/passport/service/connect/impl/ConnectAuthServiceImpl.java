@@ -55,22 +55,24 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         String appKey = connectConfig.getAppKey();
         String appSecret = connectConfig.getAppSecret();
 
-        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getAccessTokenUrl())
-                .setAppKey(appKey).setAppSecret(appSecret).setRedirectURI(redirectUrl).setCode(code)
-                .setGrantType(GrantTypeEnum.AUTHORIZATION_CODE).buildBodyMessage(OAuthAuthzClientRequest.class);
+        OAuthAuthzClientRequest.TokenRequestBuilder builder = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getAccessTokenUrl())
+                .setAppKey(appKey, provider).setAppSecret(appSecret, provider).setRedirectURI(redirectUrl).setCode(code)
+                .setGrantType(GrantTypeEnum.AUTHORIZATION_CODE);
         OAuthAccessTokenResponse oauthResponse;
         if (provider == AccountTypeEnum.QQ.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, QQJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, QQJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.SINA.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, SinaJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, SinaJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.RENREN.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, RenrenJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, RenrenJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.TAOBAO.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, TaobaoJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, TaobaoJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.BAIDU.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, BaiduJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, BaiduJSONAccessTokenResponse.class);
+        } else if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+            oauthResponse = OAuthHttpClient.execute(builder.buildQueryMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.GET, WeixinJSONAccessTokenResponse.class);
         } else {
-            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+            throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
         }
         return oauthResponse;
     }
@@ -88,10 +90,10 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         if (AccountTypeEnum.WEIXIN.getValue() == provider) {
             //微信的刷新token为GET方式
             request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getRefreshAccessTokenUrl())
-                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey).setRefreshToken(refreshToken).buildQueryMessage(OAuthAuthzClientRequest.class);
+                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey, provider).setRefreshToken(refreshToken).buildQueryMessage(OAuthAuthzClientRequest.class);
         } else {
             request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getRefreshAccessTokenUrl())
-                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey).setAppSecret(appSecret)
+                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey, provider).setAppSecret(appSecret, provider)
                     .setRefreshToken(refreshToken).buildBodyMessage(OAuthAuthzClientRequest.class);
         }
         OAuthAccessTokenResponse response;
@@ -105,7 +107,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         } else if (AccountTypeEnum.WEIXIN.getValue() == provider) {
             response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONAccessTokenResponse.class);
         } else {
-            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+            throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
         }
         OAuthTokenVO oAuthTokenVO = response.getOAuthTokenVO();
         return oAuthTokenVO;
@@ -142,7 +144,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                     .setAccessToken(accessToken).buildQueryMessage(BaiduUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, BaiduUserAPIResponse.class);
         } else {
-            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+            throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
         }
         if (response != null) {
             userProfileFromConnect = response.toUserInfo();
@@ -172,25 +174,6 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             }
         }
         return null;
-    }
-
-    @Override
-    public OAuthTokenVO verifyAccessToken(String openid, String accessToken, ConnectConfig connectConfig) throws IOException, OAuthProblemException {
-        int provider = connectConfig.getProvider();
-        OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-        if (oAuthConsumer == null) {
-            return null;
-        }
-        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.verifyTokenLocation(oAuthConsumer.getWebUserAuthzUrl())
-                .setOpenid(openid).setAccessToken(accessToken).buildQueryMessage(OAuthAuthzClientRequest.class);
-        OAuthTokenVO oAuthTokenVO;
-        if (provider == AccountTypeEnum.WEIXIN.getValue()) {
-            WeixinJSONVerifyAccessTokenResponse response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONVerifyAccessTokenResponse.class);
-            oAuthTokenVO = response.getOAuthTokenVO();
-        } else {
-            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
-        }
-        return oAuthTokenVO;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

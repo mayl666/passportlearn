@@ -4,7 +4,6 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.parameters.BaiduOAuthError;
-import com.sogou.upd.passport.oauth2.openresource.parameters.RenrenOAuthError;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthClientResponse;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,10 +16,10 @@ public class BaiduAPIValidator extends AbstractClientValidator {
     public static Map<String, String> BAIDU_OAUTH_ERROR_MAP = new HashMap<String, String>();
 
     static {
-        BAIDU_OAUTH_ERROR_MAP.put("6", ErrorUtil.REQUEST_NO_AUTHORITY);/*用户没有此api权限*/
-        BAIDU_OAUTH_ERROR_MAP.put("211", ErrorUtil.REQUEST_NO_AUTHORITY);
-        BAIDU_OAUTH_ERROR_MAP.put("111", ErrorUtil.CONNECT_TOKEN_INVALID);        /*access_token无效、过期*/
-        BAIDU_OAUTH_ERROR_MAP.put("2002", ErrorUtil.CONNECT_TOKEN_INVALID);
+        BAIDU_OAUTH_ERROR_MAP.put("6", ErrorUtil.ERR_CODE_CONNECT_REQUEST_NO_AUTHORITY);/*用户没有此api权限*/
+        BAIDU_OAUTH_ERROR_MAP.put("211", ErrorUtil.ERR_CODE_CONNECT_REQUEST_NO_AUTHORITY);
+        BAIDU_OAUTH_ERROR_MAP.put("111", ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID);        /*access_token无效、过期*/
+        BAIDU_OAUTH_ERROR_MAP.put("2002", ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID);
 
     }
 

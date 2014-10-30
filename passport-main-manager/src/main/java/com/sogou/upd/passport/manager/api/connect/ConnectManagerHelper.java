@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class ConnectManagerHelper {
 
-    public static String constructRedirectURI(int clientId, String ru, String type, String instanceId, String pCallbackUrl, String ip, String from,String domain,String thirdInfo, String userAgent) {
+    public static String constructRedirectURI(int clientId, String ru, String type, String instanceId, String pCallbackUrl, String ip, String from,String domain,String thirdInfo, int appid_type, String userAgent) {
         try {
             ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CHARSET);
             Map<String, Object> callbackParams = Maps.newHashMap();
@@ -39,6 +39,7 @@ public class ConnectManagerHelper {
             if(!Strings.isNullOrEmpty(userAgent)){
                 callbackParams.put(CommonConstant.USER_AGENT, userAgent);
             }
+            callbackParams.put("appid_type", appid_type);
             StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CHARSET));
             return pCallbackUrl + "?" + query;
         } catch (UnsupportedEncodingException e) {

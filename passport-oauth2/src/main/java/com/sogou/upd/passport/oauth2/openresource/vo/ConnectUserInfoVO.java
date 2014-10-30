@@ -19,12 +19,10 @@ public class ConnectUserInfoVO {
     public String avatarLarge;
     public String userDesc;
     public int gender; // 0-女，1-男
-    public String country; // 国家  微信开平用到
     public String province; // 省
     public String city; // 市
     public String region; // 区
     public String unionid; // 用户唯一标识  微信开平用到
-    public String privilege; // 用户特权信息  微信开平用到
 
     public Map<String, Object> original;//第三方返回的原始json串
 
@@ -108,27 +106,11 @@ public class ConnectUserInfoVO {
         this.avatarLarge = avatarLarge;
     }
 
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
     public String getUnionid() {
         return unionid;
     }
 
     public void setUnionid(String unionid) {
         this.unionid = unionid;
-    }
-
-    public String getPrivilege() {
-        return privilege;
-    }
-
-    public void setPrivilege(String privilege) {
-        this.privilege = privilege;
     }
 }

@@ -47,10 +47,8 @@ public class WeiXinUserAPIResponse extends UserAPIResponse {
             user.setAvatarLarge(imgurl + "/" + WeiXinOAuth.LARGE_0);   // 640*640
         }
         user.setGender(formGender(getParam(WeiXinOAuth.SEX)));
-        user.setCountry(getParam(WeiXinOAuth.COUNTRY));
         user.setProvince(getParam(WeiXinOAuth.PROVINCE));
         user.setCity(getParam(WeiXinOAuth.CITY));
-        user.setPrivilege(getParam(WeiXinOAuth.PROVILEGE));
         user.setUnionid(getParam(WeiXinOAuth.UNIONID));
         user.setOriginal(parameters);
         return user;
