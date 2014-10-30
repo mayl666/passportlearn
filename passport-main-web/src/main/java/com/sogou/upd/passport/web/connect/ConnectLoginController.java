@@ -68,8 +68,7 @@ public class ConnectLoginController extends BaseConnectController {
             }
 
             String uuid = UUID.randomUUID().toString();
-            url = sgConnectApiManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps, ua);
-            url = oAuthAuthLoginManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps);
+            url = oAuthAuthLoginManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps, ua);
             res.sendRedirect(url);
             return;
         } catch (OAuthProblemException e) {

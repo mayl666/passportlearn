@@ -26,7 +26,7 @@ public interface OAuthAuthLoginManager {
      * @return
      */
     public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid,
-                                       int provider, String ip, String httpOrHttps) throws OAuthProblemException;
+                                       int provider, String ip, String httpOrHttps, String usearAgent) throws OAuthProblemException;
 
     /**
      * 处理第三方登录授权回调

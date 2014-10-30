@@ -89,7 +89,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private AppConfigService appConfigService;
 
     @Override
-    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip, String httpOrHttps) throws OAuthProblemException {
+    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip, String httpOrHttps, String userAgent) throws OAuthProblemException {
         OAuthConsumer oAuthConsumer;
         OAuthAuthzClientRequest request;
         ConnectConfig connectConfig;
@@ -104,7 +104,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             }
             String redirectURI = ConnectManagerHelper.constructRedirectURI(clientId, connectLoginParams.getRu(), connectLoginParams.getType(),
                     connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(),
-                    connectLoginParams.getDomain(), connectLoginParams.getThirdInfo(), connectLoginParams.getAppid_type());
+                    connectLoginParams.getDomain(), connectLoginParams.getThirdInfo(), connectLoginParams.getAppid_type(), userAgent);
             String scope = connectConfig.getScope();
             String appKey = connectConfig.getAppKey();
             String connectType = connectLoginParams.getType();
@@ -162,7 +162,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String code = oar.getCode();
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             if (oAuthConsumer == null) {
-                result.setCode(ErrorUtil.UNSUPPORT_THIRDPARTY);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                 return result;
             }
             //根据code值获取access_token
