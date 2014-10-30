@@ -53,12 +53,14 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
         Result result = new APIResultSupport(false);
         try {
             // read request parameters
-
             String client_id = ServletRequestUtils.getRequiredStringParameter(request, CommonConstant.CLIENT_ID);
             int clientId = Integer.parseInt(StringUtils.trim(client_id));
 
+            String c_t = ServletRequestUtils.getRequiredStringParameter(request, CommonConstant.RESQUEST_CT);
+            long ct = Long.parseLong(StringUtils.trim(c_t));
+
 //            int clientId = Integer.parseInt(request.getParameter(CommonConstant.CLIENT_ID));
-            long ct = Long.parseLong(request.getParameter(CommonConstant.RESQUEST_CT));
+//            long ct = Long.parseLong(request.getParameter(CommonConstant.RESQUEST_CT));
             String originalCode = request.getParameter(CommonConstant.RESQUEST_CODE);
 
             String firstStr = buildFirstSignString(request);
