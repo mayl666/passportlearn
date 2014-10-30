@@ -24,7 +24,6 @@ public enum ConnectDomainEnum {
     PINYIN_CN("qq.pinyin.cn"), //qq.pinyin.cn
     TEEMO("teemo.cn"); // www.teemo.cn
 
-
     private String connectType;
     private static final List<String> DOMAIN_LIST = Lists.newArrayList();
     private static final Map<String, String> DOMAIN_SSOCOOKIE_URL_MAP = Maps.newHashMap();
