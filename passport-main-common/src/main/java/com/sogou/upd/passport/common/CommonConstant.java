@@ -118,6 +118,7 @@ public class CommonConstant {
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.RENREN.toString());
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.TAOBAO.toString());
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.BAIDU.toString());
+        SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.WEIXIN.toString());
     }
 
     // 不用通行证统一的第三方appkey的应用，client_id|provider
