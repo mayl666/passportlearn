@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,5 +106,33 @@ public class CommonHelper {
         long currentTime = System.currentTimeMillis()/1000;
         boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
         return timeRight;
+    }
+
+    /**
+     * 浏览器新版本采用新的UI设计，此方法判断是否为新UI的版本
+     * 分隔版本为：5.1.7.14861
+     *
+     * @param version
+     * @return
+     */
+    public static boolean isNewVersionSE(String version) {
+        try {
+            if (!Strings.isNullOrEmpty(version)) {
+                String[] versionArray = version.split("\\.");
+                if (versionArray.length != 4) {
+                    return false;
+                } else if (Integer.parseInt(versionArray[0]) > 5) {
+                    return true;
+                } else if (Integer.parseInt(versionArray[1]) > 1) {
+                    return true;
+                } else if (Integer.parseInt(versionArray[2]) > 7) {
+                    return true;
+                } else if (Integer.parseInt(versionArray[3]) > 14861) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+        }
+        return false;
     }
 }

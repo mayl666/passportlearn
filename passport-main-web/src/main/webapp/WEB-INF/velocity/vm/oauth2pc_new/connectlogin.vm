@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>正在登录</title>
+    <meta name="description" content="搜狗浏览器第三方登录中间页">
+    <meta name="author" content="yinyong@sogou-inc.com">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <script type="text/javascript">
+        var splus = {};
+        splus.bru = "";
+        splus.sp_status = "1";
+        splus.sname = '${sname}';
+        splus.nick = '${nick}';
+        splus.sid = "0";
+        splus.passport = '${passport}';
+        splus.accesstoken = '${accesstoken}';
+        splus.refreshtoken = '${refreshtoken}';
+        splus.result = "0";
+        splus.logintype = '${logintype}';
+        splus._timestamp = "201308061701";
+    </script>
+    <script src="/./static/js/oauth2pc/require-jquery.js?t=168932"
+            data-main="/./static/js/oauth2pc/main.js"></script>
+    <script src="/./static/js/oauth2pc/sdk.js?appkey=21556307"></script>
+</head>
+<script>require(['pages/oauth_login'])</script>
+</body>
+</html>

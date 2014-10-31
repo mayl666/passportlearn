@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web;
 
 import com.google.common.collect.Maps;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import junit.framework.Assert;
@@ -57,7 +58,21 @@ public class BaseControllerTest {
         ru1 = ServletUtil.applyOAuthParametersString(ru1, paramMap);
 
         Assert.assertEquals(ru, ru1);
+    }
 
-
+    @Test
+    public void testIsNewVersionSE() {
+        String v1 = "5.1.7.14862";
+        Assert.assertTrue(CommonHelper.isNewVersionSE(v1));
+        String v2 = "5.1.8.14861";
+        Assert.assertTrue(CommonHelper.isNewVersionSE(v2));
+        String v3 = "6.1.8.14861";
+        Assert.assertTrue(CommonHelper.isNewVersionSE(v3));
+        String v4 = "5.1.7.1486";
+        Assert.assertFalse(CommonHelper.isNewVersionSE(v4));
+        String v5 = "5.1.7";
+        Assert.assertFalse(CommonHelper.isNewVersionSE(v5));
+        String v6 = "5.1.7.14adb";
+        Assert.assertFalse(CommonHelper.isNewVersionSE(v6));
     }
 }

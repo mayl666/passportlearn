@@ -45,6 +45,8 @@ public class ConnectLoginParams {
     @Min(0)
     private Integer appid_type = 0; //appidtype=1，则根据应用传入的client_id查询相关的第三方appid；appidtype=0，则使用sogou passport的appid；
 
+    private String v; //浏览器根据v判断显示新旧UI
+
     @AssertTrue(message = "Client_id不允许为空")
     private boolean isEmptyClientId() {
         return !Strings.isNullOrEmpty(appid) || !Strings.isNullOrEmpty(client_id);
@@ -187,5 +189,13 @@ public class ConnectLoginParams {
 
     public void setAppid_type(Integer appid_type) {
         this.appid_type = appid_type;
+    }
+
+    public String getV() {
+        return v;
+    }
+
+    public void setV(String v) {
+        this.v = v;
     }
 }

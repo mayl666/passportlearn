@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -79,17 +80,28 @@ public class PCOAuth2AccountController extends BaseController {
 
 
     @RequestMapping(value = "/sogou/fastreg", method = RequestMethod.GET)
-    public String fastreg(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "instanceid", defaultValue = "") String instanceid, Model model) throws Exception {
+    public String fastreg(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String instanceid, @RequestParam(defaultValue = "") String v, Model model) throws Exception {
         model.addAttribute("instanceid", instanceid);
         model.addAttribute("client_id", CommonConstant.PC_CLIENTID);
-        return "/oauth2pc/fastreg";
+        model.addAttribute("v", v);
+        if (CommonHelper.isNewVersionSE(v)) {
+            return "/oauth2pc_new/fastreg";
+        } else {
+            return "/oauth2pc/fastreg";
+        }
     }
 
     @RequestMapping(value = "/sogou/mobilereg", method = RequestMethod.GET)
-    public String mobilereg(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "instanceid", defaultValue = "") String instanceid, Model model) throws Exception {
+    public String mobilereg(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String instanceid, @RequestParam(defaultValue = "") String v, Model model) throws Exception {
         model.addAttribute("instanceid", instanceid);
         model.addAttribute("client_id", CommonConstant.PC_CLIENTID);
-        return "/oauth2pc/mobilereg";
+        model.addAttribute("v", v);
+        if (CommonHelper.isNewVersionSE(v)) {
+            return "/oauth2pc_new/mobilereg";
+        } else {
+            return "/oauth2pc/mobilereg";
+        }
+
     }
 
     /**
@@ -107,7 +119,14 @@ public class PCOAuth2AccountController extends BaseController {
         webCookieProcess(request, response);
         model.addAttribute("instanceid", pcOAuth2BaseParams.getInstanceid());
         model.addAttribute("client_id", pcOAuth2BaseParams.getClient_id());
-        return "/oauth2pc/pclogin";
+        String v = pcOAuth2BaseParams.getV();
+        model.addAttribute("v", v);
+        if (CommonHelper.isNewVersionSE(v)) {
+            return "/oauth2pc_new/pclogin";
+        } else {
+            return "/oauth2pc/pclogin";
+        }
+
     }
 
     @RequestMapping(value = "/oauth2/token/")
