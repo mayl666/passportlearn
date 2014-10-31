@@ -50,8 +50,12 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
         }
 
         // 第三方appkey
-        public AuthenticationRequestBuilder setAppKey(String appKey) {
-            this.parameters.put(OAuth.OAUTH_CLIENT_ID, appKey);
+        public AuthenticationRequestBuilder setAppKey(String appKey, int provider) {
+            if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+                this.parameters.put(OAuth.OAUTH_WEIXIN_CLIENT_ID, appKey);
+            } else {
+                this.parameters.put(OAuth.OAUTH_CLIENT_ID, appKey);
+            }
             return this;
         }
 

@@ -121,7 +121,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 requestUrl = oAuthConsumer.getWebUserAuthzUrl();
             }
             OAuthAuthzClientRequest.AuthenticationRequestBuilder builder = OAuthAuthzClientRequest
-                    .authorizationLocation(requestUrl).setAppKey(appKey)
+                    .authorizationLocation(requestUrl).setAppKey(appKey,provider)
                     .setRedirectURI(redirectURI)
                     .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
                     .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
