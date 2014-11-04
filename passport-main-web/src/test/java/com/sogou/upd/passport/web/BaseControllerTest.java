@@ -70,7 +70,7 @@ public class BaseControllerTest {
         Assert.assertTrue(CommonHelper.isNewVersionSE(v3));
         String v4 = "5.1.7.1486";
         Assert.assertFalse(CommonHelper.isNewVersionSE(v4));
-        String v5 = "5.1.7";
+        String v5 = "5.0.10.1486";
         Assert.assertFalse(CommonHelper.isNewVersionSE(v5));
         String v6 = "5.1.7.14adb";
         Assert.assertFalse(CommonHelper.isNewVersionSE(v6));

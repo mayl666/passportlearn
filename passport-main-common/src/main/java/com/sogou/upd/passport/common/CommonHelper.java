@@ -70,28 +70,31 @@ public class CommonHelper {
 
     /**
      * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
+     *
      * @param passportId passport内部传输的用户id
      * @return
      */
-    public static boolean isInvokeProxyApi(String passportId){
+    public static boolean isInvokeProxyApi(String passportId) {
         return true;
 //        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));
     }
 
     /**
      * 是否生成搜狗新cookie
+     *
      * @return
      */
-    public static boolean isBuildNewCookie(){
+    public static boolean isBuildNewCookie() {
         return false;
     }
 
     /**
      * 判断时间戳（毫秒）是否有效
+     *
      * @param ct
      * @return
      */
-    public static boolean isMillCtValid(long ct){
+    public static boolean isMillCtValid(long ct) {
         long currentTime = System.currentTimeMillis();
         boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM_IN_MILLI;
         return timeRight;
@@ -99,11 +102,12 @@ public class CommonHelper {
 
     /**
      * 判断时间戳（秒）是否有效
+     *
      * @param ct
      * @return
      */
-    public static boolean isSecCtValid(long ct){
-        long currentTime = System.currentTimeMillis()/1000;
+    public static boolean isSecCtValid(long ct) {
+        long currentTime = System.currentTimeMillis() / 1000;
         boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
         return timeRight;
     }
@@ -121,14 +125,26 @@ public class CommonHelper {
                 String[] versionArray = version.split("\\.");
                 if (versionArray.length != 4) {
                     return false;
-                } else if (Integer.parseInt(versionArray[0]) > 5) {
+                }
+                if (Integer.parseInt(versionArray[0]) > 5) {
                     return true;
-                } else if (Integer.parseInt(versionArray[1]) > 1) {
+                } else if (Integer.parseInt(versionArray[0]) < 5) {
+                    return false;
+                }
+                if (Integer.parseInt(versionArray[1]) > 1) {
                     return true;
-                } else if (Integer.parseInt(versionArray[2]) > 7) {
+                } else if (Integer.parseInt(versionArray[1]) < 1) {
+                    return false;
+                }
+                if (Integer.parseInt(versionArray[2]) > 7) {
                     return true;
-                } else if (Integer.parseInt(versionArray[3]) > 14861) {
+                } else if (Integer.parseInt(versionArray[2]) < 7) {
+                    return false;
+                }
+                if (Integer.parseInt(versionArray[3]) > 14861) {
                     return true;
+                } else {
+                    return false;
                 }
             }
         } catch (Exception e) {
