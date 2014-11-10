@@ -34,7 +34,6 @@ public class CommonConstant {
     //双读异常原因
     public static final String AUTH_MESSAGE = "update-pwd-bindmobile"; //用来读分离时记log时用，主账号有修改绑定手机或密码操作
     public static final String CHECK_MESSAGE = "update-bindmobile"; //用来读分离时记log时用,检查用户名是否可用时，主账号有修改绑定手机操作
-    public static final String SG_NOT_EXIST = "SoGouNotExist"; //账号在搜狗不存在
     //双写异常原因
     public static final String SGSUCCESS_SHERROR = "write_SGSuccess_SHError";//SG写成功，SH写失败
 
@@ -57,7 +56,6 @@ public class CommonConstant {
     public static final String APP_ID = "appid";
     public static final String RESQUEST_CT = "ct";
     public static final String RESQUEST_CODE = "code";
-    public static final String HAVE_UPDATE = "true";//用户有修改操作
 
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
     public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明
@@ -128,9 +126,6 @@ public class CommonConstant {
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1001, 4));
 
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2001, 4));
-
-//        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2011, 3));
-//        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2011, 4));
     }
 
 }

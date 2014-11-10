@@ -2,6 +2,7 @@
 <!-- Reference Manual http://logback.qos.ch/manual/index.html -->
 <configuration>
     <property name="log.path" value="/search/passport/log"/>
+    <property resource="deploy_config.properties" />
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -38,6 +39,7 @@
     <appender name="userOperationAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/useroperation/useroperation.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>3</maxHistory>
         </rollingPolicy>
         <encoder>
             <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
@@ -64,9 +66,9 @@
 
     <appender name="kafkaAsyncAppender" class="com.sogou.upd.passport.logback.api.kafka.MultiKafkaAppender"
               additivity="false">
-        <zkList>10.11.211.158:2181,10.11.211.158:3181,10.11.211.158:4181</zkList>
-        <brokerList>10.11.211.158:9092,10.11.215.220:9092,10.11.207.133:9092</brokerList>
-        <topic>test</topic>
+        <zkList>${zkList}</zkList>
+        <brokerList>${brokerList}</brokerList>
+        <topic>${topic.userlog}</topic>
         <poolSize>10</poolSize>
         <async>true</async>
         <encoder>
@@ -75,8 +77,8 @@
     </appender>
 
     <appender name="rabbitMQAppender" class="com.sogou.upd.passport.mq.RabbitMQAppender">
-        <host>localhost</host>
-        <port>5672</port>
+        <host>${rabbitmq.host}</host>
+        <port>${rabbitmq.port}</port>
         <virtualHost>/storm_host</virtualHost>
         <username>davion</username>
         <password>davion</password>
@@ -115,6 +117,7 @@
     <appender name="redisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/redisMiss/redisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>14</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%d %msg %n</pattern>
@@ -127,6 +130,7 @@
     <appender name="tokenRedisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/tokenRedisMiss/redisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>14</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%d %msg %n</pattern>
@@ -139,6 +143,7 @@
     <appender name="dBRedisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/dBRedisMiss/redisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>14</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%d %msg %n</pattern>
@@ -152,6 +157,7 @@
     <appender name="httpclientFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/httpclient/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
@@ -171,6 +177,7 @@
     <appender name="webPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/webperf/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
@@ -209,6 +216,7 @@
     <appender name="kvPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/kvperf/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
@@ -243,7 +251,7 @@
     </logger>
     <!--end:web服务器性能log-->
 
-    <root level="info">
+    <root level="warn">
         <appender-ref ref="Console"/>
     </root>
 </configuration>
