@@ -399,10 +399,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 boolean isConnectUserInfo = false;
                 //isthird=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
                 if (isthird == 0) {
-                    ObtainAccountInfoParams params = new ObtainAccountInfoParams();
-                    params.setUsername(passportId);
-                    params.setClient_id(String.valueOf(clientId));
-                    params.setFields("uniqname,sex");
+                    ObtainAccountInfoParams params = new ObtainAccountInfoParams(String.valueOf(clientId), passportId, "uniqname,sex");
                     result = accountInfoManager.getUserInfo(params);
                     if (result.isSuccess()) {
                         String img180 = (String) result.getModels().get("img_180");
