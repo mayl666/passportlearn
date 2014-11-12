@@ -97,6 +97,7 @@ public class DBZkSwitchMonitor {
         try {
             if (nodeCache.getCurrentData() != null && nodeCache.getCurrentData().getData() != null) {
                 String nodeData = new String(nodeCache.getCurrentData().getData());
+                LOGGER.info(" nodeData is :" + nodeData);
                 Map jsonMap = JsonUtil.jsonToBean(nodeData, Map.class);
                 String masterJdbcUrl = (String) jsonMap.get("masterJdbcUrl");
                 String slaveJdbcUrl = (String) jsonMap.get("slaveJdbcUrl");
