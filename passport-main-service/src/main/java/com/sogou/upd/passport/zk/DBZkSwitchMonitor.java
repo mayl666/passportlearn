@@ -48,7 +48,7 @@ public class DBZkSwitchMonitor {
     /**
      * rose master slave 工厂
      */
-    private MasterSlaveDataSourceFactory masterSlaveDataSourceFactory;
+//    private MasterSlaveDataSourceFactory masterSlaveDataSourceFactory;
 
     private DBMonitor dbMonitor;
 
@@ -82,7 +82,7 @@ public class DBZkSwitchMonitor {
         public void nodeChanged() throws Exception {
             LOGGER.warn("data source node changed");
             //refresh
-            refresh(dataSourceNodeCache, masterDataSource, slaveDataSource, masterSlaveDataSourceFactory);
+            refresh(dataSourceNodeCache, masterDataSource, slaveDataSource);
         }
     }
 
@@ -92,9 +92,8 @@ public class DBZkSwitchMonitor {
      * @param nodeCache
      * @param masterDataSource
      * @param slaveDataSource
-     * @param masterSlaveDataSourceFactory
      */
-    private void refresh(NodeCache nodeCache, ComboPooledDataSource masterDataSource, ComboPooledDataSource slaveDataSource, MasterSlaveDataSourceFactory masterSlaveDataSourceFactory) {
+    private void refresh(NodeCache nodeCache, ComboPooledDataSource masterDataSource, ComboPooledDataSource slaveDataSource) {
         try {
             if (nodeCache.getCurrentData() != null && nodeCache.getCurrentData().getData() != null) {
                 String nodeData = new String(nodeCache.getCurrentData().getData());
