@@ -200,19 +200,17 @@ public class PCAccountManagerImpl implements PCAccountManager {
                     return result;
                 }
                 //获取用户信息
-                ObtainAccountInfoParams params = new ObtainAccountInfoParams(String.valueOf(clientId), passportId, "uniqname,sex");
-                result = accountInfoManager.getUserInfo(params);
-                if (result.isSuccess()) {
+                ObtainAccountInfoParams params = new ObtainAccountInfoParams(String.valueOf(clientId), passportId, "uniqname,avatarurl");
+                Result accountInfoResult = accountInfoManager.getUserInfo(params);
+                if (accountInfoResult.isSuccess()) {
                     String img180 = (String) result.getModels().get("img_180");
                     String img50 = (String) result.getModels().get("img_50");
                     String img30 = (String) result.getModels().get("img_30");
                     String uniqname = (String) result.getModels().get("uniqname");
-                    String gender = (String) result.getModels().get("sex");
                     result.getModels().put("large_avatar", Strings.isNullOrEmpty(img180) ? "" : img180);
                     result.getModels().put("mid_avatar", Strings.isNullOrEmpty(img50) ? "" : img50);
                     result.getModels().put("tiny_avatar", Strings.isNullOrEmpty(img30) ? "" : img30);
                     result.getModels().put("uniqname", Strings.isNullOrEmpty(uniqname) ? "" : uniqname);
-                    result.getModels().put("gender", Strings.isNullOrEmpty(gender) ? 0 : Integer.parseInt(gender));
                 }
             } else {
                 result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
