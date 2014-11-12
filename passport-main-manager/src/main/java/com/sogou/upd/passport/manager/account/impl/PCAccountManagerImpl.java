@@ -194,7 +194,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 Result sessionResult = sessionServerManager.createSession(passportId);
                 if (sessionResult.isSuccess()) {
                     String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
-                    result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                    result.setDefaultModel(LoginConstant.COOKIE_SGID, sgid);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_CREATE_SGID_FAILED);
                     return result;
@@ -203,14 +203,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 ObtainAccountInfoParams params = new ObtainAccountInfoParams(String.valueOf(clientId), passportId, "uniqname,avatarurl");
                 Result accountInfoResult = accountInfoManager.getUserInfo(params);
                 if (accountInfoResult.isSuccess()) {
-                    String img180 = (String) result.getModels().get("img_180");
-                    String img50 = (String) result.getModels().get("img_50");
-                    String img30 = (String) result.getModels().get("img_30");
                     String uniqname = (String) result.getModels().get("uniqname");
-                    result.getModels().put("large_avatar", Strings.isNullOrEmpty(img180) ? "" : img180);
-                    result.getModels().put("mid_avatar", Strings.isNullOrEmpty(img50) ? "" : img50);
-                    result.getModels().put("tiny_avatar", Strings.isNullOrEmpty(img30) ? "" : img30);
-                    result.getModels().put("uniqname", Strings.isNullOrEmpty(uniqname) ? "" : uniqname);
+                    String avatarurl = (String) result.getModels().get("avatarurl");
+                    result.setDefaultModel("avatarurl", Strings.isNullOrEmpty(avatarurl) ? "" : avatarurl);
+                    result.setDefaultModel("uniqname", Strings.isNullOrEmpty(uniqname) ? "" : uniqname);
                 }
             } else {
                 result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
