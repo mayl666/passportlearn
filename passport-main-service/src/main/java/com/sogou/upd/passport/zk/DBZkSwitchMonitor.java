@@ -104,6 +104,12 @@ public class DBZkSwitchMonitor {
                 String masterJdbcUrl = (String) jsonMap.get("masterJdbcUrl");
                 String slaveJdbcUrl = (String) jsonMap.get("slaveJdbcUrl");
 
+                LOGGER.warn("refresh Data Source Properties before. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}" +
+                        "slaveJdbcUrl:{},slave-acquireIncrement:{},slave-checkoutTimeout:{},slave-maxPoolSize:{}",
+                        new Object[]{masterJdbcUrl, masterDataSource.getAcquireIncrement(), masterDataSource.getCheckoutTimeout(), masterDataSource.getMaxPoolSize(),
+                                slaveJdbcUrl, slaveDataSource.getAcquireIncrement(), slaveDataSource.getCheckoutTimeout(), slaveDataSource.getMaxPoolSize()
+                        });
+
                 if (!Strings.isNullOrEmpty(masterJdbcUrl)) {
                     if (masterJdbcUrl.equals(masterDataSource.getJdbcUrl())) {
                         LOGGER.warn("DBZkSwitchMonitor refresh node data.masterJdbcUrl no changed.");
@@ -153,7 +159,7 @@ public class DBZkSwitchMonitor {
                 slaveDataSource = new ComboPooledDataSource();
                 slaveDataSource.setJdbcUrl(slaveJdbcUrl);
 
-                LOGGER.warn("Data Source Properties. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}" +
+                LOGGER.warn("refresh Data Source Properties after. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}" +
                         "slaveJdbcUrl:{},slave-acquireIncrement:{},slave-checkoutTimeout:{},slave-maxPoolSize:{}",
                         new Object[]{masterJdbcUrl, masterDataSource.getAcquireIncrement(), masterDataSource.getCheckoutTimeout(), masterDataSource.getMaxPoolSize(),
                                 slaveJdbcUrl, slaveDataSource.getAcquireIncrement(), slaveDataSource.getCheckoutTimeout(), slaveDataSource.getMaxPoolSize()
