@@ -147,7 +147,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Override
     public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type, String httpOrHttps) {
         Result result = new APIResultSupport(false);
-        String v = req.getParameter("v"); //浏览器根据v判断展示新旧UI样式
+        String v = req.getParameter(CommonConstant.BROWER_VERSION); //浏览器根据v判断展示新旧UI样式
         try {
             int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
             String ip = req.getParameter("ip");

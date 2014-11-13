@@ -81,9 +81,9 @@ public class PCOAuth2AccountController extends BaseController {
 
     @RequestMapping(value = "/sogou/fastreg", method = RequestMethod.GET)
     public String fastreg(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String instanceid, @RequestParam(defaultValue = "") String v, Model model) throws Exception {
-        model.addAttribute("instanceid", instanceid);
-        model.addAttribute("client_id", CommonConstant.PC_CLIENTID);
-        model.addAttribute("v", v);
+        model.addAttribute(CommonConstant.INSTANCE_ID, instanceid);
+        model.addAttribute(CommonConstant.CLIENT_ID, CommonConstant.PC_CLIENTID);
+        model.addAttribute(CommonConstant.BROWER_VERSION, v);
         if (CommonHelper.isNewVersionSE(v)) {
             return "/oauth2pc_new/fastreg";
         } else {
@@ -93,9 +93,9 @@ public class PCOAuth2AccountController extends BaseController {
 
     @RequestMapping(value = "/sogou/mobilereg", method = RequestMethod.GET)
     public String mobilereg(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String instanceid, @RequestParam(defaultValue = "") String v, Model model) throws Exception {
-        model.addAttribute("instanceid", instanceid);
-        model.addAttribute("client_id", CommonConstant.PC_CLIENTID);
-        model.addAttribute("v", v);
+        model.addAttribute(CommonConstant.INSTANCE_ID, instanceid);
+        model.addAttribute(CommonConstant.CLIENT_ID, CommonConstant.PC_CLIENTID);
+        model.addAttribute(CommonConstant.BROWER_VERSION, v);
         if (CommonHelper.isNewVersionSE(v)) {
             return "/oauth2pc_new/mobilereg";
         } else {
@@ -117,10 +117,10 @@ public class PCOAuth2AccountController extends BaseController {
     @RequestMapping(value = "/sogou/flogon", method = RequestMethod.GET)
     public String pcLogin(HttpServletRequest request, HttpServletResponse response, PCOAuth2BaseParams pcOAuth2BaseParams, Model model) throws Exception {
         webCookieProcess(request, response);
-        model.addAttribute("instanceid", pcOAuth2BaseParams.getInstanceid());
-        model.addAttribute("client_id", pcOAuth2BaseParams.getClient_id());
+        model.addAttribute(CommonConstant.INSTANCE_ID, pcOAuth2BaseParams.getInstanceid());
+        model.addAttribute(CommonConstant.CLIENT_ID, pcOAuth2BaseParams.getClient_id());
         String v = pcOAuth2BaseParams.getV();
-        model.addAttribute("v", v);
+        model.addAttribute(CommonConstant.BROWER_VERSION, v);
         if (CommonHelper.isNewVersionSE(v)) {
             return "/oauth2pc_new/pclogin";
         } else {
@@ -148,7 +148,7 @@ public class PCOAuth2AccountController extends BaseController {
         }
         UserOperationLog userOperationLog = new UserOperationLog(oauthRequest.getUsername(), "/oauth2/token/?grant_type=" + oauthRequest.getGrantType(), String.valueOf(oauthRequest.getClientId()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("refresh_token", oauthRequest.getRefreshToken());
-        userOperationLog.putOtherMessage("instance_id", oauthRequest.getInstanceId());
+        userOperationLog.putOtherMessage(CommonConstant.INSTANCE_ID, oauthRequest.getInstanceId());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
@@ -171,8 +171,8 @@ public class PCOAuth2AccountController extends BaseController {
             result.setCode("0");
         }
         UserOperationLog userOperationLog = new UserOperationLog(params.getUsername(), "/oauth2/resource/?resource_type=" + params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        userOperationLog.putOtherMessage("access_token", params.getAccess_token());
-        userOperationLog.putOtherMessage("instance_id", params.getInstance_id());
+        userOperationLog.putOtherMessage(CommonConstant.ACCESS_TOKEN, params.getAccess_token());
+        userOperationLog.putOtherMessage(CommonConstant.INSTANCE_ID, params.getInstance_id());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }

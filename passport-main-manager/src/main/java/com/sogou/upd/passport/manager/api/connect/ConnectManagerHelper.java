@@ -40,7 +40,7 @@ public class ConnectManagerHelper {
                 callbackParams.put(CommonConstant.USER_AGENT, userAgent);
             }
             if(!Strings.isNullOrEmpty(v)){
-                callbackParams.put("v", v);
+                callbackParams.put(CommonConstant.BROWER_VERSION, v);
             }
             callbackParams.put("appid_type", appid_type);
             StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CHARSET));

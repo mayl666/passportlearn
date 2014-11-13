@@ -92,6 +92,8 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute("passport", result.getModels().get("passport"));
                 model.addAttribute("result", 0);
                 model.addAttribute("logintype", result.getModels().get("logintype"));
+                model.addAttribute(CommonConstant.BROWER_VERSION, req.getParameter(CommonConstant.BROWER_VERSION));
+                model.addAttribute(CommonConstant.INSTANCE_ID, req.getParameter(CommonConstant.INSTANCE_ID));
                 return viewUrl;
             } else if (ConnectTypeEnum.WEB.toString().equals(type)) {
                 int clientId = Integer.valueOf(clientIdStr);
@@ -127,8 +129,8 @@ public class ConnectCallbackController extends BaseConnectController {
         } else {
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 model.addAttribute("error", result.getModels().get("error"));
-                if(!Strings.isNullOrEmpty(ua) && ua.contains(CommonConstant.SOGOU_IME_UA)){     // ua=sogou_ime时，connecterr.vm不需要windows.close()
-                    model.addAttribute("appname",CommonConstant.SOGOU_IME_UA); // vm没有contains函数，只能==
+                if (!Strings.isNullOrEmpty(ua) && ua.contains(CommonConstant.SOGOU_IME_UA)) {     // ua=sogou_ime时，connecterr.vm不需要windows.close()
+                    model.addAttribute("appname", CommonConstant.SOGOU_IME_UA); // vm没有contains函数，只能==
                 }
                 return viewUrl;
             } else if (ConnectTypeEnum.PC.toString().equals(type)) {
