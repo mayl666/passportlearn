@@ -37,12 +37,12 @@ public class DBZkSwitchMonitor {
     /**
      * master 数据源
      */
-//    private ComboPooledDataSource masterDataSource;
+    private ComboPooledDataSource masterDataSource;
 
     /**
      * slave 数据源
      */
-//    private ComboPooledDataSource slaveDataSource;
+    private ComboPooledDataSource slaveDataSource;
 
 
     /**
@@ -53,15 +53,15 @@ public class DBZkSwitchMonitor {
     private DBMonitor dbMonitor;
 
     public DBZkSwitchMonitor() {
+
     }
 
 
-    //    public DBZkSwitchMonitor(DBMonitor dbMonitor, String dataSourceZkPath, ComboPooledDataSource masterDataSource, ComboPooledDataSource slaveDataSource) {
-    public DBZkSwitchMonitor(DBMonitor dbMonitor, String dataSourceZkPath) {
+    public DBZkSwitchMonitor(DBMonitor dbMonitor, String dataSourceZkPath, ComboPooledDataSource masterDataSource, ComboPooledDataSource slaveDataSource) {
         this.dbMonitor = dbMonitor;
         this.dataSourceZkPath = dataSourceZkPath;
-//        this.masterDataSource = masterDataSource;
-//        this.slaveDataSource = slaveDataSource;
+        this.masterDataSource = masterDataSource;
+        this.slaveDataSource = slaveDataSource;
         dataSourceNodeCache = this.addListener(dataSourceZkPath, new DataSourceListenerImpl());
     }
 
@@ -84,7 +84,7 @@ public class DBZkSwitchMonitor {
         public void nodeChanged() throws Exception {
             LOGGER.warn("data source node changed");
             //refresh
-//            refresh(dataSourceNodeCache, masterDataSource, slaveDataSource);
+            refresh(dataSourceNodeCache, masterDataSource, slaveDataSource);
         }
     }
 
