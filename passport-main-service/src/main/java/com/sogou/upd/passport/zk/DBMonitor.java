@@ -20,6 +20,8 @@ public class DBMonitor {
 
     private CuratorFramework curatorFramework;
 
+    public DBMonitor() {
+    }
 
     public DBMonitor(String zks) {
         SGCompressionProvider compressionProvider = new SGCompressionProvider();
