@@ -133,8 +133,8 @@
     <bean id="dbZkWitchMonitor" class="com.sogou.upd.passport.zk.DBZkSwitchMonitor" destroy-method="destroy">
         <constructor-arg name="dbMonitor" ref="dbMonitor"/>
         <constructor-arg name="dataSourceZkPath" value="${dataSourceZkPath}"/>
-        <constructor-arg name="masterDataSource" ref="masterDataSource"/>
-        <constructor-arg name="slaveDataSource" ref="slaveDataSource"/>
+        <!--<constructor-arg name="masterDataSource" ref="masterDataSource"/>-->
+        <!--<constructor-arg name="slaveDataSource" ref="slaveDataSource"/>-->
     </bean>
 
     <!-- 读写分离设置 -->
