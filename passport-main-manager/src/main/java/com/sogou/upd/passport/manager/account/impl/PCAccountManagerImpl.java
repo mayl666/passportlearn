@@ -195,6 +195,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 if (sessionResult.isSuccess()) {
                     String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                     result.setDefaultModel(LoginConstant.COOKIE_SGID, sgid);
+                    result.setSuccess(true);
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_CREATE_SGID_FAILED);
                     return result;
@@ -203,8 +204,8 @@ public class PCAccountManagerImpl implements PCAccountManager {
                 ObtainAccountInfoParams params = new ObtainAccountInfoParams(String.valueOf(clientId), passportId, "uniqname,avatarurl");
                 Result accountInfoResult = accountInfoManager.getUserInfo(params);
                 if (accountInfoResult.isSuccess()) {
-                    String uniqname = (String) result.getModels().get("uniqname");
-                    String avatarurl = (String) result.getModels().get("avatarurl");
+                    String uniqname = (String) accountInfoResult.getModels().get("uniqname");
+                    String avatarurl = (String) accountInfoResult.getModels().get("avatarurl");
                     result.setDefaultModel("avatarurl", Strings.isNullOrEmpty(avatarurl) ? "" : avatarurl);
                     result.setDefaultModel("uniqname", Strings.isNullOrEmpty(uniqname) ? "" : uniqname);
                 }
