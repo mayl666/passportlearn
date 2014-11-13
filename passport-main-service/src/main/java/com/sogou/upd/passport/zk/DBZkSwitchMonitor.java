@@ -52,8 +52,11 @@ public class DBZkSwitchMonitor {
 
     private DBMonitor dbMonitor;
 
+    public DBZkSwitchMonitor() {
+    }
 
-//    public DBZkSwitchMonitor(DBMonitor dbMonitor, String dataSourceZkPath, ComboPooledDataSource masterDataSource, ComboPooledDataSource slaveDataSource) {
+
+    //    public DBZkSwitchMonitor(DBMonitor dbMonitor, String dataSourceZkPath, ComboPooledDataSource masterDataSource, ComboPooledDataSource slaveDataSource) {
     public DBZkSwitchMonitor(DBMonitor dbMonitor, String dataSourceZkPath) {
         this.dbMonitor = dbMonitor;
         this.dataSourceZkPath = dataSourceZkPath;
