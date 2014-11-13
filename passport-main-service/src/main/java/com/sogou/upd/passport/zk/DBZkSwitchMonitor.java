@@ -135,8 +135,11 @@ public class DBZkSwitchMonitor {
 //                masterDataSource.addPropertyChangeListener();
 
                 if (masterDataSource != null && slaveDataSource != null) {
-                    masterDataSource.close();
-                    slaveDataSource.close();
+//                    masterDataSource.close();
+//                    slaveDataSource.close();
+
+                    masterDataSource.resetPoolManager();
+                    slaveDataSource.resetPoolManager();
                 }
 
 //                ComboPooledDataSource newMasterDataSource = new ComboPooledDataSource();
