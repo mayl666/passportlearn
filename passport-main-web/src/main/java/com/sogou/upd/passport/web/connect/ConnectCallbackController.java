@@ -95,10 +95,6 @@ public class ConnectCallbackController extends BaseConnectController {
                 return viewUrl;
             } else if (ConnectTypeEnum.WEB.toString().equals(type)) {
                 int clientId = Integer.valueOf(clientIdStr);
-
-                //最初版本
-//                cookieManager.setCookie(res, passportId, clientId, getIp(req), ru, (int) DateAndNumTimesConstant.TWO_WEEKS);
-
                 //module 替换
                 CookieApiParams cookieApiParams = new CookieApiParams();
                 cookieApiParams.setUserid(passportId);

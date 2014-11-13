@@ -114,7 +114,7 @@ public class CommonHelper {
 
     /**
      * 浏览器新版本采用新的UI设计，此方法判断是否为新UI的版本
-     * 分隔版本为：5.1.7.14861
+     * 分隔版本为：5.1.7.14966
      *
      * @param version
      * @return
@@ -141,7 +141,7 @@ public class CommonHelper {
                 } else if (Integer.parseInt(versionArray[2]) < 7) {
                     return false;
                 }
-                if (Integer.parseInt(versionArray[3]) > 14861) {
+                if (Integer.parseInt(versionArray[3]) > 14966) {
                     return true;
                 } else {
                     return false;
