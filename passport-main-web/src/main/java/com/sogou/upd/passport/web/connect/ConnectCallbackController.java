@@ -131,7 +131,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 return viewUrl;
             } else if (ConnectTypeEnum.PC.toString().equals(type)) {
                 model.addAttribute(CommonConstant.BROWER_VERSION, req.getParameter(CommonConstant.BROWER_VERSION));
-                model.addAttribute(CommonConstant.INSTANCE_ID, req.getParameter(CommonConstant.INSTANCE_ID));
+                model.addAttribute(CommonConstant.INSTANCE_ID, req.getParameter("ts"));
                 return viewUrl;
             } else {
                 res.sendRedirect(viewUrl + "?errorCode=" + result.getCode() + "&errorMsg=" + Coder.encodeUTF8(result.getMessage()));
