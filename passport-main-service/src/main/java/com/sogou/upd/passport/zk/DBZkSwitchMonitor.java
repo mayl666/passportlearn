@@ -99,7 +99,7 @@ public class DBZkSwitchMonitor {
         try {
             if (nodeCache.getCurrentData() != null && nodeCache.getCurrentData().getData() != null) {
                 String nodeData = new String(nodeCache.getCurrentData().getData());
-                LOGGER.info(" nodeData is :" + nodeData);
+                LOGGER.warn(" data source node current data :" + nodeData);
                 Map jsonMap = JsonUtil.jsonToBean(nodeData, Map.class);
                 String masterJdbcUrl = (String) jsonMap.get("masterJdbcUrl");
                 String slaveJdbcUrl = (String) jsonMap.get("slaveJdbcUrl");
@@ -153,6 +153,11 @@ public class DBZkSwitchMonitor {
                 slaveDataSource = new ComboPooledDataSource();
                 slaveDataSource.setJdbcUrl(slaveJdbcUrl);
 
+                LOGGER.warn("Data Source Properties. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}" +
+                        "slaveJdbcUrl:{},slave-acquireIncrement:{},slave-checkoutTimeout:{},slave-maxPoolSize:{}",
+                        new Object[]{masterJdbcUrl, masterDataSource.getAcquireIncrement(), masterDataSource.getCheckoutTimeout(), masterDataSource.getMaxPoolSize(),
+                                slaveJdbcUrl, slaveDataSource.getAcquireIncrement(), slaveDataSource.getCheckoutTimeout(), slaveDataSource.getMaxPoolSize()
+                        });
             } else {
                 LOGGER.warn("DBZkSwitchMonitor refresh node changed is NULL. Zk path: " + nodeCache.getCurrentData().getPath());
                 return;
