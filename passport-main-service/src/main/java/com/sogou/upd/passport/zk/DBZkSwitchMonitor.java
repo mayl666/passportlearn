@@ -58,9 +58,7 @@ public class DBZkSwitchMonitor {
         this.dataSourceZkPath = dataSourceZkPath;
         this.masterDataSource = masterDataSource;
         this.slaveDataSource = slaveDataSource;
-//        this.masterSlaveDataSourceFactory = masterSlaveDataSourceFactory;
-        this.dataSourceNodeCache = this.addListener(dataSourceZkPath, new DataSourceListenerImpl());
-
+        dataSourceNodeCache = this.addListener(dataSourceZkPath, new DataSourceListenerImpl());
     }
 
 
