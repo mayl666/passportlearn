@@ -92,8 +92,6 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute("passport", result.getModels().get("passport"));
                 model.addAttribute("result", 0);
                 model.addAttribute("logintype", result.getModels().get("logintype"));
-                model.addAttribute(CommonConstant.BROWER_VERSION, req.getParameter(CommonConstant.BROWER_VERSION));
-                model.addAttribute(CommonConstant.INSTANCE_ID, req.getParameter(CommonConstant.INSTANCE_ID));
                 return viewUrl;
             } else if (ConnectTypeEnum.WEB.toString().equals(type)) {
                 int clientId = Integer.valueOf(clientIdStr);
@@ -109,9 +107,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
                 cookieApiParams.setUniqname((String) result.getModels().get("refnick"));
                 cookieApiParams.setRefnick((String) result.getModels().get("refnick"));
-
                 cookieManager.createCookie(res, cookieApiParams);
-
                 String domain = req.getParameter("domain");
                 if (!Strings.isNullOrEmpty(domain)) {
                     String refnick = (String) result.getModels().get("refnick");
@@ -134,6 +130,8 @@ public class ConnectCallbackController extends BaseConnectController {
                 }
                 return viewUrl;
             } else if (ConnectTypeEnum.PC.toString().equals(type)) {
+                model.addAttribute(CommonConstant.BROWER_VERSION, req.getParameter(CommonConstant.BROWER_VERSION));
+                model.addAttribute(CommonConstant.INSTANCE_ID, req.getParameter(CommonConstant.INSTANCE_ID));
                 return viewUrl;
             } else {
                 res.sendRedirect(viewUrl + "?errorCode=" + result.getCode() + "&errorMsg=" + Coder.encodeUTF8(result.getMessage()));
