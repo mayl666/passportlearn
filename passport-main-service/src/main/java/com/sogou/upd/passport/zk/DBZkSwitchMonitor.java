@@ -101,10 +101,10 @@ public class DBZkSwitchMonitor {
                 String masterJdbcUrl = (String) jsonMap.get(DataSourceConstant.masterJdbcUrl);
                 String slaveJdbcUrl = (String) jsonMap.get(DataSourceConstant.slaveJdbcUrl);
 
-                LOGGER.warn("refresh Data Source Properties before. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}" +
+                LOGGER.warn("refresh Data Source Properties before. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}," +
                         "slaveJdbcUrl:{},slave-acquireIncrement:{},slave-checkoutTimeout:{},slave-maxPoolSize:{}",
-                        new Object[]{masterJdbcUrl, masterDataSource.getAcquireIncrement(), masterDataSource.getCheckoutTimeout(), masterDataSource.getMaxPoolSize(),
-                                slaveJdbcUrl, slaveDataSource.getAcquireIncrement(), slaveDataSource.getCheckoutTimeout(), slaveDataSource.getMaxPoolSize()
+                        new Object[]{masterDataSource.getJdbcUrl(), masterDataSource.getAcquireIncrement(), masterDataSource.getCheckoutTimeout(), masterDataSource.getMaxPoolSize(),
+                                slaveDataSource.getJdbcUrl(), slaveDataSource.getAcquireIncrement(), slaveDataSource.getCheckoutTimeout(), slaveDataSource.getMaxPoolSize()
                         });
 
                 if (!Strings.isNullOrEmpty(masterJdbcUrl)) {
@@ -263,10 +263,10 @@ public class DBZkSwitchMonitor {
                     slaveDataSource.resetPoolManager();
                 }
 
-                LOGGER.warn("refresh Data Source Properties after. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}" +
+                LOGGER.warn("refresh Data Source Properties after. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}," +
                         "slaveJdbcUrl:{},slave-acquireIncrement:{},slave-checkoutTimeout:{},slave-maxPoolSize:{}",
-                        new Object[]{masterJdbcUrl, masterDataSource.getAcquireIncrement(), masterDataSource.getCheckoutTimeout(), masterDataSource.getMaxPoolSize(),
-                                slaveJdbcUrl, slaveDataSource.getAcquireIncrement(), slaveDataSource.getCheckoutTimeout(), slaveDataSource.getMaxPoolSize()
+                        new Object[]{masterDataSource.getJdbcUrl(), masterDataSource.getAcquireIncrement(), masterDataSource.getCheckoutTimeout(), masterDataSource.getMaxPoolSize(),
+                                slaveDataSource.getJdbcUrl(), slaveDataSource.getAcquireIncrement(), slaveDataSource.getCheckoutTimeout(), slaveDataSource.getMaxPoolSize()
                         });
             } else {
                 LOGGER.warn("DBZkSwitchMonitor refresh node changed is NULL. Zk path: " + nodeCache.getCurrentData().getPath());
