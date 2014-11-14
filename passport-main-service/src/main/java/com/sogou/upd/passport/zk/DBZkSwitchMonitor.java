@@ -130,10 +130,10 @@ public class DBZkSwitchMonitor {
                 if (masterDataSource != null && slaveDataSource != null) {
 
                     //重新构建 masterDataSource
-                    masterDataSource = new ComboPooledDataSource(true);
+//                    masterDataSource = new ComboPooledDataSource(true);
                     masterDataSource.setJdbcUrl(masterJdbcUrl);
 
-                    slaveDataSource = new ComboPooledDataSource(true);
+//                    slaveDataSource = new ComboPooledDataSource(true);
                     slaveDataSource.setJdbcUrl(slaveJdbcUrl);
 
                     if (jsonMap.containsKey(DataSourceConstant.acquireIncrement) && jsonMap.get(DataSourceConstant.acquireIncrement) != null) {
@@ -261,6 +261,7 @@ public class DBZkSwitchMonitor {
 
                     //reset slaveDataSource poolManager
                     slaveDataSource.resetPoolManager(true);
+
                 }
 
                 LOGGER.warn("refresh after. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}," +
