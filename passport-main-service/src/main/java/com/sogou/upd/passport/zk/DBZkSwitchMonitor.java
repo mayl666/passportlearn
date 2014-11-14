@@ -5,7 +5,6 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.netflix.curator.framework.recipes.cache.NodeCache;
 import com.netflix.curator.framework.recipes.cache.NodeCacheListener;
 import com.sogou.upd.passport.common.utils.JsonUtil;
-import net.paoding.rose.jade.dataaccess.datasource.MasterSlaveDataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -46,10 +45,8 @@ public class DBZkSwitchMonitor {
 
 
     /**
-     * rose master slave 工厂
+     * db monitor
      */
-//    private MasterSlaveDataSourceFactory masterSlaveDataSourceFactory;
-
     private DBMonitor dbMonitor;
 
     public DBZkSwitchMonitor() {
@@ -101,8 +98,8 @@ public class DBZkSwitchMonitor {
                 String nodeData = new String(nodeCache.getCurrentData().getData());
                 LOGGER.warn(" data source node current data :" + nodeData);
                 Map jsonMap = JsonUtil.jsonToBean(nodeData, Map.class);
-                String masterJdbcUrl = (String) jsonMap.get("masterJdbcUrl");
-                String slaveJdbcUrl = (String) jsonMap.get("slaveJdbcUrl");
+                String masterJdbcUrl = (String) jsonMap.get(DataSourceConstant.masterJdbcUrl);
+                String slaveJdbcUrl = (String) jsonMap.get(DataSourceConstant.slaveJdbcUrl);
 
                 LOGGER.warn("refresh Data Source Properties before. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}" +
                         "slaveJdbcUrl:{},slave-acquireIncrement:{},slave-checkoutTimeout:{},slave-maxPoolSize:{}",
@@ -130,37 +127,141 @@ public class DBZkSwitchMonitor {
                     return;
                 }
 
-
-                //DataSource property changeListener
-//                masterDataSource.addPropertyChangeListener();
-
                 if (masterDataSource != null && slaveDataSource != null) {
-//                    masterDataSource.close();
-//                    slaveDataSource.close();
 
+                    //重新构建 masterDataSource
+                    masterDataSource = new ComboPooledDataSource();
+                    masterDataSource.setJdbcUrl(masterJdbcUrl);
+
+                    slaveDataSource = new ComboPooledDataSource();
+                    slaveDataSource.setJdbcUrl(slaveJdbcUrl);
+
+                    if (jsonMap.containsKey(DataSourceConstant.acquireIncrement) && jsonMap.get(DataSourceConstant.acquireIncrement) != null) {
+                        masterDataSource.setAcquireIncrement((Integer) jsonMap.get(DataSourceConstant.acquireIncrement));
+                        slaveDataSource.setAcquireIncrement((Integer) jsonMap.get(DataSourceConstant.acquireIncrement));
+                    } else {
+                        masterDataSource.setAcquireIncrement(DataSourceConstant.acquireIncrement_value);
+                        slaveDataSource.setAcquireIncrement(DataSourceConstant.acquireIncrement_value);
+                    }
+
+                    if (jsonMap.containsKey(DataSourceConstant.acquireRetryAttempts) && jsonMap.get(DataSourceConstant.acquireRetryAttempts) != null) {
+                        masterDataSource.setAcquireRetryAttempts((Integer) jsonMap.get(DataSourceConstant.acquireRetryAttempts));
+                        slaveDataSource.setAcquireRetryAttempts((Integer) jsonMap.get(DataSourceConstant.acquireRetryAttempts));
+                    } else {
+                        masterDataSource.setAcquireRetryAttempts(DataSourceConstant.acquireRetryAttempts_value);
+                        slaveDataSource.setAcquireRetryAttempts(DataSourceConstant.acquireRetryAttempts_value);
+                    }
+
+                    if (jsonMap.containsKey(DataSourceConstant.idleConnectionTestPeriod) && jsonMap.get(DataSourceConstant.idleConnectionTestPeriod) != null) {
+                        masterDataSource.setIdleConnectionTestPeriod((Integer) jsonMap.get(DataSourceConstant.idleConnectionTestPeriod));
+                        slaveDataSource.setIdleConnectionTestPeriod((Integer) jsonMap.get(DataSourceConstant.idleConnectionTestPeriod));
+                    } else {
+                        masterDataSource.setIdleConnectionTestPeriod(DataSourceConstant.idleConnectionTestPeriod_value);
+                        slaveDataSource.setIdleConnectionTestPeriod(DataSourceConstant.idleConnectionTestPeriod_value);
+                    }
+
+                    if (jsonMap.containsKey(DataSourceConstant.checkoutTimeout) && jsonMap.get(DataSourceConstant.checkoutTimeout) != null) {
+                        masterDataSource.setCheckoutTimeout((Integer) jsonMap.get(DataSourceConstant.checkoutTimeout));
+                        slaveDataSource.setCheckoutTimeout((Integer) jsonMap.get(DataSourceConstant.checkoutTimeout));
+                    } else {
+                        masterDataSource.setCheckoutTimeout(DataSourceConstant.checkoutTimeout_value);
+                        slaveDataSource.setCheckoutTimeout(DataSourceConstant.checkoutTimeout_value);
+                    }
+
+                    if (jsonMap.containsKey(DataSourceConstant.maxPoolSize) && jsonMap.get(DataSourceConstant.maxPoolSize) != null) {
+                        masterDataSource.setMaxPoolSize((Integer) jsonMap.get(DataSourceConstant.maxPoolSize));
+                        slaveDataSource.setMaxPoolSize((Integer) jsonMap.get(DataSourceConstant.maxPoolSize));
+                    } else {
+                        masterDataSource.setMaxPoolSize(DataSourceConstant.maxPoolSize_value);
+                        slaveDataSource.setMaxPoolSize(DataSourceConstant.maxPoolSize_value);
+                    }
+
+                    if (jsonMap.containsKey(DataSourceConstant.initialPoolSize) && jsonMap.get(DataSourceConstant.initialPoolSize) != null) {
+                        masterDataSource.setMinPoolSize((Integer) jsonMap.get(DataSourceConstant.minPoolSize));
+                        slaveDataSource.setMinPoolSize((Integer) jsonMap.get(DataSourceConstant.minPoolSize));
+                    } else {
+                        masterDataSource.setMinPoolSize(DataSourceConstant.minPoolSize_value);
+                        slaveDataSource.setMinPoolSize(DataSourceConstant.minPoolSize_value);
+                    }
+
+                    if (jsonMap.containsKey(DataSourceConstant.initialPoolSize) && jsonMap.get(DataSourceConstant.initialPoolSize) != null) {
+                        masterDataSource.setInitialPoolSize((Integer) jsonMap.get(DataSourceConstant.initialPoolSize));
+                        slaveDataSource.setInitialPoolSize((Integer) jsonMap.get(DataSourceConstant.initialPoolSize));
+                    } else {
+                        masterDataSource.setInitialPoolSize(DataSourceConstant.initialPoolSize_value);
+                        slaveDataSource.setInitialPoolSize(DataSourceConstant.initialPoolSize_value);
+                    }
+
+                    if (jsonMap.containsKey(DataSourceConstant.maxStatements) && jsonMap.get(DataSourceConstant.maxStatements) != null) {
+                        masterDataSource.setMaxStatements((Integer) jsonMap.get(DataSourceConstant.maxStatements));
+                        slaveDataSource.setMaxStatements((Integer) jsonMap.get(DataSourceConstant.maxStatements));
+                    }
+
+                    if (jsonMap.containsKey(DataSourceConstant.maxIdleTime) && jsonMap.get(DataSourceConstant.maxIdleTime) != null) {
+                        masterDataSource.setMaxIdleTime((Integer) jsonMap.get(DataSourceConstant.maxIdleTime));
+                        slaveDataSource.setMaxIdleTime((Integer) jsonMap.get(DataSourceConstant.maxIdleTime));
+                    } else {
+                        masterDataSource.setMaxIdleTime(DataSourceConstant.maxIdleTime_value);
+                        slaveDataSource.setMaxIdleTime(DataSourceConstant.maxIdleTime_value);
+                    }
+
+                    if (jsonMap.containsKey((DataSourceConstant.numHelperThreads)) && jsonMap.get(DataSourceConstant.numHelperThreads) != null) {
+                        masterDataSource.setNumHelperThreads((Integer) jsonMap.get(DataSourceConstant.numHelperThreads));
+                        slaveDataSource.setNumHelperThreads((Integer) jsonMap.get(DataSourceConstant.numHelperThreads));
+                    } else {
+                        masterDataSource.setNumHelperThreads(DataSourceConstant.numHelperThreads_value);
+                        slaveDataSource.setNumHelperThreads(DataSourceConstant.numHelperThreads_value);
+                    }
+
+                    if (jsonMap.containsKey(DataSourceConstant.breakAfterAcquireFailure) && jsonMap.get(DataSourceConstant.breakAfterAcquireFailure) != null) {
+                        masterDataSource.setBreakAfterAcquireFailure((Boolean) jsonMap.get(DataSourceConstant.breakAfterAcquireFailure));
+                        slaveDataSource.setBreakAfterAcquireFailure((Boolean) jsonMap.get(DataSourceConstant.breakAfterAcquireFailure));
+                    } else {
+                        masterDataSource.setBreakAfterAcquireFailure(DataSourceConstant.breakAfterAcquireFailure_value);
+                        slaveDataSource.setBreakAfterAcquireFailure(DataSourceConstant.breakAfterAcquireFailure_value);
+                    }
+
+                    if (jsonMap.containsKey(DataSourceConstant.testConnectionOnCheckout) && jsonMap.get(DataSourceConstant.testConnectionOnCheckout) != null) {
+                        masterDataSource.setTestConnectionOnCheckout((Boolean) jsonMap.get(DataSourceConstant.testConnectionOnCheckout));
+                        slaveDataSource.setTestConnectionOnCheckout((Boolean) jsonMap.get(DataSourceConstant.testConnectionOnCheckout));
+                    } else {
+                        masterDataSource.setTestConnectionOnCheckout(DataSourceConstant.testConnectionOnCheckout_value);
+                        slaveDataSource.setTestConnectionOnCheckout(DataSourceConstant.testConnectionOnCheckout_value);
+                    }
+
+//                    masterDataSource.setAcquireIncrement((Integer) jsonMap.get(DataSourceConstant.acquireIncrement));
+//                    masterDataSource.setAcquireRetryAttempts((Integer) jsonMap.get(DataSourceConstant.acquireRetryAttempts));
+//                    masterDataSource.setIdleConnectionTestPeriod((Integer) jsonMap.get(DataSourceConstant.idleConnectionTestPeriod));
+//                    masterDataSource.setCheckoutTimeout((Integer) jsonMap.get(DataSourceConstant.checkoutTimeout));
+//                    masterDataSource.setMaxPoolSize((Integer) jsonMap.get(DataSourceConstant.maxPoolSize));
+//                    masterDataSource.setMinPoolSize((Integer) jsonMap.get(DataSourceConstant.minPoolSize));
+//                    masterDataSource.setInitialPoolSize((Integer) jsonMap.get(DataSourceConstant.initialPoolSize));
+//                    masterDataSource.setMaxStatements((Integer) jsonMap.get(DataSourceConstant.maxStatements));
+//                    masterDataSource.setMaxIdleTime((Integer) jsonMap.get(DataSourceConstant.maxIdleTime));
+//                    masterDataSource.setNumHelperThreads((Integer) jsonMap.get(DataSourceConstant.numHelperThreads));
+//                    masterDataSource.setBreakAfterAcquireFailure((Boolean) jsonMap.get(DataSourceConstant.breakAfterAcquireFailure));
+//                    masterDataSource.setTestConnectionOnCheckout((Boolean) jsonMap.get(DataSourceConstant.testConnectionOnCheckout));
+
+//                    slaveDataSource.setAcquireIncrement((Integer) jsonMap.get(DataSourceConstant.acquireIncrement));
+//                    slaveDataSource.setAcquireRetryAttempts((Integer) jsonMap.get(DataSourceConstant.acquireRetryAttempts));
+//                    slaveDataSource.setIdleConnectionTestPeriod((Integer) jsonMap.get(DataSourceConstant.idleConnectionTestPeriod));
+//                    slaveDataSource.setCheckoutTimeout((Integer) jsonMap.get(DataSourceConstant.checkoutTimeout));
+//                    slaveDataSource.setMaxPoolSize((Integer) jsonMap.get(DataSourceConstant.maxPoolSize));
+//                    slaveDataSource.setMinPoolSize((Integer) jsonMap.get(DataSourceConstant.minPoolSize));
+//                    slaveDataSource.setInitialPoolSize((Integer) jsonMap.get(DataSourceConstant.initialPoolSize));
+//                    slaveDataSource.setMaxStatements((Integer) jsonMap.get(DataSourceConstant.maxStatements));
+//                    slaveDataSource.setMaxIdleTime((Integer) jsonMap.get(DataSourceConstant.maxIdleTime));
+//                    slaveDataSource.setNumHelperThreads((Integer) jsonMap.get(DataSourceConstant.numHelperThreads));
+//                    slaveDataSource.setBreakAfterAcquireFailure((Boolean) jsonMap.get(DataSourceConstant.breakAfterAcquireFailure));
+//                    slaveDataSource.setTestConnectionOnCheckout((Boolean) jsonMap.get(DataSourceConstant.testConnectionOnCheckout));
+
+
+                    //reset masterDataSource poolManager
                     masterDataSource.resetPoolManager();
+
+                    //reset slaveDataSource poolManager
                     slaveDataSource.resetPoolManager();
                 }
-
-//                ComboPooledDataSource newMasterDataSource = new ComboPooledDataSource();
-//                newMasterDataSource.setJdbcUrl(masterJdbcUrl);
-
-//                ComboPooledDataSource newSlaveDataSource = new ComboPooledDataSource();
-//                newSlaveDataSource.setJdbcUrl(slaveJdbcUrl);
-
-//                List<DataSource> slaveDataSources = Lists.newArrayList();
-//                slaveDataSources.add(newSlaveDataSource);
-
-//                masterDataSource.resetPoolManager(true);
-//                slaveDataSource.resetPoolManager(true);
-
-//                masterSlaveDataSourceFactory = new MasterSlaveDataSourceFactory(newMasterDataSource, slaveDataSources, true);
-
-                masterDataSource = new ComboPooledDataSource();
-                masterDataSource.setJdbcUrl(masterJdbcUrl);
-
-                slaveDataSource = new ComboPooledDataSource();
-                slaveDataSource.setJdbcUrl(slaveJdbcUrl);
 
                 LOGGER.warn("refresh Data Source Properties after. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}" +
                         "slaveJdbcUrl:{},slave-acquireIncrement:{},slave-checkoutTimeout:{},slave-maxPoolSize:{}",
