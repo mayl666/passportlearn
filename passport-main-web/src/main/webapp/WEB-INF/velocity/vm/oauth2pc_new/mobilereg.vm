@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset='utf-8'/>
+    <title>搜狗浏览器</title>
+    <meta name="description" content="搜狗浏览器登录注册框">
+    <meta name="author" content="yinyong@sogou-inc.com">
+    <link href="/./static/css/oauth2pc_new/login.css?t=543838" rel="stylesheet" />
+    <!--[if lte IE 9]>
+    <script src="/./static/js/oauth2pc_new/html5.js?t=028570"></script>
+    <![endif]-->
+    <script type="text/javascript" charset = "utf-8">
+var splus = {
+    login_history:"",
+    instanceid:"$instanceid"
+};
+var v = '$v';
+</script>
+    <script src="/./static/js/oauth2pc_new/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc_new/main.js"></script>
+    <script src="/./static/js/oauth2pc_new/sdk.js?appkey=21556307"></script>
+</head>
+<body>
+    
+
+<div class="login-wrap">
+    <div class="login-ad">
+        <p>云收藏-电脑手机跨屏浏览</p>
+    </div>
+    <div class="login-con">
+        <form id="mobile_reg_form">
+            <div class="control-group">
+                <div class="controls user-id">
+                    <input type="text" class="" placeholder="输入手机号" name="account" autocomplete="off"
+                           disableautocomplete/>
+                    <span class="position-tips"></span>
+                </div>
+                <div class="controls">
+                    <input type="text" class="" placeholder="输入验证码" name="vcode" maxlength="6">
+                        <span class="chkbtn-wrap">
+                            <span class="chktext"></span>
+                            <button class="chkbtn" type="button">获取验证码</button>
+                        </span>
+                </div>
+                <div class="controls">
+                    <input type="password" class="" placeholder="设置密码" name="password">
+                    <span class="position-tips"></span>
+                </div>
+            </div>
+            <div class="control-group reg-button clearfix">
+                <div class="controls">
+                    <button class="btn btn-g" type="submit">手机注册</button>
+                <span class="reg-switch">
+                    <a href="/sogou/fastreg?instanceid=${instanceid}&v=${v}" class="blue">快速注册</a>
+                </span>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <p class="red out-error" style="display:"></p>
+                </div>
+                <div class="controls position-bottom">
+                    <div class="fr">
+                        <span style="vertical-align:baseline">已有帐号</span>
+                    <a href="/sogou/flogon?instanceid=${instanceid}&v=${v}" class="blue"> 直接登录</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>require(['pages/reg'])</script>
+
+</body>
+</html>
