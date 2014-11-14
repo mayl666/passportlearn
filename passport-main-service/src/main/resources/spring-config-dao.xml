@@ -7,9 +7,9 @@
     <!-- 配置master数据库 -->
     <bean id="masterDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-        <property name="jdbcUrl">
+        <!--<property name="jdbcUrl">
             <value>${passport.jdbc.master.url}</value>
-        </property>
+        </property>-->
         <property name="user">
             <value>${passport.jdbc.username}</value>
         </property>
@@ -79,9 +79,9 @@
     <!-- 配置slave数据库 -->
     <bean id="slaveDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-        <property name="jdbcUrl">
+       <!-- <property name="jdbcUrl">
             <value>${passport.jdbc.slave.url}</value>
-        </property>
+        </property>-->
         <property name="user">
             <value>${passport.jdbc.username}</value>
         </property>
