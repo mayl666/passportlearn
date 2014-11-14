@@ -129,14 +129,12 @@ public class DBZkSwitchMonitor {
 
                 if (masterDataSource != null && slaveDataSource != null) {
 
-                    //重新构建 masterDataSource
-//                    masterDataSource = new ComboPooledDataSource(true);
+                    //重新构建 masterDataSource jdbc url
                     masterDataSource.setJdbcUrl(masterJdbcUrl);
 
-//                    slaveDataSource = new ComboPooledDataSource(true);
                     slaveDataSource.setJdbcUrl(slaveJdbcUrl);
 
-                    if (jsonMap.containsKey(DataSourceConstant.acquireIncrement) && jsonMap.get(DataSourceConstant.acquireIncrement) != null) {
+                    /*if (jsonMap.containsKey(DataSourceConstant.acquireIncrement) && jsonMap.get(DataSourceConstant.acquireIncrement) != null) {
                         masterDataSource.setAcquireIncrement((Integer) jsonMap.get(DataSourceConstant.acquireIncrement));
                         slaveDataSource.setAcquireIncrement((Integer) jsonMap.get(DataSourceConstant.acquireIncrement));
                     } else {
@@ -228,34 +226,7 @@ public class DBZkSwitchMonitor {
                         masterDataSource.setTestConnectionOnCheckout(DataSourceConstant.testConnectionOnCheckout_value);
                         slaveDataSource.setTestConnectionOnCheckout(DataSourceConstant.testConnectionOnCheckout_value);
                     }
-
-//                    masterDataSource.setAcquireIncrement((Integer) jsonMap.get(DataSourceConstant.acquireIncrement));
-//                    masterDataSource.setAcquireRetryAttempts((Integer) jsonMap.get(DataSourceConstant.acquireRetryAttempts));
-//                    masterDataSource.setIdleConnectionTestPeriod((Integer) jsonMap.get(DataSourceConstant.idleConnectionTestPeriod));
-//                    masterDataSource.setCheckoutTimeout((Integer) jsonMap.get(DataSourceConstant.checkoutTimeout));
-//                    masterDataSource.setMaxPoolSize((Integer) jsonMap.get(DataSourceConstant.maxPoolSize));
-//                    masterDataSource.setMinPoolSize((Integer) jsonMap.get(DataSourceConstant.minPoolSize));
-//                    masterDataSource.setInitialPoolSize((Integer) jsonMap.get(DataSourceConstant.initialPoolSize));
-//                    masterDataSource.setMaxStatements((Integer) jsonMap.get(DataSourceConstant.maxStatements));
-//                    masterDataSource.setMaxIdleTime((Integer) jsonMap.get(DataSourceConstant.maxIdleTime));
-//                    masterDataSource.setNumHelperThreads((Integer) jsonMap.get(DataSourceConstant.numHelperThreads));
-//                    masterDataSource.setBreakAfterAcquireFailure((Boolean) jsonMap.get(DataSourceConstant.breakAfterAcquireFailure));
-//                    masterDataSource.setTestConnectionOnCheckout((Boolean) jsonMap.get(DataSourceConstant.testConnectionOnCheckout));
-
-//                    slaveDataSource.setAcquireIncrement((Integer) jsonMap.get(DataSourceConstant.acquireIncrement));
-//                    slaveDataSource.setAcquireRetryAttempts((Integer) jsonMap.get(DataSourceConstant.acquireRetryAttempts));
-//                    slaveDataSource.setIdleConnectionTestPeriod((Integer) jsonMap.get(DataSourceConstant.idleConnectionTestPeriod));
-//                    slaveDataSource.setCheckoutTimeout((Integer) jsonMap.get(DataSourceConstant.checkoutTimeout));
-//                    slaveDataSource.setMaxPoolSize((Integer) jsonMap.get(DataSourceConstant.maxPoolSize));
-//                    slaveDataSource.setMinPoolSize((Integer) jsonMap.get(DataSourceConstant.minPoolSize));
-//                    slaveDataSource.setInitialPoolSize((Integer) jsonMap.get(DataSourceConstant.initialPoolSize));
-//                    slaveDataSource.setMaxStatements((Integer) jsonMap.get(DataSourceConstant.maxStatements));
-//                    slaveDataSource.setMaxIdleTime((Integer) jsonMap.get(DataSourceConstant.maxIdleTime));
-//                    slaveDataSource.setNumHelperThreads((Integer) jsonMap.get(DataSourceConstant.numHelperThreads));
-//                    slaveDataSource.setBreakAfterAcquireFailure((Boolean) jsonMap.get(DataSourceConstant.breakAfterAcquireFailure));
-//                    slaveDataSource.setTestConnectionOnCheckout((Boolean) jsonMap.get(DataSourceConstant.testConnectionOnCheckout));
-
-
+*/
                     //reset masterDataSource poolManager
                     masterDataSource.resetPoolManager(true);
 
