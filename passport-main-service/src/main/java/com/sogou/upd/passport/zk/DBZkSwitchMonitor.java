@@ -101,7 +101,7 @@ public class DBZkSwitchMonitor {
                 String masterJdbcUrl = (String) jsonMap.get(DataSourceConstant.masterJdbcUrl);
                 String slaveJdbcUrl = (String) jsonMap.get(DataSourceConstant.slaveJdbcUrl);
 
-                LOGGER.warn("refresh Data Source Properties before. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}," +
+                LOGGER.warn("refresh  before. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}," +
                         "slaveJdbcUrl:{},slave-acquireIncrement:{},slave-checkoutTimeout:{},slave-maxPoolSize:{}",
                         new Object[]{masterDataSource.getJdbcUrl(), masterDataSource.getAcquireIncrement(), masterDataSource.getCheckoutTimeout(), masterDataSource.getMaxPoolSize(),
                                 slaveDataSource.getJdbcUrl(), slaveDataSource.getAcquireIncrement(), slaveDataSource.getCheckoutTimeout(), slaveDataSource.getMaxPoolSize()
@@ -130,10 +130,10 @@ public class DBZkSwitchMonitor {
                 if (masterDataSource != null && slaveDataSource != null) {
 
                     //重新构建 masterDataSource
-                    masterDataSource = new ComboPooledDataSource();
+                    masterDataSource = new ComboPooledDataSource(true);
                     masterDataSource.setJdbcUrl(masterJdbcUrl);
 
-                    slaveDataSource = new ComboPooledDataSource();
+                    slaveDataSource = new ComboPooledDataSource(true);
                     slaveDataSource.setJdbcUrl(slaveJdbcUrl);
 
                     if (jsonMap.containsKey(DataSourceConstant.acquireIncrement) && jsonMap.get(DataSourceConstant.acquireIncrement) != null) {
@@ -257,13 +257,13 @@ public class DBZkSwitchMonitor {
 
 
                     //reset masterDataSource poolManager
-                    masterDataSource.resetPoolManager();
+                    masterDataSource.resetPoolManager(true);
 
                     //reset slaveDataSource poolManager
-                    slaveDataSource.resetPoolManager();
+                    slaveDataSource.resetPoolManager(true);
                 }
 
-                LOGGER.warn("refresh Data Source Properties after. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}," +
+                LOGGER.warn("refresh after. masterJdbcUrl:{},master-acquireIncrement:{},master-checkoutTimeout:{},master-maxPoolSize:{}," +
                         "slaveJdbcUrl:{},slave-acquireIncrement:{},slave-checkoutTimeout:{},slave-maxPoolSize:{}",
                         new Object[]{masterDataSource.getJdbcUrl(), masterDataSource.getAcquireIncrement(), masterDataSource.getCheckoutTimeout(), masterDataSource.getMaxPoolSize(),
                                 slaveDataSource.getJdbcUrl(), slaveDataSource.getAcquireIncrement(), slaveDataSource.getCheckoutTimeout(), slaveDataSource.getMaxPoolSize()
