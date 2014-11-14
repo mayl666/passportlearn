@@ -62,6 +62,10 @@ public class CommonConstant {
     public static final String DEFAULT_CHARSET = "UTF-8";
     public static final String SEPARATOR_1 = "|";
 
+    public static final String ACCESS_TOKEN = "access_token";
+    public static final String EXPIRES_IN = "expires_in";
+    public static final String OPENID = "openid";
+
     public static final String DEFAULT_CONNECT_REDIRECT_URL = "https://account.sogou.com";
     public static final String DEFAULT_INDEX_URL = "https://account.sogou.com";
     public static final String DEFAULT_WAP_INDEX_URL = "http://m.account.sogou.com";
