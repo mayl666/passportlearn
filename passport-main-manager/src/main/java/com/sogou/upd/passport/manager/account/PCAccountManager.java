@@ -53,6 +53,17 @@ public interface PCAccountManager {
     public boolean verifyRefreshToken(String passportId, int clientId, String instanceId, String refreshToken);
 
     /**
+     * 手机浏览器使用refreshtoken置换sgid
+     * 返回sgid
+     * @param passportId
+     * @param clientId
+     * @param instanceId
+     * @param refreshToken
+     * @return
+     */
+    public Result swapRefreshToken(String passportId, int clientId, String instanceId, String refreshToken);
+
+    /**
      * 获取sig
      *
      * @param passportId

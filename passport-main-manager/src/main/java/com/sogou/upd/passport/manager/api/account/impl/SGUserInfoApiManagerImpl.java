@@ -1,14 +1,11 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -44,7 +41,6 @@ import java.util.Date;
 public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserInfoApiManager {
 
     private static Logger logger = LoggerFactory.getLogger(SGUserInfoApiManagerImpl.class);
-    private static Logger profileErrorLogger = LoggerFactory.getLogger("profileErrorLogger");
 
     @Autowired
     private AccountService accountService;
@@ -296,7 +292,6 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 }
             } else {
                 //记录Log 跟踪数据同步延时情况
-                LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "updateUserInfo", CommonConstant.SG_NOT_EXIST, passportId, passportId, result.toString());
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
             }
         } catch (Exception e) {

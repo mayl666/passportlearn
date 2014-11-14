@@ -1,10 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
-import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.ResetPasswordBySecQuesApiParams;
@@ -12,7 +8,6 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 /**
