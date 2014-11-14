@@ -50,9 +50,9 @@ define(['lib/utils', 'lib/placeholder'], function(utils) {
                 "10009": "帐号不存在",
                 "20205": "帐号不存",
                 "20221": " 验证码验证失败",
-                "20231": "登陆帐号未激活",
-                "20232": "登陆帐号被封杀",
-                "20230": "当前帐号或者IP登陆操作存在异常",
+                "20231": "登录帐号未激活",
+                "20232": "登录帐号被封杀",
+                "20230": "当前帐号或者IP登录操作存在异常",
                 "20206": "帐号或密码错误",
                 "20226": "用户登录失败",
                 "20240": "生成cookie失败"
@@ -282,7 +282,7 @@ define(['lib/utils', 'lib/placeholder'], function(utils) {
                             switch (true) {
                                 case ("0" == code):
                                     self.countdown($waitArea)
-                                    $error.html("手机可以用来找回密码以及登陆")
+                                    $error.html("手机可以用来找回密码以及登录")
                                     break;
                                 default:
                                     $error.html(self.retStatus.sendSms[code] || result.statusText || "未知错误").show();
@@ -582,7 +582,7 @@ define(['lib/utils', 'lib/placeholder'], function(utils) {
                             // passport = Base64.encode(data.passport)
                             passport = data.passport*/
                         var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + (data.sname||data.uniqname) + '|' + data.nick + '|' + data.sid + '|' + data.passport + '|' + (data.autologin||1)
-                        console.log('logintype|result|accToken|refToken|sname|nick|是否公用电脑|是否自动登陆|是否保存\n ' + msg)
+                        console.log('logintype|result|accToken|refToken|sname|nick|是否公用电脑|是否自动登录|是否保存\n ' + msg)
                         window.external && window.external.passport && window.external.passport('result', msg)
                         break
                         /*                    case 1:
@@ -754,7 +754,7 @@ define(['lib/utils', 'lib/placeholder'], function(utils) {
                     case (0 == code):
                         var data = result.data;
                         var msg = (data.logintype || 'sogou') + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + /*sname*/ (data.sname||data.uniqname)+ '|' + /*nick*/ data.nick + '|' + data.sid + '|' + data.passport + '|' + '1';
-                        console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登陆 | 是否保存\n ' + msg)
+                        console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登录 | 是否保存\n ' + msg)
                         window.external && window.external.passport && window.external.passport('result', msg)
                         break;
                         /*                    case code < 1:
@@ -768,7 +768,7 @@ define(['lib/utils', 'lib/placeholder'], function(utils) {
                             sid = data.sid,
                             passport = data.passport
                         var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + sname + '|' + nick + '|' + sid + '|' + passport + '|' + '1'
-                        console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登陆 | 是否保存\n ' + msg)
+                        console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登录 | 是否保存\n ' + msg)
                         window.external && window.external.passport && window.external.passport('result ', msg)
                         break
                     case code == 1:
@@ -900,7 +900,7 @@ define(['lib/utils', 'lib/placeholder'], function(utils) {
                 switch (true) {
                     case (0 == code):
                         var msg = (data.logintype || 'sogou') + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + /*sname*/ (data.sname )+ '|' + /*nick*/ data.nick + '|' + data.sid + '|' + data.passport+ '|' + '1';
-                        console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登陆 | 是否保存\n ' + msg)
+                        console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登录 | 是否保存\n ' + msg)
                         window.external && window.external.passport && window.external.passport('result', msg)
                         break;
                         /*                    case 0:
@@ -910,7 +910,7 @@ define(['lib/utils', 'lib/placeholder'], function(utils) {
                             sid = data.sid,
                             passport = data.passport
                         var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + sname + '|' + nick + '|' + sid + '|' + passport + '|1'
-                        console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登陆 | 是否保存\n ' + msg)
+                        console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登录 | 是否保存\n ' + msg)
                         window.external && window.external.passport && window.external.passport('result ', msg)
                         break
                     case 1:

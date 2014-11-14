@@ -33,7 +33,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
         submited: false,
         init: function() {
 
-            this.exPassport("size", "540", "345")
+            this.exPassport("size", "376", "498")
             this.initEvents()
 
             this.refreshVcode($('.chkPic img'));
@@ -245,7 +245,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                     case (0 == code):
                         var data = result.data;
                         var msg = (data.logintype || 'sogou') + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + /*sname*/ (data.sname||data.uniqname)+ '|' + /*nick*/ data.nick + '|' + data.sid + '|' + data.passport + '|' + '1';
-                        console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登陆 | 是否保存\n ' + msg)
+                        console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登录 | 是否保存\n ' + msg)
                         window.external && window.external.passport && window.external.passport('result', msg)
                         self.saveHistory($input.val());
                         break; 
@@ -313,7 +313,7 @@ define(['lib/md5','lib/utils','lib/common',  'lib/placeholder', 'lib/base64'], f
                 switch (true) {
                     case (0 == code):
                         var msg = (data.logintype || 'sogou') + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + /*sname*/ (data.sname )+ '|' + /*nick*/ data.nick + '|' + data.sid + '|' + data.passport+ '|' + '1';
-                        console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登陆 | 是否保存\n ' + msg)
+                        console.log('logintype | result | accToken | refToken | sname | nick | 是否公用电脑 | 是否自动登录 | 是否保存\n ' + msg)
                         window.external && window.external.passport && window.external.passport('result', msg);
                         self.saveHistory($input.val());
                         break;

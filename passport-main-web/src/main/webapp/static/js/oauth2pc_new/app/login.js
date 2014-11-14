@@ -37,7 +37,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
 
         init: function() {
 
-            this.exPassport("size", "380", "530");
+            this.exPassport("size", "376", "498");
             this.initEvents();
             this.initLoginHistory();
             this.initDropdownEvents();
@@ -88,8 +88,10 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                     if (result.data && result.data.needCaptcha) {
 
                         $('div.vcode-area').show();
+                        $('.auto_login').addClass('show');
                     } else {
                         $('div.vcode-area').hide();
+                        $('.auto_login').removeClass('show');
                     }
 
                     switch(true){
@@ -147,7 +149,7 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                         window.location.href = url;
                         break;
                     case "taobao":
-                        exPassport("size", "450", "475");
+                        exPassport("size", "715", "530");
                         window.location.href = url;
                         break;
                     default:
@@ -276,9 +278,8 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
             })
             //鼠标点击页面其他地方,dropdown消失
             $(window).on("click", function(e) {
-                $selectBox.hide(function() {
-                    $("ul>li", $selectBox).removeClass("hover");
-                })
+                $selectBox.hide();
+                $("ul>li", $selectBox).removeClass("hover");
                 e.stopPropagation();
             })
 
@@ -308,9 +309,8 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
 
                     $mail.val(sname);
                     $('.select-btn').hide();
-                    $selectBox.hide(function() {
-                        $("ul>li", $selectBox).removeClass("hover")
-                    });
+                    $selectBox.hide();
+                    $("ul>li", $selectBox).removeClass("hover");
                     $mail.focus();
                 }
             })
@@ -400,12 +400,13 @@ define(['lib/md5', 'lib/utils', 'lib/common', 'lib/placeholder', 'lib/base64'], 
                     case (0 == code):
                         self.saveHistory($account.val()); 
                         var msg = data.logintype + '|' + data.result + '|' + data.accesstoken + '|' + data.refreshtoken + '|' + (data.sname || data.uniqname) + '|' + data.nick + '|' + data.sid + '|' + data.passport + '|' + (data.autologin)
-                        console.log('logintype|result|accToken|refToken|sname|nick|是否公用电脑|是否自动登陆|是否保存\n ' + msg)
+                        console.log('logintype|result|accToken|refToken|sname|nick|是否公用电脑|是否自动登录|是否保存\n ' + msg)
                         window.external && window.external.passport && window.external.passport('result', msg)
                         break;
                     default:
                         if (result.data && result.data.needCaptcha) {
                             $('div.vcode-area').show();
+                            $('.auto_login').addClass('show');
                             $vcode.val('').next('.position-tips').hide();
                             self.refreshVcode($img);
                         }

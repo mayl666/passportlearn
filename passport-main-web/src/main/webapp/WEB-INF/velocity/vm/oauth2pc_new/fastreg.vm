@@ -5,77 +5,76 @@
     <title>搜狗浏览器</title>
     <meta name="description" content="搜狗浏览器登录注册框">
     <meta name="author" content="yinyong@sogou-inc.com">
-    <link href="/./static/css/oauth2pc/login.css?t=810906" rel="stylesheet" />
+    <link href="/./static/css/oauth2pc_new/login.css?t=543838" rel="stylesheet" />
     <!--[if lte IE 9]>
-    <script src="/./static/js/oauth2pc/html5.js?t=028570"></script>
+    <script src="/./static/js/oauth2pc_new/html5.js?t=028570"></script>
     <![endif]-->
     <script type="text/javascript" charset = "utf-8">
 var splus = {
     login_history:"",
     instanceid:"$instanceid"
 };
+var v = '$v';
 </script>
-    <script src="/./static/js/oauth2pc/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc/main.js"></script>
-    <script src="/./static/js/oauth2pc/sdk.js?appkey=21556307"></script>
+    <script src="/./static/js/oauth2pc_new/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc_new/main.js"></script>
+    <script src="/./static/js/oauth2pc_new/sdk.js?appkey=21556307"></script>
 </head>
 <body>
+    
+<div class="login-wrap">
+    <div class="login-ad">
+        <p>云收藏-电脑手机跨屏浏览</p>
+    </div>
+    <div class="login-con">
+        <form id="fast_reg_form">
+            <div class="control-group">
+                <div class="controls user-id">
+                    <input type="text" class="" placeholder="设置帐号" name="sname" autocomplete="off" disableautocomplete>
+                    <span class="position-tips"></span>
 
-    <div class="login-wrap">
-        <div class="login-ad"></div>
-        <div class="login-con">
-            <form id="fast_reg_form">
-                <fieldset>
-                    <legend>快速注册</legend>
-                    <div class="control-group">
-                        <div class="controls user-id">
-                            <input type="text" class="" placeholder="设置帐号" name="sname" autocomplete="off" disableautocomplete>
-                            <span class="position-tips"></span>
-
-                        </div>
-                        <div class="controls">
-                            <input type="password" class="" placeholder="设置密码" name="password">
-                            <span class="position-tips"></span>
-                        </div>
+                </div>
+                <div class="controls">
+                    <input type="password" class="" placeholder="设置密码" name="password">
+                    <span class="position-tips"></span>
+                </div>
+            </div>
+            <div class="control-group vcode-area">
+                <div class="controls">
+                    <div class="chkinput">
+                        <input type="text" name="vcode" maxlength="5" autocomplete="off" disableautocomplete/>
+                        <span class="position-tips"></span>
                     </div>
-                    <div class="control-group vcode-area" >
-                        <div class="controls">
-                            <div class="chkinput">
-                                <input type="text" name="vcode" maxlength="5" autocomplete="off" disableautocomplete/>
-                                <span class="position-tips"></span>
-                            </div>
-                            <div class="chkPic">
-                                <img width="100" src="/captcha">
+                    <div class="chkPic">
+                        <img width="100" src="/captcha">
                                 <span>
                                     <a href="javascript:void(0);" class="blue">换一张</a>
                                 </span>
-                            </div>
-                        </div>
                     </div>
-                </fieldset>
-                <div class="control-group reg-button clearfix">
-                    <div class="controls">
-                        <button class="btn btn-g" type="submit">快速注册</button>
+                </div>
+            </div>
+            <div class="control-group reg-button clearfix">
+                <div class="controls">
+                    <button class="btn btn-g" type="submit">快速注册</button>
                         <span class="reg-switch">
-                            <a href="/sogou/mobilereg?instanceid=${instanceid}" class="blue">手机注册</a>
+                            <a href="/sogou/mobilereg?instanceid=${instanceid}&v=${v}" class="blue">手机注册</a>
                         </span>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls out_error_wrap">
+                    <p class="red out-error" style="display:none"></p>
+                </div>
+                <div class="controls position-bottom">
+                    <div class="fr">
+                        <span style="vertical-align:baseline">已有帐号</span>
+                            <a href="/sogou/flogon?instanceid=${instanceid}&v=${v}" class="blue"> 直接登录</a>
                     </div>
                 </div>
-                <div class="control-group">
-                    <div class="controls">
-                        <p class="red out-error" style="display:none"></p>
-                    </div>
-                    <div class="controls position-bottom">
-                        <div class="fr"> <i class="left-arrow"></i>
-                            <span style="vertical-align:baseline">已有帐号</span>
-                            <a href="/sogou/flogon?instanceid=${instanceid}" class="blue"> 直接登录</a>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
-    <script>require(['pages/reg'])</script>
+</div>
+<script>require(['pages/reg'])</script>
 
 </body>
 </html>
-

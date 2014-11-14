@@ -1,6 +1,6 @@
 require(['app/accountV2'], function(Account) {
 	var classIds = {
-		i_loginForm : "login_form",  //登陆form
+		i_loginForm : "login_form",  //登录form
 		i_commonRegForm   :  "common_reg" ,//普通注册form
 		i_phoneRegForm : "phone_reg",//手机注册form
 		c_loginLeft :"login-wrap",//登录左侧区域

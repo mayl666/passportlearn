@@ -21,13 +21,13 @@ input.error{
 	_box-shadow:#dd6600 0 0 3px;
 }
 .icon-weibo-30-1,.icon-weibo-30-0,.icon-qq-30-1,.icon-qq-30-0,.icon-renren-30-1,.icon-renren-30-0,.icon-taobao-30-1,.icon-taobao-30-0,.icon-weibo-25-1,.icon-weibo-25-0,.icon-qq-25-1,.icon-qq-25-0,.icon-renren-25-1,.icon-renren-25-0,.icon-taobao-25-1,.icon-taobao-25-0,.icon-weibo-16-1,.icon-weibo-16-0,.icon-qq-16-1,.icon-qq-16-0,.icon-renren-16-1,.icon-renren-16-0,.icon-taobao-16-1,.icon-taobao-16-0{
-	background: url(icon_login.gif) no-repeat 0 0;
+	background: url(icon_login.gif?t=) no-repeat 0 0;
 }
 .btn-sent,.btn-login,.btn-login-green,.btn-reg-big,.btn-reg,.btn-close,.btn-tool-on,.btn-tool-off{
-	background: url(btn_login.gif) no-repeat 0 0;
+	background: url(btn_login.gif?t=) no-repeat 0 0;
 }
 .sidebar h1{
-	background: url(sprite_login.gif) no-repeat 27px 0;
+	background: url(sprite_login.gif?t=) no-repeat 27px 0;
 }
 .content .form-wrap .control-group .controls input{
 	_width:248px;

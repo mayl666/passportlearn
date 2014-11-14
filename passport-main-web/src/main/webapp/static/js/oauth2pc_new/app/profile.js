@@ -383,7 +383,7 @@ define([/*'jquery', */'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 
                     switch (code) {
                         case 0:
                             self.countdown($waitArea)
-                            $vcodeError.html("手机可以用来找回密码以及登陆").removeClass("red");
+                            $vcodeError.html("手机可以用来找回密码以及登录").removeClass("red");
                             break;
                         case 10002:
                             $vcodeError.html("参数错误").show().addClass("red");
@@ -604,7 +604,7 @@ define([/*'jquery', */'lib/md5', 'app/dialog', 'lib/placeholder', 'lib/base64', 
                             "20218": "重置密码失败 ",
                             "20221": "验证码验证失败 ",
                             "20222": "当日修改或重置密码次数已达上限 ",
-                            "20230": "登陆用户或者ip在黑名单中 ",
+                            "20230": "登录用户或者ip在黑名单中 ",
                             "20244": "第三方帐号不允许此操作 "
                         };
                             switch (true) {
