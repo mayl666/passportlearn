@@ -22,7 +22,6 @@ import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
-import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
 import com.sogou.upd.passport.model.account.Account;
@@ -645,13 +644,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
             // 检验账号密码，判断是否正常用户
-            UpdateQuesApiParams updateQuesApiParams = new UpdateQuesApiParams();
-            updateQuesApiParams.setUserid(userId);
-            updateQuesApiParams.setPassword(password);
-            updateQuesApiParams.setNewquestion(newQues);
-            updateQuesApiParams.setNewanswer(newAnswer);
-            updateQuesApiParams.setModifyip(modifyIp);
-            result = secureApiManager.updateQues(updateQuesApiParams);
+            result = secureApiManager.updateQues(userId, clientId, password,newQues, newAnswer, modifyIp);
             if (!result.isSuccess()) {
                 return result;
             }

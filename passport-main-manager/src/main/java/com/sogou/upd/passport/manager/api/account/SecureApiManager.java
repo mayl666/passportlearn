@@ -1,10 +1,6 @@
 package com.sogou.upd.passport.manager.api.account;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
-import com.sogou.upd.passport.manager.api.account.form.ResetPasswordBySecQuesApiParams;
-import com.sogou.upd.passport.manager.api.account.form.UpdatePwdApiParams;
-import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
 
 /**
  * 用于安全相关的代理
@@ -22,26 +18,14 @@ public interface SecureApiManager {
 
     /**
      * 修改密保问题和答案
-     * @param updateQuesApiParams
+     * @param userId
+     * @param clientId
+     * @param password
+     * @param newQues
+     * @param newAnswer
+     * @param modifyIp
      * @return
      */
-    Result updateQues(UpdateQuesApiParams updateQuesApiParams);
-
-    /**
-     * 获取用户安全信息接口
-     * @param getSecureInfoApiParams
-     * @return
-     * sec_email 密保邮箱（绑定邮箱）
-     * sec_mobile 密保手机（绑定手机）
-     * sec_ques 密保问题
-     */
-    Result getUserSecureInfo(GetSecureInfoApiParams getSecureInfoApiParams);
-
-    /**
-     * 通过密保答案重置密码
-     * @param resetPasswordBySecQuesApiParams
-     * @return
-     */
-    Result resetPasswordByQues(ResetPasswordBySecQuesApiParams resetPasswordBySecQuesApiParams);
+    Result updateQues(String userId, int clientId, String password, String newQues, String newAnswer, String modifyIp);
 
 }

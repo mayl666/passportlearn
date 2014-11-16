@@ -11,12 +11,10 @@ public class SHPPUrlConstant {
 
     public static final int APP_ID = 1120;
     public static final String APP_KEY = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
-
     public static final String APPID_STRING = "appid";
 
     //请求SHPP时xml默认的rootNodeName
     public static final String DEFAULT_REQUEST_ROOTNODE = "info";
-
     //SHPP返回xml中状态码key
     public static final String RESULT_STATUS = "status";
 
@@ -57,10 +55,6 @@ public class SHPPUrlConstant {
     public static final String BIND_EMAIL = BASE_INTERNAL_URL + "bindemail";
 
     /*================================修改密码=======================================*/
-    //根据老密码修改新密码
-    public static final String UPDATE_PWD = BASE_INTERNAL_URL + "updatepwd";
-    //根据密保答案重置密码
-    public static final String RESET_PWD_BY_QUES = BASE_INTERNAL_URL + "recoverpwd";
     //获取用户信息
     public static final String GET_USER_INFO = BASE_INTERNAL_URL + "getuserinfo";
     //更新用户信息

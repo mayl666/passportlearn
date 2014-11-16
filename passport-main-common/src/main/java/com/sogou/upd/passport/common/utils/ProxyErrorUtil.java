@@ -107,13 +107,6 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("bindemail.6", ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED);//系统错误
         SHPPERRCODE_SGPPERRCODE_MAP.put("bindemail.7", ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT);//密码错误次数超限
 
-        //updatepwd 修改密码
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.3", ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户名不存在
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.4", ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);//原密码校验失败
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.5", ERR_CODE_ACCOUNT_BIND_NOTEXIST);//手机号绑定的账号不存在
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.6", SYSTEM_UNKNOWN_EXCEPTION);//系统异常
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updatepwd.7", ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT);//原密码错误次数超限
-
         //wapgetuserid 查询手机号绑定的账号
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapgetuserid.3", ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号码没有绑定用户
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapgetuserid.6", SYSTEM_UNKNOWN_EXCEPTION);//查询失败
@@ -136,13 +129,6 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuniqname.3", ERR_CODE_UNIQNAME_ALREADY_EXISTS);//用户昵称已经被使用
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuniqname.4", ERR_CODE_UNIQNAME_FORBID);//用户昵称包含限制词
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuniqname.6", SYSTEM_UNKNOWN_EXCEPTION);//系统异常
-
-        //recoverpwd 根据密保问题重置密保
-        SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.3", ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户名不存在
-        SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.4", ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED);//提示问题答案校验失败
-        SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.5", ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT);//一天内重复次数过多
-        SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.6", SYSTEM_UNKNOWN_EXCEPTION);//修改失败
-        SHPPERRCODE_SGPPERRCODE_MAP.put("recoverpwd.7", ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY);//用户5日内登录过
 
         //checkuser 检查用户名是否可以
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuser.3", ERR_CODE_USERID_ILLEGAL);//非法userid
