@@ -43,16 +43,6 @@ public interface ConnectConfigService {
     public ConnectConfig queryConnectConfigByClientId(int clientId, int provider) throws ServiceException;
 
     /**
-     * 指定根据clientId和provider获得对应的appkey
-     * 如果获取不到，返回null
-     * @param clientId
-     * @param provider
-     * @return
-     * @throws ServiceException
-     */
-    public String querySpecifyAppKey(int clientId, int provider) throws ServiceException;
-
-    /**
      * 更新ConnectConfig
      * @param connectConfig
      * @return

@@ -85,15 +85,6 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
     }
 
     @Override
-    public String querySpecifyAppKey(int clientId, int provider) throws ServiceException {
-        ConnectConfig connectConfig = queryConnectConfigByClientId(clientId, provider);
-        if (connectConfig != null) {
-            return connectConfig.getAppKey();
-        }
-        return null;
-    }
-
-    @Override
     public boolean modifyConnectConfig(ConnectConfig connectConfig) throws ServiceException {
         try {
             int row = connectConfigDAO.updateConnectConfig(connectConfig);
