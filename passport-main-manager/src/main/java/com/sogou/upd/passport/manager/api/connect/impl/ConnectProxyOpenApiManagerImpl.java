@@ -40,7 +40,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
     private ConnectConfigService connectConfigService;
 
     @Override
-    public Result handleConnectOpenApi(String sgUrl, Map<String, String> tokenMap, Map<String, Object> paramsMap) {
+    public Result handleConnectOpenApi(String sgUrl, Map<String, String> tokenMap, Map<String, Object> paramsMap, String thirdAppId) {
         Result result = new APIResultSupport(false);
         try {
             String connectInfo = ConnectUtil.getCONNECT_CODE_MSG(sgUrl);
@@ -48,7 +48,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
             String apiUrl = str[0];    //搜狗封装的url请求对应真正QQ第三方的接口请求
             String platform = str[1];  //QQ第三方接口所在的平台
             //封装第三方开放平台需要的参数
-            HashMap<String, Object> sigMap = buildConnectParams(tokenMap, paramsMap, apiUrl);
+            HashMap<String, Object> sigMap = buildConnectParams(tokenMap, paramsMap, apiUrl, thirdAppId);
             String protocol = CommonConstant.HTTPS;
             String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
             QQHttpClient qqHttpClient = new QQHttpClient();
@@ -68,14 +68,14 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
         return result;
     }
 
-    private HashMap<String, Object> buildConnectParams(Map<String, String> tokenMap, Map<String, Object> paramsMap, String apiUrl) throws ConnectException {
+    private HashMap<String, Object> buildConnectParams(Map<String, String> tokenMap, Map<String, Object> paramsMap, String apiUrl, String thirdAppId) throws ConnectException {
         String openId = tokenMap.get("open_id").toString();
         if (!isOpenid(openId)) {
             throw new ConnectException();
         }
         String accessToken = tokenMap.get("access_token").toString();
         //获取搜狗在第三方开放平台的appkey和appsecret
-        ConnectConfig connectConfig = connectConfigService.queryDefaultConnectConfig(AccountTypeEnum.QQ.getValue());
+        ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, AccountTypeEnum.QQ.getValue());
         String sgAppKey = connectConfig.getAppKey();
         String protocol = CommonConstant.HTTPS;
         HashMap<String, Object> sigMap = new HashMap();

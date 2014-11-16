@@ -75,14 +75,14 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
+            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId, null);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
                 Map<String, String> tokenMap = covertObjectToMap(connectToken);
                 if (!CollectionUtils.isEmpty(tokenMap)) {
                     tokenMap.put("client_id", String.valueOf(clientId));
-                    result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, null);
+                    result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, null, null);
                 }
             } else {
                 result = openResult;
@@ -113,6 +113,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
         String passportId = params.getUserid();
         int clientId = params.getClient_id();
         String uri = request.getRequestURI();
+        String thirdAppId = params.getThird_appid();
         try {
             // 仅支持qq账号调用此接口
             if (AccountTypeEnum.getAccountType(passportId) != AccountTypeEnum.QQ) {
@@ -126,7 +127,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
+            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId, thirdAppId);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
@@ -141,7 +142,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                     }
                     paramMap.put("pf", "qzone");
                     paramMap.put("format", "json");
-                    result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, paramMap);
+                    result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, paramMap, thirdAppId);
                 }
             } else {
                 result = openResult;
@@ -185,7 +186,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
+            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId, null);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
@@ -194,7 +195,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 paramMap.put("pf", "tapp");
                 if (!CollectionUtils.isEmpty(tokenMap)) {
                     tokenMap.put("client_id", String.valueOf(clientId));
-                    result = connectProxyOpenApiManager.handleConnectOpenApi(url, tokenMap, paramMap);
+                    result = connectProxyOpenApiManager.handleConnectOpenApi(url, tokenMap, paramMap, null);
                 }
             } else {
                 result = openResult;
@@ -238,14 +239,14 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
+            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId, null);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
                 Map<String, String> tokenMap = covertObjectToMap(connectToken);
                 if (!CollectionUtils.isEmpty(tokenMap)) {
                     tokenMap.put("client_id", String.valueOf(clientId));
-                    result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, null);
+                    result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, null, null);
                 }
             } else {
                 result = openResult;

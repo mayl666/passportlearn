@@ -21,7 +21,6 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 @Ignore
-@ContextConfiguration(locations = "classpath:spring-config-test.xml")
 public class QQOpenApiManagerImplTest extends BaseTest {
 
     @Autowired
@@ -48,7 +47,7 @@ public class QQOpenApiManagerImplTest extends BaseTest {
         maps.put("userip","10.129.192.121");
         qqLightOpenApiParams.setParams(maps);
         qqLightOpenApiParams.setOpenApiName("/v3/user/sogou_flag");
-        String result = sgQQLightOpenApiManager.executeQQOpenApi(openId, accessToken, qqLightOpenApiParams);
+        String result = sgQQLightOpenApiManager.executeQQOpenApi(openId, accessToken, qqLightOpenApiParams, null);
         System.out.println("result:--------------------" + result);
     }
 }

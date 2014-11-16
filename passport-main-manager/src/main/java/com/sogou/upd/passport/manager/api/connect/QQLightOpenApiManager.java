@@ -19,5 +19,5 @@ public interface QQLightOpenApiManager {
      * @return
      * @throws OpensnsException
      */
-    public String executeQQOpenApi(String openId, String openKey, QQLightOpenApiParams qqParams) throws Exception;
+    public String executeQQOpenApi(String openId, String openKey, QQLightOpenApiParams qqParams, String thirdAppId) throws Exception;
 }

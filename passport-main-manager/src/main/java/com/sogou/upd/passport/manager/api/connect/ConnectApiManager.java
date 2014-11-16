@@ -29,7 +29,7 @@ public interface ConnectApiManager {
      * @param passportId 用户Id
      * @return
      */
-    public Result obtainConnectToken(String passportId, int clientId);
+    public Result obtainConnectToken(String passportId, int clientId, String thirdAppId);
 
     /**
      * 获取访问腾讯云服务需验证的connectToken加密串（t_key）

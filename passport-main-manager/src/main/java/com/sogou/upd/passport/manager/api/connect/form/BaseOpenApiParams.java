@@ -17,6 +17,7 @@ public class BaseOpenApiParams extends BaseApiParams {
 //    @NotBlank(message = "openid不允许为空")
     protected String openid; //通行证账号，***@provider.sohu.com
     protected Object params;//调用各个api所需的参数
+    protected String third_appid;  //如果应用使用独立appid，需要传入不同第三方对应的appid; 如果不传，表示使用passport的appid；
 
     public String getUserid() {
         return userid;
@@ -40,5 +41,13 @@ public class BaseOpenApiParams extends BaseApiParams {
 
     public void setParams(Object params) {
         this.params = params;
+    }
+
+    public String getThird_appid() {
+        return third_appid;
+    }
+
+    public void setThird_appid(String third_appid) {
+        this.third_appid = third_appid;
     }
 }

@@ -37,7 +37,7 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
     private ConnectConfigService connectConfigService;
 
     @Override
-    public String executeQQOpenApi(String openId, String openKey, QQLightOpenApiParams qqParams) throws Exception {
+    public String executeQQOpenApi(String openId, String openKey, QQLightOpenApiParams qqParams, String thirdAppId) throws Exception {
         String resp;
         try {
             //QQ提供的openapi服务器
@@ -45,7 +45,7 @@ public class SGQQLightOpenApiManagerImpl extends BaseProxyManager implements QQL
             //应用的基本信息，搜狗在QQ的第三方appid与appkey
             String userId = qqParams.getUserid();
             int provider = AccountTypeEnum.getAccountType(userId).getValue();
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfigByClientId(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
+            ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
             String sgAppKey = connectConfig.getAppKey();     //搜狗在QQ的appid
             String sgAppSecret = connectConfig.getAppSecret(); //搜狗在QQ的appkey
             OpenApiV3 sdkSG = createOpenApiByApp(sgAppKey, sgAppSecret, serverName);

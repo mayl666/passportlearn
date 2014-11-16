@@ -117,11 +117,11 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     }
 
     @Override
-    public Result obtainConnectToken(String passportId, int clientId) throws ServiceException {
+    public Result obtainConnectToken(String passportId, int clientId, String thirdAppId) throws ServiceException {
         Result result = new APIResultSupport(false);
         try {
             int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-            ConnectConfig connectConfig = connectConfigService.queryDefaultConnectConfig(provider);
+            ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
             ConnectToken connectToken;
             if (connectConfig != null) {
                 connectToken = connectTokenService.queryConnectToken(passportId, provider, connectConfig.getAppKey());
@@ -144,7 +144,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     @Override
     public Result obtainTKey(String passportId, int clientId) {
         Result result = new APIResultSupport(false);
-        Result connectTokenResult = obtainConnectToken(passportId, clientId);
+        Result connectTokenResult = obtainConnectToken(passportId, clientId, null);
         if (!connectTokenResult.isSuccess()) {
             return connectTokenResult;
         }

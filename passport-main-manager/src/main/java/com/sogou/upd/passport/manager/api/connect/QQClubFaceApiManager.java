@@ -18,5 +18,5 @@ public interface QQClubFaceApiManager {
      * @return
      * @throws com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException
      */
-    public String executeQQOpenApi(String openId, String openKey, QQClubFaceOpenApiParams qqParams) throws Exception;
+    public String executeQQOpenApi(String openId, String openKey, QQClubFaceOpenApiParams qqParams, String thirdAppId) throws Exception;
 }

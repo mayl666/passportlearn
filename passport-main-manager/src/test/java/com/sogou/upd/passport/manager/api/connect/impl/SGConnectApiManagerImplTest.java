@@ -59,7 +59,7 @@ public class SGConnectApiManagerImplTest extends BaseTest {
         BaseOpenApiParams baseOpenApiParams = new BaseOpenApiParams();
         baseOpenApiParams.setUserid(passportId);
         baseOpenApiParams.setOpenid(passportId);
-        Result result = sgConnectApiManager.obtainConnectToken(passportId, clientId);
+        Result result = sgConnectApiManager.obtainConnectToken(passportId, clientId, null);
         System.out.println("------------------结果如下-------------------");
         System.out.println(result);
 
