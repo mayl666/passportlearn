@@ -45,7 +45,7 @@ public class ConnectAuthorizeServiceTest extends BaseTest {
     public void testObtainAccessTokenByCode() {
         String code = "627A7E46B28835F183C656909A6AF5B4";
 
-        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+        ConnectConfig connectConfig = connectConfigService.queryDefaultConnectConfig(provider);
         try {
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             String ru = "https://account.sogou.com";
@@ -65,7 +65,7 @@ public class ConnectAuthorizeServiceTest extends BaseTest {
     public void testRefreshAccessToken() {
         String refreshToken_qq = "33B7D25DA4F5FCD9F5DB7B4EE9136E67";
 //        String refreshToken_renren = "209417|0.zNgdF8EEhp2MlUx9r48zLZuwZWEHIx7g.225106022.1383223561658";
-        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+        ConnectConfig connectConfig = connectConfigService.queryDefaultConnectConfig(provider);
         try {
             OAuthTokenVO oAuthTokenVO = connectAuthorizeService.refreshAccessToken(refreshToken_qq, connectConfig);
             System.out.println("--------------------结果如下-------------------");

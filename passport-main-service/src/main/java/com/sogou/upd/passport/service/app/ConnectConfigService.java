@@ -16,13 +16,21 @@ public interface ConnectConfigService {
 
     /**
      * 根据clientId和provider获得ConnectConfig对象
-     * 如果获取不到，默认为搜狗通行证：1120的第三方appkey
-     * @param clientId
+     * 获取passport对应的第三方appkey
      * @param provider
      * @return
      * @throws ServiceException
      */
-    public ConnectConfig queryConnectConfig(int clientId, int provider) throws ServiceException;
+    public ConnectConfig queryDefaultConnectConfig(int provider) throws ServiceException;
+
+    /**
+     * 根据clientId和provider获得ConnectConfig对象
+     * 获取passport对应的第三方appkey
+     * @param provider
+     * @return
+     * @throws ServiceException
+     */
+    public ConnectConfig queryConnectConfigByAppId(String appId, int provider) throws ServiceException;
 
     /**
      * 根据clientId和provider获得ConnectConfig对象
@@ -32,7 +40,7 @@ public interface ConnectConfigService {
      * @return
      * @throws ServiceException
      */
-    public ConnectConfig querySpecifyConnectConfig(int clientId, int provider) throws ServiceException;
+    public ConnectConfig queryConnectConfigByClientId(int clientId, int provider) throws ServiceException;
 
     /**
      * 指定根据clientId和provider获得对应的appkey

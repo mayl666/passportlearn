@@ -185,7 +185,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             //第三方账号
             if (domain == AccountDomainEnum.THIRD) {
                 if (Strings.isNullOrEmpty(uniqname)) {
-                    ConnectToken connectToken = getConnectToken(passportId, clientId);
+                    ConnectToken connectToken = getConnectToken(passportId);
                     if (connectToken != null) {
                         uniqname = connectToken.getConnectUniqname();
                         //判断uniqname,若为空，则调用 getDefaultUniqname 方法
@@ -228,7 +228,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 //第三方
                 if (domain == AccountDomainEnum.THIRD) {
                     if (Strings.isNullOrEmpty(uniqname) || Strings.isNullOrEmpty(avatarurl)) {
-                        ConnectToken connectToken = getConnectToken(passportId, clientId);
+                        ConnectToken connectToken = getConnectToken(passportId);
                         if (connectToken != null) {
                             if (Strings.isNullOrEmpty(uniqname)) {
                                 uniqname = connectToken.getConnectUniqname();
@@ -323,13 +323,12 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
      * 获取用户 ConnectToken信息
      *
      * @param userId
-     * @param clientId
      * @return
      */
-    private ConnectToken getConnectToken(String userId, int clientId) {
+    private ConnectToken getConnectToken(String userId) {
         //从connect_token中获取
         int provider = AccountTypeEnum.getAccountType(userId).getValue();
-        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+        ConnectConfig connectConfig = connectConfigService.queryDefaultConnectConfig(provider);
         ConnectToken connectToken = null;
         if (connectConfig != null) {
             connectToken = connectTokenService.queryConnectToken(userId, provider, connectConfig.getAppKey());

@@ -60,7 +60,7 @@ public class ConnectAuthServiceTest extends BaseTest {
             String openId = connectToken.getOpenid();
             String accessToken = connectToken.getAccessToken();
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
+            ConnectConfig connectConfig = connectConfigService.queryDefaultConnectConfig(provider);
             ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
             System.out.println(connectUserInfoVO.toString());
         } catch (OAuthProblemException e) {

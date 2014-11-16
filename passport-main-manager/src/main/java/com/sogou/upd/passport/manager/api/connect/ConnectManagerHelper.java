@@ -18,7 +18,20 @@ import java.util.Map;
  */
 public class ConnectManagerHelper {
 
-    public static String constructRedirectURI(int clientId, String ru, String type, String instanceId, String pCallbackUrl, String ip, String from,String domain,String thirdInfo, int appid_type, String userAgent, String v) {
+    /**
+     * 构造第三方登录时回调接口的参数
+     * @param type  不同终端的登录类型
+     * @param instanceId 客户端实例ID，实现不同PC客户端登录状态分离
+     * @param pCallbackUrl 第三方开平url
+     * @param from  和type搭配使用
+     * @param domain  非sogou.com域时需传递
+     * @param thirdInfo  是否需要个人信息
+     * @param userAgent  输入法PC客户端根据ua判断显示不同的错误页面
+     * @param v  浏览器PC客户端根据v判断显示新旧UI样式
+     * @param thirdAppId 应用传递自己的第三方appid
+     * @return
+     */
+    public static String constructRedirectURI(int clientId, String ru, String type, String instanceId, String pCallbackUrl, String ip, String from,String domain,String thirdInfo, String userAgent, String v, String thirdAppId) {
         try {
             ru = URLEncoder.encode(ru, CommonConstant.DEFAULT_CHARSET);
             Map<String, Object> callbackParams = Maps.newHashMap();
@@ -42,7 +55,9 @@ public class ConnectManagerHelper {
             if(!Strings.isNullOrEmpty(v)){
                 callbackParams.put(CommonConstant.BROWER_VERSION, v);
             }
-            callbackParams.put("appid_type", appid_type);
+            if(!Strings.isNullOrEmpty(thirdAppId)){
+                callbackParams.put(CommonConstant.THIRD_APPID, thirdAppId);
+            }
             StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParams.entrySet(), CommonConstant.DEFAULT_CHARSET));
             return pCallbackUrl + "?" + query;
         } catch (UnsupportedEncodingException e) {

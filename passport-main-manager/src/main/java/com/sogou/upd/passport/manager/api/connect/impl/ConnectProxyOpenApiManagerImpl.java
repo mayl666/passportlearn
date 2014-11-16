@@ -75,7 +75,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
         }
         String accessToken = tokenMap.get("access_token").toString();
         //获取搜狗在第三方开放平台的appkey和appsecret
-        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(Integer.parseInt(tokenMap.get("client_id")), AccountTypeEnum.QQ.getValue());
+        ConnectConfig connectConfig = connectConfigService.queryDefaultConnectConfig(AccountTypeEnum.QQ.getValue());
         String sgAppKey = connectConfig.getAppKey();
         String protocol = CommonConstant.HTTPS;
         HashMap<String, Object> sigMap = new HashMap();

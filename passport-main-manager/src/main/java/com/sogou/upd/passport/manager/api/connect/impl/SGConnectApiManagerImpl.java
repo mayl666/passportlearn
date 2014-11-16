@@ -121,7 +121,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         Result result = new APIResultSupport(false);
         try {
             int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+            ConnectConfig connectConfig = connectConfigService.queryDefaultConnectConfig(provider);
             ConnectToken connectToken;
             if (connectConfig != null) {
                 connectToken = connectTokenService.queryConnectToken(passportId, provider, connectConfig.getAppKey());
