@@ -20,7 +20,6 @@ import com.sogou.upd.passport.manager.account.vo.ActionRecordVO;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BindEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
@@ -434,16 +433,9 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
                 return result;
             }
-            BindEmailApiParams params = new BindEmailApiParams();
-            params.setUserid(passportId);
-            params.setClient_id(clientId);
-            params.setPassword(password);
-            params.setNewbindemail(newEmail);
-            params.setOldbindemail(oldEmail);
             String flag = String.valueOf(System.currentTimeMillis());
             ru = ru + "?token=" + accountSecureService.getSecureCodeRandom(flag) + "&id=" + flag + "&username=" + passportId;
-            params.setRu(ru);
-            result = bindApiManager.bindEmail(params);
+            result = bindApiManager.bindEmail(passportId, clientId, password, newEmail, oldEmail, ru);
             if (result.isSuccess()) {
                 emailSenderService.incLimitForSendEmail(passportId, clientId, AccountModuleEnum.SECURE, newEmail);
                 operateTimesService.incIPBindTimes(modifyIp);
@@ -644,7 +636,7 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
             // 检验账号密码，判断是否正常用户
-            result = secureApiManager.updateQues(userId, clientId, password,newQues, newAnswer, modifyIp);
+            result = secureApiManager.updateQues(userId, clientId, password, newQues, newAnswer, modifyIp);
             if (!result.isSuccess()) {
                 return result;
             }

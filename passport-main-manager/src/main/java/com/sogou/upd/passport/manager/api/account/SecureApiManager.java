@@ -18,7 +18,7 @@ public interface SecureApiManager {
 
     /**
      * 修改密保问题和答案
-     * @param userId
+     * @param passportId
      * @param clientId
      * @param password
      * @param newQues
@@ -26,6 +26,6 @@ public interface SecureApiManager {
      * @param modifyIp
      * @return
      */
-    Result updateQues(String userId, int clientId, String password, String newQues, String newAnswer, String modifyIp);
+    Result updateQues(String passportId, int clientId, String password, String newQues, String newAnswer, String modifyIp);
 
 }

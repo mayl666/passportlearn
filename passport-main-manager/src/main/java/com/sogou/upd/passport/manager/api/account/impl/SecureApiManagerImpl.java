@@ -54,17 +54,17 @@ public class SecureApiManagerImpl implements SecureApiManager {
     }
 
     @Override
-    public Result updateQues(String userId, int clientId, String password, String newQues, String newAnswer, String modifyIp) {
+    public Result updateQues(String passportId, int clientId, String password, String newQues, String newAnswer, String modifyIp) {
         Result result = new APIResultSupport(false);
         try {
-            Result authUserResult = accountService.verifyUserPwdVaild(userId, password, true);
+            Result authUserResult = accountService.verifyUserPwdVaild(passportId, password, true);
             authUserResult.setDefaultModel(null);
             if (!authUserResult.isSuccess()) {
-                operateTimesService.incLimitCheckPwdFail(userId, clientId, AccountModuleEnum.SECURE);
+                operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.SECURE);
                 return authUserResult;
             }
             newAnswer = DigestUtils.md5Hex(newAnswer.getBytes(CommonConstant.DEFAULT_CHARSET));
-            AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(userId, newQues, newAnswer);
+            AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(passportId, newQues, newAnswer);
             if (accountInfo == null) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);
                 return result;
@@ -73,7 +73,7 @@ public class SecureApiManagerImpl implements SecureApiManager {
             result.setMessage("操作成功");
             return result;
         } catch (Exception e) {
-            logger.error("Update Question fail! passportId:" + userId, e);
+            logger.error("Update Question fail! passportId:" + passportId, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }

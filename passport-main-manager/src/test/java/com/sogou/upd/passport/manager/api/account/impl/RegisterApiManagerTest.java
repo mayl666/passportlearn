@@ -32,9 +32,6 @@ public class RegisterApiManagerTest extends BaseTest {
     private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private RegisterApiManager proxyRegisterApiManager;
-    @Autowired
-    private BindApiManager proxyBindApiManager;
-
 
     private static final String both_no_username = "testliuling" + new Random().nextInt(1000) + "@sogou.com";
     private static final String both_no_gexing = "135test94" + new Random().nextInt(1000);

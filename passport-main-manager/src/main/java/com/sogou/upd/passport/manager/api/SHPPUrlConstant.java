@@ -43,16 +43,8 @@ public class SHPPUrlConstant {
     public static final String GET_COOKIE_VALUE_FROM_SOHU = BASE_INTERNAL_URL + "getcookieinfo";
 
     /*================================手机绑定相关=======================================*/
-    //绑定手机号
-    public static final String BING_MOBILE = BASE_INTERNAL_URL + "wapbindmobile";
-    //解绑手机号
-    public static final String UNBING_MOBILE = BASE_INTERNAL_URL + "wapunbindmobile";
     //查询手机号绑定的账号
     public static final String MOBILE_GET_USERID = BASE_INTERNAL_URL + "wapgetuserid";
-
-    /*================================邮箱绑定相关=======================================*/
-    //绑定邮箱
-    public static final String BIND_EMAIL = BASE_INTERNAL_URL + "bindemail";
 
     /*================================修改密码=======================================*/
     //获取用户信息
