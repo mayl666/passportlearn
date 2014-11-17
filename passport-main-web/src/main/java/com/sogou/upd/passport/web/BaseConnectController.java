@@ -75,6 +75,16 @@ public class BaseConnectController extends BaseController {
                     ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
                 }
             }
+
+            //fix invalid ru redirect 安全漏洞
+            if (StringUtils.contains(errorText, CommonConstant.DOMAIN_ERROR) || CommonConstant.DOMAIN_ERROR.equals(errorText)) {
+                if (ConnectTypeEnum.isMobileApp(type)) {
+                    ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
+                } else {
+                    ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+                }
+            }
+
             if (Strings.isNullOrEmpty(provider)) {
                 //provide为空跳转到 ru
                 if (Strings.isNullOrEmpty(ru)) {
