@@ -83,7 +83,7 @@ public class BaseController {
             ru = CommonConstant.DEFAULT_INDEX_URL;
         }
 
-        if (StringUtils.contains(errorCode, CommonConstant.DOMAIN_ERROR) || CommonConstant.DOMAIN_ERROR.equals(errorMsg)) {
+        if (StringUtils.contains(errorMsg, CommonConstant.DOMAIN_ERROR) || CommonConstant.DOMAIN_ERROR.equals(errorMsg)) {
             ru = CommonConstant.DEFAULT_INDEX_URL;
         }
 
