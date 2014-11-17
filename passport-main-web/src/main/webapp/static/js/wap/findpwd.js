@@ -164,7 +164,8 @@ define(['./interface', './utils', './dialog', '../utils', './skin', './common'],
 					Form.findpwdSendsms({
 						mobile: phone,
 						token: token || "",
-						captcha: captcha || ""
+						captcha: captcha || "",
+						client_id: Utils.getUrlParams()['client_id']
 					}, function(result, data) {
 						self.showMsg(result ? '验证码发送成功' : data.statusText, result);
 						if (result) {
