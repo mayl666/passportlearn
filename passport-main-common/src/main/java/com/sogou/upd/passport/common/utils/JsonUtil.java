@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.google.common.base.Strings;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -85,6 +86,43 @@ public class JsonUtil {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
+
+    /**
+     * 判断对象是否为合法JSON字符串
+     *
+     * @param object
+     * @return boolean
+     */
+    public static boolean mayBeJSON(Object object) {
+        if (object == null || !String.class.isAssignableFrom(object.getClass())) {
+            return false;
+        }
+        String str = (String) object;
+        if (Strings.isNullOrEmpty(str)) {
+            return false;
+        }
+        char head = str.charAt(0);
+        return head == '[' || head == '{';
+    }
+
+    /**
+     * 判断对象是否为合法JSON Object的字符串
+     *
+     * @param object
+     * @return boolean
+     */
+    public static boolean mayBeJSONObject(Object object) {
+        if (object == null || !String.class.isAssignableFrom(object.getClass())) {
+            return false;
+        }
+        String str = (String) object;
+        if (Strings.isNullOrEmpty(str)) {
+            return false;
+        }
+        char head = str.charAt(0);
+        return head == '{';
+    }
+
 
     private static ObjectMapper getInstance() {
         return SingletonHolder.instance;

@@ -5,6 +5,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.netflix.curator.framework.recipes.cache.NodeCache;
 import com.netflix.curator.framework.recipes.cache.NodeCacheListener;
 import com.sogou.upd.passport.common.utils.JsonUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -98,7 +99,7 @@ public class DBZkSwitchMonitor {
                 String nodeData = new String(nodeCache.getCurrentData().getData());
                 LOGGER.warn(" node current data :" + nodeData);
 
-                if (Strings.isNullOrEmpty(nodeData)) {
+                if (Strings.isNullOrEmpty(nodeData) || !JsonUtil.mayBeJSONObject(nodeData)) {
                     return;
                 }
 
@@ -118,30 +119,30 @@ public class DBZkSwitchMonitor {
 
                 if (!Strings.isNullOrEmpty(masterJdbcUrl)) {
                     if (masterJdbcUrl.equals(masterDataSource.getJdbcUrl())) {
-                        LOGGER.warn("DBZkSwitchMonitor refresh node data.masterJdbcUrl no changed.");
+                        LOGGER.warn("DBZkSwitchMonitor refresh. masterJdbcUrl no changed.");
                         return;
                     }
                 } else {
-                    LOGGER.warn("DBZkSwitchMonitor refresh node changed.masterJdbcUrl is NULL.");
+                    LOGGER.warn("DBZkSwitchMonitor refresh. masterJdbcUrl is NULL.");
                     return;
                 }
 
                 if (!Strings.isNullOrEmpty(slaveJdbcUrl)) {
                     if (slaveJdbcUrl.equals(slaveDataSource.getJdbcUrl())) {
-                        LOGGER.warn("DBZkSwitchMonitor refresh node data.slaveJdbcUrl no changed.");
+                        LOGGER.warn("DBZkSwitchMonitor refresh. slaveJdbcUrl no changed.");
                         return;
                     }
                 } else {
-                    LOGGER.warn("DBZkSwitchMonitor refresh node changed.slaveJdbcUrl is NULL.");
+                    LOGGER.warn("DBZkSwitchMonitor refresh. slaveJdbcUrl is NULL.");
                     return;
                 }
 
                 if (masterDataSource != null && slaveDataSource != null) {
 
                     //重新构建 masterDataSource jdbc url
-                    masterDataSource.setJdbcUrl(masterJdbcUrl);
-
-                    slaveDataSource.setJdbcUrl(slaveJdbcUrl);
+                    masterDataSource.setJdbcUrl(StringUtils.trim(masterJdbcUrl));
+                    //重新构建 slaveDataSource jdbc url
+                    slaveDataSource.setJdbcUrl(StringUtils.trim(slaveJdbcUrl));
 
                     /*if (jsonMap.containsKey(DataSourceConstant.acquireIncrement) && jsonMap.get(DataSourceConstant.acquireIncrement) != null) {
                         masterDataSource.setAcquireIncrement((Integer) jsonMap.get(DataSourceConstant.acquireIncrement));
