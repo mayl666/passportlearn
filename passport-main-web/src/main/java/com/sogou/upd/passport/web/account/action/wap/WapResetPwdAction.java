@@ -84,13 +84,17 @@ public class WapResetPwdAction extends BaseController {
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
         result.setDefaultModel("v", v);
+        model.addAttribute("v", v);
+        model.addAttribute("client_id", client_id);
+        model.addAttribute("ru", Coder.encodeUTF8(ru));
+        model.addAttribute("skin", wapIndexParams.getSkin());
         if (WapConstant.WAP_COLOR.equals(wapIndexParams.getV())) {
-            model.addAttribute("v", v);
-            model.addAttribute("client_id", client_id);
-            model.addAttribute("ru", Coder.encodeUTF8(ru));
+//            model.addAttribute("v", v);
+//            model.addAttribute("client_id", client_id);
+//            model.addAttribute("ru", Coder.encodeUTF8(ru));
             model.addAttribute("mobile", wapIndexParams.getUsername());
             model.addAttribute("username", wapIndexParams.getUsername());
-            model.addAttribute("skin", wapIndexParams.getSkin());
+//            model.addAttribute("skin", wapIndexParams.getSkin());
             if (wapIndexParams.getNeedCaptcha() == 1) {
                 String token = RandomStringUtils.randomAlphanumeric(48);
                 model.addAttribute("token", token);
