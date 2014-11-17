@@ -126,8 +126,7 @@ public class WapV2RegAction extends WapV2BaseController {
                 addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
                 return "wap/regist_wap";
             }
-            BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
-            result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
+            result = sgRegisterApiManager.sendMobileRegCaptcha(clientId, mobile);
             if (!result.isSuccess()) {
                 addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
                 return "wap/regist_wap";

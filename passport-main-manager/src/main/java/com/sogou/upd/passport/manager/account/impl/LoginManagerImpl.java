@@ -78,8 +78,6 @@ public class LoginManagerImpl implements LoginManager {
                 return result;
             }
             if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
-                //搜狐账号登录时不用检查用户名是否存在，尽量减少对搜狐接口的依赖；如有问题再开启调用
-//                result = proxyRegisterApiManager.checkUser(checkUserApiParams);
                 result.setSuccess(false); //表示账号已存在
                 result.setCode(ErrorUtil.ERR_CODE_USER_ID_EXIST);
             } else {

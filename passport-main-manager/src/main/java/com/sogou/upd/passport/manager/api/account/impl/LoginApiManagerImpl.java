@@ -80,7 +80,7 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
     }
 
     @Override
-    public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {
+    public Result appAuthToken(String token) {
         return null;
     }
 

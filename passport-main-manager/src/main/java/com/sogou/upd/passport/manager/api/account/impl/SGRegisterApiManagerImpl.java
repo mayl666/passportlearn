@@ -16,10 +16,16 @@ import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
+import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
-import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.account.AccountInfoService;
+import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.SnamePassportMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +48,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
     private AccountInfoService accountInfoService;
     @Autowired
     private SecureManager secureManager;
-    @Autowired
-    private MobileCodeSenderService mobileCodeSenderService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
@@ -138,40 +142,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
         return checkUserApiParams;
     }
 
-
-    @Override
-    public Result regMobileCaptchaUser(RegMobileCaptchaApiParams regParams) {
-        Result result = new APIResultSupport(false);
-        try {
-            int clientId = regParams.getClient_id();
-            String mobile = regParams.getMobile();
-            String password = regParams.getPassword();
-            String ip = regParams.getIp();
-            String captcha = regParams.getCaptcha();
-            //验证手机号码与验证码是否匹配
-            result = mobileCodeSenderService.checkSmsCode(mobile, clientId, AccountModuleEnum.REGISTER, captcha);
-            if (!result.isSuccess()) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE);
-                return result;
-            }
-            Account account = accountService.initialAccount(mobile, password, false, ip, AccountTypeEnum
-                    .PHONE.getValue());
-            if (account != null) {
-                result.setSuccess(true);
-                result.setDefaultModel("userid", account.getPassportId());
-                result.setMessage("注册成功");
-                result.setDefaultModel("isSetCookie", true);
-                result.setDefaultModel(account);
-            } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-            }
-        } catch (Exception e) {
-            logger.error("mobile register phone account Fail:", e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        }
-        return result;
-    }
-
     @Override
     public Result checkUser(CheckUserApiParams checkUserApiParams) {
         Result result = new APIResultSupport(false);
@@ -243,20 +213,17 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
     }
 
     @Override
-    public Result sendMobileRegCaptcha(BaseMoblieApiParams params) {
+    public Result sendMobileRegCaptcha(int clientId, String mobile) {
         Result result = new APIResultSupport(false);
-        String mobile = params.getMobile();
         try {
-            BaseMoblieApiParams baseMoblieApiParams = new BaseMoblieApiParams();
-            baseMoblieApiParams.setMobile(mobile);
             //检测手机号是否已经注册或绑定
-            result = regManager.isAccountNotExists(mobile, params.getClient_id());
+            result = regManager.isAccountNotExists(mobile, clientId);
             if (!result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
                 return result;
             }
-            result = secureManager.sendMobileCode(params.getMobile(), params.getClient_id(), AccountModuleEnum.REGISTER);
+            result = secureManager.sendMobileCode(mobile, clientId, AccountModuleEnum.REGISTER);
         } catch (Exception e) {
             logger.error("send mobile code Fail, mobile:" + mobile, e);
         }

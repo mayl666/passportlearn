@@ -29,17 +29,12 @@ public class SHPPUrlConstant {
 
     /*================================登录相关=======================================*/
     public static final String AUTH_USER = BASE_INTERNAL_URL + "authuser"; //检查用户名密码是否正确
-    public static final String MOBILE_AUTH_TOKEN = BASE_INTERNAL_URL + "token/auth"; //检查移动APP登录后token是否正确
     // 手机浏览器/authtoken接口返回结果后会302到setcookie接口，这个必须为http，所以此处也为http，得到location的也为http
     public static final String HTTPS_SET_COOKIE = BASE_URL + "act/setcookie";//用于前端设置cookie
     public static final String HTTP_SET_COOKIE = "http://passport.sohu.com/act/setcookie";//用于前端设置cookie
     public static final String CHECK_USER = BASE_INTERNAL_URL + "checkuser";//查询用户名是否注册过
 
     /*================================注册相关=======================================*/
-    public static final String SEND_MOBILE_REG_CAPTCHA = BASE_INTERNAL_URL + "sendmobileregcaptcha"; //获取注册的手机验证码
-    public static final String WEB_EMAIL_REG = BASE_INTERNAL_URL + "reguser";  //web端邮箱注册
-    public static final String REG_MOBILE_NOCAPTCHA = BASE_INTERNAL_URL + "regmobiled";
-
     public static final String GET_COOKIE_VALUE_FROM_SOHU = BASE_INTERNAL_URL + "getcookieinfo";
 
     /*================================手机绑定相关=======================================*/
