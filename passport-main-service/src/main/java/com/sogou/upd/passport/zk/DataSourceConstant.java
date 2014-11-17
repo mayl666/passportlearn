@@ -12,12 +12,12 @@ public final class DataSourceConstant {
     /**
      * master jdbc url
      */
-    public static final String masterJdbcUrl = "mju";
+    public static final String masterJdbcUrl = "masterJdbcUrl";
 
     /**
      * slave jdbc url
      */
-    public static final String slaveJdbcUrl = "sju";
+    public static final String slaveJdbcUrl = "slaveJdbcUrl";
 
     /**
      * user

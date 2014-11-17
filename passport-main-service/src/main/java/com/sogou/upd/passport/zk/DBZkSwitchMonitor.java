@@ -103,6 +103,9 @@ public class DBZkSwitchMonitor {
                 }
 
                 Map jsonMap = JsonUtil.jsonToBean(nodeData, Map.class);
+                if (!jsonMap.containsKey(DataSourceConstant.masterJdbcUrl) || !jsonMap.containsKey(DataSourceConstant.slaveJdbcUrl)) {
+                    return;
+                }
 
                 String masterJdbcUrl = (String) jsonMap.get(DataSourceConstant.masterJdbcUrl);
                 String slaveJdbcUrl = (String) jsonMap.get(DataSourceConstant.slaveJdbcUrl);
