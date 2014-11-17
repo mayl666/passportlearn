@@ -110,7 +110,8 @@ define(['./interface', './utils', './dialog', '../utils', './skin', './common'],
 							mobile: u,
 							skin: Utils.getUrlParams()['skin'],
 							ru: decodeURIComponent(ru),
-							display: Utils.getUrlParams()['display']
+							display: Utils.getUrlParams()['display'],
+							client_id: Utils.getUrlParams()['client_id']
 						}, function(result, data) {
 							self.__mFinding = false;
 							if (result) {
