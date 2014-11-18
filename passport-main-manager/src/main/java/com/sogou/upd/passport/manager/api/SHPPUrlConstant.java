@@ -44,8 +44,6 @@ public class SHPPUrlConstant {
     /*================================修改密码=======================================*/
     //获取用户信息
     public static final String GET_USER_INFO = BASE_INTERNAL_URL + "getuserinfo";
-    //更新用户信息
-    public static final String UPDATE_USER_INFO = BASE_INTERNAL_URL + "updateuser";
     //修改用户昵称
     public static final String UPDATE_USER_UNIQNAME = BASE_INTERNAL_URL + "checkuniqname";
 

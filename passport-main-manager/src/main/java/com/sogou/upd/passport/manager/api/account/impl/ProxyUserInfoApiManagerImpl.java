@@ -33,14 +33,6 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     private static Set<String> SUPPORT_FIELDS_MAP = null;
 
-    @Autowired
-    private AccountInfoManager accountInfoManager;
-    @Autowired
-    private PhotoUtils photoUtils;
-    @Autowired
-    private RedisUtils redisUtils;
-
-
     static {
         SUPPORT_FIELDS_MAP = new HashSet<>(8);
         SUPPORT_FIELDS_MAP.add("birthday");//生日
@@ -105,57 +97,6 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         } catch (Exception e) {
         }
         return getUserInfoResultHandel(result);
-    }
-
-    //    @Override
-    public Result obtainPhoto(String passportId, String size) {
-        Result result = new APIResultSupport(false);
-        try {
-            String[] sizeArry = null;
-            //获取size对应的appId
-            if (!Strings.isNullOrEmpty(size)) {
-                //检测是否是支持的尺寸
-                sizeArry = size.split(",");
-
-                if (ArrayUtils.isNotEmpty(sizeArry)) {
-                    for (int i = 0; i < sizeArry.length; i++) {
-                        if (Strings.isNullOrEmpty(photoUtils.getAppIdBySize(sizeArry[i]))) {
-                            result.setCode(ErrorUtil.ERR_CODE_ERROR_IMAGE_SIZE);
-                            return result;
-                        }
-                    }
-                } else {
-                    //为空获取所有的尺寸
-                    sizeArry = photoUtils.getAllImageSize();
-                }
-
-                String cacheKey = CacheConstant.CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING + passportId;
-                String image = redisUtils.hGet(cacheKey, "sgImg");
-
-                if (!Strings.isNullOrEmpty(image) && ArrayUtils.isNotEmpty(sizeArry)) {
-                    result.setSuccess(true);
-                    for (int i = 0; i < sizeArry.length; i++) {
-                        //随机获取cdn域名
-                        String cdnUrl = photoUtils.getCdnURL();
-                        //获取图片尺寸
-                        String clientId = photoUtils.getAppIdBySize(sizeArry[i]);
-
-                        String photoURL = String.format(image, cdnUrl, clientId);
-                        if (!Strings.isNullOrEmpty(photoURL)) {
-                            result.setDefaultModel("img_" + sizeArry[i], photoURL);
-                        }
-                    }
-                    return result;
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
-                    return result;
-                }
-            }
-        } catch (Exception e) {
-            result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
-            return result;
-        }
-        return result;
     }
 
     /**
@@ -230,28 +171,7 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     @Override
     public Result updateUserInfo(UpdateUserInfoApiParams updateUserInfoApiParams) {
-        if (PhoneUtil.verifyPhoneNumberFormat(updateUserInfoApiParams.getUserid())) {
-            String userid = updateUserInfoApiParams.getUserid();
-            userid += "@sohu.com";
-            updateUserInfoApiParams.setUserid(userid);
-        }
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_INFO, "info");
-        Map<String, Object> fields = BeanUtil.beanDescribe(updateUserInfoApiParams);
-        for (Map.Entry<String, Object> entry : fields.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            if (StringUtil.isBlank(key) || value == null || StringUtil.isBlank(value.toString())) {
-                continue;
-            }
-            requestModelXml.addParam(key, value);
-        }
-        String birthday = updateUserInfoApiParams.getBirthday();
-        if (!Strings.isNullOrEmpty(birthday)) {
-            requestModelXml.addParam("birthday", birthday);
-        }
-
-
-        return this.executeResult(requestModelXml);
+        return null;
     }
 
     @Override
@@ -259,8 +179,6 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         if (updateUserUniqnameApiParams.getUniqname() == null || "".equals(updateUserUniqnameApiParams.getUniqname())) {
             throw new IllegalArgumentException("用户昵称不能为空");
         }
-
-//            updateUserUniqnameApiParams.setUniqname(URLDecoder.decode(updateUserUniqnameApiParams.getUniqname(), "utf-8"));
         updateUserUniqnameApiParams.setUniqname(updateUserUniqnameApiParams.getUniqname());
         RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "info");
         requestModelXml.addParams(updateUserUniqnameApiParams);
