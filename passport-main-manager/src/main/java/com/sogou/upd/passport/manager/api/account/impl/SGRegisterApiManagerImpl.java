@@ -16,8 +16,6 @@ import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.model.account.Account;
@@ -79,8 +77,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                 return result;
             }
             //正式注册时需要检测用户是否已经注册过
-            CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
-            result = checkUser(checkUserApiParams);
+            result = checkUser(username, clientId);
             if (!result.isSuccess()) {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
@@ -135,19 +132,10 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
         return result;
     }
 
-    private CheckUserApiParams buildProxyApiParams(String username, int clientId) {
-        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid(username);
-        checkUserApiParams.setClient_id(clientId);
-        return checkUserApiParams;
-    }
-
     @Override
-    public Result checkUser(CheckUserApiParams checkUserApiParams) {
+    public Result checkUser(String username, int clientId) {
         Result result = new APIResultSupport(false);
-        String username = null;
         try {
-            username = checkUserApiParams.getUserid();
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
             if (AccountDomainEnum.SOHU.equals(domain) || AccountDomainEnum.THIRD.equals(domain)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
@@ -177,7 +165,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
                     return result;
                 }
             }
-            int clientId = checkUserApiParams.getClient_id();
             if (CommonHelper.isExplorerToken(clientId)) {
                 result = isSohuplusUser(username);
             } else {
