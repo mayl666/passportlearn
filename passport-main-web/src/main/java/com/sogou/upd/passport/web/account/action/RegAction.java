@@ -458,7 +458,7 @@ public class RegAction extends BaseController {
             return result;
         }
         //检查用户名是否存在
-        result = regManager.isAccountNotExists(username, clientId);
+        result = sgRegisterApiManager.checkUser(username, clientId);
         return result;
     }
 

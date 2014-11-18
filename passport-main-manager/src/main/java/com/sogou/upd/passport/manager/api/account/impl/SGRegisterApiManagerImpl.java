@@ -12,7 +12,6 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.validation.constraints.UserNameValidator;
 import com.sogou.upd.passport.exception.ServiceException;
-import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
@@ -50,8 +49,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
     private MobilePassportMappingService mobilePassportMappingService;
     @Autowired
     private SnamePassportMappingService snamePassportMappingService;
-    @Autowired
-    private RegManager regManager;
     @Autowired
     private UserNameValidator userNameValidator;
 
@@ -204,7 +201,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
         Result result = new APIResultSupport(false);
         try {
             //检测手机号是否已经注册或绑定
-            result = regManager.isAccountNotExists(mobile, clientId);
+            result = checkUser(mobile, clientId);
             if (!result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);

@@ -328,18 +328,6 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
-    public Result isAccountNotExists(String username, int clientId) throws Exception {
-        Result result;
-        try {
-            result = sgRegisterApiManager.checkUser(username,clientId);
-        } catch (ServiceException e) {
-            logger.error("Check account is exists Exception, username:" + username, e);
-            throw new Exception(e);
-        }
-        return result;
-    }
-
-    @Override
     public Result checkRegInBlackListByIpForInternal(String ip, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         //如果在黑名单，也在白名单，允许注册；如果在黑名单不在白名单，不允许注册
