@@ -16,7 +16,6 @@ import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
-import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.WebRoamDO;
@@ -70,20 +69,16 @@ public class LoginManagerImpl implements LoginManager {
     public Result checkUser(String username, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         try {
-            //sohu域账号去sohu检查用户名，否则走sogou检查用户名的逻辑
-            CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
             String passportId = commonManager.getPassportIdByUsername(username);
             if (Strings.isNullOrEmpty(passportId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 return result;
             }
             if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
-                //搜狐账号登录时不用检查用户名是否存在，尽量减少对搜狐接口的依赖；如有问题再开启调用
-//                result = proxyRegisterApiManager.checkUser(checkUserApiParams);
                 result.setSuccess(false); //表示账号已存在
                 result.setCode(ErrorUtil.ERR_CODE_USER_ID_EXIST);
             } else {
-                result = sgRegisterApiManager.checkUser(checkUserApiParams);
+                result = sgRegisterApiManager.checkUser(username, clientId);
             }
             buildLoginResult(result);
         } catch (ServiceException e) {
@@ -105,13 +100,6 @@ public class LoginManagerImpl implements LoginManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
         }
         return result;
-    }
-
-    private CheckUserApiParams buildProxyApiParams(String username, int clientId) {
-        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid(username);
-        checkUserApiParams.setClient_id(clientId);
-        return checkUserApiParams;
     }
 
     @Override

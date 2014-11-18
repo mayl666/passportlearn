@@ -65,22 +65,6 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
     }
 
     @Test
-    public void testUpdateUserInfo() {
-        UpdateUserInfoApiParams updateUserInfoApiParams = new UpdateUserInfoApiParams();
-        updateUserInfoApiParams.setUserid(userid_connect);
-        updateUserInfoApiParams.setGender("2");
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, 1988);
-        updateUserInfoApiParams.setBirthday("2012-01-01");
-//        updateUserInfoApiParams.setProvince(530000);
-//        updateUserInfoApiParams.setCity(532401);
-        updateUserInfoApiParams.setUniqname("111");
-        updateUserInfoApiParams.setModifyip(modifyIp);
-        Result result = proxyUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
-        System.out.println(result);
-    }
-
-    @Test
     public void testCheckUniqName() {
         UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
 
@@ -89,13 +73,6 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
         updateUserUniqnameApiParams.setUniqname(name);
         Result result = proxyUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
         System.out.println("result输出结果为:" + result.toString());
-    }
-
-    @Test
-    public void testDefaultPhoto() {
-//       Result photoResult = proxyUserInfoApiManager.obtainPhoto(Integer.toString(1044), "30,50,180");
-//       System.out.println(photoResult.toString());
-
     }
 
 }

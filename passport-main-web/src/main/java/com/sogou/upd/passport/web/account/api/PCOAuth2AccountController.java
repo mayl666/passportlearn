@@ -13,6 +13,7 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.*;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.PCOAuth2LoginParams;
@@ -66,9 +67,9 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private LoginManager loginManager;
     @Autowired
-    private PCAccountManager pcAccountManager;
-    @Autowired
     private RegManager regManager;
+    @Autowired
+    private PCAccountManager pcAccountManager;
     @Autowired
     private HostHolder hostHolder;
     @Autowired
@@ -77,6 +78,8 @@ public class PCOAuth2AccountController extends BaseController {
     private CookieManager cookieManager;
     @Autowired
     private AccountInfoManager accountInfoManager;
+    @Autowired
+    private RegisterApiManager sgRegisterApiManager;
 
 
     @RequestMapping(value = "/sogou/fastreg", method = RequestMethod.GET)
@@ -375,7 +378,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result;
         }
         //检查用户是否存在
-        result = regManager.isAccountNotExists(username, CommonConstant.PC_CLIENTID);
+        result = sgRegisterApiManager.checkUser(username, CommonConstant.PC_CLIENTID);
         return result;
     }
 

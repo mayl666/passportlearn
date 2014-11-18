@@ -52,6 +52,8 @@ public class RegisterApiController extends BaseController {
     @ResponseBody
     public Object sendRegCaptcha(HttpServletRequest request, BaseMoblieApiParams params) {
         Result result = new APIResultSupport(false);
+        int clientId = params.getClient_id();
+        String mobile = params.getMobile();
         try {
             // 参数校验
             String validateResult = ControllerHelper.validateParams(params);
@@ -61,12 +63,12 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = sgRegisterApiManager.sendMobileRegCaptcha(params);
+            result = sgRegisterApiManager.sendMobileRegCaptcha(clientId, mobile);
         } catch (Exception e) {
-            logger.error("sendregcaptcha:send reg captcha is failed,mobile is " + params.getMobile(), e);
+            logger.error("sendregcaptcha:send reg captcha is failed,mobile is " + mobile, e);
         } finally {
             //记录log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(mobile, request.getRequestURI(), String.valueOf(clientId), result.getCode(), getIp(request));
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
@@ -260,7 +262,7 @@ public class RegisterApiController extends BaseController {
             if (regManager.checkUserExistInBlack(userid, createIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
             } else {
-                result = regManager.isAccountNotExists(userid, params.getClient_id());
+                result = sgRegisterApiManager.checkUser(userid, params.getClient_id());
                 if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
                     if (!result.isSuccess()) {
                         result.setDefaultModel("flag", "1");
