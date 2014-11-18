@@ -44,6 +44,7 @@ public class ConnectLoginController extends BaseConnectController {
         String ru = connectLoginParams.getRu();
         String providerStr = connectLoginParams.getProvider();
         String httpOrHttps = getProtocol(req);
+        //user agent
         String ua = getHeaderUserAgent(req);
         try {
             String validateResult = ControllerHelper.validateParams(connectLoginParams);
