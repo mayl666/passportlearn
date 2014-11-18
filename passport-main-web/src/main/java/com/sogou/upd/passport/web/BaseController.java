@@ -74,9 +74,19 @@ public class BaseController {
      * @throws Exception
      */
     public void returnErrMsg(HttpServletResponse response, String ru, String errorCode, String errorMsg) throws Exception {
-        if (Strings.isNullOrEmpty(ru) || "域名不正确".equals(errorMsg)) {
+//        if (Strings.isNullOrEmpty(ru) || "域名不正确".equals(errorMsg)) {
+//            ru = CommonConstant.DEFAULT_INDEX_URL;
+//        }
+
+        //fix invalid ru redirect 安全漏洞
+        if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_INDEX_URL;
         }
+
+        if (StringUtils.contains(errorMsg, CommonConstant.DOMAIN_ERROR) || CommonConstant.DOMAIN_ERROR.equals(errorMsg)) {
+            ru = CommonConstant.DEFAULT_INDEX_URL;
+        }
+
         Map paramMap = Maps.newHashMap();
         paramMap.put("errorCode", errorCode);
         paramMap.put("errorMsg", errorMsg);
@@ -98,10 +108,11 @@ public class BaseController {
 
     /**
      * 获取request header的输入法的UA标识，如果包含sogou_ime，则代表是输入法，否则返回空
+     *
      * @param request
      * @return
      */
-    protected String getHeaderUserAgent(HttpServletRequest request){
+    protected String getHeaderUserAgent(HttpServletRequest request) {
         String ua = request.getHeader(CommonConstant.USER_AGENT);
         ua = !Strings.isNullOrEmpty(ua) && ua.contains(CommonConstant.SOGOU_IME_UA) ? ua : ""; //输入法的标识
         return ua;

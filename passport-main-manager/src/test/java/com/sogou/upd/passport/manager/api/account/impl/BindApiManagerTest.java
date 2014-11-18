@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
+import com.sogou.upd.passport.manager.api.account.ProxyApiManagerImpl;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
@@ -38,7 +39,7 @@ public class BindApiManagerTest extends BaseTest {
     public void testGetPassportId(){
         BaseMoblieApiParams params = new BaseMoblieApiParams();
         params.setMobile("13071155730");
-        ProxyBindApiManagerImpl manager = new ProxyBindApiManagerImpl();
+        ProxyApiManagerImpl manager = new ProxyApiManagerImpl();
         Result resultSH = manager.getPassportIdByMobile(params);
         System.out.println(resultSH.toString());
     }

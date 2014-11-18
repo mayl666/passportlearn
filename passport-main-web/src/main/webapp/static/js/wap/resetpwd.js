@@ -65,7 +65,8 @@ define(['./interface', '../lib/tpl' , './utils',  './skin' , './common'], functi
 					password: u,
                     username: self.__data.userid,
                     scode: self.__data.scode,
-                    ru:decodeURIComponent(ru)
+                    ru:decodeURIComponent(ru),
+                    client_id: Utils.getUrlParams()['client_id']
 				}, function(result, data) {
 					self.__mChanging = false;
 					if (result) {

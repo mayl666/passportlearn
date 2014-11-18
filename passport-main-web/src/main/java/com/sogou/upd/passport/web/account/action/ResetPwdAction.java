@@ -9,9 +9,13 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.*;
+import com.sogou.upd.passport.manager.account.CheckManager;
+import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.ResetPwdManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -43,8 +47,6 @@ public class ResetPwdAction extends BaseController {
     private static final String SOHU_FINDPWD_URL = SHPPUrlConstant.SOHU_FINDPWD_URL;
 
     @Autowired
-    private RegManager regManager;
-    @Autowired
     private SecureManager secureManager;
     @Autowired
     private CheckManager checkManager;
@@ -52,6 +54,8 @@ public class ResetPwdAction extends BaseController {
     private ResetPwdManager resetPwdManager;
     @Autowired
     private CommonManager commonManager;
+    @Autowired
+    private RegisterApiManager sgRegisterApiManager;
 
     /**
      * 找回密码主页跳转
@@ -129,7 +133,7 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/index";
             }
-            result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
+            result = sgRegisterApiManager.checkUser(passportId, Integer.parseInt(params.getClient_id()));
             if (result.isSuccess()) {
                 result.setSuccess(false);
                 result.setDefaultModel("userid", username);
@@ -426,7 +430,7 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
-            result = regManager.isAccountNotExists(passportId, Integer.parseInt(params.getClient_id()));
+            result = sgRegisterApiManager.checkUser(passportId, Integer.parseInt(params.getClient_id()));
             if (result.isSuccess()) {  //账号不存在
                 result = buildErrorResult(result, params, null, ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 model.addAttribute("data", result.toString());

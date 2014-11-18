@@ -36,29 +36,6 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.9", ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);//登陆保护用户的stoken错误
         SHPPERRCODE_SGPPERRCODE_MAP.put("authuser.10", ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);//登陆保护用户的stoken错误
 
-        //手机app校验第三方登录的token
-        SHPPERRCODE_SGPPERRCODE_MAP.put("auth.-1", ERR_CODE_APPCONNECT_TOKEN_ERROR);//token校验失败
-        SHPPERRCODE_SGPPERRCODE_MAP.put("auth.9", SYSTEM_UNKNOWN_EXCEPTION);//系统错误
-
-        //sendmobileregcaptcha获取手机号注册的验证码
-        SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.3", ERR_CODE_ACCOUNT_REGED);//帐号已经注册，请直接登录
-        SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.4", ERR_CODE_ACCOUNT_PHONE_BINDED);   //手机号已绑定其他账号
-        SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.5", ERR_CODE_ACCOUNT_CANTSENTSMS);  //今天的短信验证码已经达到上限啦
-        SHPPERRCODE_SGPPERRCODE_MAP.put("sendmobileregcaptcha.6", SYSTEM_UNKNOWN_EXCEPTION);  //系统级错误
-
-        //web端email注册接口
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.3", ERR_CODE_USERID_ILLEGAL);//非法userid
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.4", ERR_CODE_ACCOUNT_REGED);//帐号已经注册，请直接登录
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.5", ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);   //登陆用户或者ip在黑名单中
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.6", ERR_CODE_ACCOUNT_REGISTER_FAILED);  //创建用户失败
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.7", ERR_CODE_ACCOUNT_PHONE_BINDED); //手机号已绑定其他账号
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.8", ERR_CODE_COM_REQURIE); //非法用户名uniquename
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.9", ERR_CODE_COM_REQURIE); //用户名uniquename已存在
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.10", INVOKE_BEYOND_FREQUENCY_LIMIT); //调用超限（5分钟调用超过了1000次）
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.11", ERR_CODE_COM_REQURIE); //不能注册vip.sohu.com的账号
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.12", ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED); //当日邮件发送次数已达上限
-        SHPPERRCODE_SGPPERRCODE_MAP.put("reguser.13", ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED); //激活链接已失效
-
         //mobilecaptcha 手机号验证码注册接口
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.3", SYSTEM_UNKNOWN_EXCEPTION); //系统错误
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.4", ERR_CODE_ACCOUNT_REGED);//帐号已经注册，请直接登录
@@ -66,11 +43,6 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.6", ERR_CODE_ACCOUNT_CANTSENTSMS);  //今天的短信验证码已经达到上限啦
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.7", ERR_CODE_ACCOUNT_CHECKSMSCODE_LIMIT); //今日验证码校验错误次数已超过上限
         SHPPERRCODE_SGPPERRCODE_MAP.put("mobilecaptcha.8", ERR_CODE_ACCOUNT_SMSCODE); //验证码错误或已过期
-
-        // regmobile 手机号直接注册接口
-        SHPPERRCODE_SGPPERRCODE_MAP.put("regmobiled.4", ERR_CODE_ACCOUNT_REGED);
-        SHPPERRCODE_SGPPERRCODE_MAP.put("regmobiled.5", ERR_CODE_ACCOUNT_PHONE_BINDED);
-        SHPPERRCODE_SGPPERRCODE_MAP.put("regmobiled.3", ERR_CODE_ACCOUNT_REGISTER_FAILED);
 
         // bindmobile 绑定手机号
         SHPPERRCODE_SGPPERRCODE_MAP.put("bindmobile.1", ERR_CODE_ACCOUNT_SMSCODE);//验证码错误
@@ -94,15 +66,6 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.3", ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户名不存在（如果是根据昵称查询，没有查询到也是返回3）
         SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.4", ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号码没有绑定
         SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.6", SYSTEM_UNKNOWN_EXCEPTION);//取得用户信息失败
-
-        //updateuser 更新用户基本信息
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.3", ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户名不存在
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.4", ERR_CODE_ACCOUNT_NOTHASACCOUNT);//手机号码没有绑定
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.6", SYSTEM_UNKNOWN_EXCEPTION);//取得用户信息失败
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.8", SYSTEM_UNKNOWN_EXCEPTION);//用户名uniqname 不合法
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.9", SYSTEM_UNKNOWN_EXCEPTION);//用户名uniqname 已存在
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.10", ERR_CODE_CONNECT_REQUEST_FREQUENCY_LIMIT);//调用超限（5分钟调用超过了1000次）
-        SHPPERRCODE_SGPPERRCODE_MAP.put("updateuser.11", SYSTEM_UNKNOWN_EXCEPTION);//加V用户不能修改uniqname
 
         //checkuniqname 检查用户昵称
         SHPPERRCODE_SGPPERRCODE_MAP.put("checkuniqname.3", ERR_CODE_UNIQNAME_ALREADY_EXISTS);//用户昵称已经被使用

@@ -102,6 +102,10 @@ public class CommonConstant {
     public static final String HTTPS_VALUE = "https";
     public static final String USER_AGENT = "User-Agent";
 
+
+    //域名不正确
+    public static final String DOMAIN_ERROR = "域名不正确";
+
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
 

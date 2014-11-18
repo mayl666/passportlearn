@@ -415,8 +415,7 @@ public class RegAction extends BaseController {
                 result.setMessage("发送短信失败");
                 return result.toString();
             }
-            BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
-            result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
+            result = sgRegisterApiManager.sendMobileRegCaptcha(clientId, mobile);
         } catch (Exception e) {
             logger.error("method[sendMobileCode] send mobile sms error.{}", e);
         } finally {
@@ -459,7 +458,7 @@ public class RegAction extends BaseController {
             return result;
         }
         //检查用户名是否存在
-        result = regManager.isAccountNotExists(username, clientId);
+        result = sgRegisterApiManager.checkUser(username, clientId);
         return result;
     }
 

@@ -1,11 +1,8 @@
 package com.sogou.upd.passport.manager.app.impl;
 
-import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.model.app.AppConfig;
-import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
-import com.sogou.upd.passport.service.app.ConnectConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +17,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConfigureManagerImpl implements ConfigureManager {
 
-    private static Logger log = LoggerFactory.getLogger(ConfigureManagerImpl.class);
-
     @Autowired
     private AppConfigService appConfigService;
-    @Autowired
-    private ConnectConfigService connectConfigService;
 
     @Override
     public boolean checkAppIsExist(int clientId) {

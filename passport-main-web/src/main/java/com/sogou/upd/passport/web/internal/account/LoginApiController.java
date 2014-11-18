@@ -247,11 +247,10 @@ public class LoginApiController extends BaseController {
             return result.toString();
         }
         // 调用内部接口
-        result = sgLoginApiManager.appAuthToken(params);
+        result = sgLoginApiManager.appAuthToken(params.getToken());
         String userId = (String) result.getModels().get("userid");
         //记录log
         UserOperationLog userOperationLog = new UserOperationLog(StringUtils.defaultIfEmpty(userId, "third"), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        userOperationLog.putOtherMessage("token", params.getToken());
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();

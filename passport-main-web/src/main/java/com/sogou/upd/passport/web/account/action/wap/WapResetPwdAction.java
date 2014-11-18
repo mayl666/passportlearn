@@ -15,6 +15,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import com.sogou.upd.passport.service.account.dataobject.WapActiveEmailDO;
 import com.sogou.upd.passport.web.BaseController;
@@ -53,7 +54,7 @@ public class WapResetPwdAction extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(WapResetPwdAction.class);
 
     @Autowired
-    private RegManager regManager;
+    private RegisterApiManager sgRegisterApiManager;
     @Autowired
     private SecureManager secureManager;
     @Autowired
@@ -64,6 +65,7 @@ public class WapResetPwdAction extends BaseController {
     private CommonManager commonManager;
     @Autowired
     private CheckManager checkManager;
+
 
 
     /**
@@ -296,7 +298,7 @@ public class WapResetPwdAction extends BaseController {
                 return result.toString();
             }
             int client_id = Integer.parseInt(params.getClient_id());
-            result = regManager.isAccountNotExists(passportId, client_id);
+            result = sgRegisterApiManager.checkUser(passportId, client_id);
             if (result.isSuccess()) {  //用户不存在
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);

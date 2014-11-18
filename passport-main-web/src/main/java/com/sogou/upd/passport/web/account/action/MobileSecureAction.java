@@ -7,8 +7,8 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -43,7 +43,7 @@ public class MobileSecureAction extends BaseController {
     @Autowired
     private HostHolder hostHolder;
     @Autowired
-    private RegManager regManager;
+    private RegisterApiManager sgRegisterApiManager;
 
     /*
      * 修改绑定手机，发送短信验证码至原绑定手机
@@ -100,7 +100,7 @@ public class MobileSecureAction extends BaseController {
                 return result.toString();
             }
             //双读，检查新手机是否允许绑定
-            result = regManager.isAccountNotExists(newMobile, clientId);
+            result = sgRegisterApiManager.checkUser(newMobile, clientId);
             if (!result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
