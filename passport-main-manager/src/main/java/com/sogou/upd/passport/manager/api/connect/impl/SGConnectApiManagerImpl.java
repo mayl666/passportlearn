@@ -126,11 +126,11 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
             if (connectConfig != null) {
                 connectToken = connectTokenService.queryConnectToken(passportId, provider, connectConfig.getAppKey());
                 if (connectToken == null || !verifyAccessToken(connectToken, connectConfig)) {           //判断accessToken是否过期，是否需要刷新
-                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND);
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                     return result;
                 }
             } else {
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                 return result;
             }
             result.setSuccess(true);

@@ -98,6 +98,10 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 connectToken = (ConnectToken) result.getModels().get("connectToken");
                 int provider = AccountTypeEnum.getAccountType(passportId).getValue();
                 ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
+                if(connectConfig == null){
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
+                    return result;
+                }
                 String appKey = connectConfig.getAppKey();
                 //读第三方api获取第三方用户信息,并更新搜狗DB的connect_token表
                 connectUserInfoVO = connectAuthService.getConnectUserInfo(provider, appKey, connectToken);
@@ -118,9 +122,13 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     }
 
     private Result obtainConnectUserInfo(String passportId, int clientId, String thirdAppId) throws ServiceException, IOException, OAuthProblemException {
-        Result result;
+        Result result = new APIResultSupport(false);
         int provider = AccountTypeEnum.getAccountType(passportId).getValue();
         ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
+        if(connectConfig == null){
+            result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
+            return result;
+        }
         String appKey = connectConfig.getAppKey();
         ConnectUserInfoVO connectUserInfoVO;
         ConnectToken connectToken;
