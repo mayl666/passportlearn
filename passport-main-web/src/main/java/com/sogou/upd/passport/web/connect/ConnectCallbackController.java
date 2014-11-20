@@ -95,10 +95,6 @@ public class ConnectCallbackController extends BaseConnectController {
                 return viewUrl;
             } else if (ConnectTypeEnum.WEB.toString().equals(type)) {
                 int clientId = Integer.valueOf(clientIdStr);
-
-                //最初版本
-//                cookieManager.setCookie(res, passportId, clientId, getIp(req), ru, (int) DateAndNumTimesConstant.TWO_WEEKS);
-
                 //module 替换
                 CookieApiParams cookieApiParams = new CookieApiParams();
                 cookieApiParams.setUserid(passportId);
@@ -111,9 +107,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
                 cookieApiParams.setUniqname((String) result.getModels().get("refnick"));
                 cookieApiParams.setRefnick((String) result.getModels().get("refnick"));
-
                 cookieManager.createCookie(res, cookieApiParams);
-
                 String domain = req.getParameter("domain");
                 if (!Strings.isNullOrEmpty(domain)) {
                     String refnick = (String) result.getModels().get("refnick");
@@ -131,11 +125,13 @@ public class ConnectCallbackController extends BaseConnectController {
         } else {
             if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                 model.addAttribute("error", result.getModels().get("error"));
-                if(!Strings.isNullOrEmpty(ua) && ua.contains(CommonConstant.SOGOU_IME_UA)){     // ua=sogou_ime时，connecterr.vm不需要windows.close()
-                    model.addAttribute("appname",CommonConstant.SOGOU_IME_UA); // vm没有contains函数，只能==
+                if (!Strings.isNullOrEmpty(ua) && ua.contains(CommonConstant.SOGOU_IME_UA)) {     // ua=sogou_ime时，connecterr.vm不需要windows.close()
+                    model.addAttribute("appname", CommonConstant.SOGOU_IME_UA); // vm没有contains函数，只能==
                 }
                 return viewUrl;
             } else if (ConnectTypeEnum.PC.toString().equals(type)) {
+                model.addAttribute(CommonConstant.BROWER_VERSION, req.getParameter(CommonConstant.BROWER_VERSION));
+                model.addAttribute(CommonConstant.INSTANCE_ID, req.getParameter("ts"));
                 return viewUrl;
             } else {
                 res.sendRedirect(viewUrl + "?errorCode=" + result.getCode() + "&errorMsg=" + Coder.encodeUTF8(result.getMessage()));

@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.connect.impl;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -104,7 +105,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             }
             String redirectURI = ConnectManagerHelper.constructRedirectURI(clientId, connectLoginParams.getRu(), connectLoginParams.getType(),
                     connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(),
-                    connectLoginParams.getDomain(), connectLoginParams.getThirdInfo(), connectLoginParams.getAppid_type(), userAgent);
+                    connectLoginParams.getDomain(), connectLoginParams.getThirdInfo(), connectLoginParams.getAppid_type(), userAgent, connectLoginParams.getV());
             String scope = connectConfig.getScope();
             String appKey = connectConfig.getAppKey();
             String connectType = connectLoginParams.getType();
@@ -121,7 +122,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 requestUrl = oAuthConsumer.getWebUserAuthzUrl();
             }
             OAuthAuthzClientRequest.AuthenticationRequestBuilder builder = OAuthAuthzClientRequest
-                    .authorizationLocation(requestUrl).setAppKey(appKey,provider)
+                    .authorizationLocation(requestUrl).setAppKey(appKey, provider)
                     .setRedirectURI(redirectURI)
                     .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
                     .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
@@ -146,6 +147,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     @Override
     public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type, String httpOrHttps) {
         Result result = new APIResultSupport(false);
+        String v = req.getParameter(CommonConstant.BROWER_VERSION); //浏览器根据v判断展示新旧UI样式
         try {
             int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
             String ip = req.getParameter("ip");
@@ -171,7 +173,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain, thirdInfo, appid_type, ua);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain, thirdInfo, appid_type, ua, v);
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
@@ -222,13 +224,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result.setDefaultModel("result", value);
                         result.setDefaultModel(CommonConstant.RESPONSE_RU, responseVm);
                     } else {
-                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
+                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail", v);
                     }
                 } else if (ConnectTypeEnum.MAPP.toString().equals(type)) {
                     if (!Strings.isNullOrEmpty(from) && "sso".equals(from)) {
                         // SDK1.08及之前的版本使用type=mapp&from=sso，1.09及之后版本使用type=wap
                         // TODO 调用量少时去除这块兼容
-                        result = buildWapResult(result, connectUserInfoVO, userId, passportId, type, ru, thirdInfo, uniqname);
+                        result = buildWapResult(result, connectUserInfoVO, userId, passportId, type, ru, thirdInfo, uniqname, v);
                     } else {
                         String token = tokenService.saveWapToken(userId);
                         String url = buildMAppSuccessRu(ru, userId, token, uniqname);
@@ -248,41 +250,44 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         uniqname = StringUtil.filterEmoji(uniqname);  // 昵称需处理,浏览器的js解析不了昵称就会白屏
                         ManagerHelper.setModelForOAuthResult(result, uniqname, accountToken, providerStr);
                         result.setSuccess(true);
-                        result.setDefaultModel(CommonConstant.RESPONSE_RU, "/oauth2pc/connectlogin");
+                        if (CommonHelper.isNewVersionSE(v)) {
+                            result.setDefaultModel(CommonConstant.RESPONSE_RU, "/oauth2pc_new/connectlogin");
+                        } else {
+                            result.setDefaultModel(CommonConstant.RESPONSE_RU, "/oauth2pc/connectlogin");
+                        }
                     } else {
-                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail");
+                        result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create token fail", v);
                     }
                 } else if (ConnectTypeEnum.WAP.toString().equals(type)) {
                     //写session 数据库
-                    result = buildWapResult(result, connectUserInfoVO, userId, passportId, type, ru, thirdInfo, uniqname);
+                    result = buildWapResult(result, connectUserInfoVO, userId, passportId, type, ru, thirdInfo, uniqname, v);
                 } else {
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
                     result.setDefaultModel("refnick", uniqname);
                 }
             } else {
-                result = buildErrorResult(type, ru, connectAccountResult.getCode(), ErrorUtil.ERR_CODE_MSG_MAP.get(connectAccountResult.getCode()));
+                result = buildErrorResult(type, ru, connectAccountResult.getCode(), ErrorUtil.ERR_CODE_MSG_MAP.get(connectAccountResult.getCode()), v);
             }
         } catch (IOException e) {
             logger.error("read oauth consumer IOException!", e);
-            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException");
+            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "read oauth consumer IOException", v);
         } catch (ServiceException se) {
             logger.error("query connect config Exception!", se);
-            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "query connect config Exception");
+            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "query connect config Exception", v);
         } catch (OAuthProblemException ope) {
             logger.warn("handle oauth authroize code error!", ope);
-            result = buildErrorResult(type, ru, ope.getError(), ope.getDescription());
+            result = buildErrorResult(type, ru, ope.getError(), ope.getDescription(), v);
         } catch (Exception exp) {
-//            logger.error("handle oauth authroize code system error!", exp);
-            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "system error!");
+            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "system error!", v);
         }
         return result;
     }
 
-    private Result buildWapResult(Result result, ConnectUserInfoVO connectUserInfoVO, String userId, String passportId, String type, String ru, String thirdInfo, String uniqname) {
+    private Result buildWapResult(Result result, ConnectUserInfoVO connectUserInfoVO, String userId, String passportId, String type, String ru, String thirdInfo, String uniqname, String v) {
         Result sessionResult = sessionServerManager.createSession(userId);
         if (!sessionResult.isSuccess()) {
-            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
+            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId, v);
             return result;
         }
         String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
@@ -291,7 +296,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
             ru = buildWapSuccessRu(ru, sgid);
         } else {
-            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId);
+            result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId, v);
             return result;
         }
         String avatarSmall = "", avatarMiddle = "", avatarLarge = "", sex = "";
@@ -399,10 +404,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 boolean isConnectUserInfo = false;
                 //isthird=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
                 if (isthird == 0) {
-                    ObtainAccountInfoParams params = new ObtainAccountInfoParams();
-                    params.setUsername(passportId);
-                    params.setClient_id(String.valueOf(clientId));
-                    params.setFields("uniqname,sex");
+                    ObtainAccountInfoParams params = new ObtainAccountInfoParams(String.valueOf(clientId), passportId, "uniqname,sex");
                     result = accountInfoManager.getUserInfo(params);
                     if (result.isSuccess()) {
                         String img180 = (String) result.getModels().get("img_180");
@@ -587,7 +589,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     /*
      * 返回错误情况下的重定向url
      */
-    private String buildErrorRu(String type, String ru, String errorCode, String errorText) {
+    private String buildErrorRu(String type, String ru, String errorCode, String errorText, String v) {
         if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
@@ -602,16 +604,20 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         } else if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
             ru = "/pcaccount/connecterr";
         } else if (ConnectTypeEnum.PC.toString().equals(type)) {
-            ru = "/oauth2pc/pclogin";
+            if (CommonHelper.isNewVersionSE(v)) {
+                ru = "/oauth2pc_new/pclogin";
+            } else {
+                ru = "/oauth2pc/pclogin";
+            }
         }
         return ru;
     }
 
-    private Result buildErrorResult(String type, String ru, String errorCode, String errorText) {
+    private Result buildErrorResult(String type, String ru, String errorCode, String errorText, String v) {
         Result result = new APIResultSupport(false);
         result.setCode(errorCode);
         result.setMessage(errorText);
-        result.setDefaultModel(CommonConstant.RESPONSE_RU, buildErrorRu(type, ru, errorCode, errorText));
+        result.setDefaultModel(CommonConstant.RESPONSE_RU, buildErrorRu(type, ru, errorCode, errorText, v));
         // type=token返回的错误信息
         if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
             String error = errorCode + "|" + errorText;

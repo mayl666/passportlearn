@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -12,6 +13,7 @@ import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.*;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.PCOAuth2LoginParams;
@@ -65,9 +67,9 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private LoginManager loginManager;
     @Autowired
-    private PCAccountManager pcAccountManager;
-    @Autowired
     private RegManager regManager;
+    @Autowired
+    private PCAccountManager pcAccountManager;
     @Autowired
     private HostHolder hostHolder;
     @Autowired
@@ -76,20 +78,33 @@ public class PCOAuth2AccountController extends BaseController {
     private CookieManager cookieManager;
     @Autowired
     private AccountInfoManager accountInfoManager;
+    @Autowired
+    private RegisterApiManager sgRegisterApiManager;
 
 
     @RequestMapping(value = "/sogou/fastreg", method = RequestMethod.GET)
-    public String fastreg(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "instanceid", defaultValue = "") String instanceid, Model model) throws Exception {
-        model.addAttribute("instanceid", instanceid);
-        model.addAttribute("client_id", CommonConstant.PC_CLIENTID);
-        return "/oauth2pc/fastreg";
+    public String fastreg(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String instanceid, @RequestParam(defaultValue = "") String v, Model model) throws Exception {
+        model.addAttribute(CommonConstant.INSTANCE_ID, instanceid);
+        model.addAttribute(CommonConstant.CLIENT_ID, CommonConstant.PC_CLIENTID);
+        model.addAttribute(CommonConstant.BROWER_VERSION, v);
+        if (CommonHelper.isNewVersionSE(v)) {
+            return "/oauth2pc_new/fastreg";
+        } else {
+            return "/oauth2pc/fastreg";
+        }
     }
 
     @RequestMapping(value = "/sogou/mobilereg", method = RequestMethod.GET)
-    public String mobilereg(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "instanceid", defaultValue = "") String instanceid, Model model) throws Exception {
-        model.addAttribute("instanceid", instanceid);
-        model.addAttribute("client_id", CommonConstant.PC_CLIENTID);
-        return "/oauth2pc/mobilereg";
+    public String mobilereg(HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "") String instanceid, @RequestParam(defaultValue = "") String v, Model model) throws Exception {
+        model.addAttribute(CommonConstant.INSTANCE_ID, instanceid);
+        model.addAttribute(CommonConstant.CLIENT_ID, CommonConstant.PC_CLIENTID);
+        model.addAttribute(CommonConstant.BROWER_VERSION, v);
+        if (CommonHelper.isNewVersionSE(v)) {
+            return "/oauth2pc_new/mobilereg";
+        } else {
+            return "/oauth2pc/mobilereg";
+        }
+
     }
 
     /**
@@ -105,9 +120,16 @@ public class PCOAuth2AccountController extends BaseController {
     @RequestMapping(value = "/sogou/flogon", method = RequestMethod.GET)
     public String pcLogin(HttpServletRequest request, HttpServletResponse response, PCOAuth2BaseParams pcOAuth2BaseParams, Model model) throws Exception {
         webCookieProcess(request, response);
-        model.addAttribute("instanceid", pcOAuth2BaseParams.getInstanceid());
-        model.addAttribute("client_id", pcOAuth2BaseParams.getClient_id());
-        return "/oauth2pc/pclogin";
+        model.addAttribute(CommonConstant.INSTANCE_ID, pcOAuth2BaseParams.getInstanceid());
+        model.addAttribute(CommonConstant.CLIENT_ID, pcOAuth2BaseParams.getClient_id());
+        String v = pcOAuth2BaseParams.getV();
+        model.addAttribute(CommonConstant.BROWER_VERSION, v);
+        if (CommonHelper.isNewVersionSE(v)) {
+            return "/oauth2pc_new/pclogin";
+        } else {
+            return "/oauth2pc/pclogin";
+        }
+
     }
 
     @RequestMapping(value = "/oauth2/token/")
@@ -129,7 +151,7 @@ public class PCOAuth2AccountController extends BaseController {
         }
         UserOperationLog userOperationLog = new UserOperationLog(oauthRequest.getUsername(), "/oauth2/token/?grant_type=" + oauthRequest.getGrantType(), String.valueOf(oauthRequest.getClientId()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("refresh_token", oauthRequest.getRefreshToken());
-        userOperationLog.putOtherMessage("instance_id", oauthRequest.getInstanceId());
+        userOperationLog.putOtherMessage(CommonConstant.INSTANCE_ID, oauthRequest.getInstanceId());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
@@ -152,8 +174,8 @@ public class PCOAuth2AccountController extends BaseController {
             result.setCode("0");
         }
         UserOperationLog userOperationLog = new UserOperationLog(params.getUsername(), "/oauth2/resource/?resource_type=" + params.getResource_type(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        userOperationLog.putOtherMessage("access_token", params.getAccess_token());
-        userOperationLog.putOtherMessage("instance_id", params.getInstance_id());
+        userOperationLog.putOtherMessage(CommonConstant.ACCESS_TOKEN, params.getAccess_token());
+        userOperationLog.putOtherMessage(CommonConstant.INSTANCE_ID, params.getInstance_id());
         UserOperationLogUtil.log(userOperationLog);
         return result.toString();
     }
@@ -356,7 +378,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result;
         }
         //检查用户是否存在
-        result = regManager.isAccountNotExists(username, CommonConstant.PC_CLIENTID);
+        result = sgRegisterApiManager.checkUser(username, CommonConstant.PC_CLIENTID);
         return result;
     }
 

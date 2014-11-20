@@ -113,8 +113,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED = "20222";
     // 当日邮件发送次数已达上限
     public static final String ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED = "20223";
-    // 当日注册次数已达上限
-    public static final String ERR_CODE_ACCOUNT_REGISTER_LIMITED = "20224";
     // 手机号已注册或已被绑定
     public static final String ERR_CODE_ACCOUNT_PHONE_BINDED = "20225";
     // 登录失败
@@ -182,8 +180,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH = "20279";
     // 未绑定邮箱
     public static final String NOTHAS_BINDINGEMAIL = "20280";
-    // 未设置密保问题及答案
-    public static final String NOTHAS_BINDINGQUESTION = "20281";
     // 密保答案错误
     public static final String ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED = "20282";
     // 重置密码申请链接失效
@@ -200,8 +196,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNTSECURE_RESETPWD_EMAIL_FAILED = "20288";
     // 绑定手机失败
     public static final String ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED = "20289";
-    // 修改密保链接失效
-    public static final String ERR_CODE_ACCOUNTSECURE_BIND_FAILED = "20290";
     // 绑定密保失败
     public static final String ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED = "20291";
     //重置密码次数超限
@@ -222,8 +216,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_UPLOAD_PHOTO = "20298";
     //获取图像失败
     public static final String ERR_CODE_OBTAIN_PHOTO = "20299";
-    // 字段非法
-    public static final String ERR_CODE_PROFILE_FIELD = "20301";
     //不支持的图片尺寸
     public static final String ERR_CODE_ERROR_IMAGE_SIZE = "20303";
 
@@ -270,8 +262,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_TOKEN_ERROR = "30028";
     //没有找到此应用对应的第三方平台信息
     public static final String ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND = "30031";
-    //只支持第三方平台账号登录
-    public static final String ERR_CODE_CONNECT_LOGIN = "30032";
     //请求方式有错(GET还是POST)
     public static final String ERR_CODE_CONNECT_ERROR_HTTP = "30033";
     //需要使用HTTPS
@@ -294,15 +284,8 @@ public class ErrorUtil {
     /* ============================================================================ */
     //获取第三方账号用户信息失败
     public static final String ERR_CODE_CONNECT_GET_USERINFO_ERROR = "30321";
-
-    // 图片url不能为空
-    public static final String PIC_URL_NOT_NULL = "30401";
-    // 发送失败
-    public static final String ADD_SHARE_FAIL = "30402";
     // QQ账号未开通微博
     public static final String NO_OPEN_BLOG = "30403";
-    // 上传的图片不能为空
-    public static final String PIC_NOT_NULL = "30404";
     // 请使用multpart格式上传图片
     public static final String UPDATE_MULTIPART_IMAGE = "30405";
     // 不支持的图片类型
@@ -336,8 +319,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_ERROR_COOKIE = "30710";
     //个人信息修改失败
     public static final String ERR_CODE_UPDATE_USERINFO = "30801";
-    //解除绑定邮箱失败 错误码定义需要有一些跨度 方便扩展！！！
-    public static final String ERR_CODE_EMAIL_UNBIND_FAIL = "40001";
     // RAS加解密错误
     public static final String ERR_CODE_RSA_DECRYPT = "31000";
     //漫游用户信息不存在
@@ -362,7 +343,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(CREATE_TOKEN_FAIL, "生成token失败");
         ERR_CODE_MSG_MAP.put(ACCESS_DENIED_CLIENT, "应用没有该API访问权限");
         ERR_CODE_MSG_MAP.put(ACCESS_TOKEN_EXPIRED, "accessToken过期");
-
 
         // oauth2授权
         ERR_CODE_MSG_MAP.put(INVALID_CLIENT, "client_id or client_secret不匹配");
@@ -403,7 +383,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_ACTIVED_URL_FAILED, "激活链接已经失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_BINDED, "手机号已注册或已被绑定");
 
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_REGISTER_LIMITED, "当日注册次数已达上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED, "账号未激活");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_KILLED, "账号已封杀");
         ERR_CODE_MSG_MAP.put(ERR_CODE_NOTSUPPORT_SOHU_REGISTER, "暂时不支持sohu域内邮箱执行此操作");
@@ -432,31 +411,25 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_FIND_KEFU, "无绑定关系，请联系客服找回您的密码");
         ERR_CODE_MSG_MAP.put(ERR_CODE_OLDMOBILE_SECMOBILE_NOT_MATCH, "原手机号与密保手机不匹配");
         ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGEMAIL, "未绑定邮箱");
-        ERR_CODE_MSG_MAP.put(NOTHAS_BINDINGQUESTION, "未设置密保问题及答案");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_CHECKANSWER_FAILED, "密保答案错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_URL_FAILED, "重置密码链接失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_SENDEMAIL_FAILED, "申请邮件发送失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_CHECKOLDEMAIL_FAILED, "当前密保邮箱错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDEMAIL_FAILED, "绑定密保邮箱失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_EMAIL_UNBIND_FAIL, "解除密保邮箱失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDEMAIL_URL_FAILED, "绑定密保邮箱申请链接失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_EMAIL_FAILED, "重置密码申请邮箱不可用");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED, "绑定密保手机失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BIND_FAILED, "修改密保链接失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED, "绑定密保问题失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOBIND, "手机号未绑定账号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_BIND_FREQUENCY_LIMIT, "手机绑定次数超限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_RESETPWD_LIMIT, "修改密码频率过于频繁");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_USER_LOGIN_SUCC_RECENTLY, "用户5日内登录过");
-
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED, "今日绑定次数超限，请明日再试");
 
         // profile
-        ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHOTO_EXT, "不支持的图片后缀");
         ERR_CODE_MSG_MAP.put(ERR_CODE_UPLOAD_PHOTO, "上传图片失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_OBTAIN_PHOTO, "获取图像失败");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_PROFILE_FIELD, "字段非法");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ERROR_IMAGE_SIZE, "不支持的图片尺寸");
         ERR_CODE_MSG_MAP.put(ERR_CODE_UPDATE_USERINFO, "个人信息修改失败");
 
@@ -479,20 +452,15 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_TOKEN_PWDERROR, "第三方账号修改密码，导致token失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_TOKEN_ERROR, "token无效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND, "没有找到此应用对应的第三方平台信息");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_LOGIN, "只支持第三方平台账号登录");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ERROR_HTTP, "请求第三方时请求方式有误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NEED_HTTPS, "需要使用HTTPS");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_CREDENTIAL, "不合法的调用凭证");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_OPENID, "不合法的Openid");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M, "用户词库大小大于5M，请特殊处理");
 
-
         // info
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_GET_USERINFO_ERROR, "获取第三方用户信息失败");
-        ERR_CODE_MSG_MAP.put(PIC_URL_NOT_NULL, "图片url不能为空");
-        ERR_CODE_MSG_MAP.put(ADD_SHARE_FAIL, "发布失败");
         ERR_CODE_MSG_MAP.put(NO_OPEN_BLOG, "还没开通微博呢");
-        ERR_CODE_MSG_MAP.put(PIC_NOT_NULL, "上传图片不能为空");
         ERR_CODE_MSG_MAP.put(UPDATE_MULTIPART_IMAGE, "请使用multpart格式上传图片");
         ERR_CODE_MSG_MAP.put(UNSUPPORT_IMAGE_FORMAT, "不支持的图片类型");
         ERR_CODE_MSG_MAP.put(REPEAT_CONTENT, "同样的内容请勿重复发送");

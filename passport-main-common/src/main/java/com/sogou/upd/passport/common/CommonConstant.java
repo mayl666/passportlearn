@@ -31,13 +31,6 @@ public class CommonConstant {
     public static final String PC_REDIRECT_PASSWORD = "password"; //跳转到修改密码页面
     public static final String SOGOU_IME_UA = "sogou_ime"; //搜狗输入法header里的User-Agent标识
 
-    //双读异常原因
-    public static final String AUTH_MESSAGE = "update-pwd-bindmobile"; //用来读分离时记log时用，主账号有修改绑定手机或密码操作
-    public static final String CHECK_MESSAGE = "update-bindmobile"; //用来读分离时记log时用,检查用户名是否可用时，主账号有修改绑定手机操作
-    public static final String SG_NOT_EXIST = "SoGouNotExist"; //账号在搜狗不存在
-    //双写异常原因
-    public static final String SGSUCCESS_SHERROR = "write_SGSuccess_SHError";//SG写成功，SH写失败
-
     public static final String APP_CONNECT_KEY = "100294784";  //搜狗在QQ第三方开放平台的应用id
     public static final String APP_CONNECT_SECRET = "a873ac91cd703bc037e14c2ef47d2021";  //搜狗在QQ第三方开放平台对应的应用密钥
     public static final String SOHU_APP_CONNECT_KEY = "200034";  //搜狐在QQ第三方开放平台的应用id
@@ -58,6 +51,8 @@ public class CommonConstant {
     public static final String RESQUEST_CT = "ct";
     public static final String RESQUEST_CODE = "code";
     public static final String HAVE_UPDATE = "true";//用户有修改操作
+    public static final String BROWER_VERSION = "v";//浏览器客户端版本
+    public static final String INSTANCE_ID = "instanceid";//终端唯一标示
 
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
     public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明
@@ -109,6 +104,10 @@ public class CommonConstant {
     public static final String HTTPS_VALUE = "https";
     public static final String USER_AGENT = "User-Agent";
 
+
+    //域名不正确
+    public static final String DOMAIN_ERROR = "域名不正确";
+
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
 
@@ -128,9 +127,6 @@ public class CommonConstant {
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1001, 4));
 
         SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2001, 4));
-
-//        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2011, 3));
-//        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2011, 4));
     }
 
 }

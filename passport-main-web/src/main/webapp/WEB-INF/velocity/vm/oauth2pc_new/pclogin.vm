@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset='utf-8'/>
+    <title>搜狗浏览器</title>
+    <meta name="description" content="搜狗浏览器登录注册框">
+    <meta name="author" content="yinyong@sogou-inc.com">
+    <link href="/./static/css/oauth2pc_new/login.css?t=543838" rel="stylesheet" />
+    <!--[if lte IE 9]>
+    <script src="/./static/js/oauth2pc_new/html5.js?t=028570"></script>
+    <![endif]-->
+    <script type="text/javascript" charset = "utf-8">
+var splus = {
+    login_history:"",
+    instanceid:"$instanceid"
+};
+var v = '$v';
+</script>
+    <script src="/./static/js/oauth2pc_new/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc_new/main.js"></script>
+    <script src="/./static/js/oauth2pc_new/sdk.js?appkey=21556307"></script>
+</head>
+<body>
+    
+<div class="login-wrap">
+    <div class="login-ad">
+        <p>云收藏-电脑手机跨屏浏览</p>
+    </div>
+    <div class="login-con">
+        <form>
+            <div class="control-group">
+                <div class="controls user-id">
+                    <input type="text" placeholder="搜狗帐号/手机/邮箱" name="account" autocomplete="off"
+                           disableautocomplete acceessKey='a' tabindex="1"/>
+                    <span class="position-tips"></span>
+                    <span class="select-btn"></span>
+
+                    <div class="ppselecter" style="display:none">
+                        <ul>
+                        </ul>
+                    </div>
+                </div>
+                <div class="controls">
+                    <input type="password" placeholder="密码" name="password" accessKey='p' tabindex="2"/>
+                    <span class="position-tips"></span>
+                </div>
+            </div>
+            <div class="control-group vcode-area" style="display:none">
+                <div class="controls">
+                    <div class="chkinput">
+                        <input type="text" name="vcode" maxlength="5" accessKey='v' tabindex="3"/>
+                        <span class="position-tips"></span>
+                    </div>
+                    <div class="chkPic">
+                        <img width="100" src="/captcha">
+                                <span>
+                                    <a href="javascript:void(0);" class="blue">换一张</a>
+                                </span>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group auto_login">
+                <div class="controls checkbox">
+                    <input type="checkbox" checked="" id="forget_pw" tabindex="4">
+                    <label for="forget_pw">
+                        <span></span>
+                        自动登录
+                    </label>
+                    <span class="find_pw_wrap"><a class="blue find_pw" href="https://account.sogou.com/web/findpwd?client_id=1065&ru=http%3A%2F%2Fie.sogou.com"
+                                                  target="_blank" onclick="javascript:window.close();">找回密码</a></span>
+                </div>
+            </div>
+            <div class="control-group login-btn clearfix">
+                <div class="controls">
+                    <button class="btn" type="submit" tabindex="5">登录</button>
+                </div>
+                <div class="controls">
+                    <div class="dropdown">
+                        <div class="selected" oauth-type="qq"><i class="outside-qq"
+                                                                 oauth="//account.sogou.com/connect/login?provider=qq&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}&v=${v}"></i>
+                            <span class="outside-title selected">QQ帐号登录</span> <i class="outside-arrow"></i>
+                        </div>
+                        <ul class="outside-list" style="display:none">
+                            <li oauth-type="weibo">
+                                <i class="outside-weibo"
+                                   oauth="//account.sogou.com/connect/login?provider=sina&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}&v=${v}"></i>
+                                <span class="outside-title">微博帐号登录</span>
+                            </li>
+                            <li oauth-type="renren">
+                                <i class="outside-renren"
+                                   oauth="//account.sogou.com/connect/login?provider=renren&client_id=1044&type=pc&ru=https%3A%2F%2Faccount.sogou.com%2Fweb%2FwebLogin&ts=${instanceid}&v=${v}"></i>
+                                <span class="outside-title">人人帐号登录</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls out_error_wrap">
+                    <p style="display:none" class="red" id="out_error"></p>
+                </div>
+                <div class="controls position-bottom" style="display:">
+                    <div class="fr">
+                        <span style='vertical-align:baseline'>还没有帐号?</span>
+                            <a href="/sogou/fastreg?instanceid=${instanceid}&v=${v}" class="blue">快速注册</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>require(['pages/login'])</script>
+
+</body>
+</html>

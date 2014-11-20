@@ -318,6 +318,28 @@ public class PCAccountController extends BaseController {
         return;
     }
 
+    @RequestMapping(value = "/act/swap_refreshtoken")
+    @ResponseBody
+    public Object swapRefreshToken(HttpServletRequest request, PcRefreshTokenParams reqParams) throws Exception {
+        Result result = new APIResultSupport(false);
+        String passportId = reqParams.getUserid();
+        String instanceId = reqParams.getTs();
+        String refreshToken = reqParams.getRefresh_token();
+        String ip = getIp(request);
+        int clientId = Integer.parseInt(reqParams.getAppid());
+        String validateResult = ControllerHelper.validateParams(reqParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+
+        result = pcAccountManager.swapRefreshToken(passportId, clientId, instanceId, refreshToken);
+        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), reqParams.getAppid(), result.getCode(), ip);
+        UserOperationLogUtil.log(userOperationLog);
+        return result.toString();
+    }
+
     @RequestMapping(value = "/act/errorMsg")
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {

@@ -1,0 +1,48 @@
+/**
+  * ie6.css
+  *
+  * changelog
+  * 2013-11-21[15:21:03]:copied
+  *
+  * @info yinyong,osx-x64,UTF-8,10.129.173.11,css,/Volumes/yinyong/sohuplus/static/css/oauth2pc
+  * @author yinyong@sogou-inc.com
+  * @version 0.0.1
+  * @since 0.0.1
+  */
+input{
+	_border:#e2e2e2 1px solid;
+	_border-radius:4px;
+	_font:12px/1.125 "Microsoft YaHei",simsun,Arial; _font-family:"SimSun";
+	_color:#2b2b2b;
+}
+input.error{
+	_color:#cb2040;
+	_border:#ff6600 1px solid;
+	_box-shadow:#dd6600 0 0 3px;
+}
+.icon-weibo-30-1,.icon-weibo-30-0,.icon-qq-30-1,.icon-qq-30-0,.icon-renren-30-1,.icon-renren-30-0,.icon-taobao-30-1,.icon-taobao-30-0,.icon-weibo-25-1,.icon-weibo-25-0,.icon-qq-25-1,.icon-qq-25-0,.icon-renren-25-1,.icon-renren-25-0,.icon-taobao-25-1,.icon-taobao-25-0,.icon-weibo-16-1,.icon-weibo-16-0,.icon-qq-16-1,.icon-qq-16-0,.icon-renren-16-1,.icon-renren-16-0,.icon-taobao-16-1,.icon-taobao-16-0{
+	background: url(icon_login.gif?t=) no-repeat 0 0;
+}
+.btn-sent,.btn-login,.btn-login-green,.btn-reg-big,.btn-reg,.btn-close,.btn-tool-on,.btn-tool-off{
+	background: url(btn_login.gif?t=) no-repeat 0 0;
+}
+.sidebar h1{
+	background: url(sprite_login.gif?t=) no-repeat 27px 0;
+}
+.content .form-wrap .control-group .controls input{
+	_width:248px;
+	_height:25px;
+	_font-size:14px;
+	_padding:0 0 0 10px;
+	_line-height: 25px;
+}
+.content .form-wrap .bind .control-group .controls input{
+	_width:178px;
+	_float:left;
+	_border-radius: 4px 0 0 4px;
+}
+.content .form-wrap .control-group .controls{
+	_float:right;
+	_margin-left:0;
+	_width: 260px;
+}

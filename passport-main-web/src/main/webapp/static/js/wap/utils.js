@@ -28,9 +28,9 @@ define([], function() {
         getRu: function() {
             var params = this.getUrlParams();
             var ru = params['ru'];
-            if (!/https?:\/\/([\w-]+\.)+sogou.com/.test(decodeURIComponent(ru))) {
-                ru = encodeURIComponent('http://wap.sogou.com');
-            }
+            // if (!/https?:\/\/([\w-]+\.)+sogou.com/.test(decodeURIComponent(ru))) {
+            //     ru = encodeURIComponent('http://wap.sogou.com');
+            // }
             return ru;
         },
         getPassThroughParams: function() {

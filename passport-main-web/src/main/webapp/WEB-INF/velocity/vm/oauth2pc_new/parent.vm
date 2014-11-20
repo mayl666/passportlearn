@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset='utf-8'/>
+    <title>搜狗浏览器</title>
+    <meta name="description" content="搜狗浏览器登录注册框">
+    <meta name="author" content="yinyong@sogou-inc.com">
+    <link href="/./static/css/oauth2pc_new/login.css?t=543838" rel="stylesheet" />
+    <!--[if lte IE 9]>
+    <script src="/./static/js/oauth2pc_new/html5.js?t=028570"></script>
+    <![endif]-->
+    <script type="text/javascript" charset = "utf-8">
+var splus = {
+    login_history:"",
+    instanceid:"$instanceid"
+};
+var v = '$v';
+</script>
+    <script src="/./static/js/oauth2pc_new/require-jquery.js?t=168932" data-main="/./static/js/oauth2pc_new/main.js"></script>
+    <script src="/./static/js/oauth2pc_new/sdk.js?appkey=21556307"></script>
+</head>
+<body>
+    
+    
+</body>
+</html>

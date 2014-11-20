@@ -39,7 +39,7 @@
     <appender name="userOperationAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/useroperation/useroperation.log.%d{yyyy-MM-dd}</fileNamePattern>
-            <maxHistory>7</maxHistory>
+            <maxHistory>3</maxHistory>
         </rollingPolicy>
         <encoder>
             <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
@@ -153,19 +153,6 @@
         <appender-ref ref="dBRedisMissAppender"/>
     </logger>
 
-    <appender name="profileErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/profileError/profileError.log.%d{yyyy-MM-dd}</fileNamePattern>
-        </rollingPolicy>
-        <encoder>
-            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
-            <pattern>%msg%n</pattern>
-        </encoder>
-    </appender>
-    <logger name="profileErrorLogger" level="info" additivity="false">
-        <appender-ref ref="profileErrorAppender"/>
-    </logger>
-
     <!--start:httpClient性能log-->
     <appender name="httpclientFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -222,25 +209,6 @@
     </appender>
     <logger name="rediesTimingLogger" level="info" additivity="false">
         <appender-ref ref="rediesCoalescingStatistics"/>
-    </logger>
-    <!--end:web服务器性能log-->
-
-    <!--start:redies请求log-->
-    <appender name="tokenRediesPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/tokenRedies/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%msg %n</pattern>
-        </encoder>
-    </appender>
-    <appender name="tokenRediesCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
-        <!--每分钟分析一次log，做出性能测试-->
-        <param name="TimeSlice" value="60000"/>
-        <appender-ref ref="tokenRediesPerfFileAppender"/>
-    </appender>
-    <logger name="tokenRediesTimingLogger" level="info" additivity="false">
-        <appender-ref ref="tokenRediesCoalescingStatistics"/>
     </logger>
     <!--end:web服务器性能log-->
 

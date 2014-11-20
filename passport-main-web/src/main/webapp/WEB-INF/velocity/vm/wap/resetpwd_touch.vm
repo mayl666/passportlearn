@@ -16,7 +16,7 @@
 <nav class="f-f f-vc">
     <a href="#" class="backlink f-f f-hc f-vc">〈</a>
     <div class="f-1 f-f f-hc f-vc">找回密码</div>
-    <a href="/wap/reg?v=$!v&skin=$!skin&client_id=$!client_id&ru=$!ru" class="f-f f-vc f-hc reglink">注册</a>
+    <a href="/wap/reg" class="f-f f-vc f-hc reglink">注册</a>
 </nav>
 #end
 
@@ -57,7 +57,7 @@
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=738285" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=834469" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"

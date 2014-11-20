@@ -1,20 +1,17 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
-import com.sogou.upd.passport.common.result.APIResultForm;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
+import com.sogou.upd.passport.manager.api.account.ProxyApiManagerImpl;
 import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,10 +22,6 @@ import java.io.IOException;
  */
 public class BindApiManagerTest extends BaseTest {
 
-    @Autowired
-    private BindApiManager proxyBindApiManager;
-    @Autowired
-    private BindApiManager sgBindApiManager;
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -46,49 +39,9 @@ public class BindApiManagerTest extends BaseTest {
     public void testGetPassportId(){
         BaseMoblieApiParams params = new BaseMoblieApiParams();
         params.setMobile("13071155730");
-        Result resultSH = proxyBindApiManager.getPassportIdByMobile(params);
+        ProxyApiManagerImpl manager = new ProxyApiManagerImpl();
+        Result resultSH = manager.getPassportIdByMobile(params);
         System.out.println(resultSH.toString());
-    }
-
-    /**
-     * 手机号已注册或已绑定的情况下---根据手机号获取passportId
-     */
-    @Test
-    public void testGetPassportIdByMobile() throws IOException {
-        BaseMoblieApiParams params = new BaseMoblieApiParams();
-        params.setMobile(mobile);
-        Result resultSH = proxyBindApiManager.getPassportIdByMobile(params);
-        APIResultForm formSH = JacksonJsonMapperUtil.getMapper().readValue(resultSH.toString(), APIResultForm.class);
-        Assert.assertEquals("0", formSH.getStatus());
-        Assert.assertEquals(mobile_passportId, formSH.getData().get("userid"));
-        Assert.assertEquals("操作成功", formSH.getStatusText());
-        Result resultSG = sgBindApiManager.getPassportIdByMobile(params);
-        APIResultForm formSG = JacksonJsonMapperUtil.getMapper().readValue(resultSG.toString(), APIResultForm.class);
-        Assert.assertTrue(formSH.equals(formSG));
-        //如果比较失败，可打开下面的结果输出对比找原因
-//        System.out.println("-----------------结果如下---------------");
-//        System.out.println("搜狐结果：" + resultSH);
-//        System.out.println("搜狗结果：" + resultSG);
-    }
-
-    /**
-     * 手机号不存在的情况下---根据手机号获取passportId
-     */
-    @Test
-    public void testGetPassportIdByMobileNoMobile() throws IOException {
-        BaseMoblieApiParams params = new BaseMoblieApiParams();
-        params.setMobile(no_mobile);
-        Result resultSH = proxyBindApiManager.getPassportIdByMobile(params);
-        APIResultForm formSH = JacksonJsonMapperUtil.getMapper().readValue(resultSH.toString(), APIResultForm.class);
-        Assert.assertEquals(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND, formSH.getStatus());
-        Assert.assertEquals(ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND), formSH.getStatusText());
-        Result resultSG = sgBindApiManager.getPassportIdByMobile(params);
-        APIResultForm formSG = JacksonJsonMapperUtil.getMapper().readValue(resultSG.toString(), APIResultForm.class);
-        Assert.assertTrue(formSH.equals(formSG));
-        //如果比较失败，可打开下面的结果输出对比找原因
-//        System.out.println("-----------------结果如下---------------");
-//        System.out.println("搜狐结果：" + resultSH);
-//        System.out.println("搜狗结果：" + resultSG);
     }
 
     @Test
@@ -119,13 +72,6 @@ public class BindApiManagerTest extends BaseTest {
         account = accountService.queryNormalAccount(mobile_userid_sogou);
         Result bindMobileActualResult = bindApiManager.bindMobile(mobile_userid_sogou, binded_mobile,account);
         Assert.assertEquals(bindMobileExpectedResult.toString(), bindMobileActualResult.toString());
-        //外域账号首次绑定成功
-//        proxyBindApiManager.unBindMobile("13624598765");
-//        String waiyuBindMobileStr = "{\"data\":{},\"statusText\":\"操作成功\",\"status\":\"0\"}";
-//        Result waiyuBindMobileExpectedResult = new APIResultSupport(true,"0", "操作成功");
-//        Result waiyuBindMobileActualResult = bindApiManager.bindMobile(userid_email, "13624598765");
-//        Assert.assertEquals(waiyuBindMobileExpectedResult.toString(), waiyuBindMobileActualResult.toString());
-//        proxyBindApiManager.unBindMobile("13624598765");
     }
 
     @Test

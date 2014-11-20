@@ -17,13 +17,12 @@ import com.sogou.upd.passport.common.utils.ToolUUIDUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.TokenService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.TokenService;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,10 +118,10 @@ public class SGLoginApiManagerImpl extends BaseProxyManager implements LoginApiM
     }
 
     @Override
-    public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams) {
+    public Result appAuthToken(String token) {
         Result result = new APIResultSupport(false);
         try {
-            String passportId = tokenService.getPassprotIdByWapToken(appAuthTokenApiParams.getToken());
+            String passportId = tokenService.getPassprotIdByWapToken(token);
             if (!Strings.isNullOrEmpty(passportId)) {
                 result.setSuccess(true);
                 result.setMessage("操作成功");

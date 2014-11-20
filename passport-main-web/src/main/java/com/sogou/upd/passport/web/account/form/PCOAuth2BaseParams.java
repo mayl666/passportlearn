@@ -15,7 +15,7 @@ public class PCOAuth2BaseParams {
     private String h;
     private String r;
     private String v; //浏览器版本
-    private int client_id= CommonConstant.PC_CLIENTID; //用户通过token解密获取userid,所以传1044
+    private int client_id = CommonConstant.PC_CLIENTID; //用户通过token解密获取userid,所以传1044
 
     public String getInstanceid() {
         return instanceid;

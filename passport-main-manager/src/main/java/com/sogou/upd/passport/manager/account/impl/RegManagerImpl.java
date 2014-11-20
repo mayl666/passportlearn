@@ -16,7 +16,6 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.CheckUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegEmailApiParams;
 import com.sogou.upd.passport.manager.api.account.form.RegMobileApiParams;
 import com.sogou.upd.passport.manager.api.account.form.ResendActiveMailParams;
@@ -329,19 +328,6 @@ public class RegManagerImpl implements RegManager {
     }
 
     @Override
-    public Result isAccountNotExists(String username, int clientId) throws Exception {
-        Result result;
-        try {
-            CheckUserApiParams checkUserApiParams = buildProxyApiParams(username, clientId);
-            result = sgRegisterApiManager.checkUser(checkUserApiParams);
-        } catch (ServiceException e) {
-            logger.error("Check account is exists Exception, username:" + username, e);
-            throw new Exception(e);
-        }
-        return result;
-    }
-
-    @Override
     public Result checkRegInBlackListByIpForInternal(String ip, int clientId) throws Exception {
         Result result = new APIResultSupport(false);
         //如果在黑名单，也在白名单，允许注册；如果在黑名单不在白名单，不允许注册
@@ -382,13 +368,6 @@ public class RegManagerImpl implements RegManager {
         } catch (ServiceException e) {
             logger.error("register incRegTimes Exception", e);
         }
-    }
-
-    private CheckUserApiParams buildProxyApiParams(String username, int clientId) {
-        CheckUserApiParams checkUserApiParams = new CheckUserApiParams();
-        checkUserApiParams.setUserid(username);
-        checkUserApiParams.setClient_id(clientId);
-        return checkUserApiParams;
     }
 
     @Override

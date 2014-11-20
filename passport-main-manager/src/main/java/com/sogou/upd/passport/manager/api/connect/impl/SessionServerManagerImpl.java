@@ -74,7 +74,6 @@ public class SessionServerManagerImpl implements SessionServerManager {
             map.put("passport_id", passportId);
             params.put("user_info", jsonMapper.writeValueAsString(map));
 
-//            String resultRequest = HttpClientUtil.postRequest(SessionServerUrlConstant.CREATE_SESSION, params);
             RequestModel requestModel = new RequestModel(SessionServerUrlConstant.CREATE_SESSION);
 
             Set<Map.Entry<String, String>> set = params.entrySet();
