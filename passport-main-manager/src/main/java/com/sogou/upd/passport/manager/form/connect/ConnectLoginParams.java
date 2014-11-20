@@ -42,8 +42,7 @@ public class ConnectLoginParams {
     @Domain
     private String domain;   // 非sogou.com域名的业务线使用，登录成功后种非sogou.com域的cookie
     private String thirdInfo = "";   // thirdInfo=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
-    @Min(0)
-    private Integer appid_type = 0; //appidtype=1，则根据应用传入的client_id查询相关的第三方appid；appidtype=0，则使用sogou passport的appid；
+    private String third_appid; //如果应用使用独立appid，则传入第三方appid值，并且根据不同的第三方传递不同的appid； 默认使用passport的appid；
 
     private String v; //浏览器根据v判断显示新旧UI
 
@@ -183,19 +182,19 @@ public class ConnectLoginParams {
         this.thirdInfo = thirdInfo;
     }
 
-    public Integer getAppid_type() {
-        return appid_type;
-    }
-
-    public void setAppid_type(Integer appid_type) {
-        this.appid_type = appid_type;
-    }
-
     public String getV() {
         return v;
     }
 
     public void setV(String v) {
         this.v = v;
+    }
+
+    public String getThird_appid() {
+        return third_appid;
+    }
+
+    public void setThird_appid(String third_appid) {
+        this.third_appid = third_appid;
     }
 }

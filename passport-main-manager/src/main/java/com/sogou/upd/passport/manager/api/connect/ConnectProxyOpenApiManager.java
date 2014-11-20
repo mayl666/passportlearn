@@ -22,7 +22,7 @@ public interface ConnectProxyOpenApiManager {
      * @param paramsMap 应用传递进来的参数信息
      * @return
      */
-    public Result handleConnectOpenApi(String sgUrl, Map<String, String> tokenMap, Map<String, Object> paramsMap);
+    public Result handleConnectOpenApi(String sgUrl, Map<String, String> tokenMap, Map<String, Object> paramsMap, String thirdAppId);
 
 
 }

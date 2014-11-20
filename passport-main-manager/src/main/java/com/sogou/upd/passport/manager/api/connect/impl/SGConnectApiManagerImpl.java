@@ -117,20 +117,20 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     }
 
     @Override
-    public Result obtainConnectToken(String passportId, int clientId) throws ServiceException {
+    public Result obtainConnectToken(String passportId, int clientId, String thirdAppId) throws ServiceException {
         Result result = new APIResultSupport(false);
         try {
             int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+            ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
             ConnectToken connectToken;
             if (connectConfig != null) {
                 connectToken = connectTokenService.queryConnectToken(passportId, provider, connectConfig.getAppKey());
                 if (connectToken == null || !verifyAccessToken(connectToken, connectConfig)) {           //判断accessToken是否过期，是否需要刷新
-                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_ACCESSTOKEN_NOT_FOUND);
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                     return result;
                 }
             } else {
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                 return result;
             }
             result.setSuccess(true);
@@ -144,7 +144,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     @Override
     public Result obtainTKey(String passportId, int clientId) {
         Result result = new APIResultSupport(false);
-        Result connectTokenResult = obtainConnectToken(passportId, clientId);
+        Result connectTokenResult = obtainConnectToken(passportId, clientId, null);
         if (!connectTokenResult.isSuccess()) {
             return connectTokenResult;
         }

@@ -260,8 +260,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_TOKEN_PWDERROR = "30027";
     //token无效
     public static final String ERR_CODE_CONNECT_TOKEN_ERROR = "30028";
-    //没有找到此应用对应的第三方平台信息
-    public static final String ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND = "30031";
     //请求方式有错(GET还是POST)
     public static final String ERR_CODE_CONNECT_ERROR_HTTP = "30033";
     //需要使用HTTPS
@@ -451,7 +449,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_FAILED, "第三方Api调用失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_TOKEN_PWDERROR, "第三方账号修改密码，导致token失效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_TOKEN_ERROR, "token无效");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_CLIENTID_PROVIDER_NOT_FOUND, "没有找到此应用对应的第三方平台信息");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_ERROR_HTTP, "请求第三方时请求方式有误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_NEED_HTTPS, "需要使用HTTPS");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_CREDENTIAL, "不合法的调用凭证");

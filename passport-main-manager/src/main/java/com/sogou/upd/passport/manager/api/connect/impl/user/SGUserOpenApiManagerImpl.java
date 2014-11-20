@@ -54,12 +54,13 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
             int original = userOpenApiParams.getOriginal();
             ConnectUserInfoVO connectUserInfoVO;
             int clientId = userOpenApiParams.getClient_id();
+            String thirdAppId = userOpenApiParams.getThird_appid();
             if (original == CommonConstant.WITH_CONNECT_ORIGINAL) {
                 //读第三方个人资料原始信息
-                result = obtainConnectOriginalUserInfo(passportId, clientId);
+                result = obtainConnectOriginalUserInfo(passportId, clientId, thirdAppId);
             } else {
                 //读第三方个人资料非原始信息
-                result = obtainConnectUserInfo(passportId, clientId);
+                result = obtainConnectUserInfo(passportId, clientId, thirdAppId);
             }
             if (!result.isSuccess()) {
                 return result;
@@ -80,23 +81,27 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
                 result = buildErrorResult(errorCode, errMsg);
             }
         } catch (Exception exp) {
-            logger.error("getUserInfo system error! passportId:"+passportId, exp);
+            logger.error("getUserInfo system error! passportId:" + passportId, exp);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "system error!");
         }
         return result;
 
     }
 
-    private Result obtainConnectOriginalUserInfo(String passportId, int clientId) throws ServiceException, IOException, OAuthProblemException {
+    private Result obtainConnectOriginalUserInfo(String passportId, int clientId, String thirdAppId) throws ServiceException, IOException, OAuthProblemException {
         Result result = new APIResultSupport(false);
         ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId);
         if (connectUserInfoVO == null) {
-            result = sgConnectApiManager.obtainConnectToken(passportId, clientId);
+            result = sgConnectApiManager.obtainConnectToken(passportId, clientId, thirdAppId);
             ConnectToken connectToken;
             if (result.isSuccess()) {
                 connectToken = (ConnectToken) result.getModels().get("connectToken");
                 int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-                ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+                ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
+                if(connectConfig == null){
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
+                    return result;
+                }
                 String appKey = connectConfig.getAppKey();
                 //读第三方api获取第三方用户信息,并更新搜狗DB的connect_token表
                 connectUserInfoVO = connectAuthService.getConnectUserInfo(provider, appKey, connectToken);
@@ -116,14 +121,18 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         return result;
     }
 
-    public Result obtainConnectUserInfo(String passportId, int clientId) throws ServiceException, IOException, OAuthProblemException {
-        Result result;
+    private Result obtainConnectUserInfo(String passportId, int clientId, String thirdAppId) throws ServiceException, IOException, OAuthProblemException {
+        Result result = new APIResultSupport(false);
         int provider = AccountTypeEnum.getAccountType(passportId).getValue();
-        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+        ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
+        if(connectConfig == null){
+            result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
+            return result;
+        }
         String appKey = connectConfig.getAppKey();
         ConnectUserInfoVO connectUserInfoVO;
         ConnectToken connectToken;
-        result = sgConnectApiManager.obtainConnectToken(passportId, clientId);
+        result = sgConnectApiManager.obtainConnectToken(passportId, clientId, thirdAppId);
         if (result.isSuccess()) {
             connectToken = (ConnectToken) result.getModels().get("connectToken");
             connectUserInfoVO = buildConnectUserInfoVO(connectToken);

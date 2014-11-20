@@ -27,6 +27,12 @@ public class ConnectConfigDAOTest extends BaseDAOTest {
     }
 
     @Test
+    public void testGetConnectConfigByAppIdAndProvider() {
+        ConnectConfig connectConfig = connectConfigDAO.getConnectConfigByAppIdAndProvider("100294784", 3);
+        Assert.assertTrue(connectConfig != null);
+    }
+
+    @Test
     public void testUpdateConnectConfig() {
         ConnectConfig connectConfig = new ConnectConfig();
         connectConfig.setClientId(CLIENT_ID);

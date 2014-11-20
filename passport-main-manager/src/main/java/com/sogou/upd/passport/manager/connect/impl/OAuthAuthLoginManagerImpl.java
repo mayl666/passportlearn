@@ -98,14 +98,14 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             int clientId = Integer.parseInt(connectLoginParams.getClient_id());
             oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             // 获取connect配置
-            int appid_type = connectLoginParams.getAppid_type();
-            connectConfig = queryConnectConfig(appid_type, clientId, provider);
+            String thirdAppId = connectLoginParams.getThird_appid();
+            connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
             if (connectConfig == null) {
                 return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
             String redirectURI = ConnectManagerHelper.constructRedirectURI(clientId, connectLoginParams.getRu(), connectLoginParams.getType(),
                     connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(),
-                    connectLoginParams.getDomain(), connectLoginParams.getThirdInfo(), connectLoginParams.getAppid_type(), userAgent, connectLoginParams.getV());
+                    connectLoginParams.getDomain(), connectLoginParams.getThirdInfo(), userAgent, connectLoginParams.getV(), thirdAppId);
             String scope = connectConfig.getScope();
             String appKey = connectConfig.getAppKey();
             String connectType = connectLoginParams.getType();
@@ -157,7 +157,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String domain = req.getParameter("domain"); //导航qq登陆，会传此参数
             String ua = req.getParameter(CommonConstant.USER_AGENT);
             int provider = AccountTypeEnum.getProvider(providerStr);
-            int appid_type = Integer.valueOf(req.getParameter("appid_type")); //1表示用应用独立appid，0表示用passport的appid
+            String thirdAppId = req.getParameter(CommonConstant.THIRD_APPID); //不为空时代表应用使用独立appid；
 
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
@@ -168,12 +168,12 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 return result;
             }
             //根据code值获取access_token
-            ConnectConfig connectConfig = queryConnectConfig(appid_type, clientId, provider);
+            ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
             if (connectConfig == null) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain, thirdInfo, appid_type, ua, v);
+            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain, thirdInfo, ua, v, thirdAppId);
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
@@ -343,13 +343,14 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             Integer appidType = appidtypeString == null ? null : Integer.valueOf(appidtypeString);
             int provider = AccountTypeEnum.getProvider(providerStr);
             String tcode = authParams.getTcode();
+            String thirdAppId = req.getParameter(CommonConstant.THIRD_APPID); //不为空时代表应用使用独立appid；
             if (AccountTypeEnum.isConnect(provider)) {
                 OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
                 if (oAuthConsumer == null) {
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                     return result;
                 }
-                ConnectConfig connectConfig = queryConnectConfig(appidType, clientId, provider);
+                ConnectConfig connectConfig = queryConnectConfig(thirdAppId, appidType, clientId, provider);
                 if (connectConfig == null) {
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                     return result;
@@ -467,15 +468,28 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return result;
     }
 
-    private ConnectConfig queryConnectConfig(Integer appidType, int clientId, int provider) {
+    /**
+     * 最早版本没有thirdAppId和appIdType参数，使用passport的appId
+     * 然后版本只有appIdType参数，当appIdType=1时，找到clientId对应的appId
+     * 安卓 V1.1和IOS V2.0之后只有thirdAppId参数，可以使用应用独立appId
+     * @param thirdAppId
+     * @param appidType
+     * @param clientId
+     * @param provider
+     * @return
+     */
+    private ConnectConfig queryConnectConfig(String thirdAppId, Integer appidType, int clientId, int provider) {
         ConnectConfig connectConfig;
+        if(!Strings.isNullOrEmpty(thirdAppId)){
+            return connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
+        }
         if (appidType == null) {
-            connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+            connectConfig = connectConfigService.queryDefaultConnectConfig(provider);
         } else {
             if (appidType == 1) {
-                connectConfig = connectConfigService.querySpecifyConnectConfig(clientId, provider);
+                connectConfig = connectConfigService.queryConnectConfigByClientId(clientId, provider);
             } else {
-                connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
+                connectConfig = connectConfigService.queryDefaultConnectConfig(provider);
             }
         }
         return connectConfig;

@@ -120,7 +120,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
         try {
             //根据获取第三方个人资料验证token的有效性
             int provider = AccountTypeEnum.QQ.getValue();
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
+            ConnectConfig connectConfig = connectConfigService.queryDefaultConnectConfig(provider);
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
 
             ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);

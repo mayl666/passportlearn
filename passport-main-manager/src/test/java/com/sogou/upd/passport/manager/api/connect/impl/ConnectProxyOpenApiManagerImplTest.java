@@ -40,7 +40,7 @@ public class ConnectProxyOpenApiManagerImplTest extends BaseTest {
         tokenMap.put("open_id", openId);
         tokenMap.put("access_token", accessToken);
         tokenMap.put("client_id", String.valueOf(clientId));
-        Result result = connectProxyOpenApiManager.handleConnectOpenApi(sgUrl, tokenMap, null);
+        Result result = connectProxyOpenApiManager.handleConnectOpenApi(sgUrl, tokenMap, null, null);
         System.out.println("-------------------------结果如下:--------------------------");
         System.out.println(result);
     }
@@ -63,7 +63,7 @@ public class ConnectProxyOpenApiManagerImplTest extends BaseTest {
         tokenMap.put("client_id", String.valueOf(clientId));
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("pf", "tapp");
-        Result result = connectProxyOpenApiManager.handleConnectOpenApi(sgUrl, tokenMap, paramMap);
+        Result result = connectProxyOpenApiManager.handleConnectOpenApi(sgUrl, tokenMap, paramMap, null);
         System.out.println("-------------------------结果如下:--------------------------");
         System.out.println(result);
     }
@@ -84,7 +84,7 @@ public class ConnectProxyOpenApiManagerImplTest extends BaseTest {
         tokenMap.put("open_id", openId);
         tokenMap.put("access_token", accessToken);
         tokenMap.put("client_id", String.valueOf(clientId));
-        Result result = connectProxyOpenApiManager.handleConnectOpenApi(sgUrl, tokenMap, null);
+        Result result = connectProxyOpenApiManager.handleConnectOpenApi(sgUrl, tokenMap, null, null);
         System.out.println("-------------------------结果如下:--------------------------");
         System.out.println(result);
     }

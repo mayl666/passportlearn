@@ -2,11 +2,9 @@ package com.sogou.upd.passport.common;
 
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * passport通用常量类
@@ -50,9 +48,9 @@ public class CommonConstant {
     public static final String APP_ID = "appid";
     public static final String RESQUEST_CT = "ct";
     public static final String RESQUEST_CODE = "code";
-    public static final String HAVE_UPDATE = "true";//用户有修改操作
     public static final String BROWER_VERSION = "v";//浏览器客户端版本
     public static final String INSTANCE_ID = "instanceid";//终端唯一标示
+    public static final String THIRD_APPID = "third_appid";//终端唯一标示
 
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
     public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明
@@ -118,15 +116,6 @@ public class CommonConstant {
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.TAOBAO.toString());
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.BAIDU.toString());
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.WEIXIN.toString());
-    }
-
-    // 不用通行证统一的第三方appkey的应用，client_id|provider
-    public static final Set SPECIAL_CONNECT_CONFIG_SET = Sets.newHashSet();
-
-    static {
-        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(1001, 4));
-
-        SPECIAL_CONNECT_CONFIG_SET.add(CommonHelper.constructSpecialConnectKey(2001, 4));
     }
 
 }

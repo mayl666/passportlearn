@@ -51,16 +51,15 @@ public class ConnectAuthServiceTest extends BaseTest {
 
     @Test
     public void testObtainConnectUserInfo() {
-        int client_id = 1120;
         String passportId = "F82CF26224957BB2DB75DCC2D49A67EF@qq.sohu.com";
         int provider = AccountTypeEnum.getAccountType(passportId).getValue();
         try {
-            String appKey = connectConfigService.querySpecifyAppKey(client_id, provider);
+            ConnectConfig connectConfig = connectConfigService.queryDefaultConnectConfig(provider);
+            String  appKey = connectConfig.getAppKey();
             ConnectToken connectToken = connectTokenService.queryConnectToken(passportId, provider, appKey);
             String openId = connectToken.getOpenid();
             String accessToken = connectToken.getAccessToken();
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
             ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
             System.out.println(connectUserInfoVO.toString());
         } catch (OAuthProblemException e) {

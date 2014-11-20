@@ -48,7 +48,7 @@ public class UserOpenApiController extends BaseController {
     @InterfaceSecurity
     @RequestMapping(value = "/info", method = RequestMethod.POST)
     @ResponseBody
-    public Object getUserInfo(UserOpenApiParams params, HttpServletRequest request) {
+    public Object getUserInfo(HttpServletRequest request, UserOpenApiParams params) {
         Result result = new APIResultSupport(false);
         try {
             // 参数校验

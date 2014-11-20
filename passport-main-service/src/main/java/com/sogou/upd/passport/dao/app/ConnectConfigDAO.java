@@ -44,6 +44,14 @@ public interface ConnectConfigDAO {
     public ConnectConfig getConnectConfigByClientIdAndProvider(@SQLParam("client_id") int client_id, @SQLParam("provider") int provider) throws
             DataAccessException;
 
+    @SQL("select " +
+            ALL_FIELD +
+            " from " +
+            TABLE_NAME +
+            " where provider=:provider and app_key=:app_key")
+    public ConnectConfig getConnectConfigByAppIdAndProvider(@SQLParam("app_key") String appId, @SQLParam("provider") int provider) throws
+            DataAccessException;
+
     /**
      * 更新用户状态表
      */
