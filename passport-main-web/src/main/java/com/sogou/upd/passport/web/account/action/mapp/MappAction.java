@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.TreeMap;
 
 /**
- * mapp相关操作
+ * 手机APP相关接口
  * User: mayan
  * Date: 14-3-3
  * Time: 下午3:46
@@ -82,7 +82,7 @@ public class MappAction extends BaseController {
             }
         } finally {
             //用于记录log
-            UserOperationLog userOperationLog = new UserOperationLog(sgid, client_id, "0", getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(sgid, client_id, result.getCode(), getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
@@ -90,7 +90,7 @@ public class MappAction extends BaseController {
         return result.toString();
     }
 
-    //sgid+client_id+instance_id+ client _secret
+    //sgid+client_id+instance_id+ client_secret
     private Result checkCodeIsCorrect(String sgid, String client_id, String instance_id, String originalCode) {
         Result result = new APIResultSupport(false);
         int clientId = Integer.parseInt(client_id);

@@ -53,7 +53,7 @@ public class QzoneConnectProxyResultStrategy extends AbstractConnectProxyResultS
                 }
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                 result.setMessage(msg);
-                logger.error("qqResult return. ret [" + ret + "]" + " and msg [" + msg + "]");
+                logger.warn("qqResult return. ret [" + ret + "]" + " and msg [" + msg + "]");
             }
         } else {
             //封装QQ返回请求正确的结果，返回结果中不包含ret或者包含ret且ret值为0的结果封装

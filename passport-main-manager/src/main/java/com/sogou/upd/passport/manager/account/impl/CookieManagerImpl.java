@@ -45,29 +45,18 @@ import java.util.Map;
 public class CookieManagerImpl implements CookieManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CookieManagerImpl.class);
-
     private static final int SG_COOKIE_MIN_LEN = 3;
-
     //搜狗域cookie 版本
     private static final int SG_COOKIE_VERSION = 5;
-
     //shard数
     private static final int SHARD_COUNT = 2;
-
     //目标值
     private static final int AIM_RESULT = 0;
-
     //生成cookie并且种cookie
     private static final int CREATE_COOKIE_AND_SET = 0;
-
     private static final String KEY_SPLITER = "|";
-
     private static final String VALUE_SPLITER = ":";
-
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
-    //制表符
-    private static final String DATA_FORMAT_TAB = "\t";
 
 
     // 非对称加密算法-私钥
@@ -96,10 +85,8 @@ public class CookieManagerImpl implements CookieManager {
     private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginApiManager sgLoginApiManager;
-
     @Autowired
     private RedisUtils redisUtils;
-
 
     @Override
     public AppConfig queryAppConfigByClientId(int clientId) {
