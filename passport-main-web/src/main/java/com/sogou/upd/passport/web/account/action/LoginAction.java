@@ -185,11 +185,7 @@ public class LoginAction extends BaseController {
     @RequestMapping(value = "/logout_js", method = RequestMethod.GET)
     public void logoutInjs(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "client_id", required = false) String client_id)
             throws Exception {
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PASSPORT);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINFO);
-
+        cookieManager.clearCookie(response);
         String userId = hostHolder.getPassportId();
 
         //用于记录log
@@ -206,11 +202,8 @@ public class LoginAction extends BaseController {
     @RequestMapping(value = "/logout_redirect", method = RequestMethod.GET)
     public ModelAndView logoutWithRu(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "ru", required = false) String ru, @RequestParam(value = "client_id", required = false) String client_id)
             throws Exception {
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PASSPORT);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINFO);
 
+        cookieManager.clearCookie(response);
         String userId = hostHolder.getPassportId();
 
         //用于记录log

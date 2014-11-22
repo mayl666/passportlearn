@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.SignatureUtils;
+import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.app.AppConfig;
@@ -31,6 +32,7 @@ import java.util.TreeMap;
  * Time: 下午3:46
  */
 @Controller
+@RequestMapping(value = "/mapp")
 public class MappAction extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(MappAction.class);
@@ -38,9 +40,9 @@ public class MappAction extends BaseController {
     @Autowired
     private SessionServerManager sessionServerManager;
     @Autowired
-    private CookieManager cookieManager;
+    private CheckManager checkManager;
 
-    @RequestMapping(value = {"/mapp/logout"})
+    @RequestMapping(value = {"/logout"})
     @ResponseBody
     public String logout(HttpServletRequest request, MappLogoutParams params) throws Exception {
         // 校验参数
@@ -64,7 +66,54 @@ public class MappAction extends BaseController {
             instance_id = params.getInstance_id();
 
             //验证code是否有效
-            result = checkCodeIsCorrect(sgid, params.getClient_id(), instance_id, code);
+            result = checkManager.checkMappLogoutCode(sgid, params.getClient_id(), instance_id, code);
+            if (!result.isSuccess()) {
+                return result.toString();
+            }
+            //session server中清除cookie
+            result = sessionServerManager.removeSession(sgid);
+            if (result.isSuccess()) {
+                result.setSuccess(true);
+                result.setMessage("logout success!");
+                return result.toString();
+            }
+        } catch (Exception e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("logout " + "sgid:" + sgid + ",client_id:" + client_id);
+            }
+        } finally {
+            //用于记录log
+            UserOperationLog userOperationLog = new UserOperationLog(sgid, client_id, result.getCode(), getIp(request));
+            UserOperationLogUtil.log(userOperationLog);
+        }
+        return result.toString();
+    }
+
+    @RequestMapping(value = {"/stat/report"})
+    @ResponseBody
+    public String dataStat(HttpServletRequest request, MappLogoutParams params) throws Exception {
+        // 校验参数
+        Result result = new APIResultSupport(false);
+        String sgid = null;
+        String client_id = null;
+        String code = null;
+        String instance_id = null;
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+
+            code = params.getCode();
+            sgid = params.getSgid();
+            client_id = params.getClient_id();
+            instance_id = params.getInstance_id();
+
+            //验证code是否有效
+            result = checkManager.checkMappLogoutCode(sgid, params.getClient_id(), instance_id, code);
             if (!result.isSuccess()) {
                 return result.toString();
             }
@@ -88,38 +137,5 @@ public class MappAction extends BaseController {
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
-    }
-
-    //sgid+client_id+instance_id+ client_secret
-    private Result checkCodeIsCorrect(String sgid, String client_id, String instance_id, String originalCode) {
-        Result result = new APIResultSupport(false);
-        int clientId = Integer.parseInt(client_id);
-        AppConfig appConfig = cookieManager.queryAppConfigByClientId(clientId);
-        if (appConfig != null) {
-            String secret = appConfig.getClientSecret();
-
-            TreeMap map = new TreeMap();
-            map.put(LoginConstant.COOKIE_SGID, sgid);
-            map.put("client_id", client_id);
-            map.put("instance_id", instance_id);
-
-            //计算默认的code
-            String code = "";
-            try {
-                code = SignatureUtils.generateSignature(map, secret);
-            } catch (Exception e) {
-                logger.error("calculate default code error", e);
-            }
-
-            if (code.equalsIgnoreCase(originalCode)) {
-                result.setSuccess(true);
-                result.setMessage("内部接口code签名正确！");
-            } else {
-                result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
-            }
-        } else {
-            result.setCode(ErrorUtil.INVALID_CLIENTID);
-        }
-        return result;
     }
 }

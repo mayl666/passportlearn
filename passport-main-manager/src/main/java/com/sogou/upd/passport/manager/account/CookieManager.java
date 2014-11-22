@@ -19,14 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 public interface CookieManager {
 
     /**
-     * 根据clientId获取AppConfig对象类
-     *
-     * @param clientId
-     * @return
-     */
-    public AppConfig queryAppConfigByClientId(int clientId);
-
-    /**
      * 种sogou域cookie接口
      *
      * @param response

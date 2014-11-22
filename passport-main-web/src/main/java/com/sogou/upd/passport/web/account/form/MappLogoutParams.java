@@ -24,8 +24,6 @@ public class MappLogoutParams {
     @NotBlank(message = "code不允许为空！")
     private String code;
 
-
-
     //验证code是否有效
 
     public String getClient_id() {
