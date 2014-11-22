@@ -50,7 +50,8 @@ public class CommonConstant {
     public static final String RESQUEST_CODE = "code";
     public static final String BROWER_VERSION = "v";//浏览器客户端版本
     public static final String INSTANCE_ID = "instanceid";//终端唯一标示
-    public static final String THIRD_APPID = "third_appid";//终端唯一标示
+    public static final String THIRD_APPID = "third_appid";//应用在第三方平台独立申请的appid
+    public static final String MAPP_REQUEST_HEADER_SIGN = "cinfo";
 
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
     public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明

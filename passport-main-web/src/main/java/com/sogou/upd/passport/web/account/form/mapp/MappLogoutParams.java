@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.account.form;
+package com.sogou.upd.passport.web.account.form.mapp;
 
 import org.hibernate.validator.constraints.NotBlank;
 

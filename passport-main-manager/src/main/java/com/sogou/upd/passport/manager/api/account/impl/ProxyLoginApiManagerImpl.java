@@ -267,26 +267,4 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
         return result;
     }*/
 
-    /**
-     * 输入法Mac，passport.sogou.com/sso/setcookie？ru=xxx不需要urlencode
-     * 手机浏览器跳转的passport.sogou.com/sso/setcookie必须为http
-     *
-     * @param locationUrl
-     * @return
-     */
-    private String modifyClientRu(String locationUrl) {
-        Map paramMap = StringUtil.extractParameterMap(locationUrl);
-        String ru = (String) paramMap.get("ru");
-        if (!Strings.isNullOrEmpty(ru)) {
-            try {
-                String decodeRu = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
-                locationUrl = locationUrl.replaceAll(ru, decodeRu);
-            } catch (UnsupportedEncodingException e) {
-                log.error("sohu sso setcookie ru encode fail,url:" + ru);
-            }
-        }
-        return locationUrl;
-    }
-
-
 }
