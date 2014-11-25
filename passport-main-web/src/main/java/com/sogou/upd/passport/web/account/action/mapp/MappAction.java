@@ -137,15 +137,15 @@ public class MappAction extends BaseController {
             TerminalAttributeDO attributeDO = new TerminalAttributeDO(request);
             udid = attributeDO.getUdid();
             //验证code是否有效
-//            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
-//            if (!isVaildCode) {
-//                return result.toString();
-//            }
+            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
+            if (!isVaildCode) {
+                return result.toString();
+            }
             //读取配置文件
             Map mappConfigMap = MappDeployConfigFactory.getMappConfig();
             if (mappConfigMap != null || !mappConfigMap.isEmpty()) {
                 result.setSuccess(true);
-                result.setDefaultModel(mappConfigMap);
+                result.setModels(mappConfigMap);
             } else {
                 result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             }
