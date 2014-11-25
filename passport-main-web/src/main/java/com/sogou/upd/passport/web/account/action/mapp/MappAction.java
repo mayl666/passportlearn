@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -80,7 +81,7 @@ public class MappAction extends BaseController {
         return result.toString();
     }
 
-    @RequestMapping(value = {"/stat/report"})
+    @RequestMapping(value = {"/stat/report"}, method = RequestMethod.POST)
     @ResponseBody
     public String dataStat(HttpServletRequest request, MappStatReportParams params) throws Exception {
         // 校验参数
@@ -139,6 +140,7 @@ public class MappAction extends BaseController {
             //验证code是否有效
             boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
             if (!isVaildCode) {
+                result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
                 return result.toString();
             }
             //读取配置文件

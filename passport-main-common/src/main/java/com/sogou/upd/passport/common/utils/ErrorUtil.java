@@ -18,7 +18,7 @@ public class ErrorUtil {
     public static final String SYSTEM_UNKNOWN_EXCEPTION = "10001";
     // 必填的参数错误
     public static final String ERR_CODE_COM_REQURIE = "10002";
-    // 内部接口code签名错误或请求超时
+    // code签名错误或请求超时
     public static final String INTERNAL_REQUEST_INVALID = "10003";
     // access_token错误
     public static final String ERR_ACCESS_TOKEN = "10005";
@@ -331,7 +331,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(SUCCESS, "操作成功");
         ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数");
-        ERR_CODE_MSG_MAP.put(INTERNAL_REQUEST_INVALID, "内部接口code签名错误或请求超时");
+        ERR_CODE_MSG_MAP.put(INTERNAL_REQUEST_INVALID, "code签名错误或请求超时");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在");
         ERR_CODE_MSG_MAP.put(INVOKE_BEYOND_FREQUENCY_LIMIT, "接口调用频次超限");
         ERR_CODE_MSG_MAP.put(ERR_ACCESS_TOKEN, "access_token错误");
