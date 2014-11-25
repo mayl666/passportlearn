@@ -329,7 +329,7 @@ public class ErrorUtil {
     static {
         // 通用错误
         ERR_CODE_MSG_MAP.put(SUCCESS, "操作成功");
-        ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "未知错误");
+        ERR_CODE_MSG_MAP.put(SYSTEM_UNKNOWN_EXCEPTION, "系统繁忙，请稍后再试");
         ERR_CODE_MSG_MAP.put(ERR_CODE_COM_REQURIE, "参数错误,请输入必填的参数");
         ERR_CODE_MSG_MAP.put(INTERNAL_REQUEST_INVALID, "code签名错误或请求超时");
         ERR_CODE_MSG_MAP.put(INVALID_ACCOUNT, "账号不存在");
