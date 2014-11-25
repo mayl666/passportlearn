@@ -51,7 +51,7 @@ public class MappDeployConfigFactory {
             confMap.putIfAbsent("httpRetryTimes", properties.getValue("httpRetryTimes"));
 
             //switch
-            confMap.putIfAbsent("isErrorInfo", properties.getValue("isErrorInfo"));
+            confMap.putIfAbsent("isExceptionInfo", properties.getValue("isExceptionInfo"));
             confMap.putIfAbsent("isTrafficStatistics", properties.getValue("isTrafficStatistics"));
             confMap.putIfAbsent("isInterfaceStatistics", properties.getValue("isInterfaceStatistics"));
             confMap.putIfAbsent("isProductStatistics", properties.getValue("isProductStatistics"));
