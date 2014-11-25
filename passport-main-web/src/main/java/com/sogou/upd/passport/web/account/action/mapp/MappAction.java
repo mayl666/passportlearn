@@ -7,9 +7,11 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
+import com.sogou.upd.passport.model.MappDeployConfigFactory;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import com.sogou.upd.passport.web.account.form.mapp.MappBaseParams;
 import com.sogou.upd.passport.web.account.form.mapp.MappLogoutParams;
 import com.sogou.upd.passport.web.account.form.mapp.MappStatReportParams;
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * 手机APP相关接口
@@ -83,8 +86,6 @@ public class MappAction extends BaseController {
         // 校验参数
         Result result = new APIResultSupport(false);
         int clientId = params.getClient_id();
-        String code = params.getCode();
-        long ct = params.getCt();
         String ip = getIp(request);
         String udid = "";
         try {
@@ -99,7 +100,7 @@ public class MappAction extends BaseController {
             TerminalAttributeDO attributeDO = new TerminalAttributeDO(request);
             udid = attributeDO.getUdid();
             //验证code是否有效
-            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, ct, code);
+            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
             if (!isVaildCode) {
                 return result.toString();
             }
@@ -115,4 +116,48 @@ public class MappAction extends BaseController {
         }
         return result.toString();
     }
+
+    @RequestMapping(value = {"/conf/fetch"})
+    @ResponseBody
+    public String confFetch(HttpServletRequest request, MappBaseParams params) throws Exception {
+        // 校验参数
+        Result result = new APIResultSupport(false);
+        int clientId = params.getClient_id();
+        String ip = getIp(request);
+        String udid = "";
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            //解析cinfo信息
+            TerminalAttributeDO attributeDO = new TerminalAttributeDO(request);
+            udid = attributeDO.getUdid();
+            //验证code是否有效
+//            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
+//            if (!isVaildCode) {
+//                return result.toString();
+//            }
+            //读取配置文件
+            Map mappConfigMap = MappDeployConfigFactory.getMappConfig();
+            if (mappConfigMap != null || !mappConfigMap.isEmpty()) {
+                result.setSuccess(true);
+                result.setDefaultModel(mappConfigMap);
+            } else {
+                result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            }
+        } catch (Exception e) {
+            logger.error("mapp stat report error," + "udid:" + udid);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        } finally {
+            //用于记录log
+            UserOperationLog userOperationLog = new UserOperationLog(udid, String.valueOf(clientId), result.getCode(), ip);
+            UserOperationLogUtil.log(userOperationLog);
+        }
+        return result.toString();
+    }
+
 }

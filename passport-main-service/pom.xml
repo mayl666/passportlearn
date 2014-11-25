@@ -166,8 +166,11 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <delete file="src/main/resources/deploy_config.properties" />
-                                <copy file="${app_config_file}" tofile="src/main/resources/deploy_config.properties" />
+                                <delete file="src/main/resources/deploy_config.properties"/>
+                                <copy file="${app_config_file}" tofile="src/main/resources/deploy_config.properties"/>
+                                <delete file="src/main/resources/mapp_deploy_config.properties"/>
+                                <copy file="${app_config_file}"
+                                      tofile="src/main/resources/mapp_deploy_config.properties"/>
                             </tasks>
                         </configuration>
                     </execution>
@@ -183,6 +186,9 @@
                 <app_config_file>
                     src/main/resources/deploy_config_DEV.properties
                 </app_config_file>
+                <app_config_file>
+                    src/main/resources/mapp_deploy_config_DEV.properties
+                </app_config_file>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -194,6 +200,9 @@
                 <app_config_file>
                     src/main/resources/deploy_config_TEST.properties
                 </app_config_file>
+                <app_config_file>
+                    src/main/resources/mapp_deploy_config_TEST.properties
+                </app_config_file>
             </properties>
         </profile>
         <profile>
@@ -201,6 +210,9 @@
             <properties>
                 <app_config_file>
                     src/main/resources/deploy_config_PROD.properties
+                </app_config_file>
+                <app_config_file>
+                    src/main/resources/mapp_deploy_config_PROD.properties
                 </app_config_file>
             </properties>
         </profile>

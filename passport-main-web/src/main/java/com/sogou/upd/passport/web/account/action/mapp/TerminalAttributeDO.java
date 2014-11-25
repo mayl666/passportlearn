@@ -5,6 +5,8 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * 移动端终端属性
@@ -15,7 +17,7 @@ import java.util.Map;
  */
 public class TerminalAttributeDO {
 
-    private String Carrier;  //运营商
+    private String carrier;  //运营商
     private String resolution; //分辨率
     private String udid; //终端唯一标识
     private String userIp;  //用户ip
@@ -27,6 +29,7 @@ public class TerminalAttributeDO {
     public TerminalAttributeDO(HttpServletRequest request) {
         String data = request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN);
         Map attrMap = StringUtil.parseFormatStringToMap(data);
+        this.udid = (String) attrMap.get("udid");
     }
 
 }

@@ -84,12 +84,9 @@ public class CommonConstant {
     //桌面端产品 生成cookie 不种标示
     public static final int CREATE_COOKIE_NOT_SET = 1;
 
-
     public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 1; // 默认种cookie的有效期，1小时
-    public static final long API_REQUEST_VAILD_TERM = 500000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒
     public static final long COOKIE_REQUEST_VAILD_TERM = 5 * 60; //接口请求的有效期为5分钟，单位为秒
     public static final long COOKIE_REQUEST_VAILD_TERM_IN_MILLI = 5 * 60 * 1000; //接口请求的有效期为5分钟，单位为秒
-
 
     public static final String LOGIN_IN_BLACKLIST = "1"; //用户名或者ip在黑名单的标识
 
@@ -102,7 +99,6 @@ public class CommonConstant {
     public static final String HTTPS_HEADER = "X-Https";
     public static final String HTTPS_VALUE = "https";
     public static final String USER_AGENT = "User-Agent";
-
 
     //域名不正确
     public static final String DOMAIN_ERROR = "域名不正确";
