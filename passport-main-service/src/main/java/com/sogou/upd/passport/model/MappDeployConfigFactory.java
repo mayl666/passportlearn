@@ -36,10 +36,10 @@ public class MappDeployConfigFactory {
             confMap.putIfAbsent("connectWapLoginUrl", properties.getValue("connectWapLoginUrl"));
             confMap.putIfAbsent("logoutUrl", properties.getValue("logoutUrl"));
             confMap.putIfAbsent("wapLoginUrl", properties.getValue("wapLoginUrl"));
-            confMap.putIfAbsent("getVerifyCodeUrl", properties.getValue("getVerifyCodeUrl"));
+            confMap.putIfAbsent("getSmsCodeUrl", properties.getValue("getSmsCodeUrl"));
             confMap.putIfAbsent("registUrl", properties.getValue("registUrl"));
             confMap.putIfAbsent("findPswUrl", properties.getValue("findPswUrl"));
-            confMap.putIfAbsent("getLoginCodeUrl", properties.getValue("getLoginCodeUrl"));
+            confMap.putIfAbsent("getloginCaptchaUrl", properties.getValue("getloginCaptchaUrl"));
             confMap.putIfAbsent("statisticsInfoUrl", properties.getValue("statisticsInfoUrl"));
             confMap.putIfAbsent("statReportUrl", properties.getValue("statReportUrl"));
 
