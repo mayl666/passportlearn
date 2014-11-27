@@ -23,7 +23,8 @@ public enum AccountTypeEnum {
     BAIDU(7),  // 百度
     SOGOU(8),  // @sogou.com账号
     SOHU(9),  //sohu域账号
-    WEIXIN(10);//微信
+    WEIXIN(10),//微信
+    HUAWEI(11);//华为
 
     // provider数字与字符串映射字典表
     private static BiMap<String, Integer> PROVIDER_MAPPING_DICT = HashBiMap.create();
@@ -39,6 +40,7 @@ public enum AccountTypeEnum {
         PROVIDER_MAPPING_DICT.put("baidu", BAIDU.getValue());
         PROVIDER_MAPPING_DICT.put("sohu", SOHU.getValue());
         PROVIDER_MAPPING_DICT.put("weixin", WEIXIN.getValue());
+        PROVIDER_MAPPING_DICT.put("huawei", HUAWEI.getValue());
     }
 
     private int value;
@@ -90,29 +92,26 @@ public enum AccountTypeEnum {
         if (Strings.isNullOrEmpty(username)) {
             return UNKNOWN;
         }
-
         if (username.endsWith("@qq.sohu.com")) {
             return QQ;
         }
-
         if (username.endsWith("@sina.sohu.com")) {
             return SINA;
         }
-
         if (username.endsWith("@renren.sohu.com")) {
             return RENREN;
         }
-
         if (username.endsWith("@taobao.sohu.com")) {
             return TAOBAO;
         }
-
         if (username.endsWith("@baidu.sohu.com")) {
             return BAIDU;
         }
-
         if (username.endsWith("@weixin.sohu.com")) {
             return WEIXIN;
+        }
+        if(username.endsWith("huawei.sohu.com")){
+            return HUAWEI;
         }
 
         return UNKNOWN;

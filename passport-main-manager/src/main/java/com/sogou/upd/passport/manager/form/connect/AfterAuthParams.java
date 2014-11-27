@@ -29,6 +29,7 @@ public class AfterAuthParams {
     @Min(0)
     private Integer appid_type; //如果appidtype=1，则根据应用传入的client_id查询相关的第三方appid；如果appidtype=0，则使用sogou passport的appid；
     private String third_appid; //如果应用使用独立appid，需要传入不同第三方对应的appid； 如果不传，表示使用passport的appid；
+    private String uniqname; //华为账号登陆时会传入uniqanme，服务端存储
 
     public String getOpenid() {
         return openid;
@@ -116,5 +117,13 @@ public class AfterAuthParams {
 
     public void setThird_appid(String third_appid) {
         this.third_appid = third_appid;
+    }
+
+    public String getUniqname() {
+        return uniqname;
+    }
+
+    public void setUniqname(String uniqname) {
+        this.uniqname = uniqname;
     }
 }
