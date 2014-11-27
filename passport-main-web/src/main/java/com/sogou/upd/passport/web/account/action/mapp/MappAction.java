@@ -103,11 +103,13 @@ public class MappAction extends BaseController {
             //验证code是否有效
             boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
             if (!isVaildCode) {
+                result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
                 return result.toString();
             }
             //session server中清除cookie
 
-
+            result.setSuccess(true);
+            return request.toString();
         } catch (Exception e) {
             logger.error("mapp stat report error," + "udid:" + udid);
         } finally {
