@@ -25,3 +25,8 @@
 
 .form-item input.nick-holder{width:81px; }
 .suffix{float: left;line-height: 17px;height: 25px;top: 10px;padding: 4px 0 0 4px;_height:24px;position: relative;}
+
+#closeMailTip{display:none;font-style:normal;height:17px;background: #FFFFB7;border: 1px solid #FFD968;color:#8C4600;line-height:20px;margin: 0 0 15px;padding: 5px 0;text-indent:1em;}
+div.mailLeavePage{width:350px;height:400px;background:url(/./static/img/i.jpg?t=665257) no-repeat;font-size:14px;line-height:25px;padding:40px 90px 0;margin:100px auto;color:#666;}
+div.mailLeavePage p{padding:15px 0 0;margin:0;text-indent:2em;}
+div.mailLeavePage p a{color:#00A3D9;text-decoration:none;}
