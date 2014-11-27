@@ -109,7 +109,7 @@ public class MappAction extends BaseController {
             //session server中清除cookie
 
             result.setSuccess(true);
-            return request.toString();
+            return result.toString();
         } catch (Exception e) {
             logger.error("mapp stat report error," + "udid:" + udid);
         } finally {

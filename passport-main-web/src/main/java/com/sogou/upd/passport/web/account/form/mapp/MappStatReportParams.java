@@ -15,6 +15,8 @@ public class MappStatReportParams extends MappBaseParams{
 
     @NotBlank(message = "data不允许为空！")
     private String data;
+    @NotBlank(message ="type不允许为空")
+    private String type;
 
     public String getData() {
         return data;
@@ -24,4 +26,11 @@ public class MappStatReportParams extends MappBaseParams{
         this.data = data;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }
