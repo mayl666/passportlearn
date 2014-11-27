@@ -22,52 +22,11 @@
         <div class="wrapper">
             
 
+<div class="mailLeavePage">
+    尊敬的搜狗邮箱用户：
+    <p>感谢大家一直以来对搜狗邮箱运营团队的支持，搜狗邮箱于2014年12月10日正式关闭新用户注册，老用户的服务在2015年12月31日前不受影响，由此给您带来的不便，我们深表歉意！欢迎继续体验<a href="http://www.sogou.com/docs/more.htm?p=40031204&v=1" terget="_blank">搜狗其他产品</a>。</p>
+</div>
 
-
-<div class="banner">
-    <div class="inner reg">
-        <ul>
-            
-            <li ><a href="/">首页</a></li>
-            
-            <li class="current"><a href="/web/findpwd">找回密码</a></li>
-            
-        </ul>
-    </div>
-    <span class="underline"></span>
-</div>
-<div class="main-content one-col">
-    <div class="inner recover" >
-        <div class="title">用手机找回密码</div>
-        <div  class="form">
-            <form method="post" id="" action="/web/findpwd/checksms" class="form2">
-                
-                           <div class="form-item">
-    <label for="Ipt">手机号：</label>
-    <span class="form-text">
-        请输入您要绑定的手机号码
-    </span>
-</div>
-                           <div class="form-item">
-    <label >&nbsp;</label>
-    <span class="form-el form-el-none">
-        <span class="tel-valid-btn" action="/web/findpwd/sendsms" >免费获取短信验证码</span>
-        <span class="tel-valid-error error"></span>
-        <span class="tel-valid-hr" ></span>
-    </span>
-</div>
-                           <div class="form-item">
-    <label for="TelvIpt">短信验证码：</label>
-    <span class="form-el"><input  autocomplete="off" type="text" name="smscode" id="TelvIpt" value="" uui-type="require" /></span>
-</div>
-                <input type="hidden" name="userid"/>        
-                <div class="form-btn">
-    <button type="submit">确定</button>
-</div>
-            </form>
-        </div>
-    </div>
-</div>
 
         </div>
         
@@ -78,7 +37,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/recover.js?t=2014112717"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2014112717"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
@@ -86,7 +45,7 @@
 var spb_vars = {
     productid:"passport",
     ptype:"web",
-    pcode:"recover_mobile".split('/').join('_')
+    pcode:"reg_leave".split('/').join('_')
 };
 
 (function() {
@@ -106,8 +65,8 @@ require.config({
 });
 
 
-require(['recover'] , function(module){
-    module.init('mobile');
+require(['reg'] , function(module){
+    module.init('leave');
 });
 
 
