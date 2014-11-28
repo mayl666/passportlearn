@@ -97,6 +97,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         try {
             int clientId = Integer.parseInt(connectLoginParams.getClient_id());
             oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+            if (oAuthConsumer.getCallbackUrl(httpOrHttps) == null) {
+                logger.error("callbackUrl is null,callbackurl=" + oAuthConsumer.getCallbackUrl() + ",accesstokenurl=" + oAuthConsumer.getAccessTokenUrl() + ",refreshtokenurl=" + oAuthConsumer.getRefreshAccessTokenUrl() + ",userinfourl=" + oAuthConsumer.getUserInfo());
+            }
             // 获取connect配置
             String thirdAppId = connectLoginParams.getThird_appid();
             connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
@@ -472,6 +475,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
      * 最早版本没有thirdAppId和appIdType参数，使用passport的appId
      * 然后版本只有appIdType参数，当appIdType=1时，找到clientId对应的appId
      * 安卓 V1.1和IOS V2.0之后只有thirdAppId参数，可以使用应用独立appId
+     *
      * @param thirdAppId
      * @param appidType
      * @param clientId
@@ -480,7 +484,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
      */
     private ConnectConfig queryConnectConfig(String thirdAppId, Integer appidType, int clientId, int provider) {
         ConnectConfig connectConfig;
-        if(!Strings.isNullOrEmpty(thirdAppId)){
+        if (!Strings.isNullOrEmpty(thirdAppId)) {
             return connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
         }
         if (appidType == null) {
