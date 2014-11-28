@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Created with IntelliJ IDEA. User: hujunfei Date: 13-5-6 Time: 下午6:49 To change this template use
  * File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 public class AccountInfoServiceTest extends BaseTest {
     private static final String PASSPORT_ID = "13552848876@sohu.com";
     private static final String EMAIL = "Binding123@163.com";
