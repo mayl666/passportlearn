@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.model;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import jodd.props.Props;
 
@@ -22,7 +21,7 @@ public class MappDeployConfigFactory {
 
     private static Props properties = null;
 
-    protected static ConcurrentMap<String,String> confMap = Maps.newConcurrentMap();
+    protected static ConcurrentMap<String, String> confMap = Maps.newConcurrentMap();
 
     public static Map getMappConfig() throws IOException {
         if (confMap == null || confMap.isEmpty()) {
@@ -33,6 +32,7 @@ public class MappDeployConfigFactory {
             confMap.putIfAbsent("qqSSOLoginUrl", properties.getValue("qqSSOLoginUrl"));
             confMap.putIfAbsent("sinaSSOLoginUrl", properties.getValue("sinaSSOLoginUrl"));
             confMap.putIfAbsent("wxSSOLoginUrl", properties.getValue("wxSSOLoginUrl"));
+            confMap.putIfAbsent("connectSSOLoginUrl", properties.getValue("connectSSOLoginUrl"));
             confMap.putIfAbsent("connectWapLoginUrl", properties.getValue("connectWapLoginUrl"));
             confMap.putIfAbsent("logoutUrl", properties.getValue("logoutUrl"));
             confMap.putIfAbsent("wapLoginUrl", properties.getValue("wapLoginUrl"));
