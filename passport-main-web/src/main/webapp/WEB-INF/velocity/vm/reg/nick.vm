@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=961983" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=464609" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -59,6 +59,7 @@
     <div class="col-r">
         <div class="inner reg-nick">
             <div class="title">
+                <div id="closeMailTip">温馨提示：搜狗邮箱将于2014年12月10日关闭邮箱注册，邮箱数据相关问题可反馈至webmaster@vip.sohu.com。</div>
                 注册个性帐号
             </div>
             <div  class="form">
@@ -118,7 +119,7 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2014111710"></script>
+    <script type="text/javascript" src="/./static/js/reg.js?t=2014112753"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
