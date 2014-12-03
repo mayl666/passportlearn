@@ -81,7 +81,7 @@ public class MappAction extends BaseController {
         return result.toString();
     }
 
-    @RequestMapping(value = {"/stat/report"}, method = RequestMethod.POST)
+    @RequestMapping(value = "/stat/report", method = RequestMethod.POST)
     @ResponseBody
     public String dataStat(HttpServletRequest request, MappStatReportParams params) throws Exception {
         // 校验参数
@@ -120,7 +120,7 @@ public class MappAction extends BaseController {
         return result.toString();
     }
 
-    @RequestMapping(value = {"/conf/fetch"})
+    @RequestMapping(value = "/conf/fetch", method = RequestMethod.POST)
     @ResponseBody
     public String confFetch(HttpServletRequest request, MappBaseParams params) throws Exception {
         // 校验参数
