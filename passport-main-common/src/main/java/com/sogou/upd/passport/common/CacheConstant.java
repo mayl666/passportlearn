@@ -135,4 +135,7 @@ public class CacheConstant {
     /*==================Module相关=====================================*/
     public static final String CACHE_KEY_MODULE_APP_REPLACE = "SP.MODULE:APP_REPLACE";   //应用module 批次替换
 
+    /*=================黑名单列表===================================*/
+    public static final String CACHE_KEY_BLACKLIST = "BLACKLIST";
+
 }
