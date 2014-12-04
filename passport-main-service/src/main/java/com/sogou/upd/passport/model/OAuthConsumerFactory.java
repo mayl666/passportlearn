@@ -28,9 +28,14 @@ public class OAuthConsumerFactory {
     public static OAuthConsumer getOAuthConsumer(int provider) throws IOException {
 
         String providerStr = AccountTypeEnum.getProviderStr(provider);
-        OAuthConsumer oAuthConsumer = consumerMap.get(buildConsumerKey(providerStr));
+        OAuthConsumer oAuthConsumer;
+        synchronized (consumerMap) {
+            oAuthConsumer = consumerMap.get(buildConsumerKey(providerStr));
+        }
         if (oAuthConsumer == null) {
-            oAuthConsumer = newResource(RESOURCE_NAME, providerStr);
+            synchronized (OAuthConsumerFactory.class) {
+                oAuthConsumer = newResource(RESOURCE_NAME, providerStr);
+            }
             consumerMap.putIfAbsent(buildConsumerKey(providerStr), oAuthConsumer);
         }
         return oAuthConsumer;
