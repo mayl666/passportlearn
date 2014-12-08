@@ -226,6 +226,13 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
         String mobile = regMobileApiParams.getMobile();
         String password = regMobileApiParams.getPassword();
         try {
+            //搜狗邮箱关闭，不允许注册
+            int clientId = regMobileApiParams.getClient_id();
+            if (clientId == 1014 ) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED);
+                return result;
+            }
             if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
                 String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
                 if (!Strings.isNullOrEmpty(passportId)) {

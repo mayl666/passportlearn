@@ -154,10 +154,9 @@ public class WapRegAction extends BaseController {
      */
     @RequestMapping(value = "/wap/reg", method = RequestMethod.GET)
     public String regist(HttpServletRequest request, HttpServletResponse response, Model model, WapIndexParams wapIndexParams) throws Exception {
-
-        //搜狗邮箱关闭
-        String clientId = wapIndexParams.getClient_id();
-        if ((!Strings.isNullOrEmpty(clientId)) && (clientId.equals("1014")) ){
+        //关闭搜狗邮箱client_id=1014
+        String client_id = wapIndexParams.getClient_id();
+        if ((!Strings.isNullOrEmpty(client_id)) && (client_id.equals("1014")) ){
             return "/reg/leave";
         }
 
