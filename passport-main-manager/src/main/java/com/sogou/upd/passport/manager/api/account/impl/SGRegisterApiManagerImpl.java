@@ -65,7 +65,6 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             if (clientId == 1014 ) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED);
-                result.setMessage("搜狗邮箱已关闭，注册失败");
                 return result;
             }
             //不支持sohu域账号,第三方账号注册

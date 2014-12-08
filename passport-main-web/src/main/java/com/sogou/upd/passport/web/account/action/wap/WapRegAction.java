@@ -155,6 +155,12 @@ public class WapRegAction extends BaseController {
     @RequestMapping(value = "/wap/reg", method = RequestMethod.GET)
     public String regist(HttpServletRequest request, HttpServletResponse response, Model model, WapIndexParams wapIndexParams) throws Exception {
 
+        //搜狗邮箱关闭
+        String clientId = wapIndexParams.getClient_id();
+        if ((!Strings.isNullOrEmpty(clientId)) && (clientId.equals("1014")) ){
+            return "/reg/leave";
+        }
+
         if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {
             response.setHeader("Content-Type", "text/vnd.wap.wml;charset=utf-8");
             return "wap/regist_simple";
