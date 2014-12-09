@@ -115,6 +115,7 @@ public class MappAction extends BaseController {
         } finally {
             //用于记录log
             UserOperationLog userOperationLog = new UserOperationLog(udid, String.valueOf(clientId), result.getCode(), ip);
+            userOperationLog.putOtherMessage("data", params.getData());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
