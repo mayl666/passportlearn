@@ -20,9 +20,9 @@ public enum MappStatReportTypeEnum {
 
     EXCEPTION("exception"),         //异常
     INTERFACE("interface"), //接口响应
-    NETFLOW("netFlow"), //流量
+    NETFLOW("netflow"), //流量
     PRODUCT("product"), //产品
-    COMMLOG("commLog"); //普通日志
+    COMMLOG("debuglog"); //普通日志
 
     private String type;
     MappStatReportTypeEnum(String type) {
