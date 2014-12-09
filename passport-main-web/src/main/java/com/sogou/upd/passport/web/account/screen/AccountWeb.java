@@ -50,7 +50,7 @@ public class AccountWeb extends BaseController {
         if (result.isSuccess()) {
             //关闭搜狗邮箱client_id=1014
             String client_id = webParams.getClient_id();
-            if ((!Strings.isNullOrEmpty(client_id)) && (client_id.equals("1014")) ){
+            if ((!Strings.isNullOrEmpty(client_id)) && (CommonConstant.MAIL_CLIENTID == Integer.parseInt(client_id)) ){
                 return "/reg/leave";
             }
             model.addAttribute("data", result.toString());
@@ -75,7 +75,7 @@ public class AccountWeb extends BaseController {
         if (result.isSuccess()) {
             //关闭搜狗邮箱client_id=1014
             String client_id = webParams.getClient_id();
-            if ((!Strings.isNullOrEmpty(client_id)) && (client_id.equals("1014")) ){
+            if ((!Strings.isNullOrEmpty(client_id)) && (CommonConstant.MAIL_CLIENTID == Integer.parseInt(client_id)) ){
                 return "/reg/leave";
             }
             model.addAttribute("data", result.toString());
@@ -99,7 +99,7 @@ public class AccountWeb extends BaseController {
         if (result.isSuccess()) {
             //关闭搜狗邮箱client_id=1014
             String client_id = webParams.getClient_id();
-            if ((!Strings.isNullOrEmpty(client_id)) && (client_id.equals("1014")) ){
+            if ((!Strings.isNullOrEmpty(client_id)) && (CommonConstant.MAIL_CLIENTID == Integer.parseInt(client_id)) ){
                 return "/reg/leave";
             }
             model.addAttribute("data", result.toString());

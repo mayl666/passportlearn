@@ -62,7 +62,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             int clientId = params.getClient_id();
             AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
             //搜狗邮箱关闭，不允许注册
-            if (clientId == 1014 ) {
+            if (clientId == CommonConstant.MAIL_CLIENTID ) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED);
                 return result;
@@ -228,7 +228,7 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
         try {
             //搜狗邮箱关闭，不允许注册
             int clientId = regMobileApiParams.getClient_id();
-            if (clientId == 1014 ) {
+            if (clientId == CommonConstant.MAIL_CLIENTID ) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED);
                 return result;
