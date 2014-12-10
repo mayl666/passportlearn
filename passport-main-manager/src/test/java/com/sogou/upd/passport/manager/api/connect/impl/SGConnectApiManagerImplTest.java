@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Time: 上午11:57
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 public class SGConnectApiManagerImplTest extends BaseTest {
 
     @Autowired
@@ -64,5 +64,20 @@ public class SGConnectApiManagerImplTest extends BaseTest {
         System.out.println(result);
 
     }
+
+
+    @Test
+    public void testObtainTKey() throws Exception {
+        String pid ="C2A6E7174FC56A79F8BE08697E5F1EC1@qq.sohu.com";
+
+//        String pid = "056B15F99925016562B24E2070AE7AF5@qq.sohu.com";
+        int clientId = 2003;
+        Result result = sgConnectApiManager.obtainTKey(pid, clientId);
+        if (result.isSuccess()) {
+            System.out.println("t_key  " + result.getModels().get("tKey"));
+        }
+
+    }
+
 
 }
