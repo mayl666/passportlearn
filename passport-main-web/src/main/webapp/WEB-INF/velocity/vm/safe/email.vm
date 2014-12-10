@@ -157,7 +157,13 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
+<<<<<<< HEAD
     <script type="text/javascript" src="/./static/js/safe.js?t=2014121016"></script>
+=======
+
+    <script type="text/javascript" src="/./static/js/safe.js?t=2014121018"></script>
+
+>>>>>>> aa73c84bc1b4dd4824579f066c45479bacc3e299
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
