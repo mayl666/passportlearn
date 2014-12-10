@@ -61,6 +61,12 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
             String ip = params.getCreateip();
             int clientId = params.getClient_id();
             AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
+            //搜狗邮箱关闭，不允许注册
+            if (clientId == CommonConstant.MAIL_CLIENTID ) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED);
+                return result;
+            }
             //不支持sohu域账号,第三方账号注册
             if (AccountDomainEnum.SOHU.equals(emailType) || AccountDomainEnum.THIRD.equals(emailType)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
@@ -220,6 +226,13 @@ public class SGRegisterApiManagerImpl extends BaseProxyManager implements Regist
         String mobile = regMobileApiParams.getMobile();
         String password = regMobileApiParams.getPassword();
         try {
+            //搜狗邮箱关闭，不允许注册
+            int clientId = regMobileApiParams.getClient_id();
+            if (clientId == CommonConstant.MAIL_CLIENTID ) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED);
+                return result;
+            }
             if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
                 String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
                 if (!Strings.isNullOrEmpty(passportId)) {

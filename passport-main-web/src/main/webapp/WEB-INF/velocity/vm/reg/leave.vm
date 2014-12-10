@@ -23,8 +23,8 @@
             
 
 <div class="mailLeavePage">
-    尊敬的搜狗邮箱用户：
-    <p>感谢大家一直以来对搜狗邮箱运营团队的支持，搜狗邮箱于2014年12月10日正式关闭新用户注册，老用户的服务在2015年12月31日前不受影响，由此给您带来的不便，我们深表歉意！欢迎继续体验<a href="http://www.sogou.com/docs/more.htm?p=40031204&v=1" terget="_blank">搜狗其他产品</a>。</p>
+    尊敬的用户：
+    <p>感谢您对搜狗邮箱的支持，搜狗邮箱已于2014年12月10日正式停止新用户注册，由此给您带来的不便，我们深表歉意！欢迎继续体验<a href="http://www.sogou.com/docs/more.htm?p=40031204&v=1" terget="_blank">搜狗其他产品</a>。</p>
 </div>
 
 
@@ -37,7 +37,8 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/reg.js?t=2014112753"></script>
+
+    <script type="text/javascript" src="/./static/js/reg.js?t=2014121018"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

@@ -165,6 +165,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_NOTALLOWED = "20259";
     //搜狐接口异常
     public static final String ERR_CODE_ACCOUNT_SOHU_API_FAILED = "20260";
+    //搜狗邮箱关闭
+    public static final String ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED = "20261";
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -403,6 +405,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_UNBIND_FAILED, "手机解除绑定失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTALLOWED, "账号不允许做此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SOHU_API_FAILED, "搜狐接口异常");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED,"搜狗邮箱已关闭");
 
         // acount secure info
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_HAVA_BIND_MOBILE, "您的帐号已绑定手机，请使用手机找回或联系客服");
