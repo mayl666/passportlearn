@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.model;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import jodd.props.Props;
 
@@ -30,37 +31,45 @@ public class MappDeployConfigFactory {
                 InputStream input = MappDeployConfigFactory.class.getClassLoader().getResourceAsStream(RESOURCE_NAME);
                 properties.load(input);
                 //url
-                confMap.putIfAbsent("qqSSOLoginUrl", properties.getValue("qqSSOLoginUrl"));
-                confMap.putIfAbsent("sinaSSOLoginUrl", properties.getValue("sinaSSOLoginUrl"));
-                confMap.putIfAbsent("wxSSOLoginUrl", properties.getValue("wxSSOLoginUrl"));
-                confMap.putIfAbsent("connectSSOLoginUrl", properties.getValue("connectSSOLoginUrl"));
-                confMap.putIfAbsent("connectWapLoginUrl", properties.getValue("connectWapLoginUrl"));
-                confMap.putIfAbsent("logoutUrl", properties.getValue("logoutUrl"));
-                confMap.putIfAbsent("wapLoginUrl", properties.getValue("wapLoginUrl"));
-                confMap.putIfAbsent("getSmsCodeUrl", properties.getValue("getSmsCodeUrl"));
-                confMap.putIfAbsent("registUrl", properties.getValue("registUrl"));
-                confMap.putIfAbsent("findPswUrl", properties.getValue("findPswUrl"));
-                confMap.putIfAbsent("getloginCaptchaUrl", properties.getValue("getloginCaptchaUrl"));
-                confMap.putIfAbsent("statisticsInfoUrl", properties.getValue("statisticsInfoUrl"));
-                confMap.putIfAbsent("statReportUrl", properties.getValue("statReportUrl"));
+                setProperties(confMap, properties, "qqSSOLoginUrl");
+                setProperties(confMap, properties, "sinaSSOLoginUrl");
+                setProperties(confMap, properties, "wxSSOLoginUrl");
+                setProperties(confMap, properties, "connectSSOLoginUrl");
+                setProperties(confMap, properties, "connectWapLoginUrl");
+                setProperties(confMap, properties, "logoutUrl");
+                setProperties(confMap, properties, "wapLoginUrl");
+                setProperties(confMap, properties, "getSmsCodeUrl");
+                setProperties(confMap, properties, "registUrl");
+                setProperties(confMap, properties, "findPswUrl");
+                setProperties(confMap, properties, "getloginCaptchaUrl");
+                setProperties(confMap, properties, "statisticsInfoUrl");
+                setProperties(confMap, properties, "statReportUrl");
 
                 //threshold
-                confMap.putIfAbsent("statReportSizeMobile", properties.getValue("statReportSizeMobile"));
-                confMap.putIfAbsent("statReportSizeWifi", properties.getValue("statReportSizeWifi"));
-                confMap.putIfAbsent("statReportTimeSpace", properties.getValue("statReportTimeSpace"));
-                confMap.putIfAbsent("httpReadTimeout", properties.getValue("httpReadTimeout"));
-                confMap.putIfAbsent("httpRetryTimes", properties.getValue("httpRetryTimes"));
+                setProperties(confMap, properties, "statReportSizeMobile");
+                setProperties(confMap, properties, "statReportSizeWifi");
+                setProperties(confMap, properties, "statReportTimeSpace");
+                setProperties(confMap, properties, "httpReadTimeout");
+                setProperties(confMap, properties, "httpRetryTimes");
 
                 //switch
-                confMap.putIfAbsent("isExceptionInfo", properties.getValue("isExceptionInfo"));
-                confMap.putIfAbsent("isTrafficStatistics", properties.getValue("isTrafficStatistics"));
-                confMap.putIfAbsent("isInterfaceStatistics", properties.getValue("isInterfaceStatistics"));
-                confMap.putIfAbsent("isProductStatistics", properties.getValue("isProductStatistics"));
-                confMap.putIfAbsent("isDebugLog", properties.getValue("isDebugLog"));
+                setProperties(confMap, properties, "isExceptionLog");
+                setProperties(confMap, properties, "isNetFlowStatistics");
+                setProperties(confMap, properties, "isInterfaceStatistics");
+                setProperties(confMap, properties, "isProductStatistics");
+                setProperties(confMap, properties, "isErrorLog");
+                setProperties(confMap, properties, "isDebugLog");
             }
         }
         return confMap;
     }
 
-
+    private static void setProperties(ConcurrentMap map, Props properties, String propKey) {
+        if (!Strings.isNullOrEmpty(propKey)) {
+            String propValue = properties.getValue(propKey);
+            if (!Strings.isNullOrEmpty(propValue)) {
+                map.putIfAbsent(propKey, propValue);
+            }
+        }
+    }
 }
