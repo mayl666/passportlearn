@@ -146,7 +146,11 @@
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
+<<<<<<< HEAD
     <script type="text/javascript" src="/./static/js/safe.js?t=2014120824"></script>
+=======
+    <script type="text/javascript" src="/./static/js/safe.js?t=2014121018"></script>
+>>>>>>> master
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

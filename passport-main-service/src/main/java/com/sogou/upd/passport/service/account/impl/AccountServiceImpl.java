@@ -654,19 +654,13 @@ public class AccountServiceImpl implements AccountService {
                     String cacheKey = buildAccountKey(passportId);
                     account.setUniqname(uniqname);
                     dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-
-                    //第一次直接插入
-                    if (Strings.isNullOrEmpty(oldUniqName)) {
-                        //更新新的映射表
-                        boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
-                        if (!isInsert) return false;
-                    } else {
-                        //移除原来映射表
-                        if (uniqNamePassportMappingService.removeUniqName(oldUniqName)) {
-                            //更新新的映射表
-                            boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
-                            if (!isInsert) return false;
-                        }
+                    //新昵称写入映射表
+                    if(!uniqNamePassportMappingService.insertUniqName(passportId, uniqname)){
+                        return false;
+                    }
+                    //旧昵称在映射表里有记录则删除
+                    if (!Strings.isNullOrEmpty(uniqNamePassportMappingService.checkUniqName(uniqname))) {
+                        uniqNamePassportMappingService.removeUniqName(oldUniqName);
                     }
                     return true;
                 }
