@@ -19,6 +19,7 @@ public class CommonConstant {
     public static final int XIAOSHUO_CLIENTID = 1115; //小说client_id
     public static final int CAIPIAO_CLIENTID = 2012; //彩票client_id
     public static final int TEEMO_CLIENTID = 2020; //teemo client_id
+    public static final int MAIL_CLIENTID = 1014;//mail client_id
 
     public static final int PWD_TYPE_EXPRESS = 0; //密码类型为明文
     public static final int PWD_TYPE_CIPHER = 1; //密码类型为密文

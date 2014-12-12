@@ -1,10 +1,12 @@
 package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.form.BaseResetPwdApiParams;
@@ -27,7 +29,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -48,8 +52,17 @@ public class SecureApiController extends BaseController {
     @Autowired
     private ModuleBlackListManager moduleBlackListManager;
 
+    @Autowired
+    private RedisUtils redisUtils;
+
     //黑名单用户列表分隔符
     private static final String BLACK_USER_LIST_VALUE_SPLIT = "\r\n";
+
+    //返回给module结果集中userid与时间戳的分隔符
+    private static final String BLACK_USER_EXPIRETIME_SPLIT = " ";
+
+    //redis中保存黑名单userid与时间戳分隔符
+    private static final String BLACK_USER_EXPIRETIME_REDIS_SPLIT = "_";
 
     //有效期
     private static final int EXPIRE_TIME = 60;
@@ -132,6 +145,9 @@ public class SecureApiController extends BaseController {
             //有效期 （当前时间+60秒）秒
             long expireTime = (System.currentTimeMillis() / 1000) + EXPIRE_TIME;
 
+            //获取Redis中保存的黑名单数据
+            Set<String> set = redisUtils.smember(CacheConstant.CACHE_KEY_BLACKLIST);
+
            /* if (params.getIs_delta() != 0 || params.getIs_delta() != 1) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 return result.toString();
@@ -146,6 +162,12 @@ public class SecureApiController extends BaseController {
             }
 
             StringBuffer resultText = new StringBuffer("0 0 10");
+            Iterator<String> it = set.iterator();
+            while (it.hasNext()) {
+                String str = it.next();
+                String strs[] = str.split(BLACK_USER_EXPIRETIME_REDIS_SPLIT);
+                resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append(strs[0]).append(BLACK_USER_EXPIRETIME_SPLIT).append(strs[1]);
+            }
 //            StringBuffer resultText = new StringBuffer();
 //            resultText.append("0").append(" ").append(params.getUpdate_timestamp()).append(" ").append(update_internal).append(BLACK_USER_LIST_VALUE_SPLIT);
 //            resultText.append("0").append(" ").append("0").append(" ").append(update_internal);

@@ -97,6 +97,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         try {
             int clientId = Integer.parseInt(connectLoginParams.getClient_id());
             oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+            if (oAuthConsumer.getCallbackUrl(httpOrHttps) == null) {
+                logger.error("callbackUrl is null,callbackurl=" + oAuthConsumer.getCallbackUrl() + ",accesstokenurl=" + oAuthConsumer.getAccessTokenUrl() + ",refreshtokenurl=" + oAuthConsumer.getRefreshAccessTokenUrl() + ",userinfourl=" + oAuthConsumer.getUserInfo());
+            }
             // 获取connect配置
             String thirdAppId = connectLoginParams.getThird_appid();
             connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
