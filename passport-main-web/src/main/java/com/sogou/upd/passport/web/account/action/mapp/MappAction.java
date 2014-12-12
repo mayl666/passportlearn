@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.MappDeployConfigFactory;
@@ -107,8 +108,10 @@ public class MappAction extends BaseController {
                 result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
                 return result.toString();
             }
-            //session server中清除cookie
-
+            //将收集数据存储在本地log中
+            Map map = JacksonJsonMapperUtil.getMapper().readValue(params.getData(), Map.class);
+            String data = (String) map.get("data");
+            Map dataMap = JacksonJsonMapperUtil.getMapper().readValue(data, Map.class);
             result.setSuccess(true);
             return result.toString();
         } catch (Exception e) {
