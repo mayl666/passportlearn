@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 手机APP相关接口
@@ -110,8 +111,10 @@ public class MappAction extends BaseController {
             }
             //将收集数据存储在本地log中
             Map map = JacksonJsonMapperUtil.getMapper().readValue(params.getData(), Map.class);
-            String data = (String) map.get("data");
-            Map dataMap = JacksonJsonMapperUtil.getMapper().readValue(data, Map.class);
+            for(Object keys : map.keySet()){
+                String value = (String) map.get(keys);
+                value.toString();
+            }
             result.setSuccess(true);
             return result.toString();
         } catch (Exception e) {
