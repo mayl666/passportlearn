@@ -14,7 +14,6 @@ public class CommonConstant {
     public static final int SGPP_DEFAULT_CLIENTID = 1120;
     public static final String SGPP_DEFAULT_SERVER_SECRET = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
     public static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
-    public static final int WAN_CLIENTID = 1100; //游戏client_id
     public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
     public static final int XIAOSHUO_CLIENTID = 1115; //小说client_id
     public static final int CAIPIAO_CLIENTID = 2012; //彩票client_id

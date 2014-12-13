@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
  */
 public class CommonHelper {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommonHelper.class);
-
     /**
      * 生成第三方授权中的state参数cookie，防止CRSF攻击
      *
@@ -23,18 +21,6 @@ public class CommonHelper {
      */
     public static String constructStateCookieKey(String providerStr) {
         return providerStr + "_state";
-    }
-
-    /**
-     * 产品有自定义的第三方appkey
-     * 此方法构造自定义产品列表中的存储的key
-     *
-     * @param clientId
-     * @param provider
-     * @return
-     */
-    public static String constructSpecialConnectKey(int clientId, int provider) {
-        return clientId + CommonConstant.SEPARATOR_1 + provider;
     }
 
     /**
@@ -66,26 +52,6 @@ public class CommonHelper {
      */
     public static boolean isPinyinMACToken(int clientId) {
         return clientId == CommonConstant.PINYIN_MAC_CLIENTID;
-    }
-
-    /**
-     * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
-     *
-     * @param passportId passport内部传输的用户id
-     * @return
-     */
-    public static boolean isInvokeProxyApi(String passportId) {
-        return true;
-//        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));
-    }
-
-    /**
-     * 是否生成搜狗新cookie
-     *
-     * @return
-     */
-    public static boolean isBuildNewCookie() {
-        return false;
     }
 
     /**

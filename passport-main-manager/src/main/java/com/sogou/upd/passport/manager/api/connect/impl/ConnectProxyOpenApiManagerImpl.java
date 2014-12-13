@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.exception.ConnectException;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -96,7 +97,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
                 }
             }
         }
-        String method = CommonConstant.CONNECT_METHOD_POST;
+        String method = HttpConstant.HttpMethod.POST;
         //如果是http请求，则需要算签名
         if (protocol.equals(CommonConstant.HTTP)) {
             // 签名密钥
