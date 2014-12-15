@@ -111,10 +111,7 @@ public class MappAction extends BaseController {
             }
             //将收集数据存储在本地log中
             Map map = JacksonJsonMapperUtil.getMapper().readValue(params.getData(), Map.class);
-            for(Object keys : map.keySet()){
-                String value = (String) map.get(keys);
-                value.toString();
-            }
+
             result.setSuccess(true);
             return result.toString();
         } catch (Exception e) {
@@ -122,9 +119,9 @@ public class MappAction extends BaseController {
         } finally {
             //用于记录log
             UserOperationLog userOperationLog = new UserOperationLog(udid, String.valueOf(clientId), result.getCode(), ip);
-            userOperationLog.putOtherMessage("cinfo", request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN));
-            userOperationLog.putOtherMessage("type", params.getType());
-            userOperationLog.putOtherMessage("data", params.getData());
+//            userOperationLog.putOtherMessage("cinfo", request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN));
+//            userOperationLog.putOtherMessage("type", params.getType());
+//            userOperationLog.putOtherMessage("data", params.getData());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
