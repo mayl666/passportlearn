@@ -56,6 +56,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -123,6 +124,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 requestUrl = oAuthConsumer.getWapUserAuthzUrl();
             } else {
                 requestUrl = oAuthConsumer.getWebUserAuthzUrl();
+            }
+            if(AccountTypeEnum.WEIXIN.getValue() == provider){
+                redirectURI = URLEncoder.encode(redirectURI, CommonConstant.DEFAULT_CHARSET);
             }
             OAuthAuthzClientRequest.AuthenticationRequestBuilder builder = OAuthAuthzClientRequest
                     .authorizationLocation(requestUrl).setAppKey(appKey, provider)
