@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.account.action.mapp;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -12,6 +11,7 @@ import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.MappDeployConfigFactory;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
+import com.sogou.upd.passport.web.MobileOperationLogUtil;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.mapp.MappBaseParams;
 import com.sogou.upd.passport.web.account.form.mapp.MappLogoutParams;
@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * 手机APP相关接口
@@ -84,7 +83,7 @@ public class MappAction extends BaseController {
         return result.toString();
     }
 
-    @RequestMapping(value = "/stat/report", method = RequestMethod.POST)
+    @RequestMapping(value = "/stat/report")
     @ResponseBody
     public String dataStat(HttpServletRequest request, MappStatReportParams params) throws Exception {
         // 校验参数
@@ -104,17 +103,21 @@ public class MappAction extends BaseController {
             TerminalAttributeDO attributeDO = new TerminalAttributeDO(request);
             udid = attributeDO.getUdid();
             //验证code是否有效
-            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
+            //TODO 先去除验证作测试
+            boolean isVaildCode = true;
+//            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
             if (!isVaildCode) {
                 result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
                 return result.toString();
             }
             //将收集数据存储在本地log中
             Map map = JacksonJsonMapperUtil.getMapper().readValue(params.getData(), Map.class);
+            MobileOperationLogUtil.log(params.getType(), map);
 
             result.setSuccess(true);
             return result.toString();
         } catch (Exception e) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             logger.error("mapp stat report error," + "udid:" + udid);
         } finally {
             //用于记录log

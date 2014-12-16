@@ -10,6 +10,97 @@
         </encoder>
     </appender>
 
+    <!--移动端数据统计 interface  -->
+    <appender name="interfaceAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/interface/interface.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="interfaceLogger" level="info" additivity="false">
+        <appender-ref ref="interfaceAppender"/>
+    </logger>
+
+    <!--移动端数据统计 exception  -->
+    <appender name="exceptionAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/exception/exception.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="exceptionLogger" level="info" additivity="false">
+        <appender-ref ref="exceptionAppender"/>
+    </logger>
+
+    <!--移动端数据统计 product  -->
+    <appender name="productAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/product/product.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="productLogger" level="info" additivity="false">
+        <appender-ref ref="productAppender"/>
+    </logger>
+
+    <!--移动端数据统计 debugLog  -->
+    <appender name="debugAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/debug/debug.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="debugLogger" level="info" additivity="false">
+        <appender-ref ref="debugAppender"/>
+    </logger>
+
+    <!--移动端数据统计 debugLog  -->
+    <appender name="errorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/error/error.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="errorLogger" level="info" additivity="false">
+        <appender-ref ref="errorAppender"/>
+    </logger>
+
+    <!--移动端数据统计 netflow  -->
+    <appender name="netflowAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/netflow/netflow.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="netflowLogger" level="info" additivity="false">
+        <appender-ref ref="netflowAppender"/>
+    </logger>
+
+    <!--移动端数据统计 cinfo  -->
+    <appender name="cinfoAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/cinfo/cinfo.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="cinfoLogger" level="info" additivity="false">
+        <appender-ref ref="cinfoAppender"/>
+    </logger>
+
     <!--注册黑名单-->
     <appender name="regBlackListFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
