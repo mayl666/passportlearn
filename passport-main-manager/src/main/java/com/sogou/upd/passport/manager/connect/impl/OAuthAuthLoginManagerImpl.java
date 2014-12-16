@@ -125,9 +125,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             } else {
                 requestUrl = oAuthConsumer.getWebUserAuthzUrl();
             }
-            if(AccountTypeEnum.WEIXIN.getValue() == provider){
-                redirectURI = URLEncoder.encode(redirectURI, CommonConstant.DEFAULT_CHARSET);
-            }
             OAuthAuthzClientRequest.AuthenticationRequestBuilder builder = OAuthAuthzClientRequest
                     .authorizationLocation(requestUrl).setAppKey(appKey, provider)
                     .setRedirectURI(redirectURI)
