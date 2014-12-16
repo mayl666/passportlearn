@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,14 +18,15 @@ import java.util.Map;
  */
 public class MobileOperationLogUtil {
 
-    private static Logger logger = null;
+    public static Executor executor = Executors.newFixedThreadPool(10);
 
     /**
      * 初始化日志Log
      *
      * @param type
      */
-    private static void init(String type) {
+    public static Logger init(String type) {
+        Logger logger = null;
         switch (type) {
             case "interface": {
                 logger = LoggerFactory.getLogger("interfaceLogger");
@@ -56,6 +59,7 @@ public class MobileOperationLogUtil {
             default:
                 logger = LoggerFactory.getLogger(MobileOperationLogUtil.class);
         }
+        return logger;
     }
 
     /**
@@ -66,14 +70,32 @@ public class MobileOperationLogUtil {
      * @throws Exception
      */
     public static void log(String type, Map data) throws Exception {
+        executor.execute(new LogTask(type, data));
+    }
+}
+
+class LogTask implements Runnable {
+
+    private Logger log = LoggerFactory.getLogger(LogTask.class);
+
+    private String type;
+    private Map data;
+
+    public LogTask(String type, Map data) {
+        this.type = type;
+        this.data = data;
+    }
+
+    @Override
+    public void run() {
         try {
-            init(type);
+            Logger logger = MobileOperationLogUtil.init(type);
             JSONArray jsonArray = JSONArray.fromObject(data.get("data"));
             for (int i = 0; i < jsonArray.size(); i++) {
                 logger.info(jsonArray.get(i) + "");
             }
         } catch (Exception e) {
-            throw new Exception(e);
+            log.error(e.getMessage());
         }
     }
 }
