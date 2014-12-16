@@ -83,7 +83,7 @@ public class MappAction extends BaseController {
         return result.toString();
     }
 
-    @RequestMapping(value = "/stat/report")
+    @RequestMapping(value = "/stat/report",method = RequestMethod.POST)
     @ResponseBody
     public String dataStat(HttpServletRequest request, MappStatReportParams params) throws Exception {
         // 校验参数
@@ -104,8 +104,8 @@ public class MappAction extends BaseController {
             udid = attributeDO.getUdid();
             //验证code是否有效
             //TODO 先去除验证作测试
-            boolean isVaildCode = true;
-//            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
+//            boolean isVaildCode = true;
+            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
             if (!isVaildCode) {
                 result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
                 return result.toString();
