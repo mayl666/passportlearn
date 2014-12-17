@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action.mapp;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -83,7 +84,7 @@ public class MappAction extends BaseController {
         return result.toString();
     }
 
-    @RequestMapping(value = "/stat/report",method = RequestMethod.POST)
+    @RequestMapping(value = "/stat/report", method = RequestMethod.POST)
     @ResponseBody
     public String dataStat(HttpServletRequest request, MappStatReportParams params) throws Exception {
         // 校验参数
@@ -112,7 +113,7 @@ public class MappAction extends BaseController {
             }
             //将收集数据存储在本地log中
             Map map = JacksonJsonMapperUtil.getMapper().readValue(params.getData(), Map.class);
-            MobileOperationLogUtil.log(params.getType(), map);
+            MobileOperationLogUtil.log(params.getType(), map, request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN));
 
             result.setSuccess(true);
             return result.toString();

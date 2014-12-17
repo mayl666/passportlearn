@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.web;
 
 
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
+import com.sogou.upd.passport.model.mobileoperation.*;
 import net.sf.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +22,93 @@ public class MobileOperationLogUtil {
 
     public static Executor executor = Executors.newFixedThreadPool(10);
 
+
+    /**
+     * 记录日志
+     *
+     * @param type 日志类型
+     * @param data 日志详情
+     * @throws Exception
+     */
+    public static void log(String type, Map data, String cinfo) throws Exception {
+//        executor.execute(new LogTask(type, data));
+        new LogTask(cinfo, type, data).run();
+    }
+}
+
+class LogTask implements Runnable {
+
+    private Logger log = LoggerFactory.getLogger(LogTask.class);
+
+    private String cinfo;
+    private String type;
+    private Map data;
+    private MobileLog mobileLog;
+
+    public LogTask(String cinfo, String type, Map data) {
+        this.cinfo = cinfo;
+        this.type = type;
+        this.data = data;
+    }
+
+    @Override
+    public void run() {
+        try {
+            Logger logger = LogTask.initLogger(type);
+            JSONArray jsonArray = JSONArray.fromObject(data.get("data"));
+            for (int i = 0; i < jsonArray.size(); i++) {
+                Map map = JacksonJsonMapperUtil.getMapper().readValue(String.valueOf(jsonArray.get(i)), Map.class);
+                logger.info(cinfo + "\t" + this.initMobileLog(map).toHiveString());
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 初始化日志数据对象
+     */
+    public MobileLog initMobileLog(Map map) {
+        switch (type) {
+            case "interface": {
+                mobileLog = new InterfaceLog(map);
+                break;
+            }
+            case "exception": {
+                mobileLog = new ExceptionLog(map);
+                break;
+            }
+            case "product": {
+                mobileLog = new ProductLog(map);
+                break;
+            }
+            case "debuglog": {
+                mobileLog = new DebugLog(map);
+                break;
+            }
+            case "errorlog": {
+                mobileLog = new ErrorLog(map);
+                break;
+            }
+            case "netflow": {
+                mobileLog = new NetflowLog(map);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+        return mobileLog;
+    }
+
+
     /**
      * 初始化日志Log
      *
      * @param type
      */
-    public static Logger init(String type) {
+
+    public static Logger initLogger(String type) {
         Logger logger = null;
         switch (type) {
             case "interface": {
@@ -60,42 +143,5 @@ public class MobileOperationLogUtil {
                 logger = LoggerFactory.getLogger(MobileOperationLogUtil.class);
         }
         return logger;
-    }
-
-    /**
-     * 记录日志
-     *
-     * @param type 日志类型
-     * @param data 日志详情
-     * @throws Exception
-     */
-    public static void log(String type, Map data) throws Exception {
-        executor.execute(new LogTask(type, data));
-    }
-}
-
-class LogTask implements Runnable {
-
-    private Logger log = LoggerFactory.getLogger(LogTask.class);
-
-    private String type;
-    private Map data;
-
-    public LogTask(String type, Map data) {
-        this.type = type;
-        this.data = data;
-    }
-
-    @Override
-    public void run() {
-        try {
-            Logger logger = MobileOperationLogUtil.init(type);
-            JSONArray jsonArray = JSONArray.fromObject(data.get("data"));
-            for (int i = 0; i < jsonArray.size(); i++) {
-                logger.info(jsonArray.get(i) + "");
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
     }
 }
