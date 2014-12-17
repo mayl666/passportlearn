@@ -31,8 +31,8 @@ public class MobileOperationLogUtil {
      * @throws Exception
      */
     public static void log(String type, Map data, String cinfo) throws Exception {
-//        executor.execute(new LogTask(type, data));
-        new LogTask(cinfo, type, data).run();
+        executor.execute(new LogTask(cinfo, type, data));
+//        new LogTask(cinfo, type, data).run();
     }
 }
 
