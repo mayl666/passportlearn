@@ -55,7 +55,7 @@ public class ResetPwdAction extends BaseController {
     @Autowired
     private CommonManager commonManager;
     @Autowired
-    private RegisterApiManager sgRegisterApiManager;
+    private RegisterApiManager registerApiManager;
 
     /**
      * 找回密码主页跳转
@@ -133,7 +133,7 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/index";
             }
-            result = sgRegisterApiManager.checkUser(passportId, Integer.parseInt(params.getClient_id()));
+            result = registerApiManager.checkUser(passportId, Integer.parseInt(params.getClient_id()));
             if (result.isSuccess()) {
                 result.setSuccess(false);
                 result.setDefaultModel("userid", username);
@@ -430,7 +430,7 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
-            result = sgRegisterApiManager.checkUser(passportId, Integer.parseInt(params.getClient_id()));
+            result = registerApiManager.checkUser(passportId, Integer.parseInt(params.getClient_id()));
             if (result.isSuccess()) {  //账号不存在
                 result = buildErrorResult(result, params, null, ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
                 model.addAttribute("data", result.toString());

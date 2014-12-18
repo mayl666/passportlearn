@@ -51,7 +51,7 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     @Autowired
-    private RegisterApiManager sgRegisterApiManager;
+    private RegisterApiManager registerApiManager;
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -78,7 +78,7 @@ public class LoginManagerImpl implements LoginManager {
                 result.setSuccess(false); //表示账号已存在
                 result.setCode(ErrorUtil.ERR_CODE_USER_ID_EXIST);
             } else {
-                result = sgRegisterApiManager.checkUser(username, clientId);
+                result = registerApiManager.checkUser(username, clientId);
             }
             buildLoginResult(result);
         } catch (ServiceException e) {
