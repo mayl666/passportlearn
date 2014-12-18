@@ -168,8 +168,6 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         String instanceId = redirectParams.getTs();
         String from = redirectParams.getFrom(); //手机浏览器会传此参数，响应结果和PC端不一样
         String thirdInfo = redirectParams.getThirdInfo(); //用于SDK端请求，返回搜狗用户信息或者低三方用户信息；
-        String domain = redirectParams.getDomain(); //导航qq登陆，会传此参数
-        String ua = redirectParams.getUser_agent();
         int provider = AccountTypeEnum.getProvider(providerStr);
         String thirdAppId = redirectParams.getThird_appId(); //不为空时代表应用使用独立appid；
         try {
