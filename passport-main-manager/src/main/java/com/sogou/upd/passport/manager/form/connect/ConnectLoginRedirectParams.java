@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.manager.form.connect;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,7 +23,11 @@ public class ConnectLoginRedirectParams {
     private String v;   //浏览器PC客户端根据v判断显示新旧UI样式
     private String third_appId; //应用传递自己的第三方appid
 
-    public ConnectLoginRedirectParams(ConnectLoginParams connectLoginParams, String ip, String userAgent){
+    //必须有无参的构造函数，不然servlet报错
+    public ConnectLoginRedirectParams() {
+    }
+
+    public ConnectLoginRedirectParams(ConnectLoginParams connectLoginParams, String ip, String userAgent) {
         this.ru = connectLoginParams.getRu();
         this.client_id = Integer.parseInt(connectLoginParams.getClient_id());
         this.type = Strings.isNullOrEmpty(connectLoginParams.getType()) ? "web" : connectLoginParams.getType();

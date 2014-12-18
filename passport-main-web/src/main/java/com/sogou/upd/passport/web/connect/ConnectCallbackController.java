@@ -22,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,7 +51,7 @@ public class ConnectCallbackController extends BaseConnectController {
     @RequestMapping("/callback/{providerStr}")
     public String handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
                                          @PathVariable("providerStr") String providerStr,
-                                         @PathVariable("state") String state,
+                                         @RequestParam(defaultValue = "") String state,
                                          ConnectLoginRedirectParams redirectParams, Model model) throws IOException {
 
         if (AccountTypeEnum.WEIXIN.getValue() == AccountTypeEnum.getProvider(providerStr) && !Strings.isNullOrEmpty(state)) {
