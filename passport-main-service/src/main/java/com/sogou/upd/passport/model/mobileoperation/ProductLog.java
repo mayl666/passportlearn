@@ -13,6 +13,7 @@ public class ProductLog extends MobileLog {
 
     private String page;
     private String event_id;
+    private String time;
     private String client_id;
 
     public ProductLog(Map map) {
@@ -24,6 +25,14 @@ public class ProductLog extends MobileLog {
         this.event_id = String.valueOf(map.get("event_id"));
         this.client_id = String.valueOf(map.get("client_id"));
     }*/
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
 
     public String getPage() {
         return page;
@@ -51,6 +60,6 @@ public class ProductLog extends MobileLog {
 
     @Override
     public String toHiveString() {
-        return page + "\t" + event_id + "\t" + client_id;
+        return page + "\t" + event_id + "\t" + time + "\t" + client_id;
     }
 }

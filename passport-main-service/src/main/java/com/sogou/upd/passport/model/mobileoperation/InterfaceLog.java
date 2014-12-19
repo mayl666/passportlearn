@@ -20,6 +20,7 @@ public class InterfaceLog extends MobileLog {
     private String response_time;
     private String passport_code;
     private String http_code;
+    private String client_id;
 
     public InterfaceLog(Map map) {
         super(map);
@@ -32,6 +33,14 @@ public class InterfaceLog extends MobileLog {
         this.passport_code = String.valueOf(map.get("passport_code"));
         this.http_code = String.valueOf(map.get("http_code"));
     }*/
+
+    public String getClient_id() {
+        return client_id;
+    }
+
+    public void setClient_id(String client_id) {
+        this.client_id = client_id;
+    }
 
     public String getUri() {
         return uri;
@@ -75,7 +84,7 @@ public class InterfaceLog extends MobileLog {
 
     @Override
     public String toHiveString() {
-        return uri + "\t" + start_time + "\t" + response_time + "\t" + passport_code + "\t" + http_code;
+        return uri + "\t" + start_time + "\t" + response_time + "\t" + passport_code + "\t" + http_code + "\t" + client_id;
     }
 }
 
