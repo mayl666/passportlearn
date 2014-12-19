@@ -51,6 +51,6 @@ public class ErrorLog extends MobileLog {
 
     @Override
     public String toHiveString() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return time + "\t" + key + "\t" + info;
     }
 }
