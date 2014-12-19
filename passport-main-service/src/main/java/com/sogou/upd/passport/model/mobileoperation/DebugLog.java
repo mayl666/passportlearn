@@ -9,7 +9,7 @@ import java.util.Map;
  * Time: 下午8:32
  * To change this template use File | Settings | File Templates.
  */
-public class DebugLog implements MobileLog {
+public class DebugLog extends MobileLog {
 
     private String times;
     private String level;
@@ -17,13 +17,17 @@ public class DebugLog implements MobileLog {
     private String key;
     private String info;
 
-    public DebugLog(Map data) {
+    public DebugLog(Map map) {
+        super(map);
+    }
+
+    /*public DebugLog(Map data) {
         this.times = String.valueOf(data.get("times"));
         this.level = String.valueOf(data.get("level"));
         this.tag = String.valueOf(data.get("tag"));
         this.key = String.valueOf(data.get("key"));
         this.info = String.valueOf(data.get("info"));
-    }
+    }*/
 
     public String getTimes() {
         return times;

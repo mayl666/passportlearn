@@ -1,9 +1,11 @@
 package com.sogou.upd.passport.web;
 
 
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.model.mobileoperation.*;
 import net.sf.json.JSONArray;
+import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +22,25 @@ import java.util.concurrent.Executors;
  */
 public class MobileOperationLogUtil {
 
-    public static Executor executor = Executors.newFixedThreadPool(10);
+    enum Type {
+        INTERFACE("interfaceLogger"),
+        EXCEPTION("exceptionLogger"),
+        PRODUCT("productLogger"),
+        DEBUGLOG("debugLogger"),
+        ERRORLOG("errorLogger"),
+        NETFLOW("netflowLogger");
 
+        private String logName;
+
+        Type(String logName) {
+            this.logName = logName;
+        }
+
+        public String getLogName() {
+            return logName;
+        }
+
+    }
 
     /**
      * 记录日志
@@ -31,44 +50,20 @@ public class MobileOperationLogUtil {
      * @throws Exception
      */
     public static void log(String type, Map data, String cinfo) throws Exception {
-        executor.execute(new LogTask(cinfo, type, data));
-//        new LogTask(cinfo, type, data).run();
-    }
-}
-
-class LogTask implements Runnable {
-
-    private Logger log = LoggerFactory.getLogger(LogTask.class);
-
-    private String cinfo;
-    private String type;
-    private Map data;
-    private MobileLog mobileLog;
-
-    public LogTask(String cinfo, String type, Map data) {
-        this.cinfo = cinfo;
-        this.type = type;
-        this.data = data;
-    }
-
-    @Override
-    public void run() {
-        try {
-            Logger logger = LogTask.initLogger(type);
-            JSONArray jsonArray = JSONArray.fromObject(data.get("data"));
-            for (int i = 0; i < jsonArray.size(); i++) {
-                Map map = JacksonJsonMapperUtil.getMapper().readValue(String.valueOf(jsonArray.get(i)), Map.class);
-                logger.info(cinfo + "\t" + this.initMobileLog(map).toHiveString());
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
+        Logger logger = initLogger(type);
+        JSONArray jsonArray = JSONArray.fromObject(data.get("data"));
+        for (int i = 0; i < jsonArray.size(); i++) {
+            Map map = JacksonJsonMapperUtil.getMapper().readValue(String.valueOf(jsonArray.get(i)), Map.class);
+            if (MapUtils.isNotEmpty(map))
+                logger.info(cinfo + "\t" + initMobileLog(type, map).toHiveString());
         }
     }
 
     /**
      * 初始化日志数据对象
      */
-    public MobileLog initMobileLog(Map map) {
+    public static MobileLog initMobileLog(String type, Map map) {
+        MobileLog mobileLog = null;
         switch (type) {
             case "interface": {
                 mobileLog = new InterfaceLog(map);
@@ -109,8 +104,8 @@ class LogTask implements Runnable {
      */
 
     public static Logger initLogger(String type) {
-        Logger logger = null;
-        switch (type) {
+        Logger logger = LoggerFactory.getLogger(Type.valueOf(type.toUpperCase()).getLogName());
+        /*switch (type) {
             case "interface": {
                 logger = LoggerFactory.getLogger("interfaceLogger");
                 break;
@@ -140,8 +135,8 @@ class LogTask implements Runnable {
                 break;
             }
             default:
-                logger = LoggerFactory.getLogger(MobileOperationLogUtil.class);
-        }
+                break;
+        }*/
         return logger;
     }
 }

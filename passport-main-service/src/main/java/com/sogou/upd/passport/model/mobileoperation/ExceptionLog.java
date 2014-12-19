@@ -9,7 +9,7 @@ import java.util.Map;
  * Time: 下午8:27
  * To change this template use File | Settings | File Templates.
  */
-public class ExceptionLog implements MobileLog {
+public class ExceptionLog extends MobileLog {
     private String times;
     private String start_time;
     private String last_time;
@@ -17,12 +17,16 @@ public class ExceptionLog implements MobileLog {
     private String exception_detail;
 
     public ExceptionLog(Map map) {
+        super(map);
+    }
+
+    /*public ExceptionLog(Map map) {
         this.times = String.valueOf(map.get("times"));
         this.start_time = String.valueOf(map.get("start_time"));
         this.last_time = String.valueOf(map.get("last_time"));
         this.exception_msg = String.valueOf(map.get("exception_msg"));
         this.exception_detail = String.valueOf(map.get("exception_detail"));
-    }
+    }*/
 
     public String getTimes() {
         return times;

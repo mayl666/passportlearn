@@ -1,5 +1,11 @@
 package com.sogou.upd.passport.model.mobileoperation;
 
+import com.sogou.upd.passport.common.utils.BeanUtil;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Created with IntelliJ IDEA.
  * User: lzy_clement
@@ -7,8 +13,18 @@ package com.sogou.upd.passport.model.mobileoperation;
  * Time: 下午8:16
  * To change this template use File | Settings | File Templates.
  */
-public interface MobileLog {
+public class MobileLog {
 
+    public MobileLog(Map map) {
+        Set keys = map.keySet();
+        Iterator it = keys.iterator();
+        while (it.hasNext()) {
+            String key = String.valueOf(it.next());
+            BeanUtil.setBeanProperty(this, key, String.valueOf(map.get(key)));
+        }
+    }
 
-    public String toHiveString();
+    public String toHiveString() {
+        return this.toString();
+    }
 }

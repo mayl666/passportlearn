@@ -17,19 +17,22 @@ import java.util.concurrent.Executors;
  */
 public class TerminalAttributeDO {
 
-    private String carrier;  //运营商
-    private String resolution; //分辨率
-    private String udid; //终端唯一标识
-    private String userIp;  //用户ip
+    private Map attrMap = null;
 
-    public String getUdid() {
-        return udid;
-    }
+
     //op=&pm=Lenovo A760&SdkVersion=16&resolution=480x854&platform=android&platformV=4.1.2&udid=860227023442427SOGOUcb35e205-a936-48fa-9513-1e3c1b97e82c891872840933341&passportSdkV=1.11&clientId=1120&appV=1.0
     public TerminalAttributeDO(HttpServletRequest request) {
         String data = request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN);
-        Map attrMap = StringUtil.parseFormatStringToMap(data);
-        this.udid = (String) attrMap.get("udid");
+        attrMap = StringUtil.parseFormatStringToMap(data);
+    }
+
+    public String getUdid() {
+        return (String) attrMap.get("udid");
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(attrMap.get("op")) + "\t" + String.valueOf(attrMap.get("pm")) + "\t" + String.valueOf(attrMap.get("SdkVersion")) + "\t" + String.valueOf(attrMap.get("resolution")) + "\t" + String.valueOf(attrMap.get("platform")) + "\t" + String.valueOf(attrMap.get("platformV")) + "\t" + String.valueOf(attrMap.get("udid"));
     }
 
 }

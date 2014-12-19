@@ -1,6 +1,10 @@
 package com.sogou.upd.passport.model.mobileoperation;
 
+import com.sogou.upd.passport.common.utils.BeanUtil;
+
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -9,7 +13,7 @@ import java.util.Map;
  * Time: 下午8:17
  * To change this template use File | Settings | File Templates.
  */
-public class InterfaceLog implements MobileLog {
+public class InterfaceLog extends MobileLog {
 
     private String uri;
     private String start_time;
@@ -18,12 +22,16 @@ public class InterfaceLog implements MobileLog {
     private String http_code;
 
     public InterfaceLog(Map map) {
-        this.uri = String.valueOf(map.get("uri"));
+        super(map);
+    }
+
+   /* public InterfaceLog(Map map) {
+       this.uri = String.valueOf(map.get("uri"));
         this.start_time = String.valueOf(map.get("start_time"));
         this.response_time = String.valueOf(map.get("response_time"));
         this.passport_code = String.valueOf(map.get("passport_code"));
         this.http_code = String.valueOf(map.get("http_code"));
-    }
+    }*/
 
     public String getUri() {
         return uri;

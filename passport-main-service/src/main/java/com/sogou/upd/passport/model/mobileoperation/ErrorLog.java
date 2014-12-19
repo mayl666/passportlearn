@@ -9,17 +9,21 @@ import java.util.Map;
  * Time: 下午8:58
  * To change this template use File | Settings | File Templates.
  */
-public class ErrorLog implements MobileLog {
+public class ErrorLog extends MobileLog {
 
     private String time;
     private String key;
     private String info;
 
     public ErrorLog(Map map) {
+        super(map);
+    }
+
+    /*public ErrorLog(Map map) {
         this.time = String.valueOf(map.get("time"));
         this.key = String.valueOf(map.get("key"));
         this.info = String.valueOf(map.get("info"));
-    }
+    }*/
 
     public String getTime() {
         return time;

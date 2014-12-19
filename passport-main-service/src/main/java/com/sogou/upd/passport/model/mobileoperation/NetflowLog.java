@@ -9,7 +9,7 @@ import java.util.Map;
  * Time: 下午8:37
  * To change this template use File | Settings | File Templates.
  */
-public class NetflowLog implements MobileLog {
+public class NetflowLog extends MobileLog {
 
     private String start_time;
     private String now_time;
@@ -23,6 +23,10 @@ public class NetflowLog implements MobileLog {
     private String wifi_up_tcp;
 
     public NetflowLog(Map map) {
+        super(map);
+    }
+
+    /*public NetflowLog(Map map) {
         this.start_time = String.valueOf(map.get("start_time"));
         this.now_time = String.valueOf(map.get("now_time"));
         this.mobile_down_http = String.valueOf(map.get("mobile_down_http"));
@@ -33,9 +37,7 @@ public class NetflowLog implements MobileLog {
         this.mobile_up_tcp = String.valueOf(map.get("mobile_up_tcp"));
         this.wifi_down_tcp = String.valueOf(map.get("wifi_down_tcp"));
         this.wifi_up_tcp = String.valueOf(map.get("wifi_up_tcp"));
-
-
-    }
+    }*/
 
     public String getStart_time() {
         return start_time;

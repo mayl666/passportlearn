@@ -9,17 +9,21 @@ import java.util.Map;
  * Time: 下午8:56
  * To change this template use File | Settings | File Templates.
  */
-public class ProductLog implements MobileLog {
+public class ProductLog extends MobileLog {
 
     private String page;
     private String event_id;
     private String client_id;
 
     public ProductLog(Map map) {
+        super(map);
+    }
+
+   /* public ProductLog(Map map) {
         this.page = String.valueOf(map.get("page"));
         this.event_id = String.valueOf(map.get("event_id"));
         this.client_id = String.valueOf(map.get("client_id"));
-    }
+    }*/
 
     public String getPage() {
         return page;
