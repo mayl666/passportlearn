@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.account.action.mapp;
+package com.sogou.upd.passport.model.mobileoperation;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -17,17 +17,21 @@ import java.util.Set;
  * Time: 下午7:59
  * To change this template use File | Settings | File Templates.
  */
-public class TerminalAttributeDO {
+public class TerminalAttribute {
 
-    private String op;
-    private String pm;
-    private String SdkVersion;
-    private String resolution;
-    private String platform;
-    private String platformV;
-    private String udid;
+    private String op;  //运营商
+    private String pm;  //机型
+    private String sdkVersion; //操作系统版本code
+    private String platform;  //操作系统
+    private String platformV;  //操作系统版本string
+    private String resolution;   //分辨率
+    private String udid;    //唯一标示
+    private String passportSdkV; //passport sdk版本
+    private String appV;  //应用版本
+    private String network;  //网络
 
-    public TerminalAttributeDO(HttpServletRequest request) {
+    //op=&pm=Lenovo A760&sdkVersion=16&resolution=480x854&platform=android&platformV=4.1.2&udid=860227023442427SOGOUcb35e205-a936-48fa-9513-1e3c1b97e82c891872840933341&passportSdkV=1.11&clientId=1120&appV=1.0
+    public TerminalAttribute(HttpServletRequest request) {
         String data = request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN);
         Map attrMap = StringUtil.parseFormatStringToMap(data);
         if (!MapUtils.isEmpty(attrMap)) {
@@ -57,11 +61,11 @@ public class TerminalAttributeDO {
     }
 
     public String getSdkVersion() {
-        return SdkVersion;
+        return sdkVersion;
     }
 
     public void setSdkVersion(String sdkVersion) {
-        SdkVersion = sdkVersion;
+        this.sdkVersion = sdkVersion;
     }
 
     public String getResolution() {
@@ -96,8 +100,33 @@ public class TerminalAttributeDO {
         this.udid = udid;
     }
 
+    public String getPassportSdkV() {
+        return passportSdkV;
+    }
+
+    public void setPassportSdkV(String passportSdkV) {
+        this.passportSdkV = passportSdkV;
+    }
+
+    public String getAppV() {
+        return appV;
+    }
+
+    public void setAppV(String appV) {
+        this.appV = appV;
+    }
+
+    public String getNetwork() {
+        return network;
+    }
+
+    public void setNetwork(String network) {
+        this.network = network;
+    }
+
     public String toHiveString() {
-        return op + "\t" + pm + "\t" + SdkVersion + "\t" + resolution + "\t" + platform + "\t" + platformV + "\t" + udid + "\t";
+        return op + "\t" + pm + "\t" + sdkVersion + "\t" + platform + "\t" + platformV + "\t" +
+                resolution + "\t" + udid + "\t" + passportSdkV + "\t" + appV + "\t" + network + "\t";
     }
 
 }

@@ -14,6 +14,7 @@
     <appender name="interfaceAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/mobileoperation/interface/interface.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
@@ -27,6 +28,7 @@
     <appender name="exceptionAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/mobileoperation/exception/exception.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
@@ -40,6 +42,7 @@
     <appender name="productAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/mobileoperation/product/product.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
@@ -53,6 +56,7 @@
     <appender name="debugAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/mobileoperation/debug/debug.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
@@ -66,6 +70,7 @@
     <appender name="errorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/mobileoperation/error/error.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
@@ -79,6 +84,7 @@
     <appender name="netflowAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/mobileoperation/netflow/netflow.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
@@ -86,19 +92,6 @@
     </appender>
     <logger name="netflowLogger" level="info" additivity="false">
         <appender-ref ref="netflowAppender"/>
-    </logger>
-
-    <!--移动端数据统计 cinfo  -->
-    <appender name="cinfoAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/mobileoperation/cinfo/cinfo.log.%d{yyyy-MM-dd}</fileNamePattern>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%msg %n</pattern>
-        </encoder>
-    </appender>
-    <logger name="cinfoLogger" level="info" additivity="false">
-        <appender-ref ref="cinfoAppender"/>
     </logger>
 
     <!--注册黑名单-->

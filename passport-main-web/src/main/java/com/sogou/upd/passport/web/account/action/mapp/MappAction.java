@@ -5,11 +5,10 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.MappDeployConfigFactory;
-import com.sogou.upd.passport.model.mobileoperation.MobileBaseLog;
+import com.sogou.upd.passport.model.mobileoperation.TerminalAttribute;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.MobileOperationLogUtil;
@@ -101,19 +100,18 @@ public class MappAction extends BaseController {
                 return result.toString();
             }
             //解析cinfo信息
-            TerminalAttributeDO terminalAttributeDO = new TerminalAttributeDO(request);
-            udid = terminalAttributeDO.getUdid();
+            TerminalAttribute terminalAttribute = new TerminalAttribute(request);
+            udid = terminalAttribute.getUdid();
             //验证code是否有效
             //TODO 先去除验证作测试
-//            boolean isVaildCode = true;
-            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
+            boolean isVaildCode = true;
+//            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
             if (!isVaildCode) {
                 result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
                 return result.toString();
             }
             //将收集数据存储在本地log中
-            Map map = JacksonJsonMapperUtil.getMapper().readValue(params.getData(), Map.class);
-            MobileOperationLogUtil.log(params.getType(), params.getData(), terminalAttributeDO);
+            MobileOperationLogUtil.log(params.getType(), params.getData(), terminalAttribute);
 
             result.setSuccess(true);
             return result.toString();
@@ -145,8 +143,8 @@ public class MappAction extends BaseController {
                 return result.toString();
             }
             //解析cinfo信息
-            TerminalAttributeDO terminalAttributeDO = new TerminalAttributeDO(request);
-            udid = terminalAttributeDO.getUdid();
+            TerminalAttribute terminalAttribute = new TerminalAttribute(request);
+            udid = terminalAttribute.getUdid();
             //验证code是否有效
             boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
             if (!isVaildCode) {
