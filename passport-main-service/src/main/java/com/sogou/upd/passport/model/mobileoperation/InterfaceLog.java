@@ -1,10 +1,6 @@
 package com.sogou.upd.passport.model.mobileoperation;
 
-import com.sogou.upd.passport.common.utils.BeanUtil;
-
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,7 +9,7 @@ import java.util.Set;
  * Time: 下午8:17
  * To change this template use File | Settings | File Templates.
  */
-public class InterfaceLog extends MobileLog {
+public class InterfaceLog extends MobileBaseLog {
 
     private String uri;
     private String start_time;
@@ -25,14 +21,6 @@ public class InterfaceLog extends MobileLog {
     public InterfaceLog(Map map) {
         super(map);
     }
-
-   /* public InterfaceLog(Map map) {
-       this.uri = String.valueOf(map.get("uri"));
-        this.start_time = String.valueOf(map.get("start_time"));
-        this.response_time = String.valueOf(map.get("response_time"));
-        this.passport_code = String.valueOf(map.get("passport_code"));
-        this.http_code = String.valueOf(map.get("http_code"));
-    }*/
 
     public String getClient_id() {
         return client_id;
@@ -84,7 +72,7 @@ public class InterfaceLog extends MobileLog {
 
     @Override
     public String toHiveString() {
-        return uri + "\t" + start_time + "\t" + response_time + "\t" + passport_code + "\t" + http_code + "\t" + client_id;
+        return super.toHiveString() + uri + "\t" + start_time + "\t" + response_time + "\t" + passport_code + "\t" + http_code + "\t" + client_id;
     }
 }
 

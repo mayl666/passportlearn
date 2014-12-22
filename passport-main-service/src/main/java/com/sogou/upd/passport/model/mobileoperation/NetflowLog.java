@@ -9,7 +9,7 @@ import java.util.Map;
  * Time: 下午8:37
  * To change this template use File | Settings | File Templates.
  */
-public class NetflowLog extends MobileLog {
+public class NetflowLog extends MobileBaseLog {
 
     private String start_time;
     private String now_time;
@@ -25,19 +25,6 @@ public class NetflowLog extends MobileLog {
     public NetflowLog(Map map) {
         super(map);
     }
-
-    /*public NetflowLog(Map map) {
-        this.start_time = String.valueOf(map.get("start_time"));
-        this.now_time = String.valueOf(map.get("now_time"));
-        this.mobile_down_http = String.valueOf(map.get("mobile_down_http"));
-        this.mobile_up_http = String.valueOf(map.get("mobile_up_http"));
-        this.wifi_down_http = String.valueOf(map.get("wifi_down_http"));
-        this.wifi_up_http = String.valueOf(map.get("wifi_up_http"));
-        this.mobile_down_tcp = String.valueOf(map.get("mobile_down_tcp"));
-        this.mobile_up_tcp = String.valueOf(map.get("mobile_up_tcp"));
-        this.wifi_down_tcp = String.valueOf(map.get("wifi_down_tcp"));
-        this.wifi_up_tcp = String.valueOf(map.get("wifi_up_tcp"));
-    }*/
 
     public String getStart_time() {
         return start_time;
@@ -121,6 +108,6 @@ public class NetflowLog extends MobileLog {
 
     @Override
     public String toHiveString() {
-        return start_time + "\t" + now_time + "\t" + mobile_down_http + "\t" + mobile_up_http + "\t" + wifi_down_http + "\t" + wifi_up_http + "\t" + mobile_down_tcp + "\t" + mobile_up_tcp + "\t" + wifi_up_tcp + "\t" + wifi_down_http;
+        return super.toHiveString() + start_time + "\t" + now_time + "\t" + mobile_down_http + "\t" + mobile_up_http + "\t" + wifi_down_http + "\t" + wifi_up_http + "\t" + mobile_down_tcp + "\t" + mobile_up_tcp + "\t" + wifi_up_tcp + "\t" + wifi_down_http;
     }
 }

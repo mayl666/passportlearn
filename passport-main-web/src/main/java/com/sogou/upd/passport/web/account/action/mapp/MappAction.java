@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.web.account.action.mapp;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -10,6 +9,7 @@ import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.MappDeployConfigFactory;
+import com.sogou.upd.passport.model.mobileoperation.MobileBaseLog;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.MobileOperationLogUtil;
@@ -101,8 +101,8 @@ public class MappAction extends BaseController {
                 return result.toString();
             }
             //解析cinfo信息
-            TerminalAttributeDO attributeDO = new TerminalAttributeDO(request);
-            udid = attributeDO.getUdid();
+            MobileBaseLog mobileBaseLog = new MobileBaseLog(request);
+            udid = mobileBaseLog.getUdid();
             //验证code是否有效
             //TODO 先去除验证作测试
             boolean isVaildCode = true;
@@ -113,7 +113,7 @@ public class MappAction extends BaseController {
             }
             //将收集数据存储在本地log中
             Map map = JacksonJsonMapperUtil.getMapper().readValue(params.getData(), Map.class);
-            MobileOperationLogUtil.log(params.getType(), map, attributeDO.toString());
+            MobileOperationLogUtil.log(params.getType(), map);
 
             result.setSuccess(true);
             return result.toString();
@@ -123,9 +123,6 @@ public class MappAction extends BaseController {
         } finally {
             //用于记录log
             UserOperationLog userOperationLog = new UserOperationLog(udid, String.valueOf(clientId), result.getCode(), ip);
-//            userOperationLog.putOtherMessage("cinfo", request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN));
-//            userOperationLog.putOtherMessage("type", params.getType());
-//            userOperationLog.putOtherMessage("data", params.getData());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
@@ -148,8 +145,8 @@ public class MappAction extends BaseController {
                 return result.toString();
             }
             //解析cinfo信息
-            TerminalAttributeDO attributeDO = new TerminalAttributeDO(request);
-            udid = attributeDO.getUdid();
+            MobileBaseLog mobileBaseLog = new MobileBaseLog(request);
+            udid = mobileBaseLog.getUdid();
             //验证code是否有效
             boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
             if (!isVaildCode) {

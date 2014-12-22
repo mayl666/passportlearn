@@ -1,12 +1,12 @@
 package com.sogou.upd.passport.web;
 
 
-import com.sogou.upd.passport.model.mobileoperation.*;
+import com.sogou.upd.passport.common.utils.ReflectUtil;
+import com.sogou.upd.passport.model.mobileoperation.MobileBaseLog;
+import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -19,30 +19,37 @@ import java.util.Map;
  */
 public class MobileOperationLogUtil {
 
+    private static final Logger utilLogger = LoggerFactory.getLogger(MobileOperationLogUtil.class);
+    private static final Logger interfaceLogger = LoggerFactory.getLogger("interfaceLogger");
+    private static final Logger exceptionLogger = LoggerFactory.getLogger("exceptionLogger");
+    private static final Logger productLogger = LoggerFactory.getLogger("productLogger");
+    private static final Logger debugLogger = LoggerFactory.getLogger("debugLogger");
+    private static final Logger errorLogger = LoggerFactory.getLogger("errorLogger");
+    private static final Logger netflowLogger = LoggerFactory.getLogger("netflowLogger");
+
     enum Type {
-        INTERFACE("interfaceLogger", "com.sogou.upd.passport.model.mobileoperation.InterfaceLog"),
-        EXCEPTION("exceptionLogger", "com.sogou.upd.passport.model.mobileoperation.ExceptionLog"),
-        PRODUCT("productLogger", "com.sogou.upd.passport.model.mobileoperation.ProductLog"),
-        DEBUGLOG("debugLogger", "com.sogou.upd.passport.model.mobileoperation.DebugLog"),
-        ERRORLOG("errorLogger", "com.sogou.upd.passport.model.mobileoperation.ErrorLog"),
-        NETFLOW("netflowLogger", "com.sogou.upd.passport.model.mobileoperation.NetflowLog");
+        INTERFACE(interfaceLogger, "com.sogou.upd.passport.model.mobileoperation.InterfaceLog"),
+        EXCEPTION(exceptionLogger, "com.sogou.upd.passport.model.mobileoperation.ExceptionLog"),
+        PRODUCT(productLogger, "com.sogou.upd.passport.model.mobileoperation.ProductLog"),
+        DEBUGLOG(debugLogger, "com.sogou.upd.passport.model.mobileoperation.DebugLog"),
+        ERRORLOG(errorLogger, "com.sogou.upd.passport.model.mobileoperation.ErrorLog"),
+        NETFLOW(netflowLogger, "com.sogou.upd.passport.model.mobileoperation.NetflowLog");
 
-        private String logName;
-        private String className;
+        private String className;   //type对应的对象类名
+        private Logger logger;     //type对应的logger
 
-        Type(String logName, String className) {
-            this.logName = logName;
+        Type(Logger logger, String className) {
+            this.logger = logger;
             this.className = className;
-        }
-
-        public String getLogName() {
-            return logName;
         }
 
         public String getClassName() {
             return className;
         }
 
+        Logger getLogger() {
+            return logger;
+        }
     }
 
     /**
@@ -52,43 +59,41 @@ public class MobileOperationLogUtil {
      * @param data 日志详情
      * @throws Exception
      */
-    public static void log(String type, Map data, String cinfo) throws Exception {
-        Logger logger = initLogger(type);
-        Object obj = data.get("data");
-        if (obj instanceof List) {
-            List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
-            for (int i = 0; i < list.size(); i++) {
-                logger.info(cinfo + "\t" + initMobileLog(type, list.get(i)).toHiveString());
+    public static void log(String type, Map data) {
+        try {
+            Logger logger = Type.valueOf(type).getLogger();
+            if (!MapUtils.isEmpty(data)) {
+                Object obj = data.get("data");
+                if (obj instanceof List) {
+                    List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
+                    for (Map<String, Object> dataMap : list) {
+                        logger.info(initMobileLog(type, dataMap).toHiveString());
+                    }
+                } else if (obj instanceof Map) {
+                    Map map = (Map) obj;
+                    logger.info(initMobileLog(type, map).toHiveString());
+                } else {
+                    utilLogger.error("mobileOperationLog is not list or map!type:" + type);
+                }
             }
-        } else {
-            Map map = (Map) obj;
-            logger.info(cinfo + "\t" + initMobileLog(type, map).toHiveString());
+        } catch (Exception e) {
         }
 //        JSONArray jsonArray = JSONArray.fromObject(data.get("data"));
-
     }
 
     /**
      * 初始化日志数据对象
      */
-    public static MobileLog initMobileLog(String type, Map map) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        String className = Type.valueOf(type.toUpperCase()).getClassName();
-        Class clazz = Class.forName(className);
-        Constructor constructor = clazz.getConstructor(Map.class);
-        MobileLog mobileLog = (MobileLog) constructor.newInstance(map);
-        return mobileLog;
-    }
-
-
-    /**
-     * 初始化日志Log
-     *
-     * @param type
-     */
-
-    public static Logger initLogger(String type) {
-        String loggerName = Type.valueOf(type.toUpperCase()).getLogName();
-        Logger logger = LoggerFactory.getLogger(loggerName);
-        return logger;
+    public static MobileBaseLog initMobileLog(String type, Map map) throws Exception {
+        MobileBaseLog mobileBaseLog = null;
+        String className = Type.valueOf(type).getClassName();
+        try {
+            Class clazz = Class.forName(className);
+            mobileBaseLog = (MobileBaseLog) ReflectUtil.instantiateClassWithParameters(clazz, new Class[]{Map.class}, new Object[]{map});
+            return mobileBaseLog;
+        } catch (ClassNotFoundException e) {
+            utilLogger.error("Instantiate Class With Parameters NoSuchMethodException! Class:" + className, e);
+            throw e;
+        }
     }
 }

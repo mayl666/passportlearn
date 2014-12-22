@@ -9,7 +9,7 @@ import java.util.Map;
  * Time: 下午8:58
  * To change this template use File | Settings | File Templates.
  */
-public class ErrorLog extends MobileLog {
+public class ErrorLog extends MobileBaseLog {
 
     private String time;
     private String key;
@@ -18,12 +18,6 @@ public class ErrorLog extends MobileLog {
     public ErrorLog(Map map) {
         super(map);
     }
-
-    /*public ErrorLog(Map map) {
-        this.time = String.valueOf(map.get("time"));
-        this.key = String.valueOf(map.get("key"));
-        this.info = String.valueOf(map.get("info"));
-    }*/
 
     public String getTime() {
         return time;
@@ -51,6 +45,6 @@ public class ErrorLog extends MobileLog {
 
     @Override
     public String toHiveString() {
-        return time + "\t" + key + "\t" + info;
+        return super.toHiveString() + time + "\t" + key + "\t" + info;
     }
 }

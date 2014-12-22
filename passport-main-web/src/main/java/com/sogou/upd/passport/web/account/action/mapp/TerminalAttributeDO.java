@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account.action.mapp;
 
+import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 
@@ -17,7 +18,7 @@ import java.util.concurrent.Executors;
  */
 public class TerminalAttributeDO {
 
-    private Map attrMap = null;
+    private Map attrMap = Maps.newHashMap();
 
 
     //op=&pm=Lenovo A760&SdkVersion=16&resolution=480x854&platform=android&platformV=4.1.2&udid=860227023442427SOGOUcb35e205-a936-48fa-9513-1e3c1b97e82c891872840933341&passportSdkV=1.11&clientId=1120&appV=1.0
