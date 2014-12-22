@@ -105,8 +105,8 @@ public class MappAction extends BaseController {
             udid = terminalAttributeDO.getUdid();
             //验证code是否有效
             //TODO 先去除验证作测试
-            boolean isVaildCode = true;
-//            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
+//            boolean isVaildCode = true;
+            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
             if (!isVaildCode) {
                 result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
                 return result.toString();
