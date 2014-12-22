@@ -57,8 +57,8 @@ public class MobileOperationLogUtil {
     /**
      * 记录日志
      *
-     * @param type                日志类型
-     * @param dataJson            日志详情
+     * @param type              日志类型
+     * @param dataJson          日志详情
      * @param terminalAttribute
      * @throws Exception
      */
@@ -81,6 +81,7 @@ public class MobileOperationLogUtil {
                 }
             }
         } catch (Exception e) {
+            utilLogger.error("mobileOperationLog parse error!data=" + dataJson);
         }
 //        JSONArray jsonArray = JSONArray.fromObject(data.get("data"));
     }
