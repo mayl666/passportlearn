@@ -101,8 +101,8 @@ public class MappAction extends BaseController {
                 return result.toString();
             }
             //解析cinfo信息
-            MobileBaseLog mobileBaseLog = new MobileBaseLog(request);
-            udid = mobileBaseLog.getUdid();
+            TerminalAttributeDO terminalAttributeDO = new TerminalAttributeDO(request);
+            udid = terminalAttributeDO.getUdid();
             //验证code是否有效
             //TODO 先去除验证作测试
             boolean isVaildCode = true;
@@ -113,7 +113,7 @@ public class MappAction extends BaseController {
             }
             //将收集数据存储在本地log中
             Map map = JacksonJsonMapperUtil.getMapper().readValue(params.getData(), Map.class);
-            MobileOperationLogUtil.log(params.getType(), map);
+            MobileOperationLogUtil.log(params.getType(), params.getData(), terminalAttributeDO);
 
             result.setSuccess(true);
             return result.toString();
@@ -145,8 +145,8 @@ public class MappAction extends BaseController {
                 return result.toString();
             }
             //解析cinfo信息
-            MobileBaseLog mobileBaseLog = new MobileBaseLog(request);
-            udid = mobileBaseLog.getUdid();
+            TerminalAttributeDO terminalAttributeDO = new TerminalAttributeDO(request);
+            udid = terminalAttributeDO.getUdid();
             //验证code是否有效
             boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
             if (!isVaildCode) {

@@ -1,8 +1,10 @@
 package com.sogou.upd.passport.web;
 
 
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.ReflectUtil;
 import com.sogou.upd.passport.model.mobileoperation.MobileBaseLog;
+import com.sogou.upd.passport.web.account.action.mapp.TerminalAttributeDO;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,23 +57,25 @@ public class MobileOperationLogUtil {
     /**
      * 记录日志
      *
-     * @param type 日志类型
-     * @param data 日志详情
+     * @param type                日志类型
+     * @param dataJson            日志详情
+     * @param terminalAttributeDO
      * @throws Exception
      */
-    public static void log(String type, Map data) {
+    public static void log(String type, String dataJson, TerminalAttributeDO terminalAttributeDO) {
         try {
+            Map dataMap = JacksonJsonMapperUtil.getMapper().readValue(dataJson, Map.class);
             Logger logger = Type.valueOf(type).getLogger();
-            if (!MapUtils.isEmpty(data)) {
-                Object obj = data.get("data");
+            if (!MapUtils.isEmpty(dataMap)) {
+                Object obj = dataMap.get("data");
                 if (obj instanceof List) {
                     List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
-                    for (Map<String, Object> dataMap : list) {
-                        logger.info(initMobileLog(type, dataMap).toHiveString());
+                    for (Map<String, Object> valueMap : list) {
+                        logger.info(terminalAttributeDO.toHiveString() + initMobileLog(type, valueMap).toHiveString());
                     }
                 } else if (obj instanceof Map) {
-                    Map map = (Map) obj;
-                    logger.info(initMobileLog(type, map).toHiveString());
+                    Map valueMap = (Map) obj;
+                    logger.info(terminalAttributeDO.toHiveString() + initMobileLog(type, valueMap).toHiveString());
                 } else {
                     utilLogger.error("mobileOperationLog is not list or map!type:" + type);
                 }
