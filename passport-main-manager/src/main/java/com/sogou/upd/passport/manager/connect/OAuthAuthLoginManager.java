@@ -43,6 +43,6 @@ public interface OAuthAuthLoginManager {
      * @param params
      * @return
      */
-    public Result handleSSOAfterauth(HttpServletRequest req, AfterAuthParams params, String providerStr);
+    public Result handleSSOAfterauth(HttpServletRequest req, AfterAuthParams params, String providerStr, String ip);
 
 }

@@ -331,7 +331,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     }
 
     @Override
-    public Result handleSSOAfterauth(HttpServletRequest req, AfterAuthParams authParams, String providerStr) {
+    public Result handleSSOAfterauth(HttpServletRequest req, AfterAuthParams authParams, String providerStr, String ip) {
         Result result = new APIResultSupport(false);
 
         try {
@@ -348,13 +348,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String tcode = authParams.getTcode();
             String thirdAppId = req.getParameter(CommonConstant.THIRD_APPID); //不为空时代表应用使用独立appid；
             if (AccountTypeEnum.isConnect(provider)) {
-                OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-                if (oAuthConsumer == null) {
+                ConnectConfig connectConfig = queryConnectConfig(thirdAppId, appidType, clientId, provider);
+                if (connectConfig == null) {
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                     return result;
                 }
-                ConnectConfig connectConfig = queryConnectConfig(thirdAppId, appidType, clientId, provider);
-                if (connectConfig == null) {
+                OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+                if (oAuthConsumer == null && AccountTypeEnum.HUAWEI.getValue() != provider) {   //华为账号不用取oAuthConsumer
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                     return result;
                 }
@@ -374,23 +374,30 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     }
                 }
                 // 获取第三方个人资料
-                ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
-                if (connectUserInfoVO == null) {
-                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
-                    return result;
-                }
-                // 创建第三方账号
-                ConnectToken connectToken = null;
                 OAuthTokenVO oAuthTokenVO = new OAuthTokenVO();
+                ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
+                if (AccountTypeEnum.HUAWEI.getValue() == provider) {  //华为账号只有昵称，且由SDK传入
+                    String uniqname = authParams.getUniqname();
+                    connectUserInfoVO.setNickname(uniqname);
+                } else {
+                    connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
+                    if (connectUserInfoVO == null) {
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
+                        return result;
+                    }
+
+                }
                 String uniqname = connectUserInfoVO.getNickname();
-                oAuthTokenVO.setNickName(uniqname);
-                oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
                 oAuthTokenVO.setAccessToken(accessToken);
                 oAuthTokenVO.setRefreshToken(refreshToken);
                 oAuthTokenVO.setOpenid(openId);
                 oAuthTokenVO.setExpiresIn(expiresIn);
+                oAuthTokenVO.setNickName(uniqname);
+                oAuthTokenVO.setIp(ip);
+                oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
                 oAuthTokenVO.setUnionId(connectUserInfoVO.getUnionid());
                 Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
+                ConnectToken connectToken;
                 if (!connectAccountResult.isSuccess()) {
                     return connectAccountResult;
                 } else {

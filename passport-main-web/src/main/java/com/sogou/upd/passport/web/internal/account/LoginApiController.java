@@ -47,8 +47,6 @@ public class LoginApiController extends BaseController {
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
-    private LoginApiManager sgLoginApiManager;
-    @Autowired
     private LoginManager loginManager;
     @Autowired
     private LoginApiManager loginApiManager;
@@ -247,7 +245,7 @@ public class LoginApiController extends BaseController {
             return result.toString();
         }
         // 调用内部接口
-        result = sgLoginApiManager.appAuthToken(params.getToken());
+        result = loginApiManager.appAuthToken(params.getToken());
         String userId = (String) result.getModels().get("userid");
         //记录log
         UserOperationLog userOperationLog = new UserOperationLog(StringUtils.defaultIfEmpty(userId, "third"), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));

@@ -14,7 +14,6 @@ public class CommonConstant {
     public static final int SGPP_DEFAULT_CLIENTID = 1120;
     public static final String SGPP_DEFAULT_SERVER_SECRET = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
     public static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
-    public static final int WAN_CLIENTID = 1100; //游戏client_id
     public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
     public static final int XIAOSHUO_CLIENTID = 1115; //小说client_id
     public static final int CAIPIAO_CLIENTID = 2012; //彩票client_id
@@ -51,7 +50,8 @@ public class CommonConstant {
     public static final String RESQUEST_CODE = "code";
     public static final String BROWER_VERSION = "v";//浏览器客户端版本
     public static final String INSTANCE_ID = "instanceid";//终端唯一标示
-    public static final String THIRD_APPID = "third_appid";//终端唯一标示
+    public static final String THIRD_APPID = "third_appid";//应用在第三方平台独立申请的appid
+    public static final String MAPP_REQUEST_HEADER_SIGN = "cinfo";
 
     public static final String RESPONSE_STATUS = "status"; // 响应结果状态码，>0表示异常
     public static final String RESPONSE_STATUS_TEXT = "statusText"; // 响应结果说明
@@ -84,12 +84,9 @@ public class CommonConstant {
     //桌面端产品 生成cookie 不种标示
     public static final int CREATE_COOKIE_NOT_SET = 1;
 
-
     public static final int DEFAULT_COOKIE_EXPIRE = 3600 * 60 * 1; // 默认种cookie的有效期，1小时
-    public static final long API_REQUEST_VAILD_TERM = 500000 * 60 * 1000l; //接口请求的有效期为5分钟，单位为秒
     public static final long COOKIE_REQUEST_VAILD_TERM = 5 * 60; //接口请求的有效期为5分钟，单位为秒
     public static final long COOKIE_REQUEST_VAILD_TERM_IN_MILLI = 5 * 60 * 1000; //接口请求的有效期为5分钟，单位为秒
-
 
     public static final String LOGIN_IN_BLACKLIST = "1"; //用户名或者ip在黑名单的标识
 
@@ -102,7 +99,6 @@ public class CommonConstant {
     public static final String HTTPS_HEADER = "X-Https";
     public static final String HTTPS_VALUE = "https";
     public static final String USER_AGENT = "User-Agent";
-
 
     //域名不正确
     public static final String DOMAIN_ERROR = "域名不正确";

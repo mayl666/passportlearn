@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.account.form;
+package com.sogou.upd.passport.web.account.form.mapp;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -23,8 +23,6 @@ public class MappLogoutParams {
 
     @NotBlank(message = "code不允许为空！")
     private String code;
-
-
 
     //验证code是否有效
 

@@ -350,7 +350,7 @@ public class RegAction extends BaseController {
         boolean canProcessGet = false;
         String cInfo;
         if ("GET".equalsIgnoreCase(request.getMethod())) {
-            cInfo = request.getHeader("cinfo");
+            cInfo = request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN);
             if (StringUtil.isNotEmpty(cInfo)) {
                 canProcessGet = true;
             }
@@ -378,7 +378,7 @@ public class RegAction extends BaseController {
             }
             String mobile = reqParams.getMobile();
             String userAgent = request.getHeader(CommonConstant.USER_AGENT);
-            cInfo = request.getHeader("cinfo");
+            cInfo = request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN);
             boolean isNeedCaptcha = false;
             //只有客户端才会有此"cinfo"参数，web端和桌面端是没有的，故客户端和手机端还走第二次弹出验证码的流程
             if (!Strings.isNullOrEmpty(cInfo) || (!Strings.isNullOrEmpty(userAgent) && (userAgent.toLowerCase().contains("android") || userAgent.toLowerCase().contains("iphone")))) {

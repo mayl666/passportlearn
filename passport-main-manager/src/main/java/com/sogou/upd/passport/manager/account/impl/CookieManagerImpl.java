@@ -76,9 +76,6 @@ public class CookieManagerImpl implements CookieManager {
                     "QCUkidj2RX7aEGCy24mwYimbF0EKljzPYVbcoTWujGFOLaVIC6SNf95mFwfEO3D7xTs+UEdWVrUC" +
                     "0pOTjeSYPdw=";
 
-
-    @Autowired
-    private AppConfigService appConfigService;
     @Autowired
     private CommonManager commonManager;
     @Autowired
@@ -87,12 +84,6 @@ public class CookieManagerImpl implements CookieManager {
     private LoginApiManager sgLoginApiManager;
     @Autowired
     private RedisUtils redisUtils;
-
-    @Override
-    public AppConfig queryAppConfigByClientId(int clientId) {
-        AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
-        return appConfig;
-    }
 
     @Override
     public Result setCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int maxAge) {

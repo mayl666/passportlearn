@@ -9,11 +9,11 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +39,8 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
     private CommonManager commonManager;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private TokenService tokenService;
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserApiParams) {
@@ -81,16 +83,25 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
 
     @Override
     public Result appAuthToken(String token) {
-        return null;
+        Result result = new APIResultSupport(false);
+        try {
+            String passportId = tokenService.getPassprotIdByWapToken(token);
+            if (!Strings.isNullOrEmpty(passportId)) {
+                result.setSuccess(true);
+                result.setMessage("操作成功");
+                result.setDefaultModel("userid", passportId);
+                return result;
+            }
+            result.setCode(ErrorUtil.ERR_SIGNATURE_OR_TOKEN);
+            return result;
+        } catch (Exception e) {
+            result.setSuccess(false);
+            return result;
+        }
     }
 
     @Override
     public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode, boolean isHttps) {
-        return null;
-    }
-
-    @Override
-    public Result getCookieInfoWithRedirectUrl(CreateCookieUrlApiParams createCookieUrlApiParams) {
         return null;
     }
 

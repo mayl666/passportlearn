@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
+import com.sogou.upd.passport.manager.api.account.ProxyApiManagerImpl;
 import com.sogou.upd.passport.manager.api.account.form.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +98,8 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
         createCookieUrlApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
         createCookieUrlApiParams.setPersistentcookie(1);
         createCookieUrlApiParams.setDomain("sogou.com");
-        Result result = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
+        ProxyApiManagerImpl proxyApiManager = new ProxyApiManagerImpl();
+        Result result = proxyApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
         System.out.println(result);
     }
 

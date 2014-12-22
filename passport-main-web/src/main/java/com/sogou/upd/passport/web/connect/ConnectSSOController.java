@@ -62,7 +62,7 @@ public class ConnectSSOController extends BaseConnectController {
                 return result.toString();
             }
 
-            result = oAuthAuthLoginManager.handleSSOAfterauth(req, params, providerStr);
+            result = oAuthAuthLoginManager.handleSSOAfterauth(req, params, providerStr, getIp(req));
             if (result.isSuccess()) {
                 buildSpecialResultParams(req, result, params.getClient_id(), providerStr);
             }

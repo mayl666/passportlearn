@@ -166,8 +166,11 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <delete file="src/main/resources/deploy_config.properties" />
-                                <copy file="${app_config_file}" tofile="src/main/resources/deploy_config.properties" />
+                                <delete file="src/main/resources/deploy_config.properties"/>
+                                <copy file="${config_file}" tofile="src/main/resources/deploy_config.properties"/>
+                                <delete file="src/main/resources/mapp_deploy_config.properties"/>
+                                <copy file="${mapp_config_file}"
+                                      tofile="src/main/resources/mapp_deploy_config.properties"/>
                             </tasks>
                         </configuration>
                     </execution>
@@ -180,9 +183,12 @@
         <profile>
             <id>dev</id>
             <properties>
-                <app_config_file>
+                <config_file>
                     src/main/resources/deploy_config_DEV.properties
-                </app_config_file>
+                </config_file>
+                <mapp_config_file>
+                    src/main/resources/mapp_deploy_config_DEV.properties
+                </mapp_config_file>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -191,17 +197,23 @@
         <profile>
             <id>test</id>
             <properties>
-                <app_config_file>
+                <config_file>
                     src/main/resources/deploy_config_TEST.properties
-                </app_config_file>
+                </config_file>
+                <mapp_config_file>
+                    src/main/resources/mapp_deploy_config_TEST.properties
+                </mapp_config_file>
             </properties>
         </profile>
         <profile>
             <id>prod</id>
             <properties>
-                <app_config_file>
+                <config_file>
                     src/main/resources/deploy_config_PROD.properties
-                </app_config_file>
+                </config_file>
+                <mapp_config_file>
+                    src/main/resources/mapp_deploy_config_PROD.properties
+                </mapp_config_file>
             </properties>
         </profile>
     </profiles>
