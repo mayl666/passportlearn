@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web;
 
 
+import com.sogou.upd.passport.common.parameter.MappStatReportType;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.ReflectUtil;
 import com.sogou.upd.passport.model.mobileoperation.MobileBaseLog;
@@ -22,62 +23,30 @@ import java.util.Map;
 public class MobileOperationLogUtil {
 
     private static final Logger utilLogger = LoggerFactory.getLogger(MobileOperationLogUtil.class);
-    private static final Logger interfaceLogger = LoggerFactory.getLogger("interfaceLogger");
-    private static final Logger exceptionLogger = LoggerFactory.getLogger("exceptionLogger");
-    private static final Logger productLogger = LoggerFactory.getLogger("productLogger");
-    private static final Logger debugLogger = LoggerFactory.getLogger("debugLogger");
-    private static final Logger errorLogger = LoggerFactory.getLogger("errorLogger");
-    private static final Logger netflowLogger = LoggerFactory.getLogger("netflowLogger");
-
-    enum Type {
-        INTERFACE(interfaceLogger, "com.sogou.upd.passport.model.mobileoperation.InterfaceLog"),
-        EXCEPTION(exceptionLogger, "com.sogou.upd.passport.model.mobileoperation.ExceptionLog"),
-        PRODUCT(productLogger, "com.sogou.upd.passport.model.mobileoperation.ProductLog"),
-        DEBUGLOG(debugLogger, "com.sogou.upd.passport.model.mobileoperation.DebugLog"),
-        ERRORLOG(errorLogger, "com.sogou.upd.passport.model.mobileoperation.ErrorLog"),
-        NETFLOW(netflowLogger, "com.sogou.upd.passport.model.mobileoperation.NetflowLog");
-
-        private String className;   //type对应的对象类名
-        private Logger logger;     //type对应的logger
-
-        Type(Logger logger, String className) {
-            this.logger = logger;
-            this.className = className;
-        }
-
-        public String getClassName() {
-            return className;
-        }
-
-        Logger getLogger() {
-            return logger;
-        }
-    }
 
     /**
      * 记录日志
      *
-     * @param type              日志类型
+     * @param typeName              日志类型
      * @param dataJson          日志详情
      * @param terminalAttribute
-     * @throws Exception
      */
-    public static void log(String type, String dataJson, TerminalAttribute terminalAttribute) {
+    public static void log(String typeName, String dataJson, TerminalAttribute terminalAttribute) {
         try {
             Map dataMap = JacksonJsonMapperUtil.getMapper().readValue(dataJson, Map.class);
             if (!MapUtils.isEmpty(dataMap)) {
-                Logger logger = Type.valueOf(type).getLogger();
+                Logger logger = MappStatReportType.getLogger(typeName);
                 Object obj = dataMap.get("data");
                 if (obj instanceof List) {
                     List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
                     for (Map<String, Object> valueMap : list) {
-                        logger.info(terminalAttribute.toHiveString() + initMobileLog(type, valueMap).toHiveString());
+                        logger.info(terminalAttribute.toHiveString() + initMobileLog(typeName, valueMap).toHiveString());
                     }
                 } else if (obj instanceof Map) {
                     Map valueMap = (Map) obj;
-                    logger.info(terminalAttribute.toHiveString() + initMobileLog(type, valueMap).toHiveString());
+                    logger.info(terminalAttribute.toHiveString() + initMobileLog(typeName, valueMap).toHiveString());
                 } else {
-                    utilLogger.error("mobileOperationLog is not list or map!type:" + type);
+                    utilLogger.error("mobileOperationLog is not list or map!type:" + typeName);
                 }
             }
         } catch (Exception e) {
@@ -89,8 +58,8 @@ public class MobileOperationLogUtil {
     /**
      * 初始化日志数据对象
      */
-    public static MobileBaseLog initMobileLog(String type, Map map) throws Exception {
-        String className = Type.valueOf(type).getClassName();
+    public static MobileBaseLog initMobileLog(String typeName, Map map) throws Exception {
+        String className = MappStatReportType.getClassName(typeName);
         try {
             Class clazz = Class.forName(className);
             MobileBaseLog mobileBaseLog = (MobileBaseLog) ReflectUtil.instantiateClassWithParameters(clazz, new Class[]{Map.class}, new Object[]{map});
