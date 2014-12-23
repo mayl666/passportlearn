@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web;
 
 
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.MappStatReportType;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.ReflectUtil;
@@ -10,6 +11,8 @@ import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +34,7 @@ public class MobileOperationLogUtil {
      * @param dataJson          日志详情
      * @param terminalAttribute
      */
-    public static void log(String typeName, String dataJson, TerminalAttribute terminalAttribute) {
+    public static void log(String typeName, String dataJson, TerminalAttribute terminalAttribute, String userIp) {
         try {
             Map dataMap = JacksonJsonMapperUtil.getMapper().readValue(dataJson, Map.class);
             if (!MapUtils.isEmpty(dataMap)) {
@@ -41,12 +44,12 @@ public class MobileOperationLogUtil {
                     List<String> list = (List<String>) obj;
                     for (String valuejson : list) {
                         Map valueMap = JacksonJsonMapperUtil.getMapper().readValue(valuejson, Map.class);
-                        logger.info(terminalAttribute.toHiveString() + initMobileLog(typeName, valueMap).toHiveString());
+                        log(logger, terminalAttribute, initMobileLog(typeName, valueMap), userIp);
                     }
                 } else if (obj instanceof String) {
                     String valuejson = (String) obj;
                     Map valueMap = JacksonJsonMapperUtil.getMapper().readValue(valuejson, Map.class);
-                    logger.info(terminalAttribute.toHiveString() + initMobileLog(typeName, valueMap).toHiveString());
+                    log(logger, terminalAttribute, initMobileLog(typeName, valueMap), userIp);
                 } else {
                     utilLogger.error("mobileOperationLog is not list or map!type:" + typeName);
                 }
@@ -70,5 +73,19 @@ public class MobileOperationLogUtil {
             utilLogger.error("Instantiate Class With Parameters NoSuchMethodException! Class:" + className, e);
             throw e;
         }
+    }
+
+    /**
+     * 用于记录log代码
+     * 日志格式：日期+时间  终端属性 各类型移动端数据
+     */
+    public static <T extends MobileBaseLog> void log(Logger operationLogger, TerminalAttribute terminalAttribute, T mobileLog, String userIp) {
+        StringBuilder log = new StringBuilder();
+        Date date = new Date();
+        log.append(new SimpleDateFormat("yyy-MM-dd_HH:mm:ss").format(date));
+        log.append("\t").append(StringUtil.defaultIfEmpty(userIp, "-"));
+        log.append("\t").append(terminalAttribute.toHiveString());
+        log.append("\t").append(mobileLog.toHiveString());
+        operationLogger.info(log.toString());
     }
 }

@@ -19,16 +19,16 @@ import java.util.Set;
  */
 public class TerminalAttribute {
 
-    private String op = "";  //运营商
-    private String pm = "";  //机型
-    private String sdkVersion = ""; //操作系统版本code
-    private String platform = "";  //操作系统
-    private String platformV = "";  //操作系统版本string
-    private String resolution = "";   //分辨率
-    private String udid = "";    //唯一标示
-    private String passportSdkV = ""; //passport sdk版本
-    private String appV = "";  //应用版本
-    private String network = "";  //网络
+    private String op;  //运营商
+    private String pm;  //机型
+    private String sdkVersion; //操作系统版本code
+    private String platform;  //操作系统
+    private String platformV;  //操作系统版本string
+    private String resolution;   //分辨率
+    private String udid;    //唯一标示
+    private String passportSdkV; //passport sdk版本
+    private String appV;  //应用版本
+    private String network;  //网络
 
     //op=&pm=Lenovo A760&sdkVersion=16&resolution=480x854&platform=android&platformV=4.1.2&udid=860227023442427SOGOUcb35e205-a936-48fa-9513-1e3c1b97e82c891872840933341&passportSdkV=1.11&clientId=1120&appV=1.0
     public TerminalAttribute(HttpServletRequest request) {
@@ -125,8 +125,11 @@ public class TerminalAttribute {
     }
 
     public String toHiveString() {
-        return op + "\t" + pm + "\t" + sdkVersion + "\t" + platform + "\t" + platformV + "\t" +
-                resolution + "\t" + udid + "\t" + passportSdkV + "\t" + appV + "\t" + network + "\t";
+        return StringUtil.defaultIfEmpty(op, "-") + "\t" + StringUtil.defaultIfEmpty(pm, "-") + "\t" +
+                StringUtil.defaultIfEmpty(sdkVersion, "-") + "\t" + StringUtil.defaultIfEmpty(platform, "-") + "\t" +
+                StringUtil.defaultIfEmpty(platformV, "-") + "\t" + StringUtil.defaultIfEmpty(resolution, "-") + "\t" +
+                StringUtil.defaultIfEmpty(udid, "-") + "\t" + StringUtil.defaultIfEmpty(passportSdkV, "-") + "\t" +
+                StringUtil.defaultIfEmpty(appV, "-") + "\t" + StringUtil.defaultIfEmpty(network, "-");
     }
 
 }

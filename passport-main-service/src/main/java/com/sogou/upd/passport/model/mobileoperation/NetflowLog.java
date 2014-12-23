@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.model.mobileoperation;
 
+import com.sogou.upd.passport.common.lang.StringUtil;
+
 import java.util.Map;
 
 /**
@@ -108,6 +110,10 @@ public class NetflowLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return start_time + "\t" + now_time + "\t" + mobile_down_http + "\t" + mobile_up_http + "\t" + wifi_down_http + "\t" + wifi_up_http + "\t" + mobile_down_tcp + "\t" + mobile_up_tcp + "\t" + wifi_up_tcp + "\t" + wifi_down_http;
+        return StringUtil.defaultIfEmpty(start_time, "-") + "\t" + StringUtil.defaultIfEmpty(now_time, "-") + "\t" +
+                StringUtil.defaultIfEmpty(mobile_down_http, "-") + "\t" + StringUtil.defaultIfEmpty(mobile_up_http, "-") + "\t" +
+                StringUtil.defaultIfEmpty(wifi_down_http, "-") + "\t" + StringUtil.defaultIfEmpty(wifi_up_http, "-") + "\t" +
+                StringUtil.defaultIfEmpty(mobile_down_tcp, "-") + "\t" + StringUtil.defaultIfEmpty(mobile_up_tcp, "-") + "\t" +
+                StringUtil.defaultIfEmpty(wifi_up_tcp, "-") + "\t" + StringUtil.defaultIfEmpty(wifi_down_http, "-");
     }
 }

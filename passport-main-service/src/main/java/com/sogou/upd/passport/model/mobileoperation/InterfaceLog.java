@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.model.mobileoperation;
 
+import com.sogou.upd.passport.common.lang.StringUtil;
+
 import java.util.Map;
 
 /**
@@ -72,7 +74,9 @@ public class InterfaceLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return uri + "\t" + start_time + "\t" + response_time + "\t" + passport_code + "\t" + http_code + "\t" + client_id;
+        return StringUtil.defaultIfEmpty(client_id, "-") + "\t" + StringUtil.defaultIfEmpty(uri, "-") + "\t" +
+                StringUtil.defaultIfEmpty(start_time, "-") + "\t" + StringUtil.defaultIfEmpty(response_time, "-") + "\t" +
+                StringUtil.defaultIfEmpty(passport_code, "-") + "\t" + StringUtil.defaultIfEmpty(http_code, "-");
     }
 }
 

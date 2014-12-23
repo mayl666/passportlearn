@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.model.mobileoperation;
 
+import com.sogou.upd.passport.common.lang.StringUtil;
+
 import java.util.Map;
 
 /**
@@ -63,6 +65,8 @@ public class DebugLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return times + "\t" + level + "\t" + tag + "\t" + key + "\t" + info;
+        return StringUtil.defaultIfEmpty(times, "-") + "\t" + StringUtil.defaultIfEmpty(level, "-") + "\t" +
+                StringUtil.defaultIfEmpty(tag, "-") + "\t" + StringUtil.defaultIfEmpty(key, "-") + "\t" +
+                StringUtil.defaultIfEmpty(info, "-");
     }
 }
