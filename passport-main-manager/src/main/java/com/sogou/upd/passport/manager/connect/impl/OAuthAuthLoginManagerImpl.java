@@ -201,6 +201,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), oAuthConsumer);
                 if (provider == AccountTypeEnum.BAIDU.getValue()) {     // 百度 oauth2.0授权的openid需要从用户信息接口获取
                     setBaiduOpenid(connectUserInfoVO, oAuthTokenVO);
+                } else if (provider == AccountTypeEnum.WEIXIN.getValue()) {  //微信的用户唯一标示unionid需要从用户信息接口获取
+                    oAuthTokenVO.setUnionId(connectUserInfoVO.getUnionid());
                 }
             }
             String uniqname = openId;
