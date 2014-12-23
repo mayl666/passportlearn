@@ -62,6 +62,6 @@ public class ExceptionLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return super.toHiveString() + times + "\t" + start_time + "\t" + last_time + "\t" + exception_msg + "\t" + exception_detail;
+        return times + "\t" + start_time + "\t" + last_time + "\t" + exception_msg + "\t" + exception_detail;
     }
 }

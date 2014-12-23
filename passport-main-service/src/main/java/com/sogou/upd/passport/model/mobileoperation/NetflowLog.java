@@ -108,6 +108,6 @@ public class NetflowLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return super.toHiveString() + start_time + "\t" + now_time + "\t" + mobile_down_http + "\t" + mobile_up_http + "\t" + wifi_down_http + "\t" + wifi_up_http + "\t" + mobile_down_tcp + "\t" + mobile_up_tcp + "\t" + wifi_up_tcp + "\t" + wifi_down_http;
+        return start_time + "\t" + now_time + "\t" + mobile_down_http + "\t" + mobile_up_http + "\t" + wifi_down_http + "\t" + wifi_up_http + "\t" + mobile_down_tcp + "\t" + mobile_up_tcp + "\t" + wifi_up_tcp + "\t" + wifi_down_http;
     }
 }

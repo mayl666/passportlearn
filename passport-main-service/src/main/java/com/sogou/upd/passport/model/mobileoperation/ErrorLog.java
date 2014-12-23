@@ -45,6 +45,6 @@ public class ErrorLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return super.toHiveString() + time + "\t" + key + "\t" + info;
+        return time + "\t" + key + "\t" + info;
     }
 }

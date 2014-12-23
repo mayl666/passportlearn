@@ -54,6 +54,6 @@ public class ProductLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return super.toHiveString() + page + "\t" + event_id + "\t" + time + "\t" + client_id;
+        return page + "\t" + event_id + "\t" + time + "\t" + client_id;
     }
 }

@@ -63,6 +63,6 @@ public class DebugLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return super.toHiveString() + times + "\t" + level + "\t" + tag + "\t" + key + "\t" + info;
+        return times + "\t" + level + "\t" + tag + "\t" + key + "\t" + info;
     }
 }

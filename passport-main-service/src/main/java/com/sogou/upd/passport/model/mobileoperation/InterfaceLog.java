@@ -72,7 +72,7 @@ public class InterfaceLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return super.toHiveString() + uri + "\t" + start_time + "\t" + response_time + "\t" + passport_code + "\t" + http_code + "\t" + client_id;
+        return uri + "\t" + start_time + "\t" + response_time + "\t" + passport_code + "\t" + http_code + "\t" + client_id;
     }
 }
 
