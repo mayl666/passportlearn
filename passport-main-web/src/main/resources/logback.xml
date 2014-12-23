@@ -66,20 +66,6 @@
         <appender-ref ref="debugAppender"/>
     </logger>
 
-    <!--移动端数据统计 debugLog  -->
-    <appender name="errorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/mobileoperation/error/error.log.%d{yyyy-MM-dd}</fileNamePattern>
-            <maxHistory>7</maxHistory>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%msg %n</pattern>
-        </encoder>
-    </appender>
-    <logger name="errorLogger" level="info" additivity="false">
-        <appender-ref ref="errorAppender"/>
-    </logger>
-
     <!--移动端数据统计 netflow  -->
     <appender name="netflowAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

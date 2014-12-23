@@ -17,7 +17,6 @@ public class MappStatReportType {
     private static final Logger exceptionLogger = LoggerFactory.getLogger("exceptionLogger");
     private static final Logger productLogger = LoggerFactory.getLogger("productLogger");
     private static final Logger debugLogger = LoggerFactory.getLogger("debugLogger");
-    private static final Logger errorLogger = LoggerFactory.getLogger("errorLogger");
     private static final Logger netflowLogger = LoggerFactory.getLogger("netflowLogger");
 
     private static final Map<String, Type> TYPE_MAP = Maps.newHashMap();
@@ -27,7 +26,6 @@ public class MappStatReportType {
         TYPE_MAP.put("exception", Type.EXCEPTION);
         TYPE_MAP.put("product", Type.PRODUCT);
         TYPE_MAP.put("debuglog", Type.DEBUGLOG);
-        TYPE_MAP.put("error", Type.ERRORLOG);
         TYPE_MAP.put("netflow", Type.NETFLOW);
     }
 
@@ -48,7 +46,6 @@ public class MappStatReportType {
         EXCEPTION(exceptionLogger, "com.sogou.upd.passport.model.mobileoperation.ExceptionLog"),  //sdk异常
         PRODUCT(productLogger, "com.sogou.upd.passport.model.mobileoperation.ProductLog"), //产品
         DEBUGLOG(debugLogger, "com.sogou.upd.passport.model.mobileoperation.DebugLog"), //普通日志
-        ERRORLOG(errorLogger, "com.sogou.upd.passport.model.mobileoperation.ErrorLog"), //接口异常
         NETFLOW(netflowLogger, "com.sogou.upd.passport.model.mobileoperation.NetflowLog"); //流量
 
         private Logger logger;     //type对应的logger
