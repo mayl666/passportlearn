@@ -60,12 +60,12 @@ public class MobileOperationLogUtil {
     /**
      * 初始化日志数据对象
      */
-    public static MobileBaseLog initMobileLog(String typeName, Map map) throws Exception {
+    public static <T extends MobileBaseLog> T initMobileLog(String typeName, Map map) throws Exception {
         String className = MappStatReportType.getClassName(typeName);
         try {
             Class clazz = Class.forName(className);
-            MobileBaseLog mobileBaseLog = (MobileBaseLog) ReflectUtil.instantiateClassWithParameters(clazz, new Class[]{Map.class}, new Object[]{map});
-            return mobileBaseLog;
+            T mobileLog = (T) ReflectUtil.instantiateClassWithParameters(clazz, new Class[]{Map.class}, new Object[]{map});
+            return mobileLog;
         } catch (ClassNotFoundException e) {
             utilLogger.error("Instantiate Class With Parameters NoSuchMethodException! Class:" + className, e);
             throw e;
