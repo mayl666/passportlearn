@@ -27,7 +27,7 @@ public class MobileOperationLogUtil {
     /**
      * 记录日志
      *
-     * @param typeName              日志类型
+     * @param typeName          日志类型
      * @param dataJson          日志详情
      * @param terminalAttribute
      */
@@ -38,19 +38,21 @@ public class MobileOperationLogUtil {
                 Logger logger = MappStatReportType.getLogger(typeName);
                 Object obj = dataMap.get("data");
                 if (obj instanceof List) {
-                    List<Map<String, Object>> list = (List<Map<String, Object>>) obj;
-                    for (Map<String, Object> valueMap : list) {
+                    List<String> list = (List<String>) obj;
+                    for (String valuejson : list) {
+                        Map valueMap = JacksonJsonMapperUtil.getMapper().readValue(valuejson, Map.class);
                         logger.info(terminalAttribute.toHiveString() + initMobileLog(typeName, valueMap).toHiveString());
                     }
-                } else if (obj instanceof Map) {
-                    Map valueMap = (Map) obj;
+                } else if (obj instanceof String) {
+                    String valuejson = (String) obj;
+                    Map valueMap = JacksonJsonMapperUtil.getMapper().readValue(valuejson, Map.class);
                     logger.info(terminalAttribute.toHiveString() + initMobileLog(typeName, valueMap).toHiveString());
                 } else {
                     utilLogger.error("mobileOperationLog is not list or map!type:" + typeName);
                 }
             }
         } catch (Exception e) {
-            utilLogger.error("mobileOperationLog parse error!data=" + dataJson);
+            utilLogger.error("mobileOperationLog parse error!", e);
         }
 //        JSONArray jsonArray = JSONArray.fromObject(data.get("data"));
     }
