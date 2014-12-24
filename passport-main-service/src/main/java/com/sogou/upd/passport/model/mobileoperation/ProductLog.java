@@ -13,10 +13,10 @@ import java.util.Map;
  */
 public class ProductLog extends MobileBaseLog {
 
+    private String client_id;
     private String page;
     private String event_id;
     private String time;
-    private String client_id;
 
     public ProductLog(Map map) {
         super(map);

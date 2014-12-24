@@ -14,11 +14,11 @@ import java.util.Map;
 public class InterfaceLog extends MobileBaseLog {
 
     private String uri;
+    private String client_id;
     private String start_time;
     private String response_time;
     private String passport_code;
     private String http_code;
-    private String client_id;
 
     public InterfaceLog(Map map) {
         super(map);
