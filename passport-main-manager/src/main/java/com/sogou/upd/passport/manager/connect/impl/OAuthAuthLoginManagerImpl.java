@@ -115,12 +115,12 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String pCallbackUrl = oAuthConsumer.getCallbackUrl(httpOrHttps);
             ConnectLoginRedirectParams redirectParams = new ConnectLoginRedirectParams(connectLoginParams, ip, userAgent);
             String state = UUID.randomUUID().toString();
-            String redirectURI;
+            String redirectURL;
             if (AccountTypeEnum.WEIXIN.getValue() == provider) { //微信不能把redirectURL里的参数带到回跳接口，需要通过state存储并获取
-                redirectURI = pCallbackUrl;
+                redirectURL = pCallbackUrl;
                 redisUtils.set(state, redirectParams, 30, TimeUnit.MINUTES);
             } else {
-                redirectURI = ConnectManagerHelper.constructRedirectURL(pCallbackUrl, redirectParams);
+                redirectURL = ConnectManagerHelper.constructRedirectURL(pCallbackUrl, redirectParams);
             }
             String scope = connectConfig.getScope();
             String appKey = connectConfig.getAppKey();
@@ -136,7 +136,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
 
             OAuthAuthzClientRequest.AuthenticationRequestBuilder builder = OAuthAuthzClientRequest
                     .authorizationLocation(oAuthConsumer.getWebUserAuthzUrl()).setAppKey(appKey, provider)
-                    .setRedirectURI(redirectURI)
+                    .setRedirectURI(redirectURL)
                     .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
                     .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
                     .setState(state);
@@ -186,7 +186,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURL(oAuthConsumer.getCallbackUrl(httpOrHttps), redirectParams);
+            String redirectUrl;
+            String pCallbackUrl = oAuthConsumer.getCallbackUrl(httpOrHttps);
+            if (AccountTypeEnum.WEIXIN.getValue() == provider) { //微信不能把redirectURL里的参数带到回跳接口
+                redirectUrl = pCallbackUrl;
+            } else {
+                redirectUrl = ConnectManagerHelper.constructRedirectURL(pCallbackUrl, redirectParams);
+            }
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
