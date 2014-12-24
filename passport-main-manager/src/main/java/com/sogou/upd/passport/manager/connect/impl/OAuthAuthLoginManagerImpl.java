@@ -169,7 +169,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         String from = redirectParams.getFrom(); //手机浏览器会传此参数，响应结果和PC端不一样
         String thirdInfo = redirectParams.getThirdInfo(); //用于SDK端请求，返回搜狗用户信息或者低三方用户信息；
         int provider = AccountTypeEnum.getProvider(providerStr);
-        String thirdAppId = redirectParams.getThird_appId(); //不为空时代表应用使用独立appid；
+        String thirdAppId = redirectParams.getThird_appid(); //不为空时代表应用使用独立appid；
         try {
             int clientId = Integer.valueOf(redirectParams.getClient_id());
             //1.获取授权成功后返回的code值

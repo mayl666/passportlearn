@@ -64,17 +64,10 @@ public class ConnectCallbackController extends BaseConnectController {
         String type = redirectParams.getType();
         String clientIdStr = String.valueOf(redirectParams.getClient_id());
         String ua = redirectParams.getUser_agent();
-        String ru = redirectParams.getRu();
+        String ru = parseRedirectUrl(redirectParams).getRu();
         if (Strings.isNullOrEmpty(clientIdStr)) {
             res.sendRedirect(ru);
             return "empty";
-        }
-        try {
-            ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_CONNECT_REDIRECT_URL : ru;
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Url decode Exception! ru:" + ru);
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
         }
 
         Result result = oAuthAuthLoginManager.handleConnectCallback(redirectParams, req, providerStr, getProtocol(req));
@@ -153,4 +146,16 @@ public class ConnectCallbackController extends BaseConnectController {
         }
     }
 
+    private ConnectLoginRedirectParams parseRedirectUrl(ConnectLoginRedirectParams redirectParams) {
+        String ru = redirectParams.getRu();
+        try {
+            ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_CONNECT_REDIRECT_URL : ru;
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Url decode Exception! ru:" + ru);
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
+        redirectParams.setRu(ru);
+        return redirectParams;
+    }
 }

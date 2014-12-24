@@ -21,7 +21,7 @@ public class ConnectLoginRedirectParams {
     private String thirdInfo;  //是否需要个人信息
     private String user_agent;   //输入法PC客户端根据ua判断显示不同的错误页面
     private String v;   //浏览器PC客户端根据v判断显示新旧UI样式
-    private String third_appId; //应用传递自己的第三方appid
+    private String third_appid; //应用传递自己的第三方appid
 
     //必须有无参的构造函数，不然servlet报错
     public ConnectLoginRedirectParams() {
@@ -38,7 +38,7 @@ public class ConnectLoginRedirectParams {
         this.thirdInfo = connectLoginParams.getThirdInfo();
         this.user_agent = userAgent;
         this.v = connectLoginParams.getV();
-        this.third_appId = connectLoginParams.getThird_appid();
+        this.third_appid = connectLoginParams.getThird_appid();
     }
 
     public String getRu() {
@@ -121,11 +121,11 @@ public class ConnectLoginRedirectParams {
         this.v = v;
     }
 
-    public String getThird_appId() {
-        return third_appId;
+    public String getThird_appid() {
+        return third_appid;
     }
 
-    public void setThird_appId(String third_appId) {
-        this.third_appId = third_appId;
+    public void setThird_appid(String third_appid) {
+        this.third_appid = third_appid;
     }
 }

@@ -39,7 +39,7 @@ public class ConnectManagerHelper {
             callbackParamMap.put("thirdInfo", redirectParams.getThirdInfo());
             callbackParamMap.put("user_agent", redirectParams.getUser_agent());
             callbackParamMap.put("v", redirectParams.getV());
-            callbackParamMap.put(CommonConstant.THIRD_APPID, redirectParams.getThird_appId());
+            callbackParamMap.put(CommonConstant.THIRD_APPID, redirectParams.getThird_appid());
             StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParamMap.entrySet(), CommonConstant.DEFAULT_CHARSET));
             return pCallbackUrl + "?" + query;
         } catch (UnsupportedEncodingException e) {
