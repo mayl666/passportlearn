@@ -24,6 +24,7 @@ public class SkinValidator implements ConstraintValidator<Skin, String> {
     static {
         SUPPORT_SKIN.add(WapConstant.WAP_SKIN_RED);
         SUPPORT_SKIN.add(WapConstant.WAP_SKIN_GREEN);
+        SUPPORT_SKIN.add(WapConstant.WAP_SKIN_SE);
     }
 
     @Override
