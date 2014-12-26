@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 public class RegisterApiController extends BaseController {
 
     @Autowired
-    private RegisterApiManager sgRegisterApiManager;
+    private RegisterApiManager registerApiManager;
     @Autowired
     private RegManager regManager;
     @Autowired
@@ -63,7 +63,7 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = sgRegisterApiManager.sendMobileRegCaptcha(clientId, mobile);
+            result = registerApiManager.sendMobileRegCaptcha(clientId, mobile);
         } catch (Exception e) {
             logger.error("sendregcaptcha:send reg captcha is failed,mobile is " + mobile, e);
         } finally {
@@ -138,7 +138,7 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = sgRegisterApiManager.regMailUser(params);
+            result = registerApiManager.regMailUser(params);
         } catch (Exception e) {
             logger.error("regMailUser:Mail User Register Is Failed For Internal,UserId Is " + userid, e);
         } finally {
@@ -175,7 +175,7 @@ public class RegisterApiController extends BaseController {
                 return result.toString();
             }
             // 调用内部接口
-            result = sgRegisterApiManager.regMobileUser(params);
+            result = registerApiManager.regMobileUser(params);
         } catch (Exception e) {
             logger.error("regMobileUser:Mobile User Register Is Failed,Mobile Is " + params.getMobile(), e);
         } finally {
@@ -262,7 +262,7 @@ public class RegisterApiController extends BaseController {
             if (regManager.checkUserExistInBlack(userid, createIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
             } else {
-                result = sgRegisterApiManager.checkUser(userid, params.getClient_id());
+                result = registerApiManager.checkUser(userid, params.getClient_id());
                 if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
                     if (!result.isSuccess()) {
                         result.setDefaultModel("flag", "1");
