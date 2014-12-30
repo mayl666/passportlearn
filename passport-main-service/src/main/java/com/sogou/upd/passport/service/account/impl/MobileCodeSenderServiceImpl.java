@@ -141,8 +141,9 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
                 // 使用原来验证码
                 String randomCode = cacheMap.get("smsCode");
                 //读取短信内容
-                if (Strings.isNullOrEmpty(randomCode))
+                if (Strings.isNullOrEmpty(randomCode)) {
                     randomCode = RandomStringUtils.randomNumeric(5);
+                }
                 String smsText = appConfigService.querySmsText(clientId, randomCode);
                 if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
                     //更新缓存
