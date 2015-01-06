@@ -75,7 +75,8 @@ public class InternalQQOpenAPiController extends BaseController {
             logger.info("test-qqopenapi:" + str);
 //            result.setSuccess(true);
 //            result.getModels().put("tKey", tKey);
-            return result.toString();
+//            return result.toString();
+            return str;
             //TODO 使用HTTP协议请求passport腾讯Server获取好友
         } finally {
             //用于记录log
