@@ -89,8 +89,8 @@
     </bean>
     <bean id="kvPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <property name="maxActive" value="400"/>
-        <property name="maxIdle" value="200"/>
-        <property name="minIdle" value="200"/>
+        <property name="maxIdle" value="100"/>
+        <property name="minIdle" value="100"/>
         <property name="maxWait" value="1000"/>
         <property name="testOnBorrow" value="false"/>
     </bean>
