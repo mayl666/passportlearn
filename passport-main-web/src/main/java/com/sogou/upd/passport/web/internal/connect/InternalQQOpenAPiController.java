@@ -61,10 +61,10 @@ public class InternalQQOpenAPiController extends BaseController {
                 return result.toString();
             }
             //判断访问者是否有权限
-            if (!isAccessAccept(clientId, req)) {
+            /*if (!isAccessAccept(clientId, req)) {
                 result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
                 return result.toString();
-            }
+            }*/
             Result obtainTKeyResult = sgConnectApiManager.obtainTKey(userId, clientId);
             if (!obtainTKeyResult.isSuccess()) {
                 return obtainTKeyResult.toString();
@@ -95,6 +95,9 @@ public class InternalQQOpenAPiController extends BaseController {
 //            result.getModels().put("tKey", tKey);
 //            return result.toString();
             return resp;
+        } catch (Exception e) {
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result.toString();
         } finally {
             //用于记录log
             UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(clientId), result.getCode(), getIp(req));
@@ -114,7 +117,7 @@ public class InternalQQOpenAPiController extends BaseController {
             if (QQ_RET_CODE.equals(ret)) {
                 map.put("status", ret);
             } else {
-                map.put("status",ErrorUtil.ERR_CODE_CONNECT_FAILED) ;
+                map.put("status", ErrorUtil.ERR_CODE_CONNECT_FAILED);
             }
             map.remove("ret");
         }
