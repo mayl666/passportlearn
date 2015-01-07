@@ -82,9 +82,9 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            logger.info("start to send http request get the qq friends");
+            logger.warn("start to send http request get the qq friends");
             Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
-            logger.info("end to send http request get the qq friends");
+            logger.warn("end to send http request get the qq friends");
             String resp = null;
             if (map != null && map.size() > 0) {
                 map = changeResult(map);
@@ -103,6 +103,7 @@ public class InternalQQOpenAPiController extends BaseController {
             return resp;
         } catch (Exception e) {
             logger.error("请求出错：" + e.getMessage());
+            logger.error(e.getStackTrace() + "");
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result.toString();
         } finally {
