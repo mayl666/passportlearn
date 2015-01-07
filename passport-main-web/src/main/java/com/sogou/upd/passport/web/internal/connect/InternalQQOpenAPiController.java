@@ -93,13 +93,13 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            Map map = new HashMap();
-            map.put("userid",userId);
-            map.put("tKey",tKey);
+            /*Map inParammap = new HashMap();
+            inParammap.put("userid",userId);
+            inParammap.put("tKey",tKey);*/
             logger.error("start to send http request get the qq friends");
-//            Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
-            String str = this.send(QQ_FRIENDS_URL,"POST",map,null);
-            logger.error(str);
+            Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+//            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
+            logger.error(map.toString());
             logger.error("end to send http request get the qq friends");
             String resp = null;
             if (map != null && map.size() > 0) {
@@ -148,7 +148,7 @@ public class InternalQQOpenAPiController extends BaseController {
 
 
 
-    private String  send(String urlString, String method,
+    /*private String  send(String urlString, String method,
                              Map<String, String> parameters, Map<String, String> propertys)
             throws IOException {
         HttpURLConnection urlConnection = null;
@@ -192,13 +192,13 @@ public class InternalQQOpenAPiController extends BaseController {
         return this.makeContent(urlString, urlConnection);
     }
 
-    /**
+    *//**
      * 得到响应对象
      *
      * @param urlConnection
      * @return 响应对象
      * @throws IOException
-     */
+     *//*
     private String makeContent(String urlString,
                                     HttpURLConnection urlConnection) throws IOException {
         try {
@@ -220,5 +220,5 @@ public class InternalQQOpenAPiController extends BaseController {
             if (urlConnection != null)
                 urlConnection.disconnect();
         }
-    }
+    }*/
 }
