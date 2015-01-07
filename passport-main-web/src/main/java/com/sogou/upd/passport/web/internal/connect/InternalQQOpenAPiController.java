@@ -5,9 +5,11 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
+import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.form.BaseUserApiParams;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
@@ -17,10 +19,12 @@ import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,6 +38,9 @@ import javax.servlet.http.HttpServletRequest;
 public class InternalQQOpenAPiController extends BaseController {
 
     private static String QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
+
+    //QQ正确返回状态码
+    private String QQ_RET_CODE = "0";
 
     @Autowired
     private ConnectApiManager sgConnectApiManager;
@@ -71,17 +78,46 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            String str = SGHttpClient.executeStr(requestModel);
-            logger.info("test-qqopenapi:" + str);
+            Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+            String resp = null;
+            if (map != null && map.size() > 0) {
+                map = changeResult(map);
+                //调用返回
+                resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
+            }
+            if (Strings.isNullOrEmpty(resp)) {
+                result = new APIResultSupport(false);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
+                return result.toString();
+            }
+
 //            result.setSuccess(true);
 //            result.getModels().put("tKey", tKey);
 //            return result.toString();
-            return str;
-            //TODO 使用HTTP协议请求passport腾讯Server获取好友
+            return resp;
         } finally {
             //用于记录log
             UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(clientId), result.getCode(), getIp(req));
             UserOperationLogUtil.log(userOperationLog);
         }
+    }
+
+
+    public Map changeResult(Map map) {
+        if (!CollectionUtils.isEmpty(map) && map.containsKey("msg")) {
+            String msg = String.valueOf(map.get("msg"));
+            map.put("statusText", msg);
+            map.remove("msg");
+        }
+        if (!CollectionUtils.isEmpty(map) && map.containsKey("ret")) {
+            String ret = String.valueOf(map.get("ret"));
+            if (QQ_RET_CODE.equals(ret)) {
+                map.put("status", ret);
+            } else {
+                map.put("status",ErrorUtil.ERR_CODE_CONNECT_FAILED) ;
+            }
+            map.remove("ret");
+        }
+        return map;
     }
 }
