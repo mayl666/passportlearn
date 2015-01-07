@@ -143,6 +143,11 @@ public class InternalQQOpenAPiController extends BaseController {
             }
             map.remove("ret");
         }
+        if (!CollectionUtils.isEmpty(map) && map.containsKey("items")) {
+            String items = String.valueOf(map.get("items"));
+            map.put("data", items);
+            map.remove("items");
+        }
         return map;
     }
 
