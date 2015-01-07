@@ -54,7 +54,8 @@ public class SGHttpClient {
     /**
      * 获取连接的最大等待时间
      */
-    protected final static int WAIT_TIMEOUT = 3000;
+//    protected final static int WAIT_TIMEOUT = 3000;
+    protected final static int WAIT_TIMEOUT = 10000;
     /**
      * 每个路由最大连接数
      */
@@ -62,8 +63,8 @@ public class SGHttpClient {
     /**
      * 读取超时时间
      */
-    protected final static int READ_TIMEOUT = 3000;
-
+//    protected final static int READ_TIMEOUT = 3000;
+    protected final static int READ_TIMEOUT = 10000;
     /**
      * http返回成功的code
      */
@@ -82,6 +83,7 @@ public class SGHttpClient {
         HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
         httpClient = WebClientDevWrapper.wrapClient(new DefaultHttpClient());
     }
+
 
     /**
      * 执行http请求，并将返回结果从HttpTransformat转换为java bean
