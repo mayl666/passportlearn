@@ -119,9 +119,6 @@ public class MappAction extends BaseController {
         } finally {
             //用于记录log
             UserOperationLog userOperationLog = new UserOperationLog(udid, String.valueOf(clientId), result.getCode(), ip);
-//            userOperationLog.putOtherMessage("cinfo", request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN));
-//            userOperationLog.putOtherMessage("type", params.getType());
-//            userOperationLog.putOtherMessage("data", params.getData());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();

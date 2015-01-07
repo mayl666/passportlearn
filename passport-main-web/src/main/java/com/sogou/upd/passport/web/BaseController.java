@@ -4,7 +4,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
@@ -118,4 +120,21 @@ public class BaseController {
         return ua;
     }
 
+    /**
+     * 模糊处理邮箱和手机
+     */
+    protected void processSecureMailMobile(Result result) {
+        AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
+        String sec_email = (String) result.getModels().get("sec_email");
+        String sec_mobile = (String) result.getModels().get("sec_mobile");
+        if (accountSecureInfoVO != null) {
+            if(!Strings.isNullOrEmpty(sec_email))   {
+                result.setDefaultModel("sec_email",accountSecureInfoVO.getSec_email());
+            }
+            if(!Strings.isNullOrEmpty(sec_mobile))   {
+                result.setDefaultModel("sec_mobile",accountSecureInfoVO.getSec_mobile());
+            }
+
+        }
+    }
 }

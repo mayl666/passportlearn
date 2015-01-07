@@ -79,7 +79,7 @@ public class PCOAuth2AccountController extends BaseController {
     @Autowired
     private AccountInfoManager accountInfoManager;
     @Autowired
-    private RegisterApiManager sgRegisterApiManager;
+    private RegisterApiManager registerApiManager;
 
 
     @RequestMapping(value = "/sogou/fastreg", method = RequestMethod.GET)
@@ -378,7 +378,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result;
         }
         //检查用户是否存在
-        result = sgRegisterApiManager.checkUser(username, CommonConstant.PC_CLIENTID);
+        result = registerApiManager.checkUser(username, CommonConstant.PC_CLIENTID);
         return result;
     }
 

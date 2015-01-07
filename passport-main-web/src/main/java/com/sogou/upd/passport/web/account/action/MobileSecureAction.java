@@ -43,7 +43,7 @@ public class MobileSecureAction extends BaseController {
     @Autowired
     private HostHolder hostHolder;
     @Autowired
-    private RegisterApiManager sgRegisterApiManager;
+    private RegisterApiManager registerApiManager;
 
     /*
      * 修改绑定手机，发送短信验证码至原绑定手机
@@ -100,7 +100,7 @@ public class MobileSecureAction extends BaseController {
                 return result.toString();
             }
             //双读，检查新手机是否允许绑定
-            result = sgRegisterApiManager.checkUser(newMobile, clientId);
+            result = registerApiManager.checkUser(newMobile, clientId);
             if (!result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);

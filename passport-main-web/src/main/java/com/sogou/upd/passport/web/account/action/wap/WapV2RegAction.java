@@ -55,7 +55,7 @@ public class WapV2RegAction extends WapV2BaseController {
     @Autowired
     private CommonManager commonManager;
     @Autowired
-    private RegisterApiManager sgRegisterApiManager;
+    private RegisterApiManager registerApiManager;
     @Autowired
     private RegManager regManager;
     @Autowired
@@ -126,7 +126,7 @@ public class WapV2RegAction extends WapV2BaseController {
                 addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
                 return "wap/regist_wap";
             }
-            result = sgRegisterApiManager.sendMobileRegCaptcha(clientId, mobile);
+            result = registerApiManager.sendMobileRegCaptcha(clientId, mobile);
             if (!result.isSuccess()) {
                 addReturnPageModel(model, true, ru, result.getMessage(), clientIdStr, skin, v, false, mobile);
                 return "wap/regist_wap";
