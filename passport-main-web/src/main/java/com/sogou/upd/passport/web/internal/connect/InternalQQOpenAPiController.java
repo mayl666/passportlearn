@@ -18,6 +18,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+import org.apache.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * Created with IntelliJ IDEA.
@@ -53,10 +62,11 @@ public class InternalQQOpenAPiController extends BaseController {
     //    @InterfaceSecurity
     @ResponseBody
     @RequestMapping(value = "/get_qqfriends")
-    public String get_qqfriends(HttpServletRequest req, BaseUserApiParams params,@RequestParam(defaultValue = "")String third_appid) throws Exception {
+    public String get_qqfriends(HttpServletRequest req, BaseUserApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String userId = params.getUserid();
         int clientId = params.getClient_id();
+        String third_appid = params.getThird_appid();
         try {
             //参数校验
             String validateResult = ControllerHelper.validateParams(params);
@@ -70,7 +80,7 @@ public class InternalQQOpenAPiController extends BaseController {
                 result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
                 return result.toString();
             }*/
-            Result obtainTKeyResult = sgConnectApiManager.obtainTKey(userId, clientId , third_appid);
+            Result obtainTKeyResult = sgConnectApiManager.obtainTKey(userId, clientId, third_appid);
             if (!obtainTKeyResult.isSuccess()) {
                 return obtainTKeyResult.toString();
             }
@@ -83,9 +93,14 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            logger.warn("start to send http request get the qq friends");
-            Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
-            logger.warn("end to send http request get the qq friends");
+            Map map = new HashMap();
+            map.put("userid",userId);
+            map.put("tKey",tKey);
+            logger.error("start to send http request get the qq friends");
+//            Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+            String str = this.send(QQ_FRIENDS_URL,"post",map,null);
+            logger.error(str);
+            logger.error("end to send http request get the qq friends");
             String resp = null;
             if (map != null && map.size() > 0) {
                 map = changeResult(map);
@@ -114,7 +129,6 @@ public class InternalQQOpenAPiController extends BaseController {
         }
     }
 
-
     public Map changeResult(Map map) {
         if (!CollectionUtils.isEmpty(map) && map.containsKey("msg")) {
             String msg = String.valueOf(map.get("msg"));
@@ -131,5 +145,81 @@ public class InternalQQOpenAPiController extends BaseController {
             map.remove("ret");
         }
         return map;
+    }
+
+
+
+    private String  send(String urlString, String method,
+                             Map<String, String> parameters, Map<String, String> propertys)
+            throws IOException {
+        HttpURLConnection urlConnection = null;
+
+        if (method.equalsIgnoreCase("GET") && parameters != null) {
+            StringBuffer param = new StringBuffer();
+            int i = 0;
+            for (String key : parameters.keySet()) {
+                if (i == 0)
+                    param.append("?");
+                else
+                    param.append("&");
+                param.append(key).append("=").append(parameters.get(key));
+                i++;
+            }
+            urlString += param;
+        }
+        URL url = new URL(urlString);
+        urlConnection = (HttpURLConnection) url.openConnection();
+
+        urlConnection.setRequestMethod(method);
+        urlConnection.setDoOutput(true);
+        urlConnection.setDoInput(true);
+        urlConnection.setUseCaches(false);
+
+        if (propertys != null)
+            for (String key : propertys.keySet()) {
+                urlConnection.addRequestProperty(key, propertys.get(key));
+            }
+
+        if (method.equalsIgnoreCase("POST") && parameters != null) {
+            StringBuffer param = new StringBuffer();
+            for (String key : parameters.keySet()) {
+                param.append("&");
+                param.append(key).append("=").append(parameters.get(key));
+            }
+            urlConnection.getOutputStream().write(param.toString().getBytes());
+            urlConnection.getOutputStream().flush();
+            urlConnection.getOutputStream().close();
+        }
+        return this.makeContent(urlString, urlConnection);
+    }
+
+    /**
+     * 得到响应对象
+     *
+     * @param urlConnection
+     * @return 响应对象
+     * @throws IOException
+     */
+    private String makeContent(String urlString,
+                                    HttpURLConnection urlConnection) throws IOException {
+        try {
+            InputStream in = urlConnection.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(in));
+            StringBuffer temp = new StringBuffer();
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                temp.append(line).append("\r\n");
+                line = bufferedReader.readLine();
+            }
+            bufferedReader.close();
+
+            return temp.toString();
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            if (urlConnection != null)
+                urlConnection.disconnect();
+        }
     }
 }
