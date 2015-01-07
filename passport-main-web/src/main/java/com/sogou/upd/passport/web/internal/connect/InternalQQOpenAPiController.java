@@ -13,10 +13,13 @@ import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.form.BaseUserApiParams;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
+import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
@@ -37,6 +40,7 @@ import java.util.Map;
 @RequestMapping(value = "/internal/connect/qq")
 public class InternalQQOpenAPiController extends BaseController {
 
+    private Logger logger = LoggerFactory.getLogger(InternalQQOpenAPiController.class);
     private static String QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
 
     //QQ正确返回状态码
@@ -78,7 +82,9 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
+            logger.info("start to send http request get the qq friends");
             Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+            logger.info("end to send http request get the qq friends");
             String resp = null;
             if (map != null && map.size() > 0) {
                 map = changeResult(map);
@@ -96,6 +102,7 @@ public class InternalQQOpenAPiController extends BaseController {
 //            return result.toString();
             return resp;
         } catch (Exception e) {
+            logger.error("请求出错：" + e.getMessage());
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result.toString();
         } finally {
