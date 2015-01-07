@@ -3,25 +3,17 @@ package com.sogou.upd.passport.web.internal.connect;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.ning.http.client.FluentStringsMap;
 import com.sogou.upd.passport.common.asynchttpclient.AsyncHttpClientService;
 import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
-import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
-import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.form.BaseUserApiParams;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
-import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +53,7 @@ public class InternalQQOpenAPiController extends BaseController {
         Result result = new APIResultSupport(false);
         String userId = params.getUserid();
         int clientId = params.getClient_id();
+        String third_appid = params.getThird_appid();
         try {
             //参数校验
             String validateResult = ControllerHelper.validateParams(params);
@@ -74,7 +67,7 @@ public class InternalQQOpenAPiController extends BaseController {
                 result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
                 return result.toString();
             }*/
-            Result obtainTKeyResult = sgConnectApiManager.obtainTKey(userId, clientId);
+            Result obtainTKeyResult = sgConnectApiManager.obtainTKey(userId, clientId, third_appid);
             if (!obtainTKeyResult.isSuccess()) {
                 return obtainTKeyResult.toString();
             }
@@ -88,9 +81,14 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            logger.warn("start to send http request get the qq friends");
+            /*Map inParammap = new HashMap();
+            inParammap.put("userid",userId);
+            inParammap.put("tKey",tKey);
+            logger.error("start to send http request get the qq friends");
             Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
-            logger.warn("end to send http request get the qq friends");
+//            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
+            logger.error(map.toString());
+            logger.error("end to send http request get the qq friends");
             String resp = null;
             if (map != null && map.size() > 0) {
                 map = changeResult(map);
@@ -133,7 +131,6 @@ public class InternalQQOpenAPiController extends BaseController {
         }
     }
 
-
     public Map changeResult(Map map) {
         if (!CollectionUtils.isEmpty(map) && map.containsKey("msg")) {
             String msg = String.valueOf(map.get("msg"));
@@ -149,6 +146,87 @@ public class InternalQQOpenAPiController extends BaseController {
             }
             map.remove("ret");
         }
+        if (!CollectionUtils.isEmpty(map) && map.containsKey("items")) {
+            String items = String.valueOf(map.get("items"));
+            map.put("data", items);
+            map.remove("items");
+        }
         return map;
     }
+
+
+
+    /*private String  send(String urlString, String method,
+                             Map<String, String> parameters, Map<String, String> propertys)
+            throws IOException {
+        HttpURLConnection urlConnection = null;
+
+        if (method.equalsIgnoreCase("GET") && parameters != null) {
+            StringBuffer param = new StringBuffer();
+            int i = 0;
+            for (String key : parameters.keySet()) {
+                if (i == 0)
+                    param.append("?");
+                else
+                    param.append("&");
+                param.append(key).append("=").append(parameters.get(key));
+                i++;
+            }
+            urlString += param;
+        }
+        URL url = new URL(urlString);
+        urlConnection = (HttpURLConnection) url.openConnection();
+
+        urlConnection.setRequestMethod(method);
+        urlConnection.setDoOutput(true);
+        urlConnection.setDoInput(true);
+        urlConnection.setUseCaches(false);
+
+        if (propertys != null)
+            for (String key : propertys.keySet()) {
+                urlConnection.addRequestProperty(key, propertys.get(key));
+            }
+
+        if (method.equalsIgnoreCase("POST") && parameters != null) {
+            StringBuffer param = new StringBuffer();
+            for (String key : parameters.keySet()) {
+                param.append("&");
+                param.append(key).append("=").append(parameters.get(key));
+            }
+            urlConnection.getOutputStream().write(param.toString().getBytes());
+            urlConnection.getOutputStream().flush();
+            urlConnection.getOutputStream().close();
+        }
+        return this.makeContent(urlString, urlConnection);
+    }
+
+    *//**
+     * 得到响应对象
+     *
+     * @param urlConnection
+     * @return 响应对象
+     * @throws IOException
+     *//*
+    private String makeContent(String urlString,
+                                    HttpURLConnection urlConnection) throws IOException {
+        try {
+            InputStream in = urlConnection.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(in));
+            StringBuffer temp = new StringBuffer();
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                temp.append(line).append("\r\n");
+                line = bufferedReader.readLine();
+            }
+            bufferedReader.close();
+
+            return temp.toString();
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            if (urlConnection != null)
+                urlConnection.disconnect();
+        }
+    }*/
 }

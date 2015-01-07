@@ -36,11 +36,11 @@ public class AsyncHttpClientService {
     /**
      * 默认连接超时毫秒数
      */
-    private static final int DEFAULT_CON_TIME_OUT_MS = 1000;
+    private static final int DEFAULT_CON_TIME_OUT_MS = 3000;
     /**
      * 默认套接字超时毫秒数
      */
-    private static final int DEFAULT_SO_TIME_OUT_MS = 1000;
+    private static final int DEFAULT_SO_TIME_OUT_MS = 3000;
 
     /**
      * 使用默认值构造HTTP客户端服务<br/>

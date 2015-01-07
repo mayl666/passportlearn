@@ -39,5 +39,7 @@ public interface ConnectApiManager {
      */
     public Result obtainTKey(String passportId, int clientId);
 
+    public Result obtainTKey(String passportId, int clientId,String third_appid);
+
 
 }

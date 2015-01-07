@@ -163,6 +163,27 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         }
     }
 
+    @Override
+    public Result obtainTKey(String passportId, int clientId,String third_appid) {
+        Result result = new APIResultSupport(false);
+        Result connectTokenResult = obtainConnectToken(passportId, clientId, third_appid);
+        if (!connectTokenResult.isSuccess()) {
+            return connectTokenResult;
+        }
+        ConnectToken connectToken = (ConnectToken) connectTokenResult.getModels().get("connectToken");
+        try {
+            String tKey = String.format("%s|%s|%s|%s|%s|%s|%s", connectToken.getOpenid(), connectToken.getAccessToken(), connectToken.getExpiresIn(), connectToken.getAppKey(), connectToken.getPassportId(), clientId, System.currentTimeMillis());
+            tKey = TKEY_VERSION + SEPARATOR_1 + AES.encryptURLSafeString(tKey, TKEY_SECURE_KEY);
+            result.setSuccess(true);
+            result.getModels().put("tKey", tKey);
+            return result;
+        } catch (Exception e) {
+            logger.error("obtain tKey AES fail,passportId:{}", passportId, e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+    }
+
     private ConnectToken newConnectToken(String passportId, String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
         ConnectToken connectToken = new ConnectToken();
         connectToken.setPassportId(passportId);
