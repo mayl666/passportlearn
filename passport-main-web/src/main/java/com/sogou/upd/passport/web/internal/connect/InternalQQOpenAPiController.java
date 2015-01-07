@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,7 +53,7 @@ public class InternalQQOpenAPiController extends BaseController {
     //    @InterfaceSecurity
     @ResponseBody
     @RequestMapping(value = "/get_qqfriends")
-    public String get_qqfriends(HttpServletRequest req, BaseUserApiParams params) throws Exception {
+    public String get_qqfriends(HttpServletRequest req, BaseUserApiParams params,@RequestParam(defaultValue = "") String third_appid) throws Exception {
         Result result = new APIResultSupport(false);
         String userId = params.getUserid();
         int clientId = params.getClient_id();
@@ -69,7 +70,7 @@ public class InternalQQOpenAPiController extends BaseController {
                 result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
                 return result.toString();
             }*/
-            Result obtainTKeyResult = sgConnectApiManager.obtainTKey(userId, clientId);
+            Result obtainTKeyResult = sgConnectApiManager.obtainTKey(userId, clientId , third_appid);
             if (!obtainTKeyResult.isSuccess()) {
                 return obtainTKeyResult.toString();
             }
