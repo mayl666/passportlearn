@@ -1,6 +1,10 @@
 package com.sogou.upd.passport.web.internal.connect;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.ning.http.client.FluentStringsMap;
+import com.sogou.upd.passport.common.asynchttpclient.AsyncHttpClientService;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -27,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -78,7 +83,8 @@ public class InternalQQOpenAPiController extends BaseController {
                 result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
                 return result.toString();
             }
-            RequestModel requestModel = new RequestModel(QQ_FRIENDS_URL);
+
+           /* RequestModel requestModel = new RequestModel(QQ_FRIENDS_URL);
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
@@ -96,11 +102,26 @@ public class InternalQQOpenAPiController extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                 return result.toString();
             }
+*/
+
+            //构建参数
+            Map<String, Collection<String>> paramsMap = Maps.newHashMap();
+            paramsMap.put("userid", Lists.newArrayList(userId));
+            paramsMap.put("tKey", Lists.newArrayList(tKey));
+
+            AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
+            String responseData = asyncHttpClientService.sendPost(QQ_FRIENDS_URL, paramsMap, null);
+            if (Strings.isNullOrEmpty(responseData)) {
+                result = new APIResultSupport(false);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
+                return result.toString();
+            }
+            return responseData;
 
 //            result.setSuccess(true);
 //            result.getModels().put("tKey", tKey);
 //            return result.toString();
-            return resp;
+//            return resp;
         } catch (Exception e) {
             logger.error("get qq friends error. ", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
