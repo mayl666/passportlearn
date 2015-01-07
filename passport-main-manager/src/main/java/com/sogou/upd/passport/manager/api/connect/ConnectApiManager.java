@@ -37,7 +37,9 @@ public interface ConnectApiManager {
      * @param passportId 用户Id
      * @return
      */
-    public Result obtainTKey(String passportId, int clientId , String third_appid);
+    public Result obtainTKey(String passportId, int clientId);
+
+    public Result obtainTKey(String passportId, int clientId,String third_appid);
 
 
 }

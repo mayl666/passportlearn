@@ -53,7 +53,7 @@ public class InternalQQOpenAPiController extends BaseController {
     //    @InterfaceSecurity
     @ResponseBody
     @RequestMapping(value = "/get_qqfriends")
-    public String get_qqfriends(HttpServletRequest req, BaseUserApiParams params,@RequestParam(defaultValue = "") String third_appid) throws Exception {
+    public String get_qqfriends(HttpServletRequest req, BaseUserApiParams params,@RequestParam(defaultValue = "")String third_appid) throws Exception {
         Result result = new APIResultSupport(false);
         String userId = params.getUserid();
         int clientId = params.getClient_id();
