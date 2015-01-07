@@ -51,7 +51,7 @@ import java.util.Vector;
 public class InternalQQOpenAPiController extends BaseController {
 
     private Logger logger = LoggerFactory.getLogger(InternalQQOpenAPiController.class);
-    private static String QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
+    private static final String QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
 
     //QQ正确返回状态码
     private String QQ_RET_CODE = "0";
@@ -118,8 +118,7 @@ public class InternalQQOpenAPiController extends BaseController {
 //            return result.toString();
             return resp;
         } catch (Exception e) {
-            logger.error("请求出错：" + e.getMessage());
-            logger.error(e.getStackTrace() + "");
+            logger.error("get qq friends error. ", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result.toString();
         } finally {

@@ -63,8 +63,8 @@ public class SGHttpClient {
     /**
      * 读取超时时间
      */
-//    protected final static int READ_TIMEOUT = 3000;
-    protected final static int READ_TIMEOUT = 10000;
+    protected final static int READ_TIMEOUT = 3000;
+
     /**
      * http返回成功的code
      */
@@ -104,7 +104,9 @@ public class SGHttpClient {
             case xml:
                 t = XMLUtil.xmlToBean(value, type);
                 break;
-        }       ArrayList list = new ArrayList();list.iterator();
+        }
+        ArrayList list = new ArrayList();
+        list.iterator();
         return t;
     }
 
@@ -184,23 +186,23 @@ public class SGHttpClient {
             throw new NullPointerException("requestModel 不能为空");
         }
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
-        InputStream in=null;
+        InputStream in = null;
         try {
             HttpResponse httpResponse = httpClient.execute(httpRequest);
-            in=httpResponse.getEntity().getContent();
+            in = httpResponse.getEntity().getContent();
             int responseCode = httpResponse.getStatusLine().getStatusCode();
             //302如何处理
             if (responseCode == RESPONSE_SUCCESS_CODE) {
                 return httpResponse.getEntity();
             }
             String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CHARSET);
-            String result= EntityUtils.toString(httpResponse.getEntity(),CommonConstant.DEFAULT_CHARSET);
-            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:"+result);
+            String result = EntityUtils.toString(httpResponse.getEntity(), CommonConstant.DEFAULT_CHARSET);
+            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:" + result);
         } catch (Exception e) {
-            if(in!=null){
-                try{
+            if (in != null) {
+                try {
                     in.close();
-                }catch(IOException ioe){
+                } catch (IOException ioe) {
                 }
             }
             throw new RuntimeException("http request error ", e);
