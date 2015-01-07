@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -103,7 +104,7 @@ public class InternalQQOpenAPiController extends BaseController {
 */
 
             //构建参数
-            Map<String, Collection<String>> paramsMap = Maps.newHashMap();
+            Map<String, List<String>> paramsMap = Maps.newHashMap();
             paramsMap.put("userid", Lists.newArrayList(userId));
             paramsMap.put("tKey", Lists.newArrayList(tKey));
 

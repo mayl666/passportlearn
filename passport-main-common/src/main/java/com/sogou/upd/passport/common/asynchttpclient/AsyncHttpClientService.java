@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStreamReader;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.sogou.upd.passport.common.asynchttpclient.HttpClientConfig.CompressFormat.*;
@@ -63,9 +64,9 @@ public class AsyncHttpClientService {
     public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs, final int soTimeOutMs) {
         // 多线程连接管理器
         AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
-                .setMaximumConnectionsPerHost(maxConPerHost)
-                .setConnectionTimeoutInMs(conTimeOutMs)
-                .setRequestTimeoutInMs(soTimeOutMs)
+                .setMaxConnectionsPerHost(maxConPerHost)
+                .setConnectTimeout(conTimeOutMs)
+                .setRequestTimeout(soTimeOutMs)
                 .build();
         this.httpClient = new AsyncHttpClient(config);
     }
@@ -87,9 +88,9 @@ public class AsyncHttpClientService {
             Preconditions.checkArgument(proxyConfig.getProxyPort() > 0, "proxy port must be larger than 0.");
             ProxyServer proxyServer = new ProxyServer(proxyConfig.getProxyHost(), proxyConfig.getProxyPort(), proxyConfig.getProxyAuthUser(), proxyConfig.getProxyAuthPassword());
             AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
-                    .setMaximumConnectionsPerHost(maxConPerHost)
-                    .setConnectionTimeoutInMs(conTimeOutMs)
-                    .setRequestTimeoutInMs(soTimeOutMs)
+                    .setMaxConnectionsPerHost(maxConPerHost)
+                    .setConnectTimeout(conTimeOutMs)
+                    .setRequestTimeout(soTimeOutMs)
                     .setUseProxyProperties(proxyConfig.isUseProxy())
                     .setProxyServer(proxyServer)
                     .build();
@@ -111,7 +112,7 @@ public class AsyncHttpClientService {
         LOGGER.debug("Get Request:{}", url);
         AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient.prepareGet(url)
                 .setBodyEncoding(Constants.DEFAULT_CHARSET)
-                .setQueryParameters(getParams)
+                .setQueryParams(getParams)
                 .setHeaders(headers);
         return sendRequest(boundRequestBuilder);
     }
@@ -124,13 +125,13 @@ public class AsyncHttpClientService {
      * @param headers   请求头部参数
      * @return
      */
-    public  String sendPost(String url, Map<String, Collection<String>> getParams, Map<String, Collection<String>> headers) throws Exception {
+    public String sendPost(String url, Map<String, List<String>> getParams, Map<String, Collection<String>> headers) throws Exception {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
         LOGGER.debug("Post Request:{}", url);
         AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient.preparePost(url);
         boundRequestBuilder.setBodyEncoding("UTF-8");
         boundRequestBuilder.setHeaders(headers);
-        boundRequestBuilder.setParameters(getParams);
+        boundRequestBuilder.setQueryParams(getParams);
         return sendRequest(boundRequestBuilder);
     }
 
