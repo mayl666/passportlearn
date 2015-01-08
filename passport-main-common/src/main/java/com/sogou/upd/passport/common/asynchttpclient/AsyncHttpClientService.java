@@ -232,6 +232,7 @@ public class AsyncHttpClientService {
             String responseData = resp.getResponseBody();
 //            LOGGER.warn("resp.getResponseBody :" + resp.getResponseBody());
             return responseData;
+
 //            InputStream inputStream = resp.getResponseBodyAsStream();
 //            return IOUtils.toString(inputStream, Constants.DEFAULT_CHARSET);
 
@@ -243,10 +244,7 @@ public class AsyncHttpClientService {
 
         } catch (Exception e) {
             LOGGER.error("sendPost error.", e);
-        } finally {
-            httpClient.close();
         }
-
         return "";
     }
 
