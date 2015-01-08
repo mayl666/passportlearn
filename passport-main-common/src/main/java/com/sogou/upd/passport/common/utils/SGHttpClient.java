@@ -35,10 +35,8 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -182,11 +180,12 @@ public class SGHttpClient {
 //            InputSupplier<InputStreamReader> readerSupplier = CharStreams.newReaderSupplier(inputSupplier, Charsets.UTF_8);
 //            String text = CharStreams.toString(readerSupplier);
 //            return text;
-            StopWatch watch = new StopWatch();
+
+         /*   StopWatch watch = new StopWatch();
             watch.start();
             String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
             LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
-            return text;
+            return text;*/
 
             /*String text = null;
             try (final Reader reader = new InputStreamReader(inputStream)) {
@@ -195,9 +194,15 @@ public class SGHttpClient {
             LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
             return text;*/
 
-           /* InputStreamReader inputStreamReader = new InputStreamReader(inputStream, HTTP.DEF_CONTENT_CHARSET);
-            while (inputStreamReader.read() > -1) {
-            }*/
+            StringBuilder textBuilder = new StringBuilder();
+            try (Reader reader = new BufferedReader(new InputStreamReader
+                    (inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
+                int c;
+                while ((c = reader.read()) != -1) {
+                    textBuilder.append((char) c);
+                }
+            }
+            return textBuilder.toString();
 
         } catch (Exception e) {
             throw new RuntimeException("executeWithGuava http request error ", e);
