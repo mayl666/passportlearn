@@ -26,6 +26,9 @@ define(['./utils'], function(Utils) {
                 case /cyan|x1/i.test(name):
                     name = 'x1';
                     break;
+                case /semob|se/i.test(name):
+                    name = 'se';
+                    break;
                 default:
                     name = null;
             }

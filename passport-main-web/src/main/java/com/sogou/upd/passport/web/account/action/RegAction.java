@@ -57,7 +57,7 @@ public class RegAction extends BaseController {
     @Autowired
     private SecureManager secureManager;
     @Autowired
-    private RegisterApiManager sgRegisterApiManager;
+    private RegisterApiManager registerApiManager;
     @Autowired
     private CookieManager cookieManager;
     @Autowired
@@ -415,7 +415,7 @@ public class RegAction extends BaseController {
                 result.setMessage("发送短信失败");
                 return result.toString();
             }
-            result = sgRegisterApiManager.sendMobileRegCaptcha(clientId, mobile);
+            result = registerApiManager.sendMobileRegCaptcha(clientId, mobile);
         } catch (Exception e) {
             logger.error("method[sendMobileCode] send mobile sms error.{}", e);
         } finally {
@@ -458,7 +458,7 @@ public class RegAction extends BaseController {
             return result;
         }
         //检查用户名是否存在
-        result = sgRegisterApiManager.checkUser(username, clientId);
+        result = registerApiManager.checkUser(username, clientId);
         return result;
     }
 

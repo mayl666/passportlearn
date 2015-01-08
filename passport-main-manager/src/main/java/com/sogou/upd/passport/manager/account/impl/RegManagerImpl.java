@@ -51,7 +51,7 @@ public class RegManagerImpl implements RegManager {
     @Autowired
     private AccountInfoService accountInfoService;
     @Autowired
-    private RegisterApiManager sgRegisterApiManager;
+    private RegisterApiManager registerApiManager;
     @Autowired
     private CommonManager commonManager;
     @Autowired
@@ -100,7 +100,7 @@ public class RegManagerImpl implements RegManager {
                     ru = Strings.isNullOrEmpty(ru) ? LOGIN_INDEX_URL : ru;
                     RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                             clientId, ru);
-                    result = sgRegisterApiManager.regMailUser(regEmailApiParams);
+                    result = registerApiManager.regMailUser(regEmailApiParams);
                     break;
                 case PHONE://手机号
                     result = registerMobile(username, password, clientId, captcha, null);
@@ -158,7 +158,7 @@ public class RegManagerImpl implements RegManager {
             String randomPwd = RandomStringUtils.randomNumeric(6);
             //注册手机号
             RegMobileApiParams regApiParams = new RegMobileApiParams(mobile, randomPwd, clientId);
-            Result regMobileResult = sgRegisterApiManager.regMobileUser(regApiParams);
+            Result regMobileResult = registerApiManager.regMobileUser(regApiParams);
             if (regMobileResult.isSuccess()) {
                 passportId = (String) regMobileResult.getModels().get("userid");
                 //发送短信验证码
@@ -204,7 +204,7 @@ public class RegManagerImpl implements RegManager {
             return result;
         }
         RegMobileApiParams regApiParams = new RegMobileApiParams(username, password, clientId);
-        result = sgRegisterApiManager.regMobileUser(regApiParams);
+        result = registerApiManager.regMobileUser(regApiParams);
         if (result.isSuccess()) {
             if (!Strings.isNullOrEmpty(type)) {
                 if (ConnectTypeEnum.WAP.toString().equals(type)) {

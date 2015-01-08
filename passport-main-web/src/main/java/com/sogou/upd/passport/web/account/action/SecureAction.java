@@ -72,6 +72,10 @@ public class SecureAction extends BaseController {
             return "redirect:/";
         } else {
             result = secureManager.queryAccountSecureInfo(userId, clientId, true);
+            //查询账号安全信息页面，密保邮箱、手机模糊处理
+            if (result.isSuccess()) {
+                processSecureMailMobile(result);
+            }
         }
         result.setDefaultModel("username", accountInfoManager.getUniqName(userId, clientId, true));
         if (domain == AccountDomainEnum.PHONE) {
@@ -110,6 +114,10 @@ public class SecureAction extends BaseController {
                 return "redirect:/";
         }
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
+        //绑定邮箱页面，密保邮箱、手机模糊处理
+        if (result.isSuccess()) {
+            processSecureMailMobile(result);
+        }
         result.setDefaultModel("username", result.getModels().get("uniqname"));
 //        result.setDefaultModel("username", accountInfoManager.getUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
@@ -147,6 +155,10 @@ public class SecureAction extends BaseController {
                 return "redirect:/web/security";
         }
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
+        //绑定手机页面，密保邮箱、手机模糊处理
+        if (result.isSuccess()) {
+            processSecureMailMobile(result);
+        }
         result.setDefaultModel("username", result.getModels().get("uniqname"));
 //        result.setDefaultModel("username", accountInfoManager.getUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {

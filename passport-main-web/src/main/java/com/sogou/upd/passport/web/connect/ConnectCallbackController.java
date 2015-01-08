@@ -6,11 +6,14 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
+import com.sogou.upd.passport.manager.form.connect.ConnectLoginRedirectParams;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,35 +45,37 @@ public class ConnectCallbackController extends BaseConnectController {
     private OAuthAuthLoginManager oAuthAuthLoginManager;
     @Autowired
     private CookieManager cookieManager;
+    @Autowired
+    private RedisUtils redisUtils;
 
     @RequestMapping("/callback/{providerStr}")
     public String handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
-                                         @PathVariable("providerStr") String providerStr, Model model) throws IOException {
-        String viewUrl;
-        String ru = req.getParameter(CommonConstant.RESPONSE_RU);
-        String type = Strings.isNullOrEmpty(req.getParameter("type")) ? "web" : req.getParameter("type");
-        String clientIdStr = req.getParameter(CommonConstant.CLIENT_ID);
-        String ua = req.getParameter(CommonConstant.USER_AGENT);
+                                         @PathVariable("providerStr") String providerStr,
+                                         @RequestParam(defaultValue = "") String state,
+                                         ConnectLoginRedirectParams redirectParams, Model model) throws IOException {
+
+        if (AccountTypeEnum.WEIXIN.getValue() == AccountTypeEnum.getProvider(providerStr) && !Strings.isNullOrEmpty(state)) {
+            redirectParams = redisUtils.getObject(state, ConnectLoginRedirectParams.class);
+            if (redirectParams == null) {
+                res.sendRedirect(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
+                return "empty";
+            }
+        }
+        String type = redirectParams.getType();
+        String clientIdStr = String.valueOf(redirectParams.getClient_id());
+        String ua = redirectParams.getUser_agent();
+        String ru = parseRedirectUrl(redirectParams).getRu();
         if (Strings.isNullOrEmpty(clientIdStr)) {
             res.sendRedirect(ru);
             return "empty";
         }
 
-        String httpOrHttps = getProtocol(req);
-        try {
-            ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_CONNECT_REDIRECT_URL : ru;
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Url decode Exception! ru:" + ru);
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
-        }
-
-        Result result = oAuthAuthLoginManager.handleConnectCallback(req, providerStr, ru, type, httpOrHttps);
-        viewUrl = (String) result.getModels().get(CommonConstant.RESPONSE_RU);
+        Result result = oAuthAuthLoginManager.handleConnectCallback(redirectParams, req, providerStr, getProtocol(req));
+        String viewUrl = (String) result.getModels().get(CommonConstant.RESPONSE_RU);
         if (result.isSuccess()) {
             String passportId = (String) result.getModels().get("userid");
             //用户第三方登录log
-            UserOperationLog userOperationLog = new UserOperationLog(passportId, req.getRequestURI(), req.getParameter(CommonConstant.CLIENT_ID), result.getCode(), getIp(req));
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, req.getRequestURI(), clientIdStr, result.getCode(), getIp(req));
             userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
             userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(req, "YYID"));
             userOperationLog.putOtherMessage(CommonConstant.USER_AGENT, ua);
@@ -108,7 +114,7 @@ public class ConnectCallbackController extends BaseConnectController {
                 cookieApiParams.setUniqname((String) result.getModels().get("refnick"));
                 cookieApiParams.setRefnick((String) result.getModels().get("refnick"));
                 cookieManager.createCookie(res, cookieApiParams);
-                String domain = req.getParameter("domain");
+                String domain = redirectParams.getDomain();
                 if (!Strings.isNullOrEmpty(domain)) {
                     String refnick = (String) result.getModels().get("refnick");
                     //uniqname： 对qq导航应用，传qq昵称
@@ -130,8 +136,8 @@ public class ConnectCallbackController extends BaseConnectController {
                 }
                 return viewUrl;
             } else if (ConnectTypeEnum.PC.toString().equals(type)) {
-                model.addAttribute(CommonConstant.BROWER_VERSION, req.getParameter(CommonConstant.BROWER_VERSION));
-                model.addAttribute(CommonConstant.INSTANCE_ID, req.getParameter("ts"));
+                model.addAttribute(CommonConstant.BROWER_VERSION, redirectParams.getV());
+                model.addAttribute(CommonConstant.INSTANCE_ID, redirectParams.getTs());
                 return viewUrl;
             } else {
                 res.sendRedirect(viewUrl + "?errorCode=" + result.getCode() + "&errorMsg=" + Coder.encodeUTF8(result.getMessage()));
@@ -140,4 +146,16 @@ public class ConnectCallbackController extends BaseConnectController {
         }
     }
 
+    private ConnectLoginRedirectParams parseRedirectUrl(ConnectLoginRedirectParams redirectParams) {
+        String ru = redirectParams.getRu();
+        try {
+            ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_CONNECT_REDIRECT_URL : ru;
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("Url decode Exception! ru:" + ru);
+            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+        }
+        redirectParams.setRu(ru);
+        return redirectParams;
+    }
 }

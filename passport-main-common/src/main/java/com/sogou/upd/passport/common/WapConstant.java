@@ -28,6 +28,8 @@ public class WapConstant {
     public static final String WAP_SKIN_GREEN = "green";
     // wap版颜色为红色
     public static final String WAP_SKIN_RED = "red";
+    //wap版颜色与浏览器统一
+    public static final String WAP_SKIN_SE = "se";
 
     //默认登录来源
     public static final String WAP_INDEX = "http://wap.sogou.com/";

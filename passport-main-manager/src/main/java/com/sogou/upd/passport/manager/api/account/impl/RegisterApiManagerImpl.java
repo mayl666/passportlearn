@@ -36,9 +36,9 @@ import java.util.Date;
  * Date: 13-6-8
  * Time: 下午9:50
  */
-@Component("sgRegisterApiManager")
-public class SGRegisterApiManagerImpl extends BaseProxyManager implements RegisterApiManager {
-    private static Logger logger = LoggerFactory.getLogger(SGRegisterApiManagerImpl.class);
+@Component("registerApiManager")
+public class RegisterApiManagerImpl extends BaseProxyManager implements RegisterApiManager {
+    private static Logger logger = LoggerFactory.getLogger(RegisterApiManagerImpl.class);
     @Autowired
     private AccountService accountService;
     @Autowired

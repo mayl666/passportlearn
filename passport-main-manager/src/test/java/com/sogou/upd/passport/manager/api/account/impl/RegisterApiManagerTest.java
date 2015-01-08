@@ -26,7 +26,7 @@ import java.util.Random;
 public class RegisterApiManagerTest extends BaseTest {
 
     @Autowired
-    private RegisterApiManager sgRegisterApiManager;
+    private RegisterApiManager registerApiManager;
 
     private static final String both_no_username = "testliuling" + new Random().nextInt(1000) + "@sogou.com";
     private static final String both_no_gexing = "135test94" + new Random().nextInt(1000);
@@ -51,7 +51,7 @@ public class RegisterApiManagerTest extends BaseTest {
     public void testCheckUser_1() throws IOException {
         String expectResult = "{\"statusText\":\"操作成功\",\"data\":{},\"status\":\"0\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = sgRegisterApiManager.checkUser(both_no_username, clientId);
+        Result actualResult = registerApiManager.checkUser(both_no_username, clientId);
         APIResultForm actualFrom = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualFrom));
     }
@@ -63,7 +63,7 @@ public class RegisterApiManagerTest extends BaseTest {
     public void testCheckUser_2() throws IOException {
         String expectResult = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + username_sogou + "\"},\"status\":\"20294\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = sgRegisterApiManager.checkUser(mobile_2, clientId);
+        Result actualResult = registerApiManager.checkUser(mobile_2, clientId);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualForm));
     }
@@ -75,7 +75,7 @@ public class RegisterApiManagerTest extends BaseTest {
     public void testCheckUser_3() throws IOException {
         String expectResult = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + username_mail + "\"},\"status\":\"20294\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = sgRegisterApiManager.checkUser(username_mail, clientId);
+        Result actualResult = registerApiManager.checkUser(username_mail, clientId);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualForm));
     }
@@ -89,7 +89,7 @@ public class RegisterApiManagerTest extends BaseTest {
     public void testCheckUser_4() throws IOException {
         String expectResult = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + mobile_2 + "@sohu.com\"},\"status\":\"20294\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = sgRegisterApiManager.checkUser(mobile_2+"@sohu.com", clientId);
+        Result actualResult = registerApiManager.checkUser(mobile_2+"@sohu.com", clientId);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualForm));
     }
@@ -101,7 +101,7 @@ public class RegisterApiManagerTest extends BaseTest {
     public void testCheckUser_5() throws IOException {
         String expectResult = "{\"data\":{\"userid\":\"" + both_no_gexing + "\"},\"statusText\":\"非法userid\",\"status\":\"20239\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = sgRegisterApiManager.checkUser(both_no_gexing, clientId);
+        Result actualResult = registerApiManager.checkUser(both_no_gexing, clientId);
         APIResultForm actualFrom = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualFrom));
     }
@@ -113,7 +113,7 @@ public class RegisterApiManagerTest extends BaseTest {
     public void testCheckUser_6() throws IOException {
         String expectResult = "{\"data\":{\"userid\":\"" + wrong_format + "\"},\"statusText\":\"非法userid\",\"status\":\"20239\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = sgRegisterApiManager.checkUser(wrong_format, clientId);
+        Result actualResult = registerApiManager.checkUser(wrong_format, clientId);
         APIResultForm actualFrom = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualFrom));
     }
@@ -124,7 +124,7 @@ public class RegisterApiManagerTest extends BaseTest {
      */
     @Test
     public void testCheckUser_7() throws IOException {
-        Result actualResult = sgRegisterApiManager.checkUser("sogou", clientId);
+        Result actualResult = registerApiManager.checkUser("sogou", clientId);
         APIResultForm actualFrom = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
     }
 
@@ -137,7 +137,7 @@ public class RegisterApiManagerTest extends BaseTest {
         //新手机，发送验证码
         String expectResult = "{\"statusText\":\"验证码已发送至" + new_mobile + "\",\"data\":{},\"status\":\"0\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = sgRegisterApiManager.sendMobileRegCaptcha(clientId, new_mobile);
+        Result actualResult = registerApiManager.sendMobileRegCaptcha(clientId, new_mobile);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertEquals(expectForm, actualForm);
 
@@ -145,7 +145,7 @@ public class RegisterApiManagerTest extends BaseTest {
         String code1 = ManagerHelper.generatorCodeGBK(mobile_2, clientId, serverSecret, ct);
         String expectResult1 = "{\"statusText\":\"手机号已绑定其他账号\",\"data\":{\"userid\":\"" + mobile_2 + "@sohu.com\"},\"status\":\"20225\"}";
         APIResultForm expectForm1 = JacksonJsonMapperUtil.getMapper().readValue(expectResult1.toString(), APIResultForm.class);
-        Result actualResult1 = sgRegisterApiManager.sendMobileRegCaptcha(clientId, mobile_2);
+        Result actualResult1 = registerApiManager.sendMobileRegCaptcha(clientId, mobile_2);
         APIResultForm actualForm1 = JacksonJsonMapperUtil.getMapper().readValue(actualResult1.toString(), APIResultForm.class);
         Assert.assertEquals(expectForm1, actualForm1);   //todo 手机号注册时还需要写映射表  done
 
@@ -153,7 +153,7 @@ public class RegisterApiManagerTest extends BaseTest {
         String code2 = ManagerHelper.generatorCodeGBK(mobile_1, clientId, serverSecret, ct);
         String expectResult2 = "{\"statusText\":\"手机号已绑定其他账号\",\"data\":{\"userid\":\"loveerin@sogou.com\"},\"status\":\"20225\"}";
         APIResultForm expectForm2 = JacksonJsonMapperUtil.getMapper().readValue(expectResult2.toString(), APIResultForm.class);
-        Result actualResult2 = sgRegisterApiManager.sendMobileRegCaptcha(clientId, mobile_1);
+        Result actualResult2 = registerApiManager.sendMobileRegCaptcha(clientId, mobile_1);
         System.out.println(actualResult2.toString());
         APIResultForm actualForm2 = JacksonJsonMapperUtil.getMapper().readValue(actualResult2.toString(), APIResultForm.class);
         Assert.assertEquals(expectForm2, actualForm2);
@@ -168,7 +168,7 @@ public class RegisterApiManagerTest extends BaseTest {
         RegEmailApiParams regEmailApiParams = new RegEmailApiParams(both_no_username_mail, password, ip,
                 clientId, EMAIL_REG_VERIFY_URL);
 //        String expectResult = "{\"statusText\":\"注册成功\",\"data\":{\"userid\":\"" + both_no_username_mail + "\",\"isSetCookie\":false},\"status\":\"0\"}";
-        Result actualResult = sgRegisterApiManager.regMailUser(regEmailApiParams);
+        Result actualResult = registerApiManager.regMailUser(regEmailApiParams);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
     }
 
@@ -180,7 +180,7 @@ public class RegisterApiManagerTest extends BaseTest {
         RegEmailApiParams regEmailApiParams = new RegEmailApiParams(both_no_username_sogou, password, ip,
                 clientId, LOGIN_INDEX_URL);
 //        String expectResult = "{\"statusText\":\"注册成功\",\"data\":{\"userid\":\"" + both_no_username_sogou + "\",\"isSetCookie\":true},\"status\":\"0\"}";
-        Result actualResult = sgRegisterApiManager.regMailUser(regEmailApiParams);
+        Result actualResult = registerApiManager.regMailUser(regEmailApiParams);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
     }
 
@@ -194,7 +194,7 @@ public class RegisterApiManagerTest extends BaseTest {
                 clientId, LOGIN_INDEX_URL);
 //        System.out.println(expectResult.toString());
 //        String expectResult = "{\"statusText\":\"账号已注册\",\"data\":{},\"status\":\"20201\"}";
-        Result actualResult = sgRegisterApiManager.regMailUser(regEmailApiParams);
+        Result actualResult = registerApiManager.regMailUser(regEmailApiParams);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
     }
 
@@ -207,7 +207,7 @@ public class RegisterApiManagerTest extends BaseTest {
         RegEmailApiParams regEmailApiParams = new RegEmailApiParams(wrong_format_username, password, ip,
                 clientId, LOGIN_INDEX_URL);
 //        String expectResult = "{\"statusText\":\"参数错误,请输入必填的参数\",\"data\":{},\"status\":\"10002\"}";
-        Result actualResult = sgRegisterApiManager.regMailUser(regEmailApiParams);
+        Result actualResult = registerApiManager.regMailUser(regEmailApiParams);
         APIResultForm acturalForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
     }
 
@@ -219,7 +219,7 @@ public class RegisterApiManagerTest extends BaseTest {
         RegEmailApiParams regEmailApiParams = new RegEmailApiParams(wrong_format, password, ip,
                 clientId, LOGIN_INDEX_URL);
 //        String expectResult = "{\"statusText\":\"参数错误,请输入必填的参数\",\"data\":{},\"status\":\"10002\"}";
-        Result actualResult = sgRegisterApiManager.regMailUser(regEmailApiParams);
+        Result actualResult = registerApiManager.regMailUser(regEmailApiParams);
         APIResultForm acturalForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
     }
 
@@ -242,21 +242,21 @@ public class RegisterApiManagerTest extends BaseTest {
         params.setMobile(new_mobile);
         String expectResult = "{\"statusText\":\"注册成功\",\"data\":{\"userid\":\"" + new_mobile + "@sohu.com\",\"isSetCookie\":false},\"status\":\"0\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result resultSG = sgRegisterApiManager.regMobileUser(params);
+        Result resultSG = registerApiManager.regMobileUser(params);
         APIResultForm formSG = JacksonJsonMapperUtil.getMapper().readValue(resultSG.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(formSG));
         //手机号格式有误
         params.setMobile("135xxx3xxx41");
         String expectResult_format = "{\"statusText\":\"参数错误,请输入必填的参数\",\"data\":{},\"status\":\"10002\"}";
         APIResultForm expectForm_format = JacksonJsonMapperUtil.getMapper().readValue(expectResult_format.toString(), APIResultForm.class);
-        Result resultSG_format = sgRegisterApiManager.regMobileUser(params);
+        Result resultSG_format = registerApiManager.regMobileUser(params);
         APIResultForm formSG_format = JacksonJsonMapperUtil.getMapper().readValue(resultSG_format.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm_format.equals(formSG_format));
         //手机号已注册或绑定
         params.setMobile("13545210241");
         String expectResult_exist = "{\"data\":{},\"status\":\"20201\",\"statusText\":\"账号已注册\"}";
         APIResultForm expectForm_exist = JacksonJsonMapperUtil.getMapper().readValue(expectResult_exist.toString(), APIResultForm.class);
-        Result resultSG_exist = sgRegisterApiManager.regMobileUser(params);
+        Result resultSG_exist = registerApiManager.regMobileUser(params);
         System.out.println(resultSG_exist.toString());
         APIResultForm formSG_exist = JacksonJsonMapperUtil.getMapper().readValue(resultSG_exist.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm_exist.equals(formSG_exist));

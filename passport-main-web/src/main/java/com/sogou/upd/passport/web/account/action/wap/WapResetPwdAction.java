@@ -54,7 +54,7 @@ public class WapResetPwdAction extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(WapResetPwdAction.class);
 
     @Autowired
-    private RegisterApiManager sgRegisterApiManager;
+    private RegisterApiManager registerApiManager;
     @Autowired
     private SecureManager secureManager;
     @Autowired
@@ -298,7 +298,7 @@ public class WapResetPwdAction extends BaseController {
                 return result.toString();
             }
             int client_id = Integer.parseInt(params.getClient_id());
-            result = sgRegisterApiManager.checkUser(passportId, client_id);
+            result = registerApiManager.checkUser(passportId, client_id);
             if (result.isSuccess()) {  //用户不存在
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);

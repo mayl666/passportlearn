@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.connect;
 
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.connect.ConnectToken;
+import com.sogou.upd.passport.model.connect.OriginalConnectInfo;
 
 /**
  * Account_Connect表服务接口
@@ -39,6 +40,11 @@ public interface ConnectTokenService {
      */
     public ConnectToken queryConnectToken(String passportId, int provider, String appKey) throws ServiceException;
 
+    /**
+     *   获取第三方用户的原始信息
+     *
+     */
+    public OriginalConnectInfo queryOriginalConnectInfo(String passportId, int provider) throws ServiceException;
     /**
      * 新增或更新ConnectTokena对象
      *

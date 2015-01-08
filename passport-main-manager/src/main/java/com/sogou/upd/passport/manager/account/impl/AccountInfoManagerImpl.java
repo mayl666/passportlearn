@@ -21,6 +21,7 @@ import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
+import com.sogou.upd.passport.model.connect.OriginalConnectInfo;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
@@ -185,9 +186,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             //第三方账号
             if (domain == AccountDomainEnum.THIRD) {
                 if (Strings.isNullOrEmpty(uniqname)) {
-                    ConnectToken connectToken = getConnectToken(passportId);
-                    if (connectToken != null) {
-                        uniqname = connectToken.getConnectUniqname();
+                    OriginalConnectInfo connectInfo = getOriginalConnectInfo(passportId) ;
+                    if (connectInfo != null) {
+                        uniqname = connectInfo.getConnectUniqname();
                         //判断uniqname,若为空，则调用 getDefaultUniqname 方法
                         if (Strings.isNullOrEmpty(uniqname)) {
                             uniqname = getDefaultUniqname(passportId, uniqname);
@@ -215,7 +216,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         NickNameAndAvatarVO nameAndAvatarVO = new NickNameAndAvatarVO();
         String uniqname = "";
         String avatarurl = "";
-
+        String gender = "0";
         String passportId = params.getUserid();
         int clientId = params.getClient_id();
         try {
@@ -228,25 +229,33 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 //第三方
                 if (domain == AccountDomainEnum.THIRD) {
                     if (Strings.isNullOrEmpty(uniqname) || Strings.isNullOrEmpty(avatarurl)) {
-                        ConnectToken connectToken = getConnectToken(passportId);
-                        if (connectToken != null) {
+                        OriginalConnectInfo connectInfo = getOriginalConnectInfo(passportId);
+                        if (connectInfo != null) {
                             if (Strings.isNullOrEmpty(uniqname)) {
-                                uniqname = connectToken.getConnectUniqname();
+                                uniqname = connectInfo.getConnectUniqname();
                                 //判断uniqname,若为空，则调用 getDefaultUniqname 方法
                                 if (Strings.isNullOrEmpty(uniqname)) {
                                     uniqname = getDefaultUniqname(passportId, uniqname);
                                 }
                             }
                             if (Strings.isNullOrEmpty(avatarurl)) {
-                                nameAndAvatarVO.setLarge_avatar(connectToken.getAvatarLarge());
-                                nameAndAvatarVO.setMid_avatar(connectToken.getAvatarMiddle());
-                                nameAndAvatarVO.setTiny_avatar(connectToken.getAvatarSmall());
+                                nameAndAvatarVO.setLarge_avatar(connectInfo.getAvatarLarge());
+                                nameAndAvatarVO.setMid_avatar(connectInfo.getAvatarMiddle());
+                                nameAndAvatarVO.setTiny_avatar(connectInfo.getAvatarSmall());
                             } else {
                                 obtainPhotoSizeUrl(nameAndAvatarVO, avatarurl);
+                            }
+                            //处理gender信息，默认为0
+                            if(!Strings.isNullOrEmpty(connectInfo.getGender())) {
+                                gender = connectInfo.getGender() ;
                             }
                         }
                     } else {
                         obtainPhotoSizeUrl(nameAndAvatarVO, avatarurl);
+                    }
+                    // 处理gender信息，默认为0
+                    if (StringUtils.contains(params.getFields(), "gender")) {
+                        result.setDefaultModel("gender",gender);
                     }
                 } else {
                     //非第三方账号
@@ -336,6 +345,18 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         return connectToken;
     }
 
+    /**
+     *获取第三方用户原始信息
+     *
+     *
+     */
+    private OriginalConnectInfo getOriginalConnectInfo(String userId) {
+        //
+        int provider = AccountTypeEnum.getAccountType(userId).getValue();
+        OriginalConnectInfo connectInfo = connectTokenService.queryOriginalConnectInfo(userId,provider);
+
+        return connectInfo;
+    }
     /**
      * 从浏览器论坛取昵称
      *

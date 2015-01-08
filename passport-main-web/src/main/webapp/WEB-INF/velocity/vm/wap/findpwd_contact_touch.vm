@@ -7,7 +7,7 @@
 <meta name="MobileOptimized" content="320"/>
 <meta name="format-detection" content="telephone=no"/>
 <title>找回密码-搜狗通行证</title>
-<link rel="stylesheet" href="/./static/css/wap/main.css?t=443027"/>
+<link rel="stylesheet" href="/./static/css/wap/main.css?t=368739"/>
 </head>
 <body>
 
@@ -26,7 +26,7 @@
 <p class="findpwd-info">彩票：<span class="red">kfcp@sogou-inc.com或010-56898998</span></p>
 <p class="findpwd-info">小说：<span class="red">客服QQ群 263958053</span></p>
 <p class="findpwd-info">游戏：<span class="red">企业QQ 2851050936</span></p>
-<p class="findpwd-info">壁纸：<span class="red">客服QQ群 227986177</span></p>
+<p class="findpwd-info">糖猫：<span class="red">客服QQ群 339074366</span></p>
 <p class="findpwd-info">其他：<span class="red">passportkf@sogou-inc.com</span></p>
 
 
@@ -35,7 +35,7 @@
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=834469" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=265811" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"

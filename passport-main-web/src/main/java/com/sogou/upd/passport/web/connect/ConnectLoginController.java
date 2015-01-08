@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * SSO-SDK第三方授权接口
@@ -46,6 +45,7 @@ public class ConnectLoginController extends BaseConnectController {
         String httpOrHttps = getProtocol(req);
         //user agent
         String ua = getHeaderUserAgent(req);
+        String ip = getIp(req);
         try {
             String validateResult = ControllerHelper.validateParams(connectLoginParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
@@ -66,9 +66,7 @@ public class ConnectLoginController extends BaseConnectController {
                 res.sendRedirect(url);
                 return;
             }
-
-            String uuid = UUID.randomUUID().toString();
-            url = oAuthAuthLoginManager.buildConnectLoginURL(connectLoginParams, uuid, provider, getIp(req), httpOrHttps, ua);
+            url = oAuthAuthLoginManager.buildConnectLoginURL(connectLoginParams, provider, ip, httpOrHttps, ua);
             res.sendRedirect(url);
             return;
         } catch (OAuthProblemException e) {
@@ -77,7 +75,7 @@ public class ConnectLoginController extends BaseConnectController {
             return;
         } finally {
             //用户登陆log--二期迁移到callback中记录log
-            UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), connectLoginParams.getClient_id(), "0", getIp(req));
+            UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), connectLoginParams.getClient_id(), "0", ip);
             userOperationLog.putOtherMessage("ref", connectLoginParams.getRu());
             userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
             userOperationLog.putOtherMessage(CommonConstant.USER_AGENT, ua);

@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DateUtil;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.SignatureUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.ManagerHelper;
@@ -23,6 +24,7 @@ import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.manager.form.connect.AfterAuthParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
+import com.sogou.upd.passport.manager.form.connect.ConnectLoginRedirectParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.account.AccountToken;
@@ -60,6 +62,8 @@ import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -89,14 +93,15 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private ConnectApiManager sgConnectApiManager;
     @Autowired
     private AppConfigService appConfigService;
+    @Autowired
+    private RedisUtils redisUtils;
 
     @Override
-    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, String uuid, int provider, String ip, String httpOrHttps, String userAgent) throws OAuthProblemException {
+    public String buildConnectLoginURL(ConnectLoginParams connectLoginParams, int provider, String ip, String httpOrHttps, String userAgent) throws OAuthProblemException {
         OAuthConsumer oAuthConsumer;
         OAuthAuthzClientRequest request;
         ConnectConfig connectConfig;
         try {
-            int clientId = Integer.parseInt(connectLoginParams.getClient_id());
             oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
             if (oAuthConsumer.getCallbackUrl(httpOrHttps) == null) {
                 logger.error("callbackUrl is null,callbackurl=" + oAuthConsumer.getCallbackUrl() + ",accesstokenurl=" + oAuthConsumer.getAccessTokenUrl() + ",refreshtokenurl=" + oAuthConsumer.getRefreshAccessTokenUrl() + ",userinfourl=" + oAuthConsumer.getUserInfo());
@@ -107,30 +112,36 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             if (connectConfig == null) {
                 return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
             }
-            String redirectURI = ConnectManagerHelper.constructRedirectURI(clientId, connectLoginParams.getRu(), connectLoginParams.getType(),
-                    connectLoginParams.getTs(), oAuthConsumer.getCallbackUrl(httpOrHttps), ip, connectLoginParams.getFrom(),
-                    connectLoginParams.getDomain(), connectLoginParams.getThirdInfo(), userAgent, connectLoginParams.getV(), thirdAppId);
+
+            String pCallbackUrl = oAuthConsumer.getCallbackUrl(httpOrHttps);
+            ConnectLoginRedirectParams redirectParams = new ConnectLoginRedirectParams(connectLoginParams, ip, userAgent);
+            String state = UUID.randomUUID().toString();
+            String redirectURL;
+            if (AccountTypeEnum.WEIXIN.getValue() == provider) { //微信不能把redirectURL里的参数带到回跳接口，需要通过state存储并获取
+                redirectURL = pCallbackUrl;
+                redisUtils.set(state, redirectParams, 30, TimeUnit.MINUTES);
+            } else {
+                redirectURL = ConnectManagerHelper.constructRedirectURL(pCallbackUrl, redirectParams);
+            }
             String scope = connectConfig.getScope();
             String appKey = connectConfig.getAppKey();
             String connectType = connectLoginParams.getType();
+
             // 重新填充display，如果display为空，根据终端自动赋值；如果display不为空，则使用display
             String display = connectLoginParams.getDisplay();
             display = Strings.isNullOrEmpty(display) ? fillDisplay(connectType, connectLoginParams.getFrom(), provider) : display;
-
-            String requestUrl;
-            // 采用Authorization Code Flow流程
-            //若provider=QQ && display=wml、xhtml调用WAP接口
+            //若provider=QQ display=wml、xhtml已废弃，qq不支持wap接口
             if (ConnectRequest.isQQWapRequest(connectLoginParams.getProvider(), display)) {
-                requestUrl = oAuthConsumer.getWapUserAuthzUrl();
-            } else {
-                requestUrl = oAuthConsumer.getWebUserAuthzUrl();
+                display = "mobile";
             }
+
             OAuthAuthzClientRequest.AuthenticationRequestBuilder builder = OAuthAuthzClientRequest
-                    .authorizationLocation(requestUrl).setAppKey(appKey, provider)
-                    .setRedirectURI(redirectURI)
+                    .authorizationLocation(oAuthConsumer.getWebUserAuthzUrl()).setAppKey(appKey, provider)
+                    .setRedirectURI(redirectURL)
                     .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
                     .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
-                    .setState(uuid);
+                    .setState(state);
+
             if (AccountTypeEnum.QQ.getValue() == provider) {
                 builder.setShowAuthItems(QQOAuth.NO_AUTH_ITEMS);       // qq为搜狗产品定制化页面，隐藏授权信息
                 if (!Strings.isNullOrEmpty(connectLoginParams.getViewPage())) {
@@ -149,20 +160,19 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     }
 
     @Override
-    public Result handleConnectCallback(HttpServletRequest req, String providerStr, String ru, String type, String httpOrHttps) {
+    public Result handleConnectCallback(ConnectLoginRedirectParams redirectParams, HttpServletRequest req, String providerStr, String httpOrHttps) {
         Result result = new APIResultSupport(false);
-        String v = req.getParameter(CommonConstant.BROWER_VERSION); //浏览器根据v判断展示新旧UI样式
+        String v = redirectParams.getV(); //浏览器根据v判断展示新旧UI样式
+        String ru = redirectParams.getRu();
+        String type = redirectParams.getType();
+        String ip = redirectParams.getIp();
+        String instanceId = redirectParams.getTs();
+        String from = redirectParams.getFrom(); //手机浏览器会传此参数，响应结果和PC端不一样
+        String thirdInfo = redirectParams.getThirdInfo(); //用于SDK端请求，返回搜狗用户信息或者低三方用户信息；
+        int provider = AccountTypeEnum.getProvider(providerStr);
+        String thirdAppId = redirectParams.getThird_appid(); //不为空时代表应用使用独立appid；
         try {
-            int clientId = Integer.valueOf(req.getParameter(CommonConstant.CLIENT_ID));
-            String ip = req.getParameter("ip");
-            String instanceId = req.getParameter("ts");
-            String from = req.getParameter("from"); //手机浏览器会传此参数，响应结果和PC端不一样
-            String thirdInfo = req.getParameter("thirdInfo"); //用于SDK端请求，返回搜狗用户信息或者低三方用户信息；
-            String domain = req.getParameter("domain"); //导航qq登陆，会传此参数
-            String ua = req.getParameter(CommonConstant.USER_AGENT);
-            int provider = AccountTypeEnum.getProvider(providerStr);
-            String thirdAppId = req.getParameter(CommonConstant.THIRD_APPID); //不为空时代表应用使用独立appid；
-
+            int clientId = Integer.valueOf(redirectParams.getClient_id());
             //1.获取授权成功后返回的code值
             OAuthAuthzClientResponse oar = OAuthAuthzClientResponse.oauthCodeAuthzResponse(req);
             String code = oar.getCode();
@@ -177,7 +187,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            String redirectUrl = ConnectManagerHelper.constructRedirectURI(clientId, ru, type, instanceId, oAuthConsumer.getCallbackUrl(httpOrHttps), ip, from, domain, thirdInfo, ua, v, thirdAppId);
+            String redirectUrl;
+            String pCallbackUrl = oAuthConsumer.getCallbackUrl(httpOrHttps);
+            if (AccountTypeEnum.WEIXIN.getValue() == provider) { //微信不能把redirectURL里的参数带到回跳接口
+                redirectUrl = pCallbackUrl;
+            } else {
+                redirectUrl = ConnectManagerHelper.constructRedirectURL(pCallbackUrl, redirectParams);
+            }
             OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, code, connectConfig,
                     oAuthConsumer, redirectUrl);
             OAuthTokenVO oAuthTokenVO = oauthResponse.getOAuthTokenVO();
@@ -192,6 +208,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), oAuthConsumer);
                 if (provider == AccountTypeEnum.BAIDU.getValue()) {     // 百度 oauth2.0授权的openid需要从用户信息接口获取
                     setBaiduOpenid(connectUserInfoVO, oAuthTokenVO);
+                } else if (provider == AccountTypeEnum.WEIXIN.getValue()) {  //微信的用户唯一标示unionid需要从用户信息接口获取
+                    oAuthTokenVO.setUnionId(connectUserInfoVO.getUnionid());
                 }
             }
             String uniqname = openId;
