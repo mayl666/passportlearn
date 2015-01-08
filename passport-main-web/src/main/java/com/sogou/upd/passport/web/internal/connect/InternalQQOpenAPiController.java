@@ -94,7 +94,7 @@ public class InternalQQOpenAPiController extends BaseController {
             logger.error("end to send http request get the qq friends");
             String resp = null;
             if (map != null && map.size() > 0) {
-//                map = changeResult(map);
+                map = changeResult(map);
                 //调用返回
                 resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
             }
@@ -150,8 +150,7 @@ public class InternalQQOpenAPiController extends BaseController {
             map.remove("ret");
         }
         if (!CollectionUtils.isEmpty(map) && map.containsKey("items")) {
-            String items = String.valueOf(map.get("items"));
-            map.put("data", items);
+            map.put("data", map.get("items"));
             map.remove("items");
         }
         if (!CollectionUtils.isEmpty(map) && map.containsKey("is_lost")) {
