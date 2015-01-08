@@ -96,9 +96,9 @@ public class InternalQQOpenAPiController extends BaseController {
             inParammap.put("userid",userId);
             inParammap.put("tKey",tKey);
             logger.error("start to send http request get the qq friends");
-//            Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
-            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
-            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);
+            Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+//            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
+//            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);
 //            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
             logger.error(map.toString());
             logger.error("end to send http request get the qq friends");
