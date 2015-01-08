@@ -92,13 +92,13 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-//            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
+            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
 
-            Map inParammap = new HashMap();
+       /*     Map inParammap = new HashMap();
             inParammap.put("userid", userId);
             inParammap.put("tKey", tKey);
             String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
-            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);
+            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);*/
 
             String resp = null;
             if (!CollectionUtils.isEmpty(map)) {
