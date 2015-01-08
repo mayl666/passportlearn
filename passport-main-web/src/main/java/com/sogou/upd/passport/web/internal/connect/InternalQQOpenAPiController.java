@@ -147,12 +147,8 @@ public class InternalQQOpenAPiController extends BaseController {
             }
 
             result.setModels(changeResult(JacksonJsonMapperUtil.getMapper().readValue(responseData, Map.class)));
+            result.setSuccess(true);
             return result.toString();
-
-//            result.setSuccess(true);
-//            result.getModels().put("tKey", tKey);
-//            return result.toString();
-//            return resp;
         } catch (Exception e) {
             logger.error("get qq friends error. ", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
