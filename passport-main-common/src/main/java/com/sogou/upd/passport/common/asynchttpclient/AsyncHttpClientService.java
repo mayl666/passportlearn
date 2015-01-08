@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -51,7 +52,7 @@ public class AsyncHttpClientService {
 
     private static final String GET_QQ_FRIENDS_IP_PORT = "http://203.195.155.61:80";
 
-    private static final String GET_QQ_FRIENDS_URL = "/internal/qq/friends_info";
+    private static final String GET_QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
 
 
     /**
@@ -210,7 +211,7 @@ public class AsyncHttpClientService {
             StopWatch watch = new StopWatch();
             watch.start();
 
-            Response resp = httpClient.prepareGet(GET_QQ_FRIENDS_IP_PORT + GET_QQ_FRIENDS_URL).setBody("").addQueryParam("userid", userId).addQueryParam("tKey", tKey).execute(new AsyncCompletionHandler<Response>() {
+            /*Response resp = httpClient.prepareGet(GET_QQ_FRIENDS_IP_PORT + GET_QQ_FRIENDS_URL).setBody("").addQueryParam("userid", userId).addQueryParam("tKey", tKey).execute(new AsyncCompletionHandler<Response>() {
 
                 public STATE onHeaderWriteCompleted() {
                     headerSent.set(true);
@@ -227,11 +228,15 @@ public class AsyncHttpClientService {
                     return response;
                 }
             }).get();
-
             LOGGER.warn("user time :" + watch.getElapsedTime());
             String responseData = resp.getResponseBody();
-//            LOGGER.warn("resp.getResponseBody :" + resp.getResponseBody());
-            return responseData;
+            return responseData;*/
+
+            Future<Response> future = httpClient.preparePost(GET_QQ_FRIENDS_URL).addQueryParam("userid", userId).addQueryParam("tKey", tKey).execute();
+            Response response = future.get();
+            LOGGER.warn("response.getStatusCode() :" + response.getStatusCode());
+            String responseBody = response.getResponseBody();
+            return responseBody;
 
 //            InputStream inputStream = resp.getResponseBodyAsStream();
 //            return IOUtils.toString(inputStream, Constants.DEFAULT_CHARSET);
