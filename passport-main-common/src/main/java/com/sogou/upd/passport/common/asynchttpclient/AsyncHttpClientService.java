@@ -224,7 +224,8 @@ public class AsyncHttpClientService {
             String responseData = resp.getResponseBody();
             return responseData;*/
 
-            Response response = httpClient.preparePost(GET_QQ_FRIENDS_URL).addQueryParam("userid", userId).addQueryParam("tKey", tKey).execute(new AsyncCompletionHandler<Response>() {
+            AsyncHttpClient aysncHttpClient = new AsyncHttpClient();
+            Response response = aysncHttpClient.preparePost(GET_QQ_FRIENDS_URL).addQueryParam("userid", userId).addQueryParam("tKey", tKey).execute(new AsyncCompletionHandler<Response>() {
                 @Override
                 public Response onCompleted(Response response) throws Exception {
                     return response;
