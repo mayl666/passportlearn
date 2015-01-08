@@ -164,7 +164,7 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
     }
 
     @Override
-    public Result obtainTKey(String passportId, int clientId,String third_appid) {
+    public Result obtainTKey(String passportId, int clientId, String third_appid) {
         Result result = new APIResultSupport(false);
         Result connectTokenResult = obtainConnectToken(passportId, clientId, third_appid);
         if (!connectTokenResult.isSuccess()) {
