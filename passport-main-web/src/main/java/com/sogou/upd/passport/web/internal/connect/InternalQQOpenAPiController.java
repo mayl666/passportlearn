@@ -1,10 +1,7 @@
 package com.sogou.upd.passport.web.internal.connect;
 
-import com.alibaba.dubbo.common.json.JSONObject;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.asynchttpclient.AsyncHttpClientService;
+import com.rabbitmq.tools.json.JSONUtil;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -20,8 +17,6 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import net.sf.json.JSONArray;
-import org.codehaus.jackson.JsonGenerationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +26,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -44,7 +45,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-@RequestMapping(value = "/internal/connect/qq")
+@RequestMapping(value = "/internal/connect")
 public class InternalQQOpenAPiController extends BaseController {
 
     private Logger logger = LoggerFactory.getLogger(InternalQQOpenAPiController.class);
@@ -58,7 +59,7 @@ public class InternalQQOpenAPiController extends BaseController {
 
     //    @InterfaceSecurity
     @ResponseBody
-    @RequestMapping(value = "/get_qqfriends")
+    @RequestMapping(value = "/get_friends_info")
     public String get_qqfriends(HttpServletRequest req, BaseUserApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String userId = params.getUserid();
@@ -91,11 +92,13 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            /*Map inParammap = new HashMap();
+            Map inParammap = new HashMap();
             inParammap.put("userid",userId);
-            inParammap.put("tKey",tKey);*/
+            inParammap.put("tKey",tKey);
             logger.error("start to send http request get the qq friends");
-            Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+//            Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
+            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);
 //            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
             logger.error(map.toString());
             logger.error("end to send http request get the qq friends");
@@ -157,9 +160,7 @@ public class InternalQQOpenAPiController extends BaseController {
             map.remove("ret");
         }
         if (!CollectionUtils.isEmpty(map) && map.containsKey("items")) {
-            String items = String.valueOf(map.get("items"));
-            JSONArray jsonArray = JSONArray.fromObject(items);
-            map.put("data", jsonArray);
+            map.put("data", map.get("items"));
             map.remove("items");
         }
         if (!CollectionUtils.isEmpty(map) && map.containsKey("is_lost")) {
@@ -170,10 +171,11 @@ public class InternalQQOpenAPiController extends BaseController {
 
 
 
-    /*private String  send(String urlString, String method,
+    private String  send(String urlString, String method,
                              Map<String, String> parameters, Map<String, String> propertys)
             throws IOException {
         HttpURLConnection urlConnection = null;
+        Proxy proxy = new Proxy(java.net.Proxy.Type.HTTP,new InetSocketAddress("10.129.192.147", 8888));
 
         if (method.equalsIgnoreCase("GET") && parameters != null) {
             StringBuffer param = new StringBuffer();
@@ -189,7 +191,7 @@ public class InternalQQOpenAPiController extends BaseController {
             urlString += param;
         }
         URL url = new URL(urlString);
-        urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection = (HttpURLConnection) url.openConnection(proxy);
 
         urlConnection.setRequestMethod(method);
         urlConnection.setDoOutput(true);
@@ -214,13 +216,13 @@ public class InternalQQOpenAPiController extends BaseController {
         return this.makeContent(urlString, urlConnection);
     }
 
-    *//**
+    /*
      * 得到响应对象
      *
      * @param urlConnection
      * @return 响应对象
      * @throws IOException
-     *//*
+     */
     private String makeContent(String urlString,
                                     HttpURLConnection urlConnection) throws IOException {
         try {
@@ -242,5 +244,5 @@ public class InternalQQOpenAPiController extends BaseController {
             if (urlConnection != null)
                 urlConnection.disconnect();
         }
-    }*/
+    }
 }
