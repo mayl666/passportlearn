@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,7 +64,7 @@ public class InternalQQOpenAPiController extends BaseController {
 
     //    @InterfaceSecurity
     @ResponseBody
-    @RequestMapping(value = "/get_friends_info")
+    @RequestMapping(value = "/get_friends_info", method = RequestMethod.POST)
     public String get_qqfriends(HttpServletRequest req, BaseUserApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String userId = params.getUserid();
