@@ -220,7 +220,7 @@ public class AsyncHttpClientService {
                 LOGGER.debug("response headers :");
             }
 */
-           /* String encodingHeader = response.getHeader(HttpHeaders.Names.CONTENT_ENCODING);
+            String encodingHeader = response.getHeader(HttpHeaders.Names.CONTENT_ENCODING);
             if (!Strings.isNullOrEmpty(encodingHeader)) {
                 if (HttpClientConfig.CompressFormat.COMPRESS_FORMAT_GZIP.isBelong(encodingHeader)) {
                     return HttpClientUtils.uncompressStream(HttpClientConfig.CompressFormat.COMPRESS_FORMAT_GZIP, response.getResponseBodyAsStream());
@@ -232,7 +232,7 @@ public class AsyncHttpClientService {
                     LOGGER.error("Unsupported HTTP compressed encoding:{}", encodingHeader);
                     throw new RuntimeException("Unsupported HTTP compressed encoding:" + encodingHeader);
                 }
-            }*/
+            }
             // 如果response头部没有指示编码格式，认为非压缩，直接返回
 //            InputStreamReader inputReader = new InputStreamReader(response.getResponseBodyAsStream(), Constants.DEFAULT_CHARSET);
 //                     return CharStreams.toString(inputReader);
