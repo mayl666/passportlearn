@@ -20,6 +20,7 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import org.codehaus.jackson.JsonGenerationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +140,7 @@ public class InternalQQOpenAPiController extends BaseController {
         }
     }
 
-    public Map changeResult(Map map) {
+    public Map changeResult(Map map) throws IOException {
         if (!CollectionUtils.isEmpty(map) && map.containsKey("msg")) {
             String msg = String.valueOf(map.get("msg"));
             map.put("statusText", msg);
@@ -155,7 +157,8 @@ public class InternalQQOpenAPiController extends BaseController {
         }
         if (!CollectionUtils.isEmpty(map) && map.containsKey("items")) {
             String items = String.valueOf(map.get("items"));
-            map.put("data", items);
+            String temp = JacksonJsonMapperUtil.getMapper().writeValueAsString(items);
+            map.put("data", temp);
             map.remove("items");
         }
         if (!CollectionUtils.isEmpty(map) && map.containsKey("is_lost")) {
