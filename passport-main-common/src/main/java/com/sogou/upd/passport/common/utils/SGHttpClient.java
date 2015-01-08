@@ -184,16 +184,16 @@ public class SGHttpClient {
 //            return text;
             StopWatch watch = new StopWatch();
             watch.start();
-            /*String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+            String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
             LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
-            return text;*/
+            return text;
 
-            String text = null;
+            /*String text = null;
             try (final Reader reader = new InputStreamReader(inputStream)) {
                 text = CharStreams.toString(reader);
             }
             LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
-            return text;
+            return text;*/
 
            /* InputStreamReader inputStreamReader = new InputStreamReader(inputStream, HTTP.DEF_CONTENT_CHARSET);
             while (inputStreamReader.read() > -1) {

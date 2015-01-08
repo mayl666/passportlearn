@@ -5,16 +5,18 @@ import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
 import com.ning.http.client.*;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.io.IOUtils;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.sogou.upd.passport.common.asynchttpclient.HttpClientConfig.CompressFormat.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -61,7 +63,7 @@ public class AsyncHttpClientService {
      * @param conTimeOutMs  连接超时毫秒数
      * @param soTimeOutMs   套接字超时毫秒数
      */
-    public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs, final int soTimeOutMs) {
+   /* public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs, final int soTimeOutMs) {
         // 多线程连接管理器
         AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
                 .setMaxConnectionsPerHost(maxConPerHost)
@@ -69,7 +71,17 @@ public class AsyncHttpClientService {
                 .setRequestTimeout(soTimeOutMs)
                 .build();
         this.httpClient = new AsyncHttpClient(config);
+    }*/
+    public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs, final int soTimeOutMs) {
+        // 多线程连接管理器
+        AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
+                .setMaximumConnectionsPerHost(maxConPerHost)
+                .setConnectionTimeoutInMs(conTimeOutMs)
+                .setRequestTimeoutInMs(soTimeOutMs)
+                .build();
+        this.httpClient = new AsyncHttpClient(config);
     }
+
 
     /**
      * 构造提供代理功能的HTTP客户端服务，代理参数参见
@@ -79,7 +91,7 @@ public class AsyncHttpClientService {
      * @param soTimeOutMs   套接字超时毫秒数
      * @param proxyConfig   代理配置参数
      */
-    public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs,
+   /* public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs,
                                   final int soTimeOutMs, final HttpClientProxyConfig proxyConfig) {
         this(maxConPerHost, conTimeOutMs, soTimeOutMs);
         if (proxyConfig.isUseProxy()) {
@@ -96,6 +108,24 @@ public class AsyncHttpClientService {
                     .build();
             this.httpClient = new AsyncHttpClient(config);
         }
+    }*/
+    public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs,
+                                  final int soTimeOutMs, final HttpClientProxyConfig proxyConfig) {
+        this(maxConPerHost, conTimeOutMs, soTimeOutMs);
+        if (proxyConfig.isUseProxy()) {
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(proxyConfig.getProxyHost()),
+                    "proxy host must not be null or empty.");
+            Preconditions.checkArgument(proxyConfig.getProxyPort() > 0, "proxy port must be larger than 0.");
+            ProxyServer proxyServer = new ProxyServer(proxyConfig.getProxyHost(), proxyConfig.getProxyPort(), proxyConfig.getProxyAuthUser(), proxyConfig.getProxyAuthPassword());
+            AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
+                    .setMaximumConnectionsPerHost(maxConPerHost)
+                    .setConnectionTimeoutInMs(conTimeOutMs)
+                    .setRequestTimeoutInMs(soTimeOutMs)
+                    .setUseProxyProperties(proxyConfig.isUseProxy())
+                    .setProxyServer(proxyServer)
+                    .build();
+            this.httpClient = new AsyncHttpClient(config);
+        }
     }
 
 
@@ -107,7 +137,7 @@ public class AsyncHttpClientService {
      * @param headers   请求头部参数
      * @return
      */
-    public String sendGet(String url, FluentStringsMap getParams, Map<String, Collection<String>> headers) throws Exception {
+   /* public String sendGet(String url, FluentStringsMap getParams, Map<String, Collection<String>> headers) throws Exception {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
         LOGGER.debug("Get Request:{}", url);
         AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient.prepareGet(url)
@@ -116,6 +146,17 @@ public class AsyncHttpClientService {
                 .setHeaders(headers);
         return sendRequest(boundRequestBuilder);
     }
+*/
+    public String sendGet(String url, FluentStringsMap getParams, Map<String, Collection<String>> headers) throws Exception {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
+        LOGGER.debug("Get Request:{}", url);
+        AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient.prepareGet(url)
+                .setBodyEncoding(Constants.DEFAULT_CHARSET)
+                .setQueryParameters(getParams)
+                .setHeaders(headers);
+        return sendRequest(boundRequestBuilder);
+    }
+
 
     /**
      * 发送post请求
@@ -125,7 +166,7 @@ public class AsyncHttpClientService {
      * @param headers   请求头部参数
      * @return
      */
-    public String sendPost(String url, Map<String, List<String>> getParams, Map<String, Collection<String>> headers) throws Exception {
+   /* public String sendPost(String url, Map<String, List<String>> getParams, Map<String, Collection<String>> headers) throws Exception {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
         LOGGER.debug("Post Request:{}", url);
         AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient.preparePost(url);
@@ -133,13 +174,21 @@ public class AsyncHttpClientService {
         boundRequestBuilder.setHeaders(headers);
         boundRequestBuilder.setQueryParams(getParams);
         return sendRequest(boundRequestBuilder);
+    }*/
+    public String sendPost(String url, Map<String, Collection<String>> getParams, Map<String, Collection<String>> headers) throws Exception {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
+        LOGGER.debug("Post Request:{}", url);
+        AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient.preparePost(url);
+        boundRequestBuilder.setBodyEncoding("UTF-8");
+        boundRequestBuilder.setHeaders(headers);
+        boundRequestBuilder.setParameters(getParams);
+        return sendRequest(boundRequestBuilder);
     }
 
 
     public String sendPost(String url) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
         LOGGER.debug("Post Request:{}", url);
-
         return "";
     }
 
@@ -166,11 +215,11 @@ public class AsyncHttpClientService {
                 throw new IllegalStateException("Http response error. status code:" + statusCode);
             }
 
-            if (LOGGER.isDebugEnabled()) {
+            /*if (LOGGER.isDebugEnabled()) {
                 FluentCaseInsensitiveStringsMap resHeader = response.getHeaders();
                 LOGGER.debug("response headers :");
             }
-
+*/
             String encodingHeader = response.getHeader(HttpHeaders.Names.CONTENT_ENCODING);
             if (!Strings.isNullOrEmpty(encodingHeader)) {
                 if (HttpClientConfig.CompressFormat.COMPRESS_FORMAT_GZIP.isBelong(encodingHeader)) {
@@ -185,8 +234,10 @@ public class AsyncHttpClientService {
                 }
             }
             // 如果response头部没有指示编码格式，认为非压缩，直接返回
-            InputStreamReader inputReader = new InputStreamReader(response.getResponseBodyAsStream(), Constants.DEFAULT_CHARSET);
-            return CharStreams.toString(inputReader);
+//            InputStreamReader inputReader = new InputStreamReader(response.getResponseBodyAsStream(), Constants.DEFAULT_CHARSET);
+//                     return CharStreams.toString(inputReader);
+            InputStream inputStream = response.getResponseBodyAsStream();
+            return IOUtils.toString(inputStream, Constants.DEFAULT_CHARSET);
         } finally {
             /// 不论如何，释放连接
 //            if (listenableFuture != null && listenableFuture.isDone()) {
