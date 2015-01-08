@@ -23,6 +23,7 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
@@ -32,8 +33,10 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -118,6 +121,7 @@ public class SGHttpClient {
      */
     public static String executeStr(RequestModel requestModel) {
         HttpEntity httpEntity = execute(requestModel);
+
         try {
             String charset = EntityUtils.getContentCharSet(httpEntity);
             if (StringUtil.isBlank(charset)) {
@@ -132,6 +136,54 @@ public class SGHttpClient {
             throw new RuntimeException("http request error ", e);
         }
     }
+
+
+    /**
+     * 执行请求操作，返回服务器返回内容
+     *
+     * @param requestModel
+     * @return
+     */
+    public static String executeStrV1(RequestModel requestModel) {
+        HttpEntity httpEntity = execute(requestModel);
+
+        try {
+            InputStream inputStream = httpEntity.getContent();
+
+            if (inputStream == null) {
+                return null;
+            }
+
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, HTTP.DEF_CONTENT_CHARSET);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuffer buffer = new StringBuffer();
+            String data;
+            while ((data = bufferedReader.readLine()) != null) {
+                buffer.append(data);
+            }
+
+            return data.toString();
+
+        } catch (Exception e) {
+
+        }
+
+
+        try {
+            String charset = EntityUtils.getContentCharSet(httpEntity);
+            if (StringUtil.isBlank(charset)) {
+                charset = CommonConstant.DEFAULT_CHARSET;
+            }
+            String value = EntityUtils.toString(httpEntity, charset);
+            if (!StringUtil.isBlank(value)) {
+                value = value.trim();
+            }
+            return value;
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException("http request error ", e);
+        }
+    }
+
 
     /**
      * 对外提供的执行请求的方法，主要添加了性能log
