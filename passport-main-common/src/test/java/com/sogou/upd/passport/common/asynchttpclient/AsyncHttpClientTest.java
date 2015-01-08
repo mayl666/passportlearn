@@ -68,10 +68,12 @@ public class AsyncHttpClientTest {
     @Test
     public void testAysncPost() {
         try {
+            String userId = "6F8ECBDA703857FD29BD4E4132E2A1E9@qq.sohu.com";
+//            String userId ="C2A6E7174FC56A79F8BE08697E5F1EC1@qq.sohu.com";
 
             AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
             Response response = asyncHttpClient.preparePost("http://10.136.24.127:8090/internal/connect/get_friends_info")
-                    .addQueryParam("userid", "C2A6E7174FC56A79F8BE08697E5F1EC1@qq.sohu.com").addQueryParam("client_id", "1024")
+                    .addQueryParameter("userid", userId).addQueryParameter("client_id", "1024").addQueryParameter("code", "1024")
                     .execute(new AsyncCompletionHandler<Response>() {
                         @Override
                         public Response onCompleted(Response response) throws Exception {
