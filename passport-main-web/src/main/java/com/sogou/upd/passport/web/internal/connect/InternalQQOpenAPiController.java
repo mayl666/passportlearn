@@ -122,14 +122,30 @@ public class InternalQQOpenAPiController extends BaseController {
             paramsMap.put("userid", Lists.newArrayList(userId));
             paramsMap.put("tKey", Lists.newArrayList(tKey));
 
-            AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
+
+            Map<String, String> paramsData = Maps.newHashMap();
+            paramsData.put("userid", userId);
+            paramsData.put("tKey", tKey);
+
+
+           /* AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
             String responseData = asyncHttpClientService.sendPost(QQ_FRIENDS_URL, paramsMap, null);
             if (Strings.isNullOrEmpty(responseData)) {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                 return result.toString();
             }
+            return responseData;*/
+
+            AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
+            String responseData = asyncHttpClientService.sendPost(QQ_FRIENDS_URL, paramsData);
+            if (Strings.isNullOrEmpty(responseData)) {
+                result = new APIResultSupport(false);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
+                return result.toString();
+            }
             return responseData;
+
 
 //            result.setSuccess(true);
 //            result.getModels().put("tKey", tKey);
