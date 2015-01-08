@@ -284,14 +284,14 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
 //            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
 
-
-            Process process = Runtime.getRuntime().exec("curl -d \"tKey="+ tKey + "&userid="+ userId + " \"http://203.195.155.61:80/internal/qq/friends_info\"");
+            String curl = "curl -d \"tKey=" + tKey + "&userid=" + userId + " \"http://203.195.155.61:80/internal/qq/friends_info\"";
+            Process process = Runtime.getRuntime().exec("ifconfig");
             InputStream inputStream = process.getInputStream();
             InputStreamReader reader = new InputStreamReader(inputStream);
             BufferedReader reader1 = new BufferedReader(reader);
             String str = reader1.readLine();
             StringBuffer resultValue = new StringBuffer();
-            while(str!=null){
+            while (str != null) {
                 resultValue.append(str);
                 str = reader1.readLine();
             }
