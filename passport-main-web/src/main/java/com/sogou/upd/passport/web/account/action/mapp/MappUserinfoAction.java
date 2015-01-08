@@ -5,16 +5,15 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.IpLocationUtil;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
+import com.sogou.upd.passport.model.mobileoperation.TerminalAttribute;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.mapp.MappGetUserinfoParams;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +66,7 @@ public class MappUserinfoAction extends BaseController {
             }
 
             //解析cinfo信息
-            TerminalAttributeDO attributeDO = new TerminalAttributeDO(request);
+            TerminalAttribute attributeDO = new TerminalAttribute(request);
             udid = attributeDO.getUdid();
             //验证code是否有效
             boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
