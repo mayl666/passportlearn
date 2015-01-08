@@ -8,6 +8,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.perf4j.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -202,6 +203,9 @@ public class AsyncHttpClientService {
                 userId = params.get("userid");
                 tKey = params.get("tKey");
             }
+            StopWatch watch = new StopWatch();
+            watch.start();
+
             Response resp = httpClient.preparePost(url).setBody("").addParameter("userid", userId).addParameter("tKey", tKey).execute(new AsyncCompletionHandler<Response>() {
 
                 public STATE onHeaderWriteCompleted() {
@@ -220,9 +224,10 @@ public class AsyncHttpClientService {
                 }
             }).get();
 
+            LOGGER.warn("user time :" + watch.getElapsedTime());
+            String responseData = resp.getResponseBody();
 //            LOGGER.warn("resp.getResponseBody :" + resp.getResponseBody());
-
-            return resp.getResponseBody();
+            return responseData;
 //            InputStream inputStream = resp.getResponseBodyAsStream();
 //            return IOUtils.toString(inputStream, Constants.DEFAULT_CHARSET);
 
