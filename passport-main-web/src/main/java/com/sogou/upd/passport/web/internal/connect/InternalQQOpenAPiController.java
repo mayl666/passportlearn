@@ -129,22 +129,22 @@ public class InternalQQOpenAPiController extends BaseController {
             paramsData.put("userid", userId);
             paramsData.put("tKey", tKey);
 
-           /* AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
+            AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
+
             String responseData = asyncHttpClientService.sendPost(QQ_FRIENDS_URL, paramsMap, null);
             if (Strings.isNullOrEmpty(responseData)) {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                 return result.toString();
             }
-            return responseData;*/
 
-            AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
+            /*AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
             String responseData = asyncHttpClientService.sendPreparePost(QQ_FRIENDS_URL, paramsData);
             if (Strings.isNullOrEmpty(responseData)) {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                 return result.toString();
-            }
+            }*/
 
             result.setModels(changeResult(JacksonJsonMapperUtil.getMapper().readValue(responseData, Map.class)));
             result.setSuccess(true);
