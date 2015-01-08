@@ -1,7 +1,10 @@
 package com.sogou.upd.passport.web.internal.connect;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.rabbitmq.tools.json.JSONUtil;
+import com.sogou.upd.passport.common.asynchttpclient.AsyncHttpClientService;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -34,6 +37,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,11 +92,11 @@ public class InternalQQOpenAPiController extends BaseController {
                 return result.toString();
             }
 
-            RequestModel requestModel = new RequestModel(QQ_FRIENDS_URL);
+           /* RequestModel requestModel = new RequestModel(QQ_FRIENDS_URL);
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
+            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);*/
 
        /*     Map inParammap = new HashMap();
             inParammap.put("userid", userId);
@@ -100,7 +104,7 @@ public class InternalQQOpenAPiController extends BaseController {
             String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
             Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);*/
 
-            String resp = null;
+          /*  String resp = null;
             if (!CollectionUtils.isEmpty(map)) {
                 map = changeResult(map);
                 //调用返回
@@ -112,9 +116,9 @@ public class InternalQQOpenAPiController extends BaseController {
                 return result.toString();
             }
 
-
+*/
             //构建参数
-/*            Map<String, List<String>> paramsMap = Maps.newHashMap();
+            Map<String, Collection<String>> paramsMap = Maps.newHashMap();
             paramsMap.put("userid", Lists.newArrayList(userId));
             paramsMap.put("tKey", Lists.newArrayList(tKey));
 
@@ -125,12 +129,12 @@ public class InternalQQOpenAPiController extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                 return result.toString();
             }
-            return responseData;*/
+            return responseData;
 
 //            result.setSuccess(true);
 //            result.getModels().put("tKey", tKey);
 //            return result.toString();
-            return resp;
+//            return resp;
         } catch (Exception e) {
             logger.error("get qq friends error. ", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
