@@ -67,7 +67,7 @@ public class AsyncHttpClientService {
      * @param conTimeOutMs  连接超时毫秒数
      * @param soTimeOutMs   套接字超时毫秒数
      */
-   /* public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs, final int soTimeOutMs) {
+    public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs, final int soTimeOutMs) {
         // 多线程连接管理器
         AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
                 .setMaxConnectionsPerHost(maxConPerHost)
@@ -75,8 +75,8 @@ public class AsyncHttpClientService {
                 .setRequestTimeout(soTimeOutMs)
                 .build();
         this.httpClient = new AsyncHttpClient(config);
-    }*/
-    public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs, final int soTimeOutMs) {
+    }
+    /*public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs, final int soTimeOutMs) {
         // 多线程连接管理器
         AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder()
                 .setMaximumConnectionsPerHost(maxConPerHost)
@@ -84,7 +84,7 @@ public class AsyncHttpClientService {
                 .setRequestTimeoutInMs(soTimeOutMs)
                 .build();
         this.httpClient = new AsyncHttpClient(config);
-    }
+    }*/
 
 
     /**
@@ -95,7 +95,7 @@ public class AsyncHttpClientService {
      * @param soTimeOutMs   套接字超时毫秒数
      * @param proxyConfig   代理配置参数
      */
-   /* public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs,
+    public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs,
                                   final int soTimeOutMs, final HttpClientProxyConfig proxyConfig) {
         this(maxConPerHost, conTimeOutMs, soTimeOutMs);
         if (proxyConfig.isUseProxy()) {
@@ -112,8 +112,8 @@ public class AsyncHttpClientService {
                     .build();
             this.httpClient = new AsyncHttpClient(config);
         }
-    }*/
-    public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs,
+    }
+ /*   public AsyncHttpClientService(final int maxConPerHost, final int conTimeOutMs,
                                   final int soTimeOutMs, final HttpClientProxyConfig proxyConfig) {
         this(maxConPerHost, conTimeOutMs, soTimeOutMs);
         if (proxyConfig.isUseProxy()) {
@@ -130,7 +130,7 @@ public class AsyncHttpClientService {
                     .build();
             this.httpClient = new AsyncHttpClient(config);
         }
-    }
+    }*/
 
 
     /**
@@ -141,7 +141,7 @@ public class AsyncHttpClientService {
      * @param headers   请求头部参数
      * @return
      */
-   /* public String sendGet(String url, FluentStringsMap getParams, Map<String, Collection<String>> headers) throws Exception {
+    public String sendGet(String url, FluentStringsMap getParams, Map<String, Collection<String>> headers) throws Exception {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
         LOGGER.debug("Get Request:{}", url);
         AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient.prepareGet(url)
@@ -150,8 +150,7 @@ public class AsyncHttpClientService {
                 .setHeaders(headers);
         return sendRequest(boundRequestBuilder);
     }
-*/
-    public String sendGet(String url, FluentStringsMap getParams, Map<String, Collection<String>> headers) throws Exception {
+   /* public String sendGet(String url, FluentStringsMap getParams, Map<String, Collection<String>> headers) throws Exception {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
         LOGGER.debug("Get Request:{}", url);
         AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient.prepareGet(url)
@@ -160,7 +159,7 @@ public class AsyncHttpClientService {
                 .setHeaders(headers);
         return sendRequest(boundRequestBuilder);
     }
-
+*/
 
     /**
      * 发送post请求
@@ -170,7 +169,7 @@ public class AsyncHttpClientService {
      * @param headers   请求头部参数
      * @return
      */
-   /* public String sendPost(String url, Map<String, List<String>> getParams, Map<String, Collection<String>> headers) throws Exception {
+    public String sendPost(String url, Map<String, List<String>> getParams, Map<String, Collection<String>> headers) throws Exception {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
         LOGGER.debug("Post Request:{}", url);
         AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient.preparePost(url);
@@ -178,8 +177,8 @@ public class AsyncHttpClientService {
         boundRequestBuilder.setHeaders(headers);
         boundRequestBuilder.setQueryParams(getParams);
         return sendRequest(boundRequestBuilder);
-    }*/
-    public String sendPost(String url, Map<String, Collection<String>> getParams, Map<String, Collection<String>> headers) throws Exception {
+    }
+    /*public String sendPost(String url, Map<String, Collection<String>> getParams, Map<String, Collection<String>> headers) throws Exception {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
         LOGGER.debug("Post Request:{}", url);
         AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient.preparePost(url);
@@ -188,7 +187,7 @@ public class AsyncHttpClientService {
         boundRequestBuilder.setParameters(getParams);
         return sendRequest(boundRequestBuilder);
     }
-
+*/
 
     public String sendPost(String url, Map<String, String> params) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
@@ -206,7 +205,7 @@ public class AsyncHttpClientService {
             StopWatch watch = new StopWatch();
             watch.start();
 
-            Response resp = httpClient.preparePost(url).setBody("").addParameter("userid", userId).addParameter("tKey", tKey).execute(new AsyncCompletionHandler<Response>() {
+            Response resp = httpClient.preparePost(url).setBody("").addQueryParam("userid", userId).addQueryParam("tKey", tKey).execute(new AsyncCompletionHandler<Response>() {
 
                 public STATE onHeaderWriteCompleted() {
                     headerSent.set(true);
