@@ -1,5 +1,8 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
+import com.google.common.io.InputSupplier;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
@@ -144,31 +147,38 @@ public class SGHttpClient {
      * @param requestModel
      * @return
      */
-   /* public static String executeStrV1(RequestModel requestModel) {
+    public static String executeWithGuava(RequestModel requestModel) throws IOException {
         HttpEntity httpEntity = execute(requestModel);
-
+        final InputStream inputStream = httpEntity.getContent();
         try {
-            InputStream inputStream = httpEntity.getContent();
-
             if (inputStream == null) {
                 return null;
             }
+            InputSupplier<InputStream> inputSupplier = new InputSupplier<InputStream>() {
+                @Override
+                public InputStream getInput() throws IOException {
+                    return inputStream;
+                }
+            };
+            InputSupplier<InputStreamReader> readerSupplier = CharStreams.newReaderSupplier(inputSupplier, Charsets.UTF_8);
+            String text = CharStreams.toString(readerSupplier);
 
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, HTTP.DEF_CONTENT_CHARSET);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            StringBuffer buffer = new StringBuffer();
-            String data;
-            while ((data = bufferedReader.readLine()) != null) {
-                buffer.append(data);
-            }
+           /* String text = null;
+            try (final Reader reader = new InputStreamReader(inputStream)) {
+                text = CharStreams.toString(reader);
+            }*/
 
-            return data.toString();
+           /* InputStreamReader inputStreamReader = new InputStreamReader(inputStream, HTTP.DEF_CONTENT_CHARSET);
+            while (inputStreamReader.read() > -1) {
+            }*/
 
+            return text;
         } catch (Exception e) {
-
+            throw new RuntimeException("executeWithGuava http request error ", e);
+        } finally {
+            inputStream.close();
         }
-
-    }*/
+    }
 
 
     /**
