@@ -282,7 +282,7 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
+//            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
 
 
             Process process = Runtime.getRuntime().exec("curl -d \"tKey="+ tKey + "&userid="+ userId + " \"http://203.195.155.61:80/internal/qq/friends_info\"");
