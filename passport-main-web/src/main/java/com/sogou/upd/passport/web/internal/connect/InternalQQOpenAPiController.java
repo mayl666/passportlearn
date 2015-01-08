@@ -89,10 +89,11 @@ public class InternalQQOpenAPiController extends BaseController {
                 return obtainTKeyResult.toString();
             }
             String tKey = (String) obtainTKeyResult.getModels().get("tKey");
-            if (StringUtil.isEmpty(tKey)) {
-                result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-                return result.toString();
+            if (!StringUtil.isEmpty(tKey)) {
+                result.setCode(ErrorUtil.SUCCESS);
+
             }
+            return result.toString();
 
            /* RequestModel requestModel = new RequestModel(QQ_FRIENDS_URL);
             requestModel.addParam("userid", userId);
@@ -120,14 +121,14 @@ public class InternalQQOpenAPiController extends BaseController {
 
 */
             //构建参数
-            Map<String, Collection<String>> paramsMap = Maps.newHashMap();
+           /* Map<String, Collection<String>> paramsMap = Maps.newHashMap();
             paramsMap.put("userid", Lists.newArrayList(userId));
             paramsMap.put("tKey", Lists.newArrayList(tKey));
 
 
             Map<String, String> paramsData = Maps.newHashMap();
             paramsData.put("userid", userId);
-            paramsData.put("tKey", tKey);
+            paramsData.put("tKey", tKey);*/
 
            /* AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
             String responseData = asyncHttpClientService.sendPost(QQ_FRIENDS_URL, paramsMap, null);
@@ -138,7 +139,7 @@ public class InternalQQOpenAPiController extends BaseController {
             }
             return responseData;*/
 
-            AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
+            /*AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
             String responseData = asyncHttpClientService.sendPrepareGet(QQ_FRIENDS_URL, paramsData);
             if (Strings.isNullOrEmpty(responseData)) {
                 result = new APIResultSupport(false);
@@ -147,7 +148,8 @@ public class InternalQQOpenAPiController extends BaseController {
             }
 
             result.setModels(changeResult(JacksonJsonMapperUtil.getMapper().readValue(responseData, Map.class)));
-            return result.toString();
+            return result.toString();*/
+
 
 //            result.setSuccess(true);
 //            result.getModels().put("tKey", tKey);

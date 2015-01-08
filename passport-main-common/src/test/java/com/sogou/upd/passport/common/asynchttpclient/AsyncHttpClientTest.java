@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.asynchttpclient;
 
 import com.ning.http.client.AsyncCompletionHandler;
+import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
 import org.junit.Test;
 import org.perf4j.StopWatch;
@@ -30,20 +31,18 @@ public class AsyncHttpClientTest {
         }
     }
 
-   /* public void testAysnc() {
+    @Test
+    public void testAysnc() {
         try {
 
             final AtomicBoolean headerSent = new AtomicBoolean(false);
             final AtomicBoolean operationCompleted = new AtomicBoolean(false);
-            String userId = null;
-            String tKey = null;
-
 
             StopWatch watch = new StopWatch();
             watch.start();
 
-            Response resp = httpClient.prepareGet("http://www.baidu.com").setBody("").execute(new AsyncCompletionHandler<Response>() {
-
+            AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+            Response resp = asyncHttpClient.prepareGet("http://www.baidu.com").setBody("").execute(new AsyncCompletionHandler<Response>() {
                 public STATE onHeaderWriteCompleted() {
                     headerSent.set(true);
                     return STATE.CONTINUE;
@@ -59,11 +58,30 @@ public class AsyncHttpClientTest {
                     return response;
                 }
             }).get();
+            System.out.println(resp.getResponseBody());
+        } catch (Exception e) {
+            LOGGER.error("error", e);
+        }
+    }
+
+
+    @Test
+    public void testAysncPost() {
+        try {
+
+            AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+            Response response = asyncHttpClient.preparePost("http://203.195.155.61:80/internal/qq/friends_info").addQueryParam("userid", "C2A6E7174FC56A79F8BE08697E5F1EC1@qq.sohu.com").addQueryParam("client_id", "1024").execute(new AsyncCompletionHandler<Response>() {
+                @Override
+                public Response onCompleted(Response response) throws Exception {
+                    return response;
+                }
+            }).get();
+
+            System.out.println(response.getResponseBody());
         } catch (Exception e) {
 
         }
 
     }
-*/
 
 }
