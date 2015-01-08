@@ -55,6 +55,7 @@ public class InternalQQOpenAPiController extends BaseController {
 
     private Logger logger = LoggerFactory.getLogger(InternalQQOpenAPiController.class);
     private static final String QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
+    private static final String GET_QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
 
     //QQ正确返回状态码
     private String QQ_RET_CODE = "0";

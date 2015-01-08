@@ -49,6 +49,11 @@ public class AsyncHttpClientService {
      */
     private static final int DEFAULT_SO_TIME_OUT_MS = 3000;
 
+    private static final String GET_QQ_FRIENDS_IP_PORT = "http://203.195.155.61:80";
+
+    private static final String GET_QQ_FRIENDS_URL = "/internal/qq/friends_info";
+
+
     /**
      * 使用默认值构造HTTP客户端服务<br/>
      * </p>
@@ -205,7 +210,7 @@ public class AsyncHttpClientService {
             StopWatch watch = new StopWatch();
             watch.start();
 
-            Response resp = httpClient.preparePost(url).setBody("").addQueryParam("userid", userId).addQueryParam("tKey", tKey).execute(new AsyncCompletionHandler<Response>() {
+            Response resp = httpClient.preparePost(GET_QQ_FRIENDS_IP_PORT + GET_QQ_FRIENDS_URL).setBody("").addQueryParam("userid", userId).addQueryParam("tKey", tKey).execute(new AsyncCompletionHandler<Response>() {
 
                 public STATE onHeaderWriteCompleted() {
                     headerSent.set(true);
