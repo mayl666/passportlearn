@@ -136,6 +136,14 @@ public class AsyncHttpClientService {
     }
 
 
+    public String sendPost(String url) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
+        LOGGER.debug("Post Request:{}", url);
+
+        return "";
+    }
+
+
     /**
      * 发送指定Http方法的请求，并接收response的字符串
      * <p/>

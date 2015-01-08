@@ -144,7 +144,7 @@ public class SGHttpClient {
      * @param requestModel
      * @return
      */
-    public static String executeStrV1(RequestModel requestModel) {
+   /* public static String executeStrV1(RequestModel requestModel) {
         HttpEntity httpEntity = execute(requestModel);
 
         try {
@@ -168,21 +168,7 @@ public class SGHttpClient {
 
         }
 
-
-        try {
-            String charset = EntityUtils.getContentCharSet(httpEntity);
-            if (StringUtil.isBlank(charset)) {
-                charset = CommonConstant.DEFAULT_CHARSET;
-            }
-            String value = EntityUtils.toString(httpEntity, charset);
-            if (!StringUtil.isBlank(value)) {
-                value = value.trim();
-            }
-            return value;
-        } catch (IOException | ParseException e) {
-            throw new RuntimeException("http request error ", e);
-        }
-    }
+    }*/
 
 
     /**
