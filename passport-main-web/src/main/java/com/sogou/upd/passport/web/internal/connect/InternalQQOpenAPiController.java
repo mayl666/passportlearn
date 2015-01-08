@@ -94,7 +94,7 @@ public class InternalQQOpenAPiController extends BaseController {
             logger.error("end to send http request get the qq friends");
             String resp = null;
             if (map != null && map.size() > 0) {
-                map = changeResult(map);
+//                map = changeResult(map);
                 //调用返回
                 resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
             }
