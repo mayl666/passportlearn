@@ -88,12 +88,16 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
+            /*Map inParammap = new HashMap();
+            inParammap.put("userid",userId);
+            inParammap.put("tKey",tKey);*/
             logger.error("start to send http request get the qq friends");
-            JSONObject map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, JSONObject.class);
+            Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+//            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
             logger.error(map.toString());
             logger.error("end to send http request get the qq friends");
             String resp = null;
-            if (map != null) {
+            if (map != null && map.size() > 0) {
                 map = changeResult(map);
                 //调用返回
                 resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
@@ -134,27 +138,105 @@ public class InternalQQOpenAPiController extends BaseController {
         }
     }
 
-    public JSONObject changeResult(JSONObject json) {
-        JSONObject returnJson = new JSONObject();
-        if (null != json) {
-            if (json.contains("msg")) {
-                String msg = String.valueOf(json.get("msg"));
-                returnJson.put("statusText", msg);
-            }
-            if (json.contains("ret")) {
-                String ret = String.valueOf(json.get("ret"));
-                if (QQ_RET_CODE.equals(ret)) {
-                    returnJson.put("status", ret);
-                } else {
-                    returnJson.put("status", ErrorUtil.ERR_CODE_CONNECT_FAILED);
-                }
-            }
-            if (json.contains("items")) {
-                String items = String.valueOf(json.get("items"));
-                returnJson.put("data", items);
-            }
+    public Map changeResult(Map map) {
+        if (!CollectionUtils.isEmpty(map) && map.containsKey("msg")) {
+            String msg = String.valueOf(map.get("msg"));
+            map.put("statusText", msg);
+            map.remove("msg");
         }
-        return returnJson;
+        if (!CollectionUtils.isEmpty(map) && map.containsKey("ret")) {
+            String ret = String.valueOf(map.get("ret"));
+            if (QQ_RET_CODE.equals(ret)) {
+                map.put("status", ret);
+            } else {
+                map.put("status", ErrorUtil.ERR_CODE_CONNECT_FAILED);
+            }
+            map.remove("ret");
+        }
+        if (!CollectionUtils.isEmpty(map) && map.containsKey("items")) {
+            String items = String.valueOf(map.get("items"));
+            map.put("data", items);
+            map.remove("items");
+        }
+        if (!CollectionUtils.isEmpty(map) && map.containsKey("is_lost")) {
+            map.remove("is_lost");
+        }
+        return map;
     }
 
+
+
+    /*private String  send(String urlString, String method,
+                             Map<String, String> parameters, Map<String, String> propertys)
+            throws IOException {
+        HttpURLConnection urlConnection = null;
+
+        if (method.equalsIgnoreCase("GET") && parameters != null) {
+            StringBuffer param = new StringBuffer();
+            int i = 0;
+            for (String key : parameters.keySet()) {
+                if (i == 0)
+                    param.append("?");
+                else
+                    param.append("&");
+                param.append(key).append("=").append(parameters.get(key));
+                i++;
+            }
+            urlString += param;
+        }
+        URL url = new URL(urlString);
+        urlConnection = (HttpURLConnection) url.openConnection();
+
+        urlConnection.setRequestMethod(method);
+        urlConnection.setDoOutput(true);
+        urlConnection.setDoInput(true);
+        urlConnection.setUseCaches(false);
+
+        if (propertys != null)
+            for (String key : propertys.keySet()) {
+                urlConnection.addRequestProperty(key, propertys.get(key));
+            }
+
+        if (method.equalsIgnoreCase("POST") && parameters != null) {
+            StringBuffer param = new StringBuffer();
+            for (String key : parameters.keySet()) {
+                param.append("&");
+                param.append(key).append("=").append(parameters.get(key));
+            }
+            urlConnection.getOutputStream().write(param.toString().getBytes());
+            urlConnection.getOutputStream().flush();
+            urlConnection.getOutputStream().close();
+        }
+        return this.makeContent(urlString, urlConnection);
+    }
+
+    *//**
+     * 得到响应对象
+     *
+     * @param urlConnection
+     * @return 响应对象
+     * @throws IOException
+     *//*
+    private String makeContent(String urlString,
+                                    HttpURLConnection urlConnection) throws IOException {
+        try {
+            InputStream in = urlConnection.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(in));
+            StringBuffer temp = new StringBuffer();
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                temp.append(line).append("\r\n");
+                line = bufferedReader.readLine();
+            }
+            bufferedReader.close();
+
+            return temp.toString();
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            if (urlConnection != null)
+                urlConnection.disconnect();
+        }
+    }*/
 }
