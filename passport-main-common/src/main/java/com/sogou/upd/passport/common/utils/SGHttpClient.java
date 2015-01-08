@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.google.common.io.CharStreams;
 import com.google.common.io.InputSupplier;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -36,6 +37,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -181,14 +184,16 @@ public class SGHttpClient {
 //            return text;
             StopWatch watch = new StopWatch();
             watch.start();
-            String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
-            LOGGER.error("IOUtils.toString use time:" + watch.getElapsedTime());
-            return text;
+            /*String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+            LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
+            return text;*/
 
-           /* String text = null;
+            String text = null;
             try (final Reader reader = new InputStreamReader(inputStream)) {
                 text = CharStreams.toString(reader);
-            }*/
+            }
+            LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
+            return text;
 
            /* InputStreamReader inputStreamReader = new InputStreamReader(inputStream, HTTP.DEF_CONTENT_CHARSET);
             while (inputStreamReader.read() > -1) {
