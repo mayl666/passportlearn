@@ -304,7 +304,8 @@ public class InternalQQOpenAPiController extends BaseController {
 
             String curl = "curl -d \"tKey=" + tKey + "&userid=" + userId + "\" \"http://203.195.155.61:80/internal/qq/friends_info\"";
             Process process = Runtime.getRuntime().exec(curl);
-            process.waitFor();
+            while (process.waitFor() == 1)
+                process.waitFor();
             logger.error(curl);
             InputStream inputStream = process.getInputStream();
             InputStreamReader reader = new InputStreamReader(inputStream);
