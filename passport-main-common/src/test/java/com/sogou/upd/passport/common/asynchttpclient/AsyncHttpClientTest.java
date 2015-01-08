@@ -23,7 +23,9 @@ public class AsyncHttpClientTest {
         } catch (Exception e) {
             LOGGER.error("AsyncHttpClientService sendGet error", e);
         }
-
     }
+
+
+
 
 }

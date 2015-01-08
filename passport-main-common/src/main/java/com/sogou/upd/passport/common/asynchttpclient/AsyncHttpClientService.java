@@ -194,7 +194,7 @@ public class AsyncHttpClientService {
     }
 */
 
-    public String sendPost(String url, Map<String, String> params) {
+    public String sendPrepareGet(String url, Map<String, String> params) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
         LOGGER.debug("Post Request:{}", url);
         try {
@@ -210,7 +210,7 @@ public class AsyncHttpClientService {
             StopWatch watch = new StopWatch();
             watch.start();
 
-            Response resp = httpClient.preparePost(GET_QQ_FRIENDS_IP_PORT + GET_QQ_FRIENDS_URL).setBody("").addQueryParam("userid", userId).addQueryParam("tKey", tKey).execute(new AsyncCompletionHandler<Response>() {
+            Response resp = httpClient.prepareGet(GET_QQ_FRIENDS_IP_PORT + GET_QQ_FRIENDS_URL).setBody("").addQueryParam("userid", userId).addQueryParam("tKey", tKey).execute(new AsyncCompletionHandler<Response>() {
 
                 public STATE onHeaderWriteCompleted() {
                     headerSent.set(true);

@@ -140,7 +140,7 @@ public class InternalQQOpenAPiController extends BaseController {
             return responseData;*/
 
             AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
-            String responseData = asyncHttpClientService.sendPost(QQ_FRIENDS_URL, paramsData);
+            String responseData = asyncHttpClientService.sendPrepareGet(QQ_FRIENDS_URL, paramsData);
             if (Strings.isNullOrEmpty(responseData)) {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
