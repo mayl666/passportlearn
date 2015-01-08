@@ -182,8 +182,7 @@ public class SGHttpClient {
             StopWatch watch = new StopWatch();
             watch.start();
             String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
-            watch.stop();
-            LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
+            LOGGER.error("IOUtils.toString use time:" + watch.getElapsedTime());
             return text;
 
            /* String text = null;
