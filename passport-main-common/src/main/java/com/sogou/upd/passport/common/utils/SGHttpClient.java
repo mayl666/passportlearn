@@ -116,6 +116,23 @@ public class SGHttpClient {
         return t;
     }
 
+    public static <T> T execute(RequestModel requestModel, HttpTransformat transformat, java.lang.Class<T> type) throws IOException {
+        String value = executeWithGuava(requestModel).trim();
+        T t = null;
+        switch (transformat) {
+            case json:
+                t = JsonUtil.jsonToBean(value, type);
+                break;
+            case xml:
+                t = XMLUtil.xmlToBean(value, type);
+                break;
+        }
+        ArrayList list = new ArrayList();
+        list.iterator();
+        return t;
+    }
+
+
     /**
      * 执行请求操作，返回服务器返回内容
      *

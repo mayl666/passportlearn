@@ -92,18 +92,17 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            Map inParammap = new HashMap();
-            inParammap.put("userid",userId);
-            inParammap.put("tKey",tKey);
-            logger.error("start to send http request get the qq friends");
-//            Map map = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
-            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
-            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);
+            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
+
+//            Map inParammap = new HashMap();
+//            inParammap.put("userid", userId);
+//            inParammap.put("tKey", tKey);
 //            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
-            logger.error(map.toString());
-            logger.error("end to send http request get the qq friends");
+//            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);
+//            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
+
             String resp = null;
-            if (map != null && map.size() > 0) {
+            if (!CollectionUtils.isEmpty(map)) {
                 map = changeResult(map);
                 //调用返回
                 resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
@@ -145,12 +144,12 @@ public class InternalQQOpenAPiController extends BaseController {
     }
 
     public Map changeResult(Map map) throws IOException {
-        if (!CollectionUtils.isEmpty(map) && map.containsKey("msg")) {
+        if (map.containsKey("msg")) {
             String msg = String.valueOf(map.get("msg"));
             map.put("statusText", msg);
             map.remove("msg");
         }
-        if (!CollectionUtils.isEmpty(map) && map.containsKey("ret")) {
+        if (map.containsKey("ret")) {
             String ret = String.valueOf(map.get("ret"));
             if (QQ_RET_CODE.equals(ret)) {
                 map.put("status", ret);
@@ -159,23 +158,22 @@ public class InternalQQOpenAPiController extends BaseController {
             }
             map.remove("ret");
         }
-        if (!CollectionUtils.isEmpty(map) && map.containsKey("items")) {
+        if (map.containsKey("items")) {
             map.put("data", map.get("items"));
             map.remove("items");
         }
-        if (!CollectionUtils.isEmpty(map) && map.containsKey("is_lost")) {
+        if (map.containsKey("is_lost")) {
             map.remove("is_lost");
         }
         return map;
     }
 
 
-
-    private String  send(String urlString, String method,
-                             Map<String, String> parameters, Map<String, String> propertys)
+    private String send(String urlString, String method,
+                        Map<String, String> parameters, Map<String, String> propertys)
             throws IOException {
         HttpURLConnection urlConnection = null;
-        Proxy proxy = new Proxy(java.net.Proxy.Type.HTTP,new InetSocketAddress("10.129.192.147", 8888));
+        Proxy proxy = new Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("10.129.192.147", 8888));
 
         if (method.equalsIgnoreCase("GET") && parameters != null) {
             StringBuffer param = new StringBuffer();
@@ -224,7 +222,7 @@ public class InternalQQOpenAPiController extends BaseController {
      * @throws IOException
      */
     private String makeContent(String urlString,
-                                    HttpURLConnection urlConnection) throws IOException {
+                               HttpURLConnection urlConnection) throws IOException {
         try {
             InputStream in = urlConnection.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(
