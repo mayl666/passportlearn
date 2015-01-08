@@ -37,7 +37,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 @Controller
-@RequestMapping(value = "/internal/connect/qq")
+@RequestMapping(value = "/internal/connect")
 public class InternalQQOpenAPiController extends BaseController {
 
     private Logger logger = LoggerFactory.getLogger(InternalQQOpenAPiController.class);
@@ -51,7 +51,7 @@ public class InternalQQOpenAPiController extends BaseController {
 
     //    @InterfaceSecurity
     @ResponseBody
-    @RequestMapping(value = "/get_qqfriends")
+    @RequestMapping(value = "/get_friends_info")
     public String get_qqfriends(HttpServletRequest req, BaseUserApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String userId = params.getUserid();
