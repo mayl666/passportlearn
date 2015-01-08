@@ -1,13 +1,12 @@
 package com.sogou.upd.passport.common.utils;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
 import com.google.common.io.InputSupplier;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -26,7 +25,6 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
@@ -36,10 +34,9 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -51,6 +48,7 @@ import java.util.ArrayList;
  */
 public class SGHttpClient {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SGHttpClient.class);
 
     protected static final HttpClient httpClient;
     /**
@@ -69,7 +67,8 @@ public class SGHttpClient {
     /**
      * 读取超时时间
      */
-    protected final static int READ_TIMEOUT = 3000;
+//    protected final static int READ_TIMEOUT = 3000;
+    protected final static int READ_TIMEOUT = 5000;
 
     /**
      * http返回成功的code
@@ -171,14 +170,20 @@ public class SGHttpClient {
             if (inputStream == null) {
                 return null;
             }
-            InputSupplier<InputStream> inputSupplier = new InputSupplier<InputStream>() {
-                @Override
-                public InputStream getInput() throws IOException {
-                    return inputStream;
-                }
-            };
-            InputSupplier<InputStreamReader> readerSupplier = CharStreams.newReaderSupplier(inputSupplier, Charsets.UTF_8);
-            String text = CharStreams.toString(readerSupplier);
+//            InputSupplier<InputStream> inputSupplier = new InputSupplier<InputStream>() {
+//                @Override
+//                public InputStream getInput() throws IOException {
+//                    return inputStream;
+//                }
+//            };
+//            InputSupplier<InputStreamReader> readerSupplier = CharStreams.newReaderSupplier(inputSupplier, Charsets.UTF_8);
+//            String text = CharStreams.toString(readerSupplier);
+//            return text;
+            StopWatch watch = new StopWatch();
+            watch.start();
+            String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+            LOGGER.error("IOUtils.toString use time:" + watch.getElapsedTime());
+            return text;
 
            /* String text = null;
             try (final Reader reader = new InputStreamReader(inputStream)) {
@@ -189,7 +194,6 @@ public class SGHttpClient {
             while (inputStreamReader.read() > -1) {
             }*/
 
-            return text;
         } catch (Exception e) {
             throw new RuntimeException("executeWithGuava http request error ", e);
         } finally {
