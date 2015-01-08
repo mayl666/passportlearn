@@ -1,10 +1,7 @@
 package com.sogou.upd.passport.web.internal.connect;
 
-import com.alibaba.dubbo.common.json.JSONObject;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.sogou.upd.passport.common.asynchttpclient.AsyncHttpClientService;
+import com.rabbitmq.tools.json.JSONUtil;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -20,8 +17,6 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import net.sf.json.JSONArray;
-import org.codehaus.jackson.JsonGenerationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +27,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -158,8 +151,7 @@ public class InternalQQOpenAPiController extends BaseController {
         }
         if (!CollectionUtils.isEmpty(map) && map.containsKey("items")) {
             String items = String.valueOf(map.get("items"));
-            JSONArray jsonArray = JSONArray.fromObject(items);
-            map.put("data", jsonArray);
+            map.put("data", items);
             map.remove("items");
         }
         if (!CollectionUtils.isEmpty(map) && map.containsKey("is_lost")) {
