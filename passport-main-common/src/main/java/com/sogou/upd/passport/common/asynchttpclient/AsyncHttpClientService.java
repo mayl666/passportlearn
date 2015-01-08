@@ -232,11 +232,17 @@ public class AsyncHttpClientService {
             String responseData = resp.getResponseBody();
             return responseData;*/
 
-            Future<Response> future = httpClient.preparePost(GET_QQ_FRIENDS_URL).addQueryParam("userid", userId).addQueryParam("tKey", tKey).execute();
-            Response response = future.get();
+            Response response = httpClient.preparePost(GET_QQ_FRIENDS_URL).addQueryParam("userid", userId).addQueryParam("tKey", tKey).execute(new AsyncCompletionHandler<Response>() {
+                @Override
+                public Response onCompleted(Response response) throws Exception {
+                    return response;
+                }
+            }).get();
+
             LOGGER.warn("response.getStatusCode() :" + response.getStatusCode());
             String responseBody = response.getResponseBody();
             return responseBody;
+
 
 //            InputStream inputStream = resp.getResponseBodyAsStream();
 //            return IOUtils.toString(inputStream, Constants.DEFAULT_CHARSET);
