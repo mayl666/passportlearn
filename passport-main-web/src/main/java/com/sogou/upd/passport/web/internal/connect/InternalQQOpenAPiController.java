@@ -285,7 +285,8 @@ public class InternalQQOpenAPiController extends BaseController {
 //            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
 
             String curl = "curl -d \"tKey=" + tKey + "&userid=" + userId + " \"http://203.195.155.61:80/internal/qq/friends_info\"";
-            Process process = Runtime.getRuntime().exec("ifconfig");
+            Process process = Runtime.getRuntime().exec(curl);
+            logger.error(curl);
             InputStream inputStream = process.getInputStream();
             InputStreamReader reader = new InputStreamReader(inputStream);
             BufferedReader reader1 = new BufferedReader(reader);
