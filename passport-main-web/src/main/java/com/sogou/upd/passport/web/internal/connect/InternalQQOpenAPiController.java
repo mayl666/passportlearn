@@ -92,14 +92,13 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
+//            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
 
-//            Map inParammap = new HashMap();
-//            inParammap.put("userid", userId);
-//            inParammap.put("tKey", tKey);
-//            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
-//            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);
-//            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
+            Map inParammap = new HashMap();
+            inParammap.put("userid", userId);
+            inParammap.put("tKey", tKey);
+            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
+            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);
 
             String resp = null;
             if (!CollectionUtils.isEmpty(map)) {
@@ -192,6 +191,7 @@ public class InternalQQOpenAPiController extends BaseController {
         urlConnection = (HttpURLConnection) url.openConnection(proxy);
 
         urlConnection.setRequestMethod(method);
+        urlConnection.setReadTimeout(999999999);
         urlConnection.setDoOutput(true);
         urlConnection.setDoInput(true);
         urlConnection.setUseCaches(false);
