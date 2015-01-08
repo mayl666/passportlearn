@@ -20,6 +20,7 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import net.sf.json.JSONArray;
 import org.codehaus.jackson.JsonGenerationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,8 +158,8 @@ public class InternalQQOpenAPiController extends BaseController {
         }
         if (!CollectionUtils.isEmpty(map) && map.containsKey("items")) {
             String items = String.valueOf(map.get("items"));
-            String temp = JacksonJsonMapperUtil.getMapper().writeValueAsString(items);
-            map.put("data", temp);
+            JSONArray jsonArray = JSONArray.fromObject(items);
+            map.put("data", jsonArray);
             map.remove("items");
         }
         if (!CollectionUtils.isEmpty(map) && map.containsKey("is_lost")) {
