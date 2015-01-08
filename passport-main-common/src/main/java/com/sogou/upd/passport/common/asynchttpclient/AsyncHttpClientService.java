@@ -2,9 +2,7 @@ package com.sogou.upd.passport.common.asynchttpclient;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.io.CharStreams;
 import com.ning.http.client.*;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
@@ -12,15 +10,10 @@ import org.perf4j.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -195,12 +188,11 @@ public class AsyncHttpClientService {
     }
 */
 
-    public String sendPrepareGet(String url, Map<String, String> params) {
+    public String sendPreparePost(String url, Map<String, String> params) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
         LOGGER.debug("Post Request:{}", url);
         try {
-            final AtomicBoolean headerSent = new AtomicBoolean(false);
-            final AtomicBoolean operationCompleted = new AtomicBoolean(false);
+
             String userId = null;
             String tKey = null;
 

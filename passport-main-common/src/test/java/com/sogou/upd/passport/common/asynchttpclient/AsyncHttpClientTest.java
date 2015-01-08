@@ -70,12 +70,14 @@ public class AsyncHttpClientTest {
         try {
 
             AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
-            Response response = asyncHttpClient.preparePost("http://203.195.155.61:80/internal/qq/friends_info").addQueryParam("userid", "C2A6E7174FC56A79F8BE08697E5F1EC1@qq.sohu.com").addQueryParam("client_id", "1024").execute(new AsyncCompletionHandler<Response>() {
-                @Override
-                public Response onCompleted(Response response) throws Exception {
-                    return response;
-                }
-            }).get();
+            Response response = asyncHttpClient.preparePost("http://10.136.24.127:8090/internal/connect/get_friends_info")
+                    .addQueryParam("userid", "C2A6E7174FC56A79F8BE08697E5F1EC1@qq.sohu.com").addQueryParam("client_id", "1024")
+                    .execute(new AsyncCompletionHandler<Response>() {
+                        @Override
+                        public Response onCompleted(Response response) throws Exception {
+                            return response;
+                        }
+                    }).get();
 
             System.out.println(response.getResponseBody());
         } catch (Exception e) {
