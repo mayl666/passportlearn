@@ -67,7 +67,8 @@ public class SGHttpClient {
     /**
      * 读取超时时间
      */
-    protected final static int READ_TIMEOUT = 3000;
+//    protected final static int READ_TIMEOUT = 3000;
+    protected final static int READ_TIMEOUT = 5000;
 
     /**
      * http返回成功的code
