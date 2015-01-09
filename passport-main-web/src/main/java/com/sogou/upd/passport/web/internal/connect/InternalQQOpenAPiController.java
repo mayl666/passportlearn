@@ -99,7 +99,7 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-//            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
+            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
 
        /*     Map inParammap = new HashMap();
             inParammap.put("userid", userId);
@@ -134,12 +134,12 @@ public class InternalQQOpenAPiController extends BaseController {
             }*/
 
 
-            Map<String, String> paramsData = Maps.newHashMap();
-            Map<String, String> headerMap = Maps.newHashMap();
-            paramsData.put("userid", userId);
-            paramsData.put("tKey", tKey);
-            HttpClientService httpClientService = new HttpClientService();
-            String responseData = httpClientService.sendPost(QQ_FRIENDS_URL, paramsData, headerMap);
+//            Map<String, String> paramsData = Maps.newHashMap();
+//            Map<String, String> headerMap = Maps.newHashMap();
+//            paramsData.put("userid", userId);
+//            paramsData.put("tKey", tKey);
+//            HttpClientService httpClientService = new HttpClientService();
+//            String responseData = httpClientService.sendPost(QQ_FRIENDS_URL, paramsData, headerMap);
 
             /*AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
             String responseData = asyncHttpClientService.sendPreparePost(QQ_FRIENDS_URL, paramsData);
@@ -149,8 +149,8 @@ public class InternalQQOpenAPiController extends BaseController {
                 return result.toString();
             }*/
 
-            result.setModels(changeResult(JacksonJsonMapperUtil.getMapper().readValue(responseData, Map.class)));
-//            result.setModels(changeResult(map));
+//            result.setModels(changeResult(JacksonJsonMapperUtil.getMapper().readValue(responseData, Map.class)));
+            result.setModels(changeResult(map));
             result.setSuccess(true);
             return result.toString();
         } catch (Exception e) {
