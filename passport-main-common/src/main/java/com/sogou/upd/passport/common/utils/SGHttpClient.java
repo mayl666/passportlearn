@@ -247,6 +247,7 @@ public class SGHttpClient {
             throw new RuntimeException("executeForBigData http request error ", e);
         } finally {
             inputStream.close();
+
         }
     }
 
