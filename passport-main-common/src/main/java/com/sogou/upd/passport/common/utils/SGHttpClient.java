@@ -61,7 +61,7 @@ public class SGHttpClient {
      * 获取连接的最大等待时间
      */
 //    protected final static int WAIT_TIMEOUT = 3000;
-    protected final static int WAIT_TIMEOUT = 10000;
+    protected final static int WAIT_TIMEOUT = 50000;
     /**
      * 每个路由最大连接数
      */
@@ -70,7 +70,7 @@ public class SGHttpClient {
      * 读取超时时间
      */
 //    protected final static int READ_TIMEOUT = 3000;
-    protected final static int READ_TIMEOUT = 5000;
+    protected final static int READ_TIMEOUT = 50000;
 
     /**
      * http返回成功的code
@@ -196,9 +196,9 @@ public class SGHttpClient {
             if (inputStream == null) {
                 return null;
             }
-            byte[] dataByteArray = SGEntityUtils.toByteArray(httpEntity);
-            String text = StringUtils.newStringUtf8(dataByteArray);
-            return text;
+            String str = SGEntityUtils.getContent1(httpEntity);
+//            String text = StringUtils.newStringUtf8(dataByteArray);
+            return str;
         } catch (Exception e) {
             throw new RuntimeException("executeForBigData http request error ", e);
         }

@@ -4,9 +4,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.http.HttpEntity;
 import org.apache.http.util.ByteArrayBuffer;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -75,6 +73,32 @@ public final class SGEntityUtils {
             instream.close();
         }
     }
+
+
+    public static String getContent1(HttpEntity entity) throws IOException {
+        InputStream in = entity.getContent();
+        BufferedReader stream = new BufferedReader(new InputStreamReader(in));
+        StringBuilder response = new StringBuilder();
+        String inputLine;
+        while ((inputLine = stream.readLine()) != null) {
+            response.append(inputLine);
+        }
+        return response.toString();
+    }
+
+
+    private static String getContent2(HttpEntity entity) throws IOException {
+        InputStream in = entity.getContent();
+        BufferedInputStream stream = new BufferedInputStream(in);
+        int inputLine;
+        StringBuilder response = new StringBuilder();
+
+        while ((inputLine = stream.read()) != -1) {
+            response.append(Integer.toHexString(inputLine));
+        }
+        return response.toString();
+    }
+
 
 
 }

@@ -1,11 +1,6 @@
 package com.sogou.upd.passport.web.internal.connect;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.rabbitmq.tools.json.JSONUtil;
-import com.sogou.upd.passport.common.asynchttpclient.AsyncHttpClientService;
-import com.sogou.upd.passport.common.asynchttpclient.HttpClientService;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -14,7 +9,6 @@ import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.form.BaseUserApiParams;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
@@ -25,9 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,8 +31,6 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
