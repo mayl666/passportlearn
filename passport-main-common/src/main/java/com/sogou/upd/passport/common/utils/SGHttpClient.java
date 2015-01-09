@@ -181,11 +181,11 @@ public class SGHttpClient {
 //            String text = CharStreams.toString(readerSupplier);
 //            return text;
 
-         /*   StopWatch watch = new StopWatch();
+            StopWatch watch = new StopWatch();
             watch.start();
             String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
             LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
-            return text;*/
+            return text;
 
             /*String text = null;
             try (final Reader reader = new InputStreamReader(inputStream)) {
@@ -194,7 +194,7 @@ public class SGHttpClient {
             LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
             return text;*/
 
-            StringBuilder textBuilder = new StringBuilder();
+           /* StringBuilder textBuilder = new StringBuilder();
             try (Reader reader = new BufferedReader(new InputStreamReader
                     (inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
                 int c;
@@ -202,7 +202,7 @@ public class SGHttpClient {
                     textBuilder.append((char) c);
                 }
             }
-            return textBuilder.toString();
+            return textBuilder.toString();*/
 
         } catch (Exception e) {
             throw new RuntimeException("executeWithGuava http request error ", e);

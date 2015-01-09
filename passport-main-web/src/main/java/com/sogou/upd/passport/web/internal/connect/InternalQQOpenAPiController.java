@@ -94,11 +94,12 @@ public class InternalQQOpenAPiController extends BaseController {
                 return result.toString();
             }
 
-           /* RequestModel requestModel = new RequestModel(QQ_FRIENDS_URL);
+            RequestModel requestModel = new RequestModel(QQ_FRIENDS_URL);
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);*/
+            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
+
 
        /*     Map inParammap = new HashMap();
             inParammap.put("userid", userId);
@@ -129,30 +130,28 @@ public class InternalQQOpenAPiController extends BaseController {
             paramsData.put("userid", userId);
             paramsData.put("tKey", tKey);
 
-
            /* AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
+
             String responseData = asyncHttpClientService.sendPost(QQ_FRIENDS_URL, paramsMap, null);
             if (Strings.isNullOrEmpty(responseData)) {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                 return result.toString();
             }
-            return responseData;*/
-
-            AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
-            String responseData = asyncHttpClientService.sendPost(QQ_FRIENDS_URL, paramsData);
+*/
+            /*AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
+            String responseData = asyncHttpClientService.sendPreparePost(QQ_FRIENDS_URL, paramsData);
             if (Strings.isNullOrEmpty(responseData)) {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                 return result.toString();
-            }
-            return responseData;
+            }*/
 
+//            result.setModels(changeResult(JacksonJsonMapperUtil.getMapper().readValue(responseData, Map.class)));
+            result.setModels(changeResult(map));
+            result.setSuccess(true);
+            return result.toString();
 
-//            result.setSuccess(true);
-//            result.getModels().put("tKey", tKey);
-//            return result.toString();
-//            return resp;
         } catch (Exception e) {
             logger.error("get qq friends error. ", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
