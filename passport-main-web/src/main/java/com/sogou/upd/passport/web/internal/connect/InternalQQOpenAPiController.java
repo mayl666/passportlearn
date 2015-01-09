@@ -32,6 +32,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -92,14 +93,15 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
             long start = System.currentTimeMillis();
 //            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
-            String str = SGHttpClient.executeForBigData(requestModel);
-            logger.error("SGHttpClient.executeForBigData : " + (System.currentTimeMillis() - start));
-            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);
-       /*     Map inParammap = new HashMap();
+//            String str = SGHttpClient.executeForBigData(requestModel);
+
+            Map inParammap = new HashMap();
             inParammap.put("userid", userId);
             inParammap.put("tKey", tKey);
             String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
-            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);*/
+            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);
+
+            logger.error("SGHttpClient.executeForBigData : " + (System.currentTimeMillis() - start));
 
           /*  String resp = null;
             if (!CollectionUtils.isEmpty(map)) {
