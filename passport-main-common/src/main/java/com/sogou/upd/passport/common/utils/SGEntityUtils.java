@@ -77,28 +77,35 @@ public final class SGEntityUtils {
 
     public static String getContent1(HttpEntity entity) throws IOException {
         InputStream in = entity.getContent();
-        BufferedReader stream = new BufferedReader(new InputStreamReader(in));
-        StringBuilder response = new StringBuilder();
-        String inputLine;
-        while ((inputLine = stream.readLine()) != null) {
-            response.append(inputLine);
+        try {
+            BufferedReader stream = new BufferedReader(new InputStreamReader(in));
+            StringBuilder response = new StringBuilder();
+            String inputLine;
+            while ((inputLine = stream.readLine()) != null) {
+                response.append(inputLine);
+            }
+            return response.toString();
+        } finally {
+            in.close();
         }
-        return response.toString();
     }
 
 
-    private static String getContent2(HttpEntity entity) throws IOException {
+    public static String getContent2(HttpEntity entity) throws IOException {
         InputStream in = entity.getContent();
-        BufferedInputStream stream = new BufferedInputStream(in);
-        int inputLine;
-        StringBuilder response = new StringBuilder();
+        try {
+            BufferedInputStream stream = new BufferedInputStream(in);
+            int inputLine;
+            StringBuilder response = new StringBuilder();
 
-        while ((inputLine = stream.read()) != -1) {
-            response.append(Integer.toHexString(inputLine));
+            while ((inputLine = stream.read()) != -1) {
+                response.append(Integer.toHexString(inputLine));
+            }
+            return response.toString();
+        } finally {
+            in.close();
         }
-        return response.toString();
     }
-
 
 
 }
