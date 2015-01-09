@@ -118,7 +118,7 @@ public class SGHttpClient {
     }
 
     public static <T> T execute(RequestModel requestModel, HttpTransformat transformat, java.lang.Class<T> type) throws IOException {
-        String value = executeForBigData(requestModel).trim();
+        String value = executeStr(requestModel).trim();
         T t = null;
         switch (transformat) {
             case json:
