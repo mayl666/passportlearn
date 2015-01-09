@@ -212,29 +212,39 @@ public class SGHttpClient {
             LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
             return text;*/
 
-            /*String text = null;
-            try (final Reader reader = new InputStreamReader(inputStream)) {
+
+            StopWatch watch = new StopWatch();
+            watch.start();
+            String text;
+            /*try (final InputStreamReader reader = new InputStreamReader(inputStream)) {
                 text = CharStreams.toString(reader);
             }
-            LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
-            return text;*/
+*/
 
-           /* StringBuilder textBuilder = new StringBuilder();
+            try (Reader reader = new BufferedReader(new InputStreamReader
+                    (inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
+                text = CharStreams.toString(reader);
+            }
+            LOGGER.warn("CharStreams.toString use time:" + watch.getElapsedTime());
+            return text;
+
+
+           /* StringBuilder text = new StringBuilder();
             try (Reader reader = new BufferedReader(new InputStreamReader
                     (inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
                 int c;
                 while ((c = reader.read()) != -1) {
-                    textBuilder.append((char) c);
+                    text.append((char) c);
                 }
             }
-            return textBuilder.toString();*/
+            return text.toString();*/
 
-            byte[] dataByteArray = EntityUtils.toByteArray(httpEntity);
+           /* byte[] dataByteArray = EntityUtils.toByteArray(httpEntity);
             String text = StringUtils.newStringUtf8(dataByteArray);
-            return text;
+            return text;*/
 
         } catch (Exception e) {
-            throw new RuntimeException("executeWithGuava http request error ", e);
+            throw new RuntimeException("executeForBigData http request error ", e);
         } finally {
             inputStream.close();
         }
