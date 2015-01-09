@@ -364,6 +364,10 @@ public class SGHttpClient {
                 HttpClientParams.setCookiePolicy(params, CookiePolicy.IGNORE_COOKIES); //忽略header里的cookie，解决ResponseProcessCookies(134): Invalid cookie header
                 HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
                 HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
+                HttpConnectionParams.setTcpNoDelay(params, false);
+                HttpConnectionParams.setSoKeepalive(params, true);
+                HttpConnectionParams.setSocketBufferSize(params, 10240);
+                HttpConnectionParams.setSoReuseaddr(params, false);
 
                 return new DefaultHttpClient(mgr, params);
             } catch (Exception ex) {
