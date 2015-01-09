@@ -148,7 +148,7 @@ public class InternalQQOpenAPiController extends BaseController {
             result.setSuccess(true);
             return result.toString();
         } catch (Exception e) {
-            logger.error("get qq friends error. ", e.getStackTrace());
+            logger.error("get qq friends error. ", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result.toString();
         } finally {
