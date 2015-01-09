@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -117,7 +118,7 @@ public class SGHttpClient {
     }
 
     public static <T> T execute(RequestModel requestModel, HttpTransformat transformat, java.lang.Class<T> type) throws IOException {
-        String value = executeWithGuava(requestModel).trim();
+        String value = executeForBigData(requestModel).trim();
         T t = null;
         switch (transformat) {
             case json:
@@ -164,7 +165,7 @@ public class SGHttpClient {
      * @param requestModel
      * @return
      */
-    public static String executeWithGuava(RequestModel requestModel) throws IOException {
+    public static String executeForBigData(RequestModel requestModel) throws IOException {
         HttpEntity httpEntity = execute(requestModel);
         final InputStream inputStream = httpEntity.getContent();
         try {
@@ -181,11 +182,11 @@ public class SGHttpClient {
 //            String text = CharStreams.toString(readerSupplier);
 //            return text;
 
-            StopWatch watch = new StopWatch();
+           /* StopWatch watch = new StopWatch();
             watch.start();
             String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
             LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
-            return text;
+            return text;*/
 
             /*String text = null;
             try (final Reader reader = new InputStreamReader(inputStream)) {
@@ -204,6 +205,9 @@ public class SGHttpClient {
             }
             return textBuilder.toString();*/
 
+            byte[] dataByteArray = EntityUtils.toByteArray(httpEntity);
+            String text = StringUtils.newStringUtf8(dataByteArray);
+            return text;
         } catch (Exception e) {
             throw new RuntimeException("executeWithGuava http request error ", e);
         } finally {
