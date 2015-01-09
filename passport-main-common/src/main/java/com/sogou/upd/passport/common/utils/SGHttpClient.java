@@ -229,7 +229,7 @@ public class SGHttpClient {
             }
             return textBuilder.toString();*/
 
-            byte[] dataByteArray = EntityUtils.toByteArray(httpEntity);
+            byte[] dataByteArray = SGEntityUtils.toByteArray(httpEntity);
             String text = StringUtils.newStringUtf8(dataByteArray);
             return text;
 
