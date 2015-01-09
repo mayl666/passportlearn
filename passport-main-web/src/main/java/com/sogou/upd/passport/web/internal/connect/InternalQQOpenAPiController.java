@@ -65,7 +65,7 @@ public class InternalQQOpenAPiController extends BaseController {
 
     //    @InterfaceSecurity
     @ResponseBody
-    @RequestMapping(value = "/get_friends_info", method = RequestMethod.POST)
+    @RequestMapping(value = "/get_friends_info")
     public String get_qqfriends(HttpServletRequest req, BaseUserApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         String userId = params.getUserid();
@@ -98,7 +98,8 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
+            String str = SGHttpClient.executeStrByByte(requestModel);
+//            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
 
 
        /*     Map inParammap = new HashMap();
@@ -148,9 +149,9 @@ public class InternalQQOpenAPiController extends BaseController {
             }*/
 
 //            result.setModels(changeResult(JacksonJsonMapperUtil.getMapper().readValue(responseData, Map.class)));
-            result.setModels(changeResult(map));
-            result.setSuccess(true);
-            return result.toString();
+          /*  result.setModels(changeResult(map));
+            result.setSuccess(true);*/
+            return str;
 
         } catch (Exception e) {
             logger.error("get qq friends error. ", e);
