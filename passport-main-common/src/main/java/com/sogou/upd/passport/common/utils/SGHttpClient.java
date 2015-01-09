@@ -132,6 +132,30 @@ public class SGHttpClient {
         return t;
     }
 
+    /**
+     * 执行请求操作，返回服务器返回内容
+     *
+     * @param requestModel
+     * @return
+     */
+    public static String executeStrByByte(RequestModel requestModel) {
+        HttpEntity httpEntity = execute(requestModel);
+
+        try {
+            String charset = EntityUtils.getContentCharSet(httpEntity);
+            if (StringUtil.isBlank(charset)) {
+                charset = CommonConstant.DEFAULT_CHARSET;
+            }
+            String value = new String(EntityUtils.toByteArray(httpEntity));
+            if (!StringUtil.isBlank(value)) {
+                value = value.trim();
+            }
+            return value;
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException("http request error ", e);
+        }
+    }
+
 
     /**
      * 执行请求操作，返回服务器返回内容
