@@ -189,8 +189,10 @@ public class HttpClientService {
                 }
             }
             // 如果response头部没有指示编码格式，认为非压缩，直接返回
-            InputStreamReader inputReader = new InputStreamReader(method.getResponseBodyAsStream(), Constants.DEFAULT_CHARSET);
-            return CharStreams.toString(inputReader);
+//            InputStreamReader inputReader = new InputStreamReader(method.getResponseBodyAsStream(), Constants.DEFAULT_CHARSET);
+//            return CharStreams.toString(inputReader);
+
+            return method.getResponseBodyAsString();
         } finally {
             // 不论如何，释放连接
             method.releaseConnection();
