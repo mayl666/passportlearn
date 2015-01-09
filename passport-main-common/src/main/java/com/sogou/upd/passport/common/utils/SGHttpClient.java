@@ -215,18 +215,18 @@ public class SGHttpClient {
 
             StopWatch watch = new StopWatch();
             watch.start();
-            String text;
+//            String text;
             /*try (final InputStreamReader reader = new InputStreamReader(inputStream)) {
                 text = CharStreams.toString(reader);
             }
 */
 
-            try (Reader reader = new BufferedReader(new InputStreamReader
+            /*try (Reader reader = new BufferedReader(new InputStreamReader
                     (inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
                 text = CharStreams.toString(reader);
             }
-            LOGGER.warn("CharStreams.toString use time:" + watch.getElapsedTime());
-            return text;
+            LOGGER.warn("CharStreams.toString use time:" + watch.getElapsedTime());*/
+//            return text;
 
 
            /* StringBuilder text = new StringBuilder();
@@ -239,9 +239,9 @@ public class SGHttpClient {
             }
             return text.toString();*/
 
-           /* byte[] dataByteArray = EntityUtils.toByteArray(httpEntity);
+            byte[] dataByteArray = SGEntityUtils.toByteArray(httpEntity);
             String text = StringUtils.newStringUtf8(dataByteArray);
-            return text;*/
+            return text;
 
         } catch (Exception e) {
             throw new RuntimeException("executeForBigData http request error ", e);
