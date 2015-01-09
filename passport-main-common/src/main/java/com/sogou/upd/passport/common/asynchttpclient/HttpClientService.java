@@ -3,6 +3,8 @@ package com.sogou.upd.passport.common.asynchttpclient;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
+import com.sogou.upd.passport.common.utils.SGEntityUtils;
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
@@ -192,7 +194,9 @@ public class HttpClientService {
 //            InputStreamReader inputReader = new InputStreamReader(method.getResponseBodyAsStream(), Constants.DEFAULT_CHARSET);
 //            return CharStreams.toString(inputReader);
 
-            return method.getResponseBodyAsString();
+            byte[] bytes = SGEntityUtils.toByteArrayNew(method);
+            return StringUtils.newStringUtf8(bytes);
+
         } finally {
             // 不论如何，释放连接
             method.releaseConnection();

@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
+import org.apache.commons.httpclient.HttpMethod;
 import org.apache.http.HttpEntity;
 import org.apache.http.util.ByteArrayBuffer;
 
@@ -30,14 +31,14 @@ public final class SGEntityUtils {
             if (entity.getContentLength() > Integer.MAX_VALUE) {
                 throw new IllegalArgumentException("HTTP entity too large to be buffered in memory");
             }
-            int i = (int)entity.getContentLength();
+            int i = (int) entity.getContentLength();
             if (i < 0) {
                 i = 4096;
             }
             ByteArrayBuffer buffer = new ByteArrayBuffer(i);
-            byte[] tmp = new byte[4096];
+            byte[] tmp = new byte[8092];
             int l;
-            while((l = instream.read(tmp)) != -1) {
+            while ((l = instream.read(tmp)) != -1) {
                 buffer.append(tmp, 0, l);
             }
             return buffer.toByteArray();
@@ -45,4 +46,35 @@ public final class SGEntityUtils {
             instream.close();
         }
     }
+
+
+    public static byte[] toByteArrayNew(final HttpMethod method) throws IOException {
+        if (method == null) {
+            throw new IllegalArgumentException("HTTP entity may not be null");
+        }
+        BufferedInputStream instream = new BufferedInputStream(method.getResponseBodyAsStream());
+        if (instream == null) {
+            return null;
+        }
+        try {
+            if (method.getResponseBodyAsString().length() > Integer.MAX_VALUE) {
+                throw new IllegalArgumentException("HTTP entity too large to be buffered in memory");
+            }
+            int i = method.getResponseBodyAsString().length();
+            if (i < 0) {
+                i = 4096;
+            }
+            ByteArrayBuffer buffer = new ByteArrayBuffer(i);
+            byte[] tmp = new byte[8092];
+            int l;
+            while ((l = instream.read(tmp)) != -1) {
+                buffer.append(tmp, 0, l);
+            }
+            return buffer.toByteArray();
+        } finally {
+            instream.close();
+        }
+    }
+
+
 }
