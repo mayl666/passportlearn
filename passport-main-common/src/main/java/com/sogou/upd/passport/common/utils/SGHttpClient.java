@@ -208,6 +208,7 @@ public class SGHttpClient {
             byte[] dataByteArray = EntityUtils.toByteArray(httpEntity);
             String text = StringUtils.newStringUtf8(dataByteArray);
             return text;
+
         } catch (Exception e) {
             throw new RuntimeException("executeWithGuava http request error ", e);
         } finally {
