@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.form.BaseUserApiParams;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
@@ -90,8 +91,10 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
             long start = System.currentTimeMillis();
-            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
-            logger.error("SGHttpClient.execute : " + (System.currentTimeMillis() - start));
+//            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
+            String str = SGHttpClient.executeForBigData(requestModel);
+            logger.error("SGHttpClient.executeForBigData : " + (System.currentTimeMillis() - start));
+            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);
        /*     Map inParammap = new HashMap();
             inParammap.put("userid", userId);
             inParammap.put("tKey", tKey);
@@ -145,7 +148,7 @@ public class InternalQQOpenAPiController extends BaseController {
             result.setSuccess(true);
             return result.toString();
         } catch (Exception e) {
-            logger.error("get qq friends error. ", e);
+            logger.error("get qq friends error. ", e.getStackTrace());
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result.toString();
         } finally {
