@@ -380,7 +380,7 @@ public class InternalQQOpenAPiController extends BaseController {
     public String test2(HttpServletRequest req, BaseUserApiParams params) throws IOException {
         RequestModel requestModel = new RequestModel("http://10.136.24.127:8090/internal/connect/get_friends_info/test1");
         requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-        Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
+//        Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
         String str = SGHttpClient.executeStrByByte(requestModel);
         return str;
     }
