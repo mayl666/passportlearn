@@ -198,7 +198,7 @@ public class SGHttpClient {
                 return null;
             }
             long start = System.currentTimeMillis();
-            String str = SGEntityUtils.getContent2(httpEntity);
+            String str = SGEntityUtils.getContent1(httpEntity);
             LOGGER.error("SGEntityUtils.getContent1(BufferedReader -> InputStreamReader -> InputStream) : " + (System.currentTimeMillis() - start));
 //            String text = StringUtils.newStringUtf8(dataByteArray);
             return str;
