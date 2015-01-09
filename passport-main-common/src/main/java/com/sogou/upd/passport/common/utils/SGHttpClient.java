@@ -235,8 +235,6 @@ public class SGHttpClient {
 
         } catch (Exception e) {
             throw new RuntimeException("executeWithGuava http request error ", e);
-        } finally {
-            inputStream.close();
         }
     }
 
