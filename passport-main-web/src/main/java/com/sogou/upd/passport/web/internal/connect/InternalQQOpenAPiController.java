@@ -98,8 +98,8 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            String str = SGHttpClient.executeStrByByte(requestModel);
-//            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
+//            String str = SGHttpClient.executeStrByByte(requestModel);
+            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
 
 
        /*     Map inParammap = new HashMap();
@@ -149,9 +149,9 @@ public class InternalQQOpenAPiController extends BaseController {
             }*/
 
 //            result.setModels(changeResult(JacksonJsonMapperUtil.getMapper().readValue(responseData, Map.class)));
-          /*  result.setModels(changeResult(map));
-            result.setSuccess(true);*/
-            return str;
+            result.setModels(changeResult(map));
+            result.setSuccess(true);
+//            return str;
 
         } catch (Exception e) {
             logger.error("get qq friends error. ", e);
