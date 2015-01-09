@@ -166,13 +166,14 @@ public class SGHttpClient {
      */
     public static String executeStr(RequestModel requestModel) {
         HttpEntity httpEntity = execute(requestModel);
-
         try {
             String charset = EntityUtils.getContentCharSet(httpEntity);
             if (StringUtil.isBlank(charset)) {
                 charset = CommonConstant.DEFAULT_CHARSET;
             }
+            long start = System.currentTimeMillis();
             String value = EntityUtils.toString(httpEntity, charset);
+            LOGGER.error("EntityUtils.toString : " + (System.currentTimeMillis() - start));
             if (!StringUtil.isBlank(value)) {
                 value = value.trim();
             }
