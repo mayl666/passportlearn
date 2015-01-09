@@ -196,58 +196,11 @@ public class SGHttpClient {
             if (inputStream == null) {
                 return null;
             }
-//            InputSupplier<InputStream> inputSupplier = new InputSupplier<InputStream>() {
-//                @Override
-//                public InputStream getInput() throws IOException {
-//                    return inputStream;
-//                }
-//            };
-//            InputSupplier<InputStreamReader> readerSupplier = CharStreams.newReaderSupplier(inputSupplier, Charsets.UTF_8);
-//            String text = CharStreams.toString(readerSupplier);
-//            return text;
-
-           /* StopWatch watch = new StopWatch();
-            watch.start();
-            String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
-            LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
-            return text;*/
-
-
-            /*StopWatch watch = new StopWatch();
-            watch.start();
-            String text;
-            try (final InputStreamReader reader = new InputStreamReader(inputStream)) {
-                text = CharStreams.toString(reader);
-            }
-*/
-
-           /* try (Reader reader = new BufferedReader(new InputStreamReader
-                    (inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
-                text = CharStreams.toString(reader);
-            }
-            LOGGER.warn("CharStreams.toString use time:" + watch.getElapsedTime());
-            return text;*/
-
-
-           /* StringBuilder text = new StringBuilder();
-            try (Reader reader = new BufferedReader(new InputStreamReader
-                    (inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
-                int c;
-                while ((c = reader.read()) != -1) {
-                    text.append((char) c);
-                }
-            }
-            return text.toString();*/
-
             byte[] dataByteArray = SGEntityUtils.toByteArray(httpEntity);
             String text = StringUtils.newStringUtf8(dataByteArray);
             return text;
-
         } catch (Exception e) {
             throw new RuntimeException("executeForBigData http request error ", e);
-        } finally {
-            inputStream.close();
-
         }
     }
 

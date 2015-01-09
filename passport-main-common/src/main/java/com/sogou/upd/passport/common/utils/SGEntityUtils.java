@@ -22,7 +22,7 @@ public final class SGEntityUtils {
         if (entity == null) {
             throw new IllegalArgumentException("HTTP entity may not be null");
         }
-        InputStream instream = new BufferedInputStream(entity.getContent());
+        BufferedInputStream instream = new BufferedInputStream(entity.getContent());
         if (instream == null) {
             return null;
         }
