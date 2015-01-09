@@ -99,12 +99,7 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-//            String str = SGHttpClient.executeStrByByte(requestModel);
-            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
-
-
-
-
+//            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
 
        /*     Map inParammap = new HashMap();
             inParammap.put("userid", userId);
