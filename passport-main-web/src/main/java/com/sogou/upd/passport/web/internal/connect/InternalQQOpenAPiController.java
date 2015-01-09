@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.rabbitmq.tools.json.JSONUtil;
 import com.sogou.upd.passport.common.asynchttpclient.AsyncHttpClientService;
+import com.sogou.upd.passport.common.asynchttpclient.HttpClientService;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -102,6 +103,9 @@ public class InternalQQOpenAPiController extends BaseController {
             Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
 
 
+
+
+
        /*     Map inParammap = new HashMap();
             inParammap.put("userid", userId);
             inParammap.put("tKey", tKey);
@@ -122,24 +126,26 @@ public class InternalQQOpenAPiController extends BaseController {
 
 */
             //构建参数
-            Map<String, Collection<String>> paramsMap = Maps.newHashMap();
+         /*   Map<String, Collection<String>> paramsMap = Maps.newHashMap();
             paramsMap.put("userid", Lists.newArrayList(userId));
             paramsMap.put("tKey", Lists.newArrayList(tKey));
 
-
-            Map<String, String> paramsData = Maps.newHashMap();
-            paramsData.put("userid", userId);
-            paramsData.put("tKey", tKey);
-
-           /* AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
-
+            AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
             String responseData = asyncHttpClientService.sendPost(QQ_FRIENDS_URL, paramsMap, null);
             if (Strings.isNullOrEmpty(responseData)) {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                 return result.toString();
-            }
-*/
+            }*/
+
+
+            Map<String, String> paramsData = Maps.newHashMap();
+            Map<String, String> headerMap = Maps.newHashMap();
+            paramsData.put("userid", userId);
+            paramsData.put("tKey", tKey);
+            HttpClientService httpClientService = new HttpClientService();
+            String responseData = httpClientService.sendPost(QQ_FRIENDS_URL, paramsData, headerMap);
+
             /*AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
             String responseData = asyncHttpClientService.sendPreparePost(QQ_FRIENDS_URL, paramsData);
             if (Strings.isNullOrEmpty(responseData)) {
@@ -148,8 +154,8 @@ public class InternalQQOpenAPiController extends BaseController {
                 return result.toString();
             }*/
 
-//            result.setModels(changeResult(JacksonJsonMapperUtil.getMapper().readValue(responseData, Map.class)));
-            result.setModels(changeResult(map));
+            result.setModels(changeResult(JacksonJsonMapperUtil.getMapper().readValue(responseData, Map.class)));
+//            result.setModels(changeResult(map));
             result.setSuccess(true);
             return result.toString();
         } catch (Exception e) {
