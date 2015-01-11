@@ -5,10 +5,10 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
-import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.HttpClientUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.form.BaseUserApiParams;
@@ -16,6 +16,7 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,8 +99,9 @@ public class InternalQQOpenAPiController extends BaseController {
             Map inParammap = new HashMap();
             inParammap.put("userid", userId);
             inParammap.put("tKey", tKey);
-            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
-            Map map = JacksonJsonMapperUtil.getMapper().readValue(str,Map.class);
+//            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
+            Pair<Integer, String> pair = HttpClientUtil.post(QQ_FRIENDS_URL, inParammap);
+            Map map = JacksonJsonMapperUtil.getMapper().readValue(pair.getRight(), Map.class);
 
             logger.error("SGHttpClient.executeForBigData : " + (System.currentTimeMillis() - start));
 
