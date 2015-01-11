@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
+import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -93,13 +94,13 @@ public class InternalQQOpenAPiController extends BaseController {
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
             long start = System.currentTimeMillis();
 //            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
-//            String str = SGHttpClient.executeForBigData(requestModel);
+            String str = SGHttpClient.executeForBigData(requestModel);
 
-            Map inParammap = new HashMap();
-            inParammap.put("userid", userId);
-            inParammap.put("tKey", tKey);
+//            Map inParammap = new HashMap();
+//            inParammap.put("userid", userId);
+//            inParammap.put("tKey", tKey);
 //            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
-            Pair<Integer, String> pair = HttpClientUtil.post(QQ_FRIENDS_URL, inParammap);
+//            Pair<Integer, String> pair = HttpClientUtil.post(QQ_FRIENDS_URL, inParammap);
 //            Map map = JacksonJsonMapperUtil.getMapper().readValue(pair.getRight(), Map.class);
 
             logger.error("SGHttpClient.executeForBigData : " + (System.currentTimeMillis() - start));
@@ -148,7 +149,7 @@ public class InternalQQOpenAPiController extends BaseController {
 
 //            result.setModels(changeResult(JacksonJsonMapperUtil.getMapper().readValue(responseData, Map.class)));
 //            result.setModels(changeResult(map));
-            result.setDefaultModel("data", pair.getRight());
+            result.setDefaultModel("data", str);
             result.setSuccess(true);
             return result.toString();
         } catch (Exception e) {

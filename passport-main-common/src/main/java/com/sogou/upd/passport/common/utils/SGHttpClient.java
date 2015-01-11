@@ -388,7 +388,7 @@ public class SGHttpClient {
             //当应用程序希望降低网络延迟并提高性能时，它们可以关闭Nagle算法
             HttpConnectionParams.setTcpNoDelay(httpParams, true);
             //内部套接字缓冲使用的大小，来缓冲数据同时接收/传输HTTP报文
-            HttpConnectionParams.setSocketBufferSize(httpParams, 100*1024);
+            HttpConnectionParams.setSocketBufferSize(httpParams, 1000*1024);
             // "旧连接"检查,为了确保该“被重用”的连接确实有效，会在重用之前对其进行有效性检查。这个检查大概会花费15-30毫秒。关闭该检查举措，会稍微提升传输速度
             HttpConnectionParams.setStaleCheckingEnabled(httpParams, false);
             HttpConnectionParams.setSoKeepalive(httpParams,true);
