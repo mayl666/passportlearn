@@ -23,6 +23,7 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
@@ -285,6 +286,10 @@ public class SGHttpClient {
                 HttpClientParams.setCookiePolicy(params, CookiePolicy.IGNORE_COOKIES); //忽略header里的cookie，解决ResponseProcessCookies(134): Invalid cookie header
                 HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
                 HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
+                //当应用程序希望降低网络延迟并提高性能时，它们可以关闭Nagle算法
+                HttpConnectionParams.setTcpNoDelay(params, true);
+                // "持续握手",遭到服务器拒绝应答的情况下，如果发送整个请求体，则会大大降低效率。此时，可以先发送部分请求进行试探，如果服务器愿意接收，则继续发送请求体。
+                HttpProtocolParams.setUseExpectContinue(params, true);
 
                 return new DefaultHttpClient(mgr, params);
             } catch (Exception ex) {
