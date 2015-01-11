@@ -8,15 +8,14 @@ import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
+import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnPerRouteBean;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -26,6 +25,8 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
@@ -53,7 +54,7 @@ public class SGHttpClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SGHttpClient.class);
 
-    protected static final HttpClient httpClient;
+    protected static HttpClient httpClient;
     /**
      * 最大连接数
      */
@@ -86,10 +87,11 @@ public class SGHttpClient {
     protected static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
 
     static {
-        HttpParams params = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
-        HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
-        httpClient = WebClientDevWrapper.wrapClient(new DefaultHttpClient());
+//        HttpParams params = new BasicHttpParams();
+//        HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
+//        HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
+//        httpClient = WebClientDevWrapper.wrapClient(new DefaultHttpClient());
+        httpClient = getHttpClient();
     }
 
 
@@ -369,6 +371,36 @@ public class SGHttpClient {
                 return null;
             }
         }
+    }
+
+    private static synchronized HttpClient getHttpClient() {
+        if(httpClient == null) {
+            final HttpParams httpParams = new BasicHttpParams();
+            SchemeRegistry registry = new SchemeRegistry();
+            registry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
+            ThreadSafeClientConnManager mgr = new ThreadSafeClientConnManager(registry);
+            mgr.setMaxTotal(MAX_TOTAL_CONNECTIONS);
+            mgr.setDefaultMaxPerRoute(MAX_ROUTE_CONNECTIONS);
+            HttpClientParams.setCookiePolicy(httpParams, CookiePolicy.IGNORE_COOKIES); //忽略header里的cookie，解决ResponseProcessCookies(134): Invalid cookie header
+            HttpConnectionParams.setConnectionTimeout(httpParams, WAIT_TIMEOUT);
+            HttpConnectionParams.setSoTimeout(httpParams, READ_TIMEOUT);
+            // "持续握手",遭到服务器拒绝应答的情况下，如果发送整个请求体，则会大大降低效率。此时，可以先发送部分请求进行试探，如果服务器愿意接收，则继续发送请求体。
+            HttpProtocolParams.setUseExpectContinue(httpParams, true);
+            // "旧连接"检查,为了确保该“被重用”的连接确实有效，会在重用之前对其进行有效性检查。这个检查大概会花费15-30毫秒。关闭该检查举措，会稍微提升传输速度
+            HttpConnectionParams.setStaleCheckingEnabled(httpParams, false);
+
+            HttpProtocolParams.setUseExpectContinue(httpParams, true);
+            HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
+            HttpProtocolParams.setContentCharset(httpParams, HTTP.UTF_8);
+            HttpClientParams.setRedirecting(httpParams, false);
+            //当应用程序希望降低网络延迟并提高性能时，它们可以关闭Nagle算法
+            HttpConnectionParams.setTcpNoDelay(httpParams, true);
+            //内部套接字缓冲使用的大小，来缓冲数据同时接收/传输HTTP报文
+            HttpConnectionParams.setSocketBufferSize(httpParams, 32*1024);
+            httpClient = new DefaultHttpClient(mgr, httpParams);
+        }
+
+        return httpClient;
     }
 
 
