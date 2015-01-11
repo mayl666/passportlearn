@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
@@ -36,10 +37,8 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -63,7 +62,7 @@ public class SGHttpClient {
      * 获取连接的最大等待时间
      */
 //    protected final static int WAIT_TIMEOUT = 3000;
-    protected final static int WAIT_TIMEOUT = 10000;
+    protected final static int WAIT_TIMEOUT = 50000;
     /**
      * 每个路由最大连接数
      */
@@ -72,7 +71,7 @@ public class SGHttpClient {
      * 读取超时时间
      */
 //    protected final static int READ_TIMEOUT = 3000;
-    protected final static int READ_TIMEOUT = 5000;
+    protected final static int READ_TIMEOUT = 50000;
 
     /**
      * http返回成功的code
@@ -121,7 +120,7 @@ public class SGHttpClient {
     }
 
     public static <T> T execute(RequestModel requestModel, HttpTransformat transformat, java.lang.Class<T> type) throws IOException {
-        String value = executeWithGuava(requestModel).trim();
+        String value = executeStr(requestModel).trim();
         T t = null;
         switch (transformat) {
             case json:
@@ -136,14 +135,13 @@ public class SGHttpClient {
         return t;
     }
 
-
     /**
      * 执行请求操作，返回服务器返回内容
      *
      * @param requestModel
      * @return
      */
-    public static String executeStr(RequestModel requestModel) {
+    public static String executeStrByByte(RequestModel requestModel) {
         HttpEntity httpEntity = execute(requestModel);
 
         try {
@@ -151,7 +149,7 @@ public class SGHttpClient {
             if (StringUtil.isBlank(charset)) {
                 charset = CommonConstant.DEFAULT_CHARSET;
             }
-            String value = EntityUtils.toString(httpEntity, charset);
+            String value = new String(EntityUtils.toByteArray(httpEntity));
             if (!StringUtil.isBlank(value)) {
                 value = value.trim();
             }
@@ -168,43 +166,46 @@ public class SGHttpClient {
      * @param requestModel
      * @return
      */
-    public static String executeWithGuava(RequestModel requestModel) throws IOException {
+    public static String executeStr(RequestModel requestModel) {
+        HttpEntity httpEntity = execute(requestModel);
+        try {
+            String charset = EntityUtils.getContentCharSet(httpEntity);
+            if (StringUtil.isBlank(charset)) {
+                charset = CommonConstant.DEFAULT_CHARSET;
+            }
+            long start = System.currentTimeMillis();
+            String value = EntityUtils.toString(httpEntity, charset);
+            LOGGER.error("EntityUtils.toString : " + (System.currentTimeMillis() - start));
+            if (!StringUtil.isBlank(value)) {
+                value = value.trim();
+            }
+            return value;
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException("http request error ", e);
+        }
+    }
+
+
+    /**
+     * 执行请求操作，返回服务器返回内容
+     *
+     * @param requestModel
+     * @return
+     */
+    public static String executeForBigData(RequestModel requestModel) throws IOException {
         HttpEntity httpEntity = execute(requestModel);
         final InputStream inputStream = httpEntity.getContent();
         try {
             if (inputStream == null) {
                 return null;
             }
-//            InputSupplier<InputStream> inputSupplier = new InputSupplier<InputStream>() {
-//                @Override
-//                public InputStream getInput() throws IOException {
-//                    return inputStream;
-//                }
-//            };
-//            InputSupplier<InputStreamReader> readerSupplier = CharStreams.newReaderSupplier(inputSupplier, Charsets.UTF_8);
-//            String text = CharStreams.toString(readerSupplier);
-//            return text;
-            StopWatch watch = new StopWatch();
-            watch.start();
-            String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
-            LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
-            return text;
-
-            /*String text = null;
-            try (final Reader reader = new InputStreamReader(inputStream)) {
-                text = CharStreams.toString(reader);
-            }
-            LOGGER.warn("IOUtils.toString use time:" + watch.getElapsedTime());
-            return text;*/
-
-           /* InputStreamReader inputStreamReader = new InputStreamReader(inputStream, HTTP.DEF_CONTENT_CHARSET);
-            while (inputStreamReader.read() > -1) {
-            }*/
-
+            long start = System.currentTimeMillis();
+            String str = SGEntityUtils.getContent1(httpEntity);
+            LOGGER.error("SGEntityUtils.getContent1(BufferedReader -> InputStreamReader -> InputStream) : " + (System.currentTimeMillis() - start));
+//            String text = StringUtils.newStringUtf8(dataByteArray);
+            return str;
         } catch (Exception e) {
-            throw new RuntimeException("executeWithGuava http request error ", e);
-        } finally {
-            inputStream.close();
+            throw new RuntimeException("executeForBigData http request error ", e);
         }
     }
 
@@ -365,6 +366,10 @@ public class SGHttpClient {
                 HttpClientParams.setCookiePolicy(params, CookiePolicy.IGNORE_COOKIES); //忽略header里的cookie，解决ResponseProcessCookies(134): Invalid cookie header
                 HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
                 HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
+                HttpConnectionParams.setTcpNoDelay(params, false);
+                HttpConnectionParams.setSoKeepalive(params, true);
+                HttpConnectionParams.setSocketBufferSize(params, 10240);
+                HttpConnectionParams.setSoReuseaddr(params, false);
 
                 return new DefaultHttpClient(mgr, params);
             } catch (Exception ex) {
