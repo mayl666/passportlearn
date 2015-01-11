@@ -99,7 +99,7 @@ public class InternalQQOpenAPiController extends BaseController {
             Map inParammap = new HashMap();
             inParammap.put("userid", userId);
             inParammap.put("tKey", tKey);
-            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
+//            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
             Pair<Integer, String> pair = HttpClientUtil.post(QQ_FRIENDS_URL, inParammap);
 //            Map map = JacksonJsonMapperUtil.getMapper().readValue(pair.getRight(), Map.class);
 

@@ -219,7 +219,7 @@ public class HttpClientUtil {
 
     private static String read(Reader reader) throws IOException {
         StringBuilder cache = new StringBuilder();
-        char[] buf = new char[1024];
+        char[] buf = new char[1000*1024];
         int l;
         while ((l = reader.read(buf)) > 0)
             cache.append(buf, 0, l);
