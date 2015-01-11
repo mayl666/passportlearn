@@ -366,10 +366,6 @@ public class SGHttpClient {
                 HttpClientParams.setCookiePolicy(params, CookiePolicy.IGNORE_COOKIES); //忽略header里的cookie，解决ResponseProcessCookies(134): Invalid cookie header
                 HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
                 HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
-                HttpConnectionParams.setTcpNoDelay(params, false);
-                HttpConnectionParams.setSoKeepalive(params, true);
-                HttpConnectionParams.setSocketBufferSize(params, 10240);
-                HttpConnectionParams.setSoReuseaddr(params, false);
 
                 return new DefaultHttpClient(mgr, params);
             } catch (Exception ex) {
@@ -389,19 +385,21 @@ public class SGHttpClient {
             HttpClientParams.setCookiePolicy(httpParams, CookiePolicy.IGNORE_COOKIES); //忽略header里的cookie，解决ResponseProcessCookies(134): Invalid cookie header
             HttpConnectionParams.setConnectionTimeout(httpParams, WAIT_TIMEOUT);
             HttpConnectionParams.setSoTimeout(httpParams, READ_TIMEOUT);
-            // "持续握手",遭到服务器拒绝应答的情况下，如果发送整个请求体，则会大大降低效率。此时，可以先发送部分请求进行试探，如果服务器愿意接收，则继续发送请求体。
-            HttpProtocolParams.setUseExpectContinue(httpParams, true);
+            //当应用程序希望降低网络延迟并提高性能时，它们可以关闭Nagle算法
+            HttpConnectionParams.setTcpNoDelay(httpParams, true);
+            //内部套接字缓冲使用的大小，来缓冲数据同时接收/传输HTTP报文
+            HttpConnectionParams.setSocketBufferSize(httpParams, 100*1024);
             // "旧连接"检查,为了确保该“被重用”的连接确实有效，会在重用之前对其进行有效性检查。这个检查大概会花费15-30毫秒。关闭该检查举措，会稍微提升传输速度
             HttpConnectionParams.setStaleCheckingEnabled(httpParams, false);
+            HttpConnectionParams.setSoKeepalive(httpParams,true);
 
+            // "持续握手",遭到服务器拒绝应答的情况下，如果发送整个请求体，则会大大降低效率。此时，可以先发送部分请求进行试探，如果服务器愿意接收，则继续发送请求体。
+            HttpProtocolParams.setUseExpectContinue(httpParams, true);
             HttpProtocolParams.setUseExpectContinue(httpParams, true);
             HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
             HttpProtocolParams.setContentCharset(httpParams, HTTP.UTF_8);
             HttpClientParams.setRedirecting(httpParams, false);
-            //当应用程序希望降低网络延迟并提高性能时，它们可以关闭Nagle算法
-            HttpConnectionParams.setTcpNoDelay(httpParams, true);
-            //内部套接字缓冲使用的大小，来缓冲数据同时接收/传输HTTP报文
-            HttpConnectionParams.setSocketBufferSize(httpParams, 32*1024);
+
             httpClient = new DefaultHttpClient(mgr, httpParams);
         }
 
