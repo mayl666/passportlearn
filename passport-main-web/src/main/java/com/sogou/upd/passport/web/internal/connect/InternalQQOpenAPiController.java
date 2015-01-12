@@ -49,6 +49,7 @@ public class InternalQQOpenAPiController extends BaseController {
 
     private Logger logger = LoggerFactory.getLogger(InternalQQOpenAPiController.class);
     private static final String QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
+    private static final String QQ_FRIENDS_OPENID_URL = "http://203.195.155.61:80/internal/qq/friends_openid";
     private static final String GET_QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
 
     //QQ正确返回状态码
@@ -382,6 +383,112 @@ public class InternalQQOpenAPiController extends BaseController {
 //        Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
         String str = SGHttpClient.executeStrByByte(requestModel);
         return str;
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/get_friends_openid")
+    public String get_qqfriendsByOpenid(HttpServletRequest req, BaseUserApiParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        String userId = params.getUserid();
+        int clientId = params.getClient_id();
+        String third_appid = params.getThird_appid();
+        try {
+            //参数校验
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            //判断访问者是否有权限
+            /*if (!isAccessAccept(clientId, req)) {
+                result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
+                return result.toString();
+            }*/
+            Result obtainTKeyResult = sgConnectApiManager.obtainTKey(userId, clientId, third_appid);
+            if (!obtainTKeyResult.isSuccess()) {
+                return obtainTKeyResult.toString();
+            }
+            String tKey = (String) obtainTKeyResult.getModels().get("tKey");
+            if (StringUtil.isEmpty(tKey)) {
+                result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                return result.toString();
+            }
+
+            RequestModel requestModel = new RequestModel(QQ_FRIENDS_OPENID_URL);
+            requestModel.addParam("userid", userId);
+            requestModel.addParam("tKey", tKey);
+            requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
+            long start = System.currentTimeMillis();
+//            Map map = SGHttpClient.execute(requestModel, HttpTransformat.json, Map.class);
+//            String str = SGHttpClient.executeForBigData(requestModel);
+
+            Map inParammap = new HashMap();
+            inParammap.put("userid", userId);
+            inParammap.put("tKey", tKey);
+//            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
+            Pair<Integer, String> pair = HttpClientUtil.post(QQ_FRIENDS_OPENID_URL, inParammap);
+//            Map map = JacksonJsonMapperUtil.getMapper().readValue(pair.getRight(), Map.class);
+
+            logger.error("SGHttpClient.executeForBigData(OpenID) : " + (System.currentTimeMillis() - start));
+
+          /*  String resp = null;
+            if (!CollectionUtils.isEmpty(map)) {
+                map = changeResult(map);
+                //调用返回
+                resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
+            }
+            if (Strings.isNullOrEmpty(resp)) {
+                result = new APIResultSupport(false);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
+                return result.toString();
+            }
+
+*/
+            //构建参数
+         /*   Map<String, Collection<String>> paramsMap = Maps.newHashMap();
+            paramsMap.put("userid", Lists.newArrayList(userId));
+            paramsMap.put("tKey", Lists.newArrayList(tKey));
+
+            AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
+            String responseData = asyncHttpClientService.sendPost(QQ_FRIENDS_URL, paramsMap, null);
+            if (Strings.isNullOrEmpty(responseData)) {
+                result = new APIResultSupport(false);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
+                return result.toString();
+            }*/
+
+
+//            Map<String, String> paramsData = Maps.newHashMap();
+//            Map<String, String> headerMap = Maps.newHashMap();
+//            paramsData.put("userid", userId);
+//            paramsData.put("tKey", tKey);
+//            HttpClientService httpClientService = new HttpClientService();
+//            String responseData = httpClientService.sendPost(QQ_FRIENDS_URL, paramsData, headerMap);
+
+            /*AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
+            String responseData = asyncHttpClientService.sendPreparePost(QQ_FRIENDS_URL, paramsData);
+            if (Strings.isNullOrEmpty(responseData)) {
+                result = new APIResultSupport(false);
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
+                return result.toString();
+            }*/
+
+//            result.setModels(changeResult(JacksonJsonMapperUtil.getMapper().readValue(responseData, Map.class)));
+//            result.setModels(changeResult(map));
+            result.setDefaultModel("data", pair.getRight());
+            result.setSuccess(true);
+            return result.toString();
+        } catch (Exception e) {
+            logger.error("get qq friends error. ", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result.toString();
+        } finally {
+            //用于记录log
+            UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(clientId), result.getCode(), getIp(req));
+            UserOperationLogUtil.log(userOperationLog);
+        }
     }
 
 
