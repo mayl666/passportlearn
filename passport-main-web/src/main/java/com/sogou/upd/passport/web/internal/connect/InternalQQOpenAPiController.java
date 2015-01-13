@@ -188,7 +188,8 @@ public class InternalQQOpenAPiController extends BaseController {
             map.remove("ret");
         }
         if (map.containsKey("items")) {
-            map.put("data", JSONArray.fromObject(AES.decryptURLSafeString(String.valueOf(map.get("items")), TKEY_SECURE_KEY)));
+            String items = AES.decryptURLSafeString(String.valueOf(map.get("items")), TKEY_SECURE_KEY);
+            map.put("data", (Object) items);
             map.remove("items");
         }
         if (map.containsKey("is_lost")) {
