@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.internal.connect;
 
 import com.google.common.base.Strings;
+import com.mysql.jdbc.StringUtils;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
@@ -15,6 +16,7 @@ import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.form.BaseUserApiParams;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
+import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -38,6 +40,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -104,7 +107,6 @@ public class InternalQQOpenAPiController extends BaseController {
             String returnVal = SGHttpClient.executeStr(requestModel);
             String str = AES.decryptURLSafeString(returnVal, TKEY_SECURE_KEY);
             Map map = JacksonJsonMapperUtil.getMapper().readValue(str, Map.class);
-            logger.error(map.toString());
 //            String str = SGHttpClient.executeForBigData(requestModel);
 
 //            Map inParammap = new HashMap();
@@ -118,7 +120,7 @@ public class InternalQQOpenAPiController extends BaseController {
 
             String resp = null;
             if (!CollectionUtils.isEmpty(map)) {
-                map = changeResult(map);
+                map = changeResult(map, third_appid);
                 //调用返回
                 resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
             }
@@ -175,7 +177,7 @@ public class InternalQQOpenAPiController extends BaseController {
         }
     }
 
-    public Map changeResult(Map map) throws Exception {
+    public Map changeResult(Map map, String third_appid) throws Exception {
         if (map.containsKey("msg")) {
             String msg = String.valueOf(map.get("msg"));
             map.put("statusText", msg);
@@ -191,6 +193,7 @@ public class InternalQQOpenAPiController extends BaseController {
             map.remove("ret");
         }
         if (map.containsKey("items")) {
+            changePassportId((List<Map<String, Object>>) map.get("items"), third_appid);
             map.put("data", map.get("items"));
             map.remove("items");
         }
@@ -198,6 +201,26 @@ public class InternalQQOpenAPiController extends BaseController {
             map.remove("is_lost");
         }
         return map;
+    }
+
+
+    public void changePassportId(List<Map<String, Object>> list, String third_appid) {
+        if (!CollectionUtils.isEmpty(list)) {
+            for (Map map : list) {
+                String openid = String.valueOf(map.get("openid"));
+                if (!StringUtils.isNullOrEmpty(openid)) {
+                    Result result = sgConnectApiManager.getConnectRelation(openid, 3, third_appid);
+                    if (!result.isSuccess()) {
+                        logger.error("connectRelation中没有此openid : " + openid);
+                        continue;
+                    } else {
+                        ConnectRelation connectRelation = (ConnectRelation) result.getModels().get("connectRelation");
+                        map.put("userid", connectRelation.getPassportId());
+                        map.remove("openid");
+                    }
+                }
+            }
+        }
     }
 
 

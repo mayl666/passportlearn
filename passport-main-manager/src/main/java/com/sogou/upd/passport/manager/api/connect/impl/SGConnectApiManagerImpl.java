@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -266,6 +267,36 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         long currentTime = System.currentTimeMillis() / (1000);
         long tokenTime = createTime.getTime() / (1000);
         return currentTime < tokenTime + expiresIn;
+    }
+
+
+    /**
+     * 根据openid获取passportId
+     *
+     * @param openid
+     * @param provider
+     * @param appKey
+     */
+    public Result getConnectRelation(String openid, int provider, String appKey) {
+        Result result = new APIResultSupport(false);
+        if (Strings.isNullOrEmpty(appKey)) {
+            ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(null, provider);
+            if (null != connectConfig) {
+                appKey = connectConfig.getAppKey();
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
+                return result;
+            }
+        }
+        ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(openid, provider, appKey);
+        if (null != connectRelation) {
+            result.setSuccess(true);
+            result.getModels().put("connectRelation", connectRelation);
+            return result;
+        } else {
+            result.setCode(ErrorUtil.ERR_CODE_CONNECT_REQUEST_NO_AUTHORITY);
+            return result;
+        }
     }
 
 }
