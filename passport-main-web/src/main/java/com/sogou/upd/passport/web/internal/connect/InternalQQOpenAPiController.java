@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.internal.connect;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
@@ -54,6 +55,8 @@ public class InternalQQOpenAPiController extends BaseController {
     private static final String QQ_FRIENDS_OPENID_URL = "http://203.195.155.61:80/internal/qq/friends_openid";
     private static final String GET_QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
     private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:80/internal/qq/friends_aesinfo";
+
+    public static final String TKEY_SECURE_KEY = "adfab231rqwqerq";
 
     //QQ正确返回状态码
     private String QQ_RET_CODE = "0";
@@ -168,7 +171,7 @@ public class InternalQQOpenAPiController extends BaseController {
         }
     }
 
-    public Map changeResult(Map map) throws IOException {
+    public Map changeResult(Map map) throws Exception {
         if (map.containsKey("msg")) {
             String msg = String.valueOf(map.get("msg"));
             map.put("statusText", msg);
@@ -184,7 +187,7 @@ public class InternalQQOpenAPiController extends BaseController {
             map.remove("ret");
         }
         if (map.containsKey("items")) {
-            map.put("data", map.get("items"));
+            map.put("data", AES.decryptURLSafeString(String.valueOf(map.get("items")), TKEY_SECURE_KEY));
             map.remove("items");
         }
         if (map.containsKey("is_lost")) {
