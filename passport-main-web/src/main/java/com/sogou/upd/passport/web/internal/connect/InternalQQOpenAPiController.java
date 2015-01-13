@@ -18,6 +18,7 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+import net.sf.json.JSONArray;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,7 +188,7 @@ public class InternalQQOpenAPiController extends BaseController {
             map.remove("ret");
         }
         if (map.containsKey("items")) {
-            map.put("data", AES.decryptURLSafeString(String.valueOf(map.get("items")), TKEY_SECURE_KEY));
+            map.put("data", JSONArray.fromObject(AES.decryptURLSafeString(String.valueOf(map.get("items")), TKEY_SECURE_KEY)));
             map.remove("items");
         }
         if (map.containsKey("is_lost")) {
