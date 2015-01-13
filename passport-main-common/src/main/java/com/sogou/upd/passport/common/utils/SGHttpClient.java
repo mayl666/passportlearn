@@ -86,11 +86,11 @@ public class SGHttpClient {
     protected static final Logger prefLogger = LoggerFactory.getLogger("httpClientTimingLogger");
 
     static {
-//        HttpParams params = new BasicHttpParams();
-//        HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
-//        HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
-//        httpClient = WebClientDevWrapper.wrapClient(new DefaultHttpClient());
-        httpClient = getHttpClient();
+        HttpParams params = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
+        HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
+        httpClient = WebClientDevWrapper.wrapClient(new DefaultHttpClient());
+//        httpClient = getHttpClient();
     }
 
 
