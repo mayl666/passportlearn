@@ -292,7 +292,7 @@ public class SGHttpClient {
 //                HttpConnectionParams.setStaleCheckingEnabled(params, false);
 
                 // "持续握手",遭到服务器拒绝应答的情况下，如果发送整个请求体，则会大大降低效率。此时，可以先发送部分请求进行试探，如果服务器愿意接收，则继续发送请求体。
-                HttpProtocolParams.setUseExpectContinue(params, true);
+//                HttpProtocolParams.setUseExpectContinue(params, true);
 
                 return new DefaultHttpClient(mgr, params);
             } catch (Exception ex) {
