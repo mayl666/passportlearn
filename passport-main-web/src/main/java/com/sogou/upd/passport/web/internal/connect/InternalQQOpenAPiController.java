@@ -155,6 +155,7 @@ public class InternalQQOpenAPiController extends BaseController {
 //            result.setModels(changeResult(map));
 //            result.setDefaultModel("data", pair.getRight());
             result.setSuccess(true);
+            logger.error(resp);
             return resp;
         } catch (Exception e) {
             logger.error("get qq friends error. ", e);
