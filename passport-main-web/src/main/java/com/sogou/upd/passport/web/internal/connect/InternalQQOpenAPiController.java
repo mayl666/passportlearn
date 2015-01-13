@@ -104,6 +104,7 @@ public class InternalQQOpenAPiController extends BaseController {
             String returnVal = SGHttpClient.executeStr(requestModel);
             String str = AES.decryptURLSafeString(returnVal, TKEY_SECURE_KEY);
             Map map = JacksonJsonMapperUtil.getMapper().readValue(str, Map.class);
+            logger.error(map.toString());
 //            String str = SGHttpClient.executeForBigData(requestModel);
 
 //            Map inParammap = new HashMap();
@@ -190,7 +191,7 @@ public class InternalQQOpenAPiController extends BaseController {
             map.remove("ret");
         }
         if (map.containsKey("items")) {
-            map.put("data", map.get("item"));
+            map.put("data", map.get("items"));
             map.remove("items");
         }
         if (map.containsKey("is_lost")) {
