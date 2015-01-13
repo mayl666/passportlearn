@@ -30,6 +30,8 @@ public class WapConstant {
     public static final String WAP_SKIN_RED = "red";
     //wap版颜色与浏览器统一
     public static final String WAP_SKIN_SE = "se";
+    //输入法的手游H5页面使用
+    public static final String WAP_SKIN_ORANGE = "orange";
 
     //默认登录来源
     public static final String WAP_INDEX = "http://wap.sogou.com/";
