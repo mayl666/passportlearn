@@ -6,6 +6,7 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -216,7 +217,7 @@ public class InternalQQOpenAPiController extends BaseController {
                 Map map = list.get(i);
                 String openid = String.valueOf(map.get("openid"));
                 if (!StringUtils.isNullOrEmpty(openid)) {
-                    Result result = sgConnectApiManager.getConnectRelation(openid, 3, third_appid);
+                    Result result = sgConnectApiManager.getConnectRelation(openid, AccountTypeEnum.QQ.getValue(), third_appid);
                     if (!result.isSuccess()) {
                         logger.error("connectRelation中没有此openid,去除此记录返回，openid : " + openid);
                         removeList.add(map);
