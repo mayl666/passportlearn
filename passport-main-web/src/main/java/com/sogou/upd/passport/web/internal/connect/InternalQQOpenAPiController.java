@@ -191,8 +191,8 @@ public class InternalQQOpenAPiController extends BaseController {
             map.remove("ret");
         }
         if (map.containsKey("items")) {
-            changePassportId((List<Map<String, Object>>) map.get("items"), third_appid);
-            map.put("data", map.get("items"));
+            List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid);
+            map.put("data", list);
             map.remove("items");
         }
         if (map.containsKey("is_lost")) {
@@ -202,7 +202,7 @@ public class InternalQQOpenAPiController extends BaseController {
     }
 
 
-    public void changePassportId(List<Map<String, Object>> list, String third_appid) {
+    public List<Map<String, Object>> changePassportId(List<Map<String, Object>> list, String third_appid) {
         if (!CollectionUtils.isEmpty(list)) {
             for (int i = 0; i < list.size(); i++) {
                 Map map = list.get(i);
@@ -221,6 +221,7 @@ public class InternalQQOpenAPiController extends BaseController {
                 }
             }
         }
+        return list;
     }
 
 
