@@ -92,7 +92,7 @@ public class InternalQQOpenAPiController extends BaseController {
                 return result.toString();
             }
 
-            result = qqOpenAPIManager.get_qqfriends(userId, tKey, third_appid);
+            String resultval = qqOpenAPIManager.get_qqfriends(userId, tKey, third_appid);
 
            /* RequestModel requestModel = new RequestModel(GET_QQ_FRIENDS_AES_URL);
             requestModel.addParam("userid", userId);
@@ -178,7 +178,7 @@ public class InternalQQOpenAPiController extends BaseController {
 //            result.setModels(changeResult(map));
 //            result.setDefaultModel("data", pair.getRight());
 
-            return result.toString();
+            return resultval;
         } catch (Exception e) {
             logger.error("get qq friends error. ", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
