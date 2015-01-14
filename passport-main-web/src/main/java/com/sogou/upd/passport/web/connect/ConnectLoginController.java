@@ -104,7 +104,7 @@ public class ConnectLoginController extends BaseConnectController {
 
     private String buildPinyinSSLv3Page(HttpServletRequest req) {
         try {
-            String qqLoginUrl = req.getRequestURL().toString();
+            String qqLoginUrl = "https://account.sogou.com/connect/login";
             qqLoginUrl = qqLoginUrl+"?"+req.getQueryString();
             String qqLoginUrlEncode = URLEncoder.encode(qqLoginUrl, CommonConstant.DEFAULT_CHARSET);
             return PINYIN_SSLV3_PAGE + "?url=" + qqLoginUrlEncode;
