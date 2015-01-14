@@ -60,7 +60,7 @@ public class ConnectLoginController extends BaseConnectController {
             }
 
             // 如果是输入法客户端且SSL_Protocol包含SSLv3,则QQ登录url重定向到输入法定制页面
-            if (!Strings.isNullOrEmpty(ua) && AccountTypeEnum.QQ.toString().equals(providerStr) && isSSLV3(req)) {
+            if (isIMEUserAgent(req) && AccountTypeEnum.QQ.toString().equals(providerStr) && isSSLV3(req)) {
                 res.sendRedirect(buildPinyinSSLv3Page(req));
                 return;
             }
@@ -111,6 +111,11 @@ public class ConnectLoginController extends BaseConnectController {
         } catch (UnsupportedEncodingException e) {
             return PINYIN_SSLV3_PAGE;
         }
+    }
+
+    private boolean isIMEUserAgent(HttpServletRequest request) {
+        String ua = request.getHeader(CommonConstant.USER_AGENT);
+        return !Strings.isNullOrEmpty(ua) && ua.contains(CommonConstant.SOGOU_IME_UA); //输入法的标识
     }
 
 }
