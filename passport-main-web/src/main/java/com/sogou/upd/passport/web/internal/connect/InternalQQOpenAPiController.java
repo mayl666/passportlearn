@@ -37,6 +37,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,6 +205,7 @@ public class InternalQQOpenAPiController extends BaseController {
 
     public List<Map<String, Object>> changePassportId(List<Map<String, Object>> list, String third_appid) {
         if (!CollectionUtils.isEmpty(list)) {
+            List<Map<String, Object>> removeList = new ArrayList<Map<String, Object>>();
             for (int i = 0; i < list.size(); i++) {
                 Map map = list.get(i);
                 String openid = String.valueOf(map.get("openid"));
@@ -211,7 +213,7 @@ public class InternalQQOpenAPiController extends BaseController {
                     Result result = sgConnectApiManager.getConnectRelation(openid, 3, third_appid);
                     if (!result.isSuccess()) {
                         logger.error("connectRelation中没有此openid,去除此记录返回，openid : " + openid);
-                        list.remove(i);
+                        removeList.add(map);
                         continue;
                     } else {
                         ConnectRelation connectRelation = (ConnectRelation) result.getModels().get("connectRelation");
@@ -220,6 +222,7 @@ public class InternalQQOpenAPiController extends BaseController {
                     }
                 }
             }
+            list.removeAll(removeList);
         }
         return list;
     }
