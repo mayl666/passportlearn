@@ -137,11 +137,11 @@ public class InternalQQOpenAPiController extends BaseController {
                 //调用返回
 //                resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
             }
-            if (Strings.isNullOrEmpty(resp)) {
+           /* if (Strings.isNullOrEmpty(resp)) {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                 return result.toString();
-            }
+            }*/
 
 
             //构建参数
