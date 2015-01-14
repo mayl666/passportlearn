@@ -58,7 +58,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     public String get_qqfriends(String userid, String tkey, String third_appid) throws Exception {
         String cacheKey = buildQQFriendsCacheKey(userid, third_appid);
         String resultVal = dbShardRedisUtils.get(cacheKey);
-        if (Strings.isNullOrEmpty(resultVal)) {
+        if (!Strings.isNullOrEmpty(resultVal)) {
             return resultVal;
         } else {
             Result result = new APIResultSupport(false);
