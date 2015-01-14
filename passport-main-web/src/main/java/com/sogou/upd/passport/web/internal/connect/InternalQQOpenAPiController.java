@@ -125,7 +125,7 @@ public class InternalQQOpenAPiController extends BaseController {
                         result.setSuccess(true);
                         if (map.containsKey("items")) {
                             List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid);
-                            result.setDefaultModel(list);
+                            result.setDefaultModel("items", list);
                         }
                     } else {
                         result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
