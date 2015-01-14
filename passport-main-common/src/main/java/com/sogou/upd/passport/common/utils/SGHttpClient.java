@@ -1,22 +1,19 @@
 package com.sogou.upd.passport.common.utils;
 
-import com.google.common.io.CharStreams;
-import com.google.common.io.InputSupplier;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
-import org.apache.commons.codec.binary.StringUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.*;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
-import org.apache.http.conn.params.ConnManagerParams;
-import org.apache.http.conn.params.ConnPerRouteBean;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -26,8 +23,6 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
@@ -37,9 +32,8 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -51,9 +45,8 @@ import java.util.ArrayList;
  */
 public class SGHttpClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SGHttpClient.class);
 
-    protected static HttpClient httpClient;
+    protected static final HttpClient httpClient;
     /**
      * 最大连接数
      */
@@ -61,8 +54,7 @@ public class SGHttpClient {
     /**
      * 获取连接的最大等待时间
      */
-//    protected final static int WAIT_TIMEOUT = 3000;
-    protected final static int WAIT_TIMEOUT = 50000;
+    protected final static int WAIT_TIMEOUT = 3000;
     /**
      * 每个路由最大连接数
      */
@@ -70,8 +62,7 @@ public class SGHttpClient {
     /**
      * 读取超时时间
      */
-//    protected final static int READ_TIMEOUT = 3000;
-    protected final static int READ_TIMEOUT = 50000;
+    protected final static int READ_TIMEOUT = 3000;
 
     /**
      * http返回成功的code
@@ -90,9 +81,7 @@ public class SGHttpClient {
         HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
         HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
         httpClient = WebClientDevWrapper.wrapClient(new DefaultHttpClient());
-        httpClient = getHttpClient();
     }
-
 
     /**
      * 执行http请求，并将返回结果从HttpTransformat转换为java bean
@@ -113,52 +102,9 @@ public class SGHttpClient {
             case xml:
                 t = XMLUtil.xmlToBean(value, type);
                 break;
-        }
-        ArrayList list = new ArrayList();
-        list.iterator();
+        }       ArrayList list = new ArrayList();list.iterator();
         return t;
     }
-
-    public static <T> T execute(RequestModel requestModel, HttpTransformat transformat, java.lang.Class<T> type) throws IOException {
-        String value = executeStr(requestModel).trim();
-        T t = null;
-        switch (transformat) {
-            case json:
-                t = JsonUtil.jsonToBean(value, type);
-                break;
-            case xml:
-                t = XMLUtil.xmlToBean(value, type);
-                break;
-        }
-        ArrayList list = new ArrayList();
-        list.iterator();
-        return t;
-    }
-
-    /**
-     * 执行请求操作，返回服务器返回内容
-     *
-     * @param requestModel
-     * @return
-     */
-    public static String executeStrByByte(RequestModel requestModel) {
-        HttpEntity httpEntity = execute(requestModel);
-
-        try {
-            String charset = EntityUtils.getContentCharSet(httpEntity);
-            if (StringUtil.isBlank(charset)) {
-                charset = CommonConstant.DEFAULT_CHARSET;
-            }
-            String value = new String(EntityUtils.toByteArray(httpEntity));
-            if (!StringUtil.isBlank(value)) {
-                value = value.trim();
-            }
-            return value;
-        } catch (IOException | ParseException e) {
-            throw new RuntimeException("http request error ", e);
-        }
-    }
-
 
     /**
      * 执行请求操作，返回服务器返回内容
@@ -182,31 +128,6 @@ public class SGHttpClient {
             throw new RuntimeException("http request error ", e);
         }
     }
-
-
-    /**
-     * 执行请求操作，返回服务器返回内容
-     *
-     * @param requestModel
-     * @return
-     */
-    public static String executeForBigData(RequestModel requestModel) throws IOException {
-        HttpEntity httpEntity = execute(requestModel);
-        final InputStream inputStream = httpEntity.getContent();
-        try {
-            if (inputStream == null) {
-                return null;
-            }
-            long start = System.currentTimeMillis();
-            String str = SGEntityUtils.getContent1(httpEntity);
-            LOGGER.error("SGEntityUtils.getContent1(BufferedReader -> InputStreamReader -> InputStream) : " + (System.currentTimeMillis() - start));
-//            String text = StringUtils.newStringUtf8(dataByteArray);
-            return str;
-        } catch (Exception e) {
-            throw new RuntimeException("executeForBigData http request error ", e);
-        }
-    }
-
 
     /**
      * 对外提供的执行请求的方法，主要添加了性能log
@@ -261,23 +182,23 @@ public class SGHttpClient {
             throw new NullPointerException("requestModel 不能为空");
         }
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
-        InputStream in = null;
+        InputStream in=null;
         try {
             HttpResponse httpResponse = httpClient.execute(httpRequest);
-            in = httpResponse.getEntity().getContent();
+            in=httpResponse.getEntity().getContent();
             int responseCode = httpResponse.getStatusLine().getStatusCode();
             //302如何处理
             if (responseCode == RESPONSE_SUCCESS_CODE) {
                 return httpResponse.getEntity();
             }
             String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CHARSET);
-            String result = EntityUtils.toString(httpResponse.getEntity(), CommonConstant.DEFAULT_CHARSET);
-            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:" + result);
+            String result= EntityUtils.toString(httpResponse.getEntity(),CommonConstant.DEFAULT_CHARSET);
+            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:"+result);
         } catch (Exception e) {
-            if (in != null) {
-                try {
+            if(in!=null){
+                try{
                     in.close();
-                } catch (IOException ioe) {
+                }catch(IOException ioe){
                 }
             }
             throw new RuntimeException("http request error ", e);
@@ -370,38 +291,6 @@ public class SGHttpClient {
                 return null;
             }
         }
-    }
-
-    private static synchronized HttpClient getHttpClient() {
-        if(httpClient == null) {
-            final HttpParams httpParams = new BasicHttpParams();
-            SchemeRegistry registry = new SchemeRegistry();
-            registry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
-            ThreadSafeClientConnManager mgr = new ThreadSafeClientConnManager(registry);
-            mgr.setMaxTotal(MAX_TOTAL_CONNECTIONS);
-            mgr.setDefaultMaxPerRoute(MAX_ROUTE_CONNECTIONS);
-            HttpClientParams.setCookiePolicy(httpParams, CookiePolicy.IGNORE_COOKIES); //忽略header里的cookie，解决ResponseProcessCookies(134): Invalid cookie header
-            HttpConnectionParams.setConnectionTimeout(httpParams, WAIT_TIMEOUT);
-            HttpConnectionParams.setSoTimeout(httpParams, READ_TIMEOUT);
-            //当应用程序希望降低网络延迟并提高性能时，它们可以关闭Nagle算法
-            HttpConnectionParams.setTcpNoDelay(httpParams, true);
-            //内部套接字缓冲使用的大小，来缓冲数据同时接收/传输HTTP报文
-            HttpConnectionParams.setSocketBufferSize(httpParams, 1000*1024);
-            // "旧连接"检查,为了确保该“被重用”的连接确实有效，会在重用之前对其进行有效性检查。这个检查大概会花费15-30毫秒。关闭该检查举措，会稍微提升传输速度
-            HttpConnectionParams.setStaleCheckingEnabled(httpParams, false);
-            HttpConnectionParams.setSoKeepalive(httpParams,true);
-
-            // "持续握手",遭到服务器拒绝应答的情况下，如果发送整个请求体，则会大大降低效率。此时，可以先发送部分请求进行试探，如果服务器愿意接收，则继续发送请求体。
-            HttpProtocolParams.setUseExpectContinue(httpParams, true);
-            HttpProtocolParams.setUseExpectContinue(httpParams, true);
-            HttpProtocolParams.setVersion(httpParams, HttpVersion.HTTP_1_1);
-            HttpProtocolParams.setContentCharset(httpParams, HTTP.UTF_8);
-            HttpClientParams.setRedirecting(httpParams, false);
-
-            httpClient = new DefaultHttpClient(mgr, httpParams);
-        }
-
-        return httpClient;
     }
 
 
