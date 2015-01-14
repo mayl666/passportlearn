@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.connect.impl;
 
+import com.google.common.base.Strings;
 import com.mysql.jdbc.StringUtils;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
@@ -54,13 +55,13 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     }
 
 
-    public Result get_qqfriends(String userid, String tkey, String third_appid) throws Exception {
+    public String get_qqfriends(String userid, String tkey, String third_appid) throws Exception {
         String cacheKey = buildQQFriendsCacheKey(userid, third_appid);
-        Result result = dbShardRedisUtils.getObject(cacheKey, APIResultSupport.class);
-        if (null != result) {
-            return result;
+        String resultVal = dbShardRedisUtils.get(cacheKey);
+        if (Strings.isNullOrEmpty(resultVal)) {
+            return resultVal;
         } else {
-            result = new APIResultSupport(false);
+            Result result = new APIResultSupport(false);
             RequestModel requestModel = new RequestModel(GET_QQ_FRIENDS_AES_URL);
             requestModel.addParam("userid", userid);
             requestModel.addParam("tKey", tkey);
@@ -88,7 +89,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                         if (map.containsKey("items")) {
                             List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid);
                             result.setDefaultModel("items", list);
-                            dbShardRedisUtils.setObjectWithinSeconds(cacheKey, result, DateAndNumTimesConstant.TIME_ONEDAY);
+                            dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.TIME_ONEDAY);
                         }
                     } else {
                         logger.error("返回值错误 ：" + map.toString());
@@ -108,7 +109,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                 logger.error("返回值错误：无返回值！");
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
             }
-            return result;
+            return result.toString();
         }
 
     }
