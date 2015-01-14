@@ -15,6 +15,7 @@ import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.form.BaseUserApiParams;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
+import com.sogou.upd.passport.manager.connect.QQOpenAPIManager;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -44,18 +45,21 @@ import java.util.Map;
 public class InternalQQOpenAPiController extends BaseController {
 
     private Logger logger = LoggerFactory.getLogger(InternalQQOpenAPiController.class);
-    private static final String QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
-    private static final String QQ_FRIENDS_OPENID_URL = "http://203.195.155.61:80/internal/qq/friends_openid";
-    private static final String GET_QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
-    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:80/internal/qq/friends_aesinfo";
-
-    public static final String TKEY_SECURE_KEY = "adfab231rqwqerq";
-
-    //QQ正确返回状态码
-    private String QQ_RET_CODE = "0";
-
+    //    private static final String QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
+//    private static final String QQ_FRIENDS_OPENID_URL = "http://203.195.155.61:80/internal/qq/friends_openid";
+//    private static final String GET_QQ_FRIENDS_URL = "http://203.195.155.61:80/internal/qq/friends_info";
+//    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:80/internal/qq/friends_aesinfo";
+//
+//    public static final String TKEY_SECURE_KEY = "adfab231rqwqerq";
+//
+//    //QQ正确返回状态码
+//    private String QQ_RET_CODE = "0";
+//
     @Autowired
     private ConnectApiManager sgConnectApiManager;
+
+    @Autowired
+    private QQOpenAPIManager qqOpenAPIManager;
 
     //    @InterfaceSecurity
     @ResponseBody
@@ -88,14 +92,17 @@ public class InternalQQOpenAPiController extends BaseController {
                 return result.toString();
             }
 
-            RequestModel requestModel = new RequestModel(GET_QQ_FRIENDS_AES_URL);
+            result = qqOpenAPIManager.get_qqfriends(userId, tKey, third_appid);
+
+           /* RequestModel requestModel = new RequestModel(GET_QQ_FRIENDS_AES_URL);
             requestModel.addParam("userid", userId);
             requestModel.addParam("tKey", tKey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
             long start = System.currentTimeMillis();
             String returnVal = SGHttpClient.executeStr(requestModel);
             String str = AES.decryptURLSafeString(returnVal, TKEY_SECURE_KEY);
-            Map map = JacksonJsonMapperUtil.getMapper().readValue(str, Map.class);
+            Map map = JacksonJsonMapperUtil.getMapper().readValue(str, Map.class);*/
+
 //            String str = SGHttpClient.executeForBigData(requestModel);
 
 //            Map inParammap = new HashMap();
@@ -105,7 +112,7 @@ public class InternalQQOpenAPiController extends BaseController {
 //            Pair<Integer, String> pair = HttpClientUtil.post(QQ_FRIENDS_URL, inParammap);
 //            Map map = JacksonJsonMapperUtil.getMapper().readValue(pair.getRight(), Map.class);
 
-            logger.warn("SGHttpClient.executeStr time : " + (System.currentTimeMillis() - start));
+           /* logger.warn("SGHttpClient.executeStr time : " + (System.currentTimeMillis() - start));
 
             if (!CollectionUtils.isEmpty(map)) {
                 if (map.containsKey("ret")) {
@@ -130,7 +137,7 @@ public class InternalQQOpenAPiController extends BaseController {
             } else {
                 logger.error("返回值错误：无返回值！");
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
-            }
+            }*/
            /* if (Strings.isNullOrEmpty(resp)) {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
