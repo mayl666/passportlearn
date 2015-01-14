@@ -204,13 +204,14 @@ public class InternalQQOpenAPiController extends BaseController {
 
     public void changePassportId(List<Map<String, Object>> list, String third_appid) {
         if (!CollectionUtils.isEmpty(list)) {
-            for (Map map : list) {
+            for (int i = 0; i < list.size(); i++) {
+                Map map = list.get(i);
                 String openid = String.valueOf(map.get("openid"));
                 if (!StringUtils.isNullOrEmpty(openid)) {
                     Result result = sgConnectApiManager.getConnectRelation(openid, 3, third_appid);
                     if (!result.isSuccess()) {
                         logger.error("connectRelation中没有此openid,去除此记录返回，openid : " + openid);
-                        list.remove(map);
+                        list.remove(i);
                         continue;
                     } else {
                         ConnectRelation connectRelation = (ConnectRelation) result.getModels().get("connectRelation");
