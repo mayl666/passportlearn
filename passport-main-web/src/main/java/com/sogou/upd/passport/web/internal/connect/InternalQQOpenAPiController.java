@@ -7,7 +7,6 @@ import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
-import com.sogou.upd.passport.common.parameter.HttpTransformat;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -20,7 +19,6 @@ import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import net.sf.json.JSONArray;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -211,7 +209,8 @@ public class InternalQQOpenAPiController extends BaseController {
                 if (!StringUtils.isNullOrEmpty(openid)) {
                     Result result = sgConnectApiManager.getConnectRelation(openid, 3, third_appid);
                     if (!result.isSuccess()) {
-                        logger.error("connectRelation中没有此openid : " + openid);
+                        logger.error("connectRelation中没有此openid,去除此记录返回，openid : " + openid);
+                        list.remove(map);
                         continue;
                     } else {
                         ConnectRelation connectRelation = (ConnectRelation) result.getModels().get("connectRelation");
