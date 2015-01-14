@@ -173,9 +173,7 @@ public class SGHttpClient {
             if (StringUtil.isBlank(charset)) {
                 charset = CommonConstant.DEFAULT_CHARSET;
             }
-            long start = System.currentTimeMillis();
             String value = EntityUtils.toString(httpEntity, charset);
-            LOGGER.error("EntityUtils.toString : " + (System.currentTimeMillis() - start));
             if (!StringUtil.isBlank(value)) {
                 value = value.trim();
             }

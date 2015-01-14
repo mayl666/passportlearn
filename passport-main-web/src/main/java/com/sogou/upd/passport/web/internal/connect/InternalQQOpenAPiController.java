@@ -10,7 +10,6 @@ import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.HttpClientUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.account.form.BaseUserApiParams;
@@ -19,7 +18,6 @@ import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,8 +72,8 @@ public class InternalQQOpenAPiController extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            //判断访问者是否有权限
-            /*if (!isAccessAccept(clientId, req)) {
+            /*//判断访问者是否有权限
+            if (!isAccessAccept(clientId, req)) {
                 result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
                 return result.toString();
             }*/
@@ -117,7 +106,6 @@ public class InternalQQOpenAPiController extends BaseController {
 
             logger.warn("SGHttpClient.executeStr time : " + (System.currentTimeMillis() - start));
 
-            String resp = null;
             if (!CollectionUtils.isEmpty(map)) {
                 if (map.containsKey("ret")) {
                     String ret = String.valueOf(map.get("ret"));
@@ -128,14 +116,19 @@ public class InternalQQOpenAPiController extends BaseController {
                             result.setDefaultModel("items", list);
                         }
                     } else {
+                        logger.error("返回值错误 ：" + map.toString());
                         result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                     }
                 } else {
+                    logger.error("返回值错误 ：" + map.toString());
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                 }
 //                map = changeResult(map, third_appid);
                 //调用返回
 //                resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
+            } else {
+                logger.error("返回值错误：无返回值！");
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
             }
            /* if (Strings.isNullOrEmpty(resp)) {
                 result = new APIResultSupport(false);
@@ -189,7 +182,7 @@ public class InternalQQOpenAPiController extends BaseController {
         }
     }
 
-    public Map changeResult(Map map, String third_appid) throws Exception {
+    /*public Map changeResult(Map map, String third_appid) throws Exception {
         if (map.containsKey("msg")) {
             String msg = String.valueOf(map.get("msg"));
             map.put("statusText", msg);
@@ -213,7 +206,7 @@ public class InternalQQOpenAPiController extends BaseController {
             map.remove("is_lost");
         }
         return map;
-    }
+    }*/
 
 
     public List<Map<String, Object>> changePassportId(List<Map<String, Object>> list, String third_appid) {
