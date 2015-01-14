@@ -90,7 +90,7 @@ public class SGHttpClient {
         HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
         HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
         httpClient = WebClientDevWrapper.wrapClient(new DefaultHttpClient());
-//        httpClient = getHttpClient();
+        httpClient = getHttpClient();
     }
 
 
