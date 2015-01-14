@@ -287,7 +287,8 @@ public class SGHttpClient {
                 HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
                 HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
                 //当应用程序希望降低网络延迟并提高性能时，它们可以关闭Nagle算法
-                HttpConnectionParams.setTcpNoDelay(params, true);
+                // 加了以后没看到明显优化
+//                HttpConnectionParams.setTcpNoDelay(params, true);
                 // "旧连接"检查,为了确保该“被重用”的连接确实有效，会在重用之前对其进行有效性检查。这个检查大概会花费15-30毫秒。关闭该检查举措，会稍微提升传输速度
                 // 加了这个配置以后，响应明显变慢，TIME_WAIT增多，所以不要用
 //                HttpConnectionParams.setStaleCheckingEnabled(params, false);
