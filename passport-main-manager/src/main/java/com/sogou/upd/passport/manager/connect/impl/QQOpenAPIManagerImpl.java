@@ -133,6 +133,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                     }
                 }
             }
+            logger.warn("腾讯返回好友总数：" + list.size() + "已去除好友总数 ：" + removeList.size());
             list.removeAll(removeList);
         }
         return list;
