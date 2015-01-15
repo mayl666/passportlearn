@@ -37,8 +37,7 @@ public class RegisterApiManagerTest extends BaseTest {
     private static final String both_no_username_mail = "testmail" + new Random().nextInt(100) + "@163.com";
     private static final String username_sogou = userid_sogou_2;
     private static final String username_mail = userid_email;
-    private static final int clientId = CommonConstant.SGPP_DEFAULT_CLIENTID;
-    private static final String serverSecret = CommonConstant.SGPP_DEFAULT_SERVER_SECRET;
+
     private static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
     private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
     private static final String mobile_reged = mobile_2;

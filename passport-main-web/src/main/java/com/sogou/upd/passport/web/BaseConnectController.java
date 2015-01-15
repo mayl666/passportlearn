@@ -46,7 +46,7 @@ public class BaseConnectController extends BaseController {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (UnsupportedEncodingException e) {
             logger.error("Url decode Exception! ru:" + ru);
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+            ru = CommonConstant.DEFAULT_INDEX_URL;
         }
         params.put("userid", userid);
         params.put("token", token);
@@ -72,7 +72,7 @@ public class BaseConnectController extends BaseController {
                 if (ConnectTypeEnum.isMobileApp(type)) {
                     ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
                 } else {
-                    ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+                    ru = CommonConstant.DEFAULT_INDEX_URL;
                 }
             }
 
@@ -81,7 +81,7 @@ public class BaseConnectController extends BaseController {
                 if (ConnectTypeEnum.isMobileApp(type)) {
                     ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
                 } else {
-                    ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+                    ru = CommonConstant.DEFAULT_INDEX_URL;
                 }
             }
 

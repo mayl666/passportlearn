@@ -29,8 +29,6 @@ import java.util.Random;
 public class UserInfoApiManagerImplTest extends BaseTest {
 
     @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
-    @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
 
     //检查昵称是否可用
@@ -49,10 +47,6 @@ public class UserInfoApiManagerImplTest extends BaseTest {
     private String username = fullname;
     //获取用户信息
     private static final String fields = "province,city,gender,birthday,fullname,personalid,uniqname,mobile,email,question";
-
-    private static final int clientId = CommonConstant.SGPP_DEFAULT_CLIENTID;
-    private static final String serverSecret = CommonConstant.SGPP_DEFAULT_SERVER_SECRET;
-
 
     /**
      * 更新用户信息

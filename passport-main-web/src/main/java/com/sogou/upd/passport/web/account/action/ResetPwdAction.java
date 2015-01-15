@@ -110,7 +110,7 @@ public class ResetPwdAction extends BaseController {
             switch (domain) {
                 //主账号是sohu域/外域/手机号的去sohu找回密码
                 case SOHU:
-                    return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+                    return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_INDEX_URL;
                 case THIRD:
                     return "redirect:/web/findpwd";
                 case UNKNOWN:

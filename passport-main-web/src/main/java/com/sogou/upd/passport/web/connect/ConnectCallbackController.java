@@ -57,7 +57,7 @@ public class ConnectCallbackController extends BaseConnectController {
         if (AccountTypeEnum.WEIXIN.getValue() == AccountTypeEnum.getProvider(providerStr) && !Strings.isNullOrEmpty(state)) {
             redirectParams = redisUtils.getObject(state, ConnectLoginRedirectParams.class);
             if (redirectParams == null) {
-                res.sendRedirect(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
+                res.sendRedirect(CommonConstant.DEFAULT_INDEX_URL);
                 return "empty";
             }
         }
@@ -149,11 +149,11 @@ public class ConnectCallbackController extends BaseConnectController {
     private ConnectLoginRedirectParams parseRedirectUrl(ConnectLoginRedirectParams redirectParams) {
         String ru = redirectParams.getRu();
         try {
-            ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_CONNECT_REDIRECT_URL : ru;
+            ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (UnsupportedEncodingException e) {
             logger.error("Url decode Exception! ru:" + ru);
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+            ru = CommonConstant.DEFAULT_INDEX_URL;
         }
         redirectParams.setRu(ru);
         return redirectParams;

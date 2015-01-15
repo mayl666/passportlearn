@@ -20,7 +20,7 @@ public class WebBindEmailParams extends WebPwdParams {
     private String old_email;
     @URL
     @Ru
-    private String ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL + "/web/security/emailverify";  // TODO:以后增加判断是否SOGOU域
+    private String ru = CommonConstant.DEFAULT_INDEX_URL + "/web/security/emailverify";  // TODO:以后增加判断是否SOGOU域
 
     @AssertTrue(message = "新密保邮箱不能与原密保邮箱相同")
     public boolean isCheckNewIsOld() {
