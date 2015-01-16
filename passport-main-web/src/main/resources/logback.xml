@@ -175,7 +175,7 @@
     <logger name="userLoggerAsync" level="info" additivity="false">
         <appender-ref ref="kafkaAsyncAppender"/>
         <!--<appender-ref ref="rabbitMQAsyncAppender"/>-->
-        <appender-ref ref="localAsyncAppender"/>
+        <!--<appender-ref ref="localAsyncAppender"/>-->
 
     </logger>
 
