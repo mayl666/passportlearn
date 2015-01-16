@@ -329,23 +329,6 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     }
 
     /**
-     * 获取用户 ConnectToken信息
-     *
-     * @param userId
-     * @return
-     */
-    private ConnectToken getConnectToken(String userId) {
-        //从connect_token中获取
-        int provider = AccountTypeEnum.getAccountType(userId).getValue();
-        ConnectConfig connectConfig = connectConfigService.queryDefaultConnectConfig(provider);
-        ConnectToken connectToken = null;
-        if (connectConfig != null) {
-            connectToken = connectTokenService.queryConnectToken(userId, provider, connectConfig.getAppKey());
-        }
-        return connectToken;
-    }
-
-    /**
      *获取第三方用户原始信息
      *
      *
