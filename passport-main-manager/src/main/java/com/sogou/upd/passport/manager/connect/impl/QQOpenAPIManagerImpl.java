@@ -92,21 +92,21 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                             dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.TIME_ONEDAY);
                         }
                     } else {
-                        logger.error("返回值错误 ：" + map.toString());
+                        logger.error("return value error ：" + map.toString());
                         if (map.containsKey("msg")) {
                             result.setMessage(String.valueOf(map.get("msg")));
                         }
                         result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                     }
                 } else {
-                    logger.error("返回值错误 ：" + map.toString());
+                    logger.error("return value error ：" + map.toString());
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                 }
 //                map = changeResult(map, third_appid);
                 //调用返回
 //                resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
             } else {
-                logger.error("返回值错误：无返回值！");
+                logger.error("return value error,no value！");
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
             }
             return result.toString();
@@ -123,7 +123,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                 if (!StringUtils.isNullOrEmpty(openid)) {
                     Result result = sgConnectApiManager.getConnectRelation(openid, AccountTypeEnum.QQ.getValue(), third_appid);
                     if (!result.isSuccess()) {
-                        logger.error("connectRelation中没有此openid,去除此记录返回，openid : " + openid);
+                        logger.error("connectRelation has no this openid,remove，openid : " + openid);
                         removeList.add(map);
                         continue;
                     } else {
@@ -133,7 +133,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                     }
                 }
             }
-            logger.warn("腾讯返回好友总数：" + list.size() + "已去除好友总数 ：" + removeList.size());
+            logger.warn("tencent return size：" + list.size() + "removed size ：" + removeList.size());
             list.removeAll(removeList);
         }
         return list;
