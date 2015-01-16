@@ -43,7 +43,7 @@ public class ConnectManagerHelper {
             StringBuffer query = new StringBuffer(OAuthUtils.format(callbackParamMap.entrySet(), CommonConstant.DEFAULT_CHARSET));
             return pCallbackUrl + "?" + query;
         } catch (UnsupportedEncodingException e) {
-            return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+            return CommonConstant.DEFAULT_INDEX_URL;
         }
     }
 }

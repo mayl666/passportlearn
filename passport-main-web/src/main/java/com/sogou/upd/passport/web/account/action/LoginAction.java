@@ -215,7 +215,7 @@ public class LoginAction extends BaseController {
         RuValidator ruValidator = new RuValidator();
         if (StringUtil.isBlank(ru) || !ruValidator.isValid(ru, null)) {
             if (StringUtil.isBlank(referer)) {
-                referer = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+                referer = CommonConstant.DEFAULT_INDEX_URL;
             }
             ru = referer;
         }

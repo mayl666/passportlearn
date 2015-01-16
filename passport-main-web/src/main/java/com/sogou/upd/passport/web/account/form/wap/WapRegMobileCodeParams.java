@@ -33,7 +33,7 @@ public class WapRegMobileCodeParams {
     @Value(value = CommonConstant.DEFAULT_WAP_URL)
     private String ru;//登录来源
     @Skin
-    @Value(value = CommonConstant.WAP_DEFAULT_SKIN)
+    @Value(value = WapConstant.WAP_SKIN_GREEN)
     private String skin;//皮肤参数
     private String errorMsg;//错误信息
     private int needCaptcha;//是否需要输入验证码:0-不需要；1-需要

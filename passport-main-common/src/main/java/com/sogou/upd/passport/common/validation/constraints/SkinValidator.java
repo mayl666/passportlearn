@@ -22,9 +22,10 @@ public class SkinValidator implements ConstraintValidator<Skin, String> {
 
     //目前wap只有red一种颜色，若不传，默认为绿色.后续有其它颜色再添加
     static {
-        SUPPORT_SKIN.add(WapConstant.WAP_SKIN_RED);
+        SUPPORT_SKIN.add(WapConstant.WAP_SKIN_RED);   //彩票H5页面使用
         SUPPORT_SKIN.add(WapConstant.WAP_SKIN_GREEN);
-        SUPPORT_SKIN.add(WapConstant.WAP_SKIN_SE);
+        SUPPORT_SKIN.add(WapConstant.WAP_SKIN_SE);  //手机浏览器APP使用
+        SUPPORT_SKIN.add(WapConstant.WAP_SKIN_ORANGE); //输入法的手游H5页面使用
     }
 
     @Override

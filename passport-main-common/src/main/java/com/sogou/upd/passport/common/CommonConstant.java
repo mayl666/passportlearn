@@ -12,7 +12,6 @@ import java.util.List;
 public class CommonConstant {
 
     public static final int SGPP_DEFAULT_CLIENTID = 1120;
-    public static final String SGPP_DEFAULT_SERVER_SECRET = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
     public static final int PC_CLIENTID = 1044; //浏览器输入法桌面端client_id
     public static final int PINYIN_MAC_CLIENTID = 1105; //输入法MAC版client_id
     public static final int XIAOSHUO_CLIENTID = 1115; //小说client_id
@@ -35,8 +34,6 @@ public class CommonConstant {
     public static final String SOHU_APP_CONNECT_SECRET = "8c0116a88d3b5ce01f25d69a376f381f ";  //搜狐在QQ第三方开放平台对应的应用密钥
     public static final String HTTP = "http";  //http请求方式
     public static final String HTTPS = "https";//https请求方式
-    public static final String CONNECT_METHOD_GET = "get";//method=get请求方式
-    public static final String CONNECT_METHOD_POST = "post";//method=post请求方式
     public static final String QQ_SERVER_IP = "119.147.19.43";         //QQ测试环境ip：
     public static final String QQ_SERVER_NAME = "openapi.tencentyun.com";   //QQ正式环境可以使用域名，http的，需要sig签名
     public static final String QQ_SERVER_NAME_GRAPH = "graph.qq.com";   //QQ https请求域名，不需要sig签名
@@ -65,7 +62,6 @@ public class CommonConstant {
     public static final String EXPIRES_IN = "expires_in";
     public static final String OPENID = "openid";
 
-    public static final String DEFAULT_CONNECT_REDIRECT_URL = "https://account.sogou.com";
     public static final String DEFAULT_INDEX_URL = "https://account.sogou.com";
     public static final String DEFAULT_WAP_INDEX_URL = "http://m.account.sogou.com";
     public static final String DEFAULT_WAP_URL = "http://wap.sogou.com";
@@ -74,7 +70,6 @@ public class CommonConstant {
     public static final String SOGOU_SUFFIX = "@sogou.com";
     public static final String SOHU_SUFFIX = "@sohu.com";
     public static final String EMAIL_REG_VERIFY_URL = "https://account.sogou.com/web/reg/emailverify";
-    public static final String WAP_DEFAULT_SKIN = "green";
 
     public static final String PP_COOKIE_URL = "http://account.sogou.com/act/setppcookie";
 
@@ -99,6 +94,7 @@ public class CommonConstant {
     public static final String HTTPS_HEADER = "X-Https";
     public static final String HTTPS_VALUE = "https";
     public static final String USER_AGENT = "User-Agent";
+    public static final String SSL_PROTOCOL= "X-SSL-Protocol";
 
     //域名不正确
     public static final String DOMAIN_ERROR = "域名不正确";

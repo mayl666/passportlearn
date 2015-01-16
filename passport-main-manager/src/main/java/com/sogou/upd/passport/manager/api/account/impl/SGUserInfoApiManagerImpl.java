@@ -107,6 +107,26 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                 result.setDefaultModel("avatarurl", accountResult.getModels().get("avatarurl"));
                                 paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "avatarurl"));
                             }
+
+                            //大头像，中头像，小头像
+                            String imageSize=infoApiparams.getImagesize();
+                            String large_avatar = (String) accountResult.getModels().get("img_180");
+                            String mid_avatar = (String) accountResult.getModels().get("img_50");
+                            String tiny_avatar = (String) accountResult.getModels().get("img_30");
+                            if (StringUtils.contains(imageSize,"30")) {
+                                result.setDefaultModel("tiny_avatar", Strings.isNullOrEmpty(tiny_avatar) ? "" : tiny_avatar);
+                            }
+                            if (StringUtils.contains(imageSize,"50")) {
+                                result.setDefaultModel("mid_avatar", Strings.isNullOrEmpty(mid_avatar) ? "" : mid_avatar);
+                            }
+                            if (StringUtils.contains(imageSize,"180")) {
+                                result.setDefaultModel("large_avatar", Strings.isNullOrEmpty(mid_avatar) ? "" : large_avatar);
+                            }
+                            //处理第三方gender信息
+                            if ((domain == AccountDomainEnum.THIRD) && (StringUtils.contains(fields,"gender"))) {
+                                result.setDefaultModel("gender",accountResult.getModels().get("gender"));
+                            }
+
                             result.setDefaultModel("userid", passportId);
                         } else if (domain == AccountDomainEnum.SOHU) {
                             //如果为"搜狐域"账号，则根据请求参数构建值为 "" 的result

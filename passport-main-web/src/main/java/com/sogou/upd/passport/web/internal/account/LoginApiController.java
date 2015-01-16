@@ -43,7 +43,6 @@ import java.util.Map;
 @RequestMapping("/internal")
 public class LoginApiController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(LoginApiController.class);
-    private static final Logger authEmailUserLogger = LoggerFactory.getLogger("authEmailUserLogger");
     @Autowired
     private PCAccountManager pcAccountManager;
     @Autowired
@@ -52,11 +51,8 @@ public class LoginApiController extends BaseController {
     private LoginApiManager loginApiManager;
     @Autowired
     private ConfigureManager configureManager;
-
     @Autowired
     private CookieManager cookieManager;
-
-    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
     /**
      * 续种cookie
@@ -87,7 +83,7 @@ public class LoginApiController extends BaseController {
         //设置来源
         String ru = params.getRu();
         if (Strings.isNullOrEmpty(ru)) {
-            ru = LOGIN_INDEX_URL;
+            ru = CommonConstant.DEFAULT_INDEX_URL;
         }
         String passportId = params.getUserid();
         String ip = getIp(request);
@@ -168,7 +164,7 @@ public class LoginApiController extends BaseController {
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(userid, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             userOperationLog.putOtherMessage("createip", createip);
-            UserOperationLogUtil.log(userOperationLog, authEmailUserLogger);
+            UserOperationLogUtil.log(userOperationLog);
             return result.toString();
         }
     }
