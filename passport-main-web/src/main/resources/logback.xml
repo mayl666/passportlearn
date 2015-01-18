@@ -160,11 +160,11 @@
         <connSize>10</connSize>
     </appender>
 
-    <appender name="rabbitMQAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
+  <!--  <appender name="rabbitMQAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
         <queueSize>256</queueSize>
         <workerSize>4</workerSize>
         <appender-ref ref="rabbitMQAppender"/>
-    </appender>
+    </appender>-->
 
     <appender name="localAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
         <queueSize>512</queueSize>
@@ -175,7 +175,7 @@
     <logger name="userLoggerAsync" level="info" additivity="false">
         <appender-ref ref="kafkaAsyncAppender"/>
         <!--<appender-ref ref="rabbitMQAsyncAppender"/>-->
-        <!--<appender-ref ref="localAsyncAppender"/>-->
+        <appender-ref ref="localAsyncAppender"/>
 
     </logger>
 
