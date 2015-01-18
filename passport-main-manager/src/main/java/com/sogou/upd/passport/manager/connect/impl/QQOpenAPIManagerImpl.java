@@ -78,9 +78,6 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
 //            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
 //            Pair<Integer, String> pair = HttpClientUtil.post(QQ_FRIENDS_URL, inParammap);
 //            Map map = JacksonJsonMapperUtil.getMapper().readValue(pair.getRight(), Map.class);
-
-            logger.warn("SGHttpClient.executeStr time : " + (System.currentTimeMillis() - start));
-
             if (!CollectionUtils.isEmpty(map)) {
                 if (map.containsKey("ret")) {
                     String ret = String.valueOf(map.get("ret"));
