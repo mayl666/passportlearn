@@ -76,19 +76,19 @@
         </encoder>
     </appender>
 
-    <appender name="rabbitMQAppender" class="com.sogou.upd.passport.mq.RabbitMQAppender">
-        <host>${rabbitmq.host}</host>
-        <port>${rabbitmq.port}</port>
-        <virtualHost>/storm_host</virtualHost>
-        <username>davion</username>
-        <password>davion</password>
-        <queueName>passport_user_1</queueName>
-        <exchangeName>passport_user_1</exchangeName>
-        <encoder>
-            <pattern>%msg</pattern>
-        </encoder>
-        <connSize>10</connSize>
-    </appender>
+    <!--<appender name="rabbitMQAppender" class="com.sogou.upd.passport.mq.RabbitMQAppender">-->
+        <!--<host>${rabbitmq.host}</host>-->
+        <!--<port>${rabbitmq.port}</port>-->
+        <!--<virtualHost>/storm_host</virtualHost>-->
+        <!--<username>davion</username>-->
+        <!--<password>davion</password>-->
+        <!--<queueName>passport_user_1</queueName>-->
+        <!--<exchangeName>passport_user_1</exchangeName>-->
+        <!--<encoder>-->
+            <!--<pattern>%msg</pattern>-->
+        <!--</encoder>-->
+        <!--<connSize>10</connSize>-->
+    <!--</appender>-->
 
    <!-- <appender name="rabbitMQAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
         <queueSize>256</queueSize>
