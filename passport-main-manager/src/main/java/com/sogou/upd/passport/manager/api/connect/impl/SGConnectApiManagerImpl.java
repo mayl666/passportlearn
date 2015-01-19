@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -163,6 +164,27 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         }
     }
 
+    @Override
+    public Result obtainTKey(String passportId, int clientId, String third_appid) {
+        Result result = new APIResultSupport(false);
+        Result connectTokenResult = obtainConnectToken(passportId, clientId, third_appid);
+        if (!connectTokenResult.isSuccess()) {
+            return connectTokenResult;
+        }
+        ConnectToken connectToken = (ConnectToken) connectTokenResult.getModels().get("connectToken");
+        try {
+            String tKey = String.format("%s|%s|%s|%s|%s|%s|%s", connectToken.getOpenid(), connectToken.getAccessToken(), connectToken.getExpiresIn(), connectToken.getAppKey(), connectToken.getPassportId(), clientId, System.currentTimeMillis());
+            tKey = TKEY_VERSION + SEPARATOR_1 + AES.encryptURLSafeString(tKey, TKEY_SECURE_KEY);
+            result.setSuccess(true);
+            result.getModels().put("tKey", tKey);
+            return result;
+        } catch (Exception e) {
+            logger.error("obtain tKey AES fail,passportId:{}", passportId, e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
+    }
+
     private ConnectToken newConnectToken(String passportId, String appKey, int provider, OAuthTokenVO oAuthTokenVO) {
         ConnectToken connectToken = new ConnectToken();
         connectToken.setPassportId(passportId);
@@ -245,6 +267,36 @@ public class SGConnectApiManagerImpl implements ConnectApiManager {
         long currentTime = System.currentTimeMillis() / (1000);
         long tokenTime = createTime.getTime() / (1000);
         return currentTime < tokenTime + expiresIn;
+    }
+
+
+    /**
+     * 根据openid获取passportId
+     *
+     * @param openid
+     * @param provider
+     * @param appKey
+     */
+    public Result getConnectRelation(String openid, int provider, String appKey) {
+        Result result = new APIResultSupport(false);
+        if (Strings.isNullOrEmpty(appKey)) {
+            ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(null, provider);
+            if (null != connectConfig) {
+                appKey = connectConfig.getAppKey();
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
+                return result;
+            }
+        }
+        ConnectRelation connectRelation = connectRelationService.querySpecifyConnectRelation(openid, provider, appKey);
+        if (null != connectRelation) {
+            result.setSuccess(true);
+            result.getModels().put("connectRelation", connectRelation);
+            return result;
+        } else {
+            result.setCode(ErrorUtil.ERR_CODE_CONNECT_REQUEST_NO_AUTHORITY);
+            return result;
+        }
     }
 
 }

@@ -158,6 +158,7 @@ public class HttpClientUtil {
             return Pair.of(code, body);
         } catch (Exception e) {
             String message = e.getClass().getName() + "|" + e.getMessage();
+            logger.error("doWget", e);
             return Pair.of(0, message);
         } finally {
             method.releaseConnection();
@@ -218,7 +219,7 @@ public class HttpClientUtil {
 
     private static String read(Reader reader) throws IOException {
         StringBuilder cache = new StringBuilder();
-        char[] buf = new char[1024];
+        char[] buf = new char[100000*1024];
         int l;
         while ((l = reader.read(buf)) > 0)
             cache.append(buf, 0, l);
@@ -237,8 +238,11 @@ public class HttpClientUtil {
         MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
         manager.getParams().setDefaultMaxConnectionsPerHost(100);
         manager.getParams().setMaxTotalConnections(500);
-        manager.getParams().setConnectionTimeout(5000);
-        manager.getParams().setSoTimeout(5000);
+        manager.getParams().setConnectionTimeout(300000);
+        manager.getParams().setSoTimeout(300000);
+        manager.getParams().setTcpNoDelay(true);
+        manager.getParams().setStaleCheckingEnabled(false);
+        manager.getParams().setReceiveBufferSize(1000*1024);
         client = new HttpClient(manager);
     }
 
