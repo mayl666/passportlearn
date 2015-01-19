@@ -11,5 +11,5 @@ import com.sogou.upd.passport.common.result.Result;
  */
 public interface QQOpenAPIManager {
 
-    public String get_qqfriends(String userid, String tkey, String third_appid) throws Exception;
+    public String getQQFriends(String userid, String tkey, String third_appid) throws Exception;
 }

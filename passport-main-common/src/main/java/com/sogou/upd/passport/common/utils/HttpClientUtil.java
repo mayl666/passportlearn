@@ -238,11 +238,8 @@ public class HttpClientUtil {
         MultiThreadedHttpConnectionManager manager = new MultiThreadedHttpConnectionManager();
         manager.getParams().setDefaultMaxConnectionsPerHost(100);
         manager.getParams().setMaxTotalConnections(500);
-        manager.getParams().setConnectionTimeout(300000);
-        manager.getParams().setSoTimeout(300000);
-        manager.getParams().setTcpNoDelay(true);
-        manager.getParams().setStaleCheckingEnabled(false);
-        manager.getParams().setReceiveBufferSize(1000*1024);
+        manager.getParams().setConnectionTimeout(5000);
+        manager.getParams().setSoTimeout(5000);
         client = new HttpClient(manager);
     }
 

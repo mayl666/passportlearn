@@ -21,7 +21,7 @@ public class InternalQQOpenApiControllerTest {
 
     @Test
     public void testHttpClient(){
-        RequestModel requestModel = new RequestModel("http://localhost/internal/connect/qq/get_qqfriends");
+        RequestModel requestModel = new RequestModel("http://localhost/internal/connect/qq/getQQFriends");
         requestModel.addParam("userid","089DEEA78E4EFC388FECF28F780B7761@qq.sohu.com");
         requestModel.addParam("client_id","1024");
         requestModel.addParam("code","1024");
