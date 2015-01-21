@@ -35,13 +35,16 @@ public class RepairTmpData extends BaseTest {
      */
     @Test
     public void testCheckDataIsNewRegister() {
-        List<String> passportIdList = FileUtil.readFileByLines("D:\\mysql\\phone_account00");
+        List<String> passportIdList = FileUtil.readFileByLines("D:\\mysql\\phone_account30-31");
         int count = 0;
+        long start = System.currentTimeMillis();
         for (String passportId : passportIdList) {
             if (!Strings.isNullOrEmpty(passportId) && passportId.contains("@")) {
                 Account account = accountDAO.getAccountByPassportId(passportId);
 
                 String[] array = passportId.split("@");
+
+
                 String mobile = array[0];
                 boolean isBind = accountService.bindMobile(account, mobile);
                 if (!isBind) {
@@ -50,9 +53,11 @@ public class RepairTmpData extends BaseTest {
                 }
             }
         }
+        long end = System.currentTimeMillis();
+        failedList.add("time:" + (end - start) + "ms");
         failedList.add("count:" + count);
         try {
-            FileUtil.storeFile("D:\\mysql\\phone_account00_result.txt", failedList);
+            FileUtil.storeFile("D:\\mysql\\phone_account30-31_result.txt", failedList);
         } catch (Exception e) {
             e.printStackTrace();
         }
