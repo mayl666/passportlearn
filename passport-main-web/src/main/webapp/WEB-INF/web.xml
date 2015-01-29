@@ -31,7 +31,7 @@
     </filter-mapping>
     
     <!-- 编码转换 -->
-    <!--<filter>
+    <filter>
         <filter-name>Set Character Encoding</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
         <init-param>
@@ -41,14 +41,14 @@
         <init-param>
             <param-name>forceEncoding</param-name>
             <param-value>true</param-value>
-            &lt;!&ndash; 强制进行转码 &ndash;&gt;
+            <!-- 强制进行转码 -->
         </init-param>
     </filter>
 
     <filter-mapping>
         <filter-name>Set Character Encoding</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>-->
+    </filter-mapping>
     
     <!-- 400 页面不存在错误 -->
     <error-page>
