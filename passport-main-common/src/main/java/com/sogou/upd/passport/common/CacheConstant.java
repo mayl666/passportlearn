@@ -73,6 +73,7 @@ public class CacheConstant {
 
     /*================CONNECT 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = "SP.PASSPORTID:CONNECTTOKEN_"; //passportId+provider+appKey与ConnectToken映射
+    public static final String CACHE_PREFIX_PASSPORTID_ORIGINAL_CONNECTINFO = "SP.PASSPORTID:ORIGINAL_CONNECTINFO_"; //passportId+provider与OriginalConnectInfo映射
     public static final String CACHE_PREFIX_OPENID_CONNECTRELATION = "SP.OPENID:CONNECTRELATION_";  // openid+provider与ConnectRelation的映射
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO = "SP.PASSPORTID:CONNECTUSERINFO_"; //passportId与ConnectUserInfoVO映射
 
@@ -130,5 +131,10 @@ public class CacheConstant {
 
     /*=================黑名单列表===================================*/
     public static final String CACHE_KEY_BLACKLIST = "BLACKLIST";
+    /*=================QQ好友链===================================*/
+    public static final String CACHE_KEY_QQ_FRIENDS = "SP.QQFRIENDS:RETURNVAL_";
+
+    /*=================guava本地缓存===================================*/
+    public static final int CACHE_REFRESH_INTERVAL= 10;     //guava cache 自动刷新时间间隔为10 min
 
 }

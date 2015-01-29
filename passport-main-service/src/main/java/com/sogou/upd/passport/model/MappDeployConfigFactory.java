@@ -44,6 +44,7 @@ public class MappDeployConfigFactory {
                 setProperties(confMap, properties, "getloginCaptchaUrl");
                 setProperties(confMap, properties, "statisticsInfoUrl");
                 setProperties(confMap, properties, "statReportUrl");
+                setProperties(confMap, properties, "getUserInfoUrl");
 
                 //threshold
                 setProperties(confMap, properties, "statReportSizeMobile");

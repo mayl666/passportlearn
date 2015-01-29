@@ -74,7 +74,7 @@ public class EmailSecureAction extends BaseController {
             String modifyIp = getIp(request);
             String ru = params.getRu();
             if (Strings.isNullOrEmpty(ru)) {
-                ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+                ru = CommonConstant.DEFAULT_INDEX_URL;
             }
             switch (AccountDomainEnum.getAccountDomain(passportId)) {
                 case SOHU:

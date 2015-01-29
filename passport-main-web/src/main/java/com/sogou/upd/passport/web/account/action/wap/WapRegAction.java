@@ -169,7 +169,7 @@ public class WapRegAction extends BaseController {
             model.addAttribute("v", WapConstant.WAP_COLOR);
             model.addAttribute("client_id", Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? CommonConstant.SGPP_DEFAULT_CLIENTID : wapIndexParams.getClient_id());
             model.addAttribute("ru", Strings.isNullOrEmpty(wapIndexParams.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(wapIndexParams.getRu()));
-            model.addAttribute("skin", Strings.isNullOrEmpty(wapIndexParams.getSkin()) ? CommonConstant.WAP_DEFAULT_SKIN : wapIndexParams.getSkin());
+            model.addAttribute("skin", Strings.isNullOrEmpty(wapIndexParams.getSkin()) ? WapConstant.WAP_SKIN_GREEN : wapIndexParams.getSkin());
             if (wapIndexParams.getNeedCaptcha() == 1) {
                 String token = RandomStringUtils.randomAlphanumeric(48);
                 model.addAttribute("token", token);

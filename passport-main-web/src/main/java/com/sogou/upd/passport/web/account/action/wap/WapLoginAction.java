@@ -243,7 +243,7 @@ public class WapLoginAction extends BaseController {
                 }
             } catch (UnsupportedEncodingException e) {
                 logger.error("Url decode Exception! ru:" + ru);
-                ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+                ru = CommonConstant.DEFAULT_INDEX_URL;
             }
 
             data = params.getData();

@@ -109,7 +109,7 @@ public class OAuth2ResourceManagerImpl implements OAuth2ResourceManager {
             CookieApiParams cookieApiParams = new CookieApiParams();
             cookieApiParams.setUserid(passportId);
             cookieApiParams.setClient_id(clientId);
-            cookieApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
+            cookieApiParams.setRu(CommonConstant.DEFAULT_INDEX_URL);
             cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
             cookieApiParams.setPersistentcookie(String.valueOf(1));
             cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);

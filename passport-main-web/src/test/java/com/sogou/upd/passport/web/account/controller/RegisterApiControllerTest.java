@@ -54,7 +54,7 @@ public class RegisterApiControllerTest extends BaseActionTest {
     private static final String wrong_capthca = "grtyr";
     private static final String right_capthca = "1q23";
     private static final int clientId = CommonConstant.SGPP_DEFAULT_CLIENTID;
-    private static final String serverSecret = CommonConstant.SGPP_DEFAULT_SERVER_SECRET;
+    private static final String serverSecret = "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY";
 
 
     /**

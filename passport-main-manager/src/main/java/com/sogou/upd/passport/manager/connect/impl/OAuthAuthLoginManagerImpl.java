@@ -109,7 +109,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String thirdAppId = connectLoginParams.getThird_appid();
             connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
             if (connectConfig == null) {
-                return CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+                return CommonConstant.DEFAULT_INDEX_URL;
             }
 
             String pCallbackUrl = oAuthConsumer.getCallbackUrl(httpOrHttps);
@@ -544,7 +544,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (UnsupportedEncodingException e) {
             logger.error("Url decode Exception! ru:" + ru);
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+            ru = CommonConstant.DEFAULT_INDEX_URL;
         }
         params.put("userid", userid);
         params.put("token", token);
@@ -587,7 +587,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (UnsupportedEncodingException e) {
             logger.error("Url decode Exception! ru:" + ru);
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+            ru = CommonConstant.DEFAULT_INDEX_URL;
         }
         params.put("s_m_u", s_m_u);
         params.put("un", un);
@@ -634,7 +634,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
      */
     private String buildErrorRu(String type, String ru, String errorCode, String errorText, String v) {
         if (Strings.isNullOrEmpty(ru)) {
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+            ru = CommonConstant.DEFAULT_INDEX_URL;
         }
         if (!Strings.isNullOrEmpty(errorCode) && (ConnectTypeEnum.isMobileApp(type) || ConnectTypeEnum.isMobileWap(type))) {
             Map params = Maps.newHashMap();

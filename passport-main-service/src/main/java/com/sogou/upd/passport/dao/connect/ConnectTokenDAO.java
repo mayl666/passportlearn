@@ -7,6 +7,8 @@ import net.paoding.rose.jade.annotation.SQLParam;
 import net.paoding.rose.jade.annotation.ShardBy;
 import org.springframework.dao.DataAccessException;
 
+import java.util.List;
+
 /**
  * connect_token表的DAO操作
  * User: shipengzhi
@@ -47,6 +49,19 @@ public interface ConnectTokenDAO {
             + "(passport_id=:passport_id and provider=:provider and app_key=:app_key)")
     public ConnectToken getSpecifyConnectToken(@ShardBy @SQLParam("passport_id") String passport_id, @SQLParam("provider") int provider,
                                                @SQLParam("app_key") String app_key) throws DataAccessException;
+
+    /**
+     * 根据passportId、provider取ConnectToken列表
+     */
+    @SQL("select " +
+            ALL_FIELD +
+            " from " +
+            TABLE_NAME +
+            " where "
+            + "(passport_id=:passport_id and provider=:provider)")
+    public List<ConnectToken> getConnectTokenList(@ShardBy @SQLParam("passport_id") String passport_id, @SQLParam("provider") int provider)
+            throws DataAccessException;
+
 
     /**
      * 更新AccountConnect

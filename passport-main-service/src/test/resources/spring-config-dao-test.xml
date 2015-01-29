@@ -12,7 +12,7 @@
     <bean id="masterDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
-            <!--<value>jdbc:mysql://passport03.upd.mysql.db.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
+            <!--<value>jdbc:mysql://passport01.upd.mysql.db:3306/sogou_passport?characterEncoding=utf-8</value>-->
             <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
             <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
         </property>
@@ -61,7 +61,7 @@
     <bean id="slaveDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
-            <!--<value>jdbc:mysql://readpassport03.upd.mysql.db.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
+            <!--<value>jdbc:mysql://passport01.lvs.upd.mysql.db:3306/sogou_passport?characterEncoding=utf-8</value>-->
             <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
             <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
         </property>
@@ -106,6 +106,16 @@
         </property>
     </bean>
 
+    <bean id="dbMonitor" class="com.sogou.upd.passport.zk.DBMonitor" destroy-method="destroy">
+        <constructor-arg name="zks" value="10.136.24.136:2181"/>
+    </bean>
+
+    <bean id="dbZkWitchMonitor" class="com.sogou.upd.passport.zk.DBZkSwitchMonitor" destroy-method="destroy">
+        <constructor-arg name="dbMonitor" ref="dbMonitor"/>
+        <constructor-arg name="dataSourceZkPath" value="/sogou_passport/datasource/properties"/>
+        <constructor-arg name="masterDataSource" ref="masterDataSource"/>
+        <constructor-arg name="slaveDataSource" ref="slaveDataSource"/>
+    </bean>
 
     <bean id="jade.dataSourceFactory" class="net.paoding.rose.jade.dataaccess.datasource.MasterSlaveDataSourceFactory">
         <constructor-arg type="javax.sql.DataSource" ref="masterDataSource"/>
@@ -143,6 +153,5 @@
         <jdbc:script location="classpath:sql/delete_data_account.sql" encoding="UTF-8"/>
         <jdbc:script location="classpath:sql/import_data_account.sql" encoding="UTF-8"/>
     </jdbc:initialize-database>
-
 
 </beans>

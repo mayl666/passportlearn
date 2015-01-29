@@ -95,7 +95,7 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     public void testGetCookieValue() {
         CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
         createCookieUrlApiParams.setUserid("shipengzhi1986@sogou.com");
-        createCookieUrlApiParams.setRu(CommonConstant.DEFAULT_CONNECT_REDIRECT_URL);
+        createCookieUrlApiParams.setRu(CommonConstant.DEFAULT_INDEX_URL);
         createCookieUrlApiParams.setPersistentcookie(1);
         createCookieUrlApiParams.setDomain("sogou.com");
         ProxyApiManagerImpl proxyApiManager = new ProxyApiManagerImpl();

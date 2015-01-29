@@ -107,13 +107,14 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
             }
             String cacheKeySendNum = buildCacheKeyForSmsLimit(mobile, clientId, module);
 
-            //生成随机数
-            String randomCode = RandomStringUtils.randomNumeric(5);
+
             //写入缓存
             String cacheKey = buildCacheKeyForSmsCode(mobile, module);
             //初始化缓存映射
             Map<String, String> cacheMap = redisUtils.hGetAll(cacheKey);
             if (MapUtils.isEmpty(cacheMap) || !StringUtil.checkIsDigit(cacheMap.get("sendTime"))) {
+                //生成随机数
+                String randomCode = RandomStringUtils.randomNumeric(5);
                 //读取短信内容
                 String smsText = appConfigService.querySmsText(clientId, randomCode);
                 if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
@@ -137,12 +138,16 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT);
                     return result;
                 }
+                // 使用原来验证码
+                String randomCode = cacheMap.get("smsCode");
                 //读取短信内容
+                if (Strings.isNullOrEmpty(randomCode)) {
+                    randomCode = RandomStringUtils.randomNumeric(5);
+                }
                 String smsText = appConfigService.querySmsText(clientId, randomCode);
                 if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
                     //更新缓存
                     updateSmsCacheInfo(cacheKeySendNum, cacheKey, String.valueOf(curtime), randomCode);
-
                     result.setSuccess(true);
                     result.setMessage("验证码已发送至" + mobile);
                     return result;
@@ -189,8 +194,8 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
                 String strValue = mapResult.get("smsCode");
                 if (StringUtils.isNotBlank(strValue) && strValue.equals(smsCode)) {
                     return true;
-                }else{
-                  setSmsFailLimited(mobile, clientId, module);
+                } else {
+                    setSmsFailLimited(mobile, clientId, module);
                 }
             }
             return false;
@@ -277,11 +282,11 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
 
     private String buildCacheKeyForSmsFailLimit(String mobile, int clientId, AccountModuleEnum module) {
         return CACHE_PREFIX_MOBILE_CHECKSMSFAIL + module + "_" + clientId + "_" + mobile + "_" +
-               DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+                DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
     }
 
     private String buildCacheKeyForSmsLimit(String mobile, int clientId, AccountModuleEnum module) {
         return CACHE_PREFIX_ACCOUNT_SENDNUM + module + "_" + clientId + "_" + mobile +
-               DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+                DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
     }
 }

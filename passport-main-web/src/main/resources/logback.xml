@@ -10,6 +10,76 @@
         </encoder>
     </appender>
 
+    <!--移动端数据统计 interface  -->
+    <appender name="interfaceAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/interface/interface.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="interfaceLogger" level="info" additivity="false">
+        <appender-ref ref="interfaceAppender"/>
+    </logger>
+
+    <!--移动端数据统计 exception  -->
+    <appender name="exceptionAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/exception/exception.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="exceptionLogger" level="info" additivity="false">
+        <appender-ref ref="exceptionAppender"/>
+    </logger>
+
+    <!--移动端数据统计 product  -->
+    <appender name="productAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/product/product.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="productLogger" level="info" additivity="false">
+        <appender-ref ref="productAppender"/>
+    </logger>
+
+    <!--移动端数据统计 debugLog  -->
+    <appender name="debugAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/debug/debug.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="debugLogger" level="info" additivity="false">
+        <appender-ref ref="debugAppender"/>
+    </logger>
+
+    <!--移动端数据统计 netflow  -->
+    <appender name="netflowAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/netflow/netflow.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="netflowLogger" level="info" additivity="false">
+        <appender-ref ref="netflowAppender"/>
+    </logger>
+
     <!--注册黑名单-->
     <appender name="regBlackListFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -76,25 +146,25 @@
         </encoder>
     </appender>
 
-    <appender name="rabbitMQAppender" class="com.sogou.upd.passport.mq.RabbitMQAppender">
-        <host>${rabbitmq.host}</host>
-        <port>${rabbitmq.port}</port>
-        <virtualHost>/storm_host</virtualHost>
-        <username>davion</username>
-        <password>davion</password>
-        <queueName>passport_user_1</queueName>
-        <exchangeName>passport_user_1</exchangeName>
-        <encoder>
-            <pattern>%msg</pattern>
-        </encoder>
-        <connSize>10</connSize>
-    </appender>
+    <!--<appender name="rabbitMQAppender" class="com.sogou.upd.passport.mq.RabbitMQAppender">-->
+        <!--<host>${rabbitmq.host}</host>-->
+        <!--<port>${rabbitmq.port}</port>-->
+        <!--<virtualHost>/storm_host</virtualHost>-->
+        <!--<username>davion</username>-->
+        <!--<password>davion</password>-->
+        <!--<queueName>passport_user_1</queueName>-->
+        <!--<exchangeName>passport_user_1</exchangeName>-->
+        <!--<encoder>-->
+            <!--<pattern>%msg</pattern>-->
+        <!--</encoder>-->
+        <!--<connSize>10</connSize>-->
+    <!--</appender>-->
 
-    <appender name="rabbitMQAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
+  <!--  <appender name="rabbitMQAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
         <queueSize>256</queueSize>
         <workerSize>4</workerSize>
         <appender-ref ref="rabbitMQAppender"/>
-    </appender>
+    </appender>-->
 
     <appender name="localAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
         <queueSize>512</queueSize>
@@ -104,7 +174,7 @@
 
     <logger name="userLoggerAsync" level="info" additivity="false">
         <appender-ref ref="kafkaAsyncAppender"/>
-        <appender-ref ref="rabbitMQAsyncAppender"/>
+        <!--<appender-ref ref="rabbitMQAsyncAppender"/>-->
         <appender-ref ref="localAsyncAppender"/>
 
     </logger>

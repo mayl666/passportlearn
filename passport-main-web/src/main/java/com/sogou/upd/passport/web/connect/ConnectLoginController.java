@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * SSO-SDK第三方授权接口
@@ -28,6 +30,9 @@ import java.io.IOException;
  */
 @Controller
 public class ConnectLoginController extends BaseConnectController {
+
+    private static String PINYIN_SSLV3_PAGE = "http://config.pinyin.sogou.com/api/qqfastlogin/load_failed.php";
+    ;
 
     @Autowired
     private OAuthAuthLoginManager oAuthAuthLoginManager;
@@ -51,6 +56,12 @@ public class ConnectLoginController extends BaseConnectController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 url = buildAppErrorRu(type, providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 res.sendRedirect(url);
+                return;
+            }
+
+            // 如果是输入法客户端且SSL_Protocol包含SSLv3,则QQ登录url重定向到输入法定制页面
+            if (isIMEUserAgent(req) && AccountTypeEnum.QQ.toString().equals(providerStr) && isSSLV3(req)) {
+                res.sendRedirect(buildPinyinSSLv3Page(req));
                 return;
             }
 
@@ -81,6 +92,30 @@ public class ConnectLoginController extends BaseConnectController {
             userOperationLog.putOtherMessage(CommonConstant.USER_AGENT, ua);
             UserOperationLogUtil.log(userOperationLog);
         }
+    }
+
+    private boolean isSSLV3(HttpServletRequest request) {
+        String sslProtocol = request.getHeader(CommonConstant.SSL_PROTOCOL);// 获取当前浏览器使用的SSL协议
+        if (!Strings.isNullOrEmpty(sslProtocol) && sslProtocol.equalsIgnoreCase("SSLv3")) {
+            return true;
+        }
+        return false;
+    }
+
+    private String buildPinyinSSLv3Page(HttpServletRequest req) {
+        try {
+            String qqLoginUrl = "https://account.sogou.com/connect/login";
+            qqLoginUrl = qqLoginUrl+"?"+req.getQueryString();
+            String qqLoginUrlEncode = URLEncoder.encode(qqLoginUrl, CommonConstant.DEFAULT_CHARSET);
+            return PINYIN_SSLV3_PAGE + "?url=" + qqLoginUrlEncode;
+        } catch (UnsupportedEncodingException e) {
+            return PINYIN_SSLV3_PAGE;
+        }
+    }
+
+    private boolean isIMEUserAgent(HttpServletRequest request) {
+        String ua = request.getHeader(CommonConstant.USER_AGENT);
+        return !Strings.isNullOrEmpty(ua) && ua.contains(CommonConstant.SOGOU_IME_UA); //输入法的标识
     }
 
 }

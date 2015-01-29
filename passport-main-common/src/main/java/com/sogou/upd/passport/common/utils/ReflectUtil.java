@@ -1,5 +1,10 @@
 package com.sogou.upd.passport.common.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -11,6 +16,9 @@ import java.lang.reflect.Method;
  * To change this template use File | Settings | File Templates.
  */
 public class ReflectUtil {
+
+    private static final Logger log = LoggerFactory.getLogger(ReflectUtil.class);
+
     /**
      * 利用递归找一个类的指定方法，如果找不到，去父亲里面找直到最上层Object对象为止。
      *
@@ -72,6 +80,45 @@ public class ReflectUtil {
      */
     public static Object invoke(final Object obj, final String methodName) {
         return invoke(obj, methodName, new Class[]{}, new Object[]{});
+    }
+
+    /**
+     * 初始化带参数构造器
+     * @param clazz
+     * @param paramsTypes
+     * @param paramValues
+     * @return
+     */
+    public static Object instantiateClassWithParameters(Class clazz, Class[] paramsTypes,
+                                                        Object[] paramValues) throws Exception {
+        try {
+            if (paramsTypes != null && paramValues != null) {
+                if (!(paramsTypes.length == paramValues.length)) {
+                    throw new IllegalArgumentException(
+                            "Number of types and values must be equal");
+                }
+
+                if (paramsTypes.length == 0 && paramValues.length == 0) {
+                    return clazz
+                            .newInstance();
+                }
+                Constructor clazzConstructor = clazz.getConstructor(paramsTypes);
+                return clazzConstructor.newInstance(paramValues);
+            }
+            return clazz.newInstance();
+        } catch (NoSuchMethodException e) {
+            log.error("Instantiate Class With Parameters NoSuchMethodException! Class:" + clazz.getName(), e);
+            throw new Exception();
+        } catch (InstantiationException e) {
+            log.error("Instantiate Class With Parameters InstantiationException! Class:" + clazz.getName(), e);
+            throw new Exception();
+        } catch (IllegalAccessException e) {
+            log.error("Instantiate Class With Parameters IllegalAccessException! Class:" + clazz.getName(), e);
+            throw new Exception();
+        } catch (InvocationTargetException e) {
+            log.error("Instantiate Class With Parameters InvocationTargetException! Class:" + clazz.getName(), e);
+            throw new Exception();
+        }
     }
 
     /**

@@ -29,6 +29,9 @@ define(['./utils'], function(Utils) {
                 case /semob|se/i.test(name):
                     name = 'se';
                     break;
+                case /orange|or/i.test(name):
+                    name = 'or';
+                    break;
                 default:
                     name = null;
             }
