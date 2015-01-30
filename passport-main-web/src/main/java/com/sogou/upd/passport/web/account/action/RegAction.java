@@ -291,14 +291,14 @@ public class RegAction extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(activeParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.ERR_CODE_COM_REQURIE);
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.ERR_CODE_COM_REQURIE+"&client_id="+activeParams.getClient_id());
             return;
         }
         //验证client_id
         int clientId = Integer.parseInt(activeParams.getClient_id());
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
-            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.INVALID_CLIENTID);
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.INVALID_CLIENTID+"&client_id="+activeParams.getClient_id());
             return;
         }
         String ip = getIp(request);
@@ -327,11 +327,11 @@ public class RegAction extends BaseController {
                 if (Strings.isNullOrEmpty(ru) || CommonConstant.EMAIL_REG_VERIFY_URL.equals(ru)) {
                     ru = CommonConstant.DEFAULT_INDEX_URL;
                 }
-                response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=0&ru=" + ru);
+                response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=0&ru=" + ru+"&client_id="+clientId);
                 return;
             }
         }
-        response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode());
+        response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode()+"&client_id="+clientId);
         return;
 
     }
