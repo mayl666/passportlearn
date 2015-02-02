@@ -70,7 +70,7 @@ public class BaseConnectController extends BaseController {
         try {
             if (Strings.isNullOrEmpty(ru)) {
                 if (ConnectTypeEnum.isMobileApp(type)) {
-                    ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
+                    ru = CommonConstant.DEFAULT_WAP_URL;
                 } else {
                     ru = CommonConstant.DEFAULT_INDEX_URL;
                 }
@@ -79,7 +79,7 @@ public class BaseConnectController extends BaseController {
             //fix invalid ru redirect 安全漏洞
             if (StringUtils.contains(errorText, CommonConstant.DOMAIN_ERROR) || CommonConstant.DOMAIN_ERROR.equals(errorText)) {
                 if (ConnectTypeEnum.isMobileApp(type)) {
-                    ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
+                    ru = CommonConstant.DEFAULT_WAP_URL;
                 } else {
                     ru = CommonConstant.DEFAULT_INDEX_URL;
                 }
@@ -111,14 +111,4 @@ public class BaseConnectController extends BaseController {
         }
         return ru;
     }
-
-    protected String getProtocol(HttpServletRequest req) {
-        String httpsHeader = req.getHeader(CommonConstant.HTTPS_HEADER);
-        String httpOrHttps = "http";
-        if (!StringUtils.isBlank(httpsHeader) && httpsHeader.equals(CommonConstant.HTTPS_VALUE)) {
-            httpOrHttps = "https";
-        }
-        return httpOrHttps;
-    }
-
 }

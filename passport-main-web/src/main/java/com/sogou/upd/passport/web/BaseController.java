@@ -29,6 +29,11 @@ public class BaseController {
     @Autowired
     private AppConfigService appConfigService;
 
+    /**
+     * 获取用户的源ip
+     * @param request
+     * @return
+     */
     protected static String getIp(HttpServletRequest request) {
         String sff = request.getHeader("X-Forwarded-For");// 根据nginx的配置，获取相应的ip
         if (Strings.isNullOrEmpty(sff)) {
@@ -40,6 +45,38 @@ public class BaseController {
         String[] ips = sff.split(",");
         String realip = ips[0];
         return realip;
+    }
+
+    /**
+     * 获取是http或https协议
+     * @param req
+     * @return
+     */
+    protected String getProtocol(HttpServletRequest req) {
+        String httpsHeader = req.getHeader(CommonConstant.HTTPS_HEADER);
+        String httpOrHttps = "http";
+        if (!org.apache.commons.lang.StringUtils.isBlank(httpsHeader) && httpsHeader.equals(CommonConstant.HTTPS_VALUE)) {
+            httpOrHttps = "https";
+        }
+        return httpOrHttps;
+    }
+
+    /**
+     * 获取https://域名，或http://域名
+     *
+     * request.getServletPath()=/wap/findpwd
+     * request.getRemoteAddr()=127.0.0.1
+     * request.getLocalAddr()=127.0.0.1
+     * request.getRequestURL().toString()=http://account.sogou.com/wap/findpwd
+     * request.getRequestURI()=/wap/findpwd
+     * request.getServerName()=account.sogou.com
+     * request.getRemoteHost()=127.0.0.1
+     * @param request
+     * @return
+     */
+    public String getProtocolAndServerName(HttpServletRequest request){
+        return getProtocol(request) + request.getServerName();   //    account.sogou.com
+
     }
 
     public boolean isAccessAccept(int clientId, HttpServletRequest request) {
