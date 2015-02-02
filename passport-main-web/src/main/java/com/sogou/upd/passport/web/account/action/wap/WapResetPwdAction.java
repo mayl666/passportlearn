@@ -403,6 +403,7 @@ public class WapResetPwdAction extends BaseController {
             if (result.isSuccess()) {
                 String scode = (String) result.getModels().get("scode");
                 url = url + "&scode=" + scode + "&code=0";
+                url = getProtocolAndServerName(request) + url;
                 response.sendRedirect(getProtocolAndServerName(request) + url);
                 return;
             }
