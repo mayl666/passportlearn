@@ -7,7 +7,6 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
-import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.Map;
 
 public class BaseController {
@@ -31,6 +29,7 @@ public class BaseController {
 
     /**
      * 获取用户的源ip
+     *
      * @param request
      * @return
      */
@@ -49,6 +48,7 @@ public class BaseController {
 
     /**
      * 获取是http或https协议
+     *
      * @param req
      * @return
      */
@@ -63,7 +63,7 @@ public class BaseController {
 
     /**
      * 获取https://域名，或http://域名
-     *
+     * <p/>
      * request.getServletPath()=/wap/findpwd
      * request.getRemoteAddr()=127.0.0.1
      * request.getLocalAddr()=127.0.0.1
@@ -71,11 +71,19 @@ public class BaseController {
      * request.getRequestURI()=/wap/findpwd
      * request.getServerName()=account.sogou.com
      * request.getRemoteHost()=127.0.0.1
+     *
      * @param request
      * @return
      */
-    public String getProtocolAndServerName(HttpServletRequest request){
-        return getProtocol(request) + request.getServerName();   //    account.sogou.com
+    public String getProtocolAndServerName(HttpServletRequest request) {
+        String s1 = request.getRemoteAddr();
+        String s2 = request.getLocalAddr();
+        String s3 = request.getRequestURL().toString();
+        String s4 = request.getRequestURI();
+        String s5 = request.getServerName();
+        String s6 = request.getRemoteHost();
+
+        return getProtocol(request) + "://" + request.getServerName();
 
     }
 
@@ -165,11 +173,11 @@ public class BaseController {
         String sec_email = (String) result.getModels().get("sec_email");
         String sec_mobile = (String) result.getModels().get("sec_mobile");
         if (accountSecureInfoVO != null) {
-            if(!Strings.isNullOrEmpty(sec_email))   {
-                result.setDefaultModel("sec_email",accountSecureInfoVO.getSec_email());
+            if (!Strings.isNullOrEmpty(sec_email)) {
+                result.setDefaultModel("sec_email", accountSecureInfoVO.getSec_email());
             }
-            if(!Strings.isNullOrEmpty(sec_mobile))   {
-                result.setDefaultModel("sec_mobile",accountSecureInfoVO.getSec_mobile());
+            if (!Strings.isNullOrEmpty(sec_mobile)) {
+                result.setDefaultModel("sec_mobile", accountSecureInfoVO.getSec_mobile());
             }
 
         }
