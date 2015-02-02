@@ -54,38 +54,14 @@ public class BaseController {
      */
     protected String getProtocol(HttpServletRequest req) {
         String httpsHeader = req.getHeader(CommonConstant.HTTPS_HEADER);
-        String httpOrHttps = "http";
+        String httpOrHttps = CommonConstant.HTTP;
         if (!org.apache.commons.lang.StringUtils.isBlank(httpsHeader) && httpsHeader.equals(CommonConstant.HTTPS_VALUE)) {
-            httpOrHttps = "https";
+            httpOrHttps = CommonConstant.HTTPS;
         }
         return httpOrHttps;
     }
 
-    /**
-     * 获取https://域名，或http://域名
-     * <p/>
-     * request.getServletPath()=/wap/findpwd
-     * request.getRemoteAddr()=127.0.0.1
-     * request.getLocalAddr()=127.0.0.1
-     * request.getRequestURL().toString()=http://account.sogou.com/wap/findpwd
-     * request.getRequestURI()=/wap/findpwd
-     * request.getServerName()=account.sogou.com
-     * request.getRemoteHost()=127.0.0.1
-     *
-     * @param request
-     * @return
-     */
-    public String getProtocolAndServerName(HttpServletRequest request) {
-        String s1 = request.getRemoteAddr();
-        String s2 = request.getLocalAddr();
-        String s3 = request.getRequestURL().toString();
-        String s4 = request.getRequestURI();
-        String s5 = request.getServerName();
-        String s6 = request.getRemoteHost();
 
-        return getProtocol(request) + "://" + request.getServerName();
-
-    }
 
     public boolean isAccessAccept(int clientId, HttpServletRequest request) {
         String apiName = request.getRequestURI();

@@ -276,8 +276,8 @@ public class SGHttpClient {
                 ctx.init(null, new TrustManager[]{tm}, null);
                 SSLSocketFactory ssf = new SSLSocketFactory(ctx, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
                 SchemeRegistry registry = new SchemeRegistry();
-                registry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
-                registry.register(new Scheme("https", 443, ssf));
+                registry.register(new Scheme(CommonConstant.HTTP, 80, PlainSocketFactory.getSocketFactory()));
+                registry.register(new Scheme(CommonConstant.HTTPS, 443, ssf));
                 ThreadSafeClientConnManager mgr = new ThreadSafeClientConnManager(registry);
 
                 HttpParams params = base.getParams();

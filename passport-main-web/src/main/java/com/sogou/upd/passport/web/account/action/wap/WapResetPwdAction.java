@@ -403,8 +403,7 @@ public class WapResetPwdAction extends BaseController {
             if (result.isSuccess()) {
                 String scode = (String) result.getModels().get("scode");
                 url = url + "&scode=" + scode + "&code=0";
-                url = getProtocolAndServerName(request) + url;
-                response.sendRedirect(url);
+                response.sendRedirect(getProtocolAndServerName(request) + url);
                 return;
             }
         } catch (Exception e) {
@@ -545,6 +544,21 @@ public class WapResetPwdAction extends BaseController {
         UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID), resultCode, getIp(request));
         userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
         UserOperationLogUtil.log(userOperationLog);
+    }
+
+    /**
+     * 获取https://域名，或http://域名
+     *
+     * @param request
+     * @return
+     */
+    private String getProtocolAndServerName(HttpServletRequest request) {
+        String protocol = getProtocol(request);
+        if(protocol.equals(CommonConstant.HTTPS)) {
+            return CommonConstant.DEFAULT_INDEX_URL;
+        }else {
+            return CommonConstant.DEFAULT_WAP_INDEX_URL;
+        }
     }
 
 }
