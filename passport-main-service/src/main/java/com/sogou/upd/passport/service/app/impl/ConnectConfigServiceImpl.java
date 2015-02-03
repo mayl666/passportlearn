@@ -79,7 +79,7 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
             try {
                 connectConfig = connectCacheByAppId.get(cacheKey);
             } catch (Exception e) {
-                logger.error("[App] queryConnectConfigByAppId.{}", e);
+                logger.warn("[App] queryConnectConfigByAppId.{}", e);
                 return null;
             }
 
@@ -99,7 +99,7 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
             try {
                 connectConfig = connectCacheByClientId.get(cacheKey);
             } catch (Exception e) {
-                logger.error("[App] queryConnectConfigByClientId.{}", e);
+                logger.warn("[App] queryConnectConfigByClientId.{}", e);
                 return null;
             }
         } else {

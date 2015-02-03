@@ -84,7 +84,7 @@ public class AppConfigServiceImpl implements AppConfigService {
             try {
                 appConfig = appLocalCache.get(cacheKey);
             } catch (Exception e) {
-                logger.error("[App] queryAppConfigByClientId.{}", e);
+                logger.warn("[App] queryAppConfigByClientId.{}", e);
                 return null;
             }
         } else {
