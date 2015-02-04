@@ -93,7 +93,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
     //构建激活邮件中的激活链接public
     private  String buildActiveUrl(ActiveEmailDO activeEmailDO, String scode) throws Exception {
-        String prefix = activeEmailDO.getPrefix();
+//        String prefix = activeEmailDO.getPrefix();
+        String prefix = CommonConstant.DEFAULT_INDEX_URL;
         String passportId = activeEmailDO.getPassportId();
         String ru = Strings.isNullOrEmpty(activeEmailDO.getRu()) ? prefix : activeEmailDO.getRu();
 

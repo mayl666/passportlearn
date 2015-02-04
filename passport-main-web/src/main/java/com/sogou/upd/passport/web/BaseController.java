@@ -7,7 +7,6 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
-import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.Map;
 
 public class BaseController {
@@ -29,6 +27,12 @@ public class BaseController {
     @Autowired
     private AppConfigService appConfigService;
 
+    /**
+     * 获取用户的源ip
+     *
+     * @param request
+     * @return
+     */
     protected static String getIp(HttpServletRequest request) {
         String sff = request.getHeader("X-Forwarded-For");// 根据nginx的配置，获取相应的ip
         if (Strings.isNullOrEmpty(sff)) {
@@ -41,6 +45,23 @@ public class BaseController {
         String realip = ips[0];
         return realip;
     }
+
+    /**
+     * 获取是http或https协议
+     *
+     * @param req
+     * @return
+     */
+    protected String getProtocol(HttpServletRequest req) {
+        String httpsHeader = req.getHeader(CommonConstant.HTTPS_HEADER);
+        String httpOrHttps = CommonConstant.HTTP;
+        if (!org.apache.commons.lang.StringUtils.isBlank(httpsHeader) && httpsHeader.equals(CommonConstant.HTTPS_VALUE)) {
+            httpOrHttps = CommonConstant.HTTPS;
+        }
+        return httpOrHttps;
+    }
+
+
 
     public boolean isAccessAccept(int clientId, HttpServletRequest request) {
         String apiName = request.getRequestURI();
@@ -128,11 +149,11 @@ public class BaseController {
         String sec_email = (String) result.getModels().get("sec_email");
         String sec_mobile = (String) result.getModels().get("sec_mobile");
         if (accountSecureInfoVO != null) {
-            if(!Strings.isNullOrEmpty(sec_email))   {
-                result.setDefaultModel("sec_email",accountSecureInfoVO.getSec_email());
+            if (!Strings.isNullOrEmpty(sec_email)) {
+                result.setDefaultModel("sec_email", accountSecureInfoVO.getSec_email());
             }
-            if(!Strings.isNullOrEmpty(sec_mobile))   {
-                result.setDefaultModel("sec_mobile",accountSecureInfoVO.getSec_mobile());
+            if (!Strings.isNullOrEmpty(sec_mobile)) {
+                result.setDefaultModel("sec_mobile", accountSecureInfoVO.getSec_mobile());
             }
 
         }

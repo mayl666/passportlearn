@@ -381,7 +381,7 @@ public class WapLoginAction extends BaseController {
     protected String buildErrorRu(String ru, String errorCode, String errorText) {
         try {
             if (Strings.isNullOrEmpty(ru)) {
-                ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
+                ru = CommonConstant.DEFAULT_WAP_URL;
             }
             if (!Strings.isNullOrEmpty(errorCode)) {
                 Map params = Maps.newHashMap();
