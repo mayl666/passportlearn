@@ -65,8 +65,8 @@ public class DebugLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return StringUtil.defaultIfEmpty(times, "-") + "\t" + StringUtil.defaultIfEmpty(level, "-") + "\t" +
-                StringUtil.defaultIfEmpty(tag, "-") + "\t" + StringUtil.defaultIfEmpty(key, "-") + "\t" +
-                StringUtil.defaultIfEmpty(info, "-");
+        return StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(times, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(level, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(tag, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(key, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(info, "-"), "\t", "_");
     }
 }

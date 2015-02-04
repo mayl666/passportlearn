@@ -110,10 +110,10 @@ public class NetflowLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return StringUtil.defaultIfEmpty(start_time, "-") + "\t" + StringUtil.defaultIfEmpty(now_time, "-") + "\t" +
-                StringUtil.defaultIfEmpty(mobile_down_http, "-") + "\t" + StringUtil.defaultIfEmpty(mobile_up_http, "-") + "\t" +
-                StringUtil.defaultIfEmpty(wifi_down_http, "-") + "\t" + StringUtil.defaultIfEmpty(wifi_up_http, "-") + "\t" +
-                StringUtil.defaultIfEmpty(mobile_down_tcp, "-") + "\t" + StringUtil.defaultIfEmpty(mobile_up_tcp, "-") + "\t" +
-                StringUtil.defaultIfEmpty(wifi_up_tcp, "-") + "\t" + StringUtil.defaultIfEmpty(wifi_down_http, "-");
+        return StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(start_time, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(now_time, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(mobile_down_http, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(mobile_up_http, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(wifi_down_http, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(wifi_up_http, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(mobile_down_tcp, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(mobile_up_tcp, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(wifi_up_tcp, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(wifi_down_http, "-"), "\t", "_");
     }
 }

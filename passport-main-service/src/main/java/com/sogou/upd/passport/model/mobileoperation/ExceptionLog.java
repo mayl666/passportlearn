@@ -64,8 +64,8 @@ public class ExceptionLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return StringUtil.defaultIfEmpty(times, "-") + "\t" + StringUtil.defaultIfEmpty(start_time, "-") + "\t" +
-                StringUtil.defaultIfEmpty(last_time, "-") + "\t" + StringUtil.defaultIfEmpty(exception_msg, "-") + "\t" +
-                StringUtil.defaultIfEmpty(exception_detail, "-");
+        return StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(times, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(start_time, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(last_time, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(exception_msg, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(exception_detail, "-"), "\t", "_");
     }
 }

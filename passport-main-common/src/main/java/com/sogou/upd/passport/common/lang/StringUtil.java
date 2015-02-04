@@ -445,4 +445,9 @@ public class StringUtil {
         }
         return value;
     }
+
+    public static String exchangeIfContains(String value, String containStr, String exchangeStr) {
+        return value.contains(containStr) ? value.replace(containStr, exchangeStr) : value;
+    }
+
 }
