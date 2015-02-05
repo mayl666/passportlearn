@@ -74,7 +74,7 @@ public class BindApiManagerImpl implements BindApiManager {
         Result result = new APIResultSupport(false);
         try {
             if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
             boolean isSgBind = accountService.bindMobile(account, newMobile);
@@ -97,7 +97,7 @@ public class BindApiManagerImpl implements BindApiManager {
         try {
             Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
             // 修改绑定手机，checkCode为secureCode  TODO 不知道scode是干嘛用的

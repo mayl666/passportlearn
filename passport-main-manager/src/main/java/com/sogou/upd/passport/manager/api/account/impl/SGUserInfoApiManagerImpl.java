@@ -133,7 +133,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                             return buildSoHuEmptyResult(result, fields, passportId);
                         } else {
                             //若 account 为空，并且账号域类型不是"搜狐域"账号，错误码返回:账号不存在、并且返回
-                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                            result.setCode(ErrorUtil.INVALID_ACCOUNT);
                             return result;
                         }
                     } else {
@@ -312,7 +312,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                 }
             } else {
                 //记录Log 跟踪数据同步延时情况
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
             }
         } catch (Exception e) {
             logger.error("updateUserInfo Fail,passportId:" + passportIdLog, e);

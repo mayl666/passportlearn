@@ -247,7 +247,7 @@ public class RegManagerImpl implements RegManager {
                     result = insertAccountInfo(account, result, ip);
                     return result;
                 } else {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
                     return result;
                 }
             } else {
@@ -264,7 +264,7 @@ public class RegManagerImpl implements RegManager {
                     }
                 } else {
                     //无此账号
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
                     return result;
                 }
             }

@@ -71,7 +71,7 @@ public class LoginManagerImpl implements LoginManager {
         try {
             String passportId = commonManager.getPassportIdByUsername(username);
             if (Strings.isNullOrEmpty(passportId)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
             if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
@@ -97,7 +97,7 @@ public class LoginManagerImpl implements LoginManager {
         //注册checkuser返回结果为true，表示账号不存在，需要转成登录的结果
         if (result.isSuccess()) {
             result.setSuccess(false);
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            result.setCode(ErrorUtil.INVALID_ACCOUNT);
         }
         return result;
     }

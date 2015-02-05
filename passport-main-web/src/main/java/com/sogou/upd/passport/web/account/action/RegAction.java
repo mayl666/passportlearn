@@ -266,7 +266,7 @@ public class RegAction extends BaseController {
                         break;
                 }
             } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
             }
         } catch (Exception e) {
             logger.error("method[resendActiveMail] send mobile sms error.{}", e);

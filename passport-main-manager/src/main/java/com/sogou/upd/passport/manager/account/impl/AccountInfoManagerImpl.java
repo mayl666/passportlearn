@@ -110,7 +110,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                     }
                 } else {
                     //账号不存在
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
                     return result;
                 }
                 result.setSuccess(true);
@@ -270,7 +270,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             } else if (domain == AccountDomainEnum.SOHU) {
                 setUniqNameAndAvatarResult(result, params.getFields(), nameAndAvatarVO, passportId);
             } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
             result.getModels().put("account", account);
