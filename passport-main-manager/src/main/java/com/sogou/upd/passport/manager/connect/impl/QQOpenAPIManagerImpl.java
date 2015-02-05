@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.manager.connect.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+
 import com.mysql.jdbc.StringUtils;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
@@ -21,8 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +40,10 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
 
     private String QQ_RET_CODE = "0";
 
-    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:80/internal/qq/friends_aesinfo";
+
+    //    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:80/internal/qq/friends_aesinfo";
+    private static final String GET_QQ_FRIENDS_AES_URL = "http://qqfriends.gz.1251021740.clb.myqcloud.com/internal/qq/friends_aesinfo";
+
 
     public static final String TKEY_SECURE_KEY = "adfab231rqwqerq";
 
@@ -57,7 +60,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     }
 
 
-    public String get_qqfriends(String userid, String tkey, String third_appid) throws Exception {
+    public String getQQFriends(String userid, String tkey, String third_appid) throws Exception {
         String cacheKey = buildQQFriendsCacheKey(userid, third_appid);
         String resultVal = dbShardRedisUtils.get(cacheKey);
         if (!Strings.isNullOrEmpty(resultVal)) {
@@ -81,8 +84,6 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
 //            Pair<Integer, String> pair = HttpClientUtil.post(QQ_FRIENDS_URL, inParammap);
 //            Map map = JacksonJsonMapperUtil.getMapper().readValue(pair.getRight(), Map.class);
 
-            logger.warn("SGHttpClient.executeStr time : " + (System.currentTimeMillis() - start));
-
             if (!CollectionUtils.isEmpty(map)) {
                 if (map.containsKey("ret")) {
                     String ret = String.valueOf(map.get("ret"));
@@ -94,21 +95,22 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                             dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.TIME_ONEDAY);
                         }
                     } else {
-                        logger.error("返回值错误 ：" + map.toString());
+
+                        logger.error("return value error ：" + map.toString());
                         if (map.containsKey("msg")) {
                             result.setMessage(String.valueOf(map.get("msg")));
                         }
                         result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                     }
                 } else {
-                    logger.error("返回值错误 ：" + map.toString());
+                    logger.error("return value error ：" + map.toString());
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
                 }
 //                map = changeResult(map, third_appid);
                 //调用返回
 //                resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
             } else {
-                logger.error("返回值错误：无返回值！");
+                logger.error("return value error,no value！");
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
             }
             return result.toString();
@@ -119,14 +121,13 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     public List<Map<String, Object>> changePassportId(List<Map<String, Object>> list, String third_appid) {
         if (!CollectionUtils.isEmpty(list)) {
             List<Map<String, Object>> removeList = new ArrayList<Map<String, Object>>();
-
             for (int i = 0; i < list.size(); i++) {
                 Map map = list.get(i);
                 String openid = String.valueOf(map.get("openid"));
                 if (!StringUtils.isNullOrEmpty(openid)) {
                     Result result = sgConnectApiManager.getConnectRelation(openid, AccountTypeEnum.QQ.getValue(), third_appid);
                     if (!result.isSuccess()) {
-                        logger.error("connectRelation中没有此openid,去除此记录返回，openid : " + openid);
+                        logger.error("connectRelation has no this openid,remove，openid : " + openid);
                         removeList.add(map);
                         continue;
                     } else {
@@ -136,7 +137,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                     }
                 }
             }
-            logger.warn("腾讯返回好友总数：" + list.size() + "已去除好友总数 ：" + removeList.size());
+            logger.warn("tencent return size：" + list.size() + "removed size ：" + removeList.size());
             list.removeAll(removeList);
         }
         return list;

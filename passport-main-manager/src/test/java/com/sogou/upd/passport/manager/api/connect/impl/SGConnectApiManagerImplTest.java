@@ -65,19 +65,9 @@ public class SGConnectApiManagerImplTest extends BaseTest {
 
     }
 
-
     @Test
-    public void testObtainTKey() throws Exception {
-        String pid ="C2A6E7174FC56A79F8BE08697E5F1EC1@qq.sohu.com";
-
-//        String pid = "056B15F99925016562B24E2070AE7AF5@qq.sohu.com";
-        int clientId = 2003;
-        Result result = sgConnectApiManager.obtainTKey(pid, clientId);
-        if (result.isSuccess()) {
-            System.out.println("t_key  " + result.getModels().get("tKey"));
-        }
-
+    public void testObtainTKey() {
+        Result result = sgConnectApiManager.obtainTKey("C7208AF09F5A15632FC1788F6735908F@qq.sohu.com", 1024);
+        System.out.println(result.getModels().get("tKey"));
     }
-
-
 }

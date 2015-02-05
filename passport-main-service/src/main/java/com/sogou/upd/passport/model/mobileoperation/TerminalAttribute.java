@@ -125,11 +125,11 @@ public class TerminalAttribute {
     }
 
     public String toHiveString() {
-        return StringUtil.defaultIfEmpty(op, "-") + "\t" + StringUtil.defaultIfEmpty(pm, "-") + "\t" +
-                StringUtil.defaultIfEmpty(sdkVersion, "-") + "\t" + StringUtil.defaultIfEmpty(platform, "-") + "\t" +
-                StringUtil.defaultIfEmpty(platformV, "-") + "\t" + StringUtil.defaultIfEmpty(resolution, "-") + "\t" +
-                StringUtil.defaultIfEmpty(udid, "-") + "\t" + StringUtil.defaultIfEmpty(passportSdkV, "-") + "\t" +
-                StringUtil.defaultIfEmpty(appV, "-") + "\t" + StringUtil.defaultIfEmpty(network, "-");
+        return StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(op, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(pm, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(sdkVersion, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(platform, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(platformV, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(resolution, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(udid, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(passportSdkV, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(appV, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(network, "-"), "\t", "_");
     }
 
 }

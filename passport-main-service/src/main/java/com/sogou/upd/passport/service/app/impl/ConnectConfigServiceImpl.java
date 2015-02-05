@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.service.app.impl;
 
 import com.google.common.base.Strings;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
@@ -9,12 +12,14 @@ import com.sogou.upd.passport.dao.app.ConnectConfigDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,11 +33,33 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
 
     private Logger logger = LoggerFactory.getLogger(ConnectConfigService.class);
     private static final String CACHE_PREFIX_CLIENTID = CacheConstant.CACHE_PREFIX_CLIENTID_CONNECTCONFIG; //clientid与connectConfig映射
+    private static LoadingCache<String, ConnectConfig> connectCacheByAppId = null;
+    private static LoadingCache<String, ConnectConfig> connectCacheByClientId = null;
 
     @Autowired
     private ConnectConfigDAO connectConfigDAO;
     @Inject
     private RedisUtils redisUtils;
+
+    public ConnectConfigServiceImpl() {
+        connectCacheByAppId = CacheBuilder.newBuilder()
+                .refreshAfterWrite(CacheConstant.CACHE_REFRESH_INTERVAL, TimeUnit.MINUTES)
+                .build(new CacheLoader<String, ConnectConfig>() {
+                    @Override
+                    public ConnectConfig load(String key) throws Exception {
+                        return loadConnectByAppId(key);
+                    }
+                });
+
+        connectCacheByClientId = CacheBuilder.newBuilder()
+                .refreshAfterWrite(CacheConstant.CACHE_REFRESH_INTERVAL, TimeUnit.MINUTES)
+                .build(new CacheLoader<String, ConnectConfig>() {
+                    @Override
+                    public ConnectConfig load(String key) throws Exception {
+                        return loadConnectByClientId(key);
+                    }
+                });
+    }
 
     @Override
     public ConnectConfig queryDefaultConnectConfig(int provider) throws ServiceException {
@@ -42,11 +69,55 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
     @Override
     public ConnectConfig queryConnectConfigByAppId(String appId, int provider) throws ServiceException {
         ConnectConfig connectConfig = null;
-        try {
-            if(Strings.isNullOrEmpty(appId)){
+        String cacheKey = buildConnectConfigCacheKeyByAppId(appId, provider);
+        if (connectCacheByAppId != null) {
+
+            if (Strings.isNullOrEmpty(appId)) {
                 return queryConnectConfigByClientId(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
             }
-            String cacheKey = buildConnectConfigCacheKeyByAppId(appId, provider);
+
+            try {
+                connectConfig = connectCacheByAppId.get(cacheKey);
+            } catch (Exception e) {
+                logger.warn("[App] queryConnectConfigByAppId.{}", e);
+                return null;
+            }
+
+        } else {
+            logger.error("connectCacheByClientId initial,failed");
+            connectConfig = loadConnectByAppId(cacheKey);
+        }
+
+        return connectConfig;
+    }
+
+    @Override
+    public ConnectConfig queryConnectConfigByClientId(int clientId, int provider) throws ServiceException {
+        ConnectConfig connectConfig = null;
+        String cacheKey = buildConnectConfigCacheKey(clientId, provider);
+        if (connectCacheByClientId != null) {
+            try {
+                connectConfig = connectCacheByClientId.get(cacheKey);
+            } catch (Exception e) {
+                logger.warn("[App] queryConnectConfigByClientId.{}", e);
+                return null;
+            }
+        } else {
+            logger.error("connectCacheByClientId initial,failed");
+            connectConfig = loadConnectByClientId(cacheKey);
+        }
+        return connectConfig;
+    }
+
+    public ConnectConfig loadConnectByAppId(String cacheKey) throws ServiceException {
+        ConnectConfig connectConfig = null;
+        String[] keyArrays = StringUtils.split(cacheKey, "_");
+        String appId = keyArrays[1];
+        int provider = Integer.parseInt(keyArrays[2]);
+        try {
+            if (Strings.isNullOrEmpty(appId)) {
+                return queryConnectConfigByClientId(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
+            }
             //缓存根据clientId读取ConnectConfig
             connectConfig = redisUtils.getObject(cacheKey, ConnectConfig.class);
             if (connectConfig == null) {
@@ -57,17 +128,18 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
                 }
             }
         } catch (Exception e) {
-            logger.error("[App] service method queryAppConfigByClientId error.{}", e);
+            logger.error("[App] service method loadConnectByAppId error.{}", e);
             throw new ServiceException(e);
         }
         return connectConfig;
     }
 
-    @Override
-    public ConnectConfig queryConnectConfigByClientId(int clientId, int provider) throws ServiceException {
+    public ConnectConfig loadConnectByClientId(String cacheKey) throws ServiceException {
         ConnectConfig connectConfig = null;
+        String[] keyArray = StringUtils.split(cacheKey, "_");
+        int clientId = Integer.parseInt(keyArray[1]);
+        int provider = Integer.parseInt(keyArray[2]);
         try {
-            String cacheKey = buildConnectConfigCacheKey(clientId, provider);
             //缓存根据clientId读取ConnectConfig
             connectConfig = redisUtils.getObject(cacheKey, ConnectConfig.class);
             if (connectConfig == null) {
@@ -78,7 +150,7 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
                 }
             }
         } catch (Exception e) {
-            logger.error("[App] service method queryAppConfigByClientId error.{}", e);
+            logger.error("[App] service method loadConnectByClientId error.{}", e);
             throw new ServiceException(e);
         }
         return connectConfig;

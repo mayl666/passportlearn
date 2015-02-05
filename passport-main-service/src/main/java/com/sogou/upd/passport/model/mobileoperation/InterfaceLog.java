@@ -74,9 +74,10 @@ public class InterfaceLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return StringUtil.defaultIfEmpty(client_id, "-") + "\t" + StringUtil.defaultIfEmpty(uri, "-") + "\t" +
-                StringUtil.defaultIfEmpty(start_time, "-") + "\t" + StringUtil.defaultIfEmpty(response_time, "-") + "\t" +
-                StringUtil.defaultIfEmpty(passport_code, "-") + "\t" + StringUtil.defaultIfEmpty(http_code, "-");
+        return StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(client_id, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(uri, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(start_time, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(response_time, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(passport_code, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(http_code, "-"), "\t", "_");
     }
+
 }
 

@@ -56,7 +56,7 @@ public class ProductLog extends MobileBaseLog {
 
     @Override
     public String toHiveString() {
-        return StringUtil.defaultIfEmpty(client_id, "-") + "\t" + StringUtil.defaultIfEmpty(page, "-") + "\t" +
-                StringUtil.defaultIfEmpty(event_id, "-") + "\t" + StringUtil.defaultIfEmpty(time, "-");
+        return StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(client_id, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(page, "-"), "\t", "_") + "\t" +
+                StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(event_id, "-"), "\t", "_") + "\t" + StringUtil.exchangeIfContains(StringUtil.defaultIfEmpty(time, "-"), "\t", "_");
     }
 }

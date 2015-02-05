@@ -132,8 +132,8 @@
     </bean>
     <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">
         <constructor-arg name="monitor" ref="monitor"/>
-        <constructor-arg name="cachePath" value="${cacheRedisZkPath}"/>
-        <constructor-arg name="tokenPath" value="${tokenRedisZkPath}"/>
+        <constructor-arg name="cachePath" value="/sogou_passport/redis_info/redis_node/cache"/>
+        <constructor-arg name="tokenPath" value="/sogou_passport/redis_info/redis_node/token"/>
         <constructor-arg name="tokenConnectionFactory" ref="tokenConnectionFactory"/>
         <constructor-arg name="cacheConnectionFactory" ref="cacheConnectionFactory"/>
     </bean>
