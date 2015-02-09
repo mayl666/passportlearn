@@ -120,7 +120,7 @@ public class SecureManagerImpl implements SecureManager {
         try {
             Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
             String mobile = account.getMobile();
@@ -142,7 +142,7 @@ public class SecureManagerImpl implements SecureManager {
         try {
             Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
             String mobile = account.getMobile();
@@ -588,7 +588,7 @@ public class SecureManagerImpl implements SecureManager {
             }
             Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
             // 修改绑定手机，checkCode为secureCode  TODO 不知道scode是干嘛用的
@@ -684,7 +684,7 @@ public class SecureManagerImpl implements SecureManager {
         try {
             Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
             String mobile = account.getMobile();

@@ -81,8 +81,6 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_PHONEERROR = "20203";
     // 一分钟内只能发一条短信
     public static final String ERR_CODE_ACCOUNT_MINUTELIMIT = "20204";
-    // 账号不存在
-    public static final String ERR_CODE_ACCOUNT_NOTHASACCOUNT = "20205";
     // 密码错误
     public static final String ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR = "20206";
     //手机绑定的账号不存在
@@ -361,7 +359,6 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CANTSENTSMS, "该手机号当日短信发送次数超过上限");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONEERROR, "呃，地球上没有这个手机号");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_MINUTELIMIT, "一分钟内只能发一条短信");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTHASACCOUNT, "账号不存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR, "密码错误");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_BIND_NOTEXIST, "手机号绑定的账号不存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SMSCODE, "验证码错误或已过期");

@@ -63,7 +63,7 @@ public class ProxyErrorUtil extends ErrorUtil {
         SHPPERRCODE_SGPPERRCODE_MAP.put("wapgetuserid.6", SYSTEM_UNKNOWN_EXCEPTION);//查询失败
 
         //getuserinfo 获取用户信息
-        SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.3", ERR_CODE_ACCOUNT_NOTHASACCOUNT);//用户名不存在（如果是根据昵称查询，没有查询到也是返回3）
+        SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.3", INVALID_ACCOUNT);//用户名不存在（如果是根据昵称查询，没有查询到也是返回3）
         SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.4", ERR_CODE_ACCOUNT_PHONE_NOBIND);//手机号码没有绑定
         SHPPERRCODE_SGPPERRCODE_MAP.put("getuserinfo.6", SYSTEM_UNKNOWN_EXCEPTION);//取得用户信息失败
 

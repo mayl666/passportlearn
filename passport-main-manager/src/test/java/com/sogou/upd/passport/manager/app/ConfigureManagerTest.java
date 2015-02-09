@@ -14,7 +14,7 @@ import org.junit.Test;
  * Time: 下午2:35
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
+//@Ignore
 public class ConfigureManagerTest extends TestCase {
 
     @Test
@@ -26,7 +26,7 @@ public class ConfigureManagerTest extends TestCase {
     @Test
     public void testGeneratorClientSecret() throws Exception {
         // 客户端密钥
-        int appid = 2023;
+        int appid = 3009;
         String randomClient = RandomStringUtils.randomAlphanumeric(10);
         long timestamp = System.currentTimeMillis();
         String baseStrClient = appid + "|" + timestamp + "|" + randomClient;

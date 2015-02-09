@@ -48,7 +48,7 @@ public class BindApiManagerTest extends BaseTest {
     public void testBindMobile() {
         //账号不存在
         String accountNotExistStr = "{\"data\":{},\"statusText\":\"账号不存在\",\"status\":\"20205\"}";
-        Result accountNotExistExpectedResult = new APIResultSupport(false, ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+        Result accountNotExistExpectedResult = new APIResultSupport(false, ErrorUtil.INVALID_ACCOUNT);
         Account account = accountService.queryNormalAccount("shopengzhi@sogou.com");
         Result accountNotExistActualResult = bindApiManager.bindMobile("shopengzhi@sogou.com", new_bind_mobile,account);
         Assert.assertEquals(accountNotExistExpectedResult.toString(), accountNotExistActualResult.toString());
@@ -78,7 +78,7 @@ public class BindApiManagerTest extends BaseTest {
     public void testModifyBindMobile() {
         //账号不存在
         String accountNotExistStr = "{\"data\":{},\"statusText\":\"账号不存在\",\"status\":\"20205\"}";
-        Result accountNotExistExpectedResult = new APIResultSupport(false, ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+        Result accountNotExistExpectedResult = new APIResultSupport(false, ErrorUtil.INVALID_ACCOUNT);
         Result accountNotExistActualResult = bindApiManager.modifyBindMobile("shopengzhi@sogou.com", new_bind_mobile);
         Assert.assertEquals(accountNotExistExpectedResult.toString(), accountNotExistActualResult.toString());
         //手机号已绑定或已注册

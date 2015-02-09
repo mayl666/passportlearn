@@ -73,7 +73,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                     result.setSuccess(true);
                 }
             } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
         } catch (Exception e) {
@@ -229,7 +229,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
         try {
             Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
             String mobile = account.getMobile();
@@ -270,7 +270,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             }
             Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
             if (!accountService.resetPassword(account, password, true)) {

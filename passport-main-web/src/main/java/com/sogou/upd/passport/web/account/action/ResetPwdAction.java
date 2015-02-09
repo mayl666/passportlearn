@@ -114,7 +114,7 @@ public class ResetPwdAction extends BaseController {
                 case THIRD:
                     return "redirect:/web/findpwd";
                 case UNKNOWN:
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
                     model.addAttribute("data", result.toString());
                     return "/recover/index";
             }
@@ -137,7 +137,7 @@ public class ResetPwdAction extends BaseController {
             if (result.isSuccess()) {
                 result.setSuccess(false);
                 result.setDefaultModel("userid", username);
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 model.addAttribute("data", result.toString());
                 return "/recover/index";
@@ -432,7 +432,7 @@ public class ResetPwdAction extends BaseController {
             }
             result = registerApiManager.checkUser(passportId, Integer.parseInt(params.getClient_id()));
             if (result.isSuccess()) {  //账号不存在
-                result = buildErrorResult(result, params, null, ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result = buildErrorResult(result, params, null, ErrorUtil.INVALID_ACCOUNT);
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }

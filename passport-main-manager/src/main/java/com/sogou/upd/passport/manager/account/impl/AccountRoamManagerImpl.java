@@ -61,7 +61,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
     public Result createRoamKey(String sLoginPassportId) {
         Result result = new APIResultSupport(false);
         if (Strings.isNullOrEmpty(sLoginPassportId)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            result.setCode(ErrorUtil.INVALID_ACCOUNT);
             return result;
         }
         String r_key = tokenService.saveWebRoamToken(sLoginPassportId);
@@ -69,7 +69,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             result.setSuccess(true);
             result.setDefaultModel("r_key", r_key);
         } else {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            result.setCode(ErrorUtil.INVALID_ACCOUNT);
         }
         return result;
     }
@@ -101,13 +101,13 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
         // 生成登录标识
         String r_key = tokenService.saveWebRoamToken(userId);
         if (Strings.isNullOrEmpty(r_key)) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            result.setCode(ErrorUtil.INVALID_ACCOUNT);
             return result;
         }
         // 验证账号是否存在，并获取用户信息
         Account account = accountService.queryNormalAccount(userId);
         if (account == null) {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+            result.setCode(ErrorUtil.INVALID_ACCOUNT);
             return result;
         } else {
             String uniqName = accountInfoManager.getUniqName(userId, CommonConstant.SGPP_DEFAULT_CLIENTID, false);
@@ -151,7 +151,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                 //标注 20140806 对于在sg 数据库不存在的第三方账号、为减少对数据的影响、仍然支持种cookie、此处对于不存在的第三方账号后续要处理。
                 if (accountDomain == AccountDomainEnum.SOGOU) {
                     //返回result
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
                     return result;
                 }
                 //若搜狐域账号、初始化一条无密码的搜狐域Account
