@@ -80,14 +80,16 @@ public class ConnectLoginController extends BaseConnectController {
                 return "empty";
             }
             url = oAuthAuthLoginManager.buildConnectLoginURL(connectLoginParams, provider, ip, httpOrHttps, ua);
-            if (isNeedCustom(connectLoginParams, "iframe", "qq", "0", "1044")) {
+            if (isNeedCustom(connectLoginParams, "iframe", "qq")) {
                 //对手机输入法qq登陆进行定制
                 int pos = url.indexOf('?');
-                String arguments = url.substring(pos+1);//获取参数
-                arguments+="&viewPage=frm&autoLogin=0&container=qlogin-frm";
-                System.out.println(arguments);
-                model.addAttribute("arguments",arguments);
-                return "/loginByQQ";
+                String arguments = url.substring(pos + 1);//获取参数
+                if (!Strings.isNullOrEmpty(connectLoginParams.getViewPage()))//viewPage不为空
+                    arguments += "&autoLogin=" + connectLoginParams.getAutoLogin() + "&container=qlogin-frm";
+                else
+                    arguments += "&viewPage=frm&autoLogin=" + connectLoginParams.getAutoLogin() + "&container=qlogin-frm";//
+                model.addAttribute("arguments", arguments);
+                return "login/connectlogin_iframe";
             } else {
                 res.sendRedirect(url);
             }
@@ -95,7 +97,7 @@ public class ConnectLoginController extends BaseConnectController {
         } catch (OAuthProblemException e) {
             url = buildAppErrorRu(type, providerStr, ru, e.getError(), e.getDescription());
             res.sendRedirect(url);
-            return"empty";
+            return "empty";
         } finally {
             //用户登陆log--二期迁移到callback中记录log
             UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), connectLoginParams.getClient_id(), "0", ip);
@@ -133,20 +135,18 @@ public class ConnectLoginController extends BaseConnectController {
     /*
 *根据ConnectLoginParams参数去判断是否有必要进行个性化的地址
 */
-    private boolean isNeedCustom(ConnectLoginParams connectLoginParams, String ConstFormat, String ConstProvider, String ConstAutoLogin, String ConstClient) {
-        if (StringUtil.checkExistNullOrEmpty(ConstFormat, ConstProvider, ConstAutoLogin, ConstClient)) {
+    private boolean isNeedCustom(ConnectLoginParams connectLoginParams, String ConstFormat, String ConstProvider) {
+        if (StringUtil.checkExistNullOrEmpty(ConstFormat, ConstProvider)) {
             return false;
         }
         if (null == connectLoginParams)
             return false;
         String format = connectLoginParams.getFormat();
         String provider = connectLoginParams.getProvider();
-        String autoLogin = connectLoginParams.getAutoLogin();
-        String clientId = connectLoginParams.getClient_id();
-        if (StringUtil.checkExistNullOrEmpty(format, provider, autoLogin, clientId)) {
+        if (StringUtil.checkExistNullOrEmpty(format, provider)) {
             return false;
         }
-        if (format.equals(ConstFormat) && provider.equals(ConstProvider) && autoLogin.equals(ConstAutoLogin) && clientId.equals(ConstClient))
+        if (format.equals(ConstFormat) && provider.equals(ConstProvider))
             return true;
         return false;
     }
