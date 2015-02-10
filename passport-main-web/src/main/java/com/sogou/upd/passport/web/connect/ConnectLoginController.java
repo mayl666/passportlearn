@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -15,6 +16,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +42,7 @@ public class ConnectLoginController extends BaseConnectController {
     private ConfigureManager configureManager;
 
     @RequestMapping(value = "/connect/login")
-    public void authorize(HttpServletRequest req, HttpServletResponse res, ConnectLoginParams connectLoginParams) throws IOException {
+    public String authorize(HttpServletRequest req, HttpServletResponse res, ConnectLoginParams connectLoginParams, Model model) throws IOException {
 
         // 校验参数
         String url;
@@ -56,13 +58,13 @@ public class ConnectLoginController extends BaseConnectController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 url = buildAppErrorRu(type, providerStr, ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
                 res.sendRedirect(url);
-                return;
+                return "empty";
             }
 
             // 如果是输入法客户端且SSL_Protocol包含SSLv3,则QQ登录url重定向到输入法定制页面
             if (isIMEUserAgent(req) && AccountTypeEnum.QQ.toString().equals(providerStr) && isSSLV3(req)) {
                 res.sendRedirect(buildPinyinSSLv3Page(req));
-                return;
+                return "empty";
             }
 
             int provider = AccountTypeEnum.getProvider(providerStr);
@@ -75,15 +77,25 @@ public class ConnectLoginController extends BaseConnectController {
             if (!configureManager.checkAppIsExist(clientId)) {
                 url = buildAppErrorRu(type, providerStr, ru, ErrorUtil.INVALID_CLIENTID, null);
                 res.sendRedirect(url);
-                return;
+                return "empty";
             }
             url = oAuthAuthLoginManager.buildConnectLoginURL(connectLoginParams, provider, ip, httpOrHttps, ua);
-            res.sendRedirect(url);
-            return;
+            if (isNeedCustom(connectLoginParams, "iframe", "qq", "0", "1044")) {
+                //对手机输入法qq登陆进行定制
+                int pos = url.indexOf('?');
+                String arguments = url.substring(pos+1);//获取参数
+                arguments+="&viewPage=frm&autoLogin=0&container=qlogin-frm";
+                System.out.println(arguments);
+                model.addAttribute("arguments",arguments);
+                return "/loginByQQ";
+            } else {
+                res.sendRedirect(url);
+            }
+            return "empty";
         } catch (OAuthProblemException e) {
             url = buildAppErrorRu(type, providerStr, ru, e.getError(), e.getDescription());
             res.sendRedirect(url);
-            return;
+            return"empty";
         } finally {
             //用户登陆log--二期迁移到callback中记录log
             UserOperationLog userOperationLog = new UserOperationLog(providerStr, req.getRequestURI(), connectLoginParams.getClient_id(), "0", ip);
@@ -105,7 +117,7 @@ public class ConnectLoginController extends BaseConnectController {
     private String buildPinyinSSLv3Page(HttpServletRequest req) {
         try {
             String qqLoginUrl = "https://account.sogou.com/connect/login";
-            qqLoginUrl = qqLoginUrl+"?"+req.getQueryString();
+            qqLoginUrl = qqLoginUrl + "?" + req.getQueryString();
             String qqLoginUrlEncode = URLEncoder.encode(qqLoginUrl, CommonConstant.DEFAULT_CHARSET);
             return PINYIN_SSLV3_PAGE + "?url=" + qqLoginUrlEncode;
         } catch (UnsupportedEncodingException e) {
@@ -118,4 +130,24 @@ public class ConnectLoginController extends BaseConnectController {
         return !Strings.isNullOrEmpty(ua) && ua.contains(CommonConstant.SOGOU_IME_UA); //输入法的标识
     }
 
+    /*
+*根据ConnectLoginParams参数去判断是否有必要进行个性化的地址
+*/
+    private boolean isNeedCustom(ConnectLoginParams connectLoginParams, String ConstFormat, String ConstProvider, String ConstAutoLogin, String ConstClient) {
+        if (StringUtil.checkExistNullOrEmpty(ConstFormat, ConstProvider, ConstAutoLogin, ConstClient)) {
+            return false;
+        }
+        if (null == connectLoginParams)
+            return false;
+        String format = connectLoginParams.getFormat();
+        String provider = connectLoginParams.getProvider();
+        String autoLogin = connectLoginParams.getAutoLogin();
+        String clientId = connectLoginParams.getClient_id();
+        if (StringUtil.checkExistNullOrEmpty(format, provider, autoLogin, clientId)) {
+            return false;
+        }
+        if (format.equals(ConstFormat) && provider.equals(ConstProvider) && autoLogin.equals(ConstAutoLogin) && clientId.equals(ConstClient))
+            return true;
+        return false;
+    }
 }
