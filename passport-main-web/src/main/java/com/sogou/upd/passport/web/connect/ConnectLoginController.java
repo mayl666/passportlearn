@@ -84,11 +84,11 @@ public class ConnectLoginController extends BaseConnectController {
                 //对手机输入法qq登陆进行定制
                 int pos = url.indexOf('?');
                 String arguments = url.substring(pos + 1);//获取参数
-                if (!Strings.isNullOrEmpty(connectLoginParams.getViewPage()))//viewPage不为空
-                    arguments += "&autoLogin=" + connectLoginParams.getAutoLogin() + "&container=qlogin-frm";
-                else
-                    arguments += "&viewPage=frm&autoLogin=" + connectLoginParams.getAutoLogin() + "&container=qlogin-frm";//
-                model.addAttribute("arguments", arguments);
+                StringBuilder sb = new StringBuilder(arguments);
+                if (Strings.isNullOrEmpty(connectLoginParams.getViewPage()))
+                    sb.append("&viewPage=frm");
+                sb.append("&autoLogin=").append(connectLoginParams.getAutoLogin()).append("&container=qlogin-frm");
+                model.addAttribute("arguments", sb.toString());
                 return "login/connectlogin_iframe";
             } else {
                 res.sendRedirect(url);
