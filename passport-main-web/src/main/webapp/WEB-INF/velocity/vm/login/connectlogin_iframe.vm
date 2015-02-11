@@ -4,7 +4,7 @@
 <body>
 <script
 data-qloginparams="${arguments}"
-src="http://qzonestyle.gtimg.cn/open/connect/widget/pc/login-frm/qq-login.js"
+src="${srcLink}"
 ></script>
 
 </body>

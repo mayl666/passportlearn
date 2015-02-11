@@ -88,7 +88,12 @@ public class ConnectLoginController extends BaseConnectController {
                 if (Strings.isNullOrEmpty(connectLoginParams.getViewPage()))
                     sb.append("&viewPage=frm");
                 sb.append("&autoLogin=").append(connectLoginParams.getAutoLogin()).append("&container=qlogin-frm");
+
+                String srcLink = "http://qzonestyle.gtimg.cn/open/connect/widget/pc/login-frm/qq-login.js";
+                if(httpOrHttps.equalsIgnoreCase("https"))
+                    srcLink = "https://qzonestyle.gtimg.cn/open/connect/widget/pc/login-frm/qq-login.js";
                 model.addAttribute("arguments", sb.toString());
+                model.addAttribute("srcLink",srcLink);
                 return "login/connectlogin_iframe";
             } else {
                 res.sendRedirect(url);
