@@ -20,7 +20,7 @@ public class FileReader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileReader.class);
 
-    public static void main() throws Exception {
+    public static void main(String[] args) throws Exception {
         Path filePath = Paths.get("D:\\logs\\increase\\increase_1.txt");
         String fileName = "D:\\logs\\increase\\increase_1.txt";
 

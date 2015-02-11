@@ -70,5 +70,4 @@ public class SGConnectApiManagerImplTest extends BaseTest {
         Result result = sgConnectApiManager.obtainTKey("C7208AF09F5A15632FC1788F6735908F@qq.sohu.com", 1024);
         System.out.println(result.getModels().get("tKey"));
     }
-
 }

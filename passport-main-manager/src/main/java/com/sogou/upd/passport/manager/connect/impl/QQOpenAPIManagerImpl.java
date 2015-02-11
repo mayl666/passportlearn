@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.connect.impl;
 
 import com.google.common.base.Strings;
+
 import com.mysql.jdbc.StringUtils;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +40,8 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
 
     private String QQ_RET_CODE = "0";
 
-//    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:80/internal/qq/friends_aesinfo";
+
+    //    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:80/internal/qq/friends_aesinfo";
     private static final String GET_QQ_FRIENDS_AES_URL = "http://qqfriends.gz.1251021740.clb.myqcloud.com/internal/qq/friends_aesinfo";
 
 
@@ -80,6 +83,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
 //            String str = this.send(QQ_FRIENDS_URL,"POST",inParammap,null);
 //            Pair<Integer, String> pair = HttpClientUtil.post(QQ_FRIENDS_URL, inParammap);
 //            Map map = JacksonJsonMapperUtil.getMapper().readValue(pair.getRight(), Map.class);
+
             if (!CollectionUtils.isEmpty(map)) {
                 if (map.containsKey("ret")) {
                     String ret = String.valueOf(map.get("ret"));
@@ -91,6 +95,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                             dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.TIME_ONEDAY);
                         }
                     } else {
+
                         logger.error("return value error ：" + map.toString());
                         if (map.containsKey("msg")) {
                             result.setMessage(String.valueOf(map.get("msg")));
