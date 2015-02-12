@@ -49,7 +49,6 @@ public class ConnectLoginParams {
      *  User: Zhangbangcheng
      */
     private String format;//
-    private String autoLogin;//是否在浏览器已有QQ登录态的情况下，倒计时自动登录 1:要， 0不要
     private String container;//承载登录框iframe的容器。这里头iframe的高度会自动调整改变，默认400x362
 
     @AssertTrue(message = "Client_id不允许为空")
@@ -210,14 +209,6 @@ public class ConnectLoginParams {
 
     public void setFormat(String format) {
         this.format = format;
-    }
-
-    public String getAutoLogin() {
-        return autoLogin;
-    }
-
-    public void setAutoLogin(String autoLogin) {
-        this.autoLogin = autoLogin;
     }
 
     public String getContainer() {

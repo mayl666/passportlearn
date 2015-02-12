@@ -34,7 +34,6 @@ import java.net.URLEncoder;
 public class ConnectLoginController extends BaseConnectController {
 
     private static String PINYIN_SSLV3_PAGE = "http://config.pinyin.sogou.com/api/qqfastlogin/load_failed.php";
-    ;
 
     @Autowired
     private OAuthAuthLoginManager oAuthAuthLoginManager;
@@ -81,14 +80,8 @@ public class ConnectLoginController extends BaseConnectController {
             }
             url = oAuthAuthLoginManager.buildConnectLoginURL(connectLoginParams, provider, ip, httpOrHttps, ua);
             if (isNeedCustom(connectLoginParams, "iframe", "qq")) {
-                //对手机输入法qq登陆进行定制
-                int pos = url.indexOf('?');
-                String arguments = url.substring(pos + 1);//获取参数
-                StringBuilder sb = new StringBuilder(arguments);
-                if (Strings.isNullOrEmpty(connectLoginParams.getViewPage()))
-                    sb.append("&viewPage=frm");
-                sb.append("&autoLogin=").append(connectLoginParams.getAutoLogin()).append("&container=qlogin-frm");
-                model.addAttribute("arguments", sb.toString());
+                String araumentsURL = buildQQIframeArguments(url, connectLoginParams);
+                model.addAttribute("arguments", araumentsURL);
                 return "login/connectlogin_iframe";
             } else {
                 res.sendRedirect(url);
@@ -133,8 +126,8 @@ public class ConnectLoginController extends BaseConnectController {
     }
 
     /*
-*根据ConnectLoginParams参数去判断是否有必要进行个性化的地址
-*/
+    * 根据ConnectLoginParams参数去判断是否有必要进行个性化的地址
+    */
     private boolean isNeedCustom(ConnectLoginParams connectLoginParams, String ConstFormat, String ConstProvider) {
         if (StringUtil.checkExistNullOrEmpty(ConstFormat, ConstProvider)) {
             return false;
@@ -150,4 +143,26 @@ public class ConnectLoginController extends BaseConnectController {
             return true;
         return false;
     }
+
+    /*
+     * 对手机输入法qq登陆进行定制
+     */
+    private String buildQQIframeArguments(String connectLoginURL, ConnectLoginParams connectLoginParams) {
+
+        int pos = connectLoginURL.indexOf('?');
+        String arguments = connectLoginURL.substring(pos + 1);//获取参数
+        StringBuilder sb = new StringBuilder(arguments);
+        if (Strings.isNullOrEmpty(connectLoginParams.getViewPage())) {
+            sb.append("&viewPage=frm");
+        }
+        sb.append("&autoLogin=");
+        if (connectLoginParams.isForcelogin()) {
+            sb.append("1");
+        } else {
+            sb.append("0");
+        }
+        sb.append("&container=qlogin-frm");
+        return sb.toString();
+    }
+
 }
