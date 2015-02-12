@@ -159,9 +159,9 @@ public class ConnectLoginController extends BaseConnectController {
         }
         sb.append("&autoLogin=");
         if (connectLoginParams.isForcelogin()) {
-            sb.append("1");
-        } else {
             sb.append("0");
+        } else {
+            sb.append("1");
         }
         sb.append("&container=qlogin-frm");
         return sb.toString();
