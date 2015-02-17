@@ -70,7 +70,7 @@ public class MappSSOManagerImpl implements MappSSOManager {
             String ssoTicket = mappSSOService.generateTicket(clientId, udid, ssoToken, serverSecret);
 
             //返回结果
-            String verifyResult = ssoTokenEncryped + CommonConstant.SEPARATOR_1;
+            String verifyResult = ssoTokenEncryped + CommonConstant.SEPARATOR_1 + ssoTicket;
             result.setDefaultModel("verify", verifyResult);
             result.setSuccess(true);
             result.setMessage("操作成功");
