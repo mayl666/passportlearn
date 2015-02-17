@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.NotBlank;
  * Time: 下午4:56
  * To change this template use File | Settings | File Templates.
  */
-public class MappCheckSSOAppParams extends MappBaseParams{
+public class MappCheckSSOAppParams extends MappBaseParams {
 
     @NotBlank(message = "package_sgin不允许为空!")
     private String sign;

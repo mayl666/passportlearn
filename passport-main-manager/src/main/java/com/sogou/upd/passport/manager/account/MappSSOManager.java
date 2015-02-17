@@ -10,5 +10,6 @@ import com.sogou.upd.passport.common.result.Result;
  * To change this template use File | Settings | File Templates.
  */
 public interface MappSSOManager {
-    public Result checkAppPackageSign(String packageSign);
+    public Result checkAppPackageSign(int clientId, long ct, String packageSign, String udid);
+
 }

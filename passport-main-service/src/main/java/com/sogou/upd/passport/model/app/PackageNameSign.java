@@ -17,6 +17,15 @@ public class PackageNameSign {
     private String packageSign;
     private Date updateTime;
 
+    public PackageNameSign() {
+
+    }
+
+    public PackageNameSign(String name, String sign) {
+        this.packageName = name;
+        this.packageSign = sign;
+    }
+
     public long getId() {
         return id;
     }

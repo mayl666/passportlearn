@@ -8,14 +8,12 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.MappSSOManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.mobileoperation.TerminalAttribute;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.mapp.MappCheckSSOAppParams;
-import com.sogou.upd.passport.web.account.form.mapp.MappGetUserinfoParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +56,7 @@ public class MappSSOAction extends BaseController {
         int clientId = params.getClient_id();
         String ip = getIp(request);
         String packageSign = params.getSign();
+        long ct = params.getCt();
         String udid = "";
 
         try {
@@ -73,14 +72,14 @@ public class MappSSOAction extends BaseController {
             TerminalAttribute attributeDO = new TerminalAttribute(request);
             udid = attributeDO.getUdid();
             //验证code是否有效
-            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
+            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, ct, params.getCode());
             if (!isVaildCode) {
                 result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
                 return result.toString();
             }
 
             //解析packageSign
-            result = mappSSOManager.checkAppPackageSign(packageSign);
+            result = mappSSOManager.checkAppPackageSign(clientId, ct, packageSign, udid);
 
         } catch (Exception e) {
             logger.error("mapp check SSO APP error," + "udid:" + udid);
@@ -93,7 +92,6 @@ public class MappSSOAction extends BaseController {
         return result.toString();
 
     }
-
 
 
 }

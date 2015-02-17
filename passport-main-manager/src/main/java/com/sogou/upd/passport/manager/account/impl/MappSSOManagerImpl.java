@@ -1,7 +1,18 @@
 package com.sogou.upd.passport.manager.account.impl;
 
+import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.math.AES;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.MappSSOManager;
+import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.model.app.PackageNameSign;
+import com.sogou.upd.passport.service.account.MappSSOService;
+import com.sogou.upd.passport.service.app.AppConfigService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,9 +23,65 @@ import org.springframework.stereotype.Component;
  * To change this template use File | Settings | File Templates.
  */
 @Component
-public class MappSSOManagerImpl implements MappSSOManager{
-    public Result checkAppPackageSign(String packageSign){
-        Result result=null;
+public class MappSSOManagerImpl implements MappSSOManager {
+    private static final Logger logger = LoggerFactory.getLogger(MappSSOManagerImpl.class);
+
+    @Autowired
+    private AppConfigService appConfigService;
+
+    @Autowired
+    private MappSSOService mappSSOService;
+
+    public Result checkAppPackageSign(int clientId, long ct, String packageSignEncrypt, String udid) {
+        Result result = new APIResultSupport(false);
+        try {
+            //解密包签名
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result;
+            }
+
+            String clientSecret = appConfig.getClientSecret();
+            String decryptResult = AES.decryptURLSafeString(packageSignEncrypt, clientSecret);
+
+            //校验解密后的包签名信息
+            PackageNameSign packageNameSign = mappSSOService.baseSSOAppInfoCheck(clientId, ct, decryptResult);
+            if (null == packageNameSign) {
+                logger.warn("baseSSOAppInfoCheck failed");
+                result.setCode(ErrorUtil.ERR_CODE_SSO_APP_CHECK_FAILED);
+                return result;
+            }
+
+            boolean checkSign = mappSSOService.checkSSOPackageSign(packageNameSign);
+            if (!checkSign) {
+                logger.warn("checkSSOPackageSign failed");
+                result.setCode(ErrorUtil.ERR_CODE_SSO_APP_CHECK_FAILED);
+                return result;
+            }
+
+            //生成token，存储，加密
+            String ssoToken = mappSSOService.generateSSOToken(ct, packageNameSign.getPackageName(), udid);
+            mappSSOService.saveSSOTokenToCache(ssoToken);
+            String ssoTokenEncryped = mappSSOService.encryptSSOToken(ssoToken, clientSecret);
+
+            //生成ST
+            String serverSecret = appConfig.getServerSecret();
+            String ssoTicket = mappSSOService.generateTicket(clientId, udid, ssoToken, serverSecret);
+
+            //返回结果
+            String verifyResult = ssoTokenEncryped + CommonConstant.SEPARATOR_1;
+            result.setDefaultModel("verify", verifyResult);
+            result.setSuccess(true);
+            result.setMessage("操作成功");
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            result.setCode(ErrorUtil.ERR_CODE_SSO_APP_CHECK_FAILED);
+            return result;
+
+        }
+
         return result;
     }
 }

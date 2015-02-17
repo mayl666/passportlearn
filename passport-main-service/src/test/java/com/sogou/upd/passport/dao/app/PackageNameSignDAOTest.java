@@ -1,9 +1,7 @@
 package com.sogou.upd.passport.dao.app;
 
 import com.sogou.upd.passport.dao.BaseDAOTest;
-import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.PackageNameSign;
-import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,24 +17,24 @@ public class PackageNameSignDAOTest extends BaseDAOTest {
     private PackageNameSignDAO packageNameSignDAO;
 
     @Test
-    public void testInsertPackageNameSign(){
-        PackageNameSign packageNameSign=new PackageNameSign();
+    public void testInsertPackageNameSign() {
+        PackageNameSign packageNameSign = new PackageNameSign();
         packageNameSign.setClientId(1120);
         packageNameSign.setPackageName("sogou.passport");
         packageNameSign.setPackageSign("abcdefg");
 
-        int num=packageNameSignDAO.insertPackageNameSign(packageNameSign);
-        System.out.println("insert num:"+num);
+        int num = packageNameSignDAO.insertPackageNameSign(packageNameSign);
+        System.out.println("insert num:" + num);
     }
 
     @Test
     public void testGetPackageNameSign() {
         PackageNameSign packageNameSign = packageNameSignDAO.getPackageNameSignByname("sogou.passport");
-        System.out.println("id:"+packageNameSign.getId()
-                            +",clientId:"+packageNameSign.getClientId()
-                            +",packageName:"+packageNameSign.getPackageName()
-                            +",packageSign:"+packageNameSign.getPackageSign()
-                            +",updateTime:"+packageNameSign.getUpdateTime());
+        System.out.println("id:" + packageNameSign.getId()
+                + ",clientId:" + packageNameSign.getClientId()
+                + ",packageName:" + packageNameSign.getPackageName()
+                + ",packageSign:" + packageNameSign.getPackageSign()
+                + ",updateTime:" + packageNameSign.getUpdateTime());
 
     }
 
