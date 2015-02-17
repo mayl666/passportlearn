@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.account.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -83,5 +84,60 @@ public class MappSSOManagerImpl implements MappSSOManager {
         }
 
         return result;
+    }
+
+    @Override
+    public Result swapSgid(int clientId, String stoken) {
+
+        Result result = new APIResultSupport(false);
+        try {
+            AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+            if (appConfig == null) {
+                result.setCode(ErrorUtil.INVALID_CLIENTID);
+                return result;
+            }
+            String serverSecret = appConfig.getServerSecret();
+
+            //解密stoken，获取token
+            String[] paramArray = stoken.split("\\" + CommonConstant.SEPARATOR_1);
+            if (null == paramArray || paramArray.length < 2) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                return result;
+            }
+
+            String appClientInfo = paramArray[0];
+            String serviceTicket = paramArray[1];
+            if (Strings.isNullOrEmpty(appClientInfo) || Strings.isNullOrEmpty(serviceTicket)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                return result;
+            }
+
+            // 解密st，查看redis中是否有token,删除token
+            String token = mappSSOService.checkSSOTicket(serviceTicket, serverSecret);
+            if (Strings.isNullOrEmpty(token)) {
+                result.setCode(ErrorUtil.ERR_CODE_SSO_TOKEN_INVALID);
+                return result;
+            }
+            //-----------------改到这里---------------------------//
+            //用token解密app-client info，获取sgid
+
+            //校验app-client info
+
+            //校验sgid
+
+            //生成新的sgid
+
+            //加密新的sgid
+
+            //返回结果
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            result.setCode(ErrorUtil.ERR_CODE_SSO_FAILED);
+            return result;
+        }
+
+        return result;
+
     }
 }

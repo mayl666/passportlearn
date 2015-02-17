@@ -23,4 +23,10 @@ public interface MappSSOService {
 
     public String generateTicket(int clientId, String udid, String ssoToken, String serverSecret);
 
+    public String checkSSOTicket(String sticket, String serverSecret);
+
+    public boolean checkOldSgid(String appInfo);
+
+    public String generateNewSgid();
+
 }

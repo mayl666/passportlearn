@@ -14,6 +14,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.mapp.MappCheckSSOAppParams;
+import com.sogou.upd.passport.web.account.form.mapp.MappSSOSwapSidParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,51 @@ public class MappSSOAction extends BaseController {
 
         } catch (Exception e) {
             logger.error("mapp check SSO APP error," + "udid:" + udid);
+        } finally {
+            //记录useroperation
+            UserOperationLog userOperationLog = new UserOperationLog(udid, String.valueOf(clientId), result.getCode(), ip);
+            UserOperationLogUtil.log(userOperationLog);
+        }
+
+        return result.toString();
+
+    }
+
+    @RequestMapping(value = "/swapsid", method = RequestMethod.POST)
+    @ResponseBody
+    public String swapsid(HttpServletRequest request, MappSSOSwapSidParams params) throws Exception {
+
+        Result result = new APIResultSupport(false);
+        int clientId = params.getClient_id();
+        String ip = getIp(request);
+        String stoken = params.getStoken();
+        long ct = params.getCt();
+        String udid = "";
+
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+
+            //解析cinfo信息
+            TerminalAttribute attributeDO = new TerminalAttribute(request);
+            udid = attributeDO.getUdid();
+            //验证code是否有效
+            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, ct, params.getCode());
+            if (!isVaildCode) {
+                result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+                return result.toString();
+            }
+
+            //解析packageSign
+            result = mappSSOManager.swapSgid(clientId,stoken);
+
+        } catch (Exception e) {
+            logger.error("mapp SSO swap sgid error," + "udid:" + udid);
         } finally {
             //记录useroperation
             UserOperationLog userOperationLog = new UserOperationLog(udid, String.valueOf(clientId), result.getCode(), ip);

@@ -155,6 +155,51 @@ public class MappSSOServiceImpl implements MappSSOService {
         return ssoTicket;
     }
 
+    @Override
+    //解密st，获取token，验证token，删除token
+    public String checkSSOTicket(String sticket, String serverSecret) {
+        //解密包签名
+        String ssoToken;
+        try {
+            String ticketDecrypt=AES.decryptURLSafeString(sticket,serverSecret);
+            String [] ticketArray=ticketDecrypt.split("\\" + SEPARATOR_1);
+            if(null==ticketArray || ticketArray.length<3){
+                logger.warn("sso ticket decryped wrong format");
+                return null;
+            }
+            //ticket格式为：AES(clientId|udid|ssoToken|)，秘钥为serverSecret
+            ssoToken=ticketArray[2];
+
+            if(Strings.isNullOrEmpty(ssoToken)){
+                logger.warn("sso token is null or empty ");
+                return null;
+            }
+
+            String cacheSSOTokenKey=buildCacheSSOTokenKey(ssoToken);
+            String ssoTokenStored=redisUtils.get(cacheSSOTokenKey);
+            if(null==ssoTokenStored || !ssoToken.equals(ssoTokenStored)){
+                logger.warn("sso token invalid");
+                return null;
+            }
+
+        } catch (Exception e){
+            logger.error("checkSSOTicket fail");
+            throw new ServiceException(e);
+        }
+
+        return ssoToken;
+    }
+
+    @Override
+    public boolean checkOldSgid(String appInfo) {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String generateNewSgid() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 
     public String buildCacheSSOTokenKey(String ssoToken) {
         String cacheSSOTokenKey = CacheConstant.CACHE_PREFIX_SSO_TOKEN_KEY + ssoToken;

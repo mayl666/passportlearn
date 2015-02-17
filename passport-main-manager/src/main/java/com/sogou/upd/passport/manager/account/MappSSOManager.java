@@ -11,5 +11,6 @@ import com.sogou.upd.passport.common.result.Result;
  */
 public interface MappSSOManager {
     public Result checkAppPackageSign(int clientId, long ct, String packageSign, String udid);
+    public Result swapSgid(int clientId,String stoken);
 
 }
