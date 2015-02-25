@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URLEncoder;
 
 /**
  * Created with IntelliJ IDEA.
@@ -152,8 +151,6 @@ public class SSOCookieController extends BaseController {
     private void log(HttpServletRequest request, String passportId, String ru, String resultCode) {
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), "", resultCode, getIp(request));
-        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
-        userOperationLog.putOtherMessage("ru", ru);
         UserOperationLogUtil.log(userOperationLog);
     }
 
