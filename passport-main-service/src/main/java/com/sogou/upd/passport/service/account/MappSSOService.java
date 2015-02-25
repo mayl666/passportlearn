@@ -19,14 +19,15 @@ public interface MappSSOService {
 
     public void saveSSOTokenToCache(String ssoToken);
 
+    public void delSSOToken(String ssoToken);
+
     public String encryptSSOToken(String ssoToken, String clientSecret);
 
     public String generateTicket(int clientId, String udid, String ssoToken, String serverSecret);
 
     public String checkSSOTicket(String sticket, String serverSecret);
 
-    public boolean checkOldSgid(String appInfo);
+    public String getOldSgid(String appInfoEncryped,String token,String udid,int clientId);
 
-    public String generateNewSgid();
 
 }

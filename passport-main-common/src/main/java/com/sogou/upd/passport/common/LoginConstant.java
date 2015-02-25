@@ -13,6 +13,11 @@ public class LoginConstant {
     //用户登陆的信息
     public static final String COOKIE_SGID = "sgid";
 
+    //SSO登录常量
+    public static final String SSO_TOKEN = "token";
+    public static final String SSO_OLD_SID = "oldsgid";
+    public static final String SSO_NEW_SID = "newsid";
+
     //PPINF 的数字签名
     public static final String COOKIE_PPRDIG = "pprdig";
     //passport cookie

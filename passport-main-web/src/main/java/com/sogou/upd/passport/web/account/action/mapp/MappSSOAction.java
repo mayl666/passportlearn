@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.web.account.action.mapp;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.LoginConstant;
+import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -125,7 +127,40 @@ public class MappSSOAction extends BaseController {
             }
 
             //解析packageSign
-            result = mappSSOManager.swapSgid(clientId,stoken);
+            Result getOldSidResult = mappSSOManager.getOldSgid(clientId, stoken, udid);
+            String oldSgid = "";
+            String token = "";
+            if (getOldSidResult.isSuccess()) {
+                oldSgid = (String) getOldSidResult.getModels().get(LoginConstant.SSO_OLD_SID);
+                token = (String) getOldSidResult.getModels().get(LoginConstant.SSO_TOKEN);
+
+            } else {
+                result.setCode(getOldSidResult.getCode());
+                return result.toString();
+            }
+
+            //校验sgid
+            String passportId = "";
+            Result verifySidResult = sessionServerManager.getPassportIdBySgid(oldSgid, ip);
+            if (verifySidResult.isSuccess()) {
+                passportId = (String) verifySidResult.getModels().get(LoginConstant.COOKIE_SGID);
+            } else {
+                result.setCode(ErrorUtil.ERR_CODE_SSO_APP_NOT_LOGIN);
+                return result.toString();
+            }
+
+            //生成、加密新的sgid
+            Result createSidResult = sessionServerManager.createSession(passportId);
+            if (!createSidResult.isSuccess()) {
+                return createSidResult.toString();
+            }
+
+            String newSgid = (String) createSidResult.getModels().get(LoginConstant.COOKIE_SGID);
+            String newSgidEncryped = AES.encryptURLSafeString(newSgid, token);
+            result.setDefaultModel(LoginConstant.SSO_NEW_SID, newSgidEncryped);
+            result.setSuccess(true);
+            result.setMessage("操作成功");
+
 
         } catch (Exception e) {
             logger.error("mapp SSO swap sgid error," + "udid:" + udid);

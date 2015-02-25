@@ -92,16 +92,6 @@ public class MappSSOServiceImpl implements MappSSOService {
     }
 
     @Override
-
-//    //生成token，存储token，并用clientSecret加密后返回
-//    public String produceSSOToken(String packageName, int clientId,String udid,long ct) throws ServiceException{
-//        String ssoToken=generateSSOToken(ct,packageName,udid);
-//        saveSSOTokenToCache(ssoToken);
-//
-//
-//
-//        }
-
     //SSO token格式：MD5(packageName|udid|ct|随机数)
     public String generateSSOToken(long ct, String packageName, String udid) throws ServiceException {
         // 8位随机数
@@ -111,7 +101,7 @@ public class MappSSOServiceImpl implements MappSSOService {
         try {
             ssotoken = Coder.encryptMD5(tokenContent);
         } catch (Exception e) {
-            logger.error("produceSSOToken fail, udid:" + udid + ",package:" + packageName);
+            logger.error("generateSSOToken fail, udid:" + udid + ",package:" + packageName);
             throw new ServiceException(e);
         }
         return ssotoken;
@@ -122,7 +112,18 @@ public class MappSSOServiceImpl implements MappSSOService {
         try {
             redisUtils.setWithinSeconds(cacheSSOTokenKey, ssoToken, DateAndNumTimesConstant.TIME_FIVEMINUTES);
         } catch (Exception e) {
-            logger.error("produceSSOToken fail, key:" + cacheSSOTokenKey);
+            logger.error("saveSSOTokenToCache fail, key:" + cacheSSOTokenKey);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public void delSSOToken(String ssoToken) {
+        String cacheSSOTokenKey = buildCacheSSOTokenKey(ssoToken);
+        try {
+            redisUtils.delete(cacheSSOTokenKey);
+        } catch (Exception e) {
+            logger.error("delSSOToken fail, key:" + cacheSSOTokenKey);
             throw new ServiceException(e);
         }
     }
@@ -161,28 +162,28 @@ public class MappSSOServiceImpl implements MappSSOService {
         //解密包签名
         String ssoToken;
         try {
-            String ticketDecrypt=AES.decryptURLSafeString(sticket,serverSecret);
-            String [] ticketArray=ticketDecrypt.split("\\" + SEPARATOR_1);
-            if(null==ticketArray || ticketArray.length<3){
+            String ticketDecrypt = AES.decryptURLSafeString(sticket, serverSecret);
+            String[] ticketArray = ticketDecrypt.split("\\" + SEPARATOR_1);
+            if (null == ticketArray || ticketArray.length < 3) {
                 logger.warn("sso ticket decryped wrong format");
                 return null;
             }
             //ticket格式为：AES(clientId|udid|ssoToken|)，秘钥为serverSecret
-            ssoToken=ticketArray[2];
+            ssoToken = ticketArray[2];
 
-            if(Strings.isNullOrEmpty(ssoToken)){
+            if (Strings.isNullOrEmpty(ssoToken)) {
                 logger.warn("sso token is null or empty ");
                 return null;
             }
 
-            String cacheSSOTokenKey=buildCacheSSOTokenKey(ssoToken);
-            String ssoTokenStored=redisUtils.get(cacheSSOTokenKey);
-            if(null==ssoTokenStored || !ssoToken.equals(ssoTokenStored)){
+            String cacheSSOTokenKey = buildCacheSSOTokenKey(ssoToken);
+            String ssoTokenStored = redisUtils.get(cacheSSOTokenKey);
+            if (null == ssoTokenStored || !ssoToken.equals(ssoTokenStored)) {
                 logger.warn("sso token invalid");
                 return null;
             }
 
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("checkSSOTicket fail");
             throw new ServiceException(e);
         }
@@ -191,13 +192,35 @@ public class MappSSOServiceImpl implements MappSSOService {
     }
 
     @Override
-    public boolean checkOldSgid(String appInfo) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+    //用token解密appClientInfo，进行基本校验，获取旧登录态
+    public String getOldSgid(String appInfoEncryped, String token, String udid, int clientId) {
 
-    @Override
-    public String generateNewSgid() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        String oldSgid;
+        try {
+            //解密appInfo:AES（clientid+imei+sgidA）
+            String appInfoDecryped = AES.decryptURLSafeString(appInfoEncryped, token);
+            String[] appInfoArray = appInfoDecryped.split("\\" + SEPARATOR_1);
+            if (appInfoArray == null || appInfoArray.length < 3) {
+                logger.warn("sso client info decryped wrong format");
+                return null;
+            }
+
+            int clientIdParam = Integer.parseInt(appInfoArray[0]);
+            String udidParam = appInfoArray[1];
+            oldSgid = appInfoArray[2];
+
+            if (clientIdParam != clientId || udidParam == null || !udidParam.equals(udid)) {
+                logger.warn("sso client info check failed");
+                return null;
+            }
+
+
+        } catch (Exception e) {
+            logger.error("getOldSgid fail");
+            throw new ServiceException(e);
+        }
+        return oldSgid;
+
     }
 
 

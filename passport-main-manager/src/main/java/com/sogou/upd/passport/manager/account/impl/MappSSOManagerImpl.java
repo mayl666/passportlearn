@@ -2,11 +2,13 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.MappSSOManager;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.model.app.PackageNameSign;
 import com.sogou.upd.passport.service.account.MappSSOService;
@@ -32,6 +34,9 @@ public class MappSSOManagerImpl implements MappSSOManager {
 
     @Autowired
     private MappSSOService mappSSOService;
+
+    @Autowired
+    private SessionServerManager sessionServerManager;
 
     public Result checkAppPackageSign(int clientId, long ct, String packageSignEncrypt, String udid) {
         Result result = new APIResultSupport(false);
@@ -87,7 +92,7 @@ public class MappSSOManagerImpl implements MappSSOManager {
     }
 
     @Override
-    public Result swapSgid(int clientId, String stoken) {
+    public Result getOldSgid(int clientId, String stoken, String udid) {
 
         Result result = new APIResultSupport(false);
         try {
@@ -118,18 +123,22 @@ public class MappSSOManagerImpl implements MappSSOManager {
                 result.setCode(ErrorUtil.ERR_CODE_SSO_TOKEN_INVALID);
                 return result;
             }
-            //-----------------改到这里---------------------------//
-            //用token解密app-client info，获取sgid
 
-            //校验app-client info
+            //删除redis中的token，只能用一次
+            mappSSOService.delSSOToken(token);
 
-            //校验sgid
-
-            //生成新的sgid
-
-            //加密新的sgid
+            //用token解密app-client info，校验app-client info,获取sgid
+            String oldSgid = mappSSOService.getOldSgid(appClientInfo, token, udid, clientId);
+            if (Strings.isNullOrEmpty(oldSgid)) {
+                result.setCode(ErrorUtil.ERR_CODE_SSO_APP_CHECK_FAILED);
+                return result;
+            }
 
             //返回结果
+            result.setDefaultModel(LoginConstant.SSO_OLD_SID, oldSgid);
+            result.setDefaultModel(LoginConstant.SSO_TOKEN, token);
+            result.setSuccess(true);
+            result.setMessage("操作成功");
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -140,4 +149,5 @@ public class MappSSOManagerImpl implements MappSSOManager {
         return result;
 
     }
+
 }
