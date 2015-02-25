@@ -81,7 +81,7 @@ public class ConnectLoginController extends BaseConnectController {
             url = oAuthAuthLoginManager.buildConnectLoginURL(connectLoginParams, provider, ip, httpOrHttps, ua);
             if (isNeedCustom(connectLoginParams, "iframe", "qq")) {
                 String araumentsURL = buildQQIframeArguments(url, connectLoginParams);
-                String srcLink = "http://qzonestyle.gtimg.cn/open/connect/widget/pc/login-frm/qq-login.js";
+                String srcLink = "//qzonestyle.gtimg.cn/open/connect/widget/pc/login-frm/qq-login.js";
                 model.addAttribute("arguments", araumentsURL);
                 model.addAttribute("srcLink",srcLink);
                 return "login/connectlogin_iframe";
