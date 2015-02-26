@@ -106,14 +106,14 @@ public class MappSSOManagerImpl implements MappSSOManager {
             //解密stoken，获取token
             String[] paramArray = stoken.split("\\" + CommonConstant.SEPARATOR_1);
             if (null == paramArray || paramArray.length < 2) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setCode(ErrorUtil.ERR_CODE_SSO_PARAM_INVALID);
                 return result;
             }
 
             String appClientInfo = paramArray[0];
             String serviceTicket = paramArray[1];
             if (Strings.isNullOrEmpty(appClientInfo) || Strings.isNullOrEmpty(serviceTicket)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setCode(ErrorUtil.ERR_CODE_SSO_PARAM_INVALID);
                 return result;
             }
 

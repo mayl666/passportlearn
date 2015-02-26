@@ -175,6 +175,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_SSO_FAILED = "20265";
     //SSO TOKEN无效
     public static final String ERR_CODE_SSO_TOKEN_INVALID = "20266";
+    //SSO参数解析错误
+    public static final String ERR_CODE_SSO_PARAM_INVALID = "20267";
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -418,6 +420,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_DEVICE_INVALID, "设备非法访问");
         ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_FAILED, "快速登录失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_TOKEN_INVALID, "快速登录令牌无效");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_PARAM_INVALID, "快速登录参数解析失败");
 
 
         // acount secure info
