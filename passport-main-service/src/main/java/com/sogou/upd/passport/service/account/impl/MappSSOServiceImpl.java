@@ -209,12 +209,15 @@ public class MappSSOServiceImpl implements MappSSOService {
             String udidParam = appInfoArray[1];
             oldSgid = appInfoArray[2];
 
-            if (clientIdParam != clientId || udidParam == null || !udidParam.equals(udid)) {
-                logger.warn("sso client info check failed");
+            if (clientIdParam != clientId) {
+                logger.warn("sso clientid check failed");
                 return null;
             }
 
-
+            if ((udid == null && !udidParam.equals("null")) || (!udidParam.equals(udid))) {
+                logger.warn("sso client udid check failed");
+                return null;
+            }
         } catch (Exception e) {
             logger.error("getOldSgid fail");
             throw new ServiceException(e);
