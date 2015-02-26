@@ -143,7 +143,7 @@ public class MappSSOAction extends BaseController {
             String passportId = "";
             Result verifySidResult = sessionServerManager.getPassportIdBySgid(oldSgid, ip);
             if (verifySidResult.isSuccess()) {
-                passportId = (String) verifySidResult.getModels().get(LoginConstant.COOKIE_SGID);
+                passportId = (String) verifySidResult.getModels().get("passport_id");
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_SSO_APP_NOT_LOGIN);
                 return result.toString();
