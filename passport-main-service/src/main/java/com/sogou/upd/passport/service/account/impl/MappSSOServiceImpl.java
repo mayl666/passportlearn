@@ -214,13 +214,13 @@ public class MappSSOServiceImpl implements MappSSOService {
                 return null;
             }
 
-            if(udid==null){
-                if(!udidParam.equals("null")){
+            if (udid == null) {
+                if (!udidParam.equals("null")) {
                     logger.warn("sso udid check failed");
                     return null;
                 }
-            }   else{
-                if(!udid.equals(udidParam)){
+            } else {
+                if (!udid.equals(udidParam)) {
                     logger.warn("sso udid check failed");
                     return null;
                 }
