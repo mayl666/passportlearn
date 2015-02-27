@@ -184,7 +184,7 @@ public class MappSSOServiceImpl implements MappSSOService {
             }
 
         } catch (Exception e) {
-            logger.error("checkSSOTicket fail");
+            logger.error("checkSSOTicket fail",e);
             return null;
         }
 
