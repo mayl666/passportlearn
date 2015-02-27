@@ -17,6 +17,7 @@ public class LoginConstant {
     public static final String SSO_TOKEN = "token";
     public static final String SSO_OLD_SID = "oldsgid";
     public static final String SSO_NEW_SID = "newsid";
+    public static final String SSO_VOUCHER = "voucher";
 
     //PPINF 的数字签名
     public static final String COOKIE_PPRDIG = "pprdig";

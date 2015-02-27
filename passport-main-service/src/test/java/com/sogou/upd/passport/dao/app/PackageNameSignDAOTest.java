@@ -34,7 +34,9 @@ public class PackageNameSignDAOTest extends BaseDAOTest {
                 + ",clientId:" + packageNameSign.getClientId()
                 + ",packageName:" + packageNameSign.getPackageName()
                 + ",packageSign:" + packageNameSign.getPackageSign()
-                + ",updateTime:" + packageNameSign.getUpdateTime());
+                + ",updateTime:" + packageNameSign.getUpdateTime()
+                + ",createTime:" + packageNameSign.getCreateTime()
+        );
 
     }
 

@@ -110,7 +110,7 @@ public class MappSSOServiceImpl implements MappSSOService {
     public void saveSSOTokenToCache(String ssoToken) {
         String cacheSSOTokenKey = buildCacheSSOTokenKey(ssoToken);
         try {
-            redisUtils.setWithinSeconds(cacheSSOTokenKey, ssoToken, DateAndNumTimesConstant.TIME_FIVEMINUTES);
+            redisUtils.setWithinSeconds(cacheSSOTokenKey, CacheConstant.CACHE_SSO_TOKEN_VALUE, DateAndNumTimesConstant.HALF_HOUR_INSECONDS);
         } catch (Exception e) {
             logger.error("saveSSOTokenToCache fail, key:" + cacheSSOTokenKey);
             throw new ServiceException(e);
@@ -142,9 +142,10 @@ public class MappSSOServiceImpl implements MappSSOService {
     }
 
     @Override
-    //验证包签名后，生成ticket，格式为：AES(clientId|udid|ssoToken|)，秘钥为serverSecret
+    //验证包签名后，生成ticket，格式为：AES(clientId|udid|ssoToken|timestamp)，秘钥为serverSecret
     public String generateTicket(int clientId, String udid, String ssoToken, String serverSecret) {
-        String ticketContent = clientId + SEPARATOR_1 + udid + SEPARATOR_1 + ssoToken;
+        long ct = System.currentTimeMillis();
+        String ticketContent = clientId + SEPARATOR_1 + udid + SEPARATOR_1 + ssoToken + SEPARATOR_1 + ct;
         String ssoTicket;
         try {
             ssoTicket = AES.encryptURLSafeString(ticketContent, serverSecret);
@@ -164,11 +165,11 @@ public class MappSSOServiceImpl implements MappSSOService {
         try {
             String ticketDecrypt = AES.decryptURLSafeString(sticket, serverSecret);
             String[] ticketArray = ticketDecrypt.split("\\" + SEPARATOR_1);
-            if (null == ticketArray || ticketArray.length < 3) {
+            if (null == ticketArray || ticketArray.length < 4) {
                 logger.warn("sso ticket decryped wrong format");
                 return null;
             }
-            //ticket格式为：AES(clientId|udid|ssoToken|)，秘钥为serverSecret
+            //ticket格式为：AES(clientId|udid|ssoToken|timestamp)，秘钥为serverSecret
             ssoToken = ticketArray[2];
 
             if (Strings.isNullOrEmpty(ssoToken)) {
@@ -178,13 +179,13 @@ public class MappSSOServiceImpl implements MappSSOService {
 
             String cacheSSOTokenKey = buildCacheSSOTokenKey(ssoToken);
             String ssoTokenStored = redisUtils.get(cacheSSOTokenKey);
-            if (null == ssoTokenStored || !ssoToken.equals(ssoTokenStored)) {
+            if (null == ssoTokenStored) {
                 logger.warn("sso token invalid");
                 return null;
             }
 
         } catch (Exception e) {
-            logger.error("checkSSOTicket fail",e);
+            logger.error("checkSSOTicket fail", e);
             return null;
         }
 
@@ -227,8 +228,8 @@ public class MappSSOServiceImpl implements MappSSOService {
             }
 
         } catch (Exception e) {
-            logger.error("getOldSgid fail");
-            throw new ServiceException(e);
+            logger.error("getOldSgid fail", e);
+            return null;
         }
         return oldSgid;
 

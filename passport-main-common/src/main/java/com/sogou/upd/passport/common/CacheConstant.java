@@ -140,4 +140,5 @@ public class CacheConstant {
     /*=================包签名相关缓存常量===================================*/
     public static final String CACHE_PREFIX_PACKAGENAME_PACKAGEINFO = "SP.PACKAGENAME:PACKAGEINFO_";//包名与包签名信息映射
     public static final String CACHE_PREFIX_SSO_TOKEN_KEY = "SP.SSOTOKEN:VALUE_";
+    public static final String CACHE_SSO_TOKEN_VALUE = "0";
 }

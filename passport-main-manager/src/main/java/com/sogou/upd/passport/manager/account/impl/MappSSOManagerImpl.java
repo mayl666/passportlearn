@@ -77,7 +77,7 @@ public class MappSSOManagerImpl implements MappSSOManager {
 
             //返回结果
             String verifyResult = ssoTokenEncryped + CommonConstant.SEPARATOR_1 + ssoTicket;
-            result.setDefaultModel("verify", verifyResult);
+            result.setDefaultModel(LoginConstant.SSO_VOUCHER, verifyResult);
             result.setSuccess(true);
             result.setMessage("操作成功");
 

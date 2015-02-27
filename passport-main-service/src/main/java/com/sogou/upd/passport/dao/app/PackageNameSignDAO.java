@@ -21,17 +21,17 @@ public interface PackageNameSignDAO {
     /**
      * 所有字段列表
      */
-    String ALL_FIELD = " id, client_id, package_name, package_sign, update_time ";
+    String ALL_FIELD = " id, client_id, package_name, package_sign, update_time ,create_time";
 
     /**
      * 值列表
      */
-    String VALUE_FIELD = " :packageNameSign.id, :packageNameSign.clientId, :packageNameSign.packageName, :packageNameSign.packageSign, :packageNameSign.updateTime ";
+    String VALUE_FIELD = " :packageNameSign.id, :packageNameSign.clientId, :packageNameSign.packageName, :packageNameSign.packageSign, :packageNameSign.updateTime,:packageNameSign.createTime";
 
     /**
      * 修改字段列表
      */
-    String UPDATE_FIELD = " client_id = :packageNameSign.clientId, package_name = :packageNameSign.packageName, package_sign = :packageNameSign.packageSign, update_time = :packageNameSign.updateTime ";
+    String UPDATE_FIELD = " client_id = :packageNameSign.clientId, package_name = :packageNameSign.packageName, package_sign = :packageNameSign.packageSign, update_time = :packageNameSign.updateTime ,create_time=:packageNameSign.createTime";
 
     /**
      * 根据包名获取PackageSign对象

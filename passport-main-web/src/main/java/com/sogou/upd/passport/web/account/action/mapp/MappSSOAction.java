@@ -74,12 +74,6 @@ public class MappSSOAction extends BaseController {
             //解析cinfo信息
             TerminalAttribute attributeDO = new TerminalAttribute(request);
             udid = attributeDO.getUdid();
-            //验证code是否有效
-            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, ct, params.getCode());
-            if (!isVaildCode) {
-                result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
-                return result.toString();
-            }
 
             //解析packageSign
             result = mappSSOManager.checkAppPackageSign(clientId, ct, packageSign, udid);
@@ -119,12 +113,6 @@ public class MappSSOAction extends BaseController {
             //解析cinfo信息
             TerminalAttribute attributeDO = new TerminalAttribute(request);
             udid = attributeDO.getUdid();
-            //验证code是否有效
-            boolean isVaildCode = checkManager.checkMappCode(udid, clientId, ct, params.getCode());
-            if (!isVaildCode) {
-                result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
-                return result.toString();
-            }
 
             //解析packageSign
             Result getOldSidResult = mappSSOManager.getOldSgid(clientId, stoken, udid);
