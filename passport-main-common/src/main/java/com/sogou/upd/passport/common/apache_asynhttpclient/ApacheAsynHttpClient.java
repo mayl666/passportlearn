@@ -26,7 +26,11 @@ import java.util.concurrent.Future;
  */
 public class ApacheAsynHttpClient {
 
-    protected static final CloseableHttpAsyncClient  httpClient = HttpAsyncClients.createDefault();
+    protected static final CloseableHttpAsyncClient httpClient = HttpAsyncClients.createDefault();
+
+    static {
+        httpClient.start();
+    }
 
     /**
      * http返回成功的code
@@ -87,23 +91,23 @@ public class ApacheAsynHttpClient {
             throw new NullPointerException("requestModel 不能为空");
         }
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
-        InputStream in=null;
+        InputStream in = null;
         try {
-            Future<HttpResponse> future = httpClient.execute(httpRequest ,null);
-            in=future.get().getEntity().getContent();
+            Future<HttpResponse> future = httpClient.execute(httpRequest, null);
+            in = future.get().getEntity().getContent();
             int responseCode = future.get().getStatusLine().getStatusCode();
             //302如何处理
             if (responseCode == RESPONSE_SUCCESS_CODE) {
                 return future.get().getEntity();
             }
             String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CHARSET);
-            String result= EntityUtils.toString(future.get().getEntity(),CommonConstant.DEFAULT_CHARSET);
-            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:"+result);
+            String result = EntityUtils.toString(future.get().getEntity(), CommonConstant.DEFAULT_CHARSET);
+            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:" + result);
         } catch (Exception e) {
-            if(in!=null){
-                try{
+            if (in != null) {
+                try {
                     in.close();
-                }catch(IOException ioe){
+                } catch (IOException ioe) {
                 }
             }
             throw new RuntimeException("http request error ", e);
