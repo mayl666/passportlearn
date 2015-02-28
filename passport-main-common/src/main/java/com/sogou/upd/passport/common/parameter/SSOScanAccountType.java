@@ -15,56 +15,64 @@ public enum SSOScanAccountType {
     WEIBO(3, "weibo", "微博"),
     RENREN(4, "renren", "人人"),
     BAIDU(5, "baidu", "百度"),
-    WEIXIN(6,"weixin","微信"),
-    HUAWEI(7,"huawei","华为");
+    WEIXIN(6, "weixin", "微信"),
+    HUAWEI(7, "huawei", "华为");
 
     private int value;
     private String enDescription;
     private String zhDescription;
 
-    SSOScanAccountType(int value,String enDescription,String zhDescription){
-        this.value=value;
-        this.enDescription=enDescription;
-        this.zhDescription=zhDescription;
+    SSOScanAccountType(int value, String enDescription, String zhDescription) {
+        this.value = value;
+        this.enDescription = enDescription;
+        this.zhDescription = zhDescription;
     }
 
-    public static String getSSOScanAccountType(String username){
-        AccountTypeEnum accountType=AccountTypeEnum.getAccountType(username);
-
-         if(accountType==null || accountType==AccountTypeEnum.UNKNOWN){
-             return UNKNOWN.getZhDescription();
-         }
-
-        if(accountType==AccountTypeEnum.EMAIL|| accountType==AccountTypeEnum.PHONE||accountType==AccountTypeEnum.SOGOU
-                ||accountType==AccountTypeEnum.SOHU)  {
-            return SOGOU.getZhDescription();
+    public static String getSSOScanAccountType(String username) {
+        AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(username);
+        if (accountDomain == AccountDomainEnum.UNKNOWN) {
+            return UNKNOWN.getZhDescription();
         }
+        if (accountDomain == AccountDomainEnum.THIRD) {
 
-        if(accountType==AccountTypeEnum.QQ){
-            return QQ.getZhDescription();
+            AccountTypeEnum accountType = AccountTypeEnum.getAccountType(username);
+
+            if (accountType == null || accountType == AccountTypeEnum.UNKNOWN) {
+                return UNKNOWN.getZhDescription();
+            }
+
+            if (accountType == AccountTypeEnum.EMAIL || accountType == AccountTypeEnum.PHONE || accountType == AccountTypeEnum.SOGOU
+                    || accountType == AccountTypeEnum.SOHU) {
+                return SOGOU.getZhDescription();
+            }
+
+            if (accountType == AccountTypeEnum.QQ) {
+                return QQ.getZhDescription();
+            }
+
+            if (accountType == AccountTypeEnum.SINA) {
+                return WEIBO.getZhDescription();
+            }
+
+            if (accountType == AccountTypeEnum.RENREN) {
+                return RENREN.getZhDescription();
+            }
+
+            if (accountType == AccountTypeEnum.BAIDU) {
+                return BAIDU.getZhDescription();
+            }
+
+            if (accountType == AccountTypeEnum.WEIXIN) {
+                return WEIXIN.getZhDescription();
+            }
+
+            if (accountType == AccountTypeEnum.HUAWEI) {
+                return HUAWEI.getZhDescription();
+            }
+
+            return UNKNOWN.getZhDescription();
         }
-
-        if(accountType==AccountTypeEnum.SINA){
-            return WEIBO.getZhDescription();
-        }
-
-        if(accountType==AccountTypeEnum.RENREN){
-            return RENREN.getZhDescription();
-        }
-
-        if(accountType==AccountTypeEnum.BAIDU){
-            return BAIDU.getZhDescription();
-        }
-
-        if(accountType==AccountTypeEnum.WEIXIN){
-            return WEIXIN.getZhDescription();
-        }
-
-        if(accountType==AccountTypeEnum.HUAWEI){
-            return HUAWEI.getZhDescription();
-        }
-
-        return UNKNOWN.getZhDescription();
+        return SOGOU.getZhDescription();
     }
 
     public int getValue() {
