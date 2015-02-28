@@ -43,8 +43,8 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     private String QQ_RET_CODE = "0";
 
 
-    //    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:80/internal/qq/friends_aesinfo";
-    private static final String GET_QQ_FRIENDS_AES_URL = "http://qqfriends.gz.1251021740.clb.myqcloud.com/internal/qq/friends_aesinfo";
+        private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:80/internal/qq/friends_aesinfo";
+//    private static final String GET_QQ_FRIENDS_AES_URL = "http://qqfriends.gz.1251021740.clb.myqcloud.com/internal/qq/friends_aesinfo";
 
 
     public static final String TKEY_SECURE_KEY = "adfab231rqwqerq";
