@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.parameter.SSOScanAccountType;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -104,6 +105,8 @@ public class WapRegAction extends BaseController {
                     result.getModels().put("userid", userid);
                     if (!Strings.isNullOrEmpty(sgid)) {
                         result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                        String ssoScanAcountType= SSOScanAccountType.getSSOScanAccountType(userid);
+                        result.getModels().put(LoginConstant.SSO_ACCOUNT_TYPE,ssoScanAcountType);
                         setSgidCookie(response, sgid);
                     }
                 } else {

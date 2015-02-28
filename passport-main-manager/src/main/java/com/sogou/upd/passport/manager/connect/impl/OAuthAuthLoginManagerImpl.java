@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.SSOScanAccountType;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DateUtil;
@@ -315,6 +316,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         if (!Strings.isNullOrEmpty(sgid)) {
             result.setSuccess(true);
             result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+            String ssoScanAcountType= SSOScanAccountType.getSSOScanAccountType(userId);
+            result.getModels().put(LoginConstant.SSO_ACCOUNT_TYPE,ssoScanAcountType);
             ru = buildWapSuccessRu(ru, sgid);
         } else {
             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId, v);
@@ -469,6 +472,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                     if (!Strings.isNullOrEmpty(sgid)) {
                         result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                        String ssoScanAcountType= SSOScanAccountType.getSSOScanAccountType(passportId);
+                        result.getModels().put(LoginConstant.SSO_ACCOUNT_TYPE,ssoScanAcountType);
                         result.setSuccess(true);
                         result.setMessage("success");
                         removeParam(result);
