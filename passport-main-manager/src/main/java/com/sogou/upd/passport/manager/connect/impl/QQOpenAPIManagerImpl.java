@@ -76,8 +76,8 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
             requestModel.addParam("tKey", tkey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
             long start = System.currentTimeMillis();
-//            String returnVal = SGHttpClient.executeStr(requestModel);
-            String returnVal = ApacheAsynHttpClient.executeStr(requestModel);
+            String returnVal = SGHttpClient.executeStr(requestModel);
+//            String returnVal = ApacheAsynHttpClient.executeStr(requestModel);
 //            asyncHttpClientService.sendPreparePost(GET_QQ_FRIENDS_AES_URL);
             String str = AES.decryptURLSafeString(returnVal, TKEY_SECURE_KEY);
             Map map = JacksonJsonMapperUtil.getMapper().readValue(str, Map.class);
