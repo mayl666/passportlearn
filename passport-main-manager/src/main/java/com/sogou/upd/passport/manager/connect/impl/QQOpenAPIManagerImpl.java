@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.mysql.jdbc.StringUtils;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.apache_asynhttpclient.ApacheAsynHttpClient;
 import com.sogou.upd.passport.common.asynchttpclient.AsyncHttpClientService;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
@@ -76,6 +77,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
             long start = System.currentTimeMillis();
 //            String returnVal = SGHttpClient.executeStr(requestModel);
+            String returnVal = ApacheAsynHttpClient.executeStr(requestModel);
 //            asyncHttpClientService.sendPreparePost(GET_QQ_FRIENDS_AES_URL);
 //            String str = AES.decryptURLSafeString(returnVal, TKEY_SECURE_KEY);
             String str = null;
