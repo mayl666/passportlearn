@@ -66,10 +66,10 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
 
     public String getQQFriends(String userid, String tkey, String third_appid) throws Exception {
         String cacheKey = buildQQFriendsCacheKey(userid, third_appid);
-        String resultVal = dbShardRedisUtils.get(cacheKey);
-        if (!Strings.isNullOrEmpty(resultVal)) {
-            return resultVal;
-        } else {
+//        String resultVal = dbShardRedisUtils.get(cacheKey);
+//        if (!Strings.isNullOrEmpty(resultVal)) {
+//            return resultVal;
+//        } else {
             Result result = new APIResultSupport(false);
             RequestModel requestModel = new RequestModel(GET_QQ_FRIENDS_AES_URL);
             requestModel.addParam("userid", userid);
@@ -98,7 +98,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                         if (map.containsKey("items")) {
                             List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid);
                             result.setDefaultModel("items", list);
-                            dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.TIME_ONEDAY);
+//                            dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.TIME_ONEDAY);
                         }
                     } else {
 
@@ -120,7 +120,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
             }
             return result.toString();
-        }
+//        }
 
     }
 
