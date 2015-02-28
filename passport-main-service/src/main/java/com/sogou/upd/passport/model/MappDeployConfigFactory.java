@@ -45,6 +45,8 @@ public class MappDeployConfigFactory {
                 setProperties(confMap, properties, "statisticsInfoUrl");
                 setProperties(confMap, properties, "statReportUrl");
                 setProperties(confMap, properties, "getUserInfoUrl");
+                setProperties(confMap, properties, "ssoCheckAppUrl");
+                setProperties(confMap, properties, "ssoSwapSgidUrl");
 
                 //threshold
                 setProperties(confMap, properties, "statReportSizeMobile");
