@@ -28,7 +28,7 @@ public class AsyncHttpClientService {
     /**
      * Async HTTP 客户端
      */
-    private AsyncHttpClient httpClient;
+    private static AsyncHttpClient httpClient;
 
     /**
      * 默认主机最大连接数
@@ -149,7 +149,7 @@ public class AsyncHttpClientService {
                 .setHeaders(headers);
         return sendRequest(boundRequestBuilder);
     }*/
-    public String sendGet(String url, FluentStringsMap getParams, Map<String, Collection<String>> headers) throws Exception {
+    public static String sendGet(String url, FluentStringsMap getParams, Map<String, Collection<String>> headers) throws Exception {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
         LOGGER.debug("Get Request:{}", url);
         AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient.prepareGet(url)
@@ -177,7 +177,7 @@ public class AsyncHttpClientService {
         return sendRequest(boundRequestBuilder);
     }
 */
-    public String sendPost(String url, Map<String, Collection<String>> getParams, Map<String, Collection<String>> headers) throws Exception {
+    public static String sendPost(String url, Map<String, Collection<String>> getParams, Map<String, Collection<String>> headers) throws Exception {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
         LOGGER.debug("Post Request:{}", url);
         AsyncHttpClient.BoundRequestBuilder boundRequestBuilder = httpClient.preparePost(url);
@@ -187,7 +187,7 @@ public class AsyncHttpClientService {
         return sendRequest(boundRequestBuilder);
     }
 
-    public String sendPreparePost(String url, Map<String, String> params) {
+    public static String sendPreparePost(String url, Map<String, String> params) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(url), "URL can not be empty or null.");
         LOGGER.debug("Post Request:{}", url);
         try {
@@ -262,7 +262,7 @@ public class AsyncHttpClientService {
      * @throws java.io.IOException
      * @throws IllegalStateException 对于gzip和deflate以外压缩格式，抛出该异常
      */
-    private String sendRequest(AsyncHttpClient.BoundRequestBuilder boundRequestBuilder) throws Exception {
+    private static String sendRequest(AsyncHttpClient.BoundRequestBuilder boundRequestBuilder) throws Exception {
         ListenableFuture<Response> listenableFuture = null;
         try {
             listenableFuture = boundRequestBuilder.execute();

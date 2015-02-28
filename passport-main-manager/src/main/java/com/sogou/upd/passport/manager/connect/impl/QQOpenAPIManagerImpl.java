@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.mysql.jdbc.StringUtils;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.asynchttpclient.AsyncHttpClientService;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -55,6 +56,8 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
+    public static AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
+
     public String buildQQFriendsCacheKey(String userid, String third_appid) {
         return CACHE_PREFIX_QQFRIEND + userid + "_" + third_appid;
     }
@@ -72,8 +75,10 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
             requestModel.addParam("tKey", tkey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
             long start = System.currentTimeMillis();
-            String returnVal = SGHttpClient.executeStr(requestModel);
-            String str = AES.decryptURLSafeString(returnVal, TKEY_SECURE_KEY);
+//            String returnVal = SGHttpClient.executeStr(requestModel);
+//            asyncHttpClientService.sendPreparePost(GET_QQ_FRIENDS_AES_URL);
+//            String str = AES.decryptURLSafeString(returnVal, TKEY_SECURE_KEY);
+            String str = null;
             Map map = JacksonJsonMapperUtil.getMapper().readValue(str, Map.class);
 //            String str = SGHttpClient.executeForBigData(requestModel);
 
