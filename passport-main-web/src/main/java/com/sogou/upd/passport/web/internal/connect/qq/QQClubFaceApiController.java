@@ -47,7 +47,7 @@ public class QQClubFaceApiController extends BaseConnectController {
      * @param params
      * @return
      */
-    @InterfaceSecurity
+//    @InterfaceSecurity
     @RequestMapping(value = "/qq/clubface", method = RequestMethod.POST)
     @ResponseBody
     public Object getConnectQQClubFaceApi(HttpServletRequest request, QQClubFaceOpenApiParams params) throws Exception {
