@@ -48,8 +48,7 @@ public class ConnectLoginParams {
     /**以下三个参数用于修改qq登陆自动计时功能
      *  User: Zhangbangcheng
      */
-    private String format;//
-    private String container;//承载登录框iframe的容器。这里头iframe的高度会自动调整改变，默认400x362
+    private String format;
 
     @AssertTrue(message = "Client_id不允许为空")
     private boolean isEmptyClientId() {
@@ -209,13 +208,5 @@ public class ConnectLoginParams {
 
     public void setFormat(String format) {
         this.format = format;
-    }
-
-    public String getContainer() {
-        return container;
-    }
-
-    public void setContainer(String container) {
-        this.container = container;
     }
 }
