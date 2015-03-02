@@ -100,7 +100,7 @@ public class ApacheAsynHttpClient {
                 .setSoTimeout(WAIT_TIMEOUT)
                 .build();
         ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor(ioReactorConfig);
-        SSLContext sslcontext =  SSLContext.getInstance("TLS");
+        SSLContext sslcontext =  SSLContexts.createDefault();
         // Use custom hostname verifier to customize SSL hostname verification.
         X509HostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifier();
         Registry<SchemeIOSessionStrategy> sessionStrategyRegistry = RegistryBuilder.<SchemeIOSessionStrategy>create()
