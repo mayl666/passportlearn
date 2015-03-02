@@ -5,16 +5,45 @@ import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.*;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.DnsResolver;
+import org.apache.http.conn.ssl.BrowserCompatHostnameVerifier;
+import org.apache.http.conn.ssl.SSLContexts;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
+import org.apache.http.impl.nio.codecs.DefaultHttpRequestWriterFactory;
+import org.apache.http.impl.nio.codecs.DefaultHttpResponseParserFactory;
+import org.apache.http.impl.nio.conn.ManagedNHttpClientConnectionFactory;
+import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
+import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
+import org.apache.http.impl.nio.reactor.IOReactorConfig;
+import org.apache.http.nio.NHttpMessageParserFactory;
+import org.apache.http.nio.NHttpMessageWriterFactory;
+import org.apache.http.nio.conn.ManagedNHttpClientConnection;
+import org.apache.http.nio.conn.NHttpConnectionFactory;
+import org.apache.http.nio.conn.NoopIOSessionStrategy;
+import org.apache.http.nio.conn.SchemeIOSessionStrategy;
+import org.apache.http.nio.conn.ssl.SSLIOSessionStrategy;
+import org.apache.http.nio.reactor.ConnectingIOReactor;
+import org.apache.http.nio.reactor.IOReactorException;
+import org.apache.http.nio.util.HeapByteBufferAllocator;
 import org.apache.http.util.EntityUtils;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Future;
 
 /**
@@ -26,14 +55,107 @@ import java.util.concurrent.Future;
  */
 public class ApacheAsynHttpClient {
 
-    protected static final CloseableHttpAsyncClient httpClient;
+    /**
+     * 最大连接数
+     */
+    protected final static int MAX_TOTAL_CONNECTIONS = 1500;
+    /**
+     * 获取连接的最大等待时间
+     */
+    protected final static int WAIT_TIMEOUT = 3000;
+    /**
+     * 每个路由最大连接数
+     */
+    protected final static int MAX_ROUTE_CONNECTIONS = 500;
+    /**
+     * 读取超时时间
+     */
+    protected final static int READ_TIMEOUT = 3000;
+
+
+
+    protected static CloseableHttpAsyncClient httpClient = null;
 
     static {
-        RequestConfig requestConfig = RequestConfig.custom()
-                .setSocketTimeout(3000)
-                .setConnectTimeout(3000).build();
-        httpClient = HttpAsyncClients.custom().setDefaultRequestConfig(requestConfig).build();
-        httpClient.start();
+//        RequestConfig requestConfig = RequestConfig.custom()
+//                .setSocketTimeout(READ_TIMEOUT)
+//                .setConnectTimeout(WAIT_TIMEOUT).build();
+//        httpClient = HttpAsyncClients.custom().setDefaultRequestConfig(requestConfig).build();
+        try {
+            httpClient = init();
+            httpClient.start();
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    public static CloseableHttpAsyncClient init() throws IOReactorException, NoSuchAlgorithmException {
+        NHttpMessageWriterFactory<HttpRequest> requestWriterFactory = new DefaultHttpRequestWriterFactory();
+        NHttpMessageParserFactory<HttpResponse> responseParserFactory = new DefaultHttpResponseParserFactory();
+        NHttpConnectionFactory<ManagedNHttpClientConnection> connFactory = new ManagedNHttpClientConnectionFactory(
+                requestWriterFactory, responseParserFactory, HeapByteBufferAllocator.INSTANCE);
+        IOReactorConfig ioReactorConfig = IOReactorConfig.custom()
+                .setIoThreadCount(Runtime.getRuntime().availableProcessors())
+                .setConnectTimeout(READ_TIMEOUT)
+                .setSoTimeout(WAIT_TIMEOUT)
+                .build();
+        ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor(ioReactorConfig);
+        SSLContext sslcontext =  SSLContext.getInstance("TLS");
+        // Use custom hostname verifier to customize SSL hostname verification.
+        X509HostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifier();
+        Registry<SchemeIOSessionStrategy> sessionStrategyRegistry = RegistryBuilder.<SchemeIOSessionStrategy>create()
+                .register("http", NoopIOSessionStrategy.INSTANCE)
+                .register("https", new SSLIOSessionStrategy(sslcontext, hostnameVerifier))
+                .build();
+        DnsResolver dnsResolver = new SystemDefaultDnsResolver();
+
+        PoolingNHttpClientConnectionManager connManager = new PoolingNHttpClientConnectionManager(
+                ioReactor, connFactory, sessionStrategyRegistry, dnsResolver);
+
+//        MessageConstraints messageConstraints = MessageConstraints.custom()
+//                .setMaxHeaderCount(200)
+//                .setMaxLineLength(2000)
+//                .build();
+        // Create connection configuration
+//        ConnectionConfig connectionConfig = ConnectionConfig.custom()
+//                .setMalformedInputAction(CodingErrorAction.IGNORE)
+//                .setUnmappableInputAction(CodingErrorAction.IGNORE)
+//                .setCharset(Consts.UTF_8)
+//                .setMessageConstraints(messageConstraints)
+//                .build();
+        // Configure the connection manager to use connection configuration either
+        // by default or for a specific host.
+//        connManager.setDefaultConnectionConfig(connectionConfig);
+//        connManager.setConnectionConfig(new HttpHost("somehost", 80), ConnectionConfig.DEFAULT);
+
+        // Configure total max or per route limits for persistent connections
+        // that can be kept in the pool or leased by the connection manager.
+        connManager.setMaxTotal(MAX_TOTAL_CONNECTIONS);
+        connManager.setDefaultMaxPerRoute(MAX_ROUTE_CONNECTIONS);
+//        connManager.setMaxPerRoute(new HttpRoute(new HttpHost("somehost", 80)), 20);
+
+        // Use custom cookie store if necessary.
+        CookieStore cookieStore = new BasicCookieStore();
+        // Use custom credentials provider if necessary.
+//        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        // Create global request configuration
+        RequestConfig defaultRequestConfig = RequestConfig.custom()
+                .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
+                .setExpectContinueEnabled(true)
+                .setStaleConnectionCheckEnabled(true)
+//                .setTargetPreferredAuthSchemes(Arrays.asList(AuthSchemes.NTLM, AuthSchemes.DIGEST))
+//                .setProxyPreferredAuthSchemes(Arrays.asList(AuthSchemes.BASIC))
+                .build();
+
+        // Create an HttpClient with the given custom dependencies and configuration.
+        return  HttpAsyncClients.custom()
+                .setConnectionManager(connManager)
+                .setDefaultCookieStore(cookieStore)
+//                .setDefaultCredentialsProvider(credentialsProvider)
+//                .setProxy(new HttpHost("myproxy", 8080))
+                .setDefaultRequestConfig(defaultRequestConfig)
+                .build();
+
     }
 
     /**
