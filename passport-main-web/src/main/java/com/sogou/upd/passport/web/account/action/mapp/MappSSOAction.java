@@ -115,7 +115,7 @@ public class MappSSOAction extends BaseController {
             udid = attributeDO.getUdid();
 
             //解析packageSign
-            Result getOldSidResult = mappSSOManager.getOldSgid(clientId, stoken, udid);
+            Result getOldSidResult = mappSSOManager.getOldSgid(clientId, stoken, udid, ct);
             String oldSgid = "";
             String token = "";
             if (getOldSidResult.isSuccess()) {

@@ -27,7 +27,7 @@ public interface MappSSOService {
 
     public String checkSSOTicket(String sticket, String serverSecret);
 
-    public String getOldSgid(String appInfoEncryped,String token,String udid,int clientId);
+    public String getOldSgid(String appInfoEncryped, String token, String udid, int clientId, long ct);
 
 
 }

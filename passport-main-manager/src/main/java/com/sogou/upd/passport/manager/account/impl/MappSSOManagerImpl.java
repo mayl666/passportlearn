@@ -92,7 +92,7 @@ public class MappSSOManagerImpl implements MappSSOManager {
     }
 
     @Override
-    public Result getOldSgid(int clientId, String stoken, String udid) {
+    public Result getOldSgid(int clientId, String stoken, String udid, long ct) {
 
         Result result = new APIResultSupport(false);
         try {
@@ -128,7 +128,7 @@ public class MappSSOManagerImpl implements MappSSOManager {
             mappSSOService.delSSOToken(token);
 
             //用token解密app-client info，校验app-client info,获取sgid
-            String oldSgid = mappSSOService.getOldSgid(appClientInfo, token, udid, clientId);
+            String oldSgid = mappSSOService.getOldSgid(appClientInfo, token, udid, clientId, ct);
             if (Strings.isNullOrEmpty(oldSgid)) {
                 result.setCode(ErrorUtil.ERR_CODE_SSO_APP_CHECK_FAILED);
                 return result;

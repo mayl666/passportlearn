@@ -194,14 +194,14 @@ public class MappSSOServiceImpl implements MappSSOService {
 
     @Override
     //用token解密appClientInfo，进行基本校验，获取旧登录态
-    public String getOldSgid(String appInfoEncryped, String token, String udid, int clientId) {
+    public String getOldSgid(String appInfoEncryped, String token, String udid, int clientId, long ct) {
 
         String oldSgid;
         try {
             //解密appInfo:AES（clientid+imei+sgidA）
             String appInfoDecryped = AES.decryptURLSafeString(appInfoEncryped, token);
             String[] appInfoArray = appInfoDecryped.split("\\" + SEPARATOR_1);
-            if (appInfoArray == null || appInfoArray.length < 3) {
+            if (appInfoArray == null || appInfoArray.length < 4) {
                 logger.warn("sso client info decryped wrong format");
                 return null;
             }
@@ -209,6 +209,7 @@ public class MappSSOServiceImpl implements MappSSOService {
             int clientIdParam = Integer.parseInt(appInfoArray[0]);
             String udidParam = appInfoArray[1];
             oldSgid = appInfoArray[2];
+            long ctParam = Long.parseLong(appInfoArray[3]);
 
             if (clientIdParam != clientId) {
                 logger.warn("sso clientid check failed");
@@ -225,6 +226,11 @@ public class MappSSOServiceImpl implements MappSSOService {
                     logger.warn("sso udid check failed");
                     return null;
                 }
+            }
+
+            if (ctParam != ct) {
+                logger.warn("sso ct check failed");
+                return null;
             }
 
         } catch (Exception e) {
