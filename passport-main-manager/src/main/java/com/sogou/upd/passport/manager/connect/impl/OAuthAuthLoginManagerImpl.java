@@ -59,6 +59,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -316,9 +317,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         if (!Strings.isNullOrEmpty(sgid)) {
             result.setSuccess(true);
             result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
-            String ssoScanAcountType= SSOScanAccountType.getSSOScanAccountType(userId);
-            result.getModels().put(LoginConstant.SSO_ACCOUNT_TYPE,ssoScanAcountType);
-            ru = buildWapSuccessRu(ru, sgid);
+            ru = buildWapSuccessRu(ru, sgid, userId);
         } else {
             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId, v);
             return result;
@@ -472,8 +471,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                     if (!Strings.isNullOrEmpty(sgid)) {
                         result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
-                        String ssoScanAcountType= SSOScanAccountType.getSSOScanAccountType(passportId);
-                        result.getModels().put(LoginConstant.SSO_ACCOUNT_TYPE,ssoScanAcountType);
+                        String ssoScanAcountType = SSOScanAccountType.getSSOScanAccountType(passportId);
+                        result.getModels().put(LoginConstant.SSO_ACCOUNT_TYPE, ssoScanAcountType);
                         result.setSuccess(true);
                         result.setMessage("success");
                         removeParam(result);
@@ -600,16 +599,22 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return ru;
     }
 
-    private String buildWapSuccessRu(String ru, String sgid) {
+    private String buildWapSuccessRu(String ru, String sgid, String userid) {
         Map params = Maps.newHashMap();
+        String acountType = SSOScanAccountType.getSSOScanAccountType(userid);
+        String acountTypeEncode = null;
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
+            acountTypeEncode = URLEncoder.encode(acountType, CommonConstant.DEFAULT_CHARSET);
         } catch (Exception e) {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_WAP_URL;
         }
         //ru后缀一个sgid
         params.put(LoginConstant.COOKIE_SGID, sgid);
+        if (null != acountTypeEncode) {
+            params.put(LoginConstant.SSO_ACCOUNT_TYPE, acountTypeEncode);
+        }
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }
