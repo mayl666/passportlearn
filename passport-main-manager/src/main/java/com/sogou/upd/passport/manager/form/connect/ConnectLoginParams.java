@@ -45,6 +45,11 @@ public class ConnectLoginParams {
     private String third_appid; //如果应用使用独立appid，则传入第三方appid值，并且根据不同的第三方传递不同的appid； 默认使用passport的appid；
 
     private String v; //浏览器根据v判断显示新旧UI
+    /**以下三个参数用于修改qq登陆自动计时功能
+     *  User: Zhangbangcheng
+     */
+    private String format;//
+    private String container;//承载登录框iframe的容器。这里头iframe的高度会自动调整改变，默认400x362
 
     @AssertTrue(message = "Client_id不允许为空")
     private boolean isEmptyClientId() {
@@ -196,5 +201,21 @@ public class ConnectLoginParams {
 
     public void setThird_appid(String third_appid) {
         this.third_appid = third_appid;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public String getContainer() {
+        return container;
+    }
+
+    public void setContainer(String container) {
+        this.container = container;
     }
 }
