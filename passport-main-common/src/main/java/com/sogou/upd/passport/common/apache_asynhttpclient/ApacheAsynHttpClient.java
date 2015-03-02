@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
@@ -14,7 +15,6 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
@@ -26,9 +26,13 @@ import java.util.concurrent.Future;
  */
 public class ApacheAsynHttpClient {
 
-    protected static final CloseableHttpAsyncClient httpClient = HttpAsyncClients.createDefault();
+    protected static final CloseableHttpAsyncClient httpClient;
 
     static {
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setSocketTimeout(3000)
+                .setConnectTimeout(3000).build();
+        httpClient = HttpAsyncClients.custom().setDefaultRequestConfig(requestConfig).build();
         httpClient.start();
     }
 
