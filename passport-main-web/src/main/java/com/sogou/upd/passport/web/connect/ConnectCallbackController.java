@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.SSOScanAccountType;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.ServletUtil;
@@ -88,6 +89,8 @@ public class ConnectCallbackController extends BaseConnectController {
             } else if (ConnectTypeEnum.WAP.toString().equals(type)) {
                 String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
                 ServletUtil.setCookie(res, LoginConstant.COOKIE_SGID, sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
+                String ssoAccountType = SSOScanAccountType.getSSOScanAccountType(passportId);
+                ServletUtil.setCookie(res, LoginConstant.SSO_ACCOUNT_TYPE, ssoAccountType, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
                 res.sendRedirect(viewUrl);
                 return "empty";
             } else if (ConnectTypeEnum.PC.toString().equals(type)) {
