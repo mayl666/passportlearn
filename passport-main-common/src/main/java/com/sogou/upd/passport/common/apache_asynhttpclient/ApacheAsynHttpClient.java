@@ -4,14 +4,13 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
+import org.apache.http.*;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.*;
+import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.DnsResolver;
@@ -38,6 +37,8 @@ import org.apache.http.nio.conn.ssl.SSLIOSessionStrategy;
 import org.apache.http.nio.reactor.ConnectingIOReactor;
 import org.apache.http.nio.reactor.IOReactorException;
 import org.apache.http.nio.util.HeapByteBufferAllocator;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpProcessor;
 import org.apache.http.util.EntityUtils;
 
 import javax.net.ssl.SSLContext;
@@ -73,7 +74,6 @@ public class ApacheAsynHttpClient {
     protected final static int READ_TIMEOUT = 3000;
 
 
-
     protected static CloseableHttpAsyncClient httpClient = null;
 
     static {
@@ -100,7 +100,7 @@ public class ApacheAsynHttpClient {
                 .setSoTimeout(WAIT_TIMEOUT)
                 .build();
         ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor(ioReactorConfig);
-        SSLContext sslcontext =  SSLContexts.createDefault();
+        SSLContext sslcontext = SSLContexts.createDefault();
         // Use custom hostname verifier to customize SSL hostname verification.
         X509HostnameVerifier hostnameVerifier = new BrowserCompatHostnameVerifier();
         Registry<SchemeIOSessionStrategy> sessionStrategyRegistry = RegistryBuilder.<SchemeIOSessionStrategy>create()
@@ -148,12 +148,38 @@ public class ApacheAsynHttpClient {
                 .build();
 
         // Create an HttpClient with the given custom dependencies and configuration.
-        return  HttpAsyncClients.custom()
+        return HttpAsyncClients.custom()
                 .setConnectionManager(connManager)
                 .setDefaultCookieStore(cookieStore)
 //                .setDefaultCredentialsProvider(credentialsProvider)
 //                .setProxy(new HttpHost("myproxy", 8080))
                 .setDefaultRequestConfig(defaultRequestConfig)
+                .addInterceptorFirst(new HttpRequestInterceptor() {
+                    @Override
+                    public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+                        if (!request.containsHeader("Accept-Encoding")) {
+                            request.addHeader("Accept-Encoding", "gzip");
+                        }
+                    }
+                })
+                .addInterceptorFirst(new HttpResponseInterceptor() {
+                    @Override
+                    public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
+                        HttpEntity entity = response.getEntity();
+                        if (entity != null) {
+                            Header ceheader = entity.getContentEncoding();
+                            if (ceheader != null) {
+                                HeaderElement[] codecs = ceheader.getElements();
+                                for (int i = 0; i < codecs.length; i++) {
+                                    if(codecs[i].getName().equalsIgnoreCase("gzip")) {
+                                        response.setEntity(new GzipDecompressingEntity(response.getEntity()));
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
                 .build();
 
     }
