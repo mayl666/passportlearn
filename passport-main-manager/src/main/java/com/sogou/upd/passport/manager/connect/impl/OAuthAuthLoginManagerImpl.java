@@ -477,6 +477,15 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     }
                 }
                 result.getModels().put("userid", passportId);
+                if (ConnectTypeEnum.TOKEN.toString().equals(req.getParameter("type")) && AccountTypeEnum.QQ.getValue() == provider) {
+                    Result tokenResult = pcAccountManager.createAccountToken(passportId, req.getParameter("instance_id"), clientId);
+                    AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
+                    if (tokenResult.isSuccess()) {
+                        result.setSuccess(true);
+                        result.setDefaultModel("accessToken", accountToken.getAccessToken());
+                        result.setDefaultModel("refreshToken", accountToken.getRefreshToken());
+                    }
+                }
             } else {
                 result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
             }
