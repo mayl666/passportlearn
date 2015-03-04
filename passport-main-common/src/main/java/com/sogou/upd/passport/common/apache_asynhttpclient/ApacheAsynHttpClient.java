@@ -254,7 +254,7 @@ public class ApacheAsynHttpClient {
                     HeaderElement[] codecs = ceheader.getElements();
                     for (int i = 0; i < codecs.length; i++) {
                         if (codecs[i].getName().equalsIgnoreCase("gzip")) {
-//                            httpEntity = new GzipDecompressingEntity(httpEntity);
+                            httpEntity = new GzipDecompressingEntity(httpEntity);
                         }
                     }
                 }
