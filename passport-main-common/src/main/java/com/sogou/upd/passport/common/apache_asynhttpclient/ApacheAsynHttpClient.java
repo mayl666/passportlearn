@@ -246,14 +246,26 @@ public class ApacheAsynHttpClient {
         InputStream in = null;
         try {
             Future<HttpResponse> future = httpClient.execute(httpRequest, null);
-            in = future.get().getEntity().getContent();
+            HttpEntity httpEntity = future.get().getEntity();
+            if (httpEntity != null) {
+                Header ceheader = httpEntity.getContentEncoding();
+                if (ceheader != null) {
+                    HeaderElement[] codecs = ceheader.getElements();
+                    for (int i = 0; i < codecs.length; i++) {
+                        if (codecs[i].getName().equalsIgnoreCase("gzip")) {
+                            httpEntity = new GzipDecompressingEntity(httpEntity);
+                        }
+                    }
+                }
+            }
+            in = httpEntity.getContent();
             int responseCode = future.get().getStatusLine().getStatusCode();
             //302如何处理
             if (responseCode == RESPONSE_SUCCESS_CODE) {
-                return future.get().getEntity();
+                return httpEntity;
             }
             String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CHARSET);
-            String result = EntityUtils.toString(future.get().getEntity(), CommonConstant.DEFAULT_CHARSET);
+            String result = EntityUtils.toString(httpEntity, CommonConstant.DEFAULT_CHARSET);
             throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:" + result);
         } catch (Exception e) {
             if (in != null) {
