@@ -154,14 +154,14 @@ public class ApacheAsynHttpClient {
 //                .setDefaultCredentialsProvider(credentialsProvider)
 //                .setProxy(new HttpHost("myproxy", 8080))
                 .setDefaultRequestConfig(defaultRequestConfig)
-//                .addInterceptorFirst(new HttpRequestInterceptor() {
-//                    @Override
-//                    public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
-//                        if (!request.containsHeader("Accept-Encoding")) {
-//                            request.addHeader("Accept-Encoding", "gzip");
-//                        }
-//                    }
-//                })
+                .addInterceptorFirst(new HttpRequestInterceptor() {
+                    @Override
+                    public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+                        if (!request.containsHeader("Accept-Encoding")) {
+                            request.addHeader("Accept-Encoding", "gzip");
+                        }
+                    }
+                })
 //                .addInterceptorFirst(new HttpResponseInterceptor() {
 //                    @Override
 //                    public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
