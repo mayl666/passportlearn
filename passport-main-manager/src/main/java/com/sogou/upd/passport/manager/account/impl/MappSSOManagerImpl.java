@@ -49,7 +49,7 @@ public class MappSSOManagerImpl implements MappSSOManager {
             }
 
             String clientSecret = appConfig.getClientSecret();
-            String decryptResult = AES.decryptURLSafeString(packageSignEncrypt, clientSecret);
+            String decryptResult = AES.decryptSSO(packageSignEncrypt, clientSecret);
 
             //校验解密后的包签名信息
             PackageNameSign packageNameSign = mappSSOService.baseSSOAppInfoCheck(clientId, ct, decryptResult);

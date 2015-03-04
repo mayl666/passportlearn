@@ -132,7 +132,7 @@ public class MappSSOServiceImpl implements MappSSOService {
 
         String ssoTokenEncryped;
         try {
-            ssoTokenEncryped = AES.encryptURLSafeString(ssoToken, clientSecret);
+            ssoTokenEncryped = AES.encryptSSO(ssoToken, clientSecret);
         } catch (Exception e) {
             logger.error("encryptSSOToken fail, ssoToken:" + ssoToken);
             throw new ServiceException(e);
@@ -148,7 +148,7 @@ public class MappSSOServiceImpl implements MappSSOService {
         String ticketContent = clientId + SEPARATOR_1 + udid + SEPARATOR_1 + ssoToken + SEPARATOR_1 + ct;
         String ssoTicket;
         try {
-            ssoTicket = AES.encryptURLSafeString(ticketContent, serverSecret);
+            ssoTicket = AES.encryptSSO(ticketContent, serverSecret);
         } catch (Exception e) {
             logger.error("generateTicket fail, clientId:" + clientId + ",udid:" + udid);
             throw new ServiceException(e);
@@ -163,7 +163,7 @@ public class MappSSOServiceImpl implements MappSSOService {
         //解密包签名
         String ssoToken;
         try {
-            String ticketDecrypt = AES.decryptURLSafeString(sticket, serverSecret);
+            String ticketDecrypt = AES.decryptSSO(sticket, serverSecret);
             String[] ticketArray = ticketDecrypt.split("\\" + SEPARATOR_1);
             if (null == ticketArray || ticketArray.length < 4) {
                 logger.warn("sso ticket decryped wrong format");
@@ -199,7 +199,7 @@ public class MappSSOServiceImpl implements MappSSOService {
         String oldSgid;
         try {
             //解密appInfo:AES（clientid+imei+sgidA）
-            String appInfoDecryped = AES.decryptURLSafeString(appInfoEncryped, token);
+            String appInfoDecryped = AES.decryptSSO(appInfoEncryped, token);
             String[] appInfoArray = appInfoDecryped.split("\\" + SEPARATOR_1);
             if (appInfoArray == null || appInfoArray.length < 4) {
                 logger.warn("sso client info decryped wrong format");

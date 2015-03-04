@@ -144,7 +144,7 @@ public class MappSSOAction extends BaseController {
             }
 
             String newSgid = (String) createSidResult.getModels().get(LoginConstant.COOKIE_SGID);
-            String newSgidEncryped = AES.encryptURLSafeString(newSgid, token);
+            String newSgidEncryped = AES.encryptSSO(newSgid, token);
             result.setDefaultModel(LoginConstant.SSO_NEW_SID, newSgidEncryped);
             result.setSuccess(true);
             result.setMessage("操作成功");
