@@ -154,32 +154,32 @@ public class ApacheAsynHttpClient {
 //                .setDefaultCredentialsProvider(credentialsProvider)
 //                .setProxy(new HttpHost("myproxy", 8080))
                 .setDefaultRequestConfig(defaultRequestConfig)
-                .addInterceptorFirst(new HttpRequestInterceptor() {
-                    @Override
-                    public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
-                        if (!request.containsHeader("Accept-Encoding")) {
-                            request.addHeader("Accept-Encoding", "gzip");
-                        }
-                    }
-                })
-                .addInterceptorFirst(new HttpResponseInterceptor() {
-                    @Override
-                    public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
-                        HttpEntity entity = response.getEntity();
-                        if (entity != null) {
-                            Header ceheader = entity.getContentEncoding();
-                            if (ceheader != null) {
-                                HeaderElement[] codecs = ceheader.getElements();
-                                for (int i = 0; i < codecs.length; i++) {
-                                    if(codecs[i].getName().equalsIgnoreCase("gzip")) {
-                                        response.setEntity(new GzipDecompressingEntity(response.getEntity()));
-                                        return;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                })
+//                .addInterceptorFirst(new HttpRequestInterceptor() {
+//                    @Override
+//                    public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+//                        if (!request.containsHeader("Accept-Encoding")) {
+//                            request.addHeader("Accept-Encoding", "gzip");
+//                        }
+//                    }
+//                })
+//                .addInterceptorFirst(new HttpResponseInterceptor() {
+//                    @Override
+//                    public void process(HttpResponse response, HttpContext context) throws HttpException, IOException {
+//                        HttpEntity entity = response.getEntity();
+//                        if (entity != null) {
+//                            Header ceheader = entity.getContentEncoding();
+//                            if (ceheader != null) {
+//                                HeaderElement[] codecs = ceheader.getElements();
+//                                for (int i = 0; i < codecs.length; i++) {
+//                                    if(codecs[i].getName().equalsIgnoreCase("gzip")) {
+//                                        response.setEntity(new GzipDecompressingEntity(response.getEntity()));
+//                                        return;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                })
                 .build();
 
     }
