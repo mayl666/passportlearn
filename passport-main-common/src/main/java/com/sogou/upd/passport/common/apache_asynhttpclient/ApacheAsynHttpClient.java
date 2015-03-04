@@ -247,7 +247,7 @@ public class ApacheAsynHttpClient {
         try {
             Future<HttpResponse> future = httpClient.execute(httpRequest, null);
             HttpEntity httpEntity = future.get().getEntity();
-            System.out.print(future.get().getEntity().getContentLength());
+            long tmp = future.get().getEntity().getContentLength();
             if (httpEntity != null) {
                 Header ceheader = httpEntity.getContentEncoding();
                 if (ceheader != null) {
