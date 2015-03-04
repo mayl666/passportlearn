@@ -160,6 +160,7 @@ public class ApacheAsynHttpClient {
                     @Override
                     public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
                         if (!request.containsHeader("Accept-Encoding")) {
+                            logger.error("add gzip header");
                             request.addHeader("Accept-Encoding", "gzip");
                         }
                     }
