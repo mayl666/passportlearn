@@ -10,7 +10,6 @@ import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.*;
-import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.DnsResolver;
@@ -38,8 +37,9 @@ import org.apache.http.nio.reactor.ConnectingIOReactor;
 import org.apache.http.nio.reactor.IOReactorException;
 import org.apache.http.nio.util.HeapByteBufferAllocator;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpProcessor;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
@@ -75,6 +75,8 @@ public class ApacheAsynHttpClient {
 
 
     protected static CloseableHttpAsyncClient httpClient = null;
+
+    private static Logger logger = LoggerFactory.getLogger("interfaceLogger");
 
     static {
 //        RequestConfig requestConfig = RequestConfig.custom()
@@ -248,12 +250,16 @@ public class ApacheAsynHttpClient {
             Future<HttpResponse> future = httpClient.execute(httpRequest, null);
             HttpEntity httpEntity = future.get().getEntity();
             long tmp = future.get().getEntity().getContentLength();
+            logger.error("11111111111111111111111111111111");
             if (httpEntity != null) {
+                logger.error("22222222222222222222222222222");
                 Header ceheader = httpEntity.getContentEncoding();
                 if (ceheader != null) {
+                    logger.error("33333333333333333333333333");
                     HeaderElement[] codecs = ceheader.getElements();
                     for (int i = 0; i < codecs.length; i++) {
                         if (codecs[i].getName().equalsIgnoreCase("gzip")) {
+                            logger.error("4444444444444444444444");
                             httpEntity = new GzipDecompressingEntity(httpEntity);
                         }
                     }
