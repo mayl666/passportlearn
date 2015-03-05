@@ -168,7 +168,7 @@ public class LoginAction extends BaseController {
             model.addAttribute("data", result.toString());
             return "/login/api";
         } finally {
-            //用户登录log                cd cd
+            //用户登录log
 
             UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
             userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
