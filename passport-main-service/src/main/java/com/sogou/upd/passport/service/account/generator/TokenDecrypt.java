@@ -39,7 +39,7 @@ public class TokenDecrypt {
             }
             return passportId;
         } catch (Exception e) {
-            logger.error("Refresh Token decryptURLSafeString Base62 fail, refreshToken:{}", token);
+            logger.warn("Refresh Token decryptURLSafeString Base62 fail, refreshToken:{}", token);
             return null;
         }
     }

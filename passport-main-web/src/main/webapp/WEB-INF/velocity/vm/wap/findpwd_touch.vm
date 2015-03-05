@@ -7,7 +7,7 @@
 <meta name="MobileOptimized" content="320"/>
 <meta name="format-detection" content="telephone=no"/>
 <title>找回密码-搜狗通行证</title>
-<link rel="stylesheet" href="/./static/css/wap/main.css?t=527531"/>
+<link rel="stylesheet" href="/./static/css/wap/main.css?t=368739"/>
 </head>
 <body>
 
@@ -71,7 +71,7 @@
         <h4 class="tc">请输入图片验证码</h4>
         <div class="tip p15 f-f f-vc row">
             <input type="text" class="f-1 h-fil clp"/>
-            <img src="about:blank" id="captcha-img" border="0" class="captcha-img block"/>
+            <img id="captcha-img" border="0" class="captcha-img block"/>
         </div>
     </div>
     <div class="buttons f-f f-vc">
@@ -82,7 +82,7 @@
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=303511" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=265811" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"
