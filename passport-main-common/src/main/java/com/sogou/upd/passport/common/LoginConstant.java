@@ -16,7 +16,7 @@ public class LoginConstant {
     //SSO登录常量
     public static final String SSO_TOKEN = "token";
     public static final String SSO_OLD_SID = "oldsgid";
-    public static final String SSO_NEW_SID = "newsid";
+    public static final String SSO_NEW_SID = "newsgid";
     public static final String SSO_VOUCHER = "voucher";
     public static final String SSO_ACCOUNT_TYPE = "accouttype";
 
