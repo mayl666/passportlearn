@@ -3,7 +3,6 @@ package com.sogou.upd.passport.web.account.action;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -169,11 +168,14 @@ public class LoginAction extends BaseController {
             model.addAttribute("data", result.toString());
             return "/login/api";
         } finally {
-            //用户登录log
+            //用户登录log                cd cd
+
             UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
             userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
             userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(request, "YYID"));
             userOperationLog.putOtherMessage("module", loginParams.getModule());
+            userOperationLog.putOtherMessage("cookie", getCookies(request));
+            userOperationLog.putOtherMessage("User-Agent", getUserAgent(request));
             UserOperationLogUtil.log(userOperationLog);
         }
     }

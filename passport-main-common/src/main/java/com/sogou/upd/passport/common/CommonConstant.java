@@ -58,6 +58,9 @@ public class CommonConstant {
     public static final String DEFAULT_CHARSET = "UTF-8";
     public static final String SEPARATOR_1 = "|";
 
+    public static final String JOINER_SEPARATOR = ";";
+    public static final String KEY_VALUE_SEPARATOR = "=";
+
     public static final String ACCESS_TOKEN = "access_token";
     public static final String EXPIRES_IN = "expires_in";
     public static final String OPENID = "openid";
@@ -93,7 +96,7 @@ public class CommonConstant {
     public static final String HTTPS_HEADER = "X-Https";
     public static final String HTTPS_VALUE = "https";
     public static final String USER_AGENT = "User-Agent";
-    public static final String SSL_PROTOCOL= "X-SSL-Protocol";
+    public static final String SSL_PROTOCOL = "X-SSL-Protocol";
 
     //域名不正确
     public static final String DOMAIN_ERROR = "域名不正确";
