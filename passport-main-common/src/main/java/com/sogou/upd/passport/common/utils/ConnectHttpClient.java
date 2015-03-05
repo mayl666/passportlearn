@@ -4,10 +4,9 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
+import org.apache.http.*;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
@@ -131,9 +130,18 @@ public class ConnectHttpClient extends SGHttpClient {
             throw new NullPointerException("requestModel 不能为空");
         }
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
+        httpRequest.addHeader("Accept-Encoding","gzip");
         InputStream in=null;
         try {
             HttpResponse httpResponse = httpClient.execute(httpRequest);
+            Header ceheader = httpResponse.getEntity().getContentEncoding();
+            if (ceheader != null) {
+                for (HeaderElement element : ceheader.getElements()) {
+                    if (element.getName().equalsIgnoreCase("gzip")) {
+                        httpResponse.setEntity(new GzipDecompressingEntity(httpResponse.getEntity()));
+                    }
+                }
+            }
             in=httpResponse.getEntity().getContent();
             int responseCode = httpResponse.getStatusLine().getStatusCode();
             //302如何处理

@@ -84,13 +84,13 @@ public class OpenApiV3 {
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
             Map<String, Object> paramsMap = convertToMap(params);
             requestModel.setParams(paramsMap);
-//            Map map = ConnectHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
-//            resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
-            resp = ApacheAsynHttpClient.executeStr(requestModel);
-        }/* catch (IOException ioe) {
+            Map map = ConnectHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+            resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
+//            resp = ApacheAsynHttpClient.executeStr(requestModel);
+        }catch (IOException ioe) {
             logger.error("api:Transfer Map To Json Is Failed :", ioe);
             throw new IOException("Transfer Map To Json Is Failed:", ioe);
-        }*/ catch (Exception e) {
+        }catch (Exception e) {
             logger.warn("api:Execute Api Is Failed :", e);
             throw new Exception("Execute Api Is Failed:", e);
         }
