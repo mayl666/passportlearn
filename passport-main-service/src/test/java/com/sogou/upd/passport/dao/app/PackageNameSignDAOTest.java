@@ -20,8 +20,8 @@ public class PackageNameSignDAOTest extends BaseDAOTest {
     public void testInsertPackageNameSign() {
         PackageNameSign packageNameSign = new PackageNameSign();
         packageNameSign.setClientId(1120);
-        packageNameSign.setPackageName("sogou.passport");
-        packageNameSign.setPackageSign("abcdefg");
+        packageNameSign.setPackageName("com.sogou.passportsdk.demo");
+        packageNameSign.setPackageSign("");
 
         int num = packageNameSignDAO.insertPackageNameSign(packageNameSign);
         System.out.println("insert num:" + num);

@@ -80,9 +80,9 @@ public class MappSSOServiceImpl implements MappSSOService {
 
         String packageName = packageNameSign.getPackageName();
         String packageSign = packageNameSign.getPackageSign();
-        if (Strings.isNullOrEmpty(packageName) || Strings.isNullOrEmpty(packageSign)) {
-            return false;
-        }
+//        if (Strings.isNullOrEmpty(packageName) || Strings.isNullOrEmpty(packageSign)) {
+//            return false;
+//        }
 
         PackageNameSign packageInfoStored = packageNameSignService.queryPackageInfoByName(packageName);
         if (null == packageInfoStored || !packageSign.equals(packageInfoStored.getPackageSign())) {
