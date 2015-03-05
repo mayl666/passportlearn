@@ -251,16 +251,12 @@ public class ApacheAsynHttpClient {
             Future<HttpResponse> future = httpClient.execute(httpRequest, null);
             HttpEntity httpEntity = future.get().getEntity();
             long tmp = future.get().getEntity().getContentLength();
-            logger.error("11111111111111111111111111111111");
             if (httpEntity != null) {
-                logger.error("22222222222222222222222222222");
                 Header ceheader = httpEntity.getContentEncoding();
                 if (ceheader != null) {
-                    logger.error("33333333333333333333333333");
                     HeaderElement[] codecs = ceheader.getElements();
                     for (int i = 0; i < codecs.length; i++) {
                         if (codecs[i].getName().equalsIgnoreCase("gzip")) {
-                            logger.error("4444444444444444444444");
                             httpEntity = new GzipDecompressingEntity(httpEntity);
                         }
                     }
