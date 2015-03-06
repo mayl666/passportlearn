@@ -176,7 +176,7 @@ public class LoginApiController extends BaseController {
      * @param params
      * @return
      */
-//    @InterfaceSecurity
+    @InterfaceSecurity
     @RequestMapping(value = "/account/authuser", method = RequestMethod.POST)
     @ResponseBody
     public Object webAuthUser(HttpServletRequest request, AuthUserApiParams params) {
