@@ -334,7 +334,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
 //            nickname = new String(updateUserUniqnameApiParams.getUniqname().getBytes("ISO8859-1"), "UTF-8");
 
             //校验昵称中是否包含敏感词汇
-            if (checkUniqSensitiveList(nickname)) {
+            if (checkUniqSensitiveSet(nickname)) {
                 result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_SENSITIVE);
                 return result;
             }
