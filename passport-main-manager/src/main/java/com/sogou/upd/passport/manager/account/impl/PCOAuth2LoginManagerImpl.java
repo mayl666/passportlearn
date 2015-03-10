@@ -43,10 +43,12 @@ public class PCOAuth2LoginManagerImpl implements PCOAuth2LoginManager {
             }
         }
         Result sogou_result = authuser(loginParams, ip, scheme, sogou_passportId);
-        if (sohu_result == null || !sohu_result.isSuccess()) {
+        if (sohu_result == null) {
             return sogou_result;
-        } else if (sohu_result.isSuccess() && !sogou_result.isSuccess()) {
+        } else if (!sogou_result.isSuccess()) {
             return sohu_result;
+        } else if (!sohu_result.isSuccess()) {
+            return sogou_result;
         } else {
             //二者都能验证成功，产生账号冲突，人工解决
             Result error_result = new APIResultSupport(false);
