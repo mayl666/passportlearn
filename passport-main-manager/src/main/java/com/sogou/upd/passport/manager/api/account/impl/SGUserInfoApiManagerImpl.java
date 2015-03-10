@@ -1,8 +1,6 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.UniqnameSensitiveList;
-import com.sogou.upd.passport.common.UniqnameSensitiveSet;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -333,12 +331,6 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
             //前端在个人资料页面填写昵称后，鼠标离开即检查昵称唯一性，这里不能编码，因为保存时没有编码
 //            nickname = new String(updateUserUniqnameApiParams.getUniqname().getBytes("ISO8859-1"), "UTF-8");
 
-            //校验昵称中是否包含敏感词汇
-            if (checkUniqSensitiveSet(nickname)) {
-                result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_SENSITIVE);
-                return result;
-            }
-
             String passportId = uniqNamePassportMappingService.checkUniqName(nickname);
             if (!Strings.isNullOrEmpty(passportId)) {
                 result.setCode(ErrorUtil.ERR_CODE_UNIQNAME_ALREADY_EXISTS);
@@ -458,38 +450,6 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         return result;
     }
 
-    //校验昵称是否包含敏感词汇：true为包含敏感词汇，遍历list
-    public boolean checkUniqSensitiveList(String uniqname) {
-        long startTime = System.currentTimeMillis();
-        boolean isSensitive = false;
-        for (String sensitiveWord : UniqnameSensitiveList.SENSITIVE_LIST) {
-            if (uniqname.contains(sensitiveWord)) {
-                isSensitive = true;
-                break;
-            }
-        }
-        long endTime = System.currentTimeMillis();
-        long spendTime = endTime - startTime;
-        logger.error("check uniqname sensitive by list:" + spendTime);
-        return isSensitive;
-    }
-
-    //校验昵称是否包含敏感词汇：true为包含敏感词汇，遍历set
-    public boolean checkUniqSensitiveSet(String uniqname) {
-        long startTime = System.currentTimeMillis();
-        boolean isSensitive = false;
-        for (String sensitiveWord : UniqnameSensitiveSet.SENSITIVE_SET) {
-            if (uniqname.contains(sensitiveWord)) {
-                isSensitive = true;
-                break;
-            }
-        }
-
-        long endTime = System.currentTimeMillis();
-        long spendTime = endTime - startTime;
-        logger.error("check uniqname sensitive by set:" + spendTime);
-        return isSensitive;
-    }
 
 }
 

@@ -11,7 +11,6 @@ import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
-import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UploadAvatarParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
