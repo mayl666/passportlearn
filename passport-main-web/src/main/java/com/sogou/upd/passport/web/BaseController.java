@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -60,7 +62,6 @@ public class BaseController {
         }
         return httpOrHttps;
     }
-
 
 
     public boolean isAccessAccept(int clientId, HttpServletRequest request) {
@@ -142,6 +143,18 @@ public class BaseController {
     }
 
     /**
+     * 获取浏览器 User-agent
+     *
+     * @param request
+     * @return
+     */
+    protected String getUserAgent(HttpServletRequest request) {
+        String user_agent = request.getHeader(CommonConstant.USER_AGENT);
+        return Strings.isNullOrEmpty(user_agent) ? StringUtils.EMPTY : user_agent;
+    }
+
+
+    /**
      * 模糊处理邮箱和手机
      */
     protected void processSecureMailMobile(Result result) {
@@ -157,5 +170,23 @@ public class BaseController {
             }
 
         }
+    }
+
+    /**
+     * 获取cookie
+     *
+     * @param request
+     * @return
+     */
+    protected String getCookies(HttpServletRequest request) {
+        Map<String, String> cookieMap = Maps.newLinkedHashMap();
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                cookieMap.put(cookie.getName(), cookie.getValue());
+            }
+        }
+        Joiner.MapJoiner joiner = Joiner.on(CommonConstant.JOINER_SEPARATOR).withKeyValueSeparator(CommonConstant.KEY_VALUE_SEPARATOR);
+        return joiner.join(cookieMap);
     }
 }
