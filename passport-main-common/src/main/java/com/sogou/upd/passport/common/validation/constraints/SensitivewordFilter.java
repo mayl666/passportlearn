@@ -91,7 +91,7 @@ public class SensitivewordFilter {
                 break;
             }
         }
-        if (matchFlag < 2 || !flag) {
+        if (matchFlag < 1 || !flag) {
             matchFlag = 0;
         }
         return matchFlag;
