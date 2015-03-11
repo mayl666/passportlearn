@@ -15,7 +15,7 @@ import javax.validation.constraints.AssertTrue;
 public class CheckOrUpdateNickNameParams {
 
     @NotBlank(message = "用户昵称不能为空")
-//    @IllegalSensitive
+    @IllegalSensitive
     private String nickname;
     private String sname = "";  //账号，sohu+继承而来，这里不做处理
 
