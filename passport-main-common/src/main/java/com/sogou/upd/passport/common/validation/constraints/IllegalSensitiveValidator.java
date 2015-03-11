@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.common.validation.constraints;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.UniqnameSensitiveSet;
+import com.sogou.upd.passport.common.utils.IllegalwordUtil;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -37,7 +37,7 @@ public class IllegalSensitiveValidator implements ConstraintValidator<IllegalSen
     public boolean checkUniqSensitiveSet(String uniqname) {
         long startTime = System.nanoTime();
         boolean isSensitive = false;
-        for (String sensitiveWord : UniqnameSensitiveSet.SENSITIVE_SET) {
+        for (String sensitiveWord : IllegalwordUtil.SENSITIVE_SET) {
             if (uniqname.contains(sensitiveWord)) {
                 isSensitive = true;
                 break;
