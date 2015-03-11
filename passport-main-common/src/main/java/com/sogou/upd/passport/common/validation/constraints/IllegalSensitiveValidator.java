@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.utils.IllegalwordUtil;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,8 +26,8 @@ public class IllegalSensitiveValidator implements ConstraintValidator<IllegalSen
         if (Strings.isNullOrEmpty(value)) {
             return true;
         }
-
-        if (checkUniqSensitiveSet(value)) {
+        if (checkUniqSensitiveDFA(value)) {
+//        if (checkUniqSensitiveSet(value)) {
             return false;
         }
 
@@ -48,4 +49,19 @@ public class IllegalSensitiveValidator implements ConstraintValidator<IllegalSen
         System.out.println("check uniqname sensitive by set:" + spendTime);
         return isSensitive;
     }
+
+    //校验昵称是否包含敏感词汇：DFA算法
+    public boolean checkUniqSensitiveDFA(String uniqname) {
+        long startTime = System.nanoTime();
+        boolean isSensitive = false;
+        Set<String> set = SensitivewordFilter.getSensitiveWord(uniqname, 1);
+        if (set.size() > 0) {
+            isSensitive = true;
+        }
+        long endTime = System.nanoTime();
+        long spendTime = endTime - startTime;
+        System.out.println("check uniqname sensitive by DFA:" + spendTime);
+        return isSensitive;
+    }
+
 }
