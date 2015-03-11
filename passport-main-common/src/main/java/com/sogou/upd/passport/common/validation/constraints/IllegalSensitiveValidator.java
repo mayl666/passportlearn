@@ -26,8 +26,8 @@ public class IllegalSensitiveValidator implements ConstraintValidator<IllegalSen
         if (Strings.isNullOrEmpty(value)) {
             return true;
         }
-//        if (checkUniqSensitiveDFA(value)) {
-        if (checkUniqSensitiveSet(value)) {
+        if (checkUniqSensitiveDFA(value)) {
+//        if (checkUniqSensitiveSet(value)) {
             return false;
         }
 

@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.common.utils;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +19,9 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class IllegalwordUtil {
+    private static final Logger logger = LoggerFactory.getLogger(IllegalwordUtil.class);
     public static final Set<String> SENSITIVE_SET;
+
 
     static {
         SENSITIVE_SET = new HashSet<String>();
@@ -31,7 +36,7 @@ public class IllegalwordUtil {
                 readValue = br.readLine();
             }
         } catch (IOException e) {
-            // 无默认数据
+            logger.error("get ilegal sensitive word failed", e);
 
         }
     }

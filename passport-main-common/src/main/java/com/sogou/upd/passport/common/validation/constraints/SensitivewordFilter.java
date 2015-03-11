@@ -1,17 +1,60 @@
 package com.sogou.upd.passport.common.validation.constraints;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.sogou.upd.passport.common.utils.IllegalwordUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 public class SensitivewordFilter {
+    private static final Logger logger = LoggerFactory.getLogger(SensitivewordFilter.class);
 
-    public static Map sensitiveWordMap = null;
+    public static Map sensitiveWordMap = new HashMap<String, String>();
+    public static Set<String> keyWordSet = new HashSet<String>();
     public static int minMatchTYpe = 1;
     public static int maxMatchType = 2;
 
     static {
-        sensitiveWordMap = SensitiveWordInit.initKeyWord();
+        initKeyWord();
+    }
+
+    public static void initKeyWord() {
+        try {
+            keyWordSet = IllegalwordUtil.SENSITIVE_SET;
+            addSensitiveWordToHashMap();
+
+        } catch (Exception e) {
+            logger.error("SensitivewordFilter initial sensitive word error", e);
+        }
+    }
+
+    public static void addSensitiveWordToHashMap() {
+        sensitiveWordMap = new HashMap(keyWordSet.size());
+        String key = null;
+        Map nowMap = null;
+        Map<String, String> newWorMap = null;
+        Iterator<String> iterator = keyWordSet.iterator();
+        while (iterator.hasNext()) {
+            key = iterator.next();
+            nowMap = sensitiveWordMap;
+            for (int i = 0; i < key.length(); i++) {
+                char keyChar = key.charAt(i);
+                Object wordMap = nowMap.get(keyChar);
+
+                if (wordMap != null) {
+                    nowMap = (Map) wordMap;
+                } else {
+                    newWorMap = new HashMap<String, String>();
+                    newWorMap.put("isEnd", "0");
+                    nowMap.put(keyChar, newWorMap);
+                    nowMap = newWorMap;
+                }
+
+                if (i == key.length() - 1) {
+                    nowMap.put("isEnd", "1");
+                }
+            }
+        }
     }
 
     public static Set<String> getSensitiveWord(String txt, int matchType) {
