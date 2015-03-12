@@ -1,20 +1,16 @@
 package com.sogou.upd.passport.common.validation.constraints;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.sogou.upd.passport.common.utils.IllegalWordUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SensitiveWordFilter {
     private static final Logger logger = LoggerFactory.getLogger(SensitiveWordFilter.class);
 
-    public static Map sensitiveWordMap = Maps.newHashMap();
-    public static Set<String> keyWordSet = Sets.newHashSet();
+    public static Map sensitiveWordMap = new HashMap<String,String>();
+    public static Set<String> keyWordSet = new HashSet<String>();
     public static int minMatchTYpe = 1;
 
     static {
@@ -32,7 +28,7 @@ public class SensitiveWordFilter {
     }
 
     public static void addSensitiveWordToHashMap() {
-        sensitiveWordMap = Maps.newHashMapWithExpectedSize(keyWordSet.size());
+        sensitiveWordMap = new HashMap(keyWordSet.size());
         String key;
         Map nowMap;
         Map<String, String> newWorMap;
@@ -47,7 +43,7 @@ public class SensitiveWordFilter {
                 if (wordMap != null) {
                     nowMap = (Map) wordMap;
                 } else {
-                    newWorMap = Maps.newHashMap();
+                    newWorMap = new HashMap();
                     newWorMap.put("isEnd", "0");
                     nowMap.put(keyChar, newWorMap);
                     nowMap = newWorMap;
@@ -61,7 +57,7 @@ public class SensitiveWordFilter {
     }
 
     public static Set<String> getSensitiveWord(String txt, int matchType) {
-        Set<String> sensitiveWordList = Sets.newHashSet();
+        Set<String> sensitiveWordList = new HashSet<String>();
 
         for (int i = 0; i < txt.length(); i++) {
             int length = checkSensitiveWord(txt, i, matchType);
