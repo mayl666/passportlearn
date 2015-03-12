@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.common.utils;
 
 
+import com.google.common.collect.Sets;
+import com.sogou.upd.passport.common.CommonConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -18,16 +19,16 @@ import java.util.Set;
  * Time: 上午11:18
  * To change this template use File | Settings | File Templates.
  */
-public class IllegalwordUtil {
-    private static final Logger logger = LoggerFactory.getLogger(IllegalwordUtil.class);
+public class IllegalWordUtil {
+    private static final Logger logger = LoggerFactory.getLogger(IllegalWordUtil.class);
     public static final Set<String> SENSITIVE_SET;
 
 
     static {
-        SENSITIVE_SET = new HashSet<String>();
+        SENSITIVE_SET = Sets.newHashSet();
         try {
-            InputStream illegalwords = IllegalwordUtil.class.getResourceAsStream("/illegalwords.dat");
-            BufferedReader br = new BufferedReader(new InputStreamReader(illegalwords, "UTF-8"));
+            InputStream illegalWords = IllegalWordUtil.class.getResourceAsStream("/illegalWords.dat");
+            BufferedReader br = new BufferedReader(new InputStreamReader(illegalWords, CommonConstant.DEFAULT_CHARSET));
             String readValue = br.readLine();
             String word;
             while (readValue != null) {
@@ -36,7 +37,7 @@ public class IllegalwordUtil {
                 readValue = br.readLine();
             }
         } catch (IOException e) {
-            logger.error("get ilegal sensitive word failed", e);
+            logger.error("get illegal sensitive word failed", e);
 
         }
     }

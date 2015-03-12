@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.common.validation.constraints;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.utils.IllegalwordUtil;
+import com.sogou.upd.passport.common.utils.IllegalWordUtil;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -36,31 +36,23 @@ public class IllegalSensitiveValidator implements ConstraintValidator<IllegalSen
 
     //校验昵称是否包含敏感词汇：true为包含敏感词汇，遍历set
     public boolean checkUniqSensitiveSet(String uniqname) {
-        long startTime = System.nanoTime();
         boolean isSensitive = false;
-        for (String sensitiveWord : IllegalwordUtil.SENSITIVE_SET) {
+        for (String sensitiveWord : IllegalWordUtil.SENSITIVE_SET) {
             if (uniqname.contains(sensitiveWord)) {
                 isSensitive = true;
                 break;
             }
         }
-        long endTime = System.nanoTime();
-        long spendTime = endTime - startTime;
-        System.out.println("check uniqname sensitive by set:" + spendTime);
         return isSensitive;
     }
 
     //校验昵称是否包含敏感词汇：DFA算法
     public boolean checkUniqSensitiveDFA(String uniqname) {
-        long startTime = System.nanoTime();
         boolean isSensitive = false;
-        Set<String> set = SensitivewordFilter.getSensitiveWord(uniqname, 1);
+        Set<String> set = SensitiveWordFilter.getSensitiveWord(uniqname, 1);
         if (set.size() > 0) {
             isSensitive = true;
         }
-        long endTime = System.nanoTime();
-        long spendTime = endTime - startTime;
-        System.out.println("check uniqname sensitive by DFA:" + spendTime);
         return isSensitive;
     }
 
