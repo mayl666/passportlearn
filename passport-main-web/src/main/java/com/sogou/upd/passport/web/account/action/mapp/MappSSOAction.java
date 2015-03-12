@@ -90,7 +90,7 @@ public class MappSSOAction extends BaseController {
 
     }
 
-    @RequestMapping(value = "/swapsid", method = RequestMethod.POST)
+    @RequestMapping(value = "/swapsgid", method = RequestMethod.POST)
     @ResponseBody
     public String swapsid(HttpServletRequest request, MappSSOSwapSidParams params) throws Exception {
 
