@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.account.form;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.UniqNameUtil;
+import com.sogou.upd.passport.common.validation.constraints.IllegalSensitive;
 import com.sogou.upd.passport.common.validation.constraints.UniqName;
 import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
@@ -18,6 +19,7 @@ import javax.validation.constraints.AssertTrue;
 public class UpdateUserUniqnameApiParams extends BaseApiParams {
 
     @NotBlank(message = "用户昵称不能为空")
+    @IllegalSensitive
     private String uniqname;
 
     @AssertTrue(message = "昵称长度不符合规则，长度应该在2——12字符之间")

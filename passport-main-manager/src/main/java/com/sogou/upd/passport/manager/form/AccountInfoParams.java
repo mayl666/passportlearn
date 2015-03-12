@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.utils.ProvinceAndCityUtil;
 import com.sogou.upd.passport.common.validation.constraints.Birthday;
 import com.sogou.upd.passport.common.validation.constraints.Gender;
 import com.sogou.upd.passport.common.validation.constraints.IdCard;
+import com.sogou.upd.passport.common.validation.constraints.IllegalSensitive;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -26,9 +27,11 @@ public class AccountInfoParams {
     private String gender;  //用户性别
     private String province;  //省份
     private String city;    //城市
+    @IllegalSensitive
     private String fullname;  //姓名
     @IdCard
     private String personalid;     //身份证号
+    @IllegalSensitive
     private String uniqname;
 
     @AssertTrue(message = "省市参数错误！")
