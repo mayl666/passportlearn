@@ -22,7 +22,6 @@ import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpenApiV3;
-import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
 import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuthError;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
@@ -113,46 +112,44 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
 
     @Override
     public ConnectUserInfoVO getQQUserInfo(String openId, String openKey, ConnectConfig connectConfig) throws OAuthProblemException {
-        ConnectUserInfoVO connectUserInfoVO = null;
+        ConnectUserInfoVO connectUserInfoVO;
+        Map resultMap;
+        //QQ提供的openapi服务器
+        String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
+        //应用的基本信息，搜狗在QQ的第三方appid与appkey
+        OpenApiV3 sdk = new OpenApiV3(connectConfig.getAppKey(), connectConfig.getAppSecret());
+        sdk.setServerName(serverName);
+        //调用代理第三方接口，点亮或熄灭QQ图标
+        //https://graph.qq.com/v3/user/get_info?openid=FF46B08FC3D97E66CCDB61FA14C78805&openkey=C569E9F7CC67311C800E6A6A89EBC9DE&pf=qzone&appid=100294784&format=json
+        // 指定OpenApi Cgi名字
+        String scriptName = "/v3/user/get_info";
+        // 指定HTTP请求协议类型,目前代理接口走的都是HTTP请求，所以需要sig签名，如果为HTTPS请求，则不需要sig签名
+        String protocol = CommonConstant.HTTPS;
+        // 填充URL请求参数,用来生成sig签名
+        HashMap<String, String> params = Maps.newHashMap();
+        params.put("openid", openId);
+        params.put("openkey", openKey);
+        params.put("pf", "qzone");
         try {
-            //QQ提供的openapi服务器
-            String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
-            //应用的基本信息，搜狗在QQ的第三方appid与appkey
-            OpenApiV3 sdk = new OpenApiV3(connectConfig.getAppKey(), connectConfig.getAppSecret());
-            sdk.setServerName(serverName);
-            //调用代理第三方接口，点亮或熄灭QQ图标
-            //https://graph.qq.com/v3/user/get_info?openid=FF46B08FC3D97E66CCDB61FA14C78805&openkey=C569E9F7CC67311C800E6A6A89EBC9DE&pf=qzone&appid=100294784&format=json
-            // 指定OpenApi Cgi名字
-            String scriptName = "/v3/user/get_info";
-            // 指定HTTP请求协议类型,目前代理接口走的都是HTTP请求，所以需要sig签名，如果为HTTPS请求，则不需要sig签名
-            String protocol = CommonConstant.HTTPS;
-            // 填充URL请求参数,用来生成sig签名
-            HashMap<String, String> params = Maps.newHashMap();
-            params.put("openid", openId);
-            params.put("openkey", openKey);
-            params.put("pf", "qzone");
-            Map resultMap = sdk.api(scriptName, params, protocol);
-            if (CollectionUtils.isEmpty(resultMap)) {
-                throw OAuthProblemException.error(ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID);
-            }
-            String ret = (String) resultMap.get(QQOAuthError.ERROR_CODE);
-            if (Strings.isNullOrEmpty(ret) || !ret.equals("0")) {
-                throw OAuthProblemException.error(ErrorUtil.CONNECT_USER_DEFINED_ERROR, (String) resultMap.get(QQOAuthError.ERROR_DESCRIPTION));
-            }
-            connectUserInfoVO = new ConnectUserInfoVO();
-            connectUserInfoVO.setNickname(getParam(resultMap, QQOAuth.NICK_NAME));
-            connectUserInfoVO.setAvatarSmall(formAvatarUrl(resultMap, "30"));    // 30*30
-            connectUserInfoVO.setAvatarMiddle(formAvatarUrl(resultMap, "50"));  // 50*50
-            connectUserInfoVO.setAvatarLarge(formAvatarUrl(resultMap, "100"));   // 100*100
-            connectUserInfoVO.setGender(formGender(getParam(resultMap, QQOAuth.GENDER)));
-            connectUserInfoVO.setOriginal(resultMap);
-        } catch (OpensnsException oe) {
-            logger.error(String.format("Request Failed.code:{}, msg:{}", oe.getErrorCode(), oe.getMessage()), oe);
-            throw OAuthProblemException.error(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            resultMap = sdk.api(scriptName, params, protocol);
         } catch (Exception e) {
-            logger.warn("Execute Api Is Failed :", e);
             throw OAuthProblemException.error(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
+        if (CollectionUtils.isEmpty(resultMap)) {
+            throw OAuthProblemException.error(ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID);
+        }
+        String ret = (String) resultMap.get(QQOAuthError.ERROR_CODE);
+        if (Strings.isNullOrEmpty(ret) || !ret.equals("0")) {
+            throw OAuthProblemException.error(ErrorUtil.CONNECT_USER_DEFINED_ERROR, (String) resultMap.get(QQOAuthError.ERROR_DESCRIPTION));
+        }
+        connectUserInfoVO = new ConnectUserInfoVO();
+        connectUserInfoVO.setNickname(getParam(resultMap, QQOAuth.NICK_NAME));
+        connectUserInfoVO.setAvatarSmall(formAvatarUrl(resultMap, "30"));    // 30*30
+        connectUserInfoVO.setAvatarMiddle(formAvatarUrl(resultMap, "50"));  // 50*50
+        connectUserInfoVO.setAvatarLarge(formAvatarUrl(resultMap, "100"));   // 100*100
+        connectUserInfoVO.setGender(formGender(getParam(resultMap, QQOAuth.GENDER)));
+        connectUserInfoVO.setOriginal(resultMap);
+
         return connectUserInfoVO;
     }
 
