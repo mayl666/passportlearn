@@ -3,8 +3,6 @@ package com.sogou.upd.passport.manager.connect;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 
-import java.util.Map;
-
 /**
  * Created with IntelliJ IDEA.
  * User: lzy_clement

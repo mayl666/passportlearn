@@ -74,33 +74,6 @@ public class ConnectSSOController extends BaseConnectController {
             UserOperationLogUtil.log(userOperationLog);
         }
     }
-    //根据qq软件管家的token生成搜狗的token，生成输入法的登陆态
-    @RequestMapping("/generateTokenByQQMananger")
-    @ResponseBody
-    public String generateTokenByQQMananger(HttpServletRequest req, HttpServletResponse res,
-                                            @PathVariable("providerStr") String providerStr,
-                                            AfterAuthParams params,String type){
-        Result result = new APIResultSupport(false);
-        try {
-            //参数验证
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
-            }
-            result = oAuthAuthLoginManager.handleSSOAfterauth(req, params, providerStr, getIp(req));
-            if (result.isSuccess()) {
-                buildSpecialResultParams(req, result, params.getClient_id(), providerStr);
-            }
-            return result.toString();
-        } finally {
-            String uidStr = PassportIDGenerator.generator(params.getOpenid(), AccountTypeEnum.getProvider(providerStr));
-            String userId = StringUtils.defaultIfEmpty((String) result.getModels().get("userid"), uidStr);
-            UserOperationLog userOperationLog = new UserOperationLog(userId, req.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(req));
-            UserOperationLogUtil.log(userOperationLog);
-        }
-    }
 
     /*
      * 根据应用需要，构建特定返回字段
