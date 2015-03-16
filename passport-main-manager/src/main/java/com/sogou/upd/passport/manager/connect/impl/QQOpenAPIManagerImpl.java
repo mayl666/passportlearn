@@ -138,8 +138,8 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
         if (CollectionUtils.isEmpty(resultMap)) {
             throw OAuthProblemException.error(ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID);
         }
-        String ret = (String) resultMap.get(QQOAuthError.ERROR_CODE);
-        if (Strings.isNullOrEmpty(ret) || !ret.equals("0")) {
+        int ret = (Integer) resultMap.get(QQOAuthError.ERROR_CODE);
+        if (ret != 0) {
             throw OAuthProblemException.error(ErrorUtil.CONNECT_USER_DEFINED_ERROR, (String) resultMap.get(QQOAuthError.ERROR_DESCRIPTION));
         }
         connectUserInfoVO = new ConnectUserInfoVO();
