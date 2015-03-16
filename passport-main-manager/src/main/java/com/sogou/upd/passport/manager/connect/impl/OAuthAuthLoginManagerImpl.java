@@ -402,7 +402,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     String uniqname = authParams.getUniqname();
                     connectUserInfoVO.setNickname(uniqname);
                 } else {
-                    if (qqManagerCooperate(type, provider)) {
+                    if (qqManagerCooperate(type, provider)) {    // QQ管家和输入法合作，传入openkey(也就是accesstoken）来登录，使用开平API，不能使用互联API，openkey有效期为2小时
                        connectUserInfoVO =qqOpenAPIManager.getQQUserInfo(openId, accessToken, connectConfig);
                     } else {
                         connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);

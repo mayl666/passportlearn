@@ -20,9 +20,11 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.connect.QQOpenAPIManager;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectRelation;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpenApiV3;
 import com.sogou.upd.passport.oauth2.common.utils.qqutils.OpensnsException;
 import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
+import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuthError;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +112,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     }
 
     @Override
-    public ConnectUserInfoVO getQQUserInfo(String openId, String openKey, ConnectConfig connectConfig) {
+    public ConnectUserInfoVO getQQUserInfo(String openId, String openKey, ConnectConfig connectConfig) throws OAuthProblemException {
         ConnectUserInfoVO connectUserInfoVO = null;
         try {
             //QQ提供的openapi服务器
@@ -130,6 +132,13 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
             params.put("openkey", openKey);
             params.put("pf", "qzone");
             Map resultMap = sdk.api(scriptName, params, protocol);
+            if (CollectionUtils.isEmpty(resultMap)) {
+                throw OAuthProblemException.error(ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID);
+            }
+            String ret = (String) resultMap.get(QQOAuthError.ERROR_CODE);
+            if (Strings.isNullOrEmpty(ret) || !ret.equals("0")) {
+                throw OAuthProblemException.error(ErrorUtil.CONNECT_USER_DEFINED_ERROR, (String) resultMap.get(QQOAuthError.ERROR_DESCRIPTION));
+            }
             connectUserInfoVO = new ConnectUserInfoVO();
             connectUserInfoVO.setNickname(getParam(resultMap, QQOAuth.NICK_NAME));
             connectUserInfoVO.setAvatarSmall(formAvatarUrl(resultMap, "30"));    // 30*30
@@ -139,8 +148,10 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
             connectUserInfoVO.setOriginal(resultMap);
         } catch (OpensnsException oe) {
             logger.error(String.format("Request Failed.code:{}, msg:{}", oe.getErrorCode(), oe.getMessage()), oe);
+            throw OAuthProblemException.error(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } catch (Exception e) {
             logger.warn("Execute Api Is Failed :", e);
+            throw OAuthProblemException.error(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return connectUserInfoVO;
     }
