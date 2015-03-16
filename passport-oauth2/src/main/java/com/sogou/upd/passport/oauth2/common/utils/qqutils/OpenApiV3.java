@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,14 +66,19 @@ public class OpenApiV3 {
      * @return 返回服务器响应内容
      */
     public String api(String scriptName, HashMap<String, String> params, String protocol, String method) throws Exception {
-        String resp;
+        Map map = api(scriptName, params, protocol);
+        String resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
+        return resp;
+    }
+
+    public Map api(String scriptName, HashMap<String, String> params, String protocol) throws Exception {
+        Map map;
         try {
             // 无需传sig,会自动生成
             params.remove("sig");
             // 添加固定参数
             params.put("appid", this.appid);
 
-//        System.out.println("sig:-------------" + sig);
             StringBuilder sb = new StringBuilder(64);
             sb.append(protocol).append("://").append(this.serverName).append(scriptName);
             String url = sb.toString();
@@ -83,16 +87,12 @@ public class OpenApiV3 {
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
             Map<String, Object> paramsMap = convertToMap(params);
             requestModel.setParams(paramsMap);
-            Map map = ConnectHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
-            resp = JacksonJsonMapperUtil.getMapper().writeValueAsString(map);
-        } catch (IOException ioe) {
-            logger.error("api:Transfer Map To Json Is Failed :", ioe);
-            throw new IOException("Transfer Map To Json Is Failed:", ioe);
+            map = ConnectHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
         } catch (Exception e) {
             logger.warn("api:Execute Api Is Failed :", e);
             throw new Exception("Execute Api Is Failed:", e);
         }
-        return resp;
+        return map;
     }
 
     private Map<String, Object> convertToMap(HashMap<String, String> paramsMap) {
