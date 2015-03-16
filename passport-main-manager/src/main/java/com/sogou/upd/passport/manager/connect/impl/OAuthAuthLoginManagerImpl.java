@@ -93,6 +93,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private ConnectApiManager sgConnectApiManager;
     @Autowired
     private QQOpenAPIManager qqOpenAPIManager;
+    @Autowired
     private AppConfigService appConfigService;
     @Autowired
     private RedisUtils redisUtils;

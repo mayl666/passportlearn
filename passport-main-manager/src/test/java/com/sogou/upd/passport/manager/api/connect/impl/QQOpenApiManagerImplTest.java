@@ -66,7 +66,9 @@ public class QQOpenApiManagerImplTest extends BaseTest {
         String openKey = "C569E9F7CC67311C800E6A6A89EBC9DE";
         ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId("", 3);
         ConnectUserInfoVO res = qqOpenApiManager.getQQUserInfo(openId, openKey, connectConfig);
-        //{ret=0, is_lost=0, nickname=SogouConnect, gender=男, country=中国, province=北京, city=海淀, figureurl=http://thirdapp2.qlogo.cn/qzopenapp/8c56bf9a878474d27a4e33ecf336cb896a91f93edc7f2230d60e1e5af24d7706/50, is_yellow_vip=0, is_yellow_year_vip=0, yellow_vip_level=0, is_yellow_high_vip=0}
+        //{ret=0, is_lost=0, nickname=SogouConnect, gender=男, country=中国, province=北京, city=海淀,
+        // figureurl=http://thirdapp2.qlogo.cn/qzopenapp/8c56bf9a878474d27a4e33ecf336cb896a91f93edc7f2230d60e1e5af24d7706/50,
+        // is_yellow_vip=0, is_yellow_year_vip=0, yellow_vip_level=0, is_yellow_high_vip=0}
         System.out.println(res);
     }
 }
