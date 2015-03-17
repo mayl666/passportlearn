@@ -395,7 +395,8 @@ public class StringUtil {
      * @return
      */
     public static String processEmail(String email) {
-        if (email.length() < 3) {
+        String prefix = email.substring(0, email.indexOf("@"));
+        if (prefix.length() <= 3) {
             return processStr(email, 1, 1, "@", 1);
         } else {
             return processStr(email, 2, 1, "@", 1);
