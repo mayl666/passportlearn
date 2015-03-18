@@ -150,8 +150,7 @@ public class Coder {
     public static String encryptMD5(String data) throws Exception {
 
         MessageDigest md5 = MessageDigest.getInstance(KEY_MD5);
-        md5.update(data.getBytes());
-        System.out.println(System.getProperty("file.encoding"));
+        md5.update(data.getBytes(CommonConstant.DEFAULT_CHARSET));
         return toHexString(md5.digest());
 
     }
