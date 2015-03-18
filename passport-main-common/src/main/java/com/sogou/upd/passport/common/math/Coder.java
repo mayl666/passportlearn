@@ -151,7 +151,7 @@ public class Coder {
 
         MessageDigest md5 = MessageDigest.getInstance(KEY_MD5);
         md5.update(data.getBytes());
-
+        System.out.println(System.getProperty("file.encoding"));
         return toHexString(md5.digest());
 
     }
