@@ -19,8 +19,6 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.form.AccountInfoParams;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.app.ConnectConfig;
-import com.sogou.upd.passport.model.connect.ConnectToken;
 import com.sogou.upd.passport.model.connect.OriginalConnectInfo;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
@@ -186,7 +184,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             //第三方账号
             if (domain == AccountDomainEnum.THIRD) {
                 if (Strings.isNullOrEmpty(uniqname)) {
-                    OriginalConnectInfo connectInfo = getOriginalConnectInfo(passportId) ;
+                    OriginalConnectInfo connectInfo = getOriginalConnectInfo(passportId);
                     if (connectInfo != null) {
                         uniqname = connectInfo.getConnectUniqname();
                         //判断uniqname,若为空，则调用 getDefaultUniqname 方法
@@ -246,8 +244,8 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                                 obtainPhotoSizeUrl(nameAndAvatarVO, avatarurl);
                             }
                             //处理gender信息，默认为0
-                            if(!Strings.isNullOrEmpty(connectInfo.getGender())) {
-                                gender = connectInfo.getGender() ;
+                            if (!Strings.isNullOrEmpty(connectInfo.getGender())) {
+                                gender = connectInfo.getGender();
                             }
                         }
                     } else {
@@ -255,7 +253,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                     }
                     // 处理gender信息，默认为0
                     if (StringUtils.contains(params.getFields(), "gender")) {
-                        result.setDefaultModel("gender",gender);
+                        result.setDefaultModel("gender", gender);
                     }
                 } else {
                     //非第三方账号
@@ -329,17 +327,16 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     }
 
     /**
-     *获取第三方用户原始信息
-     *
-     *
+     * 获取第三方用户原始信息
      */
     private OriginalConnectInfo getOriginalConnectInfo(String userId) {
         //
         int provider = AccountTypeEnum.getAccountType(userId).getValue();
-        OriginalConnectInfo connectInfo = connectTokenService.queryOriginalConnectInfo(userId,provider);
+        OriginalConnectInfo connectInfo = connectTokenService.queryOriginalConnectInfo(userId, provider);
 
         return connectInfo;
     }
+
     /**
      * 从浏览器论坛取昵称
      *
@@ -376,7 +373,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
         infoApiparams.setFields(params.getFields());
         infoApiparams.setUserid(params.getUsername());
-//        infoApiparams.setClient_id(Integer.parseInt(params.getClient_id()));
+        if (Strings.isNullOrEmpty(params.getImagesize())) {
+            infoApiparams.setImagesize(params.getImagesize());
+        }
         return infoApiparams;
     }
 
