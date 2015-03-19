@@ -373,7 +373,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
         infoApiparams.setFields(params.getFields());
         infoApiparams.setUserid(params.getUsername());
-        if (Strings.isNullOrEmpty(params.getImagesize())) {
+        if (!Strings.isNullOrEmpty(params.getImagesize())) {
             infoApiparams.setImagesize(params.getImagesize());
         }
         return infoApiparams;
