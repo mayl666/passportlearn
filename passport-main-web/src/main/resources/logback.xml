@@ -135,17 +135,17 @@
     </logger>
 
        <!---->
-    <appender name="kafkaAsyncAppender" class="com.sogou.upd.passport.logback.api.kafka.MultiKafkaAppender"
-              additivity="false">
-        <zkList>${zkList}</zkList>
-        <brokerList>${brokerList}</brokerList>
-        <topic>${topic.userlog}</topic>
-        <poolSize>10</poolSize>
-        <async>true</async>
-        <encoder>
-            <pattern>%msg</pattern>
-        </encoder>
-    </appender>
+    <!--<appender name="kafkaAsyncAppender" class="com.sogou.upd.passport.logback.api.kafka.MultiKafkaAppender"-->
+              <!--additivity="false">-->
+        <!--<zkList>${zkList}</zkList>-->
+        <!--<brokerList>${brokerList}</brokerList>-->
+        <!--<topic>${topic.userlog}</topic>-->
+        <!--<poolSize>10</poolSize>-->
+        <!--<async>true</async>-->
+        <!--<encoder>-->
+            <!--<pattern>%msg</pattern>-->
+        <!--</encoder>-->
+    <!--</appender>-->
 
     <appender name="localAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
         <queueSize>512</queueSize>
@@ -154,7 +154,7 @@
     </appender>
 
     <logger name="userLoggerAsync" level="info" additivity="false">
-        <appender-ref ref="kafkaAsyncAppender"/>
+        <!--<appender-ref ref="kafkaAsyncAppender"/>-->
         <!--<appender-ref ref="rabbitMQAsyncAppender"/>-->
         <appender-ref ref="localAsyncAppender"/>
 
