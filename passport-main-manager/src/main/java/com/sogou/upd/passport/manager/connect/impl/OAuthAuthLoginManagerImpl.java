@@ -21,6 +21,7 @@ import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.api.connect.ConnectManagerHelper;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
+import com.sogou.upd.passport.manager.connect.QQOpenAPIManager;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.manager.form.connect.AfterAuthParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
@@ -90,6 +91,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private AccountInfoManager accountInfoManager;
     @Autowired
     private ConnectApiManager sgConnectApiManager;
+    @Autowired
+    private QQOpenAPIManager qqOpenAPIManager;
     @Autowired
     private AppConfigService appConfigService;
     @Autowired
@@ -359,12 +362,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             long expiresIn = authParams.getExpires_in();
             int clientId = authParams.getClient_id();
             int isthird = authParams.getIsthird();
-//            String instance_id = req.getParameter("instance_id");
+            String instance_id = req.getParameter("instance_id");
             String appidtypeString = req.getParameter("appid_type");
             Integer appidType = appidtypeString == null ? null : Integer.valueOf(appidtypeString);
             int provider = AccountTypeEnum.getProvider(providerStr);
             String tcode = authParams.getTcode();
             String thirdAppId = req.getParameter(CommonConstant.THIRD_APPID); //不为空时代表应用使用独立appid；
+            String type = authParams.getType();
             if (AccountTypeEnum.isConnect(provider)) {
                 ConnectConfig connectConfig = queryConnectConfig(thirdAppId, appidType, clientId, provider);
                 if (connectConfig == null) {
@@ -398,7 +402,11 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     String uniqname = authParams.getUniqname();
                     connectUserInfoVO.setNickname(uniqname);
                 } else {
-                    connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
+                    if (qqManagerCooperate(type, provider)) {    // QQ管家和输入法合作，传入openkey(也就是accesstoken）来登录，使用开平API，不能使用互联API，openkey有效期为2小时
+                       connectUserInfoVO =qqOpenAPIManager.getQQUserInfo(openId, accessToken, connectConfig);
+                    } else {
+                        connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
+                    }
                     if (connectUserInfoVO == null) {
                         result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
                         return result;
@@ -463,17 +471,31 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     }
                 }
                 //写session 数据库
-                Result sessionResult = sessionServerManager.createSession(passportId);
-                String sgid;
-                if (sessionResult.isSuccess()) {
-                    sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
-                    if (!Strings.isNullOrEmpty(sgid)) {
-                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                if (ConnectTypeEnum.WAP.toString().equals(type)) {
+                    Result sessionResult = sessionServerManager.createSession(passportId);
+                    if (sessionResult.isSuccess()) {
+                        String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+                        if (!Strings.isNullOrEmpty(sgid)) {
+                            result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                            result.setSuccess(true);
+                            result.setMessage("success");
+                            removeParam(result);
+                        } else {
+                            result.setCode(ErrorUtil.ERR_CODE_CREATE_SGID_FAILED);
+                        }
+                    }
+                } else if (qqManagerCooperate(type, provider)) {
+                    Result tokenResult = pcAccountManager.createAccountToken(passportId, instance_id, clientId);
+                    AccountToken accountToken = (AccountToken) tokenResult.getDefaultModel();
+                    if (tokenResult.isSuccess()) {
+                        result.setDefaultModel("token", accountToken.getAccessToken());
+                        result.setDefaultModel("refreshToken", accountToken.getRefreshToken());
                         result.setSuccess(true);
                         result.setMessage("success");
                         removeParam(result);
                     } else {
-                        result.setCode(ErrorUtil.ERR_CODE_CREATE_SGID_FAILED);
+                        result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+                        result.setMessage("create token fail");
                     }
                 }
                 result.getModels().put("userid", passportId);
@@ -746,6 +768,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     private boolean isMobileDisplay(String type, String from) {
         return ConnectTypeEnum.TOKEN.toString().equals(type) && "mob".equalsIgnoreCase(from)
                 || ConnectTypeEnum.MOBILE.toString().equals(type);
+    }
+
+    private boolean qqManagerCooperate(String type, int provider) {
+        return ConnectTypeEnum.TOKEN.toString().equals(type) && AccountTypeEnum.QQ.getValue() == provider;
     }
 
 }
