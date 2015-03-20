@@ -327,10 +327,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         if (!Strings.isNullOrEmpty(thirdInfo)) {
             if ("0".equals(thirdInfo)) {
                 //获取搜狗用户信息
-                ObtainAccountInfoParams params = new ObtainAccountInfoParams();
-                params.setUsername(passportId);
-                params.setClient_id(String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID));
-                params.setFields("uniqname,sex");
+                ObtainAccountInfoParams params = new ObtainAccountInfoParams(String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID), passportId, "uniqname,avatarurl,sex");
+                params.setImagesize("30,50,180");
                 result = accountInfoManager.getUserInfo(params);
                 if (result.isSuccess()) {
                     avatarLarge = (String) result.getModels().get("img_180");
