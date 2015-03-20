@@ -331,9 +331,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 params.setImagesize("30,50,180");
                 result = accountInfoManager.getUserInfo(params);
                 if (result.isSuccess()) {
-                    avatarLarge = (String) result.getModels().get("img_180");
-                    avatarMiddle = (String) result.getModels().get("img_50");
-                    avatarSmall = (String) result.getModels().get("img_30");
+                    avatarLarge = (String) result.getModels().get("large_avatar");
+                    avatarMiddle = (String) result.getModels().get("mid_avatar");
+                    avatarSmall = (String) result.getModels().get("tiny_avatar");
                     uniqname = (String) result.getModels().get("uniqname");
                     sex = (String) result.getModels().get("sex");
                 }
