@@ -327,15 +327,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         if (!Strings.isNullOrEmpty(thirdInfo)) {
             if ("0".equals(thirdInfo)) {
                 //获取搜狗用户信息
-                ObtainAccountInfoParams params = new ObtainAccountInfoParams();
-                params.setUsername(passportId);
-                params.setClient_id(String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID));
-                params.setFields("uniqname,sex");
+                ObtainAccountInfoParams params = new ObtainAccountInfoParams(String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID), passportId, "uniqname,avatarurl,sex");
+                params.setImagesize("30,50,180");
                 result = accountInfoManager.getUserInfo(params);
                 if (result.isSuccess()) {
-                    avatarLarge = (String) result.getModels().get("img_180");
-                    avatarMiddle = (String) result.getModels().get("img_50");
-                    avatarSmall = (String) result.getModels().get("img_30");
+                    avatarLarge = (String) result.getModels().get("large_avatar");
+                    avatarMiddle = (String) result.getModels().get("mid_avatar");
+                    avatarSmall = (String) result.getModels().get("tiny_avatar");
                     uniqname = (String) result.getModels().get("uniqname");
                     sex = (String) result.getModels().get("sex");
                 }
@@ -441,12 +439,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 boolean isConnectUserInfo = false;
                 //isthird=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
                 if (isthird == 0) {
-                    ObtainAccountInfoParams params = new ObtainAccountInfoParams(String.valueOf(clientId), passportId, "uniqname,sex");
+                    ObtainAccountInfoParams params = new ObtainAccountInfoParams(String.valueOf(clientId), passportId, "uniqname,avatarurl,sex");
+                    params.setImagesize("30,50,180");
                     result = accountInfoManager.getUserInfo(params);
                     if (result.isSuccess()) {
-                        String img180 = (String) result.getModels().get("img_180");
-                        String img50 = (String) result.getModels().get("img_50");
-                        String img30 = (String) result.getModels().get("img_30");
+                        String img180 = (String) result.getModels().get("large_avatar");
+                        String img50 = (String) result.getModels().get("mid_avatar");
+                        String img30 = (String) result.getModels().get("tiny_avatar");
                         uniqname = (String) result.getModels().get("uniqname");
                         String gender = (String) result.getModels().get("sex");
 

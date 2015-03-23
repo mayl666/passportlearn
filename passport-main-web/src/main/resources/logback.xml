@@ -134,7 +134,7 @@
         <appender-ref ref="interfaceLimitedAppender"/>
     </logger>
 
-       <!---->
+
     <appender name="kafkaAsyncAppender" class="com.sogou.upd.passport.logback.api.kafka.MultiKafkaAppender"
               additivity="false">
         <zkList>${zkList}</zkList>
