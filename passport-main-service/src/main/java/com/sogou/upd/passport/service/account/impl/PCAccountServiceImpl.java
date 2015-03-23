@@ -126,6 +126,7 @@ public class PCAccountServiceImpl implements PCAccountTokenService {
         try {
             String tokenRedisKey = buildTokenRedisKeyStr(passportId, clientId, instanceId);
             AccountToken accountToken = tokenRedisUtils.getObject(tokenRedisKey, AccountToken.class);
+            accountToken = null;
             if (accountToken == null) {
                 accountToken = coreKvUtils.getObject(buildCoreKvKey(CORE_KV_PREFIX_PASSPROTID_TOKEN, passportId, clientId, instanceId), AccountToken.class);
                 if (accountToken != null) {

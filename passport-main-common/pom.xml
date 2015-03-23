@@ -26,6 +26,13 @@
             <version>1.0.3.RELEASE</version>
         </dependency>
 
+        <!-- mongodb -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-mongodb</artifactId>
+            <version>1.6.2.RELEASE</version>
+        </dependency>
+
         <!-- sohu sendcloud-->
         <dependency>
             <groupId>com.sohu</groupId>
