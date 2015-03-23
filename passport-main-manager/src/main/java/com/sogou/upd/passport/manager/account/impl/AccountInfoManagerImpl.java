@@ -154,6 +154,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Override
     public Result getUserInfo(ObtainAccountInfoParams params) {
         GetUserInfoApiparams infoApiparams = buildGetUserInfoApiparams(params);
+        infoApiparams.setImagesize("30,50,180");
         Result result = sgUserInfoApiManager.getUserInfo(infoApiparams);
         return result;
     }

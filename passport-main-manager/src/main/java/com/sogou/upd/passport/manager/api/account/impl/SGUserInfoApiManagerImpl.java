@@ -120,7 +120,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                 result.setDefaultModel("mid_avatar", Strings.isNullOrEmpty(mid_avatar) ? "" : mid_avatar);
                             }
                             if (StringUtils.contains(imageSize, "180")) {
-                                result.setDefaultModel("large_avatar", Strings.isNullOrEmpty(mid_avatar) ? "" : large_avatar);
+                                result.setDefaultModel("large_avatar", Strings.isNullOrEmpty(large_avatar) ? "" : large_avatar);
                             }
                             //处理第三方gender信息
                             if ((domain == AccountDomainEnum.THIRD) && (StringUtils.contains(fields, "gender"))) {
