@@ -55,7 +55,6 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
         }
         Result result = new APIResultSupport(false);
         String ip = IpLocationUtil.getIp(request);
-        ip = "10.129.192.147";
         if (Strings.isNullOrEmpty(ip)) {
             return true;
         } else {
