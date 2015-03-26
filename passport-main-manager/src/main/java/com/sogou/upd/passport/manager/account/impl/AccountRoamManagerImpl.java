@@ -230,7 +230,7 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
                         return textArray[0];
                     }
                 } else {
-                    logger.error("can't get token, text:" + clearText);
+                    logger.warn("can't get token, text:" + clearText);
                     return null;
                 }
             } else {

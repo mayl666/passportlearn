@@ -18,6 +18,10 @@ public class ObtainAccountInfoParams {
 
     private String username;
 
+    private String fields;
+
+    private String imagesize;
+
     public ObtainAccountInfoParams(){}
 
     public ObtainAccountInfoParams(String client_id, String username, String fields) {
@@ -25,8 +29,6 @@ public class ObtainAccountInfoParams {
         this.username = username;
         this.fields=fields;
     }
-
-    private String fields;
 
     public String getClient_id() {
         return client_id;
@@ -50,5 +52,13 @@ public class ObtainAccountInfoParams {
 
     public void setFields(String fields) {
         this.fields = fields;
+    }
+
+    public String getImagesize() {
+        return imagesize;
+    }
+
+    public void setImagesize(String imagesize) {
+        this.imagesize = imagesize;
     }
 }

@@ -31,6 +31,8 @@ public class AfterAuthParams {
     private String third_appid; //如果应用使用独立appid，需要传入不同第三方对应的appid； 如果不传，表示使用passport的appid；
     private String uniqname; //华为账号登陆时会传入uniqanme，服务端存储
 
+    private String type= "wap"; //wap表示手机app使用第三方SSO登录，返回sgid； token表示桌面客户端拿到第三方openid、accesstoken来登录，返回token；
+
     public String getOpenid() {
         return openid;
     }
@@ -125,5 +127,13 @@ public class AfterAuthParams {
 
     public void setUniqname(String uniqname) {
         this.uniqname = uniqname;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -78,12 +78,12 @@ public class QQProxyOpenApiManagerImpl extends BaseProxyManager implements QQPro
                 resp = qqApi(openApiParams, sigMap, protocol, method);
                 result.setDefaultModel(resp);
             } catch (Exception e) {
-                logger.error("executeQQOpenApi Is Failed:", e);
+                logger.error("get qq userinfo Is Failed:", e);
                 result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             }
             return result;
         } catch (Exception e) {
-            logger.error("executeQQOpenApi Is Failed,openId is " + openApiParams.getOpenId(), e);
+            logger.error("get qq userinfo Is Failed,openId is " + openApiParams.getOpenId(), e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;

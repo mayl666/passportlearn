@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.ProvinceAndCityUtil;
 import com.sogou.upd.passport.common.utils.UniqNameUtil;
 import com.sogou.upd.passport.common.validation.constraints.IdCard;
+import com.sogou.upd.passport.common.validation.constraints.IllegalSensitive;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -31,8 +32,10 @@ public class UpdateUserInfoApiParams extends BaseUserApiParams {
     //省份
     private String city;
     //昵称
+    @IllegalSensitive
     private String uniqname;
     //搜狗姓名
+    @IllegalSensitive
     private String fullname;
     //搜狐姓名
     private String username;

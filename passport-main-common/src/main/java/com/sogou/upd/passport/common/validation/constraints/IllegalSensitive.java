@@ -10,20 +10,18 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * The string has to be a real rootPath.
- * <p/>
- * User: shipengzhi
- * Date: 13-6-17
- * Time: 下午6:04
+ * Created with IntelliJ IDEA.
+ * User: nahongxu
+ * Date: 15-3-10
+ * Time: 下午7:22
  * To change this template use File | Settings | File Templates.
  */
 @Target({METHOD, FIELD, ANNOTATION_TYPE})
 @Retention(RUNTIME)
-@Constraint(validatedBy = DomainValidator.class)
+@Constraint(validatedBy = IllegalSensitiveValidator.class)
 @Documented
-public @interface Domain {
-
-    String message() default "不支持的domain";
+public @interface IllegalSensitive {
+    String message() default "包含敏感词汇";
 
     Class<?>[] groups() default {};
 

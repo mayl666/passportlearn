@@ -291,14 +291,14 @@ public class RegAction extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(activeParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.ERR_CODE_COM_REQURIE+"&client_id="+activeParams.getClient_id());
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&client_id=" + activeParams.getClient_id());
             return;
         }
         //验证client_id
         int clientId = Integer.parseInt(activeParams.getClient_id());
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
-            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.INVALID_CLIENTID+"&client_id="+activeParams.getClient_id());
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.INVALID_CLIENTID + "&client_id=" + activeParams.getClient_id());
             return;
         }
         String ip = getIp(request);
@@ -327,11 +327,11 @@ public class RegAction extends BaseController {
                 if (Strings.isNullOrEmpty(ru) || CommonConstant.EMAIL_REG_VERIFY_URL.equals(ru)) {
                     ru = CommonConstant.DEFAULT_INDEX_URL;
                 }
-                response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=0&ru=" + ru+"&client_id="+clientId);
+                response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=0&ru=" + ru + "&client_id=" + clientId);
                 return;
             }
         }
-        response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode()+"&client_id="+clientId);
+        response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode() + "&client_id=" + clientId);
         return;
 
     }
@@ -382,9 +382,13 @@ public class RegAction extends BaseController {
             boolean isNeedCaptcha = false;
             //只有客户端才会有此"cinfo"参数，web端和桌面端是没有的，故客户端和手机端还走第二次弹出验证码的流程
             if (!Strings.isNullOrEmpty(cInfo) || (!Strings.isNullOrEmpty(userAgent) && (userAgent.toLowerCase().contains("android") || userAgent.toLowerCase().contains("iphone")))) {
-                result = commonManager.checkMobileSendSMSInBlackList(mobile, reqParams.getClient_id());
-                if (!result.isSuccess() && ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE.equals(result.getCode())) {
-                    isNeedCaptcha = true;
+                if (Integer.parseInt(reqParams.getClient_id()) == 2003 && "GET".equalsIgnoreCase(request.getMethod())) {
+                    isNeedCaptcha = false;      // 输入法安卓版本使用passport老版本sdk，/sendsms仍是get方式，且不支持弹出图片验证码
+                } else {
+                    result = commonManager.checkMobileSendSMSInBlackList(mobile, reqParams.getClient_id());
+                    if (!result.isSuccess() && ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE.equals(result.getCode())) {
+                        isNeedCaptcha = true;
+                    }
                 }
             } else {
                 if (CommonConstant.PC_CLIENTID != Integer.parseInt(reqParams.getClient_id())) {
