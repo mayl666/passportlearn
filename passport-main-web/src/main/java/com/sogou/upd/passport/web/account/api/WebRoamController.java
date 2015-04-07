@@ -60,6 +60,14 @@ public class WebRoamController extends BaseController {
         String clientId = baseWebRuParams.getClient_id();
         String ru = baseWebRuParams.getRu();
         String ip = getIp(request);
+        //参数验证
+        String validateResult = ControllerHelper.validateParams(baseWebRuParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            returnErrMsg(response, ru, result.getCode(), result.getMessage());
+            return;
+        }
         //判断是否登录
         String sLoginPassportId;
         if (hostHolder.isLogin()) {
@@ -69,14 +77,6 @@ public class WebRoamController extends BaseController {
             return;
         }
         try {
-            //参数验证
-            String validateResult = ControllerHelper.validateParams(baseWebRuParams);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                returnErrMsg(response, ru, result.getCode(), result.getMessage());
-                return;
-            }
             result = accountRoamManager.createRoamKey(sLoginPassportId);
             if (result.isSuccess()) {
                 String r_key = (String) result.getModels().get("r_key");
