@@ -72,7 +72,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                             Date endTime = dateFormatter.parse(endTimeStr);
                             Date nowTime = new Date();
                             if (endTime.after(nowTime)) {
-                                log.info("封禁记录 ： " + resultObject.toString());
+                                log.warn("封禁记录 ： " + resultObject.toString());
                                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                                 redisUtils.set(key, resultObject.toString(), (endTime.getTime() - nowTime.getTime()), TimeUnit.MILLISECONDS);
                             } else {
@@ -85,7 +85,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                         return true;
                     }
                 } else {
-                    log.info("封禁记录 ： " + redisVal.toString());
+                    log.warn("封禁记录 ： " + redisVal.toString());
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 }
 
