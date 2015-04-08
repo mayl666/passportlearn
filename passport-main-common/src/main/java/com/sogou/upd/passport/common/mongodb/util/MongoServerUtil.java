@@ -1,6 +1,9 @@
 package com.sogou.upd.passport.common.mongodb.util;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import org.perf4j.aop.Profiled;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
@@ -19,6 +22,13 @@ public class MongoServerUtil {
 
     public DBCollection getCollection(String collection) {
         return mongoTemplate.getCollection(collection);
+    }
+
+    @Profiled(el = true, logger = "mongodbTimingLogger", tag = "mongodb_findOne", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
+    public DBObject findOne(String DBCollection, BasicDBObject basicDBObject) {
+        DBCollection dbCollection = this.getCollection(DBCollection);
+        DBObject dbObject = dbCollection.findOne(basicDBObject);
+        return dbObject;
     }
 
 }

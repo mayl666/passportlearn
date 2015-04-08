@@ -14,6 +14,7 @@ import com.sogou.upd.passport.common.utils.IpLocationUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.annotation.RiskControlSecurity;
+import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,10 +63,9 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                 String key = buildMongoDBBlackListKey(ip);
                 String redisVal = redisUtils.get(key);
                 if (Strings.isNullOrEmpty(redisVal)) {
-                    DBCollection dbCollection = mongoServerUtil.getCollection(MongodbConstant.RISK_CONTROL_COLLECTION_TEST);
                     BasicDBObject basicDBObject = new BasicDBObject();
                     basicDBObject.put("ip", ip);
-                    DBObject resultObject = dbCollection.findOne(basicDBObject);
+                    DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION_TEST, basicDBObject);
                     if (null != resultObject) {
                         String endTimeStr = String.valueOf(resultObject.get("deny_endTime"));
                         if (!Strings.isNullOrEmpty(endTimeStr)) {
