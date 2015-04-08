@@ -61,8 +61,8 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
         } else {
             try {
                 String key = buildMongoDBBlackListKey(ip);
-                String redisVal = redisUtils.get(key);
-                if (Strings.isNullOrEmpty(redisVal)) {
+//                String redisVal = redisUtils.get(key);
+//                if (Strings.isNullOrEmpty(redisVal)) {
                     BasicDBObject basicDBObject = new BasicDBObject();
                     basicDBObject.put("ip", ip);
                     DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION_TEST, basicDBObject);
@@ -84,10 +84,10 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                     } else {
                         return true;
                     }
-                } else {
-                    log.warn("封禁记录 ： " + redisVal.toString());
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
-                }
+//                } else {
+//                    log.warn("封禁记录 ： " + redisVal.toString());
+//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+//                }
 
             } catch (Exception e) {
                 log.error("RiskControlInterceptor Exception : " + e);
