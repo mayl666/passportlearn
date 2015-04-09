@@ -2,12 +2,10 @@ package com.sogou.upd.passport.web;
 
 
 import com.google.common.base.Strings;
-
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
-import com.sogou.upd.passport.common.hystrix.HystrixKafkaThreadCommand;
-import com.sogou.upd.passport.common.hystrix.HystrixQQCommand;
+import com.sogou.upd.passport.common.hystrix.HystrixKafkaSemaphoresCommand;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -38,11 +36,11 @@ public class UserOperationLogUtil {
     private static final Logger userOperationLogger = LoggerFactory.getLogger("userLoggerAsync");
     private static final Logger userOperationLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
     private static Logger userLogger = userOperationLogger;
-    private static final Logger hystrixLogger=LoggerFactory.getLogger("hystrixLogger");
+    private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
 
     //把useLogger分离开：local+kafka
-    private static Logger userLocalLogger=LoggerFactory.getLogger("userLoggerLocal");
-    private static Logger userKafkaLogger=LoggerFactory.getLogger("userLoggerKafka");
+    private static Logger userLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
+    private static Logger userKafkaLogger = LoggerFactory.getLogger("userLoggerKafka");
 
     private static String NEXTLINE = "%0A"; // \n换行符的UTF-8编码
     private static String TAB = "%09"; // \t制表符的UTF-8编码
@@ -154,7 +152,8 @@ public class UserOperationLogUtil {
             hystrixLogger.warn("UserOperationLogUtil invoke hystrix...");
             Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
             if (hystrixGlobalEnabled) {
-               new HystrixKafkaThreadCommand(log.toString()).execute();
+//               new HystrixKafkaThreadCommand(log.toString()).execute();
+                new HystrixKafkaSemaphoresCommand(log.toString()).execute();
             }
 
         } catch (Exception e) {
