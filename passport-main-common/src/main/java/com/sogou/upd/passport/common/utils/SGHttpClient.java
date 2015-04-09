@@ -1,10 +1,6 @@
 package com.sogou.upd.passport.common.utils;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.HystrixConstant;
-import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
-import com.sogou.upd.passport.common.hystrix.HystrixQQCommand;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
@@ -48,7 +44,6 @@ import java.util.ArrayList;
  * Time: 上午10:25
  */
 public class SGHttpClient {
-    private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
 
     protected static final HttpClient httpClient;
     /**
@@ -188,17 +183,6 @@ public class SGHttpClient {
             throw new NullPointerException("requestModel 不能为空");
         }
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
-
-        //对QQapi调用hystrix
-        hystrixLogger.warn("SGHttpClient executePrivate:invoke hystrix...");
-        String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
-        Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
-        if (hystrixGlobalEnabled) {
-            String qqUrl = requestModel.getUrl();
-            if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
-                return new HystrixQQCommand(requestModel, httpClient).execute();
-            }
-        }
 
         InputStream in = null;
         try {
