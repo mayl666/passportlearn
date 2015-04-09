@@ -63,27 +63,28 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                 String key = buildMongoDBBlackListKey(ip);
 //                String redisVal = redisUtils.get(key);
 //                if (Strings.isNullOrEmpty(redisVal)) {
-                    BasicDBObject basicDBObject = new BasicDBObject();
-                    basicDBObject.put("ip", ip);
-                    DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION_TEST, basicDBObject);
-                    if (null != resultObject) {
-                        String endTimeStr = String.valueOf(resultObject.get("deny_endTime"));
-                        if (!Strings.isNullOrEmpty(endTimeStr)) {
-                            Date endTime = dateFormatter.parse(endTimeStr);
-                            Date nowTime = new Date();
-                            if (endTime.after(nowTime)) {
-                                log.warn("封禁记录 ： " + resultObject.toString());
-                                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
-                                redisUtils.set(key, resultObject.toString(), (endTime.getTime() - nowTime.getTime()), TimeUnit.MILLISECONDS);
-                            } else {
-                                return true;
-                            }
+                BasicDBObject basicDBObject = new BasicDBObject();
+                basicDBObject.put("ip", ip);
+                DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION_TEST, basicDBObject);
+                if (null != resultObject) {
+                    String endTimeStr = String.valueOf(resultObject.get("deny_endTime"));
+                    if (!Strings.isNullOrEmpty(endTimeStr)) {
+                        Date endTime = dateFormatter.parse(endTimeStr);
+                        Date nowTime = new Date();
+                        if (endTime.after(nowTime)) {
+//                                log.warn("封禁记录 ： " + resultObject.toString());
+//                                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+//                                redisUtils.set(key, resultObject.toString(), (endTime.getTime() - nowTime.getTime()), TimeUnit.MILLISECONDS);
+                            return true;
                         } else {
                             return true;
                         }
                     } else {
                         return true;
                     }
+                } else {
+                    return true;
+                }
 //                } else {
 //                    log.warn("封禁记录 ： " + redisVal.toString());
 //                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
@@ -94,20 +95,20 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                 return true;
             }
         }
-        ResponseResultType resultType = security.resultType();
-        String msg = "";
-        switch (resultType) {
-            case json:
-                msg = result.toString();
-                response.setContentType(HttpConstant.ContentType.JSON + ";charset=UTF-8");
-                response.getWriter().write(msg);
-                break;
-            case xml:
-            case txt:
-            case forward:
-            case redirect:
-        }
-        return false;
+//        ResponseResultType resultType = security.resultType();
+//        String msg = "";
+//        switch (resultType) {
+//            case json:
+//                msg = result.toString();
+//                response.setContentType(HttpConstant.ContentType.JSON + ";charset=UTF-8");
+//                response.getWriter().write(msg);
+//                break;
+//            case xml:
+//            case txt:
+//            case forward:
+//            case redirect:
+//        }
+//        return false;
     }
 
 
