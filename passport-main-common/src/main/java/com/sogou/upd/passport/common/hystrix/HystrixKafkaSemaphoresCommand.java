@@ -1,7 +1,10 @@
 package com.sogou.upd.passport.common.hystrix;
 
 
-import com.netflix.hystrix.*;
+import com.netflix.hystrix.HystrixCommand;
+import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandKey;
+import com.netflix.hystrix.HystrixCommandProperties;
 import com.sogou.upd.passport.common.HystrixConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * Time: 下午3:22
  * To change this template use File | Settings | File Templates.
  */
-public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
+public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
 
     private String infoToLog;
 
@@ -22,23 +25,19 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
 
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConfigFactory.PROPERTY_REQUEST_CACHE_ENABLED));
     private static int errorThresholdPercentage = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
-    private static int kafkaHystrixThreadPoolCoreSize = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE));
     private static final int kafkaTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_TIMEOUT));
     private static final int kafkaRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD));
 
-    public HystrixKafkaThreadCommand(String infoToLog) {
+    public HystrixKafkaSemaphoresCommand(String infoToLog) {
 
         super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("HystrixKafka"))
-                .andCommandKey(HystrixCommandKey.Factory.asKey("KafkaHystrixThreadCommand"))
-                .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("HystrixThreadPool"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("KafkaHystrixSemaphoresCommand"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-                        .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD)
+                        .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE) //信号隔离
                         .withRequestCacheEnabled(requestCacheEnable)
                         .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
                         .withExecutionIsolationThreadTimeoutInMilliseconds(kafkaTimeout)
-                        .withCircuitBreakerRequestVolumeThreshold(kafkaRequestVolumeThreshold))
-                .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter()
-                        .withCoreSize(kafkaHystrixThreadPoolCoreSize)));
+                        .withCircuitBreakerRequestVolumeThreshold(kafkaRequestVolumeThreshold)));
         this.infoToLog = infoToLog;
 
     }
@@ -47,7 +46,7 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
     @Override
     protected Void run() throws Exception {
         //To change body of implemented methods use File | Settings | File Templates.
-        logger.warn("invoke Hystrix Kafka Thread Command...");
+        logger.warn("invoke Hystrix Kafka Semaphores Command...");
         logQQProperties();
         kafkaLogger.info(infoToLog);
         return null;
@@ -55,17 +54,16 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
 
     @Override
     protected Void getFallback() {
-        logger.error("HystrixKafkaThreadCommand fallback!");
+        logger.error("HystrixKafkaSemaphoresCommand fallback!");
         return null;
     }
 
 
     public static void logQQProperties() {
-        logger.warn("hystrixKafka thread kafkaTimeout:" + kafkaTimeout);
-        logger.warn("hystrixKafka thread kafkaRequestVolumeThreshold:" + kafkaRequestVolumeThreshold);
-        logger.warn("hystrixKafka thread kafkaHystrixThreadPoolCoreSize:" + kafkaHystrixThreadPoolCoreSize);
-        logger.warn("hystrixKafka thread requestCacheEnable:" + requestCacheEnable);
-        logger.warn("hystrixKafka thread errorThresholdPercentage:" + errorThresholdPercentage);
-        logger.warn("hystrixKafka thread isolation strage:THREAD");
+        logger.warn("hystrixKafka semaphores kafkaTimeout:" + kafkaTimeout);
+        logger.warn("hystrixKafka semaphores kafkaRequestVolumeThreshold:" + kafkaRequestVolumeThreshold);
+        logger.warn("hystrixKafka semaphores requestCacheEnable:" + requestCacheEnable);
+        logger.warn("hystrixKafka semaphores errorThresholdPercentage:" + errorThresholdPercentage);
+        logger.warn("hystrixKafka semaphores isolation strage:SEMAPHORES");
     }
 }
