@@ -168,17 +168,23 @@
         <appender-ref ref="userOperationAppender"/>
     </appender>
 
-    <logger name="userLoggerAsync" level="info" additivity="false">
-        <appender-ref ref="kafkaAsyncAppender"/>
-        <!--<appender-ref ref="rabbitMQAsyncAppender"/>-->
-        <appender-ref ref="localAsyncAppender"/>
+    <!--<logger name="userLoggerAsync" level="info" additivity="false">-->
+        <!--<appender-ref ref="kafkaAsyncAppender"/>-->
+        <!--&lt;!&ndash;<appender-ref ref="rabbitMQAsyncAppender"/>&ndash;&gt;-->
+        <!--<appender-ref ref="localAsyncAppender"/>-->
 
-    </logger>
+    <!--</logger>-->
 
     <logger name="userLoggerLocal" level="info" additivity="false">
         <!--<appender-ref ref="userOperationAppender" />-->
         <appender-ref ref="localAsyncAppender"/>
     </logger>
+
+    <logger name="userLoggerKafka" level="info" additivity="false">
+        <!--<appender-ref ref="userOperationAppender" />-->
+        <appender-ref ref="kafkaAsyncAppender"/>
+    </logger>
+
 
     <appender name="redisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

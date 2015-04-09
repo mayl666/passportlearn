@@ -35,6 +35,10 @@ public class UserOperationLogUtil {
     private static final Logger userOperationLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
     private static Logger userLogger = userOperationLogger;
 
+    //把useLogger分离开：local+kafka
+    private static Logger userLocalLogger=LoggerFactory.getLogger("userLoggerLocal");
+    private static Logger userKafkaLogger=LoggerFactory.getLogger("userLoggerKafka");
+
     private static String NEXTLINE = "%0A"; // \n换行符的UTF-8编码
     private static String TAB = "%09"; // \t制表符的UTF-8编码
 
@@ -138,7 +142,9 @@ public class UserOperationLogUtil {
                 log.append("\t").append(StringUtil.defaultIfEmpty(otherMsgJson, "-"));
             }
             log.append("\t").append(StringUtil.defaultIfEmpty(request.getHeader("X-Http-Real-Port"), "-"));
-            userLogger.info(log.toString());
+//            userLogger.info(log.toString());
+            userLocalLogger.info(log.toString());
+            userKafkaLogger.info(log.toString());
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
