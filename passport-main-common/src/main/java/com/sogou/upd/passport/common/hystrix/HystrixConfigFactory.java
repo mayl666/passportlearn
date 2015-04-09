@@ -64,7 +64,7 @@ public class HystrixConfigFactory {
                 setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_TIMEOUT, HystrixConstant.DEFAULT_KAFKA_TIMEOUT);
                 setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD, HystrixConstant.DEFAULT_KAFKA_REQUESTVOLUME_THRESHOLD);
                 //打印参数
-                logQQProperties();
+                logProperties();
             }
         }
     }
@@ -87,7 +87,7 @@ public class HystrixConfigFactory {
     }
 
 
-    public static void logQQProperties() {
+    public static void logProperties() {
         logger.warn(PROPERTY_REQUEST_CACHE_ENABLED+":"+getProperty(PROPERTY_REQUEST_CACHE_ENABLED));
         logger.warn(PROPERTY_ERROR_THRESHOLD_PERCENTAGE+":"+getProperty(PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
         logger.warn(PROPERTY_QQ_URL+":"+getProperty(PROPERTY_QQ_URL));
