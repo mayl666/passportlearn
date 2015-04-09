@@ -98,7 +98,7 @@ public class LoginAction extends BaseController {
      *
      * @param loginParams 传入的参数
      */
-//    @RiskControlSecurity
+    @RiskControlSecurity
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(HttpServletRequest request, HttpServletResponse response, Model model, WebLoginParams loginParams)
             throws Exception {
