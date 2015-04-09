@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.hystrix;
 
 import com.netflix.hystrix.*;
+import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
@@ -20,8 +21,8 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     private static RequestModel requestModel;
     private static HttpClient httpClient;
 
-    private static int qqTimeout = Integer.parseInt(HystrixConfigFactory.getHystrixConfValue("qqTimeout"));
-    private static int qqRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getHystrixConfValue("qqTimeout"));
+    private static int qqTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_TIMEOUT));
+    private static int qqRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_REQUESTVOLUME_THRESHOLD));
 
     public HystrixQQCommand(RequestModel requestModel, HttpClient httpClient) {
 
@@ -38,12 +39,15 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     @Override
     protected HttpEntity run() throws Exception {
         logger.warn("invoke hystrix qq command...");
+        logger.warn("hystrix qqTimeout:"+qqTimeout);
+        logger.warn("hystrix qqRequestVolumeThreshold:"+qqRequestVolumeThreshold);
+
         return HystrixCommonMethod.execute(requestModel, httpClient);
     }
 
     @Override
     protected HttpEntity getFallback() {
         logger.error("HystrixQQCommand fallback!");
-        throw new UnsupportedOperationException("No fallback available.");
+        throw new UnsupportedOperationException("HystrixQQCommand:No fallback available.");
     }
 }

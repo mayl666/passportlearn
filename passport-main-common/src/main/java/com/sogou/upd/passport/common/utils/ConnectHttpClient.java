@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
 import com.sogou.upd.passport.common.hystrix.HystrixQQCommand;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -18,6 +20,8 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +33,8 @@ import java.io.InputStream;
  * Time: 上午10:25
  */
 public class ConnectHttpClient extends SGHttpClient {
+
+    private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
 
 
     protected static final HttpClient httpClient;
@@ -135,15 +141,15 @@ public class ConnectHttpClient extends SGHttpClient {
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
 
         //对QQapi调用hystrix
-        String hystrixQQurl = HystrixConfigFactory.getHystrixConfValue("qqUrl");
-        Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getHystrixConfValue("globalEnabled"));
+        hystrixLogger.warn("ConnectHttpClient executePrivate:invoke hystrix...");
+        String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
+        Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
         if (hystrixGlobalEnabled) {
             String qqUrl = requestModel.getUrl();
-            if (!StringUtil.isEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
+            if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
                 return new HystrixQQCommand(requestModel, httpClient).execute();
             }
         }
-
 
         InputStream in = null;
         try {
