@@ -39,9 +39,6 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     @Override
     protected HttpEntity run() throws Exception {
         logger.warn("invoke hystrix qq command...");
-        logger.warn("hystrix qqTimeout:"+qqTimeout);
-        logger.warn("hystrix qqRequestVolumeThreshold:"+qqRequestVolumeThreshold);
-
         return HystrixCommonMethod.execute(requestModel, httpClient);
     }
 

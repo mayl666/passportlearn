@@ -48,7 +48,6 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
     protected Void run() throws Exception {
         //To change body of implemented methods use File | Settings | File Templates.
         logger.warn("invoke Hystrix Kafka Thread Command...");
-        logQQProperties();
         kafkaLogger.info(infoToLog);
         return null;
     }
@@ -59,13 +58,4 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
         return null;
     }
 
-
-    public static void logQQProperties() {
-        logger.warn("hystrixKafka thread kafkaTimeout:" + kafkaTimeout);
-        logger.warn("hystrixKafka thread kafkaRequestVolumeThreshold:" + kafkaRequestVolumeThreshold);
-        logger.warn("hystrixKafka thread kafkaHystrixThreadPoolCoreSize:" + kafkaHystrixThreadPoolCoreSize);
-        logger.warn("hystrixKafka thread requestCacheEnable:" + requestCacheEnable);
-        logger.warn("hystrixKafka thread errorThresholdPercentage:" + errorThresholdPercentage);
-        logger.warn("hystrixKafka thread isolation strage:THREAD");
-    }
 }

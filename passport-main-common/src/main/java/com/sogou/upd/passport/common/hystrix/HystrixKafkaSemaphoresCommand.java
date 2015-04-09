@@ -47,7 +47,6 @@ public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
     protected Void run() throws Exception {
         //To change body of implemented methods use File | Settings | File Templates.
         logger.warn("invoke Hystrix Kafka Semaphores Command...");
-        logQQProperties();
         kafkaLogger.info(infoToLog);
         return null;
     }
@@ -58,12 +57,4 @@ public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
         return null;
     }
 
-
-    public static void logQQProperties() {
-        logger.warn("hystrixKafka semaphores kafkaTimeout:" + kafkaTimeout);
-        logger.warn("hystrixKafka semaphores kafkaRequestVolumeThreshold:" + kafkaRequestVolumeThreshold);
-        logger.warn("hystrixKafka semaphores requestCacheEnable:" + requestCacheEnable);
-        logger.warn("hystrixKafka semaphores errorThresholdPercentage:" + errorThresholdPercentage);
-        logger.warn("hystrixKafka semaphores isolation strage:SEMAPHORES");
-    }
 }
