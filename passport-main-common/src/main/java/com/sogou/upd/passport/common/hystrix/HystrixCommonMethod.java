@@ -55,6 +55,7 @@ public class HystrixCommonMethod {
         return httpRequest;
     }
 
+    //ConnectHttpClient和SGHttpClient的excute
     public static HttpEntity execute(RequestModel requestModel, HttpClient httpClient) throws Exception {
 
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
@@ -80,4 +81,5 @@ public class HystrixCommonMethod {
             throw new RuntimeException("http request error ", e);
         }
     }
+
 }
