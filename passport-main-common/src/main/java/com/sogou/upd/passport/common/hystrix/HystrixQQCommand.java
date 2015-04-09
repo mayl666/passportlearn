@@ -21,17 +21,28 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     private static RequestModel requestModel;
     private static HttpClient httpClient;
 
+
+    private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConfigFactory.PROPERTY_REQUEST_CACHE_ENABLED));
+    private static int errorThresholdPercentage = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
+    private static int qqHystrixThreadPoolCoreSize = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE));
     private static int qqTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_TIMEOUT));
     private static int qqRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_REQUESTVOLUME_THRESHOLD));
 
     public HystrixQQCommand(RequestModel requestModel, HttpClient httpClient) {
 
+
         super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("SGHystrxiHttpClient"))
                 .andCommandKey(HystrixCommandKey.Factory.asKey("QQHystrixCommand"))
                 .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("QQHystrixPool"))
-                .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionIsolationThreadTimeoutInMilliseconds(qqTimeout)
-                        .withCircuitBreakerRequestVolumeThreshold(qqRequestVolumeThreshold)
-                ));
+                .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
+                        .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD)
+                        .withRequestCacheEnabled(requestCacheEnable)
+                        .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
+                        .withExecutionIsolationThreadTimeoutInMilliseconds(qqTimeout)
+                        .withCircuitBreakerRequestVolumeThreshold(qqRequestVolumeThreshold))
+                .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter()
+                        .withCoreSize(qqHystrixThreadPoolCoreSize))
+        );
         this.requestModel = requestModel;
         this.httpClient = httpClient;
     }
@@ -39,9 +50,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     @Override
     protected HttpEntity run() throws Exception {
         logger.warn("invoke hystrix qq command...");
-        logger.warn("hystrix qqTimeout:"+qqTimeout);
-        logger.warn("hystrix qqRequestVolumeThreshold:"+qqRequestVolumeThreshold);
-
+        logQQProperties();
         return HystrixCommonMethod.execute(requestModel, httpClient);
     }
 
@@ -49,5 +58,14 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     protected HttpEntity getFallback() {
         logger.error("HystrixQQCommand fallback!");
         throw new UnsupportedOperationException("HystrixQQCommand:No fallback available.");
+    }
+
+    public static void logQQProperties() {
+        logger.warn("hystrixQQ qqTimeout:" + qqTimeout);
+        logger.warn("hystrixQQ qqRequestVolumeThreshold:" + qqRequestVolumeThreshold);
+        logger.warn("hystrixQQ qqHystrixThreadPoolCoreSize:"+qqHystrixThreadPoolCoreSize);
+        logger.warn("hystrixQQ requestCacheEnable:"+requestCacheEnable);
+        logger.warn("hystrixQQ errorThresholdPercentage:"+errorThresholdPercentage);
+        logger.warn("hystrixQQ isolation strage:THREAD");
     }
 }
