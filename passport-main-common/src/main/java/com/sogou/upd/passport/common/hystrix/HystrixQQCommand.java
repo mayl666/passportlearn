@@ -50,7 +50,6 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     @Override
     protected HttpEntity run() throws Exception {
         logger.warn("invoke hystrix qq command...");
-        logQQProperties();
         return HystrixCommonMethod.execute(requestModel, httpClient);
     }
 
@@ -60,12 +59,5 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
         throw new UnsupportedOperationException("HystrixQQCommand:No fallback available.");
     }
 
-    public static void logQQProperties() {
-        logger.warn("hystrixQQ qqTimeout:" + qqTimeout);
-        logger.warn("hystrixQQ qqRequestVolumeThreshold:" + qqRequestVolumeThreshold);
-        logger.warn("hystrixQQ qqHystrixThreadPoolCoreSize:"+qqHystrixThreadPoolCoreSize);
-        logger.warn("hystrixQQ requestCacheEnable:"+requestCacheEnable);
-        logger.warn("hystrixQQ errorThresholdPercentage:"+errorThresholdPercentage);
-        logger.warn("hystrixQQ isolation strage:THREAD");
-    }
+
 }
