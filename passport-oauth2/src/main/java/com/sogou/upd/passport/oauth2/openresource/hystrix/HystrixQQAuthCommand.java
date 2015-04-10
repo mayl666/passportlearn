@@ -18,12 +18,12 @@ import java.util.Map;
  * Time: 下午6:17
  * To change this template use File | Settings | File Templates.
  */
-public class HystrixQQAuthCommand extends HystrixCommand<OAuthClientResponse> {
+public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends HystrixCommand<T>  {
 
     private static final Logger logger = LoggerFactory.getLogger("hystrixLogger");
     private OAuthClientRequest request;
     private String requestMethod;
-    public Class responseClass;
+    public Class<T> responseClass;
     private Map<String, String> headers;
 
 
@@ -33,7 +33,7 @@ public class HystrixQQAuthCommand extends HystrixCommand<OAuthClientResponse> {
     private static int qqTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_TIMEOUT));
     private static int qqRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_REQUESTVOLUME_THRESHOLD));
 
-    public HystrixQQAuthCommand(OAuthClientRequest request, String requestMethod, Class responseClass, Map<String, String> headers) {
+    public HystrixQQAuthCommand(OAuthClientRequest request, String requestMethod, Class<T> responseClass, Map<String, String> headers) {
 
 
         super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("SGHystrxiHttpClient"))
@@ -54,19 +54,18 @@ public class HystrixQQAuthCommand extends HystrixCommand<OAuthClientResponse> {
         this.headers = headers;
     }
 
-
     @Override
-    protected OAuthClientResponse run() throws Exception {
+    protected T run() throws Exception {
         logger.warn("invoke Hystrix QQ  Auth Command...");
         return HttpClient4.execute(request, headers, requestMethod, responseClass);
     }
 
-
     @Override
-    protected OAuthClientResponse getFallback() {
+    protected T getFallback() {
         logger.error("HystrixQQAuthCommand fallback!");
         throw new UnsupportedOperationException("HystrixQQAuthCommand:No fallback available.");
     }
+
 
 
 }
