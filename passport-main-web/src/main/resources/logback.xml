@@ -127,8 +127,8 @@
             <maxHistory>3</maxHistory>
         </rollingPolicy>
         <encoder>
-            <!--<pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>-->
-            <pattern>%msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss}%msg%n</pattern>
+            <!--<pattern>%msg%n</pattern>-->
         </encoder>
     </appender>
     <logger name="hystrixLogger" level="info" additivity="false">
