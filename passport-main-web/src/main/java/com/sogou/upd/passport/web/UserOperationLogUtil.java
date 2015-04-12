@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
+import com.sogou.upd.passport.common.hystrix.HystrixKafkaSemaphoresCommand;
 import com.sogou.upd.passport.common.hystrix.HystrixKafkaThreadCommand;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -155,8 +156,8 @@ public class UserOperationLogUtil {
             hystrixLogger.warn("UserOperationLogUtil invoke hystrix...");
             Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
             if (hystrixGlobalEnabled) {
-                new HystrixKafkaThreadCommand(log.toString()).execute();
-//                new HystrixKafkaSemaphoresCommand(log.toString()).execute();
+//                new HystrixKafkaThreadCommand(log.toString()).execute();
+                new HystrixKafkaSemaphoresCommand(log.toString()).execute();
             }
 
             long endLogTime=System.nanoTime();
