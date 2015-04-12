@@ -37,6 +37,7 @@ public class UserOperationLogUtil {
     private static final Logger userOperationLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
     private static Logger userLogger = userOperationLogger;
     private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
+    private static final Logger hystrixTimeCostLogger = LoggerFactory.getLogger("hystrixLoggerCost");
 
     //把useLogger分离开：local+kafka
     private static Logger userLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
@@ -146,6 +147,8 @@ public class UserOperationLogUtil {
             }
             log.append("\t").append(StringUtil.defaultIfEmpty(request.getHeader("X-Http-Real-Port"), "-"));
 //            userLogger.info(log.toString());
+
+            long beginLogTime=System.nanoTime();
             userLocalLogger.info(log.toString());
             //userKafkaLogger.info(log.toString());
             //调用hystrix 线程隔离kafka command
@@ -155,6 +158,10 @@ public class UserOperationLogUtil {
                 new HystrixKafkaThreadCommand(log.toString()).execute();
 //                new HystrixKafkaSemaphoresCommand(log.toString()).execute();
             }
+
+            long endLogTime=System.nanoTime();
+            long cost=endLogTime-beginLogTime;
+            hystrixTimeCostLogger.warn("useroperation.log.cost "+cost);
 
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
