@@ -156,8 +156,8 @@ public class UserOperationLogUtil {
             hystrixLogger.warn("UserOperationLogUtil invoke hystrix...");
             Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
             if (hystrixGlobalEnabled) {
-//                new HystrixKafkaThreadCommand(log.toString()).execute();
-                new HystrixKafkaSemaphoresCommand(log.toString()).execute();
+                new HystrixKafkaThreadCommand(log.toString()).execute();
+//                new HystrixKafkaSemaphoresCommand(log.toString()).execute();
             }
 
             long endLogTime=System.nanoTime();
