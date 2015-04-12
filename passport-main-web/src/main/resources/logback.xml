@@ -120,7 +120,7 @@
         <appender-ref ref="userOperationAppender"/>
     </logger>
 
-    <!--hystrix log-->
+    <!--start:hystrix invoke log-->
     <appender name="hystrixAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/hystrix/hystrix.log.%d{yyyy-MM-dd}</fileNamePattern>
@@ -134,7 +134,24 @@
     <logger name="hystrixLogger" level="info" additivity="false">
         <appender-ref ref="hystrixAppender"/>
     </logger>
+    <!--end:hystrix invoke log-->
 
+    <!--start:hystrix.time.cost-->
+    <appender name="hystrixAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/hystrix/hystrix-cost.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>3</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %msg %n</pattern>
+            <!--<pattern>%msg%n</pattern>-->
+        </encoder>
+    </appender>
+    <logger name="hystrixLoggerCost" level="info" additivity="false">
+        <appender-ref ref="hystrixAppender"/>
+    </logger>
+
+    <!--end:hystrix.time.cost-->
 
     <appender name="interfaceLimitedAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
