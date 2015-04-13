@@ -165,6 +165,18 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_SOHU_API_FAILED = "20260";
     //搜狗邮箱关闭
     public static final String ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED = "20261";
+    //SSO应用非法
+    public static final String ERR_CODE_SSO_APP_CHECK_FAILED = "20262";
+    //SSO应用未登录，登录态无效
+    public static final String ERR_CODE_SSO_APP_NOT_LOGIN = "20263";
+    //SSO设备非法访问
+    public static final String ERR_CODE_SSO_DEVICE_INVALID = "20264";
+    //其他异常导致无法换取sgid
+    public static final String ERR_CODE_SSO_FAILED = "20265";
+    //SSO TOKEN无效
+    public static final String ERR_CODE_SSO_TOKEN_INVALID = "20266";
+    //SSO参数解析错误
+    public static final String ERR_CODE_SSO_PARAM_INVALID = "20267";
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -402,7 +414,14 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_UNBIND_FAILED, "手机解除绑定失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTALLOWED, "账号不允许做此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SOHU_API_FAILED, "搜狐接口异常");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED,"搜狗邮箱已关闭");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED, "搜狗邮箱已关闭");
+
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_APP_CHECK_FAILED, "应用非法");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_APP_NOT_LOGIN, "应用未登录");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_DEVICE_INVALID, "设备非法访问");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_FAILED, "快速登录失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_TOKEN_INVALID, "快速登录令牌无效");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_PARAM_INVALID, "快速登录参数解析失败");
 
         // acount secure info
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_HAVA_BIND_MOBILE, "您的帐号已绑定手机，请使用手机找回或联系客服");

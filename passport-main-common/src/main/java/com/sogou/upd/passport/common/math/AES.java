@@ -17,6 +17,7 @@ import java.security.Key;
 public class AES {
 
     private static final String KEY_ALGORITHM = "AES";
+    private static final String AES_PADDING_MODE = "AES/ECB/PKCS5Padding";
 
     /**
      * 加密
@@ -36,6 +37,17 @@ public class AES {
         return encryptedValue;
     }
 
+    //用于SSO加密，指定padding模式AES/ECB/PKCS5Padding
+    public static String encryptSSO(String data, String secKey) throws Exception {
+        Key key = generateKey(secKey);
+        Cipher c = Cipher.getInstance(AES_PADDING_MODE);
+        c.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encVal = c.doFinal(data.getBytes(CommonConstant.DEFAULT_CHARSET));
+//        String encryptedValue = Coder.encryptBase64URLSafeString(encVal);
+        String encryptedValue = Base62.encodeBase62(encVal).toString();
+        return encryptedValue;
+    }
+
     /**
      * 解密
      *
@@ -47,6 +59,18 @@ public class AES {
     public static String decryptURLSafeString(String encryptedData, String secKey) throws Exception {
         Key key = generateKey(secKey);
         Cipher c = Cipher.getInstance(KEY_ALGORITHM);
+        c.init(Cipher.DECRYPT_MODE, key);
+        byte[] decordedValue = Base62.decodeBase62(encryptedData.toCharArray());//Base64.decodeBase64(encryptedData);
+        byte[] decValue = c.doFinal(decordedValue);
+
+        String decryptedValue = new String(decValue,CommonConstant.DEFAULT_CHARSET);
+        return decryptedValue;
+    }
+
+
+    public static String decryptSSO(String encryptedData, String secKey) throws Exception {
+        Key key = generateKey(secKey);
+        Cipher c = Cipher.getInstance(AES_PADDING_MODE);
         c.init(Cipher.DECRYPT_MODE, key);
         byte[] decordedValue = Base62.decodeBase62(encryptedData.toCharArray());//Base64.decodeBase64(encryptedData);
         byte[] decValue = c.doFinal(decordedValue);

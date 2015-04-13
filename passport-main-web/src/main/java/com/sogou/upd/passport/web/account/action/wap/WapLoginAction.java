@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.SSOScanAccountType;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -168,6 +169,8 @@ public class WapLoginAction extends BaseController {
                 ObtainAccountInfoParams accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), userId, fields);
                 result = accountInfoManager.getUserInfo(accountInfoParams);
                 result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                String ssoScanAcountType= SSOScanAccountType.getSSOScanAccountType(userId);
+                result.getModels().put(LoginConstant.SSO_ACCOUNT_TYPE,ssoScanAcountType);
                 writeResultToResponse(response, result);
                 loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
                 return "empty";

@@ -5,8 +5,6 @@ import com.sogou.upd.passport.common.validation.constraints.Domain;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.URL;
 
-import javax.validation.constraints.AssertTrue;
-
 /**
  * 用于web端的登陆的参数
  * User: liagng201716@sogou-inc.com
