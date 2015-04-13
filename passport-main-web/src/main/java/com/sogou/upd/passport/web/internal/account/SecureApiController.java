@@ -62,7 +62,7 @@ public class SecureApiController extends BaseController {
     private static final String BLACK_USER_EXPIRETIME_SPLIT = " ";
 
     //redis中保存黑名单userid与时间戳分隔符
-    private static final String BLACK_USER_EXPIRETIME_REDIS_SPLIT = "_";
+    private static final String BLACK_USER_EXPIRETIME_REDIS_SPLIT = "^";
 
     //有效期
     private static final int EXPIRE_TIME = 60;
