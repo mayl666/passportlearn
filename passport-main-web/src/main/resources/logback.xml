@@ -137,6 +137,27 @@
     <!--end:hystrix invoke log-->
 
 
+    <!--start:hystrix kafka性能log-->
+    <appender name="hystrixCostFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/hystrix/perfCostStats.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="hystrixCostCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
+        <!--每分钟分析一次log，做出性能测试-->
+        <param name="TimeSlice" value="60000"/>
+        <appender-ref ref="hystrixCostFileAppender"/>
+    </appender>
+    <logger name="hystrixCostPerfLogger" level="info" additivity="false">
+        <appender-ref ref="hystrixCostCoalescingStatistics"/>
+    </logger>
+    <!--end:hystrix kafka性能log-->
+
+
     <appender name="interfaceLimitedAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/interfaceLimited/interfaceLimited.log.%d{yyyy-MM-dd}</fileNamePattern>
