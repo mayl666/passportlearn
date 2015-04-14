@@ -40,7 +40,7 @@ public class InternalQQOpenAPiController extends BaseController {
     @Autowired
     private QQOpenAPIManager qqOpenAPIManager;
 
-    @InterfaceSecurity
+//    @InterfaceSecurity
     @ResponseBody
     @RequestMapping(value = "/get_friends_info")
     public String get_qqfriends(HttpServletRequest req, BaseUserApiParams params) throws Exception {
