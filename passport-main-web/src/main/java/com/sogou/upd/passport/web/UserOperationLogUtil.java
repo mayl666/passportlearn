@@ -159,8 +159,8 @@ public class UserOperationLogUtil {
             Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
             StopWatch stopWatch = new Slf4JStopWatch(hystrixCostPerfLogger);
             if (hystrixGlobalEnabled) {
-                new HystrixKafkaThreadCommand(log.toString()).execute();
-//                new HystrixKafkaSemaphoresCommand(log.toString()).execute();
+//                new HystrixKafkaThreadCommand(log.toString()).execute();
+                new HystrixKafkaSemaphoresCommand(log.toString()).execute();
             }
             stopWatch(stopWatch,"hystrix_kafka_cost","success");
 
