@@ -24,6 +24,7 @@ public class HystrixConstant {
     public static final String DEFAULT_KAFKA_HYSTRIX_THREADPOOL_CORESIZE = "10";
     public static final String DEFAULT_KAFKA_TIMEOUT = "100";// ms
     public static final String DEFAULT_KAFKA_REQUESTVOLUME_THRESHOLD = "20000";
+    public static final String DEFAULT_KAFKA_SEMAPHORE_THRESHOLD ="10";
 
     //property name
     public static final String PROPERTY_GLOBAL_ENABLED = "globalEnabled";
@@ -36,6 +37,7 @@ public class HystrixConstant {
     public static final String PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE = "kafkaHystrixThreadPoolCoreSize";
     public static final String PROPERTY_KAFKA_TIMEOUT = "kafkaTimeout";
     public static final String PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD = "kafkaRequestVolumeThreshold";
+    public static final String PROPERTY_KAFKA_SEMAPHORE_THRESHOLD="kafkaSemaphoreThreshold";
 
 
 

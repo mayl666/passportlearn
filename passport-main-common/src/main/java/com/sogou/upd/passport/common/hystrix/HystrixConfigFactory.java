@@ -32,6 +32,7 @@ public class HystrixConfigFactory {
     public static final String PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE = "kafkaHystrixThreadPoolCoreSize";
     public static final String PROPERTY_KAFKA_TIMEOUT = "kafkaTimeout";
     public static final String PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD = "kafkaRequestVolumeThreshold";
+    public static final String PROPERTY_KAFKA_SEMAPHORE_THRESHOLD="kafkaSemaphoreThreshold";
 
     private static Props properties = new Props();
     protected static ConcurrentMap<String, String> hystrixConfigMap = Maps.newConcurrentMap();
@@ -63,6 +64,7 @@ public class HystrixConfigFactory {
                 setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE, HystrixConstant.DEFAULT_KAFKA_HYSTRIX_THREADPOOL_CORESIZE);
                 setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_TIMEOUT, HystrixConstant.DEFAULT_KAFKA_TIMEOUT);
                 setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD, HystrixConstant.DEFAULT_KAFKA_REQUESTVOLUME_THRESHOLD);
+                setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_SEMAPHORE_THRESHOLD, HystrixConstant.DEFAULT_KAFKA_SEMAPHORE_THRESHOLD);
                 //打印参数
                 logProperties();
             }
@@ -96,5 +98,6 @@ public class HystrixConfigFactory {
         logger.warn(PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE + ":" + getProperty(PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE));
         logger.warn(PROPERTY_KAFKA_TIMEOUT + ":" + getProperty(PROPERTY_KAFKA_TIMEOUT));
         logger.warn(PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD + ":" + getProperty(PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD));
+        logger.warn(PROPERTY_KAFKA_SEMAPHORE_THRESHOLD+":"+ getProperty(PROPERTY_KAFKA_SEMAPHORE_THRESHOLD));
     }
 }
