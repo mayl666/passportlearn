@@ -46,7 +46,7 @@ public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
     @Override
     protected Void run() throws Exception {
         //To change body of implemented methods use File | Settings | File Templates.
-        logger.warn("invoke Hystrix Kafka Semaphores Command...");
+//        logger.warn("invoke Hystrix Kafka Semaphores Command...");
         kafkaLogger.info(infoToLog);
         return null;
     }
