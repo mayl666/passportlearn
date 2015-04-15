@@ -39,7 +39,7 @@ public class UserOperationLogUtil {
     private static final Logger userOperationLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
     private static Logger userLogger = userOperationLogger;
     private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
-    private static final Logger hystrixCostPerfLogger= LoggerFactory.getLogger("hystrixCostPerfLogger");
+//    private static final Logger hystrixCostPerfLogger= LoggerFactory.getLogger("hystrixCostPerfLogger");
 
     private static final int SLOW_TIME=10;//10ms
 
@@ -155,28 +155,28 @@ public class UserOperationLogUtil {
             userLocalLogger.info(log.toString());
             //userKafkaLogger.info(log.toString());
             //调用hystrix 线程隔离kafka command
-            hystrixLogger.warn("UserOperationLogUtil invoke hystrix...");
+//            hystrixLogger.warn("UserOperationLogUtil invoke hystrix...");
             Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
-            StopWatch stopWatch = new Slf4JStopWatch(hystrixCostPerfLogger);
+//            StopWatch stopWatch = new Slf4JStopWatch(hystrixCostPerfLogger);
             if (hystrixGlobalEnabled) {
-//                new HystrixKafkaThreadCommand(log.toString()).execute();
-                new HystrixKafkaSemaphoresCommand(log.toString()).execute();
+                new HystrixKafkaThreadCommand(log.toString()).execute();
+//                new HystrixKafkaSemaphoresCommand(log.toString()).execute();
             }
-            stopWatch(stopWatch,"hystrix_kafka_cost","success");
+//            stopWatch(stopWatch,"hystrix_kafka_cost","success");
 
 
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
     }
-
-    private static void stopWatch(StopWatch stopWatch, String tag, String message) {
-        //无论什么情况都记录下所有的请求数据
-        if (stopWatch.getElapsedTime() >= SLOW_TIME) {
-            tag += "(slow)";
-        }
-        stopWatch.stop(tag, message);
-    }
+//
+//    private static void stopWatch(StopWatch stopWatch, String tag, String message) {
+//        //无论什么情况都记录下所有的请求数据
+//        if (stopWatch.getElapsedTime() >= SLOW_TIME) {
+//            tag += "(slow)";
+//        }
+//        stopWatch.stop(tag, message);
+//    }
 
     private static String getLocalIp(HttpServletRequest request) {
         try {
