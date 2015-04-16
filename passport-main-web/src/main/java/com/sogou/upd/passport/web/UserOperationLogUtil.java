@@ -15,7 +15,6 @@ import com.sogou.upd.passport.common.utils.ApiGroupUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import org.apache.commons.collections.MapUtils;
 import org.perf4j.StopWatch;
-import org.perf4j.slf4j.Slf4JStopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -41,7 +40,7 @@ public class UserOperationLogUtil {
     private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
 //    private static final Logger hystrixCostPerfLogger= LoggerFactory.getLogger("hystrixCostPerfLogger");
 
-    private static final int SLOW_TIME=10;//10ms
+    private static final int SLOW_TIME = 10;//10ms
 
     //把useLogger分离开：local+kafka
     private static Logger userLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
@@ -158,16 +157,16 @@ public class UserOperationLogUtil {
 //            hystrixLogger.warn("UserOperationLogUtil invoke hystrix...");
             Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
 //            StopWatch stopWatch = new Slf4JStopWatch(hystrixCostPerfLogger);
-            Boolean hystrixKafkaHystrixEnabled=Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED));
-            if (hystrixGlobalEnabled && hystrixKafkaHystrixEnabled ) {
-                Boolean kafkaChooseThreadMode=Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED));
-                if(kafkaChooseThreadMode){
+            Boolean hystrixKafkaHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED));
+            if (hystrixGlobalEnabled && hystrixKafkaHystrixEnabled) {
+                Boolean kafkaChooseThreadMode = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED));
+                if (kafkaChooseThreadMode) {
                     new HystrixKafkaThreadCommand(log.toString()).execute();
-                }   else{
+                } else {
                     new HystrixKafkaSemaphoresCommand(log.toString()).execute();
                 }
 
-            } else{
+            } else {
                 userKafkaLogger.info(log.toString());
             }
 //            stopWatch(stopWatch,"hystrix_kafka_cost","success");

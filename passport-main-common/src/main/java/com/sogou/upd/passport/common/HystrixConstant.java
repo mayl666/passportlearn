@@ -10,9 +10,9 @@ package com.sogou.upd.passport.common;
 public class HystrixConstant {
     //hystrix default global configurations
     public static final String DEFAULT_GLOBAL_ENABLED = "false";   //默认总开关:关闭
-    public static final String DEFAULT_QQ_HYSTRIX_ENABLED="false";//默认QQ开关：关闭
-    public static final String DEFAULT_KAFKA_HYSTRIX_ENABLED="false";//默认kafka开关：关闭
-    public static final String DEFAULT_KAFKA_CHOOSE_THREAD_MODE="true" ;//默认采用线程池隔离kafka
+    public static final String DEFAULT_QQ_HYSTRIX_ENABLED = "false";//默认QQ开关：关闭
+    public static final String DEFAULT_KAFKA_HYSTRIX_ENABLED = "false";//默认kafka开关：关闭
+    public static final String DEFAULT_KAFKA_CHOOSE_THREAD_MODE = "true";//默认采用线程池隔离kafka
     public static final String DEFAULT_REQUEST_CACHE_ENABLED = "false";    //默认不开启request cache
     public static final String DEFAULT_ERROR_THRESHOLD_PERCENTAGE = "70";  //默认错误率阈值为70%
     public static final String DEFAULT_REQUEST_LOG_ENABLED = "true";
@@ -36,7 +36,7 @@ public class HystrixConstant {
     public static final String PROPERTY_GLOBAL_ENABLED = "globalEnabled";
     public static final String PROPERTY_QQ_HYSTRIX_ENABLED = "qqHystrixEnabled";
     public static final String PROPERTY_KAFKA_HYSTRIX_ENABLED = "kafkaHystrixEnabled";
-    public static final String PROPERTY_KAFKA_CHOOSE_THREAD_MODE="kafkaChooseThreadMode";
+    public static final String PROPERTY_KAFKA_CHOOSE_THREAD_MODE = "kafkaChooseThreadMode";
     public static final String PROPERTY_REQUEST_CACHE_ENABLED = "requestCacheEnabled";
     public static final String PROPERTY_REQUEST_LOG_ENABLED = "requestLogEnabled";
     public static final String PROPERTY_ERROR_THRESHOLD_PERCENTAGE = "errorThresholdPercentage";
