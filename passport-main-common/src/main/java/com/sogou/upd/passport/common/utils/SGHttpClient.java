@@ -1,6 +1,10 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.HystrixConstant;
+import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
+import com.sogou.upd.passport.common.hystrix.HystrixQQCommand;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
@@ -23,7 +27,6 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
@@ -45,7 +48,7 @@ import java.util.ArrayList;
  * Time: 上午10:25
  */
 public class SGHttpClient {
-
+    private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
 
     protected static final HttpClient httpClient;
     /**
@@ -103,7 +106,9 @@ public class SGHttpClient {
             case xml:
                 t = XMLUtil.xmlToBean(value, type);
                 break;
-        }       ArrayList list = new ArrayList();list.iterator();
+        }
+        ArrayList list = new ArrayList();
+        list.iterator();
         return t;
     }
 
@@ -183,23 +188,36 @@ public class SGHttpClient {
             throw new NullPointerException("requestModel 不能为空");
         }
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
-        InputStream in=null;
+
+        //对QQapi调用hystrix
+        hystrixLogger.warn("SGHttpClient executePrivate:invoke hystrix...");
+        String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
+        Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
+        if (hystrixGlobalEnabled) {
+            String qqUrl = requestModel.getUrl();
+            hystrixLogger.warn("SGHttpClient hystrix url:"+qqUrl);
+            if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
+                return new HystrixQQCommand(requestModel, httpClient).execute();
+            }
+        }
+
+        InputStream in = null;
         try {
             HttpResponse httpResponse = httpClient.execute(httpRequest);
-            in=httpResponse.getEntity().getContent();
+            in = httpResponse.getEntity().getContent();
             int responseCode = httpResponse.getStatusLine().getStatusCode();
             //302如何处理
             if (responseCode == RESPONSE_SUCCESS_CODE) {
                 return httpResponse.getEntity();
             }
             String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CHARSET);
-            String result= EntityUtils.toString(httpResponse.getEntity(),CommonConstant.DEFAULT_CHARSET);
-            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:"+result);
+            String result = EntityUtils.toString(httpResponse.getEntity(), CommonConstant.DEFAULT_CHARSET);
+            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:" + result);
         } catch (Exception e) {
-            if(in!=null){
-                try{
+            if (in != null) {
+                try {
                     in.close();
-                }catch(IOException ioe){
+                } catch (IOException ioe) {
                 }
             }
             throw new RuntimeException("http request error ", e);
