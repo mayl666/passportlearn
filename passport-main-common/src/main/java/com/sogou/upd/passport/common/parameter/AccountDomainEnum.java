@@ -112,6 +112,10 @@ public enum AccountDomainEnum {
         if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(userId)) {
             return userId;
         }
+        // TODO  linshi
+//        if (PhoneUtil.verifyPhoneNumberFormat(userId)) {
+//            return userId + "@sohu.com";
+//        }
         return userId.toLowerCase();
     }
 
