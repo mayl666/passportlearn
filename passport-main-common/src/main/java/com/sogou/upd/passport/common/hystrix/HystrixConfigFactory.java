@@ -23,6 +23,10 @@ public class HystrixConfigFactory {
     private static final Logger logger = LoggerFactory.getLogger("hystrixLogger");
 
     public static final String PROPERTY_GLOBAL_ENABLED = "globalEnabled";
+    public static final String PROPERTY_QQ_HYSTRIX_ENABLED = "qqHystrixEnabled";
+    public static final String PROPERTY_KAFKA_HYSTRIX_ENABLED = "kafkaHystrixEnabled";
+    public static final String PROPERTY_KAFKA_CHOOSE_THREAD_MODE="kafkaChooseThreadMode";
+
     public static final String PROPERTY_REQUEST_CACHE_ENABLED = "requestCacheEnabled";
     public static final String PROPERTY_REQUEST_LOG_ENABLED = "requestLogEnabled";
     public static final String PROPERTY_ERROR_THRESHOLD_PERCENTAGE = "errorThresholdPercentage";
@@ -70,6 +74,9 @@ public class HystrixConfigFactory {
                 setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD, HystrixConstant.DEFAULT_KAFKA_REQUESTVOLUME_THRESHOLD);
                 setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_SEMAPHORE_THRESHOLD, HystrixConstant.DEFAULT_KAFKA_SEMAPHORE_THRESHOLD);
                 setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_FALLBACK_SEMAPHORE_THRESHOLD, HystrixConstant.DEFAULT_KAFKA_FALLBACK_SEMAPHORE_THRESHOLD);
+                setProperties(hystrixConfigMap, properties,PROPERTY_QQ_HYSTRIX_ENABLED,HystrixConstant.DEFAULT_QQ_HYSTRIX_ENABLED);
+                setProperties(hystrixConfigMap, properties,PROPERTY_KAFKA_HYSTRIX_ENABLED,HystrixConstant.DEFAULT_KAFKA_HYSTRIX_ENABLED);
+                setProperties(hystrixConfigMap, properties,PROPERTY_KAFKA_CHOOSE_THREAD_MODE,HystrixConstant.DEFAULT_KAFKA_CHOOSE_THREAD_MODE);
                 //打印参数
                 logProperties();
             }
@@ -106,5 +113,8 @@ public class HystrixConfigFactory {
         logger.warn(PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD + ":" + getProperty(PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD));
         logger.warn(PROPERTY_KAFKA_SEMAPHORE_THRESHOLD + ":" + getProperty(PROPERTY_KAFKA_SEMAPHORE_THRESHOLD));
         logger.warn(PROPERTY_KAFKA_FALLBACK_SEMAPHORE_THRESHOLD + ":" + getProperty(PROPERTY_KAFKA_FALLBACK_SEMAPHORE_THRESHOLD));
+        logger.warn(PROPERTY_QQ_HYSTRIX_ENABLED + ":" + getProperty(PROPERTY_QQ_HYSTRIX_ENABLED));
+        logger.warn(PROPERTY_KAFKA_HYSTRIX_ENABLED + ":" + getProperty(PROPERTY_KAFKA_HYSTRIX_ENABLED));
+        logger.warn(PROPERTY_KAFKA_CHOOSE_THREAD_MODE + ":" + getProperty(PROPERTY_KAFKA_CHOOSE_THREAD_MODE));
     }
 }

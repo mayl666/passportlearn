@@ -158,9 +158,15 @@ public class UserOperationLogUtil {
 //            hystrixLogger.warn("UserOperationLogUtil invoke hystrix...");
             Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
 //            StopWatch stopWatch = new Slf4JStopWatch(hystrixCostPerfLogger);
-            if (hystrixGlobalEnabled) {
-                new HystrixKafkaThreadCommand(log.toString()).execute();
-//                new HystrixKafkaSemaphoresCommand(log.toString()).execute();
+            Boolean hystrixKafkaHystrixEnabled=Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED));
+            if (hystrixGlobalEnabled && hystrixKafkaHystrixEnabled ) {
+                Boolean kafkaChooseThreadMode=Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED));
+                if(kafkaChooseThreadMode){
+                    new HystrixKafkaThreadCommand(log.toString()).execute();
+                }   else{
+                    new HystrixKafkaSemaphoresCommand(log.toString()).execute();
+                }
+
             } else{
                 userKafkaLogger.info(log.toString());
             }
