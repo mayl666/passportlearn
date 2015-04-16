@@ -161,6 +161,8 @@ public class UserOperationLogUtil {
             if (hystrixGlobalEnabled) {
                 new HystrixKafkaThreadCommand(log.toString()).execute();
 //                new HystrixKafkaSemaphoresCommand(log.toString()).execute();
+            } else{
+                userKafkaLogger.info(log.toString());
             }
 //            stopWatch(stopWatch,"hystrix_kafka_cost","success");
 

@@ -25,7 +25,7 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
     private static int kafkaHystrixThreadPoolCoreSize = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE));
     private static final int kafkaTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_TIMEOUT));
     private static final int kafkaRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD));
-
+    private static final int kafkaFallbackSemaphoreThreshold=Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_FALLBACK_SEMAPHORE_THRESHOLD));
     public HystrixKafkaThreadCommand(String infoToLog) {
 
         super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("HystrixKafka"))
@@ -36,7 +36,8 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
                         .withRequestCacheEnabled(requestCacheEnable)
                         .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
                         .withExecutionIsolationThreadTimeoutInMilliseconds(kafkaTimeout)
-                        .withCircuitBreakerRequestVolumeThreshold(kafkaRequestVolumeThreshold))
+                        .withCircuitBreakerRequestVolumeThreshold(kafkaRequestVolumeThreshold)
+                .withFallbackIsolationSemaphoreMaxConcurrentRequests(kafkaFallbackSemaphoreThreshold))
                 .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter()
                         .withCoreSize(kafkaHystrixThreadPoolCoreSize)));
         this.infoToLog = infoToLog;

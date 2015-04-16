@@ -28,6 +28,7 @@ public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
     private static final int kafkaTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_TIMEOUT));
     private static final int kafkaRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD));
     private static final int kafkaSemaphoreThreshold=Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_SEMAPHORE_THRESHOLD));
+    private static final int kafkaFallbackSemaphoreThreshold=Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_FALLBACK_SEMAPHORE_THRESHOLD));
 
     public HystrixKafkaSemaphoresCommand(String infoToLog) {
 
@@ -37,9 +38,11 @@ public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE) //信号隔离
                         .withExecutionIsolationSemaphoreMaxConcurrentRequests(kafkaSemaphoreThreshold)
                         .withRequestCacheEnabled(requestCacheEnable)
-                        .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
-                        .withExecutionIsolationThreadTimeoutInMilliseconds(kafkaTimeout)
-                        .withCircuitBreakerRequestVolumeThreshold(kafkaRequestVolumeThreshold)));
+//                        .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
+//                        .withExecutionIsolationThreadTimeoutInMilliseconds(kafkaTimeout)
+//                        .withCircuitBreakerRequestVolumeThreshold(kafkaRequestVolumeThreshold))
+                        .withFallbackIsolationSemaphoreMaxConcurrentRequests(kafkaFallbackSemaphoreThreshold)));
+
         this.infoToLog = infoToLog;
 
     }
