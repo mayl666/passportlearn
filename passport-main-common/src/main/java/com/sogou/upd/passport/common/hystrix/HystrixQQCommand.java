@@ -49,7 +49,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
 
     @Override
     protected HttpEntity run() throws Exception {
-        logger.warn("invoke hystrix qq command...");
+//        logger.warn("invoke hystrix qq command...");
         return HystrixCommonMethod.execute(requestModel, httpClient);
     }
 

@@ -24,6 +24,7 @@ public class HystrixConfigFactory {
 
     public static final String PROPERTY_GLOBAL_ENABLED = "globalEnabled";
     public static final String PROPERTY_REQUEST_CACHE_ENABLED = "requestCacheEnabled";
+    public static final String PROPERTY_REQUEST_LOG_ENABLED = "requestLogEnabled";
     public static final String PROPERTY_ERROR_THRESHOLD_PERCENTAGE = "errorThresholdPercentage";
     public static final String PROPERTY_QQ_URL = "qqUrl";
     public static final String PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE = "qqHystrixThreadPoolCoreSize";
@@ -32,6 +33,9 @@ public class HystrixConfigFactory {
     public static final String PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE = "kafkaHystrixThreadPoolCoreSize";
     public static final String PROPERTY_KAFKA_TIMEOUT = "kafkaTimeout";
     public static final String PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD = "kafkaRequestVolumeThreshold";
+    public static final String PROPERTY_KAFKA_SEMAPHORE_THRESHOLD = "kafkaSemaphoreThreshold";
+    public static final String PROPERTY_KAFKA_FALLBACK_SEMAPHORE_THRESHOLD = "kafkaFallbackSemaphoreThreshold";
+
 
     private static Props properties = new Props();
     protected static ConcurrentMap<String, String> hystrixConfigMap = Maps.newConcurrentMap();
@@ -55,6 +59,7 @@ public class HystrixConfigFactory {
 
                 setProperties(hystrixConfigMap, properties, PROPERTY_GLOBAL_ENABLED, HystrixConstant.DEFAULT_GLOBAL_ENABLED);
                 setProperties(hystrixConfigMap, properties, PROPERTY_REQUEST_CACHE_ENABLED, HystrixConstant.DEFAULT_REQUEST_CACHE_ENABLED);
+                setProperties(hystrixConfigMap, properties, PROPERTY_REQUEST_LOG_ENABLED, HystrixConstant.DEFAULT_REQUEST_LOG_ENABLED);
                 setProperties(hystrixConfigMap, properties, PROPERTY_ERROR_THRESHOLD_PERCENTAGE, HystrixConstant.DEFAULT_ERROR_THRESHOLD_PERCENTAGE);
                 setProperties(hystrixConfigMap, properties, PROPERTY_QQ_URL, HystrixConstant.DEFAULT_QQ_URL);
                 setProperties(hystrixConfigMap, properties, PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE, HystrixConstant.DEFAULT_QQ_HYSTRIX_THREADPOOL_CORESIZE);
@@ -63,6 +68,8 @@ public class HystrixConfigFactory {
                 setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE, HystrixConstant.DEFAULT_KAFKA_HYSTRIX_THREADPOOL_CORESIZE);
                 setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_TIMEOUT, HystrixConstant.DEFAULT_KAFKA_TIMEOUT);
                 setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD, HystrixConstant.DEFAULT_KAFKA_REQUESTVOLUME_THRESHOLD);
+                setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_SEMAPHORE_THRESHOLD, HystrixConstant.DEFAULT_KAFKA_SEMAPHORE_THRESHOLD);
+                setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_FALLBACK_SEMAPHORE_THRESHOLD, HystrixConstant.DEFAULT_KAFKA_FALLBACK_SEMAPHORE_THRESHOLD);
                 //打印参数
                 logProperties();
             }
@@ -86,16 +93,18 @@ public class HystrixConfigFactory {
         }
     }
 
-
     public static void logProperties() {
-        logger.warn(PROPERTY_REQUEST_CACHE_ENABLED+":"+getProperty(PROPERTY_REQUEST_CACHE_ENABLED));
-        logger.warn(PROPERTY_ERROR_THRESHOLD_PERCENTAGE+":"+getProperty(PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
-        logger.warn(PROPERTY_QQ_URL+":"+getProperty(PROPERTY_QQ_URL));
-        logger.warn(PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE +":"+getProperty(PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE));
-        logger.warn(PROPERTY_QQ_TIMEOUT+":"+getProperty(PROPERTY_QQ_TIMEOUT));
-        logger.warn(PROPERTY_QQ_REQUESTVOLUME_THRESHOLD +":"+getProperty(PROPERTY_QQ_REQUESTVOLUME_THRESHOLD));
-        logger.warn(PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE +":"+getProperty(PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE));
-        logger.warn(PROPERTY_KAFKA_TIMEOUT +":"+getProperty(PROPERTY_KAFKA_TIMEOUT ));
-        logger.warn(PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD +":"+getProperty(PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD));
+        logger.warn(PROPERTY_REQUEST_CACHE_ENABLED + ":" + getProperty(PROPERTY_REQUEST_CACHE_ENABLED));
+        logger.warn(PROPERTY_REQUEST_LOG_ENABLED + ":" + getProperty(PROPERTY_REQUEST_LOG_ENABLED));
+        logger.warn(PROPERTY_ERROR_THRESHOLD_PERCENTAGE + ":" + getProperty(PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
+        logger.warn(PROPERTY_QQ_URL + ":" + getProperty(PROPERTY_QQ_URL));
+        logger.warn(PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE + ":" + getProperty(PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE));
+        logger.warn(PROPERTY_QQ_TIMEOUT + ":" + getProperty(PROPERTY_QQ_TIMEOUT));
+        logger.warn(PROPERTY_QQ_REQUESTVOLUME_THRESHOLD + ":" + getProperty(PROPERTY_QQ_REQUESTVOLUME_THRESHOLD));
+        logger.warn(PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE + ":" + getProperty(PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE));
+        logger.warn(PROPERTY_KAFKA_TIMEOUT + ":" + getProperty(PROPERTY_KAFKA_TIMEOUT));
+        logger.warn(PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD + ":" + getProperty(PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD));
+        logger.warn(PROPERTY_KAFKA_SEMAPHORE_THRESHOLD + ":" + getProperty(PROPERTY_KAFKA_SEMAPHORE_THRESHOLD));
+        logger.warn(PROPERTY_KAFKA_FALLBACK_SEMAPHORE_THRESHOLD + ":" + getProperty(PROPERTY_KAFKA_FALLBACK_SEMAPHORE_THRESHOLD));
     }
 }

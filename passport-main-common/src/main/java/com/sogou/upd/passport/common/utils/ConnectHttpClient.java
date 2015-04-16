@@ -34,10 +34,9 @@ import java.io.InputStream;
  */
 public class ConnectHttpClient extends SGHttpClient {
 
-    private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
-
 
     protected static final HttpClient httpClient;
+    private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
     /**
      * 获取连接的最大等待时间
      */
@@ -139,6 +138,7 @@ public class ConnectHttpClient extends SGHttpClient {
             throw new NullPointerException("requestModel 不能为空");
         }
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
+
 
         //对QQapi调用hystrix
         hystrixLogger.warn("ConnectHttpClient executePrivate:invoke hystrix");

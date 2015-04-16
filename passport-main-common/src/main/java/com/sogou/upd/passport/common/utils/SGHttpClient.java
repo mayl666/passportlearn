@@ -48,9 +48,9 @@ import java.util.ArrayList;
  * Time: 上午10:25
  */
 public class SGHttpClient {
-    private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
 
     protected static final HttpClient httpClient;
+    private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
     /**
      * 最大连接数
      */
