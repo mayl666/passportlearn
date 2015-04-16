@@ -12,7 +12,7 @@ public class HystrixConstant {
     public static final String DEFAULT_GLOBAL_ENABLED = "false";   //默认总开关:关闭
     public static final String DEFAULT_REQUEST_CACHE_ENABLED = "false";    //默认不开启request cache
     public static final String DEFAULT_ERROR_THRESHOLD_PERCENTAGE = "70";  //默认错误率阈值为70%
-    public static final String DEFAULT_REQUEST_LOG_ENABLED = "false";
+    public static final String DEFAULT_REQUEST_LOG_ENABLED = "true";
 
 
     //QQ依赖调用
