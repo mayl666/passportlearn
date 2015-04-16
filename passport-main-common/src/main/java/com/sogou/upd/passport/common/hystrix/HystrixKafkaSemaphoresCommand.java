@@ -24,6 +24,7 @@ public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
     private static final Logger kafkaLogger = LoggerFactory.getLogger("userLoggerKafka");
 
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConfigFactory.PROPERTY_REQUEST_CACHE_ENABLED));
+    private static boolean requestLogEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConfigFactory.PROPERTY_REQUEST_LOG_ENABLED));
     private static int errorThresholdPercentage = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
     private static final int kafkaTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_TIMEOUT));
     private static final int kafkaRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD));
@@ -38,6 +39,7 @@ public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE) //信号隔离
                         .withExecutionIsolationSemaphoreMaxConcurrentRequests(kafkaSemaphoreThreshold)
                         .withRequestCacheEnabled(requestCacheEnable)
+                        .withRequestLogEnabled(requestLogEnable)
 //                        .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
 //                        .withExecutionIsolationThreadTimeoutInMilliseconds(kafkaTimeout)
 //                        .withCircuitBreakerRequestVolumeThreshold(kafkaRequestVolumeThreshold))

@@ -21,6 +21,7 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
     private static final Logger kafkaLogger = LoggerFactory.getLogger("userLoggerKafka");
 
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConfigFactory.PROPERTY_REQUEST_CACHE_ENABLED));
+    private static boolean requestLogEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConfigFactory.PROPERTY_REQUEST_LOG_ENABLED));
     private static int errorThresholdPercentage = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
     private static int kafkaHystrixThreadPoolCoreSize = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE));
     private static final int kafkaTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_TIMEOUT));
@@ -34,6 +35,7 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD)
                         .withRequestCacheEnabled(requestCacheEnable)
+                        .withRequestLogEnabled(requestLogEnable)
                         .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
                         .withExecutionIsolationThreadTimeoutInMilliseconds(kafkaTimeout)
                         .withCircuitBreakerRequestVolumeThreshold(kafkaRequestVolumeThreshold)
