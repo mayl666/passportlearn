@@ -16,6 +16,8 @@ public class HystrixConstant {
     public static final String DEFAULT_REQUEST_CACHE_ENABLED = "false";    //默认不开启request cache
     public static final String DEFAULT_ERROR_THRESHOLD_PERCENTAGE = "70";  //默认错误率阈值为70%
     public static final String DEFAULT_REQUEST_LOG_ENABLED = "true";
+    public static final String DEFAULT_BREAKER_FORCE_OPEN="false";
+    public static final String DEFAULT_BREAKER_FORCE_CLOSE="false";
 
 
     //QQ依赖调用
@@ -30,11 +32,13 @@ public class HystrixConstant {
     public static final String DEFAULT_KAFKA_TIMEOUT = "100";// ms
     public static final String DEFAULT_KAFKA_REQUESTVOLUME_THRESHOLD = "20000";
     public static final String DEFAULT_KAFKA_SEMAPHORE_THRESHOLD = "10";
-    public static final String DEFAULT_KAFKA_FALLBACK_SEMAPHORE_THRESHOLD = "10";
+    public static final String DEFAULT_FALLBACK_SEMAPHORE_THRESHOLD = "10";
 
     //property name
     public static final String PROPERTY_GLOBAL_ENABLED = "globalEnabled";
     public static final String PROPERTY_QQ_HYSTRIX_ENABLED = "qqHystrixEnabled";
+    public static final String PROPERTY_BREAKER_FORCE_OPEN="breakerForceOpen" ;
+    public static final String PROPERTY_BREAKER_FORCE_CLOSE="breakerFoceClose";
     public static final String PROPERTY_KAFKA_HYSTRIX_ENABLED = "kafkaHystrixEnabled";
     public static final String PROPERTY_KAFKA_CHOOSE_THREAD_MODE = "kafkaChooseThreadMode";
     public static final String PROPERTY_REQUEST_CACHE_ENABLED = "requestCacheEnabled";
@@ -48,7 +52,7 @@ public class HystrixConstant {
     public static final String PROPERTY_KAFKA_TIMEOUT = "kafkaTimeout";
     public static final String PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD = "kafkaRequestVolumeThreshold";
     public static final String PROPERTY_KAFKA_SEMAPHORE_THRESHOLD = "kafkaSemaphoreThreshold";
-    public static final String PROPERTY_KAFKA_FALLBACK_SEMAPHORE_THRESHOLD = "kafkaFallbackSemaphoreThreshold";
+    public static final String PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD = "fallbackSemaphoreThreshold";
 
 
 }

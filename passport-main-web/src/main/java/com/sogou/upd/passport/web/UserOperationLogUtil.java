@@ -159,7 +159,7 @@ public class UserOperationLogUtil {
 //            StopWatch stopWatch = new Slf4JStopWatch(hystrixCostPerfLogger);
             Boolean hystrixKafkaHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED));
             if (hystrixGlobalEnabled && hystrixKafkaHystrixEnabled) {
-                Boolean kafkaChooseThreadMode = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED));
+                Boolean kafkaChooseThreadMode = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_CHOOSE_THREAD_MODE));
                 if (kafkaChooseThreadMode) {
                     new HystrixKafkaThreadCommand(log.toString()).execute();
                 } else {
