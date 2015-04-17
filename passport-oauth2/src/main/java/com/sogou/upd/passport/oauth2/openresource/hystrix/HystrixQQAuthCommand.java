@@ -28,6 +28,7 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
 
 
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConfigFactory.PROPERTY_REQUEST_CACHE_ENABLED));
+    private static boolean requestLogEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_LOG_ENABLED));
     private static int errorThresholdPercentage = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
     private static int qqHystrixThreadPoolCoreSize = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE));
     private static int qqTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_TIMEOUT));
@@ -42,6 +43,7 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD)
                         .withRequestCacheEnabled(requestCacheEnable)
+                        .withRequestLogEnabled(requestLogEnable)
                         .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
                         .withExecutionIsolationThreadTimeoutInMilliseconds(qqTimeout)
                         .withCircuitBreakerRequestVolumeThreshold(qqRequestVolumeThreshold))
@@ -56,7 +58,7 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
 
     @Override
     protected T run() throws Exception {
-        logger.warn("invoke Hystrix QQ  Auth Command...");
+//        logger.warn("invoke Hystrix QQ  Auth Command...");
         return HttpClient4.execute(request, headers, requestMethod, responseClass);
     }
 

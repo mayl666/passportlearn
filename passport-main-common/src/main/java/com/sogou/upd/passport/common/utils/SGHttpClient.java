@@ -196,7 +196,7 @@ public class SGHttpClient {
         Boolean hystrixQQHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
         if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
             String qqUrl = requestModel.getUrl();
-            hystrixLogger.warn("SGHttpClient hystrix url:" + qqUrl);
+//            hystrixLogger.warn("SGHttpClient hystrix url:" + qqUrl);
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
                 return new HystrixQQCommand(requestModel, httpClient).execute();
             }
