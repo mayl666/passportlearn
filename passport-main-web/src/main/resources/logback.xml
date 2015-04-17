@@ -147,22 +147,16 @@
         </encoder>
     </appender>
 
-    <appender name="localAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
-        <queueSize>512</queueSize>
-        <workerSize>1</workerSize>
-        <appender-ref ref="userOperationAppender"/>
-    </appender>
-
     <logger name="userLoggerAsync" level="info" additivity="false">
         <appender-ref ref="kafkaAsyncAppender"/>
         <!--<appender-ref ref="rabbitMQAsyncAppender"/>-->
-        <appender-ref ref="localAsyncAppender"/>
+        <appender-ref ref="userOperationAppender"/>
 
     </logger>
 
     <logger name="userLoggerLocal" level="info" additivity="false">
         <!--<appender-ref ref="userOperationAppender" />-->
-        <appender-ref ref="localAsyncAppender"/>
+        <appender-ref ref="userOperationAppender"/>
     </logger>
 
     <appender name="redisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -189,19 +183,6 @@
     </appender>
     <logger name="tokenRedisMissLogger" level="info" additivity="false">
         <appender-ref ref="tokenRedisMissAppender"/>
-    </logger>
-
-    <appender name="dBRedisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/dBRedisMiss/redisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
-            <maxHistory>14</maxHistory>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d %msg %n</pattern>
-        </encoder>
-    </appender>
-    <logger name="dBRedisMissLogger" level="info" additivity="false">
-        <appender-ref ref="dBRedisMissAppender"/>
     </logger>
 
     <!--start:httpClient性能log-->
@@ -263,7 +244,7 @@
     </logger>
     <!--end:web服务器性能log-->
 
-    <!--start:redies请求log-->
+    <!--start:kv请求log-->
     <appender name="kvPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/kvperf/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
@@ -283,7 +264,7 @@
     </logger>
     <!--end:web服务器性能log-->
 
-    <!--start:redies请求log-->
+    <!--start:mysql+redies请求log-->
     <appender name="dbPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/mysqldb/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>

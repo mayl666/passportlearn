@@ -10,6 +10,76 @@
         </encoder>
     </appender>
 
+    <!--移动端数据统计 interface  -->
+    <appender name="interfaceAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/interface/interface.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="interfaceLogger" level="info" additivity="false">
+        <appender-ref ref="interfaceAppender"/>
+    </logger>
+
+    <!--移动端数据统计 exception  -->
+    <appender name="exceptionAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/exception/exception.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="exceptionLogger" level="info" additivity="false">
+        <appender-ref ref="exceptionAppender"/>
+    </logger>
+
+    <!--移动端数据统计 product  -->
+    <appender name="productAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/product/product.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="productLogger" level="info" additivity="false">
+        <appender-ref ref="productAppender"/>
+    </logger>
+
+    <!--移动端数据统计 debugLog  -->
+    <appender name="debugAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/debug/debug.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="debugLogger" level="info" additivity="false">
+        <appender-ref ref="debugAppender"/>
+    </logger>
+
+    <!--移动端数据统计 netflow  -->
+    <appender name="netflowAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mobileoperation/netflow/netflow.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="netflowLogger" level="info" additivity="false">
+        <appender-ref ref="netflowAppender"/>
+    </logger>
+
     <!--注册黑名单-->
     <appender name="regBlackListFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -64,6 +134,7 @@
         <appender-ref ref="interfaceLimitedAppender"/>
     </logger>
 
+
     <appender name="kafkaAsyncAppender" class="com.sogou.upd.passport.logback.api.kafka.MultiKafkaAppender"
               additivity="false">
         <zkList>${zkList}</zkList>
@@ -76,22 +147,16 @@
         </encoder>
     </appender>
 
-    <appender name="localAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
-        <queueSize>512</queueSize>
-        <workerSize>1</workerSize>
-        <appender-ref ref="userOperationAppender"/>
-    </appender>
-
     <logger name="userLoggerAsync" level="info" additivity="false">
         <appender-ref ref="kafkaAsyncAppender"/>
         <!--<appender-ref ref="rabbitMQAsyncAppender"/>-->
-        <appender-ref ref="localAsyncAppender"/>
+        <appender-ref ref="userOperationAppender"/>
 
     </logger>
 
     <logger name="userLoggerLocal" level="info" additivity="false">
         <!--<appender-ref ref="userOperationAppender" />-->
-        <appender-ref ref="localAsyncAppender"/>
+        <appender-ref ref="userOperationAppender"/>
     </logger>
 
     <appender name="redisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -118,19 +183,6 @@
     </appender>
     <logger name="tokenRedisMissLogger" level="info" additivity="false">
         <appender-ref ref="tokenRedisMissAppender"/>
-    </logger>
-
-    <appender name="dBRedisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/dBRedisMiss/redisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
-            <maxHistory>14</maxHistory>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d %msg %n</pattern>
-        </encoder>
-    </appender>
-    <logger name="dBRedisMissLogger" level="info" additivity="false">
-        <appender-ref ref="dBRedisMissAppender"/>
     </logger>
 
     <!--start:httpClient性能log-->
@@ -192,7 +244,7 @@
     </logger>
     <!--end:web服务器性能log-->
 
-    <!--start:redies请求log-->
+    <!--start:kv请求log-->
     <appender name="kvPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/kvperf/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
@@ -212,7 +264,7 @@
     </logger>
     <!--end:web服务器性能log-->
 
-    <!--start:redies请求log-->
+    <!--start:mysql+redies请求log-->
     <appender name="dbPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/mysqldb/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
