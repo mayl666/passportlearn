@@ -190,13 +190,13 @@ public class SGHttpClient {
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
 
         //对QQapi调用hystrix
-        hystrixLogger.warn("SGHttpClient executePrivate:invoke hystrix...");
+//        hystrixLogger.warn("SGHttpClient executePrivate:invoke hystrix...");
         String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
         Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
         Boolean hystrixQQHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
         if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
             String qqUrl = requestModel.getUrl();
-//            hystrixLogger.warn("SGHttpClient hystrix url:" + qqUrl);
+            hystrixLogger.warn("SGHttpClient hystrix url:" + qqUrl);
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
                 return new HystrixQQCommand(requestModel, httpClient).execute();
             }

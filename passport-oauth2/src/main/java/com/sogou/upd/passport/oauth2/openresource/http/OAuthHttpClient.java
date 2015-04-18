@@ -33,13 +33,13 @@ public class OAuthHttpClient {
         headers.put(HttpConstant.HeaderType.CONTENT_TYPE, HttpConstant.ContentType.URL_ENCODED);
 
         //对QQapi调用hystrix
-        hystrixLogger.warn("OAuthHttpClient execute:invoke hystrix");
+//        hystrixLogger.warn("OAuthHttpClient execute:invoke hystrix");
         String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
         Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
         Boolean hystrixQQHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
         if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
             String oAuthUrl = request.getLocationUri();
-//            hystrixLogger.warn("OAuthHttpClient hystrix url:" + oAuthUrl);
+            hystrixLogger.warn("OAuthHttpClient hystrix url:" + oAuthUrl);
             if (!Strings.isNullOrEmpty(oAuthUrl) && oAuthUrl.contains(hystrixQQurl)) {
                 return (T) (new HystrixQQAuthCommand(request, requestMethod, responseClass, headers).execute());
             }

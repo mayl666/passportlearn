@@ -141,13 +141,13 @@ public class ConnectHttpClient extends SGHttpClient {
 
 
         //对QQapi调用hystrix
-        hystrixLogger.warn("ConnectHttpClient executePrivate:invoke hystrix");
+//        hystrixLogger.warn("ConnectHttpClient executePrivate:invoke hystrix");
         String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
         Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
         Boolean hystrixQQHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
         if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
             String qqUrl = requestModel.getUrl();
-//            hystrixLogger.warn("ConnectHttpClient hystrix url:" + qqUrl);
+            hystrixLogger.warn("ConnectHttpClient hystrix url:" + qqUrl);
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
                 return new HystrixQQCommand(requestModel, httpClient).execute();
             }
