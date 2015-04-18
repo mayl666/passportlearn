@@ -2,8 +2,11 @@ package com.sogou.upd.passport.web;
 
 
 import com.google.common.base.Strings;
-
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.HystrixConstant;
+import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
+import com.sogou.upd.passport.common.hystrix.HystrixKafkaSemaphoresCommand;
+import com.sogou.upd.passport.common.hystrix.HystrixKafkaThreadCommand;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -34,6 +37,14 @@ public class UserOperationLogUtil {
     private static final Logger userOperationLogger = LoggerFactory.getLogger("userLoggerAsync");
     private static final Logger userOperationLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
     private static Logger userLogger = userOperationLogger;
+    private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
+//    private static final Logger hystrixCostPerfLogger= LoggerFactory.getLogger("hystrixCostPerfLogger");
+
+    private static final int SLOW_TIME = 10;//10ms
+
+    //把useLogger分离开：local+kafka
+    private static Logger userLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
+    private static Logger userKafkaLogger = LoggerFactory.getLogger("userLoggerKafka");
 
     private static String NEXTLINE = "%0A"; // \n换行符的UTF-8编码
     private static String TAB = "%09"; // \t制表符的UTF-8编码
@@ -138,11 +149,41 @@ public class UserOperationLogUtil {
                 log.append("\t").append(StringUtil.defaultIfEmpty(otherMsgJson, "-"));
             }
             log.append("\t").append(StringUtil.defaultIfEmpty(request.getHeader("X-Http-Real-Port"), "-"));
-            userLogger.info(log.toString());
+//            userLogger.info(log.toString());
+
+            userLocalLogger.info(log.toString());
+            //userKafkaLogger.info(log.toString());
+            //调用hystrix 线程隔离kafka command
+//            hystrixLogger.warn("UserOperationLogUtil invoke hystrix...");
+            Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
+//            StopWatch stopWatch = new Slf4JStopWatch(hystrixCostPerfLogger);
+            Boolean hystrixKafkaHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED));
+            if (hystrixGlobalEnabled && hystrixKafkaHystrixEnabled) {
+                Boolean kafkaChooseThreadMode = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_CHOOSE_THREAD_MODE));
+                if (kafkaChooseThreadMode) {
+                    new HystrixKafkaThreadCommand(log.toString()).execute();
+                } else {
+                    new HystrixKafkaSemaphoresCommand(log.toString()).execute();
+                }
+
+            } else {
+                userKafkaLogger.info(log.toString());
+            }
+//            stopWatch(stopWatch,"hystrix_kafka_cost","success");
+
+
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
     }
+//
+//    private static void stopWatch(StopWatch stopWatch, String tag, String message) {
+//        //无论什么情况都记录下所有的请求数据
+//        if (stopWatch.getElapsedTime() >= SLOW_TIME) {
+//            tag += "(slow)";
+//        }
+//        stopWatch.stop(tag, message);
+//    }
 
     private static String getLocalIp(HttpServletRequest request) {
         try {

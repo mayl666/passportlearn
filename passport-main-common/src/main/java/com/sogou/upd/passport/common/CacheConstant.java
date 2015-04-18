@@ -91,9 +91,9 @@ public class CacheConstant {
 
     /*-----------------------------------------   KV系统   -----------------------------------------*/
     /*==================核心kv 动作记录相关缓存常量=====================*/
-    public static final String CORE_KV_PREFIX_PASSPORTID_ACTIONRECORD = "13008/action_records/SP.PASSPORTID:ACTIONRECORD_LIST_";
+    public static final String CORE_KV_PREFIX_PASSPORTID_ACTIONRECORD = "110108/action_records/SP.PASSPORTID:ACTIONRECORD_LIST_";
     /*==================核心kv token相关缓存常量========================*/
-    public static final String CORE_KV_PREFIX_PASSPROTID_TOKEN = "13008/account_token/"; //kv迁移，核心kv集群
+    public static final String CORE_KV_PREFIX_PASSPROTID_TOKEN = "110108/account_token/"; //kv迁移，核心kv集群
 //    public static final String CORE_KV_PREFIX_PASSPROTID_TOKEN = "0/0/"; //kv测试
 
     /*==================登陆相关缓存常量========================*/
