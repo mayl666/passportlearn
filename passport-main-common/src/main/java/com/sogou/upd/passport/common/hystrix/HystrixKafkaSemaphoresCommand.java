@@ -44,9 +44,9 @@ public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
                         .withRequestLogEnabled(requestLogEnable)
                         .withCircuitBreakerForceOpen(breakerForceOpen)
                         .withCircuitBreakerForceClosed(breakerForceClose)
-//                        .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
+                        .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
 //                        .withExecutionIsolationThreadTimeoutInMilliseconds(kafkaTimeout)
-//                        .withCircuitBreakerRequestVolumeThreshold(kafkaRequestVolumeThreshold))
+                        .withCircuitBreakerRequestVolumeThreshold(kafkaRequestVolumeThreshold)
                         .withFallbackIsolationSemaphoreMaxConcurrentRequests(fallbackSemaphoreThreshold)));
 
         this.infoToLog = infoToLog;
