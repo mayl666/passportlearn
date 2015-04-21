@@ -23,7 +23,7 @@ public class OAuthConsumerFactory {
 
     private static Props properties = null;
 
-    protected static ConcurrentMap<String, OAuthConsumer> consumerMap = Maps.newConcurrentMap();
+    final protected static ConcurrentMap<String, OAuthConsumer> consumerMap = Maps.newConcurrentMap();
 
     public static OAuthConsumer getOAuthConsumer(int provider) throws IOException {
 
