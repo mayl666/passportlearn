@@ -27,7 +27,7 @@
         <property name="acquireRetryAttempts">
             <value>5</value>
         </property>
-        <!--每120秒检查所有连接池中的空闲连接。Default: 0
+        <!--每300秒检查所有连接池中的空闲连接。Default: 0
           http://www.mchange.com/projects/c3p0/index.html#configuring_connection_testing
           set idleConnectionTestPeriod to 30, fire up you application and observe
           see whether clients are troubled by stale or broken Connections. If not, stick with 300, or try an even bigger number-->
