@@ -60,9 +60,9 @@
         <property name="initialPoolSize">
             <value>50</value>
         </property>
-        <!--最大空闲时间,60秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->
+        <!--最大空闲时间,30分钟内未使用则连接被丢弃。若为0则永不丢弃，单位秒。Default: 0 -->
         <property name="maxIdleTime">
-            <value>60</value>
+            <value>1800</value>
         </property>
         <!--获取连接失败将会引起所有等待连接池来获取连接的线程抛出异常。但是数据源仍有效
       保留，并在下次调用getConnection()的时候继续尝试获取连接。如果设为true，那么在尝试
@@ -119,7 +119,7 @@
             <value>50</value>
         </property>
         <property name="maxIdleTime">
-            <value>60</value>
+            <value>1800</value>
         </property>
         <property name="breakAfterAcquireFailure" value="false"/>
         <property name="testConnectionOnCheckout" value="false"/>
