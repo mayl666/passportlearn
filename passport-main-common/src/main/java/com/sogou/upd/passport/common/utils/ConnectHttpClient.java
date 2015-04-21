@@ -145,6 +145,12 @@ public class ConnectHttpClient extends SGHttpClient {
         String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
         Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
         Boolean hystrixQQHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
+        int qqDelay=Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_DELAY));
+        try {
+            Thread.sleep(qqDelay);
+        }   catch (Exception e){
+            e.printStackTrace();
+        }
         if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
             String qqUrl = requestModel.getUrl();
 //            hystrixLogger.warn("ConnectHttpClient hystrix url:" + qqUrl);

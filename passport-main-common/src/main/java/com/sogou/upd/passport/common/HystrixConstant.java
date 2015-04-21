@@ -18,6 +18,7 @@ public class HystrixConstant {
     public static final String DEFAULT_REQUEST_LOG_ENABLED = "true";
     public static final String DEFAULT_BREAKER_FORCE_OPEN="false";
     public static final String DEFAULT_BREAKER_FORCE_CLOSE="false";
+    public static final String DEFAULT_QQ_DELAY="200";
 
 
     //QQ依赖调用
@@ -53,6 +54,7 @@ public class HystrixConstant {
     public static final String PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD = "kafkaRequestVolumeThreshold";
     public static final String PROPERTY_KAFKA_SEMAPHORE_THRESHOLD = "kafkaSemaphoreThreshold";
     public static final String PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD = "fallbackSemaphoreThreshold";
+    public static final String PROPERTY_QQ_DELAY="qqDelay";
 
 
 }
