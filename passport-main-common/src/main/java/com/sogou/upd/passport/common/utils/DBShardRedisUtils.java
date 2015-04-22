@@ -301,7 +301,7 @@ public class DBShardRedisUtils {
                 throw new RuntimeException("Redis execute exception", e);
             } finally {
                 if (jedis != null) {
-                    shardedJedisPool.returnResource(jedis);
+                    jedis.close();
                 }
             }
             return result;
