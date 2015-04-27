@@ -27,16 +27,16 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     private static boolean breakerForceOpen= Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_OPEN));
     private static boolean breakerForceClose=Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_CLOSE));
     private static int errorThresholdPercentage = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
-    private static int qqHystrixThreadPoolCoreSize = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE));
+    private static int qqSGPoolCoreSize = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_SG_POOL_CORESIZE));
     private static int qqTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_TIMEOUT));
     private static int qqRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_REQUESTVOLUME_THRESHOLD));
     private static final int fallbackSemaphoreThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD));
     public HystrixQQCommand(RequestModel requestModel, HttpClient httpClient) {
 
 
-        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("SGHystrxiHttpClient"))
-                .andCommandKey(HystrixCommandKey.Factory.asKey("QQHystrixCommand"))
-                .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("QQHystrixPool"))
+        super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("HystrixHttpClient"))
+                .andCommandKey(HystrixCommandKey.Factory.asKey("QQSGHttpClientCommand"))
+                .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("QQSGHttpClientPool"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD)
                         .withRequestCacheEnabled(requestCacheEnable)
@@ -48,7 +48,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
                         .withCircuitBreakerRequestVolumeThreshold(qqRequestVolumeThreshold)
                         .withFallbackIsolationSemaphoreMaxConcurrentRequests(fallbackSemaphoreThreshold))
                 .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter()
-                        .withCoreSize(qqHystrixThreadPoolCoreSize))
+                        .withCoreSize(qqSGPoolCoreSize))
         );
         this.requestModel = requestModel;
         this.httpClient = httpClient;

@@ -36,7 +36,10 @@ public class HystrixConfigFactory {
 
     public static final String PROPERTY_ERROR_THRESHOLD_PERCENTAGE = "errorThresholdPercentage";
     public static final String PROPERTY_QQ_URL = "qqUrl";
-    public static final String PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE = "qqHystrixThreadPoolCoreSize";
+    public static final String PROPERTY_QQ_SG_POOL_CORESIZE = "qqSGPoolCoreSize";
+    public static final String PROPERTY_QQ_CONNECT_POOL_CORESIZE = "qqConnectPoolCoreSize";
+    public static final String PROPERTY_QQ_OAUTH_POOL_CORESIZE = "qqOAuthPoolCoreSize";
+
     public static final String PROPERTY_QQ_TIMEOUT = "qqTimeout";
     public static final String PROPERTY_QQ_REQUESTVOLUME_THRESHOLD = "qqRequestVolumeThreshold";
     public static final String PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE = "kafkaHystrixThreadPoolCoreSize";
@@ -71,7 +74,12 @@ public class HystrixConfigFactory {
                 setProperties(hystrixConfigMap, properties, PROPERTY_REQUEST_LOG_ENABLED, HystrixConstant.DEFAULT_REQUEST_LOG_ENABLED);
                 setProperties(hystrixConfigMap, properties, PROPERTY_ERROR_THRESHOLD_PERCENTAGE, HystrixConstant.DEFAULT_ERROR_THRESHOLD_PERCENTAGE);
                 setProperties(hystrixConfigMap, properties, PROPERTY_QQ_URL, HystrixConstant.DEFAULT_QQ_URL);
-                setProperties(hystrixConfigMap, properties, PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE, HystrixConstant.DEFAULT_QQ_HYSTRIX_THREADPOOL_CORESIZE);
+                setProperties(hystrixConfigMap, properties, PROPERTY_QQ_SG_POOL_CORESIZE, HystrixConstant.DEFAULT_QQ_SG_POOL_CORESIZE);
+                setProperties(hystrixConfigMap, properties, PROPERTY_QQ_CONNECT_POOL_CORESIZE, HystrixConstant.DEFAULT_QQ_CONNECT_POOL_CORESIZE);
+                setProperties(hystrixConfigMap, properties, PROPERTY_QQ_OAUTH_POOL_CORESIZE, HystrixConstant.DEFAULT_QQ_OAUTH_POOL_CORESIZE);
+
+
+
                 setProperties(hystrixConfigMap, properties, PROPERTY_QQ_TIMEOUT, HystrixConstant.DEFAULT_QQ_TIMEOUT);
                 setProperties(hystrixConfigMap, properties, PROPERTY_QQ_REQUESTVOLUME_THRESHOLD, HystrixConstant.DEFAULT_QQ_REQUESTVOLUME_THRESHOLD);
                 setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE, HystrixConstant.DEFAULT_KAFKA_HYSTRIX_THREADPOOL_CORESIZE);
@@ -113,7 +121,9 @@ public class HystrixConfigFactory {
         logger.warn(PROPERTY_REQUEST_LOG_ENABLED + ":" + getProperty(PROPERTY_REQUEST_LOG_ENABLED));
         logger.warn(PROPERTY_ERROR_THRESHOLD_PERCENTAGE + ":" + getProperty(PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
         logger.warn(PROPERTY_QQ_URL + ":" + getProperty(PROPERTY_QQ_URL));
-        logger.warn(PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE + ":" + getProperty(PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE));
+        logger.warn(PROPERTY_QQ_SG_POOL_CORESIZE + ":" + getProperty(PROPERTY_QQ_SG_POOL_CORESIZE));
+        logger.warn(PROPERTY_QQ_CONNECT_POOL_CORESIZE + ":" + getProperty(PROPERTY_QQ_CONNECT_POOL_CORESIZE));
+        logger.warn(PROPERTY_QQ_OAUTH_POOL_CORESIZE + ":" + getProperty(PROPERTY_QQ_OAUTH_POOL_CORESIZE));
         logger.warn(PROPERTY_QQ_TIMEOUT + ":" + getProperty(PROPERTY_QQ_TIMEOUT));
         logger.warn(PROPERTY_QQ_REQUESTVOLUME_THRESHOLD + ":" + getProperty(PROPERTY_QQ_REQUESTVOLUME_THRESHOLD));
         logger.warn(PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE + ":" + getProperty(PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE));

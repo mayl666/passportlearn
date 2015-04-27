@@ -23,7 +23,9 @@ public class HystrixConstant {
 
     //QQ依赖调用
     public static final String DEFAULT_QQ_URL = "https://graph.qq.com";
-    public static final String DEFAULT_QQ_HYSTRIX_THREADPOOL_CORESIZE = "20";
+    public static final String DEFAULT_QQ_SG_POOL_CORESIZE = "10";
+    public static final String DEFAULT_QQ_CONNECT_POOL_CORESIZE = "25";
+    public static final String DEFAULT_QQ_OAUTH_POOL_CORESIZE = "20";
     public static final String DEFAULT_QQ_TIMEOUT = "7000";//ms
     public static final String DEFAULT_QQ_REQUESTVOLUME_THRESHOLD = "2000";
 
@@ -46,7 +48,9 @@ public class HystrixConstant {
     public static final String PROPERTY_REQUEST_LOG_ENABLED = "requestLogEnabled";
     public static final String PROPERTY_ERROR_THRESHOLD_PERCENTAGE = "errorThresholdPercentage";
     public static final String PROPERTY_QQ_URL = "qqUrl";
-    public static final String PROPERTY_QQ_HYSTRIX_THREADPOOL_CORESIZE = "qqHystrixThreadPoolCoreSize";
+    public static final String PROPERTY_QQ_SG_POOL_CORESIZE = "qqSGPoolCoreSize";
+    public static final String PROPERTY_QQ_CONNECT_POOL_CORESIZE = "qqConnectPoolCoreSize";
+    public static final String PROPERTY_QQ_OAUTH_POOL_CORESIZE = "qqOAuthPoolCoreSize";
     public static final String PROPERTY_QQ_TIMEOUT = "qqTimeout";
     public static final String PROPERTY_QQ_REQUESTVOLUME_THRESHOLD = "qqRequestVolumeThreshold";
     public static final String PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE = "kafkaHystrixThreadPoolCoreSize";

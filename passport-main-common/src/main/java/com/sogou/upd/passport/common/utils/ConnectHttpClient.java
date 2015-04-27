@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
 import com.sogou.upd.passport.common.hystrix.HystrixQQCommand;
+import com.sogou.upd.passport.common.hystrix.HystrixQQConnectCommand;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpTransformat;
@@ -155,7 +156,7 @@ public class ConnectHttpClient extends SGHttpClient {
             String qqUrl = requestModel.getUrl();
 //            hystrixLogger.warn("ConnectHttpClient hystrix url:" + qqUrl);
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
-                return new HystrixQQCommand(requestModel, httpClient).execute();
+                return new HystrixQQConnectCommand(requestModel, httpClient).execute();
             }
         }
 
