@@ -32,7 +32,7 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
     private static int errorThresholdPercentage = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
     private static int qqOAuthPoolCoreSize = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_OAUTH_POOL_CORESIZE));
     private static int qqTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_TIMEOUT));
-    private static int qqRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_REQUESTVOLUME_THRESHOLD));
+    private static int qqOAuthRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_OAUTH_REQUESTVOLUME));
     private static final int fallbackSemaphoreThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD));
     private static boolean breakerForceOpen= Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_OPEN));
     private static boolean breakerForceClose=Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_CLOSE));
@@ -51,7 +51,7 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
                         .withCircuitBreakerForceClosed(breakerForceClose)
                         .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
                         .withExecutionIsolationThreadTimeoutInMilliseconds(qqTimeout)
-                        .withCircuitBreakerRequestVolumeThreshold(qqRequestVolumeThreshold)
+                        .withCircuitBreakerRequestVolumeThreshold(qqOAuthRequestVolumeThreshold)
                         .withFallbackIsolationSemaphoreMaxConcurrentRequests(fallbackSemaphoreThreshold))
                 .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter()
                         .withCoreSize(qqOAuthPoolCoreSize))

@@ -29,7 +29,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     private static int errorThresholdPercentage = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
     private static int qqSGPoolCoreSize = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_SG_POOL_CORESIZE));
     private static int qqTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_TIMEOUT));
-    private static int qqRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_REQUESTVOLUME_THRESHOLD));
+    private static int qqSgRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_SG_REQUESTVOLUME));
     private static final int fallbackSemaphoreThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD));
     public HystrixQQCommand(RequestModel requestModel, HttpClient httpClient) {
 
@@ -45,7 +45,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
                         .withCircuitBreakerForceClosed(breakerForceClose)
                         .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
                         .withExecutionIsolationThreadTimeoutInMilliseconds(qqTimeout)
-                        .withCircuitBreakerRequestVolumeThreshold(qqRequestVolumeThreshold)
+                        .withCircuitBreakerRequestVolumeThreshold(qqSgRequestVolumeThreshold)
                         .withFallbackIsolationSemaphoreMaxConcurrentRequests(fallbackSemaphoreThreshold))
                 .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter()
                         .withCoreSize(qqSGPoolCoreSize))
