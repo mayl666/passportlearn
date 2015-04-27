@@ -62,7 +62,22 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
 
     @Override
     protected Void getFallback() {
-        logger.error("HystrixKafkaThreadCommand fallback!");
+
+        boolean isShortCircuited=isResponseShortCircuited();
+        boolean isRejected=isResponseRejected();
+        boolean isTimeout=isResponseTimedOut();
+        boolean isFailed=isFailedExecution();
+        if(isFailed){
+            logger.error("HystrixKafkaThreadCommand fallback isFailedExecution");
+        }else if(isTimeout){
+            logger.error("HystrixKafkaThreadCommand fallback isTimeout");
+        }  else if(isRejected){
+            logger.error("HystrixKafkaThreadCommand fallback isRejected");
+        } else if(isShortCircuited) {
+            logger.error("HystrixKafkaThreadCommand fallback isShortCircuited");
+        } else {
+            logger.error("HystrixKafkaThreadCommand fallback unknown");
+        }
         return null;
     }
 
