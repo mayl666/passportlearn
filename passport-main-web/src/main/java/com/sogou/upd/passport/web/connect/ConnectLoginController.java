@@ -68,7 +68,12 @@ public class ConnectLoginController extends BaseConnectController {
             }
             // 如果是糖猫的wap登录，使用通行证默认appid
             if("2020".equals(connectLoginParams.getClient_id()) && !Strings.isNullOrEmpty(connectLoginParams.getThird_appid())){
-                  connectLoginParams.setThird_appid("1279688155");
+                int provider = AccountTypeEnum.getProvider(providerStr);
+                if(AccountTypeEnum.SINA.getValue() == provider) {
+                    connectLoginParams.setThird_appid("1279688155");
+                } else if(AccountTypeEnum.QQ.getValue() == provider){
+                    connectLoginParams.setThird_appid("100294784");
+                }
             }
 
             int provider = AccountTypeEnum.getProvider(providerStr);
