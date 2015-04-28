@@ -69,7 +69,7 @@ public class AppConfigServiceImpl implements AppConfigService {
                 }
             }
         } catch (Exception e) {
-            logger.error("[App] service method loadAppconfig error.{}", e);
+            logger.error("[App] service method loadAppconfig error.{}");
             throw new ServiceException(e);
         }
         return appConfig;
@@ -84,7 +84,7 @@ public class AppConfigServiceImpl implements AppConfigService {
             try {
                 appConfig = appLocalCache.get(cacheKey);
             } catch (Exception e) {
-                logger.warn("[App] queryAppConfigByClientId.{}", e);
+                logger.warn("[App] queryAppConfigByClientId.{}");
                 return null;
             }
         } else {
@@ -132,7 +132,7 @@ public class AppConfigServiceImpl implements AppConfigService {
             redisUtils.setWithinSeconds(cacheKey, appConfig, DateAndNumTimesConstant.ONE_MONTH);
         } catch (Exception e) {
             flag = false;
-            logger.error("[App] service method addClientIdMapAppConfig error.{}", e);
+            logger.error("[App] service method addClientIdMapAppConfig error.{}");
         }
         return flag;
     }
@@ -148,7 +148,7 @@ public class AppConfigServiceImpl implements AppConfigService {
             }
             return appConfig;
         } catch (ServiceException e) {
-            logger.error("[app] Verify ClientVaild Fail:", e);
+            logger.error("[app] Verify ClientVaild Fail:");
             return null;
         }
     }
