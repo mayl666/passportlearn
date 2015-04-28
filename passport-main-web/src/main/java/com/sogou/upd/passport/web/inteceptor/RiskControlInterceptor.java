@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class RiskControlInterceptor extends HandlerInterceptorAdapter {
 
+    private static final Logger fileLog = LoggerFactory.getLogger("com.sogou.upd.passport.riskControlFileAppender");
     private static final Logger log = LoggerFactory.getLogger(RiskControlInterceptor.class);
 
     public static SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -105,7 +106,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                             DateTime denyEndTime = JodaTimeUtil.parseToDateTime(endTimeStr, JodaTimeUtil.SECOND);
                             DateTime nowDateTime = new DateTime();
                             if (denyEndTime.isAfter(nowDateTime)) {
-                                log.warn("deny ip:{},denyEndTime:{}", ip, denyEndTime);
+                                fileLog.warn(ip + "\t" + resultObject.get(MongodbConstant.DENY_START_TIME + "\t" + resultObject.get(MongodbConstant.DENY_END_TIME) + "\t" + resultObject.get(MongodbConstant.RATE)));
                                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                                 redisUtils.set(key, resultObject.toString(), (denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime()), TimeUnit.MILLISECONDS);
                             } else {
