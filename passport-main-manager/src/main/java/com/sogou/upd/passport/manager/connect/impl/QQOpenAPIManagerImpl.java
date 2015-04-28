@@ -6,6 +6,8 @@ import com.mysql.jdbc.StringUtils;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.apache_asynhttpclient.ApacheAsynHttpClient;
+import com.sogou.upd.passport.common.asynchttpclient.AsyncHttpClientService;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -52,6 +54,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
 
     //    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:80/internal/qq/friends_aesinfo";
     private static final String GET_QQ_FRIENDS_AES_URL = "http://qqfriends.gz.1251021740.clb.myqcloud.com/internal/qq/friends_aesinfo";
+
     public static final String TKEY_SECURE_KEY = "adfab231rqwqerq";
     private static final String CACHE_PREFIX_QQFRIEND = CacheConstant.CACHE_KEY_QQ_FRIENDS;
 
@@ -59,6 +62,8 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     private ConnectApiManager sgConnectApiManager;
     @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
+
+    public static AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
 
     public String buildQQFriendsCacheKey(String userid, String third_appid) {
         return CACHE_PREFIX_QQFRIEND + userid + "_" + third_appid;
@@ -76,7 +81,9 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
             requestModel.addParam("userid", userid);
             requestModel.addParam("tKey", tkey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            String returnVal = SGHttpClient.executeStr(requestModel);
+//            String returnVal = SGHttpClient.executeStr(requestModel);
+            String returnVal = ApacheAsynHttpClient.executeStr(requestModel);
+//            asyncHttpClientService.sendPreparePost(GET_QQ_FRIENDS_AES_URL);
             String str = AES.decryptURLSafeString(returnVal, TKEY_SECURE_KEY);
             Map map = JacksonJsonMapperUtil.getMapper().readValue(str, Map.class);
             if (!CollectionUtils.isEmpty(map)) {
