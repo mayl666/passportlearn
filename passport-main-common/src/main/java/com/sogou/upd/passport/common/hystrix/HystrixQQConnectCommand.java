@@ -24,13 +24,14 @@ public class HystrixQQConnectCommand extends HystrixCommand<HttpEntity> {
 
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_CACHE_ENABLED));
     private static boolean requestLogEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_LOG_ENABLED));
-    private static boolean breakerForceOpen= Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_OPEN));
-    private static boolean breakerForceClose=Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_CLOSE));
+    private static boolean breakerForceOpen = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_OPEN));
+    private static boolean breakerForceClose = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_CLOSE));
     private static int errorThresholdPercentage = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
     private static int qqConnectPoolCoreSize = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_CONNECT_POOL_CORESIZE));
     private static int qqTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_TIMEOUT));
     private static int qqConnectRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_CONNECT_REQUESTVOLUME));
     private static final int fallbackSemaphoreThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD));
+
     public HystrixQQConnectCommand(RequestModel requestModel, HttpClient httpClient) {
 
 
@@ -56,23 +57,22 @@ public class HystrixQQConnectCommand extends HystrixCommand<HttpEntity> {
 
     @Override
     protected HttpEntity run() throws Exception {
-//        logger.warn("invoke hystrix qq command...");
         return HystrixCommonMethod.execute(requestModel, httpClient);
     }
 
     @Override
     protected HttpEntity getFallback() {
-        boolean isShortCircuited=isResponseShortCircuited();
-        boolean isRejected=isResponseRejected();
-        boolean isTimeout=isResponseTimedOut();
-        boolean isFailed=isFailedExecution();
-        if(isFailed){
+        boolean isShortCircuited = isResponseShortCircuited();
+        boolean isRejected = isResponseRejected();
+        boolean isTimeout = isResponseTimedOut();
+        boolean isFailed = isFailedExecution();
+        if (isFailed) {
             logger.error("HystrixQQConnectCommand fallback isFailedExecution");
-        }else if(isTimeout){
+        } else if (isTimeout) {
             logger.error("HystrixQQConnectCommand fallback isTimeout");
-        }  else if(isRejected){
+        } else if (isRejected) {
             logger.error("HystrixQQConnectCommand fallback isRejected");
-        } else if(isShortCircuited) {
+        } else if (isShortCircuited) {
             logger.error("HystrixQQConnectCommand fallback isShortCircuited");
         } else {
             logger.error("HystrixQQConnectCommand fallback unknown");

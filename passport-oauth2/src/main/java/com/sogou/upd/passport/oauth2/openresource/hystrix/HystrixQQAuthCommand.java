@@ -18,7 +18,7 @@ import java.util.Map;
  * Time: 下午6:17
  * To change this template use File | Settings | File Templates.
  */
-public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends HystrixCommand<T>  {
+public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends HystrixCommand<T> {
 
     private static final Logger logger = LoggerFactory.getLogger("hystrixLogger");
     private OAuthClientRequest request;
@@ -34,8 +34,8 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
     private static int qqTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_TIMEOUT));
     private static int qqOAuthRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_OAUTH_REQUESTVOLUME));
     private static final int fallbackSemaphoreThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD));
-    private static boolean breakerForceOpen= Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_OPEN));
-    private static boolean breakerForceClose=Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_CLOSE));
+    private static boolean breakerForceOpen = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_OPEN));
+    private static boolean breakerForceClose = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_CLOSE));
 
     public HystrixQQAuthCommand(OAuthClientRequest request, String requestMethod, Class<T> responseClass, Map<String, String> headers) {
 
@@ -64,30 +64,28 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
 
     @Override
     protected T run() throws Exception {
-//        logger.warn("invoke Hystrix QQ  Auth Command...");
         return HttpClient4.execute(request, headers, requestMethod, responseClass);
     }
 
     @Override
     protected T getFallback() {
-        boolean isShortCircuited=isResponseShortCircuited();
-        boolean isRejected=isResponseRejected();
-        boolean isTimeout=isResponseTimedOut();
-        boolean isFailed=isFailedExecution();
-        if(isFailed){
+        boolean isShortCircuited = isResponseShortCircuited();
+        boolean isRejected = isResponseRejected();
+        boolean isTimeout = isResponseTimedOut();
+        boolean isFailed = isFailedExecution();
+        if (isFailed) {
             logger.error("HystrixQQAuthCommand fallback isFailedExecution");
-        }else if(isTimeout){
+        } else if (isTimeout) {
             logger.error("HystrixQQAuthCommand fallback isTimeout");
-        }  else if(isRejected){
+        } else if (isRejected) {
             logger.error("HystrixQQAuthCommand fallback isRejected");
-        } else if(isShortCircuited) {
+        } else if (isShortCircuited) {
             logger.error("HystrixQQAuthCommand fallback isShortCircuited");
         } else {
             logger.error("HystrixQQAuthCommand fallback unknown");
         }
         throw new UnsupportedOperationException("HystrixQQAuthCommand:No fallback available.");
     }
-
 
 
 }

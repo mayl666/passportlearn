@@ -22,8 +22,8 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
 
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_CACHE_ENABLED));
     private static boolean requestLogEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_LOG_ENABLED));
-    private static boolean breakerForceOpen= Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_OPEN));
-    private static boolean breakerForceClose=Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_CLOSE));
+    private static boolean breakerForceOpen = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_OPEN));
+    private static boolean breakerForceClose = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_CLOSE));
     private static int errorThresholdPercentage = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
     private static int kafkaHystrixThreadPoolCoreSize = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_THREADPOOL_CORESIZE));
     private static final int kafkaTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_TIMEOUT));
@@ -63,17 +63,17 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
     @Override
     protected Void getFallback() {
 
-        boolean isShortCircuited=isResponseShortCircuited();
-        boolean isRejected=isResponseRejected();
-        boolean isTimeout=isResponseTimedOut();
-        boolean isFailed=isFailedExecution();
-        if(isFailed){
+        boolean isShortCircuited = isResponseShortCircuited();
+        boolean isRejected = isResponseRejected();
+        boolean isTimeout = isResponseTimedOut();
+        boolean isFailed = isFailedExecution();
+        if (isFailed) {
             logger.error("HystrixKafkaThreadCommand fallback isFailedExecution");
-        }else if(isTimeout){
+        } else if (isTimeout) {
             logger.error("HystrixKafkaThreadCommand fallback isTimeout");
-        }  else if(isRejected){
+        } else if (isRejected) {
             logger.error("HystrixKafkaThreadCommand fallback isRejected");
-        } else if(isShortCircuited) {
+        } else if (isShortCircuited) {
             logger.error("HystrixKafkaThreadCommand fallback isShortCircuited");
         } else {
             logger.error("HystrixKafkaThreadCommand fallback unknown");

@@ -25,13 +25,13 @@ public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
 
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_CACHE_ENABLED));
     private static boolean requestLogEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_LOG_ENABLED));
-    private static boolean breakerForceOpen= Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_OPEN));
-    private static boolean breakerForceClose=Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_CLOSE));
+    private static boolean breakerForceOpen = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_OPEN));
+    private static boolean breakerForceClose = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_CLOSE));
     private static int errorThresholdPercentage = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
     private static final int kafkaTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_TIMEOUT));
     private static final int kafkaRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD));
-    private static final int kafkaSemaphoreThreshold=Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_SEMAPHORE_THRESHOLD));
-    private static final int fallbackSemaphoreThreshold=Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD));
+    private static final int kafkaSemaphoreThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_SEMAPHORE_THRESHOLD));
+    private static final int fallbackSemaphoreThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD));
 
     public HystrixKafkaSemaphoresCommand(String infoToLog) {
 
@@ -64,17 +64,17 @@ public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
 
     @Override
     protected Void getFallback() {
-        boolean isShortCircuited=isResponseShortCircuited();
-        boolean isRejected=isResponseRejected();
-        boolean isTimeout=isResponseTimedOut();
-        boolean isFailed=isFailedExecution();
-        if(isFailed){
+        boolean isShortCircuited = isResponseShortCircuited();
+        boolean isRejected = isResponseRejected();
+        boolean isTimeout = isResponseTimedOut();
+        boolean isFailed = isFailedExecution();
+        if (isFailed) {
             logger.error("HystrixKafkaSemaphoresCommand fallback isFailedExecution");
-        }else if(isTimeout){
+        } else if (isTimeout) {
             logger.error("HystrixKafkaSemaphoresCommand fallback isTimeout");
-        }  else if(isRejected){
+        } else if (isRejected) {
             logger.error("HystrixKafkaSemaphoresCommand fallback isRejected");
-        } else if(isShortCircuited) {
+        } else if (isShortCircuited) {
             logger.error("HystrixKafkaSemaphoresCommand fallback isShortCircuited");
         } else {
             logger.error("HystrixKafkaSemaphoresCommand fallback unknown");

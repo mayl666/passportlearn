@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
-import com.sogou.upd.passport.common.hystrix.HystrixQQCommand;
 import com.sogou.upd.passport.common.hystrix.HystrixQQConnectCommand;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
@@ -21,8 +20,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +34,6 @@ public class ConnectHttpClient extends SGHttpClient {
 
 
     protected static final HttpClient httpClient;
-    private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
     /**
      * 获取连接的最大等待时间
      */
@@ -142,19 +138,12 @@ public class ConnectHttpClient extends SGHttpClient {
 
 
         //对QQapi调用hystrix
-//        hystrixLogger.warn("ConnectHttpClient executePrivate:invoke hystrix");
         String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
         Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
         Boolean hystrixQQHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
-//        int qqDelay=Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_DELAY));
-//        try {
-//            Thread.sleep(qqDelay);
-//        }   catch (Exception e){
-//            e.printStackTrace();
-//        }
+
         if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
             String qqUrl = requestModel.getUrl();
-//            hystrixLogger.warn("ConnectHttpClient hystrix url:" + qqUrl);
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
                 return new HystrixQQConnectCommand(requestModel, httpClient).execute();
             }

@@ -50,7 +50,6 @@ import java.util.ArrayList;
 public class SGHttpClient {
 
     protected static final HttpClient httpClient;
-    private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
     /**
      * 最大连接数
      */
@@ -190,20 +189,12 @@ public class SGHttpClient {
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
 
         //对QQapi调用hystrix
-//        hystrixLogger.warn("SGHttpClient executePrivate:invoke hystrix...");
         String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
         Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
         Boolean hystrixQQHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
-//        int qqDelay=Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_DELAY));
-//        try {
-//            Thread.sleep(qqDelay);
-//        }   catch (Exception e){
-//            e.printStackTrace();
-//        }
 
         if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
             String qqUrl = requestModel.getUrl();
-//            hystrixLogger.warn("SGHttpClient hystrix url:" + qqUrl);
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
                 return new HystrixQQCommand(requestModel, httpClient).execute();
             }
