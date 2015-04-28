@@ -47,11 +47,11 @@
         <constructor-arg index="1" value="${passport.dbredis.shard6.port}" type="int"/>
     </bean>
     <bean id="dbShardPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="1800"/>
+        <property name="maxTotal" value="1800"/>
         <!-- 由于shard，这里配置一定要注意，过小会导致资源竞争 -->
         <property name="maxIdle" value="400"/>
         <property name="minIdle" value="400"/>
-        <property name="maxWait" value="1000"/>
+        <property name="maxWaitMillis" value="1000"/>
         <property name="testOnBorrow" value="false"/>
         <!--30分钟跑一次idle object eviction线程-->
         <property name="timeBetweenEvictionRunsMillis" value="180000" />
@@ -70,10 +70,10 @@
         <constructor-arg index="0" ref="cachePoolConfig"/>
     </bean>
     <bean id="cachePoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="1600"/>
+        <property name="maxTotal" value="1600"/>
         <property name="maxIdle" value="300"/>
         <property name="minIdle" value="300"/>
-        <property name="maxWait" value="1000"/>
+        <property name="maxWaitMillis" value="1000"/>
         <property name="testOnBorrow" value="false"/>
         <!--30分钟跑一次idle object eviction线程-->
         <property name="timeBetweenEvictionRunsMillis" value="180000" />
@@ -92,10 +92,10 @@
         <constructor-arg index="0" ref="kvPoolConfig"/>
     </bean>
     <bean id="kvPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="400"/>
+        <property name="maxTotal" value="400"/>
         <property name="maxIdle" value="200"/>
         <property name="minIdle" value="200"/>
-        <property name="maxWait" value="1000"/>
+        <property name="maxWaitMillis" value="1000"/>
         <property name="testOnBorrow" value="false"/>
         <!--30分钟跑一次idle object eviction线程-->
         <!--<property name="timeBetweenEvictionRunsMillis" value="180000" />-->
@@ -114,10 +114,10 @@
         <constructor-arg index="0" ref="tokenPoolConfig"/>
     </bean>
     <bean id="tokenPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="1600"/>
+        <property name="maxTotal" value="1600"/>
         <property name="maxIdle" value="400"/>
         <property name="minIdle" value="400"/>
-        <property name="maxWait" value="1000"/>
+        <property name="maxWaitMillis" value="1000"/>
         <property name="testOnBorrow" value="false"/>
         <!--30分钟跑一次idle object eviction线程-->
         <property name="timeBetweenEvictionRunsMillis" value="180000" />
