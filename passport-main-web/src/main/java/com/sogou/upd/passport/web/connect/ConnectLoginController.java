@@ -65,6 +65,10 @@ public class ConnectLoginController extends BaseConnectController {
                 res.sendRedirect(buildPinyinSSLv3Page(req));
                 return "empty";
             }
+            // 如果是糖猫的wap登录，使用通行证默认appid
+            if("2020".equals(connectLoginParams.getClient_id()) && !Strings.isNullOrEmpty(connectLoginParams.getThird_appid())){
+                  connectLoginParams.setThird_appid("1279688155");
+            }
 
             int provider = AccountTypeEnum.getProvider(providerStr);
             // 浏览器、输入法的第三方登录是搜狐nginx转发过来的，为了避免nginx层解析，所以兼容appid参数
