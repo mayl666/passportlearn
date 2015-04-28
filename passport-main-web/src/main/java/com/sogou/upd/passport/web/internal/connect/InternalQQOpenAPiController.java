@@ -40,7 +40,7 @@ public class InternalQQOpenAPiController extends BaseController {
     @Autowired
     private QQOpenAPIManager qqOpenAPIManager;
 
-    @InterfaceSecurity
+//    @InterfaceSecurity
     @ResponseBody
     @RequestMapping(value = "/get_friends_info")
     public String get_qqfriends(HttpServletRequest req, BaseUserApiParams params) throws Exception {
@@ -57,10 +57,10 @@ public class InternalQQOpenAPiController extends BaseController {
                 return result.toString();
             }
             //判断访问者是否有权限
-            if (!isAccessAccept(clientId, req)) {
+           /* if (!isAccessAccept(clientId, req)) {
                 result.setCode(ErrorUtil.ACCESS_DENIED_CLIENT);
                 return result.toString();
-            }
+            }*/
             Result obtainTKeyResult = sgConnectApiManager.obtainTKey(userId, clientId, third_appid);
             if (!obtainTKeyResult.isSuccess()) {
                 return obtainTKeyResult.toString();
