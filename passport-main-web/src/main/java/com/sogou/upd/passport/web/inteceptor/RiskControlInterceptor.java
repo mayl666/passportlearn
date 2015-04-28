@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.MongodbConstant;
 import com.sogou.upd.passport.common.mongodb.util.MongoServerUtil;
@@ -11,9 +12,12 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.IpLocationUtil;
+import com.sogou.upd.passport.common.utils.JodaTimeUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.annotation.RiskControlSecurity;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,24 +64,55 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
             return true;
         } else {
             try {
-                String key = buildMongoDBBlackListKey(ip);
+                String key = buildDenyIpKey(ip);
 //                String redisVal = redisUtils.get(key);
 //                if (Strings.isNullOrEmpty(redisVal)) {
+
                 BasicDBObject basicDBObject = new BasicDBObject();
-                basicDBObject.put("ip", ip);
-                DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION_TEST, basicDBObject);
+                basicDBObject.put(MongodbConstant.IP, ip);
+
+                DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION, basicDBObject);
                 if (null != resultObject) {
-                    String endTimeStr = String.valueOf(resultObject.get("deny_endTime"));
-                    if (!Strings.isNullOrEmpty(endTimeStr)) {
-                        Date endTime = dateFormatter.parse(endTimeStr);
-                        Date nowTime = new Date();
-                        if (endTime.after(nowTime)) {
-                            log.warn("封禁记录 ： " + resultObject.toString());
-                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
-                            redisUtils.set(key, resultObject.toString(), (endTime.getTime() - nowTime.getTime()), TimeUnit.MILLISECONDS);
-                        } else {
-                            return true;
+                    //0:国内、1:国外
+                    String regional = String.valueOf(resultObject.get(MongodbConstant.REGIONAL));
+                    String endTimeStr = String.valueOf(resultObject.get(MongodbConstant.DENY_END_TIME));
+                    if (!Strings.isNullOrEmpty(endTimeStr) && !Strings.isNullOrEmpty(regional)) {
+                        //非线程安全
+//                        Date endTime = dateFormatter.parse(endTimeStr);
+//                        Date nowTime = new Date();
+//                        if (endTime.after(nowTime)) {
+//                            log.warn("封禁记录: " + resultObject.toString());
+//                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+//                            redisUtils.set(key, resultObject.toString(), (endTime.getTime() - nowTime.getTime()), TimeUnit.MILLISECONDS);
+//                        } else {
+//                            return true;
+//                        }
+
+                        //共用出口IP 标记
+                        boolean isSharedIp = false;
+                        //国内、国外IP 标记
+                        boolean isForeignIp = true;
+                        if (MongodbConstant.CHINA_IP.equalsIgnoreCase(regional)) {
+                            isForeignIp = false;
+                            DBObject dbObject = mongoServerUtil.findOne(MongodbConstant.IP_SHARED_EXPORT_DATABASE, basicDBObject);
+                            if (null != dbObject) {
+                                isSharedIp = true;
+                            }
                         }
+                        //国外IP、国内非共用出口IP,实施封禁
+                        if (isForeignIp || !isSharedIp) {
+                            //DateTimeFormat 是线程安全而且不变
+                            DateTime denyEndTime = JodaTimeUtil.parseToDateTime(endTimeStr, JodaTimeUtil.SECOND);
+                            DateTime nowDateTime = new DateTime();
+                            if (denyEndTime.isAfter(nowDateTime)) {
+                                log.warn("deny ip:{},denyEndTime:{}", ip, denyEndTime);
+                                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+                                redisUtils.set(key, resultObject.toString(), (denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime()), TimeUnit.MILLISECONDS);
+                            } else {
+                                return true;
+                            }
+                        }
+
                     } else {
                         return true;
                     }
@@ -95,7 +130,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
             }
         }
         ResponseResultType resultType = security.resultType();
-        String msg = "";
+        String msg;
         switch (resultType) {
             case json:
                 msg = result.toString();
@@ -110,8 +145,13 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
         return false;
     }
 
-
-    public String buildMongoDBBlackListKey(String ip) {
-        return "SP.BLACKLIST_IP:IP_" + ip;
+    /**
+     * 生成存储封禁IP的 redis key
+     *
+     * @param ip
+     * @return
+     */
+    private static String buildDenyIpKey(String ip) {
+        return CacheConstant.CACHE_PREFIX_DENY_IP + ip;
     }
 }
