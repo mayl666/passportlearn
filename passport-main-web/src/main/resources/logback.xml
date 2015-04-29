@@ -80,6 +80,20 @@
         <appender-ref ref="netflowAppender"/>
     </logger>
 
+    <!--start:风控封禁log-->
+    <appender name="riskFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/risk_control/riskdata.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.sogou.upd.passport.riskControlFileAppender" level="info" additivity="false">
+        <appender-ref ref="riskFileAppender"/>
+    </logger>
+    <!--end:风控封禁log-->
+
     <!--注册黑名单-->
     <appender name="regBlackListFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
