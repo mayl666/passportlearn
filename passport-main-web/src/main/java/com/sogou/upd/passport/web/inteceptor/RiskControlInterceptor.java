@@ -41,6 +41,8 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
 
     public static SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+    private static final String LOG_JOINER_STR = "\t";
+
     @Autowired
     public MongoServerUtil mongoServerUtil;
 
@@ -102,7 +104,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                             DateTime denyEndTime = JodaTimeUtil.parseToDateTime(endTimeStr, JodaTimeUtil.SECOND);
                             DateTime nowDateTime = new DateTime();
                             if (denyEndTime.isAfter(nowDateTime)) {
-                                fileLog.warn(ip + "\t" + resultObject.get(MongodbConstant.DENY_START_TIME + "\t" + resultObject.get(MongodbConstant.DENY_END_TIME) + "\t" + resultObject.get(MongodbConstant.RATE)));
+                                fileLog.warn(ip + LOG_JOINER_STR + resultObject.get(MongodbConstant.REGIONAL) + LOG_JOINER_STR + resultObject.get(MongodbConstant.DENY_START_TIME + LOG_JOINER_STR + resultObject.get(MongodbConstant.DENY_END_TIME) + LOG_JOINER_STR + resultObject.get(MongodbConstant.RATE)));
                                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                                 redisUtils.set(key, resultObject.toString(), (denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime()), TimeUnit.MILLISECONDS);
                             } else {
