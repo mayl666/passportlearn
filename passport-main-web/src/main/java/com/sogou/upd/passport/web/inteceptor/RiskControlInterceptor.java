@@ -2,7 +2,6 @@ package com.sogou.upd.passport.web.inteceptor;
 
 import com.google.common.base.Strings;
 import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.HttpConstant;
@@ -16,9 +15,7 @@ import com.sogou.upd.passport.common.utils.JodaTimeUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.annotation.RiskControlSecurity;
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +25,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
