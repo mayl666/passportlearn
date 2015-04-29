@@ -104,14 +104,25 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                             DateTime denyEndTime = JodaTimeUtil.parseToDateTime(endTimeStr, JodaTimeUtil.SECOND);
                             DateTime nowDateTime = new DateTime();
                             if (denyEndTime.isAfter(nowDateTime)) {
-                                fileLog.warn(ip + LOG_JOINER_STR + resultObject.get(MongodbConstant.REGIONAL) + LOG_JOINER_STR + resultObject.get(MongodbConstant.DENY_START_TIME + LOG_JOINER_STR + resultObject.get(MongodbConstant.DENY_END_TIME) + LOG_JOINER_STR + resultObject.get(MongodbConstant.RATE)));
+                                // time | ip | regional | country| subvision | city | denyStartTime | denyEndTime | rate
+                                StringBuffer msg = new StringBuffer();
+                                msg.append(JodaTimeUtil.format(nowDateTime.toDate(), JodaTimeUtil.SECOND)).append(LOG_JOINER_STR);
+                                msg.append(ip).append(LOG_JOINER_STR);
+                                msg.append(resultObject.get(MongodbConstant.REGIONAL)).append(LOG_JOINER_STR);
+                                msg.append(String.valueOf(resultObject.get(MongodbConstant.COUNTRY))).append(LOG_JOINER_STR);
+                                msg.append(String.valueOf(resultObject.get(MongodbConstant.SUBVISION))).append(LOG_JOINER_STR);
+                                msg.append(String.valueOf(resultObject.get(MongodbConstant.CITY))).append(LOG_JOINER_STR);
+                                msg.append(resultObject.get(MongodbConstant.DENY_START_TIME)).append(LOG_JOINER_STR);
+                                msg.append(resultObject.get(MongodbConstant.DENY_END_TIME)).append(LOG_JOINER_STR);
+                                msg.append(resultObject.get(MongodbConstant.RATE));
+
+                                fileLog.warn(msg.toString());
                                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                                 redisUtils.set(key, resultObject.toString(), (denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime()), TimeUnit.MILLISECONDS);
                             } else {
                                 return true;
                             }
                         }
-
                     } else {
                         return true;
                     }

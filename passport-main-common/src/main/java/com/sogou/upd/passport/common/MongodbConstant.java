@@ -24,6 +24,10 @@ public final class MongodbConstant {
     //风险IP 具体城市
     public static final String CITY = "city";
 
+    public static final String COUNTRY = "country";
+
+    public static final String SUBVISION = "subvision";
+
     //风险IP 具体地域
     public static final String REGIONAL = "regional";
 
