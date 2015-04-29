@@ -39,10 +39,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
     private static final Logger fileLog = LoggerFactory.getLogger("com.sogou.upd.passport.riskControlFileAppender");
     private static final Logger log = LoggerFactory.getLogger(RiskControlInterceptor.class);
 
-    public static SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
     private static final String LOG_JOINER_STR = "\t";
-    public static final String CHARSET_UTF8 = "UTF-8";
 
     @Autowired
     public MongoServerUtil mongoServerUtil;
@@ -110,9 +107,9 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                                 msg.append(JodaTimeUtil.format(nowDateTime.toDate(), JodaTimeUtil.SECOND)).append(LOG_JOINER_STR);
                                 msg.append(ip).append(LOG_JOINER_STR);
                                 msg.append(resultObject.get(MongodbConstant.REGIONAL)).append(LOG_JOINER_STR);
-                                msg.append(new String(resultObject.get(MongodbConstant.COUNTRY).toString().getBytes(), CHARSET_UTF8)).append(LOG_JOINER_STR);
-                                msg.append(new String(resultObject.get(MongodbConstant.SUBVISION).toString().getBytes(), CHARSET_UTF8)).append(LOG_JOINER_STR);
-                                msg.append(new String(resultObject.get(MongodbConstant.CITY).toString().getBytes(), CHARSET_UTF8)).append(LOG_JOINER_STR);
+                                msg.append(resultObject.get(MongodbConstant.COUNTRY)).append(LOG_JOINER_STR);
+                                msg.append(resultObject.get(MongodbConstant.SUBVISION)).append(LOG_JOINER_STR);
+                                msg.append(resultObject.get(MongodbConstant.CITY)).append(LOG_JOINER_STR);
                                 msg.append(resultObject.get(MongodbConstant.DENY_START_TIME)).append(LOG_JOINER_STR);
                                 msg.append(resultObject.get(MongodbConstant.DENY_END_TIME)).append(LOG_JOINER_STR);
                                 msg.append(resultObject.get(MongodbConstant.RATE));
