@@ -38,9 +38,6 @@ public class UserOperationLogUtil {
     private static final Logger userOperationLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
     private static Logger userLogger = userOperationLogger;
 
-
-    private static final int SLOW_TIME = 10;//10ms
-
     //把useLogger分离开：local+kafka
     private static Logger userLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
     private static Logger userKafkaLogger = LoggerFactory.getLogger("userLoggerKafka");
