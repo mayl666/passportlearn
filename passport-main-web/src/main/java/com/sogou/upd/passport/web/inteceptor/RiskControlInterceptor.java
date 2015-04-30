@@ -65,7 +65,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
             try {
                 String key = buildDenyIpKey(ip);
                 String cacheValue = redisUtils.get(key);
-                if (!Strings.isNullOrEmpty(cacheValue)) {
+                if (Strings.isNullOrEmpty(cacheValue)) {
                     BasicDBObject basicDBObject = new BasicDBObject();
                     basicDBObject.put(MongodbConstant.IP, ip);
                     DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION, basicDBObject);
