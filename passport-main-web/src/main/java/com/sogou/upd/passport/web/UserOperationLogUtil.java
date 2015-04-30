@@ -37,8 +37,7 @@ public class UserOperationLogUtil {
     private static final Logger userOperationLogger = LoggerFactory.getLogger("userLoggerAsync");
     private static final Logger userOperationLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
     private static Logger userLogger = userOperationLogger;
-    private static final Logger hystrixLogger = LoggerFactory.getLogger("hystrixLogger");
-//    private static final Logger hystrixCostPerfLogger= LoggerFactory.getLogger("hystrixCostPerfLogger");
+
 
     private static final int SLOW_TIME = 10;//10ms
 
