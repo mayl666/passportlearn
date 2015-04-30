@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
@@ -64,6 +65,15 @@ public class ConnectLoginController extends BaseConnectController {
             if (isIMEUserAgent(req) && AccountTypeEnum.QQ.toString().equals(providerStr) && isSSLV3(req)) {
                 res.sendRedirect(buildPinyinSSLv3Page(req));
                 return "empty";
+            }
+            // 如果是糖猫的wap登录，使用通行证默认appid
+            if("2020".equals(connectLoginParams.getClient_id()) && !Strings.isNullOrEmpty(connectLoginParams.getThird_appid())){
+                int provider = AccountTypeEnum.getProvider(providerStr);
+                if(AccountTypeEnum.SINA.getValue() == provider) {
+                    connectLoginParams.setThird_appid("1279688155");
+                } else if(AccountTypeEnum.QQ.getValue() == provider){
+                    connectLoginParams.setThird_appid("100294784");
+                }
             }
 
             int provider = AccountTypeEnum.getProvider(providerStr);

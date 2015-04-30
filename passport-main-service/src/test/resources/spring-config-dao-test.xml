@@ -32,10 +32,10 @@
             <value>5</value>
         </property>
         <property name="idleConnectionTestPeriod">
-            <value>30000</value>
+            <value>300</value>
         </property>
         <property name="checkoutTimeout">
-            <value>3000</value>
+            <value>500</value>
         </property>
         <property name="maxPoolSize">
             <value>80</value>
@@ -50,7 +50,7 @@
             <value>5</value>
         </property>
         <property name="maxIdleTime">
-            <value>300</value>
+            <value>1800</value>
         </property>
         <property name="numHelperThreads">
             <value>10</value>
@@ -81,10 +81,10 @@
             <value>5</value>
         </property>
         <property name="idleConnectionTestPeriod">
-            <value>30000</value>
+            <value>300</value>
         </property>
         <property name="checkoutTimeout">
-            <value>3000</value>
+            <value>500</value>
         </property>
         <property name="maxPoolSize">
             <value>80</value>
@@ -99,7 +99,7 @@
             <value>5</value>
         </property>
         <property name="maxIdleTime">
-            <value>300</value>
+            <value>1800</value>
         </property>
         <property name="numHelperThreads">
             <value>10</value>

@@ -21,7 +21,6 @@ import java.util.Set;
  */
 public class DBShardRedisUtils {
     private static Logger logger = LoggerFactory.getLogger(DBShardRedisUtils.class);
-    private static final Logger redisMissLogger = LoggerFactory.getLogger("redisMissLogger");
     private static ObjectMapper jsonMapper = JacksonJsonMapperUtil.getMapper();
 
     private ShardedJedisPool shardedJedisPool;
