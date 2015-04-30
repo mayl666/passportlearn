@@ -15,6 +15,7 @@ import com.sogou.upd.passport.common.utils.JodaTimeUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.annotation.RiskControlSecurity;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +25,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
-import java.util.concurrent.TimeUnit;
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,6 +40,8 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
     private static final Logger log = LoggerFactory.getLogger(RiskControlInterceptor.class);
 
     private static final String LOG_JOINER_STR = "\t";
+    private static final String CACHE_VALUE_JOINER = "|";
+    private static final int DEFAULT_TIME_UNIT = 1000;
 
     @Autowired
     public MongoServerUtil mongoServerUtil;
@@ -62,19 +64,19 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
         } else {
             try {
                 String key = buildDenyIpKey(ip);
-//                String redisVal = redisUtils.get(key);
-//                if (Strings.isNullOrEmpty(redisVal)) {
+                String cacheValue = redisUtils.get(key);
+                if (Strings.isNullOrEmpty(cacheValue)) {
 
-                BasicDBObject basicDBObject = new BasicDBObject();
-                basicDBObject.put(MongodbConstant.IP, ip);
+                    BasicDBObject basicDBObject = new BasicDBObject();
+                    basicDBObject.put(MongodbConstant.IP, ip);
 
-                DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION, basicDBObject);
-                if (null != resultObject) {
-                    //0:国内、1:国外
-                    String regional = String.valueOf(resultObject.get(MongodbConstant.REGIONAL));
-                    String endTimeStr = String.valueOf(resultObject.get(MongodbConstant.DENY_END_TIME));
-                    if (!Strings.isNullOrEmpty(endTimeStr) && !Strings.isNullOrEmpty(regional)) {
-                        //非线程安全
+                    DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION, basicDBObject);
+                    if (null != resultObject) {
+                        //0:国内、1:国外
+                        String regional = String.valueOf(resultObject.get(MongodbConstant.REGIONAL));
+                        String endTimeStr = String.valueOf(resultObject.get(MongodbConstant.DENY_END_TIME));
+                        if (!Strings.isNullOrEmpty(endTimeStr) && !Strings.isNullOrEmpty(regional)) {
+                            //非线程安全
 //                        Date endTime = dateFormatter.parse(endTimeStr);
 //                        Date nowTime = new Date();
 //                        if (endTime.after(nowTime)) {
@@ -85,52 +87,47 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
 //                            return true;
 //                        }
 
-                        //共用出口IP 标记
-                        boolean isSharedIp = false;
-                        //国内、国外IP 标记
-                        boolean isForeignIp = true;
-                        if (MongodbConstant.CHINA_IP.equalsIgnoreCase(regional)) {
-                            isForeignIp = false;
-                            DBObject dbObject = mongoServerUtil.findOne(MongodbConstant.IP_SHARED_EXPORT_DATABASE, basicDBObject);
-                            if (null != dbObject) {
-                                isSharedIp = true;
+                            //共用出口IP 标记
+                            boolean isSharedIp = false;
+                            //国内、国外IP 标记
+                            boolean isForeignIp = true;
+                            if (MongodbConstant.CHINA_IP.equalsIgnoreCase(regional)) {
+                                isForeignIp = false;
+                                DBObject dbObject = mongoServerUtil.findOne(MongodbConstant.IP_SHARED_EXPORT_DATABASE, basicDBObject);
+                                if (null != dbObject) {
+                                    isSharedIp = true;
+                                }
                             }
-                        }
-                        //国外IP、国内非共用出口IP,实施封禁
-                        if (isForeignIp || !isSharedIp) {
-                            //DateTimeFormat 是线程安全而且不变
-                            DateTime denyEndTime = JodaTimeUtil.parseToDateTime(endTimeStr, JodaTimeUtil.SECOND);
-                            DateTime nowDateTime = new DateTime();
-                            if (denyEndTime.isAfter(nowDateTime)) {
-                                // time | ip | regional | country| subvision | city | denyStartTime | denyEndTime | rate
-                                StringBuffer msg = new StringBuffer();
-                                msg.append(JodaTimeUtil.format(nowDateTime.toDate(), JodaTimeUtil.SECOND)).append(LOG_JOINER_STR);
-                                msg.append(ip).append(LOG_JOINER_STR);
-                                msg.append(resultObject.get(MongodbConstant.REGIONAL)).append(LOG_JOINER_STR);
-                                msg.append(resultObject.get(MongodbConstant.COUNTRY)).append(LOG_JOINER_STR);
-                                msg.append(resultObject.get(MongodbConstant.SUBVISION)).append(LOG_JOINER_STR);
-                                msg.append(resultObject.get(MongodbConstant.CITY)).append(LOG_JOINER_STR);
-                                msg.append(resultObject.get(MongodbConstant.DENY_START_TIME)).append(LOG_JOINER_STR);
-                                msg.append(resultObject.get(MongodbConstant.DENY_END_TIME)).append(LOG_JOINER_STR);
-                                msg.append(resultObject.get(MongodbConstant.RATE));
+                            //国外IP、国内非共用出口IP,实施封禁
+                            if (isForeignIp || !isSharedIp) {
+                                //DateTimeFormat 是线程安全而且不变
+                                DateTime denyEndTime = JodaTimeUtil.parseToDateTime(endTimeStr, JodaTimeUtil.SECOND);
+                                DateTime nowDateTime = new DateTime();
+                                if (denyEndTime.isAfter(nowDateTime)) {
+                                    String message = buildDenyLogMessage(nowDateTime.toDate(), resultObject);
+                                    fileLog.warn(message);
+                                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
 
-                                fileLog.warn(msg.toString());
-                                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
-                                redisUtils.set(key, resultObject.toString(), (denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime()), TimeUnit.MILLISECONDS);
-                            } else {
-                                return true;
+//                                    redisUtils.set(key, resultObject.toString(), (denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime()), TimeUnit.MILLISECONDS);
+
+                                    String setValue = StringUtils.replace(message, LOG_JOINER_STR, CACHE_VALUE_JOINER);
+                                    long cacheTime = (denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime()) / DEFAULT_TIME_UNIT;
+                                    redisUtils.setWithinSeconds(key, setValue, cacheTime);
+                                } else {
+                                    return true;
+                                }
                             }
+                        } else {
+                            return true;
                         }
                     } else {
                         return true;
                     }
                 } else {
-                    return true;
+                    String message = buildDenyLogMsg(cacheValue);
+                    fileLog.warn(message);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 }
-//                } else {
-//                    log.warn("封禁记录 ： " + redisVal.toString());
-//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
-//                }
 
             } catch (Exception e) {
                 log.error("RiskControlInterceptor Exception : " + e);
@@ -152,6 +149,54 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
         }
         return false;
     }
+
+
+    /**
+     * 封装封禁日志信息
+     *
+     * @param date
+     * @param dbObject
+     * @return
+     */
+    private static String buildDenyLogMessage(Date date, DBObject dbObject) {
+        StringBuffer msg = new StringBuffer();
+        msg.append(JodaTimeUtil.format(date, JodaTimeUtil.SECOND)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(MongodbConstant.IP)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(MongodbConstant.REGIONAL)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(MongodbConstant.COUNTRY)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(MongodbConstant.SUBVISION)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(MongodbConstant.CITY)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(MongodbConstant.DENY_START_TIME)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(MongodbConstant.DENY_END_TIME)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(MongodbConstant.RATE));
+        return msg.toString();
+    }
+
+    /**
+     * 封装封禁日志信息
+     *
+     * @param cacheVal
+     * @return
+     */
+    private static String buildDenyLogMsg(String cacheVal) {
+        StringBuffer msg = new StringBuffer();
+        DateTime nowDateTime = new DateTime();
+        if (!Strings.isNullOrEmpty(cacheVal)) {
+            String[] data = StringUtils.split(cacheVal, CACHE_VALUE_JOINER);
+            msg.append(JodaTimeUtil.format(nowDateTime.toDate(), JodaTimeUtil.SECOND)).append(LOG_JOINER_STR);
+            msg.append(data[1]).append(LOG_JOINER_STR);
+            msg.append(data[2]).append(LOG_JOINER_STR);
+            msg.append(data[3]).append(LOG_JOINER_STR);
+            msg.append(data[3]).append(LOG_JOINER_STR);
+            msg.append(data[4]).append(LOG_JOINER_STR);
+            msg.append(data[5]).append(LOG_JOINER_STR);
+            msg.append(data[6]).append(LOG_JOINER_STR);
+            msg.append(data[7]).append(LOG_JOINER_STR);
+            msg.append(data[8]);
+        }
+        return msg.toString();
+    }
+
 
     /**
      * 生成存储封禁IP的 redis key
