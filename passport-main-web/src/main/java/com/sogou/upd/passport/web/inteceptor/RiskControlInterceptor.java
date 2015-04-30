@@ -65,28 +65,14 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
             try {
                 String key = buildDenyIpKey(ip);
                 String cacheValue = redisUtils.get(key);
-                if (Strings.isNullOrEmpty(cacheValue)) {
-
+                if (!Strings.isNullOrEmpty(cacheValue)) {
                     BasicDBObject basicDBObject = new BasicDBObject();
                     basicDBObject.put(MongodbConstant.IP, ip);
-
                     DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION, basicDBObject);
                     if (null != resultObject) {
-                        //0:国内、1:国外
                         String regional = String.valueOf(resultObject.get(MongodbConstant.REGIONAL));
                         String endTimeStr = String.valueOf(resultObject.get(MongodbConstant.DENY_END_TIME));
                         if (!Strings.isNullOrEmpty(endTimeStr) && !Strings.isNullOrEmpty(regional)) {
-                            //非线程安全
-//                        Date endTime = dateFormatter.parse(endTimeStr);
-//                        Date nowTime = new Date();
-//                        if (endTime.after(nowTime)) {
-//                            log.warn("封禁记录: " + resultObject.toString());
-//                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
-//                            redisUtils.set(key, resultObject.toString(), (endTime.getTime() - nowTime.getTime()), TimeUnit.MILLISECONDS);
-//                        } else {
-//                            return true;
-//                        }
-
                             //共用出口IP 标记
                             boolean isSharedIp = false;
                             //国内、国外IP 标记
