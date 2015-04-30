@@ -152,11 +152,8 @@ public class UserOperationLogUtil {
 //            userLogger.info(log.toString());
 
             userLocalLogger.info(log.toString());
-            //userKafkaLogger.info(log.toString());
             //调用hystrix 线程隔离kafka command
-//            hystrixLogger.warn("UserOperationLogUtil invoke hystrix...");
             Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
-//            StopWatch stopWatch = new Slf4JStopWatch(hystrixCostPerfLogger);
             Boolean hystrixKafkaHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED));
             if (hystrixGlobalEnabled && hystrixKafkaHystrixEnabled) {
                 Boolean kafkaChooseThreadMode = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_CHOOSE_THREAD_MODE));
@@ -169,21 +166,13 @@ public class UserOperationLogUtil {
             } else {
                 userKafkaLogger.info(log.toString());
             }
-//            stopWatch(stopWatch,"hystrix_kafka_cost","success");
 
 
         } catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
     }
-//
-//    private static void stopWatch(StopWatch stopWatch, String tag, String message) {
-//        //无论什么情况都记录下所有的请求数据
-//        if (stopWatch.getElapsedTime() >= SLOW_TIME) {
-//            tag += "(slow)";
-//        }
-//        stopWatch.stop(tag, message);
-//    }
+
 
     private static String getLocalIp(HttpServletRequest request) {
         try {

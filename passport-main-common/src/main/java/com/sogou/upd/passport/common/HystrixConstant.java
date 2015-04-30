@@ -22,18 +22,18 @@ public class HystrixConstant {
 
     //QQ依赖调用
     public static final String DEFAULT_QQ_URL = "https://graph.qq.com";
-    public static final String DEFAULT_QQ_SG_POOL_CORESIZE = "10";
+    public static final String DEFAULT_QQ_SG_POOL_CORESIZE = "15";
     public static final String DEFAULT_QQ_CONNECT_POOL_CORESIZE = "100";
     public static final String DEFAULT_QQ_OAUTH_POOL_CORESIZE = "15";
     public static final String DEFAULT_QQ_TIMEOUT = "2000";//ms
-    public static final String DEFAULT_QQ_SG_REQUESTVOLUME = "100";
-    public static final String DEFAULT_QQ_CONNECT_REQUESTVOLUME = "1800";
-    public static final String DEFAULT_QQ_OAUTH_REQUESTVOLUME = "400";
+    public static final String DEFAULT_QQ_SG_REQUESTVOLUME = "20";
+    public static final String DEFAULT_QQ_CONNECT_REQUESTVOLUME = "20";
+    public static final String DEFAULT_QQ_OAUTH_REQUESTVOLUME = "20";
 
     //kafka依赖调用
     public static final String DEFAULT_KAFKA_HYSTRIX_THREADPOOL_CORESIZE = "15";
     public static final String DEFAULT_KAFKA_TIMEOUT = "100";// ms
-    public static final String DEFAULT_KAFKA_REQUESTVOLUME_THRESHOLD = "20000";
+    public static final String DEFAULT_KAFKA_REQUESTVOLUME_THRESHOLD = "40";
     public static final String DEFAULT_KAFKA_SEMAPHORE_THRESHOLD = "10";
     public static final String DEFAULT_FALLBACK_SEMAPHORE_THRESHOLD = "10";
 
