@@ -42,6 +42,8 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
     private static final String LOG_JOINER_STR = "\t";
     private static final String CACHE_VALUE_JOINER = "|";
     private static final int DEFAULT_TIME_UNIT = 1000;
+    private static final String DENY_CACHE_HIT = "1";
+    private static final String DENY_SET_CACHE = "0";
 
     @Autowired
     public MongoServerUtil mongoServerUtil;
@@ -93,9 +95,6 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                                     String message = buildDenyLogMessage(nowDateTime.toDate(), resultObject);
                                     fileLog.warn(message);
                                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
-
-//                                    redisUtils.set(key, resultObject.toString(), (denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime()), TimeUnit.MILLISECONDS);
-
                                     String setValue = StringUtils.replace(message, LOG_JOINER_STR, CACHE_VALUE_JOINER);
                                     long cacheTime = (denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime()) / DEFAULT_TIME_UNIT;
                                     redisUtils.setWithinSeconds(key, setValue, cacheTime);
@@ -114,7 +113,6 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                     fileLog.warn(message);
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 }
-
             } catch (Exception e) {
                 log.error("RiskControlInterceptor Exception : " + e);
                 return true;
@@ -154,7 +152,8 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
         msg.append(dbObject.get(MongodbConstant.CITY)).append(LOG_JOINER_STR);
         msg.append(dbObject.get(MongodbConstant.DENY_START_TIME)).append(LOG_JOINER_STR);
         msg.append(dbObject.get(MongodbConstant.DENY_END_TIME)).append(LOG_JOINER_STR);
-        msg.append(dbObject.get(MongodbConstant.RATE));
+        msg.append(dbObject.get(MongodbConstant.RATE)).append(LOG_JOINER_STR);
+        msg.append(DENY_SET_CACHE);
         return msg.toString();
     }
 
@@ -177,7 +176,8 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
             msg.append(data[5]).append(LOG_JOINER_STR);
             msg.append(data[6]).append(LOG_JOINER_STR);
             msg.append(data[7]).append(LOG_JOINER_STR);
-            msg.append(data[8]);
+            msg.append(data[8]).append(LOG_JOINER_STR);
+            msg.append(DENY_CACHE_HIT);
         }
         return msg.toString();
     }
