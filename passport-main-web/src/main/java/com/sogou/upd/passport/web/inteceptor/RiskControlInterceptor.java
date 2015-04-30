@@ -187,7 +187,6 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
             msg.append(data[1]).append(LOG_JOINER_STR);
             msg.append(data[2]).append(LOG_JOINER_STR);
             msg.append(data[3]).append(LOG_JOINER_STR);
-            msg.append(data[3]).append(LOG_JOINER_STR);
             msg.append(data[4]).append(LOG_JOINER_STR);
             msg.append(data[5]).append(LOG_JOINER_STR);
             msg.append(data[6]).append(LOG_JOINER_STR);
