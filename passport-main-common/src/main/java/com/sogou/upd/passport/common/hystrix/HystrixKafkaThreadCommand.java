@@ -34,7 +34,7 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
 
         super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("HystrixKafka"))
                 .andCommandKey(HystrixCommandKey.Factory.asKey("KafkaHystrixThreadCommand"))
-                .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("HystrixThreadPool"))
+                .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("HystrixKafkaThreadPool"))
                 .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                         .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.THREAD)
                         .withRequestCacheEnabled(requestCacheEnable)
@@ -64,17 +64,15 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
         boolean isShortCircuited = isResponseShortCircuited();
         boolean isRejected = isResponseRejected();
         boolean isTimeout = isResponseTimedOut();
-        boolean isFailed = isFailedExecution();
-        if (isFailed) {
-            logger.error("HystrixKafkaThreadCommand fallback isFailedExecution");
-        } else if (isTimeout) {
+//        boolean isFailed = isFailedExecution();
+        if (isTimeout) {
             logger.error("HystrixKafkaThreadCommand fallback isTimeout");
         } else if (isRejected) {
             logger.error("HystrixKafkaThreadCommand fallback isRejected");
         } else if (isShortCircuited) {
             logger.error("HystrixKafkaThreadCommand fallback isShortCircuited");
         } else {
-            logger.error("HystrixKafkaThreadCommand fallback unknown");
+//            logger.error("HystrixKafkaThreadCommand fallback unknown");
         }
         return null;
     }

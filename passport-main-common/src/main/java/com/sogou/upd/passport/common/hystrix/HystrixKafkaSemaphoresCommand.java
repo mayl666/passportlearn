@@ -64,17 +64,15 @@ public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
         boolean isShortCircuited = isResponseShortCircuited();
         boolean isRejected = isResponseRejected();
         boolean isTimeout = isResponseTimedOut();
-        boolean isFailed = isFailedExecution();
-        if (isFailed) {
-            logger.error("HystrixKafkaSemaphoresCommand fallback isFailedExecution");
-        } else if (isTimeout) {
+//        boolean isFailed = isFailedExecution();
+        if (isTimeout) {
             logger.error("HystrixKafkaSemaphoresCommand fallback isTimeout");
         } else if (isRejected) {
             logger.error("HystrixKafkaSemaphoresCommand fallback isRejected");
         } else if (isShortCircuited) {
             logger.error("HystrixKafkaSemaphoresCommand fallback isShortCircuited");
         } else {
-            logger.error("HystrixKafkaSemaphoresCommand fallback unknown");
+//            logger.error("HystrixKafkaSemaphoresCommand fallback unknown");
         }
         return null;
     }

@@ -65,17 +65,15 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
         boolean isShortCircuited = isResponseShortCircuited();
         boolean isRejected = isResponseRejected();
         boolean isTimeout = isResponseTimedOut();
-        boolean isFailed = isFailedExecution();
-        if (isFailed) {
-            logger.error("HystrixQQCommand fallback isFailedExecution");
-        } else if (isTimeout) {
+//        boolean isFailed = isFailedExecution();
+        if (isTimeout) {
             logger.error("HystrixQQCommand fallback isTimeout");
         } else if (isRejected) {
             logger.error("HystrixQQCommand fallback isRejected");
         } else if (isShortCircuited) {
             logger.error("HystrixQQCommand fallback isShortCircuited");
         } else {
-            logger.error("HystrixQQCommand fallback unknown");
+//            logger.error("HystrixQQCommand fallback unknown");
         }
 
         throw new UnsupportedOperationException("HystrixQQCommand:No fallback available.");

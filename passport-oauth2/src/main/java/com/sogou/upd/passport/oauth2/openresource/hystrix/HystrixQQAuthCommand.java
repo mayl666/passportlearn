@@ -72,17 +72,15 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
         boolean isShortCircuited = isResponseShortCircuited();
         boolean isRejected = isResponseRejected();
         boolean isTimeout = isResponseTimedOut();
-        boolean isFailed = isFailedExecution();
-        if (isFailed) {
-            logger.error("HystrixQQAuthCommand fallback isFailedExecution");
-        } else if (isTimeout) {
+//        boolean isFailed = isFailedExecution();
+        if (isTimeout) {
             logger.error("HystrixQQAuthCommand fallback isTimeout");
         } else if (isRejected) {
             logger.error("HystrixQQAuthCommand fallback isRejected");
         } else if (isShortCircuited) {
             logger.error("HystrixQQAuthCommand fallback isShortCircuited");
         } else {
-            logger.error("HystrixQQAuthCommand fallback unknown");
+//            logger.error("HystrixQQAuthCommand fallback unknown");
         }
         throw new UnsupportedOperationException("HystrixQQAuthCommand:No fallback available.");
     }
