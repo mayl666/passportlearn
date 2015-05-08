@@ -3,6 +3,7 @@ package com.sogou.upd.passport.oauth2.openresource.hystrix;
 import com.netflix.hystrix.*;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
+import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.http.HttpClient4;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthClientResponse;
@@ -21,6 +22,7 @@ import java.util.Map;
 public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends HystrixCommand<T> {
 
     private static final Logger logger = LoggerFactory.getLogger("hystrixLogger");
+    private static final Logger log = LoggerFactory.getLogger(HystrixQQAuthCommand.class);
     private OAuthClientRequest request;
     private String requestMethod;
     public Class<T> responseClass;
@@ -64,7 +66,13 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
 
     @Override
     protected T run() throws Exception {
-        return HttpClient4.execute(request, headers, requestMethod, responseClass);
+        try{
+            return HttpClient4.execute(request, headers, requestMethod, responseClass);
+        }catch (OAuthProblemException e){
+            log.warn("HystrixQQAuthCommand fail, errorCode:" + e.getError() + " ,errorDesc:" + e.getDescription());
+            return null;
+        }
+
     }
 
     @Override
@@ -82,7 +90,8 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
         } else {
 //            logger.error("HystrixQQAuthCommand fallback unknown");
         }
-        throw new UnsupportedOperationException("HystrixQQAuthCommand:No fallback available.");
+//        throw new UnsupportedOperationException("HystrixQQAuthCommand:No fallback available.");
+        return null;
     }
 
 

@@ -282,6 +282,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_INVALID_OPENID = "30036";
     //QQ用户词库大小大于5M，请特殊处理
     public static final String ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M = "30037";
+    //OAuth 用hystrix执行错误码
+    public static final String ERR_CODE_OAUTH_HYSTRIX_ERROR = "30038";
 
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
@@ -473,6 +475,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_CREDENTIAL, "不合法的调用凭证");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_OPENID, "不合法的Openid");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M, "用户词库大小大于5M，请特殊处理");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_OAUTH_HYSTRIX_ERROR, "oauth hystrix excute failed");
 
         // info
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_GET_USERINFO_ERROR, "获取第三方用户信息失败");

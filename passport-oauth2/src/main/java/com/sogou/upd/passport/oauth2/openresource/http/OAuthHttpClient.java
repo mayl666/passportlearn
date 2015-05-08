@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.hystrix.HystrixQQAuthCommand;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
@@ -36,7 +37,11 @@ public class OAuthHttpClient {
         if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
             String oAuthUrl = request.getLocationUri();
             if (!Strings.isNullOrEmpty(oAuthUrl) && oAuthUrl.contains(hystrixQQurl)) {
-                return (T) (new HystrixQQAuthCommand(request, requestMethod, responseClass, headers).execute());
+                T hystrixResponse=(T) new HystrixQQAuthCommand(request, requestMethod, responseClass, headers).execute();
+                if(null == hystrixResponse)  {
+                    throw new OAuthProblemException(ErrorUtil.ERR_CODE_OAUTH_HYSTRIX_ERROR,"oauth hystrix excute failed");
+                }
+                return hystrixResponse;
             }
         }
 
