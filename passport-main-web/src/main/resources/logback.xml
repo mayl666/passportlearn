@@ -120,6 +120,21 @@
         <appender-ref ref="userOperationAppender"/>
     </logger>
 
+    <!--start:hystrix invoke log-->
+    <appender name="hystrixAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/hystrix/hystrix.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>3</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %msg %n</pattern>
+            <!--<pattern>%msg%n</pattern>-->
+        </encoder>
+    </appender>
+    <logger name="hystrixLogger" level="info" additivity="false">
+        <appender-ref ref="hystrixAppender"/>
+    </logger>
+    <!--end:hystrix invoke log-->
 
     <appender name="interfaceLimitedAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -147,17 +162,16 @@
         </encoder>
     </appender>
 
-    <logger name="userLoggerAsync" level="info" additivity="false">
-        <appender-ref ref="kafkaAsyncAppender"/>
-        <!--<appender-ref ref="rabbitMQAsyncAppender"/>-->
-        <appender-ref ref="userOperationAppender"/>
-
-    </logger>
-
     <logger name="userLoggerLocal" level="info" additivity="false">
         <!--<appender-ref ref="userOperationAppender" />-->
         <appender-ref ref="userOperationAppender"/>
     </logger>
+
+    <logger name="userLoggerKafka" level="info" additivity="false">
+        <!--<appender-ref ref="userOperationAppender" />-->
+        <appender-ref ref="kafkaAsyncAppender"/>
+    </logger>
+
 
     <appender name="redisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -192,7 +206,7 @@
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>%msg %n</pattern>
+            <pattern>%msg %n</pattern>                              `
         </encoder>
     </appender>
     <appender name="httpclientCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">

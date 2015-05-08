@@ -94,7 +94,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                         if (map.containsKey("items")) {
                             List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid);
                             result.setDefaultModel("items", list);
-                            dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.TIME_ONEDAY);
+                            dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                         }
                     } else {
 
