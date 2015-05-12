@@ -150,14 +150,13 @@
     </logger>
 
 
-    <appender name="kafkaAsyncAppender" class="com.sogou.passport.platform.logback.api.kafka.MultiKafkaAppender"
+    <appender name="kafkaAsyncAppender" class="com.sogou.upd.passport.logback.api.kafka.MultiKafkaAppender"
               additivity="false">
         <zkList>${zkList}</zkList>
         <brokerList>${brokerList}</brokerList>
         <topic>${topic.userlog}</topic>
         <poolSize>10</poolSize>
         <async>true</async>
-        <queueTimeout>0</queueTimeout>
         <encoder>
             <pattern>%msg</pattern>
         </encoder>

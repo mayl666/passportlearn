@@ -275,7 +275,7 @@
         <dependency>
             <groupId>com.sogou.passport</groupId>
             <artifactId>logback-kafka</artifactId>
-            <version>1.2.1</version>
+            <version>1.1</version>
         </dependency>
 
         <!--hystrix依赖调用-->
