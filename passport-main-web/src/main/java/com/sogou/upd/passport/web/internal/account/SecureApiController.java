@@ -159,7 +159,7 @@ public class SecureApiController extends BaseController {
 //                update_internal = params.getUpdate_interval();
 //            }
 
-            StringBuffer resultText = new StringBuffer("0 0 10");
+            StringBuffer resultText = new StringBuffer("0 0 3");
             Iterator<String> it = set.iterator();
             while (it.hasNext()) {
                 String str = it.next();
