@@ -165,7 +165,12 @@ public class SecureApiController extends BaseController {
             while (it.hasNext()) {
                 String str = it.next();
                 String strs[] = str.split(BLACK_USER_EXPIRETIME_REDIS_SPLIT);
-                resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append(strs[0]).append(BLACK_USER_EXPIRETIME_SPLIT).append(strs[1]);
+
+                if (strs.length == 1) {
+                    resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append(strs[0]).append(BLACK_USER_EXPIRETIME_SPLIT);
+                } else {
+                    resultText.append(BLACK_USER_LIST_VALUE_SPLIT).append(strs[0]).append(BLACK_USER_EXPIRETIME_SPLIT).append(strs[1]);
+                }
             }
 
             result.setSuccess(true);
