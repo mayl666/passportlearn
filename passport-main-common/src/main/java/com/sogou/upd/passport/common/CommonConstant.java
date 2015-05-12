@@ -101,6 +101,9 @@ public class CommonConstant {
     //域名不正确
     public static final String DOMAIN_ERROR = "域名不正确";
 
+    //module 黑名单数据 连接符
+    public static final String MODULE_BLACK_LIST_DATA_JOINER = "^";
+
     // passport支持的第三方列表
     public static final List<String> SUPPORT_PROVIDER_LIST = Lists.newArrayList();
 

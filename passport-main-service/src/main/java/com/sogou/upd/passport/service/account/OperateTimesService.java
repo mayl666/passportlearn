@@ -351,4 +351,13 @@ public interface OperateTimesService {
      * @param cookie
      */
     public void incCheckNickNameExistTimes(final String ip, final String cookie);
+
+
+    /**
+     * 密码修改成功后，把账号设置到module blacklist 列表中
+     *
+     * @param passportId
+     * @param seconds
+     */
+    public void updatePwdSuccessSetModuleBlack(String passportId, long seconds);
 }

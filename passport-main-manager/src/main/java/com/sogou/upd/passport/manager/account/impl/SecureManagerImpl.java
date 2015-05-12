@@ -54,6 +54,9 @@ public class SecureManagerImpl implements SecureManager {
     //搜狗安全信息字段:密保邮箱、密保手机、密保问题
     private static final String SOGOU_SECURE_FIELDS = "email,mobile,question,uniqname,avatarurl";
 
+    //修改密码成功后，账号设置到module black 中的有效期
+    private static final long UPDATE_PWD_SUCCESS_SET_MODULE_SECONDS = 5;
+
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
     @Autowired
@@ -299,6 +302,9 @@ public class SecureManagerImpl implements SecureManager {
                 if (result.isSuccess()) {
                     operateTimesService.incLimitResetPwd(passportId, clientId);
                     operateTimesService.incResetPwdIPTimes(modifyIp);
+
+                    //修改密码成功，把对应的账号设置到module black中,账号重新登录 20150512 add
+                    operateTimesService.updatePwdSuccessSetModuleBlack(passportId, UPDATE_PWD_SUCCESS_SET_MODULE_SECONDS);
                 }
             }
         } catch (ServiceException e) {

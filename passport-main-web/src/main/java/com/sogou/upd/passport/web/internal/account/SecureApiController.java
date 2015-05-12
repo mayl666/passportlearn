@@ -159,7 +159,8 @@ public class SecureApiController extends BaseController {
 //                update_internal = params.getUpdate_interval();
 //            }
 
-            StringBuffer resultText = new StringBuffer("0 0 3");
+            //  module 限制 update_internal 最小调用频次为 10s
+            StringBuffer resultText = new StringBuffer("0 0 10");
             Iterator<String> it = set.iterator();
             while (it.hasNext()) {
                 String str = it.next();
