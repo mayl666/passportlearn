@@ -114,6 +114,17 @@ public class HystrixConfigFactory {
         }
     }
 
+    public static void modifyProperty(String propKey, String newValue) {
+        if (!Strings.isNullOrEmpty(propKey)) {
+            if (!Strings.isNullOrEmpty(newValue)) {
+                synchronized (hystrixConfigMap) {
+                    hystrixConfigMap.put(propKey, newValue);
+                }
+            }
+
+        }
+    }
+
     public static String getProperty(String propertyName) {
         synchronized (hystrixConfigMap) {
             return hystrixConfigMap.get(propertyName);
