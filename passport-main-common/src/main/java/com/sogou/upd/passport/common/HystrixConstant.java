@@ -18,6 +18,7 @@ public class HystrixConstant {
     public static final String DEFAULT_REQUEST_LOG_ENABLED = "true";
     public static final String DEFAULT_BREAKER_FORCE_OPEN = "false";
     public static final String DEFAULT_BREAKER_FORCE_CLOSE = "false";
+    public static final String DEFAULT_BREAKER_SLEEP_WINDOW = "500";
 
 
     //QQ依赖调用
@@ -42,6 +43,7 @@ public class HystrixConstant {
     public static final String PROPERTY_QQ_HYSTRIX_ENABLED = "qqHystrixEnabled";
     public static final String PROPERTY_BREAKER_FORCE_OPEN = "breakerForceOpen";
     public static final String PROPERTY_BREAKER_FORCE_CLOSE = "breakerFoceClose";
+    public static final String PROPERTY_BREAKER_SLEEP_WINDOW = "circuitBreakerSleepWindow";
     public static final String PROPERTY_KAFKA_HYSTRIX_ENABLED = "kafkaHystrixEnabled";
     public static final String PROPERTY_KAFKA_CHOOSE_THREAD_MODE = "kafkaChooseThreadMode";
     public static final String PROPERTY_REQUEST_CACHE_ENABLED = "requestCacheEnabled";

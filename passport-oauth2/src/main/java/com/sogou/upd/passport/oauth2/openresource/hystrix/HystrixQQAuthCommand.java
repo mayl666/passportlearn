@@ -38,6 +38,7 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
     private static final int fallbackSemaphoreThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD));
     private static boolean breakerForceOpen = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_OPEN));
     private static boolean breakerForceClose = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_FORCE_CLOSE));
+    private static final int breakerSleepWindow=Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_SLEEP_WINDOW));
 
     public HystrixQQAuthCommand(OAuthClientRequest request, String requestMethod, Class<T> responseClass, Map<String, String> headers) {
 
@@ -51,6 +52,7 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
                         .withRequestLogEnabled(requestLogEnable)
                         .withCircuitBreakerForceOpen(breakerForceOpen)
                         .withCircuitBreakerForceClosed(breakerForceClose)
+                        .withCircuitBreakerSleepWindowInMilliseconds(breakerSleepWindow)
                         .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
                         .withExecutionIsolationThreadTimeoutInMilliseconds(qqTimeout)
                         .withCircuitBreakerRequestVolumeThreshold(qqOAuthRequestVolumeThreshold)
