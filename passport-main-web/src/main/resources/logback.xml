@@ -10,6 +10,21 @@
         </encoder>
     </appender>
 
+    <!-- 好友链日志信息 -->
+    <appender name="friendsAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/qqfriend/getfriends.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="friendsLogger" level="info" additivity="false">
+        <appender-ref ref="friendsAppender"/>
+    </logger>
+
+
     <!--移动端数据统计 interface  -->
     <appender name="interfaceAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

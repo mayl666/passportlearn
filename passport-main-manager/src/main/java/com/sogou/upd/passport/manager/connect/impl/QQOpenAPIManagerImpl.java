@@ -48,7 +48,7 @@ import java.util.Map;
 @Component
 public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
 
-    private Logger logger = LoggerFactory.getLogger(QQOpenAPIManagerImpl.class);
+    private Logger logger = LoggerFactory.getLogger("friendsLogger");
 
     private String QQ_RET_CODE = "0";
 
@@ -169,7 +169,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                 if (!StringUtils.isNullOrEmpty(openid)) {
                     Result result = sgConnectApiManager.getConnectRelation(openid, AccountTypeEnum.QQ.getValue(), third_appid);
                     if (!result.isSuccess()) {
-                        logger.error("connectRelation has no this openid,remove，openid : " + openid);
+                        logger.error("connectRelation has no this openid,remove,third_appid : " + third_appid + "，openid : " + openid);
                         removeList.add(map);
                         continue;
                     } else {
