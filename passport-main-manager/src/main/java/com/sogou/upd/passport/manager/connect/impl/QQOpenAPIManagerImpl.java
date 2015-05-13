@@ -92,7 +92,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                     if (QQ_RET_CODE.equals(ret)) {
                         result.setSuccess(true);
                         if (map.containsKey("items")) {
-                            List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid);
+                            List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid,userid);
                             result.setDefaultModel("items", list);
                             dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                         }
@@ -160,7 +160,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
         return connectUserInfoVO;
     }
 
-    public List<Map<String, Object>> changePassportId(List<Map<String, Object>> list, String third_appid) {
+    public List<Map<String, Object>> changePassportId(List<Map<String, Object>> list, String third_appid ,String userid) {
         if (!CollectionUtils.isEmpty(list)) {
             List<Map<String, Object>> removeList = new ArrayList<Map<String, Object>>();
             for (int i = 0; i < list.size(); i++) {
@@ -169,7 +169,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                 if (!StringUtils.isNullOrEmpty(openid)) {
                     Result result = sgConnectApiManager.getConnectRelation(openid, AccountTypeEnum.QQ.getValue(), third_appid);
                     if (!result.isSuccess()) {
-                        logger.error("connectRelation has no this openid,remove,third_appid : " + third_appid + "，openid : " + openid);
+                        logger.error("connectRelation has no this openid,remove,userid : " + userid + "third_appid : " + third_appid + "，openid : " + openid);
                         removeList.add(map);
                         continue;
                     } else {
