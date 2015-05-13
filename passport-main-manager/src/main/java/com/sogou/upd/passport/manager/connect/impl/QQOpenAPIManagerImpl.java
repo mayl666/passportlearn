@@ -51,6 +51,8 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     private Logger logger = LoggerFactory.getLogger("friendsLogger");
 
     private String QQ_RET_CODE = "0";
+    private String QQ_RET_CODE_FOR_MODIFY_PASSPORT = "-73";
+    private String QQ_RET_CODE_FOR_TOKEN_EXPIRE = "100014";
 
     //    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:80/internal/qq/friends_aesinfo";
     private static final String GET_QQ_FRIENDS_AES_URL = "http://qqfriends.gz.1251021740.clb.myqcloud.com/internal/qq/friends_aesinfo";
@@ -96,7 +98,10 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                             result.setDefaultModel("items", list);
                             dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                         }
-                    } else {
+                    } else if(QQ_RET_CODE_FOR_MODIFY_PASSPORT.equals(ret)){
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_TOKEN_PWDERROR);
+                    } else if(QQ_RET_CODE_FOR_TOKEN_EXPIRE.equals(ret)){
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID);} else {
 
                         logger.error("return value error ：" + map.toString());
                         if (map.containsKey("msg")) {
