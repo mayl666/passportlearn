@@ -949,12 +949,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public void updatePwdSuccessSetModuleBlack(String passportId, long seconds) {
         try {
             long timeStamp = (System.currentTimeMillis() / 1000) + seconds;
-            if (redisUtils.checkKeyIsExist(CacheConstant.CACHE_KEY_BLACKLIST)) {
-                redisUtils.sadd(CacheConstant.CACHE_KEY_BLACKLIST, passportId + CommonConstant.MODULE_BLACK_LIST_DATA_JOINER + timeStamp);
-            } else {
-                redisUtils.sadd(CacheConstant.CACHE_KEY_BLACKLIST, passportId + CommonConstant.MODULE_BLACK_LIST_DATA_JOINER + timeStamp);
-            }
-
+            redisUtils.sadd(CacheConstant.CACHE_KEY_BLACKLIST, passportId + CommonConstant.MODULE_BLACK_LIST_DATA_JOINER + timeStamp);
         } catch (Exception e) {
             logger.error("updatePwdSuccessSetModuleBlack error. passportId:{}", passportId);
         }
