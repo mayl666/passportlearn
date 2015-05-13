@@ -129,16 +129,4 @@
         <property name="redisTemplate" ref="tokenTemplate"/>
     </bean>
 
-    <!--热切换redis-->
-    <bean id="monitor" class="com.sogou.upd.passport.zk.Monitor" destroy-method="destory">
-        <constructor-arg name="zks" value="10.136.24.136:2181"/>
-    </bean>
-    <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">
-        <constructor-arg name="monitor" ref="monitor"/>
-        <constructor-arg name="cachePath" value="/sogou_passport/redis_info/redis_node/cache"/>
-        <constructor-arg name="tokenPath" value="/sogou_passport/redis_info/redis_node/token"/>
-        <constructor-arg name="tokenConnectionFactory" ref="tokenConnectionFactory"/>
-        <constructor-arg name="cacheConnectionFactory" ref="cacheConnectionFactory"/>
-    </bean>
-
 </beans>
