@@ -55,7 +55,7 @@ public class SecureManagerImpl implements SecureManager {
     private static final String SOGOU_SECURE_FIELDS = "email,mobile,question,uniqname,avatarurl";
 
     //修改密码成功后，账号设置到module black 中的有效期单位秒
-    private static final long UPDATE_PWD_SUCCESS_SET_MODULE_SECONDS = 10;
+    private static final long UPDATE_PWD_SUCCESS_SET_MODULE_SECONDS = 5;
 
     @Autowired
     private MobileCodeSenderService mobileCodeSenderService;
