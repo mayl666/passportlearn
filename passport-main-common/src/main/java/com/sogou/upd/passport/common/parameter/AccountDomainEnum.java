@@ -112,6 +112,10 @@ public enum AccountDomainEnum {
         if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(userId)) {
             return userId;
         }
+        // TODO  临时解决手机号登录无法同步词库问题，后续需要查出passportId才行
+        if (PhoneUtil.verifyPhoneNumberFormat(userId)) {
+            return userId + "@sohu.com";
+        }
         return userId.toLowerCase();
     }
 

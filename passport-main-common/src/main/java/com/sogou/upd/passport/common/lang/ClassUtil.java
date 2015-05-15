@@ -49,7 +49,7 @@ public class ClassUtil {
     /**
      * 所有类的信息表，包括父类, 接口, 数组的维数等信息。
      */
-    private static Map TYPE_MAP = Collections.synchronizedMap(new WeakHashMap());
+    final private static Map TYPE_MAP = Collections.synchronizedMap(new WeakHashMap());
 
     /* ============================================================================ */
     /* 取得类名和package名的方法。                                                  */

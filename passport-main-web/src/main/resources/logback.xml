@@ -10,6 +10,21 @@
         </encoder>
     </appender>
 
+    <!-- 好友链日志信息 -->
+    <appender name="friendsAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/qqfriend/getfriends.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="friendsLogger" level="info" additivity="false">
+        <appender-ref ref="friendsAppender"/>
+    </logger>
+
+
     <!--移动端数据统计 interface  -->
     <appender name="interfaceAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -134,6 +149,21 @@
         <appender-ref ref="userOperationAppender"/>
     </logger>
 
+    <!--start:hystrix invoke log-->
+    <appender name="hystrixAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/hystrix/hystrix.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>3</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %msg %n</pattern>
+            <!--<pattern>%msg%n</pattern>-->
+        </encoder>
+    </appender>
+    <logger name="hystrixLogger" level="info" additivity="false">
+        <appender-ref ref="hystrixAppender"/>
+    </logger>
+    <!--end:hystrix invoke log-->
 
     <appender name="interfaceLimitedAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -161,23 +191,16 @@
         </encoder>
     </appender>
 
-    <appender name="localAsyncAppender" class="com.sogou.upd.passport.mq.AsyncMultiThreadAppender">
-        <queueSize>512</queueSize>
-        <workerSize>1</workerSize>
-        <appender-ref ref="userOperationAppender"/>
-    </appender>
-
-    <logger name="userLoggerAsync" level="info" additivity="false">
-        <appender-ref ref="kafkaAsyncAppender"/>
-        <!--<appender-ref ref="rabbitMQAsyncAppender"/>-->
-        <appender-ref ref="localAsyncAppender"/>
-
-    </logger>
-
     <logger name="userLoggerLocal" level="info" additivity="false">
         <!--<appender-ref ref="userOperationAppender" />-->
-        <appender-ref ref="localAsyncAppender"/>
+        <appender-ref ref="userOperationAppender"/>
     </logger>
+
+    <logger name="userLoggerKafka" level="info" additivity="false">
+        <!--<appender-ref ref="userOperationAppender" />-->
+        <appender-ref ref="kafkaAsyncAppender"/>
+    </logger>
+
 
     <appender name="redisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -205,19 +228,6 @@
         <appender-ref ref="tokenRedisMissAppender"/>
     </logger>
 
-    <appender name="dBRedisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${log.path}/dBRedisMiss/redisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
-            <maxHistory>14</maxHistory>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d %msg %n</pattern>
-        </encoder>
-    </appender>
-    <logger name="dBRedisMissLogger" level="info" additivity="false">
-        <appender-ref ref="dBRedisMissAppender"/>
-    </logger>
-
     <!--start:httpClient性能log-->
     <appender name="httpclientFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -225,7 +235,7 @@
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
-            <pattern>%msg %n</pattern>
+            <pattern>%msg %n</pattern>                              `
         </encoder>
     </appender>
     <appender name="httpclientCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
@@ -296,7 +306,7 @@
     </logger>
     <!--end:mongodb请求log-->
 
-    <!--start:redies请求log-->
+    <!--start:kv请求log-->
     <appender name="kvPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/kvperf/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
@@ -316,7 +326,7 @@
     </logger>
     <!--end:web服务器性能log-->
 
-    <!--start:redies请求log-->
+    <!--start:mysql+redies请求log-->
     <appender name="dbPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/mysqldb/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>

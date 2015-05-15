@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.SSOScanAccountType;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DateUtil;
@@ -59,6 +60,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
@@ -318,7 +320,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         if (!Strings.isNullOrEmpty(sgid)) {
             result.setSuccess(true);
             result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
-            ru = buildWapSuccessRu(ru, sgid);
+            ru = buildWapSuccessRu(ru, sgid, userId);
         } else {
             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId, v);
             return result;
@@ -616,16 +618,22 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return ru;
     }
 
-    private String buildWapSuccessRu(String ru, String sgid) {
+    private String buildWapSuccessRu(String ru, String sgid, String userid) {
         Map params = Maps.newHashMap();
+        String acountType = SSOScanAccountType.getSSOScanAccountType(userid);
+        String acountTypeEncode = null;
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
+            acountTypeEncode = URLEncoder.encode(acountType, CommonConstant.DEFAULT_CHARSET);
         } catch (Exception e) {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_WAP_URL;
         }
         //ru后缀一个sgid
         params.put(LoginConstant.COOKIE_SGID, sgid);
+        if (null != acountTypeEncode) {
+            params.put(LoginConstant.SSO_ACCOUNT_TYPE, acountTypeEncode);
+        }
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }

@@ -55,7 +55,7 @@ public class BaiduUserAPIResponse extends UserAPIResponse {
     private int getGender() {
         String gender = getParam(BaiduOAuth.SEX);
         int sex = 0;
-        if (gender.equals("男")) {
+        if (gender.equals("男")||gender.equals("1")) {
             sex = 1;
         }
         return sex;

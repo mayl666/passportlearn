@@ -22,6 +22,7 @@ public class DateAndNumTimesConstant {
     public static final int ACTIONRECORD_NUM = 10; // 动作记录条数
 
     public static final int ONE_HOUR_INSECONDS = 60 * 60 * 1; // 1小时,单位,s
+    public static final int HALF_HOUR_INSECONDS = 30 * 60;//0.5小时，单位，s
     public static final int ONE_MONTH_INSECONDS = 60 * 60 * 24 * 30; // 10天,单位,s
     public static final int ONE_DAY_INSECONDS = 60 * 60 * 24; // 1天,单位,s
     public static final int THREE_DAY_INSECONDS = 60 * 60 * 24 * 3; // 3天,单位,s
@@ -31,7 +32,6 @@ public class DateAndNumTimesConstant {
     public static final int FINDPWD_LIMIT = 5;   // 1天内找回密码的次数
     public static final int IP_RESETPWD_NUM = 100; // 密码修改一天限制次数
     public static final int RESETPWD_NUM = 5; // 密码修改一天限制次数
-
 
 
 }

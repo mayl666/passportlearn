@@ -6,6 +6,8 @@ import com.mysql.jdbc.StringUtils;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.apache_asynhttpclient.ApacheAsynHttpClient;
+import com.sogou.upd.passport.common.asynchttpclient.AsyncHttpClientService;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -46,12 +48,15 @@ import java.util.Map;
 @Component
 public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
 
-    private Logger logger = LoggerFactory.getLogger(QQOpenAPIManagerImpl.class);
+    private Logger logger = LoggerFactory.getLogger("friendsLogger");
 
     private String QQ_RET_CODE = "0";
+    private String QQ_RET_CODE_FOR_MODIFY_PASSPORT = "-73";
+    private String QQ_RET_CODE_FOR_TOKEN_EXPIRE = "100014";
 
     //    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:80/internal/qq/friends_aesinfo";
     private static final String GET_QQ_FRIENDS_AES_URL = "http://qqfriends.gz.1251021740.clb.myqcloud.com/internal/qq/friends_aesinfo";
+
     public static final String TKEY_SECURE_KEY = "adfab231rqwqerq";
     private static final String CACHE_PREFIX_QQFRIEND = CacheConstant.CACHE_KEY_QQ_FRIENDS;
 
@@ -59,6 +64,8 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     private ConnectApiManager sgConnectApiManager;
     @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
+
+    public static AsyncHttpClientService asyncHttpClientService = new AsyncHttpClientService();
 
     public String buildQQFriendsCacheKey(String userid, String third_appid) {
         return CACHE_PREFIX_QQFRIEND + userid + "_" + third_appid;
@@ -76,7 +83,9 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
             requestModel.addParam("userid", userid);
             requestModel.addParam("tKey", tkey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-            String returnVal = SGHttpClient.executeStr(requestModel);
+//            String returnVal = SGHttpClient.executeStr(requestModel);
+            String returnVal = ApacheAsynHttpClient.executeStr(requestModel);
+//            asyncHttpClientService.sendPreparePost(GET_QQ_FRIENDS_AES_URL);
             String str = AES.decryptURLSafeString(returnVal, TKEY_SECURE_KEY);
             Map map = JacksonJsonMapperUtil.getMapper().readValue(str, Map.class);
             if (!CollectionUtils.isEmpty(map)) {
@@ -85,11 +94,14 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                     if (QQ_RET_CODE.equals(ret)) {
                         result.setSuccess(true);
                         if (map.containsKey("items")) {
-                            List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid);
+                            List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid,userid);
                             result.setDefaultModel("items", list);
-                            dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.TIME_ONEDAY);
+                            dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                         }
-                    } else {
+                    } else if(QQ_RET_CODE_FOR_MODIFY_PASSPORT.equals(ret)){
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_TOKEN_PWDERROR);
+                    } else if(QQ_RET_CODE_FOR_TOKEN_EXPIRE.equals(ret)){
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID);} else {
 
                         logger.error("return value error ：" + map.toString());
                         if (map.containsKey("msg")) {
@@ -153,7 +165,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
         return connectUserInfoVO;
     }
 
-    public List<Map<String, Object>> changePassportId(List<Map<String, Object>> list, String third_appid) {
+    public List<Map<String, Object>> changePassportId(List<Map<String, Object>> list, String third_appid ,String userid) {
         if (!CollectionUtils.isEmpty(list)) {
             List<Map<String, Object>> removeList = new ArrayList<Map<String, Object>>();
             for (int i = 0; i < list.size(); i++) {
@@ -162,7 +174,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                 if (!StringUtils.isNullOrEmpty(openid)) {
                     Result result = sgConnectApiManager.getConnectRelation(openid, AccountTypeEnum.QQ.getValue(), third_appid);
                     if (!result.isSuccess()) {
-                        logger.error("connectRelation has no this openid,remove，openid : " + openid);
+                        logger.error("connectRelation has no this openid,remove,userid : " + userid + "third_appid : " + third_appid + "，openid : " + openid);
                         removeList.add(map);
                         continue;
                     } else {

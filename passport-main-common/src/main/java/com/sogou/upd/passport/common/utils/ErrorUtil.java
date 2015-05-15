@@ -165,6 +165,18 @@ public class ErrorUtil {
     public static final String ERR_CODE_ACCOUNT_SOHU_API_FAILED = "20260";
     //搜狗邮箱关闭
     public static final String ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED = "20261";
+    //SSO应用非法
+    public static final String ERR_CODE_SSO_APP_CHECK_FAILED = "20262";
+    //SSO应用未登录，登录态无效
+    public static final String ERR_CODE_SSO_APP_NOT_LOGIN = "20263";
+    //SSO设备非法访问
+    public static final String ERR_CODE_SSO_DEVICE_INVALID = "20264";
+    //其他异常导致无法换取sgid
+    public static final String ERR_CODE_SSO_FAILED = "20265";
+    //SSO TOKEN无效
+    public static final String ERR_CODE_SSO_TOKEN_INVALID = "20266";
+    //SSO参数解析错误
+    public static final String ERR_CODE_SSO_PARAM_INVALID = "20267";
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -270,6 +282,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_CONNECT_INVALID_OPENID = "30036";
     //QQ用户词库大小大于5M，请特殊处理
     public static final String ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M = "30037";
+    //OAuth 用hystrix执行错误码
+    public static final String ERR_CODE_OAUTH_HYSTRIX_ERROR = "30038";
 
     /* ============================================================================ */
     /*  Friend 服务的错误代码                                                        */
@@ -402,7 +416,14 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_PHONE_UNBIND_FAILED, "手机解除绑定失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_NOTALLOWED, "账号不允许做此操作");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_SOHU_API_FAILED, "搜狐接口异常");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED,"搜狗邮箱已关闭");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED, "搜狗邮箱已关闭");
+
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_APP_CHECK_FAILED, "应用非法");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_APP_NOT_LOGIN, "应用未登录");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_DEVICE_INVALID, "设备非法访问");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_FAILED, "快速登录失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_TOKEN_INVALID, "快速登录令牌无效");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_PARAM_INVALID, "快速登录参数解析失败");
 
         // acount secure info
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_HAVA_BIND_MOBILE, "您的帐号已绑定手机，请使用手机找回或联系客服");
@@ -454,6 +475,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_CREDENTIAL, "不合法的调用凭证");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_INVALID_OPENID, "不合法的Openid");
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_USER_DICTIONARY_LARGE_THAN_5M, "用户词库大小大于5M，请特殊处理");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_OAUTH_HYSTRIX_ERROR, "oauth hystrix excute failed");
 
         // info
         ERR_CODE_MSG_MAP.put(ERR_CODE_CONNECT_GET_USERINFO_ERROR, "获取第三方用户信息失败");

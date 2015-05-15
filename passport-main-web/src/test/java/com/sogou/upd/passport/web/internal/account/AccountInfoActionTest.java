@@ -85,5 +85,32 @@ public class AccountInfoActionTest extends BaseActionTest {
         String result = sendPost("http://10.11.196.173:8090/internal/account/userinfo", params);
         System.out.println(result);
     }
+
+    //修改单台服务器的hystrix开关
+    @Test
+    public void testSwitchHystrix() throws IOException {
+        Map<String, String> params = new HashMap<String, String>();
+        int clientId = 1110;
+        String serverSecret = "FqMV=*S:y^s0$FlwyW>xZ8#A4bQ2Hr";
+        long ct = System.currentTimeMillis();
+        String globalEnabled="true";
+        String qqHystrixEnabled="true";
+        String kafkaHystrixEnabled="true";
+        String userid="nahongxu@sogou.com";
+
+        String code = ManagerHelper.generatorCode(userid, clientId, serverSecret, ct) ;
+        System.out.println("code:" + code);
+        params.put("userid",userid);
+        params.put("client_id", String.valueOf(clientId));
+        params.put("code", code);
+        params.put("ct", String.valueOf(ct));
+        params.put("globalEnabled",globalEnabled);
+        params.put("qqHystrixEnabled",qqHystrixEnabled);
+        params.put("kafkaHystrixEnabled",kafkaHystrixEnabled);
+//        String result = sendPost("http://10.136.24.136:8090/internal/hystrix/switch", params);
+        String result = sendPost("http://10.136.24.105:8090/internal/hystrix/switch", params);
+        System.out.println(result);
+
+    }
 }
 

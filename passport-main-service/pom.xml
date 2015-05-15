@@ -31,13 +31,6 @@
             <version>0.9.1.2</version>
         </dependency>
 
-        <!-- REDIS-->
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-redis</artifactId>
-            <version>1.0.3.RELEASE</version>
-        </dependency>
-
         <!--DAL-by shipengzhi-->
         <dependency>
             <groupId>org.springframework</groupId>

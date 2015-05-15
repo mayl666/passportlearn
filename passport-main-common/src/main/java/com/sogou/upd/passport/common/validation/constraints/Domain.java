@@ -11,7 +11,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * The string has to be a real rootPath.
- *
+ * <p/>
  * User: shipengzhi
  * Date: 13-6-17
  * Time: 下午6:04
