@@ -54,10 +54,10 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        RiskControlSecurity security = handlerMethod.getMethodAnnotation(RiskControlSecurity.class);
-        if (security == null) {
-            return true;
+        RiskControlSecurity security = null;
+        if (handler instanceof HandlerMethod) {
+            HandlerMethod handlerMethod = (HandlerMethod) handler;
+            security = handlerMethod.getMethodAnnotation(RiskControlSecurity.class);
         }
         Result result = new APIResultSupport(false);
         String ip = IpLocationUtil.getIp(request);
@@ -118,7 +118,12 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                 return true;
             }
         }
-        ResponseResultType resultType = security.resultType();
+        ResponseResultType resultType;
+        if (security == null) {
+            resultType = ResponseResultType.json;
+        } else {
+            resultType = security.resultType();
+        }
         String msg;
         switch (resultType) {
             case json:
