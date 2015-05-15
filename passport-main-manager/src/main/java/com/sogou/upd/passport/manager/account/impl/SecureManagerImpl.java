@@ -303,8 +303,11 @@ public class SecureManagerImpl implements SecureManager {
                     operateTimesService.incLimitResetPwd(passportId, clientId);
                     operateTimesService.incResetPwdIPTimes(modifyIp);
 
+                    //针对游戏处理,同一账号,多台机器登录,账号真实拥有者修改密码后,执行下线操作(用户触发的),重新登录
+//                    if (clientId == 1100) {
                     //修改密码成功，把对应的账号设置到module black中,账号重新登录 20150512 add
                     operateTimesService.updatePwdSuccessSetModuleBlack(passportId, UPDATE_PWD_SUCCESS_SET_MODULE_SECONDS);
+//                    }
                 }
             }
         } catch (ServiceException e) {
