@@ -96,7 +96,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                                     fileLog.warn(message);
                                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                                     String setValue = StringUtils.replace(message, LOG_JOINER_STR, CACHE_VALUE_JOINER);
-                                    long cacheTime = (denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime()) / DEFAULT_TIME_UNIT;
+                                    long cacheTime = denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime();
                                     redisUtils.setWithinSeconds(key, setValue, cacheTime);
                                 } else {
                                     return true;
