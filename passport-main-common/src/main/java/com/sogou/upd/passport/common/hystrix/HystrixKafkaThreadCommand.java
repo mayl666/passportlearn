@@ -29,6 +29,7 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
     private static final int kafkaTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_TIMEOUT));
     private static final int kafkaRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_REQUESTVOLUME_THRESHOLD));
     private static final int fallbackSemaphoreThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD));
+    private static final int breakerSleepWindow=Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_SLEEP_WINDOW));
 
     public HystrixKafkaThreadCommand(String infoToLog) {
 
@@ -41,6 +42,7 @@ public class HystrixKafkaThreadCommand extends HystrixCommand<Void> {
                         .withRequestLogEnabled(requestLogEnable)
                         .withCircuitBreakerForceOpen(breakerForceOpen)
                         .withCircuitBreakerForceClosed(breakerForceClose)
+                        .withCircuitBreakerSleepWindowInMilliseconds(breakerSleepWindow)
                         .withCircuitBreakerErrorThresholdPercentage(errorThresholdPercentage)
                         .withExecutionIsolationThreadTimeoutInMilliseconds(kafkaTimeout)
                         .withCircuitBreakerRequestVolumeThreshold(kafkaRequestVolumeThreshold)

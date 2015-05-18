@@ -48,9 +48,11 @@ import java.util.Map;
 @Component
 public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
 
-    private Logger logger = LoggerFactory.getLogger(QQOpenAPIManagerImpl.class);
+    private Logger logger = LoggerFactory.getLogger("friendsLogger");
 
     private String QQ_RET_CODE = "0";
+    private String QQ_RET_CODE_FOR_MODIFY_PASSPORT = "-73";
+    private String QQ_RET_CODE_FOR_TOKEN_EXPIRE = "100014";
 
     //    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:80/internal/qq/friends_aesinfo";
     private static final String GET_QQ_FRIENDS_AES_URL = "http://qqfriends.gz.1251021740.clb.myqcloud.com/internal/qq/friends_aesinfo";
@@ -92,11 +94,14 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                     if (QQ_RET_CODE.equals(ret)) {
                         result.setSuccess(true);
                         if (map.containsKey("items")) {
-                            List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid);
+                            List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid,userid);
                             result.setDefaultModel("items", list);
                             dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                         }
-                    } else {
+                    } else if(QQ_RET_CODE_FOR_MODIFY_PASSPORT.equals(ret)){
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_TOKEN_PWDERROR);
+                    } else if(QQ_RET_CODE_FOR_TOKEN_EXPIRE.equals(ret)){
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID);} else {
 
                         logger.error("return value error ：" + map.toString());
                         if (map.containsKey("msg")) {
@@ -160,7 +165,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
         return connectUserInfoVO;
     }
 
-    public List<Map<String, Object>> changePassportId(List<Map<String, Object>> list, String third_appid) {
+    public List<Map<String, Object>> changePassportId(List<Map<String, Object>> list, String third_appid ,String userid) {
         if (!CollectionUtils.isEmpty(list)) {
             List<Map<String, Object>> removeList = new ArrayList<Map<String, Object>>();
             for (int i = 0; i < list.size(); i++) {
@@ -169,7 +174,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                 if (!StringUtils.isNullOrEmpty(openid)) {
                     Result result = sgConnectApiManager.getConnectRelation(openid, AccountTypeEnum.QQ.getValue(), third_appid);
                     if (!result.isSuccess()) {
-                        logger.error("connectRelation has no this openid,remove，openid : " + openid);
+                        logger.error("connectRelation has no this openid,remove,userid : " + userid + "third_appid : " + third_appid + "，openid : " + openid);
                         removeList.add(map);
                         continue;
                     } else {

@@ -18,6 +18,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
+import com.sogou.upd.passport.web.annotation.RiskControlSecurity;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -97,6 +98,7 @@ public class LoginAction extends BaseController {
      *
      * @param loginParams 传入的参数
      */
+    @RiskControlSecurity
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(HttpServletRequest request, HttpServletResponse response, Model model, WebLoginParams loginParams)
             throws Exception {

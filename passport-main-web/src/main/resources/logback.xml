@@ -2,13 +2,28 @@
 <!-- Reference Manual http://logback.qos.ch/manual/index.html -->
 <configuration>
     <property name="log.path" value="/search/passport/log"/>
-    <property resource="deploy_config.properties" />
+    <property resource="deploy_config.properties"/>
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>%5p [%t] %logger{36} %L %m %n</pattern>
         </encoder>
     </appender>
+
+    <!-- 好友链日志信息 -->
+    <appender name="friendsAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/qqfriend/getfriends.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="friendsLogger" level="info" additivity="false">
+        <appender-ref ref="friendsAppender"/>
+    </logger>
+
 
     <!--移动端数据统计 interface  -->
     <appender name="interfaceAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -79,6 +94,20 @@
     <logger name="netflowLogger" level="info" additivity="false">
         <appender-ref ref="netflowAppender"/>
     </logger>
+
+    <!--start:风控封禁log-->
+    <appender name="riskFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/risk_control/riskdata.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.sogou.upd.passport.riskControlFileAppender" level="info" additivity="false">
+        <appender-ref ref="riskFileAppender"/>
+    </logger>
+    <!--end:风控封禁log-->
 
     <!--注册黑名单-->
     <appender name="regBlackListFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -257,6 +286,25 @@
         <appender-ref ref="rediesCoalescingStatistics"/>
     </logger>
     <!--end:web服务器性能log-->
+
+    <!--start:mongodb请求log-->
+    <appender name="mongodbPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mongodb/mongodb.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="mongodbCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
+        <!--每分钟分析一次log，做出性能测试-->
+        <param name="TimeSlice" value="60000"/>
+        <appender-ref ref="mongodbPerfFileAppender"/>
+    </appender>
+    <logger name="mongodbTimingLogger" level="info" additivity="false">
+        <appender-ref ref="mongodbCoalescingStatistics"/>
+    </logger>
+    <!--end:mongodb请求log-->
 
     <!--start:kv请求log-->
     <appender name="kvPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">

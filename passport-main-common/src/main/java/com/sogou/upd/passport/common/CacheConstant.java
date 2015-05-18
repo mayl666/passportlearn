@@ -137,6 +137,11 @@ public class CacheConstant {
     /*=================guava本地缓存===================================*/
     public static final int CACHE_REFRESH_INTERVAL = 10;     //guava cache 自动刷新时间间隔为10 min
 
+
+    /*=================风控系统===================================*/
+    //封禁IP key 前缀
+    public static final String CACHE_PREFIX_DENY_IP = "SP.DENY_IP:IP_";
+
     /*=================包签名相关缓存常量===================================*/
     public static final String CACHE_PREFIX_PACKAGENAME_PACKAGEINFO = "SP.PACKAGENAME:PACKAGEINFO_";//包名与包签名信息映射
     public static final String CACHE_PREFIX_SSO_TOKEN_KEY = "SP.SSOTOKEN:VALUE_";
