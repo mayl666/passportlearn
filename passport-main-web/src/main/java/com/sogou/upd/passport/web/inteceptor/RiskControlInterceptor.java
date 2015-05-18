@@ -94,7 +94,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                                 if (denyEndTime.isAfter(nowDateTime)) {
                                     String message = buildDenyLogMessage(nowDateTime.toDate(), resultObject);
                                     fileLog.warn(message);
-                                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+                                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                                     String setValue = StringUtils.replace(message, LOG_JOINER_STR, CACHE_VALUE_JOINER);
                                     long cacheTime = denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime();
                                     redisUtils.setWithinSeconds(key, setValue, cacheTime);
@@ -111,7 +111,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                 } else {
                     String message = buildDenyLogMsg(cacheValue);
                     fileLog.warn(message);
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
                 }
             } catch (Exception e) {
                 log.error("RiskControlInterceptor Exception : " + e);
