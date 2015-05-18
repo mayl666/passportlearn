@@ -99,6 +99,7 @@
     <appender name="riskFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/risk_control/riskdata.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>7</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%msg %n</pattern>
