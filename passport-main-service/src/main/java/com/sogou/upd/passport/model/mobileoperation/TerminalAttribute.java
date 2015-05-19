@@ -37,7 +37,7 @@ public class TerminalAttribute {
     public TerminalAttribute(HttpServletRequest request) throws ServiceException {
         String cinfo = request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN);
         if(!StringUtil.isEmpty(cinfo)){
-            String data =  URLDecoder.decode(request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN));
+            String data =  URLDecoder.decode(cinfo);
             if(StringUtil.isEmpty(data)){
                 throw new ServiceException("解析异常");
             } else{
