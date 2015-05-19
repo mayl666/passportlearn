@@ -8,6 +8,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.manager.form.connect.AfterAuthParams;
 import com.sogou.upd.passport.model.mobileoperation.TerminalAttribute;
@@ -72,8 +73,13 @@ public class ConnectSSOController extends BaseConnectController {
         } finally {
             String uidStr = PassportIDGenerator.generator(params.getOpenid(), AccountTypeEnum.getProvider(providerStr));
             String userId = StringUtils.defaultIfEmpty((String) result.getModels().get("userid"), uidStr);
-            TerminalAttribute terminalAttribute = new TerminalAttribute(req);
-            String udid = terminalAttribute.getUdid();
+            String udid = null;
+            try{
+                TerminalAttribute terminalAttribute = new TerminalAttribute(req);
+                udid = terminalAttribute.getUdid();
+            } catch (ServiceException e){
+                udid = "";
+            }
             UserOperationLog userOperationLog = new UserOperationLog(userId, req.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), getIp(req),udid);
             userOperationLog.putOtherMessage("type", params.getType());
             UserOperationLogUtil.log(userOperationLog);

@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.MappDeployConfigFactory;
@@ -100,8 +101,14 @@ public class MappAction extends BaseController {
                 return result.toString();
             }
             //解析cinfo信息
-            TerminalAttribute terminalAttribute = new TerminalAttribute(request);
-            udid = terminalAttribute.getUdid();
+            TerminalAttribute terminalAttribute = null;
+            try {
+                terminalAttribute = new TerminalAttribute(request);
+                udid = terminalAttribute.getUdid();
+            } catch (ServiceException e) {
+                udid = "";
+            }
+
             //验证code是否有效
             //TODO 先去除验证作测试
 //            boolean isVaildCode = true;
