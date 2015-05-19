@@ -92,7 +92,6 @@ public class CheckManagerImpl implements CheckManager {
                 String clientSecret = appConfig.getClientSecret();
                 String expectCode = ManagerHelper.generatorCode(uniqSign, clientId, clientSecret, ct);
                 return expectCode.equals(actualCode);
-
             }
         }
         return false;
