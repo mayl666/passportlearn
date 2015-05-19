@@ -36,6 +36,7 @@
     <import resource="classpath:spring-config-jredis-test.xml"/>
     <import resource="classpath:spring-config-image-test.xml"/>
     <import resource="spring-config-mail.xml"/>
+    <import resource="spring-config-mongodb.xml"/>
 
 
     <import resource="spring-config-rabbitmq.xml"/>

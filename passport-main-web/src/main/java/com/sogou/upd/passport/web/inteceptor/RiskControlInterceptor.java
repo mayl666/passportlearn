@@ -70,8 +70,8 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
         }
         Result result = new APIResultSupport(false);
         String ip = IpLocationUtil.getIp(request);
-        String client_id = ServletRequestUtils.getStringParameter(request, CommonConstant.CLIENT_ID, StringUtils.EMPTY);
-        String username = ServletRequestUtils.getStringParameter(request, CommonConstant.USERNAME, StringUtils.EMPTY);
+//        String client_id = ServletRequestUtils.getStringParameter(request, CommonConstant.CLIENT_ID, StringUtils.EMPTY);
+//        String username = ServletRequestUtils.getStringParameter(request, CommonConstant.USERNAME, StringUtils.EMPTY);
 
         if (Strings.isNullOrEmpty(ip)) {
             return true;
@@ -128,11 +128,12 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
             } catch (Exception e) {
                 log.error("RiskControlInterceptor Exception : " + e);
                 return true;
-            } finally {
-                //记录 用户操作日志
-                UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), client_id, result.getCode(), ip);
-                UserOperationLogUtil.log(userOperationLog);
             }
+//            finally {
+//                记录 用户操作日志
+//                UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), client_id, result.getCode(), ip);
+//                UserOperationLogUtil.log(userOperationLog);
+//            }
         }
         ResponseResultType resultType;
         if (security == null) {

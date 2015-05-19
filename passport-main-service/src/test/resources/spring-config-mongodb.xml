@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+
+    <bean id="mongoClient" class="com.sogou.upd.passport.common.mongodb.util.MongoFactory" factory-method="createMongo">
+        <constructor-arg value="10.146.24.121:30000,10.146.24.122:3000,10.146.24.123:30000"/>
+    </bean>
+
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg name="mongo" ref="mongoClient"/>
+        <constructor-arg name="databaseName" value="sogou_passport"/>
+    </bean>
+
+    <bean id="mongoServerUtil" class="com.sogou.upd.passport.common.mongodb.util.MongoServerUtil">
+        <property name="mongoTemplate" ref="mongoTemplate"></property>
+    </bean>
+
+</beans>
