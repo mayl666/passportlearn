@@ -70,9 +70,9 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
         }
         Result result = new APIResultSupport(false);
         String ip = IpLocationUtil.getIp(request);
-//        String client_id = ServletRequestUtils.getStringParameter(request, CommonConstant.CLIENT_ID, StringUtils.EMPTY);
-//        String username = ServletRequestUtils.getStringParameter(request, CommonConstant.USERNAME, StringUtils.EMPTY);
 
+        String client_id = ServletRequestUtils.getStringParameter(request, CommonConstant.CLIENT_ID, StringUtils.EMPTY);
+        String username = ServletRequestUtils.getStringParameter(request, CommonConstant.USERNAME, StringUtils.EMPTY);
         if (Strings.isNullOrEmpty(ip)) {
             return true;
         } else {
@@ -110,6 +110,11 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                                     String setValue = StringUtils.replace(message, LOG_JOINER_STR, CACHE_VALUE_JOINER);
                                     long cacheTime = denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime();
                                     redisUtils.set(key, setValue, cacheTime, TimeUnit.MILLISECONDS);
+
+                                    //记录操作日志
+                                    UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), client_id, result.getCode(), ip);
+                                    userOperationLog.putOtherMessage(CommonConstant.USER_AGENT, Strings.isNullOrEmpty(request.getHeader(CommonConstant.USER_AGENT)) ? StringUtils.EMPTY : request.getHeader(CommonConstant.USER_AGENT));
+                                    UserOperationLogUtil.log(userOperationLog);
                                 } else {
                                     return true;
                                 }
@@ -129,11 +134,6 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                 log.error("RiskControlInterceptor Exception : " + e);
                 return true;
             }
-//            finally {
-//                记录 用户操作日志
-//                UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), client_id, result.getCode(), ip);
-//                UserOperationLogUtil.log(userOperationLog);
-//            }
         }
         ResponseResultType resultType;
         if (security == null) {
