@@ -6,7 +6,6 @@ import com.sogou.upd.passport.common.utils.BeanUtil;
 import com.sogou.upd.passport.exception.ServiceException;
 import jodd.util.URLDecoder;
 import org.apache.commons.collections.MapUtils;
-import org.springframework.web.bind.ServletRequestUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Iterator;
