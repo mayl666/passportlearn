@@ -84,7 +84,11 @@ public class MobileOperationLogUtil {
         Date date = new Date();
         log.append(new SimpleDateFormat("yyy-MM-dd_HH:mm:ss").format(date));
         log.append("\t").append(StringUtil.defaultIfEmpty(userIp, "-"));
-        log.append("\t").append(String.valueOf(terminalAttribute.toHiveString()));
+        if (null != terminalAttribute) {
+            log.append("\t").append(String.valueOf(terminalAttribute.toHiveString()));
+        } else {
+            log.append("\t").append(String.valueOf(new TerminalAttribute().toHiveString()));
+        }
         log.append("\t").append(mobileLog.toHiveString());
         operationLogger.info(log.toString());
     }

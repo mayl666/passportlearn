@@ -33,6 +33,10 @@ public class TerminalAttribute {
     private String appV;  //应用版本
     private String network;  //网络
 
+    public TerminalAttribute(){
+
+    }
+
     //op=&pm=Lenovo A760&sdkVersion=16&resolution=480x854&platform=android&platformV=4.1.2&udid=860227023442427SOGOUcb35e205-a936-48fa-9513-1e3c1b97e82c891872840933341&passportSdkV=1.11&clientId=1120&appV=1.0
     public TerminalAttribute(HttpServletRequest request) throws ServiceException {
         String cinfo = request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN);
