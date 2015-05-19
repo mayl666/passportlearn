@@ -41,6 +41,7 @@ public class CommonConstant {
     public static final int WITH_CONNECT_ORIGINAL = 1;      //1表示需要从第三方获取原始信息,默认为0，不返回第三方原始信息
     public static final int NOT_WITH_CONNECT_ORIGINAL = 0;      //1表示需要从第三方获取原始信息,默认为0，不返回第三方原始信息
 
+    public static final String USERNAME = "username";
     public static final String CLIENT_ID = "client_id";
     public static final String APP_ID = "appid";
     public static final String RESQUEST_CT = "ct";

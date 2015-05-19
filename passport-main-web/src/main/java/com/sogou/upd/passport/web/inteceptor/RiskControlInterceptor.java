@@ -4,8 +4,10 @@ import com.google.common.base.Strings;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.MongodbConstant;
+import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.mongodb.util.MongoServerUtil;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -13,6 +15,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.IpLocationUtil;
 import com.sogou.upd.passport.common.utils.JodaTimeUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.annotation.RiskControlSecurity;
 import org.apache.commons.lang3.StringUtils;
@@ -20,12 +23,14 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -58,9 +63,16 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             security = handlerMethod.getMethodAnnotation(RiskControlSecurity.class);
+            //检查是否加@InterfaceSecurity注解，如果没加不需要验证
+//            if (security == null) {
+//                return true;
+//            }
         }
         Result result = new APIResultSupport(false);
         String ip = IpLocationUtil.getIp(request);
+        String client_id = ServletRequestUtils.getStringParameter(request, CommonConstant.CLIENT_ID, StringUtils.EMPTY);
+        String username = ServletRequestUtils.getStringParameter(request, CommonConstant.USERNAME, StringUtils.EMPTY);
+
         if (Strings.isNullOrEmpty(ip)) {
             return true;
         } else {
@@ -94,10 +106,10 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                                 if (denyEndTime.isAfter(nowDateTime)) {
                                     String message = buildDenyLogMessage(nowDateTime.toDate(), resultObject);
                                     fileLog.warn(message);
-                                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                                    result.setCode(ErrorUtil.ERROR_CODE_RISK_CONTROL_DENY_IP);
                                     String setValue = StringUtils.replace(message, LOG_JOINER_STR, CACHE_VALUE_JOINER);
                                     long cacheTime = denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime();
-                                    redisUtils.setWithinSeconds(key, setValue, cacheTime);
+                                    redisUtils.set(key, setValue, cacheTime, TimeUnit.MILLISECONDS);
                                 } else {
                                     return true;
                                 }
@@ -111,11 +123,15 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                 } else {
                     String message = buildDenyLogMsg(cacheValue);
                     fileLog.warn(message);
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                    result.setCode(ErrorUtil.ERROR_CODE_RISK_CONTROL_DENY_IP);
                 }
             } catch (Exception e) {
                 log.error("RiskControlInterceptor Exception : " + e);
                 return true;
+            } finally {
+                //记录 用户操作日志
+                UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), client_id, result.getCode(), ip);
+                UserOperationLogUtil.log(userOperationLog);
             }
         }
         ResponseResultType resultType;

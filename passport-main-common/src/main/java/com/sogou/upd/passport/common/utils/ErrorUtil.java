@@ -336,6 +336,9 @@ public class ErrorUtil {
     //漫游用户信息不存在
     public static final String ERR_CODE_ROAM_INFO_NOT_EXIST = "41001";
 
+    //风控系统 封禁
+    public static final String ERROR_CODE_RISK_CONTROL_DENY_IP = "51001";
+
     public ErrorUtil() {
         super();
     }
@@ -507,6 +510,9 @@ public class ErrorUtil {
 
         //漫游
         ERR_CODE_MSG_MAP.put(ERR_CODE_ROAM_INFO_NOT_EXIST, "漫游用户信息不存在");
+
+        //风控 封禁
+        ERR_CODE_MSG_MAP.put(ERROR_CODE_RISK_CONTROL_DENY_IP, "您登录过于频繁,请稍后再试");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {
