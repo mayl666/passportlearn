@@ -64,9 +64,9 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
             security = handlerMethod.getMethodAnnotation(RiskControlSecurity.class);
             //检查是否加@InterfaceSecurity注解，如果没加不需要验证
-//            if (security == null) {
-//                return true;
-//            }
+            if (security == null) {
+                return true;
+            }
         }
         Result result = new APIResultSupport(false);
         String ip = IpLocationUtil.getIp(request);
