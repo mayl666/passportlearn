@@ -46,7 +46,6 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
 
     private static final String LOG_JOINER_STR = "\t";
     private static final String CACHE_VALUE_JOINER = "|";
-    private static final int DEFAULT_TIME_UNIT = 1000;
     private static final String DENY_CACHE_HIT = "1";
     private static final String DENY_SET_CACHE = "0";
 
@@ -107,12 +106,14 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                                     String message = buildDenyLogMessage(nowDateTime.toDate(), resultObject);
                                     fileLog.warn(message);
                                     result.setCode(ErrorUtil.ERROR_CODE_RISK_CONTROL_DENY_IP);
+
                                     String setValue = StringUtils.replace(message, LOG_JOINER_STR, CACHE_VALUE_JOINER);
                                     long cacheTime = denyEndTime.toDate().getTime() - nowDateTime.toDate().getTime();
                                     redisUtils.set(key, setValue, cacheTime, TimeUnit.MILLISECONDS);
 
                                     //记录操作日志
                                     UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), client_id, result.getCode(), ip);
+                                    userOperationLog.putOtherMessage(CommonConstant.REFER, request.getHeader(CommonConstant.REFER));
                                     userOperationLog.putOtherMessage(CommonConstant.USER_AGENT, Strings.isNullOrEmpty(request.getHeader(CommonConstant.USER_AGENT)) ? StringUtils.EMPTY : request.getHeader(CommonConstant.USER_AGENT));
                                     UserOperationLogUtil.log(userOperationLog);
                                 } else {
@@ -129,6 +130,12 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                     String message = buildDenyLogMsg(cacheValue);
                     fileLog.warn(message);
                     result.setCode(ErrorUtil.ERROR_CODE_RISK_CONTROL_DENY_IP);
+
+                    //记录操作日志
+                    UserOperationLog userOperationLog = new UserOperationLog(username, request.getRequestURI(), client_id, result.getCode(), ip);
+                    userOperationLog.putOtherMessage(CommonConstant.REFER, request.getHeader(CommonConstant.REFER));
+                    userOperationLog.putOtherMessage(CommonConstant.USER_AGENT, Strings.isNullOrEmpty(request.getHeader(CommonConstant.USER_AGENT)) ? StringUtils.EMPTY : request.getHeader(CommonConstant.USER_AGENT));
+                    UserOperationLogUtil.log(userOperationLog);
                 }
             } catch (Exception e) {
                 log.error("RiskControlInterceptor Exception : " + e);
