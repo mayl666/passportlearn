@@ -99,6 +99,8 @@ public class CommonConstant {
     public static final String USER_AGENT = "User-Agent";
     public static final String SSL_PROTOCOL = "X-SSL-Protocol";
 
+    public static final String REFER = "referer";
+
     //域名不正确
     public static final String DOMAIN_ERROR = "域名不正确";
 
