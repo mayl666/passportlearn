@@ -437,6 +437,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     result.setCode(ErrorUtil.ERR_CODE_SSO_After_Auth_FAILED);
                     return result;
                 }
+                //更新缓存
+                connectAuthService.initialOrUpdateConnectUserInfo(connectToken.getPassportId(), connectUserInfoVO);
                 //如果没有从搜狗方(数据库或缓存)获取到第三方的个人信息，则从第三方VO中获取个人头像信息,默认值为false,不从VO中拿
                 boolean isConnectUserInfo = false;
                 //isthird=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
