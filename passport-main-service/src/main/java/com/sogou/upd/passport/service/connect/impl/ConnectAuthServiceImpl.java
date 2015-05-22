@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.connect.impl;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.HttpConstant;
@@ -21,6 +22,7 @@ import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
 import com.sogou.upd.passport.oauth2.openresource.response.user.*;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
@@ -46,6 +48,8 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     private DBShardRedisUtils dbShardRedisUtils;
     @Autowired
     private ConnectTokenService connectTokenService;
+    @Autowired
+    private ConnectAuthService connectAuthService;
 
 
     @Override
@@ -148,8 +152,19 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         }
         if (response != null) {
             userProfileFromConnect = response.toUserInfo();
+            initialOrUpdateConnectUserInfo(provider,openid,response.toUserInfo());
         }
         return userProfileFromConnect;
+    }
+
+    public void initialOrUpdateConnectUserInfo(int provider ,String openId , ConnectUserInfoVO connectUserInfoVO) {
+        String unionId = openId;
+        if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+            unionId = connectUserInfoVO.getUnionid();
+        }
+        String passportId = PassportIDGenerator.generator(unionId, provider);
+        //更新缓存
+        connectAuthService.initialOrUpdateConnectUserInfo(passportId, connectUserInfoVO);
     }
 
     @Override
