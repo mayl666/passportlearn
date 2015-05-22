@@ -72,13 +72,15 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     }
 
 
-    public String getQQFriends(String userid, String tkey, String third_appid) throws Exception {
+    public Result getQQFriends(String userid, String tkey, String third_appid) throws Exception {
         String cacheKey = buildQQFriendsCacheKey(userid, third_appid);
-        String resultVal = dbShardRedisUtils.get(cacheKey);
-        if (!Strings.isNullOrEmpty(resultVal)) {
-            return resultVal;
+//        String resultVal = dbShardRedisUtils.get(cacheKey);
+        Result result = dbShardRedisUtils.getObject(cacheKey,Result.class);
+//        if (!Strings.isNullOrEmpty(resultVal)) {
+        if(null != result){
+            return result;
         } else {
-            Result result = new APIResultSupport(false);
+            result = new APIResultSupport(false);
             RequestModel requestModel = new RequestModel(GET_QQ_FRIENDS_AES_URL);
             requestModel.addParam("userid", userid);
             requestModel.addParam("tKey", tkey);
@@ -96,7 +98,8 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                         if (map.containsKey("items")) {
                             List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid,userid);
                             result.setDefaultModel("items", list);
-                            dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
+                            dbShardRedisUtils.setObjectWithinSeconds(cacheKey,result,DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
+//                            dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                         }
                     } else if(QQ_RET_CODE_FOR_MODIFY_PASSPORT.equals(ret)){
                         result.setCode(ErrorUtil.ERR_CODE_CONNECT_TOKEN_PWDERROR);
@@ -117,7 +120,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                 logger.error("return value error,no value！");
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_FAILED);
             }
-            return result.toString();
+            return result;
         }
 
     }

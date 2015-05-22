@@ -70,13 +70,14 @@ public class InternalQQOpenAPiController extends BaseController {
                 result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
                 return result.toString();
             }
-            String resultval = qqOpenAPIManager.getQQFriends(userId, tKey, third_appid);
-            return resultval;
+            result = qqOpenAPIManager.getQQFriends(userId, tKey, third_appid);
+            return result.toString();
         } catch (Exception e) {
             logger.error("get qq friends error. ", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result.toString();
         } finally {
+//            String resultCode = StringUtil.defaultIfEmpty(result.getCode(), "0");
             //用于记录log
             UserOperationLog userOperationLog = new UserOperationLog(userId, String.valueOf(clientId), result.getCode(), getIp(req));
             UserOperationLogUtil.log(userOperationLog);
