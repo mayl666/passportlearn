@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.service.connect.impl;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.HttpConstant;
@@ -48,9 +47,6 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     private DBShardRedisUtils dbShardRedisUtils;
     @Autowired
     private ConnectTokenService connectTokenService;
-    @Autowired
-    private ConnectAuthService connectAuthService;
-
 
     @Override
     public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer,
@@ -152,19 +148,19 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         }
         if (response != null) {
             userProfileFromConnect = response.toUserInfo();
-            initialOrUpdateConnectUserInfo(provider,openid,response.toUserInfo());
+            initialOrUpdateConnectUserInfo(provider, openid, userProfileFromConnect);
         }
         return userProfileFromConnect;
     }
 
-    public void initialOrUpdateConnectUserInfo(int provider ,String openId , ConnectUserInfoVO connectUserInfoVO) {
+    public void initialOrUpdateConnectUserInfo(int provider, String openId, ConnectUserInfoVO connectUserInfoVO) {
         String unionId = openId;
         if (provider == AccountTypeEnum.WEIXIN.getValue()) {
             unionId = connectUserInfoVO.getUnionid();
         }
         String passportId = PassportIDGenerator.generator(unionId, provider);
         //更新缓存
-        connectAuthService.initialOrUpdateConnectUserInfo(passportId, connectUserInfoVO);
+        initialOrUpdateConnectUserInfo(passportId, connectUserInfoVO);
     }
 
     @Override
@@ -198,7 +194,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             dbShardRedisUtils.setObjectWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
             return true;
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error.{}", e);
+            logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error.passportId:" + passportId, e);
             return false;
         }
     }
@@ -210,7 +206,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             ConnectUserInfoVO connectUserInfoVO = dbShardRedisUtils.getObject(cacheKey, ConnectUserInfoVO.class);
             return connectUserInfoVO;
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method obtainCachedConnectUserInfo error.{}", e);
+            logger.error("[ConnectToken] service method obtainCachedConnectUserInfo error.passportId:" + passportId, e);
             return null;
         }
     }

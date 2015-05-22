@@ -185,7 +185,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                 return result;
             }
-            //根据code值获取access_token
+            //2.根据code值获取access_token
             ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
             if (connectConfig == null) {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
@@ -204,7 +204,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             oAuthTokenVO.setIp(ip);
 
             String openId = oAuthTokenVO.getOpenid();
-            // 获取第三方个人资料
+            //3.获取第三方个人资料
             ConnectUserInfoVO connectUserInfoVO;
             if (provider == AccountTypeEnum.QQ.getValue()) {    // QQ根据code获取access_token时，已经取到了个人资料
                 connectUserInfoVO = ((QQJSONAccessTokenResponse) oauthResponse).getUserInfo();
@@ -216,6 +216,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     oAuthTokenVO.setUnionId(connectUserInfoVO.getUnionid());
                 }
             }
+            //4.更新数据库
             String uniqname = openId;
             if (connectUserInfoVO != null) {
                 uniqname = connectUserInfoVO.getNickname();
@@ -229,10 +230,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 String passportId = connectToken.getPassportId();
                 result.setDefaultModel("userid", passportId);
                 String userId = passportId;
-//                if (provider != AccountTypeEnum.QQ.getValue()) {
+                if (provider == AccountTypeEnum.QQ.getValue()) {
                     //更新第三方个人资料缓存
-                connectAuthService.initialOrUpdateConnectUserInfo(userId, connectUserInfoVO);
-//                }
+                    connectAuthService.initialOrUpdateConnectUserInfo(userId, connectUserInfoVO);
+                }
 
                 if (ConnectTypeEnum.TOKEN.toString().equals(type)) {
                     Result tokenResult = pcAccountManager.createAccountToken(userId, instanceId, clientId);
@@ -380,6 +381,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                     return result;
                 }
+                //1.验证code签名（微信不需要验证code，但需要根据code获取accesstoken）
                 if (!Strings.isNullOrEmpty(tcode)) {
                     OAuthAccessTokenResponse oauthResponse = connectAuthService.obtainAccessTokenByCode(provider, tcode, connectConfig,
                             oAuthConsumer, "");
@@ -395,7 +397,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         return result;
                     }
                 }
-                // 获取第三方个人资料
+                //2.获取第三方个人资料
                 OAuthTokenVO oAuthTokenVO = new OAuthTokenVO();
                 ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
                 if (AccountTypeEnum.HUAWEI.getValue() == provider) {  //华为账号只有昵称，且由SDK传入
@@ -403,7 +405,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     connectUserInfoVO.setNickname(uniqname);
                 } else {
                     if (qqManagerCooperate(type, provider)) {    // QQ管家和输入法合作，传入openkey(也就是accesstoken）来登录，使用开平API，不能使用互联API，openkey有效期为2小时
-                       connectUserInfoVO =qqOpenAPIManager.getQQUserInfo(openId, accessToken, connectConfig);
+                        connectUserInfoVO = qqOpenAPIManager.getQQUserInfo(openId, accessToken, connectConfig);
                     } else {
                         connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
                     }
@@ -413,6 +415,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     }
 
                 }
+                //3.更新数据库
                 String uniqname = connectUserInfoVO.getNickname();
                 oAuthTokenVO.setAccessToken(accessToken);
                 oAuthTokenVO.setRefreshToken(refreshToken);
@@ -471,7 +474,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result.getModels().put("gender", connectUserInfoVO.getGender());
                     }
                 }
-                //写session 数据库
+                //4.写session 数据库
                 if (ConnectTypeEnum.WAP.toString().equals(type)) {
                     Result sessionResult = sessionServerManager.createSession(passportId);
                     if (sessionResult.isSuccess()) {
