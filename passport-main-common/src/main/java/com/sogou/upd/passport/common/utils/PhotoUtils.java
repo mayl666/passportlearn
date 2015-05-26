@@ -33,7 +33,7 @@ import java.util.*;
  */
 public class PhotoUtils {
 
-    private HttpClient httpClient;
+    private static final HttpClient httpClient = SGHttpClient.httpClient;
 
     private String storageEngineURL;
     private int timeout = 5000;               // timeout毫秒数
@@ -52,7 +52,6 @@ public class PhotoUtils {
     static final Logger logger = LoggerFactory.getLogger(PhotoUtils.class);
 
     public void init() {
-        httpClient = SGHttpClient.WebClientDevWrapper.wrapClient(new DefaultHttpClient());
         /**
          * 30x30     100140006
          * 50x50     100140007
@@ -140,7 +139,7 @@ public class PhotoUtils {
         try {
             response = httpClient.execute(httpPost);
         } catch (IOException e) {
-            logger.warn(e.getMessage(), e);
+            logger.warn("uploadImg ioException:" + e.getMessage(), e);
             return false;
         }
         int statusCode = response.getStatusLine().getStatusCode();
@@ -166,7 +165,7 @@ public class PhotoUtils {
                     }
                 }
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
+                logger.error("uploadImg ioException:" + e.getMessage(), e);
             } finally {
                 try {
                     EntityUtils.consume(entity);
