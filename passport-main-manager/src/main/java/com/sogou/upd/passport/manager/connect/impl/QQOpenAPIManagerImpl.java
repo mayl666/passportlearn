@@ -75,9 +75,12 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     public Result getQQFriends(String userid, String tkey, String third_appid) throws Exception {
         String cacheKey = buildQQFriendsCacheKey(userid, third_appid);
 //        String resultVal = dbShardRedisUtils.get(cacheKey);
-        Result result = dbShardRedisUtils.getObject(cacheKey,APIResultSupport.class);
+        List cachelist = dbShardRedisUtils.getObject(cacheKey,List.class);
+        Result result = new APIResultSupport(false);
 //        if (!Strings.isNullOrEmpty(resultVal)) {
-        if(null != result){
+        if(null != cachelist){
+            result.setSuccess(true);
+            result.setDefaultModel("items", cachelist);
             return result;
         } else {
             result = new APIResultSupport(false);
@@ -98,7 +101,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                         if (map.containsKey("items")) {
                             List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid,userid);
                             result.setDefaultModel("items", list);
-                            dbShardRedisUtils.setObjectWithinSeconds(cacheKey,result,DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
+                            dbShardRedisUtils.setObjectWithinSeconds(cacheKey, list, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
 //                            dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                         }
                     } else if(QQ_RET_CODE_FOR_MODIFY_PASSPORT.equals(ret)){
