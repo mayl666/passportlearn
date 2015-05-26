@@ -44,6 +44,8 @@ public class AccountServiceImpl implements AccountService {
     private static final int expire = 30 * DateAndNumTimesConstant.ONE_DAY_INSECONDS;
 
     private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
+    private static final String POSTFIX_PINYIN_MIGRATE = "_pinyinPP_";   //SOGOU输入法昵称迁移，为保证昵称唯一性加的后缀
+    private String POSTFIX_PINYIN_FORMAT = "(.+)" + POSTFIX_PINYIN_MIGRATE + "[0-9][0-9][0-9][0-9]$"; //加后缀的昵称，虽然在redis和数据库中存有后缀，返回给接口时要去掉
 
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Autowired
@@ -204,6 +206,19 @@ public class AccountServiceImpl implements AccountService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+
+        //如果昵称符合POSTFIX_PINYIN_FORMAT，为输入法迁移数据，去掉后缀再返回
+        if(null!=account){
+            String uniqname=account.getUniqname();
+            if(!Strings.isNullOrEmpty(uniqname)){
+                if(uniqname.matches(POSTFIX_PINYIN_FORMAT)){
+                    int endIndex=uniqname.indexOf(POSTFIX_PINYIN_MIGRATE);
+                    account.setUniqname(uniqname.substring(0,endIndex));
+                }
+            }
+
+        }
+
         return account;
     }
 
