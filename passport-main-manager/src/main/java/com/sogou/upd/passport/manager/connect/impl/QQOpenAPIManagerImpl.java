@@ -74,10 +74,8 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
 
     public Result getQQFriends(String userid, String tkey, String third_appid) throws Exception {
         String cacheKey = buildQQFriendsCacheKey(userid, third_appid);
-//        String resultVal = dbShardRedisUtils.get(cacheKey);
         List cachelist = dbShardRedisUtils.getObject(cacheKey,List.class);
         Result result = new APIResultSupport(false);
-//        if (!Strings.isNullOrEmpty(resultVal)) {
         if(null != cachelist){
             result.setSuccess(true);
             result.setDefaultModel("items", cachelist);
@@ -102,7 +100,6 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                             List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid,userid);
                             result.setDefaultModel("items", list);
                             dbShardRedisUtils.setObjectWithinSeconds(cacheKey, list, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
-//                            dbShardRedisUtils.setStringWithinSeconds(cacheKey, result.toString(), DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                         }
                     } else if(QQ_RET_CODE_FOR_MODIFY_PASSPORT.equals(ret)){
                         result.setCode(ErrorUtil.ERR_CODE_CONNECT_TOKEN_PWDERROR);
