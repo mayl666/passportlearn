@@ -146,4 +146,11 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_PACKAGENAME_PACKAGEINFO = "SP.PACKAGENAME:PACKAGEINFO_";//包名与包签名信息映射
     public static final String CACHE_PREFIX_SSO_TOKEN_KEY = "SP.SSOTOKEN:VALUE_";
     public static final String CACHE_SSO_TOKEN_VALUE = "0";
+
+    /*=================短信登录相关===================================*/
+    public static final String CACHE_PREFIX_SMS_CODE_LOGIN = "SP.MOBILE:SMS_CODE_LOGIN_";//手机短信登录，mobile与sms code 映射
+    public static final String CACHE_PREFIX_SMS_CODE_GET_NUM = "SP.MOBILE:SMS_CODE_GET_NUM_";//手机短信登录，请求短信校验码次数,5次/天
+    public static final String CACHE_PREFIX_SMS_CODE_CHECK_FAIL_NUM = "SP.MOBILE:SMS_CODE_CHECK_FAIL_NUM_"; //手机短信登录，尝试短信校验码次数，10次/天
+
+
 }

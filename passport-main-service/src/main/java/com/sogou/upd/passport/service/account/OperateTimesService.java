@@ -360,4 +360,35 @@ public interface OperateTimesService {
      * @param seconds
      */
     public void updatePwdSuccessSetModuleBlack(String passportId, long seconds);
+
+
+    /**
+     * 手机短信登录，校验请求短信校验码次数是否超限制
+     *
+     * @param mobile
+     * @return
+     */
+    public boolean checkGetSmsCodeNumIfBeyond(final String mobile, final int clientId);
+
+    /**
+     * 手机短信登录，检查尝试短信校验码次数是否超限制
+     *
+     * @param mobile
+     * @return
+     */
+    public boolean checkTrySmsCodeNumIfBeyond(final String mobile, final int clientId);
+
+    /**
+     * 手机短信登录，记录用户尝试短信校验码失败次数
+     *
+     * @param mobile
+     */
+    public void incTrySmsCodeFailTimes(final String mobile, final int clientId);
+
+    /**
+     * 手机短信登录，记录用户获取短信校验码次数
+     *
+     * @param mobile
+     */
+    public void incGetSmsCodeTimes(final String mobile, final int clientId);
 }

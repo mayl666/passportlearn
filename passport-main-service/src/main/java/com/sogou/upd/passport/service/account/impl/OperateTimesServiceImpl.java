@@ -955,6 +955,76 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
     }
 
+    @Override
+    public boolean checkGetSmsCodeNumIfBeyond(final String mobile, final int clientId) {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_GET_NUM + mobile + "_" + clientId;
+            if (redisUtils.checkKeyIsExist(cacheKey)) {
+                //校验请求次数是否超限制
+                if (checkTimesByKey(cacheKey, DateAndNumTimesConstant.GET_SMS_CODE_LOGIN_LIMIT)) {
+                    return true;
+                } else {
+                    //记录请求sms code的次数
+                    recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                }
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("checkGetSmsCodeNumIfBeyond error. mobile:{}", mobile);
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean checkTrySmsCodeNumIfBeyond(final String mobile, final int clientId) {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_CHECK_FAIL_NUM + mobile + "_" + clientId;
+            if (redisUtils.checkKeyIsExist(cacheKey)) {
+                if (checkTimesByKey(cacheKey, DateAndNumTimesConstant.TRY_SMS_CODE_LIMIT)) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("checkTrySmsCodeNumIfBeyond error, mobile:{}", mobile);
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public void incTrySmsCodeFailTimes(final String mobile, final int clientId) {
+        try {
+            if (!Strings.isNullOrEmpty(mobile)) {
+                String cacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_CHECK_FAIL_NUM + mobile+ "_" + clientId;
+                recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            } else {
+                logger.warn("incTrySmsCodeFailTimes warning, mobile is null");
+            }
+        } catch (Exception e) {
+            logger.error("incTrySmsCodeFailTimes error. mobile:{}", mobile);
+        }
+    }
+
+    @Override
+    public void incGetSmsCodeTimes(final String mobile, final int clientId) {
+        try {
+            if (!Strings.isNullOrEmpty(mobile)) {
+                String cacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_GET_NUM + mobile+ "_" + clientId;
+                recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            } else {
+                logger.warn("incGetSmsCodeTimes warning,mobile is null or empty.");
+            }
+        } catch (Exception e) {
+            logger.error("incGetSmsCodeTimes error,mobile:{}", mobile);
+        }
+
+    }
+
+
     private static String buildGetPairtokenBlackKeyStr(String username) {
         return CacheConstant.CACHE_PREFIX_GETPAIRTOKEN_USERNAME_BLACK_ + username;
     }

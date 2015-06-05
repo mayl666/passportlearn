@@ -104,6 +104,22 @@ public class CommonConstant {
     //域名不正确
     public static final String DOMAIN_ERROR = "域名不正确";
 
+    //短信登录
+    public static final String SMS_CODE_SEND_MESSAGE = "已发送验证码到:%s";
+
+    //短信登录， 手机校验码请求过于频繁
+    public static final String SMS_CODE_GET_FREQUENCY = "手机校验码请求过于频繁,请稍后再试";
+
+    //短信登录，手机校验码 尝试次数过多
+    public static final String SMS_CODE_TRY_FREQUENCY = "尝试次数过多,请稍后再试";
+
+    //短信登录，验证码已过期,请重新获取
+    public static final String SMS_CODE_OVER_DUE = "验证码已过期,请重新获取";
+
+    //短信登录，验证码错误
+    public static final String SMS_CODE_CHECK_FAIL = "验证码错误";
+
+
     //module 黑名单数据 连接符
     public static final String MODULE_BLACK_LIST_DATA_JOINER = "^";
 

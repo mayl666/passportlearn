@@ -33,5 +33,9 @@ public class DateAndNumTimesConstant {
     public static final int IP_RESETPWD_NUM = 100; // 密码修改一天限制次数
     public static final int RESETPWD_NUM = 5; // 密码修改一天限制次数
 
+    // 短信登录
+    public static final int GET_SMS_CODE_LOGIN_LIMIT = 5; //短信登录，请求短信校验码次数限制 5次/天
+    public static final int TRY_SMS_CODE_LIMIT = 10;//短信登录，尝试短信校验码次数限制 10次/天
+
 
 }

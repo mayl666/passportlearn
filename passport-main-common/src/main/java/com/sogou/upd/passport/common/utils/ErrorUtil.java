@@ -219,6 +219,7 @@ public class ErrorUtil {
     // 今日绑定次数已超过10次
     public static final String ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED = "20295";
 
+
     /* ============================================================================ */
     /*  profile 服务的错误代码                                                       */
     /* ============================================================================ */
@@ -338,6 +339,20 @@ public class ErrorUtil {
 
     //风控系统 封禁
     public static final String ERROR_CODE_RISK_CONTROL_DENY_IP = "51001";
+
+
+    //短信登录， 手机校验码请求过于频繁
+    public static final String ERROR_CODE_SMS_CODE_GET_FREQUENCY = "21001";
+
+    //短信登录，手机校验码 尝试次数过多
+    public static final String ERROR_CODE_SMS_CODE_TRY_FREQUENCY = "21002";
+
+    //短信登录，验证码已过期,请重新获取
+    public static final String ERROR_CODE_SMS_CODE_OVER_DUE = "21003";
+
+    //短信登录，验证码错误
+    public static final String ERROR_CODE_SMS_CODE_ERROR = "21004";
+
 
     public ErrorUtil() {
         super();
@@ -513,6 +528,12 @@ public class ErrorUtil {
 
         //风控 封禁
         ERR_CODE_MSG_MAP.put(ERROR_CODE_RISK_CONTROL_DENY_IP, "您登录过于频繁,请稍后再试");
+
+        //短信登录
+        ERR_CODE_MSG_MAP.put(ERROR_CODE_SMS_CODE_GET_FREQUENCY, "校验码请求过于频繁,请稍后再试");
+        ERR_CODE_MSG_MAP.put(ERROR_CODE_SMS_CODE_TRY_FREQUENCY, "验证码尝试次数过多,请稍后再试");
+        ERR_CODE_MSG_MAP.put(ERROR_CODE_SMS_CODE_OVER_DUE, "验证码已过期,请重新获取");
+        ERR_CODE_MSG_MAP.put(ERROR_CODE_SMS_CODE_ERROR, "验证码错误");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {
