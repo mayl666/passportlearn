@@ -1,7 +1,6 @@
 package com.sogou.upd.passport.common.hystrix;
 
 import com.netflix.hystrix.*;
-import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import org.apache.http.HttpEntity;
@@ -9,9 +8,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,7 +33,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     private static int qqTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_TIMEOUT));
     private static int qqSgRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_SG_REQUESTVOLUME));
     private static final int fallbackSemaphoreThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD));
-    private static final int breakerSleepWindow=Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_SLEEP_WINDOW));
+    private static final int breakerSleepWindow = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_SLEEP_WINDOW));
 
     public HystrixQQCommand(RequestModel requestModel, HttpClient httpClient) {
 
@@ -67,9 +63,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     @Override
     protected HttpEntity run() throws Exception {
         httpRequest = HystrixCommonMethod.getHttpRequest(requestModel);
-        HttpEntity response= HystrixCommonMethod.execute(requestModel, httpClient,httpRequest);
-        logger.warn("HystrixQQCommand excute success");
-        return response;
+        return HystrixCommonMethod.execute(requestModel, httpClient, httpRequest);
     }
 
     @Override
