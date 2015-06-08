@@ -78,6 +78,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
         boolean isTimeout = isResponseTimedOut();
 //        boolean isFailed = isFailedExecution();
         if (isTimeout) {
+            httpRequest.abort();
             logger.error("HystrixQQCommand fallback isTimeout");
         } else if (isRejected) {
             logger.error("HystrixQQCommand fallback isRejected");
@@ -87,7 +88,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
 //            logger.error("HystrixQQCommand fallback unknown");
         }
 
-        httpRequest.abort();
+
         return null;
     }
 
