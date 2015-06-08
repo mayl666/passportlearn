@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.base.Strings;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
@@ -196,11 +197,11 @@ public class SGHttpClient {
         if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
             String qqUrl = requestModel.getUrl();
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
-                HttpEntity hystrixResponse=new HystrixQQCommand(requestModel, httpClient).execute();
-                if(hystrixResponse==null){
-                    throw new RuntimeException("HystrixQQCommand excute failed" );
+                try{
+                    return new HystrixQQCommand(requestModel, httpClient).execute();
+                } catch (HystrixRuntimeException e){
+                    throw new RuntimeException("Hystrix QQ Command error,url="+qqUrl);
                 }
-                return hystrixResponse;
             }
         }
 

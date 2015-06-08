@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.hystrix;
 
 import com.netflix.hystrix.*;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import org.apache.http.HttpEntity;
@@ -87,9 +88,9 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
         } else {
 //            logger.error("HystrixQQCommand fallback unknown");
         }
+        throw new RuntimeException("HystrixQQCommand fallback");
 
-
-        return null;
+//        return null;
     }
 
 
