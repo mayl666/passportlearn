@@ -8,6 +8,8 @@ import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
+
 /**
  * Created with IntelliJ IDEA.
  * User: nahongxu
@@ -18,8 +20,9 @@ import org.slf4j.LoggerFactory;
 public class HystrixQQConnectCommand extends HystrixCommand<HttpEntity> {
 
     private static final Logger logger = LoggerFactory.getLogger("hystrixLogger");
-    private static RequestModel requestModel;
+    private RequestModel requestModel;
     private static HttpClient httpClient;
+    private InputStream in;
 
 
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_CACHE_ENABLED));
@@ -55,11 +58,12 @@ public class HystrixQQConnectCommand extends HystrixCommand<HttpEntity> {
         );
         this.requestModel = requestModel;
         this.httpClient = httpClient;
+        in=null;
     }
 
     @Override
     protected HttpEntity run() throws Exception {
-        return HystrixCommonMethod.execute(requestModel, httpClient);
+        return HystrixCommonMethod.execute(requestModel, httpClient,in);
     }
 
     @Override
