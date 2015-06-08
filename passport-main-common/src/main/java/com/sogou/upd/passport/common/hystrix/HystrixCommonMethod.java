@@ -75,22 +75,27 @@ public class HystrixCommonMethod {
             String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CHARSET);
             String result = EntityUtils.toString(httpResponse.getEntity(), CommonConstant.DEFAULT_CHARSET);
             throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:" + result);
-        }catch (SocketException ske){
+        } catch (SocketException ske) {
             logger.error("HystrixCommonMethod socked error");
-            return null;
-
-        }
-        catch (Exception e) {
-
-            throw new RuntimeException("http request error ", e);
-        }  finally {
             if (in != null) {
                 try {
                     in.close();
                 } catch (IOException ioe) {
                 }
             }
+            return null;
+
+        } catch (Exception e) {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ioe) {
+                }
+            }
+            throw new RuntimeException("http request error ", e);
         }
+
     }
+
 
 }
