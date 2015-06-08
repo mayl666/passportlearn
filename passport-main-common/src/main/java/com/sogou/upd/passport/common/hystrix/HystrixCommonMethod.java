@@ -56,10 +56,9 @@ public class HystrixCommonMethod {
     }
 
     //ConnectHttpClient和SGHttpClient的excute
-    public static HttpEntity execute(RequestModel requestModel, HttpClient httpClient) throws Exception {
+    public static HttpEntity execute(RequestModel requestModel, HttpClient httpClient,InputStream in) throws Exception {
 
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
-        InputStream in = null;
         try {
             HttpResponse httpResponse = httpClient.execute(httpRequest);
             in = httpResponse.getEntity().getContent();

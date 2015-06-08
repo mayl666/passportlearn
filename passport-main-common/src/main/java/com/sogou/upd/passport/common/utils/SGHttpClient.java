@@ -196,7 +196,11 @@ public class SGHttpClient {
         if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
             String qqUrl = requestModel.getUrl();
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
-                return new HystrixQQCommand(requestModel, httpClient).execute();
+                HttpEntity hystrixResponse=new HystrixQQCommand(requestModel, httpClient).execute();
+                if(hystrixResponse==null){
+                    throw new RuntimeException("HystrixQQCommand excute failed" );
+                }
+                return hystrixResponse;
             }
         }
 
