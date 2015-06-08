@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     private static final Logger logger = LoggerFactory.getLogger("hystrixLogger");
     private RequestModel requestModel;
     private static HttpClient httpClient;
-    private InputStream in;
+    private HttpRequestBase httpRequest;
 
 
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_CACHE_ENABLED));
@@ -59,12 +60,13 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
         );
         this.requestModel = requestModel;
         this.httpClient = httpClient;
-        this.in=null;
+
     }
 
     @Override
     protected HttpEntity run() throws Exception {
-        HttpEntity response= HystrixCommonMethod.execute(requestModel, httpClient,in);
+        httpRequest = HystrixCommonMethod.getHttpRequest(requestModel);
+        HttpEntity response= HystrixCommonMethod.execute(requestModel, httpClient,httpRequest);
         logger.warn("HystrixQQCommand excute success");
         return response;
     }
@@ -85,16 +87,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
 //            logger.error("HystrixQQCommand fallback unknown");
         }
 
-
-        if (in != null) {
-            logger.warn("HystrixQQCommand fallback close inputStream");
-            try {
-                in.close();
-            } catch (IOException ioe) {
-               logger.error("HystrixQQCommand fallback close inputStream failed",ioe);
-            }
-        }
-
+        httpRequest.abort();
         return null;
     }
 

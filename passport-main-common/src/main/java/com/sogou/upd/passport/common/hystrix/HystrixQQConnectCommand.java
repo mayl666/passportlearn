@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ public class HystrixQQConnectCommand extends HystrixCommand<HttpEntity> {
     private static final Logger logger = LoggerFactory.getLogger("hystrixLogger");
     private RequestModel requestModel;
     private static HttpClient httpClient;
-    private InputStream in;
+    private HttpRequestBase httpRequest;
 
 
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_CACHE_ENABLED));
@@ -58,12 +59,12 @@ public class HystrixQQConnectCommand extends HystrixCommand<HttpEntity> {
         );
         this.requestModel = requestModel;
         this.httpClient = httpClient;
-        in=null;
     }
 
     @Override
     protected HttpEntity run() throws Exception {
-        return HystrixCommonMethod.execute(requestModel, httpClient,in);
+        httpRequest = HystrixCommonMethod.getHttpRequest(requestModel);
+        return HystrixCommonMethod.execute(requestModel, httpClient,httpRequest);
     }
 
     @Override
@@ -81,7 +82,7 @@ public class HystrixQQConnectCommand extends HystrixCommand<HttpEntity> {
         } else {
 //            logger.error("HystrixQQConnectCommand fallback unknown");
         }
-
+        httpRequest.abort();
         throw new UnsupportedOperationException("HystrixQQConnectCommand:No fallback available.");
     }
 
