@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
 
     private static final Logger logger = LoggerFactory.getLogger("hystrixLogger");
+    private static final Logger stdlogger = LoggerFactory.getLogger(HystrixQQCommand.class);
     private RequestModel requestModel;
     private static HttpClient httpClient;
     private HttpRequestBase httpRequest;
@@ -63,28 +64,31 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     @Override
     protected HttpEntity run() throws Exception {
         httpRequest = HystrixCommonMethod.getHttpRequest(requestModel);
-        return HystrixCommonMethod.execute(requestModel, httpClient, httpRequest);
+        HttpEntity response= HystrixCommonMethod.execute(requestModel, httpClient, httpRequest);
+        return response;
     }
 
     @Override
     protected HttpEntity getFallback() {
+        String url=requestModel.getUrl();
         boolean isShortCircuited = isResponseShortCircuited();
         boolean isRejected = isResponseRejected();
         boolean isTimeout = isResponseTimedOut();
 //        boolean isFailed = isFailedExecution();
         if (isTimeout) {
             httpRequest.abort();
-            logger.error("HystrixQQCommand fallback isTimeout");
+            stdlogger.warn("HystrixQQCommand fallback isTimeout ,url="+url);
         } else if (isRejected) {
-            logger.error("HystrixQQCommand fallback isRejected");
+            stdlogger.warn("HystrixQQCommand fallback isRejected ,url="+url);
         } else if (isShortCircuited) {
             logger.error("HystrixQQCommand fallback isShortCircuited");
+            stdlogger.warn("HystrixQQCommand fallback isShortCircuited ,url="+url);
         } else {
 //            logger.error("HystrixQQCommand fallback unknown");
         }
-        throw new RuntimeException("HystrixQQCommand fallback");
+//        throw new RuntimeException("HystrixQQCommand fallback");
 
-//        return null;
+        return null;
     }
 
 

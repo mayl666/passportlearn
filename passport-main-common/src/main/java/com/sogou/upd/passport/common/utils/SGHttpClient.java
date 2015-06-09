@@ -192,16 +192,23 @@ public class SGHttpClient {
         //对QQapi调用hystrix
         String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
         Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
-        Boolean hystrixQQHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
+        Boolean hystrixQQEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
 
-        if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
+        if (hystrixGlobalEnabled && hystrixQQEnabled) {
             String qqUrl = requestModel.getUrl();
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
-                try{
-                    return new HystrixQQCommand(requestModel, httpClient).execute();
-                } catch (HystrixRuntimeException e){
+                HttpEntity hystrixResponse=new HystrixQQCommand(requestModel, httpClient).execute();
+                if(null==hystrixResponse){
                     throw new RuntimeException("Hystrix QQ Command error,url="+qqUrl);
                 }
+
+                return hystrixResponse;
+
+//                try{
+//                    return new HystrixQQCommand(requestModel, httpClient).execute();
+//                } catch (HystrixRuntimeException e){
+//                    throw new RuntimeException("Hystrix QQ Command error,url="+qqUrl);
+//                }
             }
         }
 
