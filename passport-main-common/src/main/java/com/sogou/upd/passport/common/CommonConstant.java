@@ -41,6 +41,7 @@ public class CommonConstant {
     public static final int WITH_CONNECT_ORIGINAL = 1;      //1表示需要从第三方获取原始信息,默认为0，不返回第三方原始信息
     public static final int NOT_WITH_CONNECT_ORIGINAL = 0;      //1表示需要从第三方获取原始信息,默认为0，不返回第三方原始信息
 
+    public static final String USERID = "userid";
     public static final String USERNAME = "username";
     public static final String CLIENT_ID = "client_id";
     public static final String APP_ID = "appid";
@@ -118,6 +119,9 @@ public class CommonConstant {
 
     //短信登录，验证码错误
     public static final String SMS_CODE_CHECK_FAIL = "验证码错误";
+
+    //短信登录，手机格式错误
+    public static final String MOBILE_FORMAT_ERROR = "手机格式错误";
 
 
     //module 黑名单数据 连接符

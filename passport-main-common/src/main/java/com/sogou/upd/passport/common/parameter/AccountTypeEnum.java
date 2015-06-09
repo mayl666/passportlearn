@@ -24,7 +24,8 @@ public enum AccountTypeEnum {
     SOGOU(8),  // @sogou.com账号
     SOHU(9),  //sohu域账号
     WEIXIN(10),//微信
-    HUAWEI(11);//华为
+    HUAWEI(11),//华为
+    MESSAGELOGIN(12);//手机短信登录
 
     // provider数字与字符串映射字典表
     private static BiMap<String, Integer> PROVIDER_MAPPING_DICT = HashBiMap.create();
@@ -41,6 +42,8 @@ public enum AccountTypeEnum {
         PROVIDER_MAPPING_DICT.put("sohu", SOHU.getValue());
         PROVIDER_MAPPING_DICT.put("weixin", WEIXIN.getValue());
         PROVIDER_MAPPING_DICT.put("huawei", HUAWEI.getValue());
+        PROVIDER_MAPPING_DICT.put("messagelogin", MESSAGELOGIN.getValue());
+
     }
 
     private int value;
@@ -62,8 +65,8 @@ public enum AccountTypeEnum {
     }
 
     public static boolean isPhone(String account, int provider) {
-        if (PhoneUtil.verifyPhoneNumberFormat(account)) {
-            if (provider == PHONE.getValue() || provider == UNKNOWN.getValue()) {
+        if (PhoneUtil.verifyPhoneNumberFormat(account)) {  //add 短信登录类型
+            if (provider == PHONE.getValue() || provider == MESSAGELOGIN.getValue() || provider == UNKNOWN.getValue()) {
                 return true;
             }
         }
@@ -84,6 +87,13 @@ public enum AccountTypeEnum {
         } else {
             return false;
         }
+    }
+
+    public static boolean isMessageLogin(int provider) {
+        if (provider == MESSAGELOGIN.getValue()) {
+            return true;
+        }
+        return false;
     }
 
     // TODO:以后需要与AccountDomainEnum整合，或者将此Enum只针对第三方，但是需要考虑到所有以provider为参数的地方
@@ -110,7 +120,7 @@ public enum AccountTypeEnum {
         if (username.endsWith("@weixin.sohu.com")) {
             return WEIXIN;
         }
-        if(username.endsWith("huawei.sohu.com")){
+        if (username.endsWith("huawei.sohu.com")) {
             return HUAWEI;
         }
 

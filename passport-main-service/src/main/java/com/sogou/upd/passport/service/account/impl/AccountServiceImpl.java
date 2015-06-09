@@ -109,7 +109,8 @@ public class AccountServiceImpl implements AccountService {
             account.setRegIp(ip);
             account.setAccountType(provider);
             account.setFlag(AccountStatusEnum.REGULAR.getValue());
-            if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider)) {
+            //增加 短信登录类型
+            if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider) || AccountTypeEnum.isMessageLogin(provider)) {
                 //对于第三方账号和sohu域账号来讲，无密码  搜狗账号迁移完成后，需要增加一个值表示无密码
                 account.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
             } else {
@@ -208,12 +209,12 @@ public class AccountServiceImpl implements AccountService {
         }
 
         //如果昵称符合POSTFIX_PINYIN_FORMAT，为输入法迁移数据，去掉后缀再返回
-        if(null!=account){
-            String uniqname=account.getUniqname();
-            if(!Strings.isNullOrEmpty(uniqname)){
-                if(uniqname.matches(POSTFIX_PINYIN_FORMAT)){
-                    int endIndex=uniqname.indexOf(POSTFIX_PINYIN_MIGRATE);
-                    account.setUniqname(uniqname.substring(0,endIndex));
+        if (null != account) {
+            String uniqname = account.getUniqname();
+            if (!Strings.isNullOrEmpty(uniqname)) {
+                if (uniqname.matches(POSTFIX_PINYIN_FORMAT)) {
+                    int endIndex = uniqname.indexOf(POSTFIX_PINYIN_MIGRATE);
+                    account.setUniqname(uniqname.substring(0, endIndex));
                 }
             }
 
@@ -670,7 +671,7 @@ public class AccountServiceImpl implements AccountService {
                     account.setUniqname(uniqname);
                     dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                     //新昵称写入映射表
-                    if(!uniqNamePassportMappingService.insertUniqName(passportId, uniqname)){
+                    if (!uniqNamePassportMappingService.insertUniqName(passportId, uniqname)) {
                         return false;
                     }
                     //旧昵称在映射表里有记录则删除

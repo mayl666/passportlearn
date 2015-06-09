@@ -239,8 +239,7 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
                     return result;
                 }
-                Account account = accountService.initialAccount(mobile, password, true, null, AccountTypeEnum
-                        .PHONE.getValue());
+                Account account = accountService.initialAccount(mobile, password, true, null, AccountTypeEnum.PHONE.getValue());
                 if (account != null) {
                     result = insertAccountInfo(account, result, null);
                 } else {

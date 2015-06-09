@@ -64,6 +64,7 @@ public class SmsCodeLoginServiceImpl implements SmsCodeLoginService {
                 }
             } else {
                 //上次请求下发的校验码还在有效期内，删除旧的校验码，重新生成新的校验码
+                //TODO 继续使用上次下发的校验码 还是重新生成一个新的校验码
                 String newSmsCode = RandomStringUtils.randomNumeric(5);
                 String newSmsContent = appConfigService.querySmsText(clientId, newSmsCode);
                 if (!Strings.isNullOrEmpty(newSmsContent) && SMSUtil.sendSMS(mobile, newSmsContent)) {
