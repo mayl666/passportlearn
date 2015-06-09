@@ -58,11 +58,9 @@
         </div>
     </div>*#
     <div class="f-f">
-        <input type="submit" class="block submit f-1 tc" tabindex="5" value="登录"/>
+        <input type="submit" class="block submit f-1 tc"  value="登录"/>
     </div>
-    <div class="notify f-f">
-        若您未绑定手机号，请选择其他方式
-    </div>
+
 </form>
 <div class="mask hide"></div>
 <div class="dialog hide" id="captchaDialog">
