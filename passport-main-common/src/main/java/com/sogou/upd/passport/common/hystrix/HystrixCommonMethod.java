@@ -91,7 +91,7 @@ public class HystrixCommonMethod {
                 } catch (IOException ioe) {
                 }
             }
-            throw new RuntimeException("http request error ", e);
+            throw e;
         }
 
     }
