@@ -199,7 +199,7 @@ public class SGHttpClient {
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
                 HttpEntity hystrixResponse=new HystrixQQCommand(requestModel, httpClient).execute();
                 if(null==hystrixResponse){
-                    throw new RuntimeException("Hystrix QQ Command error,url="+qqUrl);
+                    throw new RuntimeException("HystrixQQCommand error");
                 }
 
                 return hystrixResponse;

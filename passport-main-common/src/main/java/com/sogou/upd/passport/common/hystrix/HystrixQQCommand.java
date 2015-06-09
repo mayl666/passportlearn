@@ -74,11 +74,14 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
         boolean isShortCircuited = isResponseShortCircuited();
         boolean isRejected = isResponseRejected();
         boolean isTimeout = isResponseTimedOut();
-//        boolean isFailed = isFailedExecution();
+        boolean isFailed = isFailedExecution();
         if (isTimeout) {
             httpRequest.abort();
             stdlogger.warn("HystrixQQCommand fallback isTimeout ,url="+url);
-        } else if (isRejected) {
+        } else if(isFailed){
+            stdlogger.warn("HystrixQQCommand fallback isFailedExecution ,url="+url+"msg="+getFailedExecutionException().getMessage());
+
+        }else if (isRejected) {
             stdlogger.warn("HystrixQQCommand fallback isRejected ,url="+url);
         } else if (isShortCircuited) {
             logger.error("HystrixQQCommand fallback isShortCircuited");
