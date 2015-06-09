@@ -87,7 +87,6 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
             if(e!=null){
                 exceptionMsg=e.getMessage();
             }
-            httpRequest.abort();
             stdlogger.warn("HystrixQQCommand fallback isFailedExecution ,url="+url+",msg="+exceptionMsg);
         } else if(isTimeout){
             httpRequest.abort();
