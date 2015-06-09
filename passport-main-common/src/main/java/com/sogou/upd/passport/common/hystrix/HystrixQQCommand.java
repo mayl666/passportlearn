@@ -79,7 +79,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
             httpRequest.abort();
             stdlogger.warn("HystrixQQCommand fallback isTimeout ,url="+url);
         } else if(isFailed){
-            stdlogger.warn("HystrixQQCommand fallback isFailedExecution ,url="+url+"msg="+getFailedExecutionException().getMessage());
+            stdlogger.warn("HystrixQQCommand fallback isFailedExecution ,url="+url+",msg=",getFailedExecutionException());
 
         }else if (isRejected) {
             stdlogger.warn("HystrixQQCommand fallback isRejected ,url="+url);
