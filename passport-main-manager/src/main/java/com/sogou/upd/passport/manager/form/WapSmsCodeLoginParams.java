@@ -1,4 +1,4 @@
-package com.sogou.upd.passport.web.account.form.wap;
+package com.sogou.upd.passport.manager.form;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.WapConstant;
@@ -16,8 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
  * Date: 15-6-8
  * Time: 下午3:45
  */
-public class WapSmsCodeLoginParams {
-
+public class WapSmsCodeLoginParams extends UsernameParams {
 
     /**
      * 手机号
@@ -25,6 +24,12 @@ public class WapSmsCodeLoginParams {
     @Phone
     @NotBlank(message = "手机号码不允许为空!")
     private String mobile;
+
+    /**
+     * 登录校验码
+     */
+    @NotBlank(message = "短信校验码不允许为空!")
+    private String smsCode;
 
     /**
      * 版本号
@@ -73,6 +78,14 @@ public class WapSmsCodeLoginParams {
      * 标识码
      */
     private String token;//标识码
+
+    public String getSmsCode() {
+        return smsCode;
+    }
+
+    public void setSmsCode(String smsCode) {
+        this.smsCode = smsCode;
+    }
 
     public String getRu() {
         return ru;

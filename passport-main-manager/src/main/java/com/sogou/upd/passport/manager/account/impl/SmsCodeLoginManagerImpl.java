@@ -13,12 +13,10 @@ import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SmsCodeLoginManager;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.form.SmsCodeLoginParams;
+import com.sogou.upd.passport.manager.form.WapSmsCodeLoginParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
-import com.sogou.upd.passport.service.account.AccountInfoService;
-import com.sogou.upd.passport.service.account.AccountService;
-import com.sogou.upd.passport.service.account.MobilePassportMappingService;
-import com.sogou.upd.passport.service.account.SmsCodeLoginService;
+import com.sogou.upd.passport.service.account.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +51,9 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
     private AccountInfoService accountInfoService;
     @Autowired
     private MobilePassportMappingService mobilePassportMappingService;
+
+    @Autowired
+    private OperateTimesService operateTimesService;
 
     /**
      * 下发短信校验码
@@ -102,12 +103,29 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
      * @return
      */
     @Override
-    public Result smsCodeLogin(SmsCodeLoginParams smsCodeLoginParams, String ip) {
+    public Result smsCodeLogin(WapSmsCodeLoginParams smsCodeLoginParams, String ip) {
         Result result = new APIResultSupport(false);
         String mobile = smsCodeLoginParams.getUsername();
         String smsCode = smsCodeLoginParams.getSmsCode();
+        String token = smsCodeLoginParams.getToken();
+        String captchaCode = smsCodeLoginParams.getCaptcha();
         int clientId = Integer.parseInt(smsCodeLoginParams.getClient_id());
+
         try {
+            //校验是否需要验证码
+            if (operateTimesService.loginFailedTimesNeedCaptcha(mobile, ip)) {
+                if (Strings.isNullOrEmpty(captchaCode)) {
+                    LOGGER.warn("smsCodeLogin need captchaCode! username:{},ip:{},token:{}", new Object[]{mobile, ip, token});
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
+                    return result;
+                }
+                if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
+                    LOGGER.warn("smsCodeLogin captchaCode is wrong! username:{},ip:{},token:{},captchaCode:{}", new Object[]{mobile, ip, token, captchaCode});
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                    return result;
+                }
+            }
+
             if (PhoneUtil.verifyPhoneNumberFormat(mobile)) {
                 //1、验证短信校验码
                 result = smsCodeLoginService.checkSmsCode(mobile, smsCode, clientId);

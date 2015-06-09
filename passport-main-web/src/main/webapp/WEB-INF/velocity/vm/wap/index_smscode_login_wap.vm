@@ -18,14 +18,10 @@
         <div class="f-1 f-f f-hc f-vc">手机短信登录</div>
         <a href="/wap/reg" class="f-f f-vc f-hc reglink">注册</a>
     </nav>
-
-
-
     #end
 
 
-
-<form action="＃" method="post" class="block findpwd">
+<form action="/smsCode/login" method="post">
     <div class="msg f-f f-vc">
         <div class="circle red f-f f-hc f-vc hide"><div class="sprite sprite-wrong"></div></div>
         <div class="info"></div>
@@ -44,15 +40,23 @@
             <a href="#" class="sendsms block tc">发送验证码</a>
             <a href="#" class="block indicator hide"></a>
         </div>
+        <!--captcha-->
+        #*<div class="row f-f f-vc hide" id="captcha-wrapper">
+            <label for="captcha" class="h-fil f-f f-hr f-vc">验证码：</label>
+            <input type="text" name="captcha" id="captcha" class="block h-fil f-1" placeholder="请输入验证码" autocomplete="off" tabindex="3"/>
+            <img id="captcha-img-check" border="0" class="captcha-img block"/>
+            <a href="#" class="block indicator hide"></a>
+        </div>*#
+
     </div>
-    <div class="links f-f f-vc">
+    #*<div class="links f-f f-vc">
         <div class="f-1 h-fil f-f f-vc f-hl">
             <a href="/wap/findpwd/email">其他方式</a>
         </div>
         <div class="f-1 h-fil f-f f-vc f-hr">
             <a href="/wap/findpwd/customer" class="rules">联系客服</a>
         </div>
-    </div>
+    </div>*#
     <div class="f-f">
         <input type="submit" class="block submit f-1 tc" tabindex="5" value="登录"/>
     </div>

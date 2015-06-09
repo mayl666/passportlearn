@@ -1,7 +1,7 @@
 package com.sogou.upd.passport.manager.account;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.form.SmsCodeLoginParams;
+import com.sogou.upd.passport.manager.form.WapSmsCodeLoginParams;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,5 +29,5 @@ public interface SmsCodeLoginManager {
      * @param ip
      * @return
      */
-    public Result smsCodeLogin(SmsCodeLoginParams smsCodeLoginParams, String ip);
+    public Result smsCodeLogin(WapSmsCodeLoginParams smsCodeLoginParams, String ip);
 }
