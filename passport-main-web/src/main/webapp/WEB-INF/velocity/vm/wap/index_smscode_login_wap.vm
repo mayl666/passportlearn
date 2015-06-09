@@ -84,7 +84,7 @@
     });
 
     require(['wap'] , function(module){
-        module['index_smscode_login_wap']();
+        module['findpwd_touch']();
     });
 </script>
 </html>
