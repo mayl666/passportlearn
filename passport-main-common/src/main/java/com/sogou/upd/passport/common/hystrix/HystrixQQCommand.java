@@ -90,15 +90,15 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
             }
             stdlogger.warn("HystrixQQCommand fallback isFailedExecution ,url=" + url + ",msg=" + exceptionMsg);
         } else if (isTimeout) {
-            if (httpRequest != null) {
-                httpRequest.abort();
-            }
+
             stdlogger.warn("HystrixQQCommand fallback isTimeout ,url=" + url);
         } else {
             stdlogger.warn("HystrixQQCommand fallback unknown reason ,url=" + url);
         }
 //        throw new RuntimeException("HystrixQQCommand fallback");
-
+        if (httpRequest != null) {
+            httpRequest.abort();
+        }
         return null;
     }
 
