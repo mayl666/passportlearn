@@ -58,13 +58,13 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
         );
         this.requestModel = requestModel;
         this.httpClient = httpClient;
-        httpRequest = HystrixCommonMethod.getHttpRequest(requestModel);
+        this.httpRequest = null;
 
     }
 
     @Override
     protected HttpEntity run() throws Exception {
-
+        httpRequest = HystrixCommonMethod.getHttpRequest(requestModel);
         HttpEntity response = HystrixCommonMethod.execute(requestModel, httpClient, httpRequest);
         return response;
     }
