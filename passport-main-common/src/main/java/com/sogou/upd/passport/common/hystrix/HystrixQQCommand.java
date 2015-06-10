@@ -100,4 +100,9 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     }
 
 
+    public void abortHttpRequest(){
+        httpRequest.abort();
+    }
+
+
 }

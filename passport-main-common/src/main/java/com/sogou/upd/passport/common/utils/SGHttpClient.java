@@ -197,18 +197,23 @@ public class SGHttpClient {
         if (hystrixGlobalEnabled && hystrixQQEnabled) {
             String qqUrl = requestModel.getUrl();
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
-                HttpEntity hystrixResponse=new HystrixQQCommand(requestModel, httpClient).execute();
-                if(null==hystrixResponse){
-                    throw new RuntimeException("HystrixQQCommand error");
+                HystrixQQCommand hystrixQQCommand = null;
+                try {
+                    hystrixQQCommand = new HystrixQQCommand(requestModel, httpClient);
+                    HttpEntity hystrixResponse = hystrixQQCommand.execute();
+                    if (null == hystrixResponse) {
+                        throw new RuntimeException("HystrixQQCommand error");
+                    }
+
+                    return hystrixResponse;
+                } catch (HystrixRuntimeException he) {
+                    if (hystrixQQCommand != null) {
+                        hystrixQQCommand.abortHttpRequest();
+                    }
+                    throw new RuntimeException("HystrixQQCommand fallback failed");
                 }
 
-                return hystrixResponse;
 
-//                try{
-//                    return new HystrixQQCommand(requestModel, httpClient).execute();
-//                } catch (HystrixRuntimeException e){
-//                    throw new RuntimeException("Hystrix QQ Command error,url="+qqUrl);
-//                }
             }
         }
 
