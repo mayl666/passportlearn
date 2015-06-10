@@ -21,7 +21,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     private static final Logger logger = LoggerFactory.getLogger("hystrixLogger");
     private static final Logger stdlogger = LoggerFactory.getLogger(HystrixQQCommand.class);
     private RequestModel requestModel;
-    private static HttpClient httpClient;
+    private HttpClient httpClient;
     private HttpRequestBase httpRequest;
 
 
