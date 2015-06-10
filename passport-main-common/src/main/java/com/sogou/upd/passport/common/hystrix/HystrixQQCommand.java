@@ -58,41 +58,44 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
         );
         this.requestModel = requestModel;
         this.httpClient = httpClient;
+        httpRequest = HystrixCommonMethod.getHttpRequest(requestModel);
 
     }
 
     @Override
     protected HttpEntity run() throws Exception {
-        httpRequest = HystrixCommonMethod.getHttpRequest(requestModel);
-        HttpEntity response= HystrixCommonMethod.execute(requestModel, httpClient, httpRequest);
+
+        HttpEntity response = HystrixCommonMethod.execute(requestModel, httpClient, httpRequest);
         return response;
     }
 
     @Override
     protected HttpEntity getFallback() {
-        String url=requestModel.getUrl();
+        String url = requestModel.getUrl();
         boolean isShortCircuited = isResponseShortCircuited();
         boolean isRejected = isResponseRejected();
         boolean isTimeout = isResponseTimedOut();
         boolean isFailed = isFailedExecution();
 
-        if(isShortCircuited) {
+        if (isShortCircuited) {
             logger.error("HystrixQQCommand fallback isShortCircuited");
-            stdlogger.warn("HystrixQQCommand fallback isShortCircuited ,url="+url);
-        } else if(isRejected) {
-            stdlogger.warn("HystrixQQCommand fallback isRejected ,url="+url);
-        } else if(isFailed) {
-            Throwable e=getFailedExecutionException();
-            String exceptionMsg="";
-            if(e!=null){
-                exceptionMsg=e.getMessage();
+            stdlogger.warn("HystrixQQCommand fallback isShortCircuited ,url=" + url);
+        } else if (isRejected) {
+            stdlogger.warn("HystrixQQCommand fallback isRejected ,url=" + url);
+        } else if (isFailed) {
+            Throwable e = getFailedExecutionException();
+            String exceptionMsg = "";
+            if (e != null) {
+                exceptionMsg = e.getMessage();
             }
-            stdlogger.warn("HystrixQQCommand fallback isFailedExecution ,url="+url+",msg="+exceptionMsg);
-        } else if(isTimeout){
-            httpRequest.abort();
-            stdlogger.warn("HystrixQQCommand fallback isTimeout ,url="+url);
-        }  else{
-            stdlogger.warn("HystrixQQCommand fallback unknown reason ,url="+url);
+            stdlogger.warn("HystrixQQCommand fallback isFailedExecution ,url=" + url + ",msg=" + exceptionMsg);
+        } else if (isTimeout) {
+            if (httpRequest != null) {
+                httpRequest.abort();
+            }
+            stdlogger.warn("HystrixQQCommand fallback isTimeout ,url=" + url);
+        } else {
+            stdlogger.warn("HystrixQQCommand fallback unknown reason ,url=" + url);
         }
 //        throw new RuntimeException("HystrixQQCommand fallback");
 
@@ -100,8 +103,10 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     }
 
 
-    public void abortHttpRequest(){
-        httpRequest.abort();
+    public void abortHttpRequest() {
+        if (httpRequest != null) {
+            httpRequest.abort();
+        }
     }
 
 

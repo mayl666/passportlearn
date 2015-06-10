@@ -210,7 +210,7 @@ public class SGHttpClient {
                     if (hystrixQQCommand != null) {
                         hystrixQQCommand.abortHttpRequest();
                     }
-                    throw new RuntimeException("HystrixQQCommand fallback failed");
+                    throw new RuntimeException("HystrixQQCommand can not excute fallback");
                 }
 
 
