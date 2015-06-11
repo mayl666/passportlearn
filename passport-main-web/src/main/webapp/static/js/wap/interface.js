@@ -491,7 +491,7 @@ define([], function () {
         checkNeedCaptcha: checkNeedCaptcha,
         getCaptcha: getCaptcha,
         login: login,
-        smsCodeLogin:smsCodeLogin,
+        smsCodeLogin: smsCodeLogin,
         checkusername: checkusername,
         sendsms: sendsms,
         checksms: checksms,

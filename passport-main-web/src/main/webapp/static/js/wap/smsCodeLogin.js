@@ -9,11 +9,7 @@
  * @version 0.1.0
  * @since 0.1.0
  */
-//define(['./interface', './utils', './dialog', '../utils', './skin', './common'], function(Form, Utils, Dialog, SuperUtils) {
-
-//});
-
-define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./dialog','../utils','./skin','./common'], function(Form,Dialog,resolve, Local,Emitter,Utils,SuperUtils) {
+define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./dialog','../utils','./skin','./common'], function(Form,resolve,Dialog, Local,Emitter,Utils,SuperUtils) {
 
     var HISTORY_KEY = 'login-history';
 
@@ -133,9 +129,6 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./dia
             });
             return this.initEvt();
         },
-
-
-
         initEvt: function() {
             var self = this;
 
@@ -148,7 +141,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./dia
             });
 
             //click refresh
-            self.$captchaImg.click(function(e) {
+            self.$captchaImg.click(function() {
                 $(this).attr('src', Form.getCaptcha(token));
             });
 
@@ -200,7 +193,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./dia
                 self.__mLogining = true;
 
                 //登录
-                return Form.login({
+                return Form.smsCodeLogin({
                     token: token,
                     captcha: c,
                     mobile: u,
