@@ -13,7 +13,7 @@
 
 //});
 
-define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./dialog','../utils','./skin','./common'], function(Form, resolve, Local,Emitter,Utils) {
+define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./dialog','../utils','./skin','./common'], function(Form,Dialog,resolve, Local,Emitter,Utils) {
 
     var HISTORY_KEY = 'login-history';
 
