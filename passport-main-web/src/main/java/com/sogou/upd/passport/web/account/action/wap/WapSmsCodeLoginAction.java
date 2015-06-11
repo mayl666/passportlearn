@@ -9,11 +9,9 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.SmsCodeLoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
-import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.WapSmsCodeLoginParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -44,10 +42,6 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WapSmsCodeLoginAction.class);
 
-    @Autowired
-    private ConfigureManager configureManager;
-    @Autowired
-    private CommonManager commonManager;
     @Autowired
     private LoginManager loginManager;
     @Autowired
