@@ -15,6 +15,7 @@ define(['./interface' , './local', './utils', './dialog', '../utils', './skin', 
             var ru = Utils.getRu();
             var passParamsStr = Utils.getPassThroughParams();
             var token;
+
             //发送手机短信需要的验证码
             var CaptchaDialog = new Dialog({
                 $container: $('#captchaDialog'),
@@ -57,19 +58,13 @@ define(['./interface' , './local', './utils', './dialog', '../utils', './skin', 
                 __smsSent: false,
                 __mFinding: false,
                 init: function () {
-                    LoginHistory.init();
-                    LoginHistory.on(LoginHistory.SELECTEVENT, this.onHistorySelect, this);
-                    $('.backlink').click(function (e) {
-                        e.preventDefault();
-                        history.back();
-                    });
-
 
                     $('.links a').each(function (idx, item) {
                         var chref = $(item).attr('href');
                         $(item).attr('href', chref.indexOf('?') == -1 ? (chref + '?' + passParamsStr) : (chref + '&' + passParamsStr));
 
                     });
+
                     return this.initEvt();
                 },
                 initEvt: function () {
