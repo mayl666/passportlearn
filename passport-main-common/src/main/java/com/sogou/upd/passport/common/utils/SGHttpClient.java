@@ -197,23 +197,11 @@ public class SGHttpClient {
         if (hystrixGlobalEnabled && hystrixQQEnabled) {
             String qqUrl = requestModel.getUrl();
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
-                HystrixQQCommand hystrixQQCommand = null;
                 try {
-                    hystrixQQCommand = new HystrixQQCommand(requestModel, httpClient);
-                    HttpEntity hystrixResponse = hystrixQQCommand.execute();
-                    if (null == hystrixResponse) {
-                        throw new RuntimeException("HystrixQQCommand error");
-                    }
-
-                    return hystrixResponse;
-                } catch (HystrixRuntimeException he) {
-                    if (hystrixQQCommand != null) {
-                        hystrixQQCommand.abortHttpRequest();
-                    }
-                    throw new RuntimeException("HystrixQQCommand can not excute fallback");
+                    return revokeHystrixQQ(requestModel);
+                } catch (Exception e) {
+                    throw new RuntimeException(e.getMessage());
                 }
-
-
             }
         }
 
@@ -287,10 +275,36 @@ public class SGHttpClient {
         stopWatch.stop(tag, message);
     }
 
+    //调用hystrixQQCommand
+    public static HttpEntity revokeHystrixQQ(RequestModel requestModel) throws Exception {
+
+        HystrixQQCommand hystrixQQCommand = null;
+        String fallbackReason="";
+        String url=requestModel.getUrl();
+        try {
+            hystrixQQCommand = new HystrixQQCommand(requestModel, httpClient);
+            HttpEntity hystrixResponse = hystrixQQCommand.execute();
+            if (null == hystrixResponse) {
+                if (hystrixQQCommand != null) {
+                    fallbackReason=hystrixQQCommand.getFallbackReason();
+                }
+                throw new RuntimeException(fallbackReason+",url="+url);
+            }
+
+            return hystrixResponse;
+        } catch (HystrixRuntimeException he) {
+            if (hystrixQQCommand != null) {
+                hystrixQQCommand.abortHttpRequest();
+            }
+            throw new RuntimeException(HystrixConstant.FALLBACK_REASON_CANNOT_FALLBACK+",url="+ url);
+        }
+
+    }
+
     /*
- * 避免HttpClient的”SSLPeerUnverifiedException: peer not authenticated”异常
- * 不用导入SSL证书
- */
+    * 避免HttpClient的”SSLPeerUnverifiedException: peer not authenticated”异常
+    * 不用导入SSL证书
+    */
     public static class WebClientDevWrapper {
 
         public static org.apache.http.client.HttpClient wrapClient(org.apache.http.client.HttpClient base) {
