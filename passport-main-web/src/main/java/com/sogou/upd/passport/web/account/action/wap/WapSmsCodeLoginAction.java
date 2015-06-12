@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * 短信登录
@@ -121,8 +122,11 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                 String userId = (String) result.getModels().get(CommonConstant.USERID);
                 String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
                 WapRegAction.setSgidCookie(response, sgid);
+
+                writeResultToResponse(response, result);
                 loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
-                response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
+
+//                response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
                 return "empty";
             } else {
                 //如果校验用户名和密码失败，且是因为需要验证码，则置验证码为1，即需要验证码
@@ -260,5 +264,10 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
         return WapConstant.WAP_INDEX + "?errorMsg=" + Coder.encodeUTF8(errorMsg);
     }
 
+
+    private void writeResultToResponse(HttpServletResponse response, Result result) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(result.toString());
+    }
 
 }
