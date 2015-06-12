@@ -7,7 +7,7 @@
 <meta name="MobileOptimized" content="320"/>
 <meta name="format-detection" content="telephone=no"/>
 <title>找回密码-搜狗通行证</title>
-<link rel="stylesheet" href="http://account.sogou.com/static/css/wap/main.css?t=368739"/>
+<link rel="stylesheet" href="/./static/css/wap/main.css?t=368739"/>
 </head>
 <body>
 
@@ -81,9 +81,8 @@
     
 
 </body>
-
-<script src="http://account.sogou.com/static/js/lib/mursa.js?t=140248"></script>
-<script src="http://account.sogou.com/static/js/wap.js?t=732446" charset="utf-8"></script>
+<script src="/static/js/lib/mursa.js?t=140248"></script>
+<script src="/./static/js/wap.js?t=459506" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"

@@ -159,7 +159,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
                                     self.$captcha.empty().focus();
                                     self.showCaptcha();
                                 } else {
-                                    self.$password.empty().focus();
+                                    self.$sms.empty().focus();
                                     if (!self.$captchaWrapper.hasClass('hide')) {
                                         self.showCaptcha();
                                     }
