@@ -105,7 +105,7 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
     @Override
     public Result smsCodeLogin(WapSmsCodeLoginParams smsCodeLoginParams, String ip) {
         Result result = new APIResultSupport(false);
-        String mobile = smsCodeLoginParams.getUsername();
+        String mobile = smsCodeLoginParams.getMobile();
         String smsCode = smsCodeLoginParams.getSmsCode();
         String token = smsCodeLoginParams.getToken();
         String captchaCode = smsCodeLoginParams.getCaptcha();
