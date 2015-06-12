@@ -9,7 +9,7 @@
  * @version 0.1.0
  * @since 0.1.0
  */
-define(['./interface' , './local', './utils', './dialog', '../utils', './skin', './common'], function (Form, resolve, Local, Emitter, Utils, Dialog, SuperUtils) {
+define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './dialog', '../utils', './skin', './common'], function (Form, resolve, Local, Emitter, Utils, Dialog, SuperUtils) {
     return {
         init: function () {
             var ru = Utils.getRu();
