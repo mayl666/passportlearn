@@ -34,8 +34,7 @@ public class OAuthHttpClient {
         String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
         Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
         Boolean hystrixQQHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
-        //关闭OAuthHttpClient的hystrix开关
-        hystrixQQHystrixEnabled=false;
+
         if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
             String oAuthUrl = request.getLocationUri();
             if (!Strings.isNullOrEmpty(oAuthUrl) && oAuthUrl.contains(hystrixQQurl)) {

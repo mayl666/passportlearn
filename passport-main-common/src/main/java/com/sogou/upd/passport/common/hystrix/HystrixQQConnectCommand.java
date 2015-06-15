@@ -20,10 +20,14 @@ import java.io.InputStream;
  */
 public class HystrixQQConnectCommand extends HystrixCommand<HttpEntity> {
 
+
     private static final Logger logger = LoggerFactory.getLogger("hystrixLogger");
+    private static final String COMMOND_FALLBACK_PREFIX = "HystrixQQConnectCommand fallback ";
+
     private RequestModel requestModel;
-    private static HttpClient httpClient;
+    private HttpClient httpClient;
     private HttpRequestBase httpRequest;
+    private String fallbackReason;
 
 
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_CACHE_ENABLED));
@@ -57,34 +61,69 @@ public class HystrixQQConnectCommand extends HystrixCommand<HttpEntity> {
                 .andThreadPoolPropertiesDefaults(HystrixThreadPoolProperties.Setter()
                         .withCoreSize(qqConnectPoolCoreSize))
         );
+
         this.requestModel = requestModel;
         this.httpClient = httpClient;
+        this.httpRequest = null;
+        this.fallbackReason = null;
     }
 
     @Override
     protected HttpEntity run() throws Exception {
         httpRequest = HystrixCommonMethod.getHttpRequest(requestModel);
-        return HystrixCommonMethod.execute(requestModel, httpClient,httpRequest);
+        HttpEntity response = HystrixCommonMethod.execute(requestModel, httpClient, httpRequest);
+        return response;
     }
 
     @Override
     protected HttpEntity getFallback() {
+        String url = requestModel.getUrl();
         boolean isShortCircuited = isResponseShortCircuited();
         boolean isRejected = isResponseRejected();
         boolean isTimeout = isResponseTimedOut();
-//        boolean isFailed = isFailedExecution();
-        if (isTimeout) {
-            logger.error("HystrixQQConnectCommand fallback isTimeout");
+        boolean isFailed = isFailedExecution();
+
+        if (isShortCircuited) {
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_SHORT_CIRCUITED;
         } else if (isRejected) {
-            logger.error("HystrixQQConnectCommand fallback isRejected");
-        } else if (isShortCircuited) {
-            logger.error("HystrixQQConnectCommand fallback isShortCircuited");
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_REJECTED;
+        } else if (isFailed) {
+            Throwable e = getFailedExecutionException();
+            String exceptionMsg = "";
+            if (e != null) {
+                exceptionMsg = e.getMessage();
+            }
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_EXCUTE_FAILED + ",msg=" + exceptionMsg;
+        } else if (isTimeout) {
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_TIMEOUT;
         } else {
-//            logger.error("HystrixQQConnectCommand fallback unknown");
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_UNKNOWN_REASON;
         }
-        httpRequest.abort();
-        throw new UnsupportedOperationException("HystrixQQConnectCommand:No fallback available.");
+
+        // 记录fallback原因
+        if(fallbackReason!=null) {
+            if(isFailed){
+                logger.error(COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_EXCUTE_FAILED);
+            }else{
+                logger.error(fallbackReason);
+            }
+        }
+
+        if (httpRequest != null) {
+            httpRequest.abort();
+        }
+        return null;
     }
 
+
+    public void abortHttpRequest() {
+        if (httpRequest != null) {
+            httpRequest.abort();
+        }
+    }
+
+    public String getFallbackReason() {
+        return fallbackReason;
+    }
 
 }
