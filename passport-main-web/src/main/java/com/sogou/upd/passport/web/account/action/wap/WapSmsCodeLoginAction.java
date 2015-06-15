@@ -218,7 +218,7 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
 
     private String getErrorReturnStr(WapSmsCodeLoginParams loginParams, String errorMsg, int isNeedCaptcha) {
         StringBuilder returnStr = new StringBuilder();
-        returnStr.append("redirect:/wap/index?");
+        returnStr.append("redirect:/wap/smsCodeLogin/index?");
         if (!Strings.isNullOrEmpty(loginParams.getV())) {
             returnStr.append("v=" + loginParams.getV());
         }

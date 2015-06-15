@@ -170,6 +170,7 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
         } catch (Exception e) {
             LOGGER.error("SmsCodeLoginManagerImpl smsCodeLogin error,message:{}", e.getMessage());
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
+            result.setSuccess(false);
         }
         return result;
     }
