@@ -82,11 +82,9 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
 
         if (isShortCircuited) {
             fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_SHORT_CIRCUITED;
-            logger.error("HystrixQQCommand fallback isShortCircuited");
         } else if (isRejected) {
             fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_REJECTED;
         } else if (isFailed) {
-
             Throwable e = getFailedExecutionException();
             String exceptionMsg = "";
             if (e != null) {
@@ -96,8 +94,11 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
         } else if (isTimeout) {
             fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_TIMEOUT;
         } else {
-            fallbackReason = HystrixConstant.FALLBACK_REASON_UNKNOWN_REASON;
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_UNKNOWN_REASON;
         }
+
+        // 记录fallback原因
+        logger.error(fallbackReason);
 
         if (httpRequest != null) {
             httpRequest.abort();
