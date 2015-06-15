@@ -13,7 +13,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
     return {
         init: function () {
             var ru = Utils.getRu();
-            var passParamsStr = Utils.getPassThroughParams();
+//            var passParamsStr = Utils.getPassThroughParams();
             var token;
 
             //发送手机短信需要的验证码
@@ -60,11 +60,10 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
                 init: function () {
 
                     //TODO what?
-                    $('.links a').each(function (idx, item) {
-                        var chref = $(item).attr('href');
-                        $(item).attr('href', chref.indexOf('?') == -1 ? (chref + '?' + passParamsStr) : (chref + '&' + passParamsStr));
-
-                    });
+                    //$('.links a').each(function (idx, item) {
+                    //    var chref = $(item).attr('href');
+                    //    $(item).attr('href', chref.indexOf('?') == -1 ? (chref + '?' + passParamsStr) : (chref + '&' + passParamsStr));
+                    //});
 
                     return this.initEvt();
                 },
@@ -72,17 +71,17 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
                     var self = this;
 
                     //check need captcha
-                    self.$username.blur(function (e) {
-                        e.target.value && Form.checkNeedCaptcha(e.target.value, function (need) {
-                            self.$captchaWrapper.toggleClass('hide', !need);
-                            need && self.$captchaImg.attr('src', Form.getCaptcha(token));
-                        });
-                    });
+                   // self.$username.blur(function (e) {
+                   //     e.target.value&&Form.checkNeedCaptcha(e.target.value, function (need) {
+                   //         self.$captchaWrapper.toggleClass('hide', !need);
+                   //         need && self.$captchaImg.attr('src', Form.getCaptcha(token));
+                   //     });
+                   // });
 
                     //click refresh
-                    self.$captchaImg.click(function () {
-                        $(this).attr('src', Form.getCaptcha(token));
-                    });
+                    //self.$captchaImg.click(function () {
+                    //    $(this).attr('src', Form.getCaptcha(token));
+                    //});
 
 
                     //check need captcha
