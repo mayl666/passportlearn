@@ -11,7 +11,7 @@
   * @version 0.1.0
   * @since 0.1.0
   */
-@import url(common.css);
+@import url(common.css?t=375811);
 body{font-size: 15px;background: #f5f4f0;}
 button,input,textarea,select{outline: none;}
 

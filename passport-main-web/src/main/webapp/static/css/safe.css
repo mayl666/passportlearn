@@ -1,6 +1,6 @@
-.safe-index .level{ padding:18px 0 18px 80px; font-size:16px;color:#588700; background:url(@img_prefix@/static/img/star.png) no-repeat 55px center; }
+.safe-index .level{ padding:18px 0 18px 80px; font-size:16px;color:#588700; background:url(/./static/img/star.png?t=011262) no-repeat 55px center; }
 .safe-index .level-status,
-.safe-index .level-status b{ width:215px; height:11px; display:inline-block;*display:inline;*zoom:1;background:url(@img_prefix@/static/img/line.png) no-repeat 0 -26px;position:relative; }
+.safe-index .level-status b{ width:215px; height:11px; display:inline-block;*display:inline;*zoom:1;background:url(/./static/img/line.png?t=049072) no-repeat 0 -26px;position:relative; }
 .safe-index .level-status{margin:0 16px;}
 .safe-index .level-status b{ position:absolute;top:0;left:0; background-position:0 0; width:0; }
 .safe-index .status li{ overflow:hidden; zoom:1;height:50px;line-height:50px; }

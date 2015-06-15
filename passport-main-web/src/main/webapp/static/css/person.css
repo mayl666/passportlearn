@@ -10,7 +10,7 @@ select.location{width: 89px;}
 .avatar-not-support-sohu{text-align: center;margin-top: 60px;}
 #UploadPhoto{border: 1px solid #cdcdcd;padding: 13px;}
 
-.form .back{height:27px;background: #adadad url(/./static/img/btn-grey-medium.png) no-repeat 0 0;width: 82px;}
+.form .back{height:27px;background: #adadad url(/./static/img/btn-grey-medium.png?t=708522) no-repeat 0 0;width: 82px;}
 .form .sub{height: 27px;width: 83px;margin-right: 9px;}
 .form .tip{color:#999;font-size: 14px;}
 .form .s-tip{color:#999;font-size: 12px;float: left;}

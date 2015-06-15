@@ -9,17 +9,17 @@
 .ucenter .table .my  .btns .btn{margin-top: 6px;font-size: 12px;}
 .ucenter .table .my  img{width: 50px;height: 50px;right: 0;position: relative;top: 50%;margin-top: -25px;}
 .ucenter .table .my  .myacc{font-weight: bold;display: block;height: 30px;}
-.ucenter .table .my .label{ /*background:url(@img_prefix@/static/img/avatar-min.png) no-repeat 80px center;*/ height: 100%}
+.ucenter .table .my .label{ /*background:url(/./static/img/avatar-min.png?t=935837) no-repeat 80px center;*/ height: 100%}
 .ucenter .table .my .username{font-size: 14px;}
-.ucenter .table .level{ height:64px; line-height:64px;font-size:16px;color:#588700;background:url(@img_prefix@/static/img/star.png) no-repeat 80px 24px; }
+.ucenter .table .level{ height:64px; line-height:64px;font-size:16px;color:#588700;background:url(/./static/img/star.png?t=011262) no-repeat 80px 24px; }
 .ucenter .table .level-status,
-.ucenter .table .level-status b{ width:215px; height:11px; display:inline-block;*display:inline;*zoom:1;background:url(@img_prefix@/static/img/line.png) no-repeat 0 -26px;position:relative; }
+.ucenter .table .level-status b{ width:215px; height:11px; display:inline-block;*display:inline;*zoom:1;background:url(/./static/img/line.png?t=049072) no-repeat 0 -26px;position:relative; }
 .ucenter .table .level-status{margin:0 16px;}
 .ucenter .table .level-status b{ position:absolute;top:0;left:0; background-position:0 0; width:0; }
 
 .ucenter .table .level-status,.ucenter .table .level-num { _position: relative; _top: 22px;}
 
 .ucenter-sidebar{ padding-left:13px;display:none; }
-.ucenter-sidebar .item{ display:inline-block; *display:inline; *zoom:1; width:102px; height:45px; line-height:45px; padding-left:12px;background:url(@img_prefix@/static/img/desc-arrow.png) no-repeat 0 center;font-size:14px; }
+.ucenter-sidebar .item{ display:inline-block; *display:inline; *zoom:1; width:102px; height:45px; line-height:45px; padding-left:12px;background:url(/./static/img/desc-arrow.png?t=707808) no-repeat 0 center;font-size:14px; }
 .ucenter-sidebar .item a{ color:#000; }
 .ucenter-sidebar .hr{ height:0;overflow:hidden;border-bottom:1px #e1e1e1 dotted; width:216px; }

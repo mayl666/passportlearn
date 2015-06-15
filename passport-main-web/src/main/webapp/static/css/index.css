@@ -58,13 +58,13 @@ body{ background:#f9f9f9; }
 .header .inner{ width:960px;margin:0 auto; height:88px; }
 .header h1{ padding-top:26px; }
 
-.wrapper{ height:412px; background:url(@img_prefix@/static/img/index/bg.png) repeat-x 0 0; min-width:980px; }
+.wrapper{ height:412px; background:url(/./static/img/index/bg.png?t=964137) repeat-x 0 0; min-width:980px; }
 .wrapper .inner{ width:960px; margin:0 auto; position:relative;}
 .wrapper .desc{ padding-top:30px; }
 
 
-.login{ position:absolute; right:40px;top:30px;width:319px;height:289px; background:url(@img_prefix@/static/img/index/login.png) no-repeat bottom center; }
-.login-inner{ height:167px;background:url(@img_prefix@/static/img/index/login.png) no-repeat top center;_overflow:hidden; }
+.login{ position:absolute; right:40px;top:30px;width:319px;height:289px; background:url(/./static/img/index/login.png?t=891534) no-repeat bottom center; }
+.login-inner{ height:167px;background:url(/./static/img/index/login.png?t=891534) no-repeat top center;_overflow:hidden; }
 .login-vcode{ height:338px; }
 .login a{color:#1777d1;}
 .login h2{ display:none; }
@@ -80,33 +80,33 @@ body{ background:#f9f9f9; }
 .login .vcode input{width:67px;text-align:center;position:relative;top:5px;_top:2px;z-index:22;background:transparent;}
 .login .vcode img{ width:81px; height:38px;position:relative;  margin-left:16px; }
 .login .vcode a{ color:#333; font-size:12px;position:relative; top:12px; left:6px; }
-.login .focusbg{ background:url(@img_prefix@/static/img/index/inputfocus.png) no-repeat 0 0;position:absolute; top:-5px; left:23px;width:273px;height:38px; z-index:1;display:none;}
+.login .focusbg{ background:url(/./static/img/index/inputfocus.png?t=692414) no-repeat 0 0;position:absolute; top:-5px; left:23px;width:273px;height:38px; z-index:1;display:none;}
 .login .password .focusbg{*top:-4px;}
 .login .vcode .focusbg{ background-position:0 -38px;top:17px; _left:-7px;*top:16px;}
 .login .vcode span{ top:22px;left:42px; _left:14px;}
 
-.login button{ height:40px; width:273px;border:none;background:none;padding:0;margin:0;position:relative;left:24px; cursor: pointer;background:url(@img_prefix@/static/img/index/loginbtn.png) no-repeat 0 0;} 
+.login button{ height:40px; width:273px;border:none;background:none;padding:0;margin:0;position:relative;left:24px; cursor: pointer;background:url(/./static/img/index/loginbtn.png?t=123621) no-repeat 0 0;} 
 .login button:hover{ background-position:0 -50px; }
 .login .func{line-height:34px;padding:5px 0 0 25px;_padding-top:10px;_padding-bottom:10px; position:relative;color:#999;font-size:12px;clear:both;}
 .login .func input{width:auto;height:auto; visibility:hidden;visibility:visible\9; width:7px;height:7px;}
 .login .func label{*padding-left:4px;}
-.login .checkbox{ display:inline-block; *display:inline;*zoom:1; width:14px; height:14px;background:url(@img_prefix@/static/img/checkbox.png) no-repeat 0 -14px; position:relative; top:3px; *top:0;margin-right:2px;overflow:hidden; z-index:1;position:absolute;top:15px;*top:7px;_top:11px;}
+.login .checkbox{ display:inline-block; *display:inline;*zoom:1; width:14px; height:14px;background:url(/./static/img/checkbox.png?t=582595) no-repeat 0 -14px; position:relative; top:3px; *top:0;margin-right:2px;overflow:hidden; z-index:1;position:absolute;top:15px;*top:7px;_top:11px;}
 .login .checkbox-checked{ background-position:0 0; }
 .login .func a{ position:absolute;right:25px;*top:-4px;_top:2px; }
 .login .reg{ line-height:40px;text-align:center;color:#505050;font-size:14px; }
-.login .error{ position:absolute;height:33px;background:url(@img_prefix@/static/img/index/error.png) no-repeat 0 0;left:23px;line-height:30px;font-size:12px;color:#e4494a;padding-left:13px; z-index:99;_left:-270px;display:none;}
+.login .error{ position:absolute;height:33px;background:url(/./static/img/index/error.png?t=091387) no-repeat 0 0;left:23px;line-height:30px;font-size:12px;color:#e4494a;padding-left:13px; z-index:99;_left:-270px;display:none;}
 .login .uname-error{width:283px;top:-35px;*top:-68px;}
 .login .vcode-error{width:133px;background-position:0 -33px;top:69px;*top:36px;}
-.login .error a{ position:absolute;background:url(@img_prefix@/static/img/index/error.png) no-repeat -241px -45px;width:12px;height:12px;top:8px;right:30px; }
+.login .error a{ position:absolute;background:url(/./static/img/index/error.png?t=091387) no-repeat -241px -45px;width:12px;height:12px;top:8px;right:30px; }
 .login .error a:hover{ background-position:-261px -45px; }
-.login .third-login{position:absolute;bottom:-33px;padding-left:15px;font-size:12px;color:#649608;background:url(@img_prefix@/static/img/index/third.png) no-repeat right center;height:28px;line-height:28px;width:270px;}
+.login .third-login{position:absolute;bottom:-33px;padding-left:15px;font-size:12px;color:#649608;background:url(/./static/img/index/third.png?t=992319) no-repeat right center;height:28px;line-height:28px;width:270px;}
 .login .third-login span{ display:inline-block;*display:inline; *zoom:1;height:24px;position:absolute;top:0;left:30px; }
 .login .third-login a{ display:inline-block;*display:inline; *zoom:1; width:29px;height:0;padding-top:28px;overflow:hidden;margin-right:7px;position:relative;left:133px; }
 
 
 .question{ width:960px; margin:0 auto;padding-top:14px; }
-.question .title{ background:url(@img_prefix@/static/img/index/qbg.png) repeat-x 0 0; height:17px;overflow:hidden; }
-.question h3{ background:url(@img_prefix@/static/img/index/qtitle.png) no-repeat 0 0; width:183px;height:0;padding-top:19px;overflow:hidden; overflow:hidden;}
+.question .title{ background:url(/./static/img/index/qbg.png?t=234754) repeat-x 0 0; height:17px;overflow:hidden; }
+.question h3{ background:url(/./static/img/index/qtitle.png?t=929483) no-repeat 0 0; width:183px;height:0;padding-top:19px;overflow:hidden; overflow:hidden;}
 .question .items{ overflow:hidden;zoom:1;line-height:42px; }
 .question .items li{ float:left;width:192px;list-style:square inside;color:#666;font-size:10px; }
 .question .items a{ font-size:12px; color:#666; text-decoration:none; }
