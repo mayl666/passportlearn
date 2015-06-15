@@ -59,6 +59,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
                 __mFinding: false,
                 init: function () {
 
+                    //TODO what?
                     $('.links a').each(function (idx, item) {
                         var chref = $(item).attr('href');
                         $(item).attr('href', chref.indexOf('?') == -1 ? (chref + '?' + passParamsStr) : (chref + '&' + passParamsStr));
@@ -171,9 +172,6 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
 
 
                     return this;
-                },
-                onHistorySelect: function (evt, name) {
-                    this.$username.val(name);
                 },
                 showCaptcha: function () {
                     this.$captchaWrapper.removeClass('hide');

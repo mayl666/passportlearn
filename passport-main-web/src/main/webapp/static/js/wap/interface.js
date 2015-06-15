@@ -69,7 +69,6 @@ define([], function () {
             data: options,
             dataType: 'json',
             error: function () {
-                alert("come into a");
                 return callback(false, {
                     'statusText': '登录失败'
                 });
@@ -78,7 +77,6 @@ define([], function () {
                 if (data && !+data.status)
                     return callback(true, data.data);
                 else
-                    alert("come into b");
                     return callback(false, data);
             }
         });
