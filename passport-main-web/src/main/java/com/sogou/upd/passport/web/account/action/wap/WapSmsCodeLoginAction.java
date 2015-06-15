@@ -125,8 +125,6 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
 
                 writeResultToResponse(response, result);
                 loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
-
-//                response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
                 return "empty";
             } else {
                 //如果校验用户名和密码失败，且是因为需要验证码，则置验证码为1，即需要验证码
