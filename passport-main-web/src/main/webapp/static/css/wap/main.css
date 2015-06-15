@@ -104,9 +104,6 @@ form{font-size: 14px;color: #333;padding: 0 10px;margin-bottom: 20px;}
   background: -moz-linear-gradient(left,#e81604,#c31001);
 }
 .skin_x1 .submit{
-  background: #ff6600;
-}
-.skin_orange .submit{
   background: #8fd900;
 }
 .submit:active{
@@ -118,15 +115,17 @@ form{font-size: 14px;color: #333;padding: 0 10px;margin-bottom: 20px;}
   background: -webkit-gradient(linear,left top,left bottom,from(#ad1103),to(#cf1707));
   background: -moz-linear-gradient(left,#ad1103,#cf1707);
 }
-.skin_orange .submit:active{
-  background: #ff6600;
-}
+
 .skin_x1 .submit:active{
   background: #8fd900;
 }
 
 .skin_se .submit,.skin_se .submit:active{
   background: #347de7;
+}
+
+.skin_orange .submit,.skin_orange .submit:active{
+    background: #ff6600;
 }
 
 
