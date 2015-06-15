@@ -98,12 +98,13 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
         }
 
         // 记录fallback原因
-        if(isFailed){
-            logger.error(COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_EXCUTE_FAILED);
-        }else{
-            logger.error(fallbackReason);
+        if(fallbackReason!=null) {
+            if(isFailed){
+                logger.error(COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_EXCUTE_FAILED);
+            }else{
+                logger.error(fallbackReason);
+            }
         }
-
 
         if (httpRequest != null) {
             httpRequest.abort();
