@@ -2,7 +2,7 @@ define(function(){
 
 
     return{
-        client_id:"1120",
+        client_id:"@client_id@",
         redirectUrl: "/static/api/jump.htm",
         thirdRedirectUrl:"/static/api/tj.htm"
     };

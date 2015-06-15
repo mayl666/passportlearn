@@ -1,1 +1,237 @@
-define("ui",[],function(){return{checkbox:function(c){c=$(c);var d=c.data("target");if(!d){return}d=$("#"+d);var b="checkbox-checked";function a(f){if(f){c.prop("checked",c.prop("checked")?null:true)}var e=c.prop("checked");e?d.addClass(b):d.removeClass(b)}c.click(function(){a()});c.on("focus",function(){if(this.blur&&window.attachEvent){this.blur()}});d.click(function(){a(1)})}}});define("utils",[],function(){return{uuid:function(){function s4(){return Math.floor((1+Math.random())*65536).toString(16).substring(1)}return s4()+s4()+s4()+s4()+s4()+s4()+s4()+s4()},addZero:function(num,len){num=num.toString();while(num.length<len){num="0"+num}return num},parseResponse:function(data){if(typeof data=="string"){try{data=eval("("+data+")")}catch(e){data={status:-1,statusText:"服务器故障"}}}return data},addIframe:function(url,callback){var iframe=document.createElement("iframe");iframe.src=url;iframe.style.position="absolute";iframe.style.top="1px";iframe.style.left="1px";iframe.style.width="1px";iframe.style.height="1px";if(iframe.attachEvent){iframe.attachEvent("onload",function(){callback&&callback()})}else{iframe.onload=function(){callback&&callback()}}document.body.appendChild(iframe)},getScript:function(url,callback){var script=document.createElement("script");var head=document.head;script.async=true;script.src=url;script.onload=script.onreadystatechange=function(_,isAbort){if(isAbort||!script.readyState||/loaded|complete/.test(script.readyState)){script.onload=script.onreadystatechange=null;if(script.parentNode){script.parentNode.removeChild(script)}script=null;if(!isAbort){callback()}}};head.insertBefore(script,head.firstChild)},getUrlByMail:function(mail){mail=mail.split("@")[1];if(!mail){return false}var hash={"139.com":"mail.10086.cn","gmail.com":"mail.google.com","sina.com":"mail.sina.com.cn","yeah.net":"www.yeah.net","hotmail.com":"www.hotmail.com","live.com":"www.outlook.com","live.cn":"www.outlook.com","live.com.cn":"www.outlook.com","outlook.com":"www.outlook.com","yahoo.com.cn":"mail.cn.yahoo.com","yahoo.cn":"mail.cn.yahoo.com","ymail.com":"www.ymail.com","eyou.com":"www.eyou.com","188.com":"www.188.com","foxmail.com":"www.foxmail.com"};var url;if(mail in hash){url=hash[mail]}else{url="mail."+mail}return"http://"+url}}});define("conf",[],function(){return{client_id:"1120",redirectUrl:"/static/api/jump.htm",thirdRedirectUrl:"/static/api/tj.htm"}});define("index",["./ui","./utils","./conf"],function(h,i,d){var g=false;var j=function(){var k=$("#Login");k.parent().parent().addClass("login-vcode");if(g){return}g=true;k.find(".vcode img,.vcode a").click(function(){b();return false});b(k);return true};var a=function(){var k=$("#Login");k.parent().parent().removeClass("login-vcode")};var c={renren:[880,620],sina:[780,640],qq:[500,300]};var b=function(){if(g){$("#Login").find(".vcode img").attr("src","/captcha?token="+PassportSC.getToken()+"&t="+ +new Date())}};var e=function(k){$("#Login .vcode-error .text").html(k).parent().show()};var f=function(k){$("#Login .uname-error .text").html(k).parent().show()};return{init:function(){var n={};try{n=$.evalJSON(server_data).data}catch(r){window.console&&console.log(r)}h.checkbox("#RemChb");if($.cookie("fe_uname")){$("#Login .username input").val($.trim($.cookie("fe_uname")));$("#Login .username span").hide()}PassportSC.appid=d.client_id;PassportSC.redirectUrl=location.protocol+"//"+location.hostname+(location.port?(":"+location.port):"")+d.redirectUrl;$("#Login").on("submit",function(){var t=$("#Login");var s=t.find('input[name="password"]').val();if(!$.trim(t.find('input[name="username"]').val())||!s){f("请输入用户名密码");return false}if(s.length>16||s.length<6){f("用户名密码输入错误");return false}if($("#Login").parent().parent().hasClass("login-vcode")&&!$.trim(t.find('input[name="captcha"]').val())){e("请输入验证码");t.find('input[name="captcha"]').focus();return false}PassportSC.loginHandle(t.find('input[name="username"]').val(),t.find('input[name="password"]').val(),t.find('input[name="captcha"]').val(),t.find('input[name="autoLogin"]').prop("checked")?1:0,document.getElementById("logdiv"),function(v){var u=false;var w=t.find("input[name=captcha]");if(+v.needcaptcha){if(j()){u=true}$("#Login").parent().parent().addClass("login-vcode")}if(+v.status==20221){var x=w.val()?"验证码错误":"请输入验证码";e(x);!u&&b();w.focus()}else{if(+v.status==20230){f("登录异常，请1小时后再试");!u&&b()}else{f("用户名或密码错误，请重新输入");!u&&b()}}},function(){$.cookie("fe_uname",$("#Login .username input").val(),{path:"/",expires:365});var u={};try{u=$.evalJSON(server_data).data}catch(v){window.console&&console.log(v)}if(u&&u.ru){location.href=u.ru}else{location.href="https://"+location.hostname}return});return false});$(document.body).click(function(){$("#Login .error").hide()});$("#Login .error a").click(function(){$("#Login .error").hide();return false});var q=location.search.split("#")[0].split(/[?&]/g),k;for(var m=q.length-1;m>=0;m--){var p=q[m];if(/^ru=.+/.test(p)){k=p.slice(3);break}}$(".login .third-login a").each(function(s,u){var t="https://account.sogou.com/connect/login?provider="+$(u).html()+"&client_id="+(n.client_id?n.client_id:d.client_id)+"&ru="+(k||encodeURIComponent(location.href));$(u).attr("href",t)});$("#Login .username input").change(function(){if(!$.trim($(this).val())){return}$.get("/web/login/checkNeedCaptcha",{username:$.trim($(this).val()),client_id:d.client_id,t:+new Date()},function(s){s=i.parseResponse(s);if(s.data.needCaptcha){j()}else{a()}if(0!=s.status){f(s.statusText)}})});var o=$("#Login .password input , #Login .username input , #Login .vcode input");var l;if(/se 2.x/i.test(navigator.userAgent)||/compatible;/i.test(navigator.userAgent)){l=setInterval(function(){o.each(function(s,t){if($(t).val().length){$(t).prev().hide()}})},100)}o.focus(function(){$(this).prev().hide();$(this).parent().find("b").show();l&&clearInterval(l)}).blur(function(){$(this).parent().find("b").hide();if(!$.trim($(this).val())){$(this).prev().show()}});o.parent().click(function(){$(this).find("input").focus()});window.onload=function(){o.each(function(s,t){if($(t).val()){$(t).prev().hide()}})};if(n.ru){$(".login a").each(function(s,t){if(/(^#|ru=|^javascript)/.test($(t).attr("href"))){return}$(t).attr("href",$(t).attr("href")+"?ru="+encodeURIComponent(n.ru))})}if(n.client_id){$(".login a").each(function(s,t){if($(t).attr("href")=="#"){return}if($(t).attr("href").indexOf("client_id")!=-1){return}$(t).attr("href",$(t).attr("href")+($(t).attr("href").indexOf("?")==-1?"?":"&")+"client_id="+n.client_id)})}}}});
+define('index' , ['./ui' , './utils' , './conf'] , function(ui , utils , conf){
+    
+    var vcodeInited = false;
+    var initVcode = function(){
+        var $el = $('#Login');
+        $el.parent().parent().addClass('login-vcode');
+        if( vcodeInited ) return;
+        vcodeInited = true;
+
+        $el.find('.vcode img,.vcode a').click(function(){
+            refreshVcode();
+            return false;
+        });
+
+        refreshVcode($el);
+        return true;
+    };
+
+    var hideVcode = function(){
+        var $el = $('#Login');
+        $el.parent().parent().removeClass('login-vcode');
+    };    
+
+    var Module_Size = {
+        renren:[880,620],
+        sina:[780,640],
+        qq:[500,300]
+    };
+
+
+
+    var refreshVcode = function(){
+        if(vcodeInited){
+            $('#Login').find('.vcode img').attr('src' , "/captcha?token="+ PassportSC.getToken() + '&t=' + +new Date() );
+        }
+    };
+
+    var showVcodeError = function(text){
+        $('#Login .vcode-error .text').html(text).parent().show();
+    };
+
+    var showUnameError = function(text){
+        $('#Login .uname-error .text').html(text).parent().show();
+    };
+
+    return {
+        init: function(){
+            var login_data ={};
+            try{
+                login_data = $.evalJSON(server_data).data;
+            }catch(e){window['console'] && console.log(e);}
+
+            ui.checkbox('#RemChb');
+
+            if( $.cookie('fe_uname') ){
+                $('#Login .username input').val($.trim($.cookie('fe_uname')));
+                $('#Login .username span').hide();
+            }
+
+            PassportSC.appid = conf.client_id;
+            PassportSC.redirectUrl = location.protocol +  '//' + location.hostname + ( location.port ? (':' + location.port) :'' ) + conf.redirectUrl;
+            $('#Login').on('submit' , function(){
+                var $el = $('#Login');
+
+                var passwordVal = $el.find('input[name="password"]').val();
+                if( !$.trim($el.find('input[name="username"]').val()) || !passwordVal  ){
+                    showUnameError('请输入用户名密码');
+                    return false;;
+                }
+
+                if( passwordVal.length > 16 || passwordVal.length<6 ){
+                    showUnameError('用户名密码输入错误');
+                    return false;;
+                }
+
+                if( $('#Login').parent().parent().hasClass('login-vcode') && !$.trim( $el.find('input[name="captcha"]').val() ) ){
+                    showVcodeError('请输入验证码');
+                    $el.find('input[name="captcha"]').focus();
+                    return false;
+                }
+
+                PassportSC.loginHandle( $el.find('input[name="username"]').val() , 
+                                        $el.find('input[name="password"]').val() ,
+                                        $el.find('input[name="captcha"]').val() , 
+                                        $el.find('input[name="autoLogin"]').prop('checked')?1:0,
+                                        document.getElementById('logdiv'),
+                                        function(data){
+                                            var refreshed = false;
+                                            var captchaIpt = $el.find('input[name=captcha]');
+                                            if( +data.needcaptcha ){
+                                                if(initVcode()) {
+                                                    refreshed = true;
+                                                }
+                                                $('#Login').parent().parent().addClass('login-vcode');
+                                                //showVcodeError('请输入验证码');
+                                                //captchaIpt.focus();
+                                            }
+                                            if( +data.status == 20221 ){//vcode
+                                                var text = captchaIpt.val() ? '验证码错误':"请输入验证码";
+                                                showVcodeError(text);
+                                                !refreshed && refreshVcode();
+                                                captchaIpt.focus();
+                                            }else if( +data.status == 20230 ){
+                                                showUnameError('登录异常，请1小时后再试');
+                                                !refreshed && refreshVcode();
+                                            }else{
+                                                showUnameError('用户名或密码错误，请重新输入');
+                                                !refreshed && refreshVcode();
+                                            }
+                                        } ,
+                                        function(){
+                                            $.cookie('fe_uname' , $('#Login .username input').val() , {
+                                                path:'/',
+                                                expires:365
+                                            });
+
+                                            var data ={};
+                                            try{
+                                                data = $.evalJSON(server_data).data;
+                                            }catch(e){window['console'] && console.log(e);}
+                                            if( data && data.ru ){
+                                                location.href = data.ru;
+                                            }else{
+                                                location.href = "@protocol@://" + location.hostname;
+                                            }
+                                            return;
+                                        }
+                                      );
+                
+                return false;
+            });
+
+            $(document.body).click(function(){
+                $('#Login .error').hide();
+            });
+            $('#Login .error a').click(function(){
+                $('#Login .error').hide();
+                return false;
+            });
+
+            var gets = location.search.split('#')[0].split(/[?&]/g),
+                ru;
+            for (var i = gets.length - 1; i >= 0; i--) {
+                var kv = gets[i];
+                if (/^ru=.+/.test(kv)) {
+                    ru = kv.slice(3);
+                    break;
+                }
+            };
+
+            $('.login .third-login a').each(function(idx,item){
+                var href ='@protocol@://account.sogou.com/connect/login?provider=' + $(item).html() 
+                             + '&client_id=' + (login_data.client_id ? login_data.client_id : conf.client_id)
+                             + '&ru=' + (ru||encodeURIComponent(location.href));
+                $(item).attr('href' , href);
+            });
+            
+            $('#Login .username input').change(function(){
+                if( !$.trim($(this).val()) ) return;
+                $.get('/web/login/checkNeedCaptcha' , {
+                    username:$.trim($(this).val()),
+                    client_id: conf.client_id,
+                    t: +new Date()
+                } , function(data){
+                    data = utils.parseResponse(data);
+                    if( data.data.needCaptcha ){
+                        initVcode();
+                    }else{
+                        hideVcode();
+                    }
+
+                    if(0!=data.status){
+                        showUnameError(data.statusText);
+                    }
+                });
+            });
+            
+
+
+            var inputs = $('#Login .password input , #Login .username input , #Login .vcode input');
+
+            var hideDescTm;
+            if( /se 2.x/i.test(navigator.userAgent) || /compatible;/i.test(navigator.userAgent) ){
+                hideDescTm = setInterval(function(){
+                    inputs.each(function(idx,item){
+                        if( $(item).val().length ){
+                            $(item).prev().hide();
+                        }
+                    });
+                },100);
+            }
+            inputs.focus(function(){
+                $(this).prev().hide();
+                $(this).parent().find('b').show();
+                hideDescTm && clearInterval(hideDescTm);
+            }).blur(function(){
+                $(this).parent().find('b').hide();
+                if( !$.trim($(this).val()) )
+                    $(this).prev().show();
+            });
+            inputs.parent().click(function(){
+                $(this).find('input').focus();
+            });
+            window.onload = function(){
+                inputs.each(function(idx,item){
+                    if( $(item).val() ){
+                        $(item).prev().hide();
+                    }
+                });
+            };
+
+
+            if( login_data.ru ){
+                $('.login a').each(function(idx , item){
+                    if(/(^#|ru=|^javascript)/.test($(item).attr('href') ) )return;
+                    $(item).attr('href' , $(item).attr('href') + '?ru=' + encodeURIComponent(login_data.ru));
+                });
+            }
+
+            if( login_data.client_id ){
+                $('.login a').each(function(idx , item){
+                    if( $(item).attr('href') == '#' )return;
+                    if( $(item).attr('href').indexOf('client_id') != -1 )return;
+                    $(item).attr('href' , 
+                                 $(item).attr('href') 
+                                 + ($(item).attr('href').indexOf('?') == -1 ? '?' : '&')
+                                 + 'client_id=' + login_data.client_id
+                                );
+                });
+            }
+            
+
+        }
+
+
+    };
+});

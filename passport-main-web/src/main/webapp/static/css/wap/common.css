@@ -12,7 +12,7 @@
   * @since 0.1.0
   */
 
-@import url(../reset.css?t=165104);
+@import url(../reset.css);
 
 a,input,button{
   -webkit-tap-highlight-color:rgba(0,0,0,0);
