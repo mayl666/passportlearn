@@ -31,6 +31,7 @@ table {
   border-spacing: 0;
 }
 .skin_red .header{background-color: #dc2515}
+.skin_orange .header{background-color: #ff6600}
 .skin_cp .header{background-color: #dc2515}
 .skin_x1 .header{background-color: #39c6f3;}
 .skin_cyan .header{background-color: #39c6f3;}
