@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web;
 
 
 import com.google.common.base.Strings;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
@@ -164,8 +165,9 @@ public class UserOperationLogUtil {
                 userKafkaLogger.info(log.toString());
             }
 
-
-        } catch (Exception e) {
+        }catch(HystrixRuntimeException he){
+            logger.error("HystrixKafka "+HystrixConstant.FALLBACK_REASON_CANNOT_FALLBACK);
+        }catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
     }
