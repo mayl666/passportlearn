@@ -119,12 +119,10 @@ define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', '.
 
                         if(/[^\d]/.test(s)){
                             return self.showMsg('请输入6位数字手机确认码');
-                        } else {
-                            self.hideMsg();
                         }
 
                         if (!/^\d{6}$/.test(s)) {
-                            return;
+                            return self.showMsg('请输入6位数字手机确认码');
                         }
 
                         //登录
