@@ -81,7 +81,6 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
             //TODO return what?
             return "wap/index_simple";
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
-//            return "wap/index_smscode_login_wap";
             return "wap/index_smscode_login_touch";
         } else {
             if (!Strings.isNullOrEmpty(wapIndexParams.getErrorMsg())) {
@@ -142,7 +141,6 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                     model.addAttribute("username", loginParams.getUsername());
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
 
-//                    return "wap/index_smscode_login_wap";
                     return "wap/index_smscode_login_touch";
 
                 }
@@ -157,7 +155,6 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                     model.addAttribute("username", loginParams.getUsername());
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
 
-//                    return "wap/index_smscode_login_wap";
                     return "wap/index_smscode_login_touch";
                 }
 
