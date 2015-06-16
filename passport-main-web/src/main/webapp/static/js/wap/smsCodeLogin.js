@@ -64,7 +64,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
                 initEvt: function () {
                     var self = this;
                     self.$username.on('input', function (e) {
-                        var phone = this.$username.val();
+                        var phone = e.target.value;
                         if (/[^\d]/.test(phone)) {
                             return self.showMsg('请输入11位手机号');
                         } else {
