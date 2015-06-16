@@ -63,11 +63,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
                 initEvt: function () {
                     var self = this;
                     self.$username.on('input', function (e) {
-
-                        alert("line 67");
                         var phone = e.target.value;
-                        alert(phone);
-
                         if (/[^\d]/.test(phone)) {
                             return self.showMsg('请输入11位手机号');
                         } else {
@@ -168,6 +164,10 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
                     }
                     this.$msg.find('.info').text(msg);
                     return this;
+                },
+                hideMsg: function() {
+                    this.$msg.find('.circle').addClass('hide');
+                    this.$msg.find('.info').empty();
                 },
                 sendSms: function (captcha) {
                     var self = this;
