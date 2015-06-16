@@ -6,7 +6,7 @@
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="MobileOptimized" content="320"/>
 <meta name="format-detection" content="telephone=no"/>
-<title>注册-搜狗通行证</title>
+<title>登录-搜狗通行证</title>
 <link rel="stylesheet" href="/./static/css/wap/main.css?t=449665"/>
 </head>
 <body>
@@ -15,8 +15,8 @@
 #if($display != "native")
 <nav class="f-f f-vc">
     <a href="#" class="backlink f-f f-hc f-vc">〈</a>
-    <div class="f-1 f-f f-hc f-vc">注册搜狗帐号</div>
-    <div class="reglink"></div>
+    <div class="f-1 f-f f-hc f-vc">手机短信登录</div>
+    <a href="/wap/reg" class="f-f f-vc f-hc reglink">注册</a>
 </nav>
 #end
 
@@ -30,7 +30,7 @@
 <!--username-->
 <div class="row f-f f-vc">
     <label for="username" class="h-fil f-f f-hr f-vc">手机号：</label>
-    <input type="text" name="username" id="username" class="block h-fil f-1" placeholder="11位中国大陆地区手机号" autocomplete="off"/>
+    <input type="text" name="username" id="username" class="block h-fil f-1" placeholder="请输入您的手机号" autocomplete="off"/>
     <a href="#" class="block indicator hide" tabindex="1"></a>
 </div>
 <!--smscode-->
@@ -40,45 +40,21 @@
     <a href="#" class="sendsms block tc">发送验证码</a>
     <a href="#" class="block indicator hide"></a>
 </div>
-
-<!--password-->
-<div class="row f-f f-vc">
-    <label for="password" class="h-fil f-f f-hr f-vc">密码：</label>
-    <input type="password" name="password" id="password" class="block h-fil f-1" placeholder="至少6位" autocomplete="off" tabindex="3"/>
+<!--captcha-->
+<div class="row f-f f-vc hide" id="captcha-wrapper">
+    <label for="captcha" class="h-fil f-f f-hr f-vc">验证码：</label>
+    <input type="text" name="captcha" id="captcha" class="block h-fil f-1" placeholder="请输入验证码" autocomplete="off" tabindex="3"/>
+    <img id="captcha-img-check" border="0" class="captcha-img block"/>
     <a href="#" class="block indicator hide"></a>
 </div>
 
 </div>
-<!--tools-->
-<div class="tools f-f f-vc">
-    <div class="f-1 h-fil f-f f-vc f-hl">
-    <input type="checkbox" class="showpass" id="showpass" tabindex="4"/>
-    <label for="showpass" class="f-f f-vc">
-        <div class="circle grey f-f f-hc f-vc"><div class="sprite sprite-right"></div></div>
-        <div>显示密码</div>
-    </label>
-    </div>
-    <div class="f-1 h-fil f-f f-vc f-hr">
-        <a href="http://account.sogou.com/static/agreement.html" class="rules">隐私协议条款</a>
-    </div>
-</div>
 <!--button-->
 <div class="f-f">
-    <input type="submit" class="block submit f-1 tc" tabindex="5" value="同意协议并注册"/>
+    <input type="submit" class="block submit f-1 tc" tabindex="5" value="登录"/>
 </div>
 </form>
 <div class="mask hide"></div>
-<div class="dialog hide" id="alertDialog">
-    <div class="content">
-        <h4 class="tc">温馨提示</h4>
-        <p class="tc tip p15">该手机已注册，可直接登录</p>
-    </div>
-    <div class="buttons f-f f-vc">
-        <a href="#" class="x f-f f-hc f-vc h-fil f-1">我知道了</a>
-        <a href="/wap/index?client_id=1024&v=5" class="tologin f-f f-hc f-vc h-fil f-1">立即登录</a>
-    </div>
-</div>
-
 <div class="dialog hide" id="captchaDialog">
     <div class="content">
         <h4 class="tc">请输入图片验证码</h4>
@@ -92,8 +68,6 @@
     </div>
 </div>
 
-<script>var token = '${token}';</script>
-
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
 <script src="/./static/js/wap.js?t=055045" charset="utf-8"></script>
@@ -103,7 +77,7 @@
 });
 
 require(['wap'] , function(module){
-    module['regist_touch']();
+    module['index_smscode_login_touch']();
 });
 </script>
 </html>
