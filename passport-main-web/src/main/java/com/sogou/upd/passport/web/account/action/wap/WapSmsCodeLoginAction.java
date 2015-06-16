@@ -130,43 +130,36 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                 //如果校验用户名和密码失败，且是因为需要验证码，则置验证码为1，即需要验证码
                 int isNeedCaptcha = 0;
                 loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
-
                 //校验是否需要验证码
                 if (result.getCode() == ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE) {
-                    String token = RandomStringUtils.randomAlphanumeric(48);
-                    buildModuleReturnStr(true, loginParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE),
-                            loginParams.getClient_id(), null, loginParams.getV(), true, model);
-                    model.addAttribute("token", token);
-                    model.addAttribute("isNeedCaptcha", 1);
-                    model.addAttribute("username", loginParams.getUsername());
-                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
-
-                    return "wap/index_smscode_login_touch";
-
+                    isNeedCaptcha = 1;
+                    if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
+                        writeResultToResponse(response, result);
+                        return "empty";
+                    }
+                    return getErrorReturnStr(loginParams, result.getMessage(), isNeedCaptcha);
                 }
                 //否则，还需要校验是否需要弹出验证码
                 boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
                 if (needCaptcha) {
-                    buildModuleReturnStr(true, loginParams.getRu(), ErrorUtil.getERR_CODE_MSG(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE),
-                            loginParams.getClient_id(), null, loginParams.getV(), true, model);
-                    String token = RandomStringUtils.randomAlphanumeric(48);
-                    model.addAttribute("token", token);
-                    model.addAttribute("isNeedCaptcha", 1);
-                    model.addAttribute("username", loginParams.getUsername());
-                    model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
-
-                    return "wap/index_smscode_login_touch";
+                    isNeedCaptcha = 1;
                 }
-
-//                String defaultMessage = "用户名或者密码错误";
-//                不直接返回直接的文案告诉用户中了安全限制
-//                if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
-//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
-//                    result.setMessage("您登陆过于频繁，请稍后再试。");
-//                    defaultMessage = "您登陆过于频繁，请稍后再试。";
-//                }
-
-                return getErrorReturnStr(loginParams, result.getMessage(), isNeedCaptcha);
+                String defaultMessage = result.getMessage();
+                //不直接返回直接的文案告诉用户中了安全限制
+                if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
+                    result.setMessage("您登陆过于频繁，请稍后再试。");
+                    defaultMessage = "您登陆过于频繁，请稍后再试。";
+                }
+                if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
+                    if (needCaptcha && result.getCode() != ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR) {
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                        result.setMessage("验证码错误或已过期");
+                    }
+                    writeResultToResponse(response, result);
+                    return "empty";
+                }
+                return getErrorReturnStr(loginParams, defaultMessage, isNeedCaptcha);
             }
         } catch (Exception e) {
             LOGGER.error("smsCodeLogin error,message:{}", e.getMessage());
