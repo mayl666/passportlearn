@@ -65,5 +65,11 @@ public class HystrixConstant {
     public static final String PROPERTY_KAFKA_SEMAPHORE_THRESHOLD = "kafkaSemaphoreThreshold";
     public static final String PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD = "fallbackSemaphoreThreshold";
 
-
+    //fallback reason
+    public static final String FALLBACK_REASON_EXCUTE_FAILED="isExcutedFailed";
+    public static final String FALLBACK_REASON_TIMEOUT="isTimeout";
+    public static final String FALLBACK_REASON_REJECTED="isRejected";
+    public static final String FALLBACK_REASON_SHORT_CIRCUITED="isShortCircuited";
+    public static final String FALLBACK_REASON_CANNOT_FALLBACK="cannotFallback";
+    public static final String FALLBACK_REASON_UNKNOWN_REASON="isUnkownReason";
 }

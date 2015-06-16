@@ -8,9 +8,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,6 +25,7 @@ import java.io.InputStream;
 public class HystrixCommonMethod {
 
     public final static int RESPONSE_SUCCESS_CODE = 200;
+    private static final Logger logger = LoggerFactory.getLogger(HystrixCommonMethod.class);
 
     /**
      * 根据请求的参数构造HttpRequestBase
@@ -56,10 +60,9 @@ public class HystrixCommonMethod {
     }
 
     //ConnectHttpClient和SGHttpClient的excute
-    public static HttpEntity execute(RequestModel requestModel, HttpClient httpClient) throws Exception {
-
-        HttpRequestBase httpRequest = getHttpRequest(requestModel);
+    public static HttpEntity execute(RequestModel requestModel, HttpClient httpClient, HttpRequestBase httpRequest) throws Exception {
         InputStream in = null;
+
         try {
             HttpResponse httpResponse = httpClient.execute(httpRequest);
             in = httpResponse.getEntity().getContent();
@@ -71,6 +74,16 @@ public class HystrixCommonMethod {
             String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CHARSET);
             String result = EntityUtils.toString(httpResponse.getEntity(), CommonConstant.DEFAULT_CHARSET);
             throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:" + result);
+        } catch (SocketException ske) {
+            logger.error("HystrixCommonMethod socked error");
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ioe) {
+                }
+            }
+            return null;
+
         } catch (Exception e) {
             if (in != null) {
                 try {
@@ -78,8 +91,10 @@ public class HystrixCommonMethod {
                 } catch (IOException ioe) {
                 }
             }
-            throw new RuntimeException("http request error ", e);
+            throw e;
         }
+
     }
+
 
 }

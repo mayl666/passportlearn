@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.base.Strings;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
@@ -191,12 +192,16 @@ public class SGHttpClient {
         //对QQapi调用hystrix
         String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
         Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
-        Boolean hystrixQQHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
+        Boolean hystrixQQEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
 
-        if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
+        if (hystrixGlobalEnabled && hystrixQQEnabled) {
             String qqUrl = requestModel.getUrl();
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
-                return new HystrixQQCommand(requestModel, httpClient).execute();
+                try {
+                    return revokeHystrixQQ(requestModel);
+                } catch (Exception e) {
+                    throw new RuntimeException(e.getMessage());
+                }
             }
         }
 
@@ -270,10 +275,36 @@ public class SGHttpClient {
         stopWatch.stop(tag, message);
     }
 
+    //调用hystrixQQCommand
+    public static HttpEntity revokeHystrixQQ(RequestModel requestModel) throws Exception {
+
+        HystrixQQCommand hystrixQQCommand = null;
+        String fallbackReason="";
+        String url=requestModel.getUrl();
+        try {
+            hystrixQQCommand = new HystrixQQCommand(requestModel, httpClient);
+            HttpEntity hystrixResponse = hystrixQQCommand.execute();
+            if (null == hystrixResponse) {
+                if (hystrixQQCommand != null) {
+                    fallbackReason=hystrixQQCommand.getFallbackReason();
+                }
+                throw new RuntimeException(fallbackReason+",url="+url);
+            }
+
+            return hystrixResponse;
+        } catch (HystrixRuntimeException he) {
+            if (hystrixQQCommand != null) {
+                hystrixQQCommand.abortHttpRequest();
+            }
+            throw new RuntimeException(HystrixConstant.FALLBACK_REASON_CANNOT_FALLBACK+",url="+ url);
+        }
+
+    }
+
     /*
- * 避免HttpClient的”SSLPeerUnverifiedException: peer not authenticated”异常
- * 不用导入SSL证书
- */
+    * 避免HttpClient的”SSLPeerUnverifiedException: peer not authenticated”异常
+    * 不用导入SSL证书
+    */
     public static class WebClientDevWrapper {
 
         public static org.apache.http.client.HttpClient wrapClient(org.apache.http.client.HttpClient base) {
