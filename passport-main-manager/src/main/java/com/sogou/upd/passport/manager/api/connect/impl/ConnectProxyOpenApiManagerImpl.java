@@ -65,7 +65,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
                             ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
                             HashMap<String, Object> maps = objectMapper.readValue(resp, HashMap.class);
                             if (!CollectionUtils.isEmpty(maps) && "0".equals(String.valueOf(maps.get("ret"))) && maps.containsKey("result")) {
-                                HashMap<String,Object> tmp = objectMapper.readValue(String.valueOf(maps.get("result")),HashMap.class);
+                                HashMap<String,Object> tmp = (HashMap<String, Object>) maps.get("result");
                                 if(!CollectionUtils.isEmpty(tmp) && tmp.containsKey("PinYinData") && Strings.isNullOrEmpty(String.valueOf(tmp.containsKey("PinYinData")))) {
                                     dbShardRedisUtils.setStringWithinSeconds("pinyinData_" + tokenMap.get("open_id").toString(),resp, TimeUnit.HOURS.toSeconds(8));
                                 }
