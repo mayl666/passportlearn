@@ -57,14 +57,17 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
                 __mLogining: false,
                 __SendingSms: false,
                 __smsSent: false,
-                __mFinding: false,
                 init: function () {
                     return this.initEvt();
                 },
                 initEvt: function () {
                     var self = this;
                     self.$username.on('input', function (e) {
+
+                        alert("line 67");
                         var phone = e.target.value;
+                        alert(phone);
+
                         if (/[^\d]/.test(phone)) {
                             return self.showMsg('请输入11位手机号');
                         } else {
