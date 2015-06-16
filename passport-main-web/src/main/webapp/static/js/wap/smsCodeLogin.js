@@ -59,6 +59,20 @@ define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', '.
                 },
                 initEvt: function () {
                     var self = this;
+
+                    //check need captcha
+                    self.$username.blur(function(e) {
+                        e.target.value&&Form.checkNeedCaptcha(e.target.value, function(need) {
+                            self.$captchaWrapper.toggleClass('hide', !need);
+                            need && self.$captchaImg.attr('src', Form.getCaptcha(token));
+                        });
+                    });
+
+                    //click refresh
+                    self.$captchaImg.click(function() {
+                        $(this).attr('src', Form.getCaptcha(token));
+                    });
+
                     self.$username.on('input', function (e) {
                         var phone = e.target.value;
                         if (/[^\d]/.test(phone)) {
@@ -127,8 +141,6 @@ define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', '.
                                     location.assign(ru + 'sgid=' + data.sgid);
                                 }
                             } else {
-                                alert(data.statusText + " " + data.status);
-
                                 self.showMsg(data.statusText);
                                 if (data.status == '20221' || data.status == '20257' || data.status == '21001' || data.status == '21002' || data.status == '21003' || data.status == '21004' ) {
                                     self.$captcha.empty().focus();
