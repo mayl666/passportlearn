@@ -9,6 +9,7 @@
  * @version 0.1.0
  * @since 0.1.0
  */
+//'./interface', './utils', './dialog', '../utils', './skin', './common'                                             //Form, resolve, Local,Emitter,Utils   //Form, Utils, Dialog, SuperUtils
 define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './dialog', '../utils', './skin', './common'], function (Form, resolve, Local, Emitter, Utils, Dialog, SuperUtils) {
     return {
         init: function () {
@@ -58,36 +59,12 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
                 __smsSent: false,
                 __mFinding: false,
                 init: function () {
-
-                    //TODO what?
-                    //$('.links a').each(function (idx, item) {
-                    //    var chref = $(item).attr('href');
-                    //    $(item).attr('href', chref.indexOf('?') == -1 ? (chref + '?' + passParamsStr) : (chref + '&' + passParamsStr));
-                    //});
-
                     return this.initEvt();
                 },
                 initEvt: function () {
                     var self = this;
-
-                    //check need captcha
-                   // self.$username.blur(function (e) {
-                   //     e.target.value&&Form.checkNeedCaptcha(e.target.value, function (need) {
-                   //         self.$captchaWrapper.toggleClass('hide', !need);
-                   //         need && self.$captchaImg.attr('src', Form.getCaptcha(token));
-                   //     });
-                   // });
-
-                    //click refresh
-                    //self.$captchaImg.click(function () {
-                    //    $(this).attr('src', Form.getCaptcha(token));
-                    //});
-
-
-                    //check need captcha
                     self.$username.on('input', function (e) {
-
-                        var phone = e.target.value;
+                        var phone = this.$username.val();
                         if (/[^\d]/.test(phone)) {
                             return self.showMsg('请输入11位手机号');
                         } else {
