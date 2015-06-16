@@ -1,10 +1,10 @@
 package com.sogou.upd.passport.oauth2.openresource.http;
 
 import com.google.common.base.Strings;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.hystrix.HystrixQQAuthCommand;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
@@ -38,15 +38,41 @@ public class OAuthHttpClient {
         if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
             String oAuthUrl = request.getLocationUri();
             if (!Strings.isNullOrEmpty(oAuthUrl) && oAuthUrl.contains(hystrixQQurl)) {
-                T hystrixResponse=(T) new HystrixQQAuthCommand(request, requestMethod, responseClass, headers).execute();
-                if(null == hystrixResponse)  {
-                    throw new OAuthProblemException(ErrorUtil.ERR_CODE_OAUTH_HYSTRIX_ERROR,"oauth hystrix excute failed");
+                try {
+                    return revokeHystrixOAuthQQ(request, requestMethod, responseClass, headers);
+                } catch (Exception e) {
+                    throw new OAuthProblemException(e.getMessage());
                 }
-                return hystrixResponse;
             }
+
         }
 
         return HttpClient4.execute(request, headers, requestMethod, responseClass);
     }
 
+    //调用HystrixQQOAuthCommand
+    public static <T extends OAuthClientResponse> T revokeHystrixOAuthQQ(OAuthClientRequest request, String requestMethod, Class<T> responseClass, Map<String, String> headers) throws Exception {
+
+        HystrixQQAuthCommand hystrixQQOAuthCommand = null;
+        String fallbackReason = "";
+        String url = request.getLocationUri();
+        try {
+            hystrixQQOAuthCommand = new HystrixQQAuthCommand(request, requestMethod, responseClass, headers);
+            T hystrixResponse = (T) hystrixQQOAuthCommand.execute();
+            if (null == hystrixResponse) {
+                if (hystrixQQOAuthCommand != null) {
+                    fallbackReason = hystrixQQOAuthCommand.getFallbackReason();
+                }
+                throw new OAuthProblemException(fallbackReason + ",url=" + url);
+            }
+
+            return hystrixResponse;
+        } catch (HystrixRuntimeException he) {
+            if (hystrixQQOAuthCommand != null) {
+                hystrixQQOAuthCommand.abortHttpRequest();
+            }
+            throw new OAuthProblemException(HystrixConstant.FALLBACK_REASON_CANNOT_FALLBACK + ",url=" + url);
+        }
+
+    }
 }
