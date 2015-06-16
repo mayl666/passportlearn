@@ -100,8 +100,8 @@ define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', '.
                         var c = $.trim(self.$captcha.val());
                         var s = $.trim(self.$sms.val());
 
-                        if (!u || !s) {
-                            return self.showMsg('请输入用户名/验证码');
+                        if (!u || !s || !c) {
+                            return self.showMsg('请输入用户名/手机确认码/验证码');
                         }
 
                         if (!/^1\d{10}$/.test(u)) {
