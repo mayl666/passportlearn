@@ -81,7 +81,8 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
             //TODO return what?
             return "wap/index_simple";
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
-            return "wap/index_smscode_login_wap";
+//            return "wap/index_smscode_login_wap";
+            return "wap/index_smscode_login_touch";
         } else {
             if (!Strings.isNullOrEmpty(wapIndexParams.getErrorMsg())) {
                 model.addAttribute("hasError", true);
@@ -141,7 +142,8 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                     model.addAttribute("username", loginParams.getUsername());
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
 
-                    return "wap/index_smscode_login_wap";
+//                    return "wap/index_smscode_login_wap";
+                    return "wap/index_smscode_login_touch";
 
                 }
                 //否则，还需要校验是否需要弹出验证码
@@ -155,7 +157,8 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                     model.addAttribute("username", loginParams.getUsername());
                     model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
 
-                    return "wap/index_smscode_login_wap";
+//                    return "wap/index_smscode_login_wap";
+                    return "wap/index_smscode_login_touch";
                 }
 
 //                String defaultMessage = "用户名或者密码错误";
