@@ -9,14 +9,11 @@
  * @version 0.1.0
  * @since 0.1.0
  */
-//'./interface', './utils', './dialog', '../utils', './skin', './common'                                             //Form, resolve, Local,Emitter,Utils   //Form, Utils, Dialog, SuperUtils
-define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './dialog', '../utils', './skin', './common'], function (Form, resolve, Local, Emitter, Utils, Dialog, SuperUtils) {
+define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', './dialog', '../utils', './skin', './common'], function (Form, resolve, Local, Emitter, Utils, Dialog, SuperUtils) {
     return {
         init: function () {
             var ru = Utils.getRu();
-//            var passParamsStr = Utils.getPassThroughParams();
             var token;
-
             //发送手机短信需要的验证码
             var CaptchaDialog = new Dialog({
                 $container: $('#captchaDialog'),
@@ -130,8 +127,10 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
                                     location.assign(ru + 'sgid=' + data.sgid);
                                 }
                             } else {
+                                alert(data.statusText + " " + data.status);
+
                                 self.showMsg(data.statusText);
-                                if (data.status == '20221' || data.status == '20257') {
+                                if (data.status == '20221' || data.status == '20257' || data.status == '21001' || data.status == '21002' || data.status == '21003' || data.status == '21004' ) {
                                     self.$captcha.empty().focus();
                                     self.showCaptcha();
                                 } else {
@@ -140,7 +139,6 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
                                         self.showCaptcha();
                                     }
                                 }
-
                             }
                         });
                     });
@@ -165,7 +163,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter', './utils', './d
                     this.$msg.find('.info').text(msg);
                     return this;
                 },
-                hideMsg: function() {
+                hideMsg: function () {
                     this.$msg.find('.circle').addClass('hide');
                     this.$msg.find('.info').empty();
                 },
