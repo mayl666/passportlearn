@@ -118,7 +118,7 @@ public class CommonConstant {
     public static final String SMS_CODE_OVER_DUE = "验证码已过期,请重新获取";
 
     //短信登录，验证码错误
-    public static final String SMS_CODE_CHECK_FAIL = "手机验证码错误";
+    public static final String SMS_CODE_CHECK_FAIL = "手机确认码错误";
 
     //短信登录，手机格式错误
     public static final String MOBILE_FORMAT_ERROR = "手机格式错误";
