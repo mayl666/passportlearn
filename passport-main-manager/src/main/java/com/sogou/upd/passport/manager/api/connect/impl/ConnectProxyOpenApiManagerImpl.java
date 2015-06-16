@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.exception.ConnectException;
@@ -44,6 +45,8 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
     @Autowired
     private DBShardRedisUtils dbShardRedisUtils;
 
+    private static final String CACHE_PREFIX_PICFACE = "SP:OPENID_PICFACE_";
+
     @Override
     public Result handleConnectOpenApi(String sgUrl, Map<String, String> tokenMap, Map<String, Object> paramsMap, String thirdAppId) {
         Result result = new APIResultSupport(false);
@@ -58,7 +61,8 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
             String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
             QQHttpClient qqHttpClient = new QQHttpClient();
             if("/v3/user/get_pinyin".equalsIgnoreCase(apiUrl)){
-                String resp = dbShardRedisUtils.get("pinyinData_" + tokenMap.get("open_id").toString());
+                String cacheKey = buildResultCacheKey(tokenMap.get("open_id").toString());
+                String resp = dbShardRedisUtils.get(cacheKey);
                 if(Strings.isNullOrEmpty(resp)){
                     resp = qqHttpClient.api(apiUrl, serverName, sigMap, protocol);
                         if (!Strings.isNullOrEmpty(resp)) {
@@ -67,7 +71,7 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
                             if (!CollectionUtils.isEmpty(maps) && "0".equals(String.valueOf(maps.get("ret"))) && maps.containsKey("result")) {
                                 HashMap<String,Object> tmp = (HashMap<String, Object>) maps.get("result");
                                 if(!CollectionUtils.isEmpty(tmp) && tmp.containsKey("PinYinData") && Strings.isNullOrEmpty(String.valueOf(tmp.containsKey("PinYinData")))) {
-                                    dbShardRedisUtils.setStringWithinSeconds("pinyinData_" + tokenMap.get("open_id").toString(),resp, TimeUnit.HOURS.toSeconds(8));
+                                    dbShardRedisUtils.setStringWithinSeconds(cacheKey,resp, TimeUnit.HOURS.toSeconds(8));
                                 }
                             }
                         }
@@ -157,4 +161,11 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
     private boolean isOpenid(String openid) {
         return (openid.length() == 32) && openid.matches("^[0-9A-Fa-f]+$");
     }
+
+
+
+    private String buildResultCacheKey(String openid){
+         return CACHE_PREFIX_PICFACE + openid;
+    }
+
 }
