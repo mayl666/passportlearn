@@ -117,14 +117,6 @@ define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', '.
                         }
                         self.__mLogining = true;
 
-                        if(/[^\d]/.test(s)){
-                            return self.showMsg('请输入6位数字手机确认码');
-                        }
-
-                        if (!/^\d{6}$/.test(s)) {
-                            return self.showMsg('请输入6位数字手机确认码');
-                        }
-
                         //登录
                         return Form.smsCodeLogin({
                             token: token,
