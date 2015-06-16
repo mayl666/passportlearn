@@ -9,8 +9,6 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-
 /**
  * Created with IntelliJ IDEA.
  * User: nahongxu
@@ -39,7 +37,7 @@ public class HystrixQQConnectCommand extends HystrixCommand<HttpEntity> {
     private static int qqTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_TIMEOUT));
     private static int qqConnectRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_CONNECT_REQUESTVOLUME));
     private static final int fallbackSemaphoreThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD));
-    private static final int breakerSleepWindow=Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_SLEEP_WINDOW));
+    private static final int breakerSleepWindow = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_SLEEP_WINDOW));
 
     public HystrixQQConnectCommand(RequestModel requestModel, HttpClient httpClient) {
 
@@ -77,7 +75,6 @@ public class HystrixQQConnectCommand extends HystrixCommand<HttpEntity> {
 
     @Override
     protected HttpEntity getFallback() {
-        String url = requestModel.getUrl();
         boolean isShortCircuited = isResponseShortCircuited();
         boolean isRejected = isResponseRejected();
         boolean isTimeout = isResponseTimedOut();
@@ -101,10 +98,10 @@ public class HystrixQQConnectCommand extends HystrixCommand<HttpEntity> {
         }
 
         // 记录fallback原因
-        if(fallbackReason!=null) {
-            if(isFailed){
+        if (fallbackReason != null) {
+            if (isFailed) {
                 logger.error(COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_EXCUTE_FAILED);
-            }else{
+            } else {
                 logger.error(fallbackReason);
             }
         }

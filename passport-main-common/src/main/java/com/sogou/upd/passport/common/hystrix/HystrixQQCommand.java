@@ -74,7 +74,6 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
 
     @Override
     protected HttpEntity getFallback() {
-        String url = requestModel.getUrl();
         boolean isShortCircuited = isResponseShortCircuited();
         boolean isRejected = isResponseRejected();
         boolean isTimeout = isResponseTimedOut();
@@ -98,10 +97,10 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
         }
 
         // 记录fallback原因
-        if(fallbackReason!=null) {
-            if(isFailed){
+        if (fallbackReason != null) {
+            if (isFailed) {
                 logger.error(COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_EXCUTE_FAILED);
-            }else{
+            } else {
                 logger.error(fallbackReason);
             }
         }
