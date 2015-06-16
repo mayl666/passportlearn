@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,6 +41,9 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
     @Autowired
     private ConnectConfigService connectConfigService;
 
+    @Autowired
+    private DBShardRedisUtils dbShardRedisUtils;
+
     @Override
     public Result handleConnectOpenApi(String sgUrl, Map<String, String> tokenMap, Map<String, Object> paramsMap, String thirdAppId) {
         Result result = new APIResultSupport(false);
@@ -53,8 +57,26 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
             String protocol = CommonConstant.HTTPS;
             String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
             QQHttpClient qqHttpClient = new QQHttpClient();
-            String resp = qqHttpClient.api(apiUrl, serverName, sigMap, protocol);
-            result = buildCommonResultByStrategy(platform, resp);
+            if("/v3/user/get_pinyin".equalsIgnoreCase(apiUrl)){
+                String resp = dbShardRedisUtils.get("pinyinData_" + tokenMap.get("open_id").toString());
+                if(Strings.isNullOrEmpty(resp)){
+                    resp = qqHttpClient.api(apiUrl, serverName, sigMap, protocol);
+                        if (!Strings.isNullOrEmpty(resp)) {
+                            ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
+                            HashMap<String, Object> maps = objectMapper.readValue(resp, HashMap.class);
+                            if (!CollectionUtils.isEmpty(maps) && "0".equals(String.valueOf(maps.get("ret"))) && maps.containsKey("result")) {
+                                HashMap<String,Object> tmp = objectMapper.readValue(String.valueOf(maps.get("result")),HashMap.class);
+                                if(!CollectionUtils.isEmpty(tmp) && tmp.containsKey("PinYinData") && Strings.isNullOrEmpty(String.valueOf(tmp.containsKey("PinYinData")))) {
+                                    dbShardRedisUtils.setStringWithinSeconds("pinyinData_" + tokenMap.get("open_id").toString(),resp, TimeUnit.HOURS.toSeconds(8));
+                                }
+                            }
+                        }
+                }
+                result = buildCommonResultByStrategy(platform, resp);
+            } else {
+                String resp = qqHttpClient.api(apiUrl, serverName, sigMap, protocol);
+                result = buildCommonResultByStrategy(platform, resp);
+            }
             //对第三方API调用失败记录log
             if (ErrorUtil.ERR_CODE_CONNECT_FAILED.equals(result.getCode()) && apiUrl.contains("get_pinyin")) {
                 logger.warn("handleConnectOpenApi error. apiUrl:{},openId:{},sigMap:{},paramsMap:{}", new Object[]{apiUrl, tokenMap.get("open_id").toString(), sigMap.toString(), paramsMap.toString()});
