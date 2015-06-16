@@ -35,7 +35,7 @@
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=588227" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=531696" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"

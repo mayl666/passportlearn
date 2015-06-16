@@ -35,7 +35,7 @@
 </div>
 <!--smscode-->
 <div class="row f-f f-vc">
-    <label for="sms" class="h-fil f-f f-hr f-vc">手机验证码：</label>
+    <label for="sms" class="h-fil f-f f-hr f-vc">确认码：</label>
     <input type="text" name="sms" id="sms" class="block h-fil f-1" placeholder="短信验证码" autocomplete="off" tabindex="2"/>
     <a href="#" class="sendsms block tc">发送验证码</a>
     <a href="#" class="block indicator hide"></a>
@@ -71,7 +71,7 @@
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=588227" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=531696" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"
