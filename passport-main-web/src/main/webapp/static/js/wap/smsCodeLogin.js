@@ -100,8 +100,8 @@ define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', '.
                         var c = $.trim(self.$captcha.val());
                         var s = $.trim(self.$sms.val());
 
-                        if (!u || !s || !c) {
-                            return self.showMsg('请输入用户名/手机确认码/验证码');
+                        if (!u || !s) {
+                            return self.showMsg('请输入用户名/手机确认码');
                         }
 
                         if (!/^1\d{10}$/.test(u)) {
@@ -116,6 +116,10 @@ define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', '.
                             return false;
                         }
                         self.__mLogining = true;
+
+                        if (!/^\d{6}$/.test(s)) {
+                           return self.showMsg('请输入6位手机确认码');
+                        }
 
                         //登录
                         return Form.smsCodeLogin({
