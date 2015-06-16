@@ -67,6 +67,7 @@
         <a href="#" class="x f-f f-hc f-vc h-fil f-1" style="border-right:0">确定</a>
     </div>
 </div>
+<script>var token = '${token}';</script>
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
