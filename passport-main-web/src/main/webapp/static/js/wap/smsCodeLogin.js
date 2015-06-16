@@ -109,7 +109,7 @@ define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', '.
                         }
 
                         if (!self.__smsSent) {
-                            return self.showMsg('您还没有获取短信验证码');
+                            return self.showMsg('您还没有获取手机确认码');
                         }
 
                         if (self.__mLogining) {
@@ -117,8 +117,14 @@ define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', '.
                         }
                         self.__mLogining = true;
 
+                        if(/[^\d]/.test(s)){
+                            return self.showMsg('请输入6位数字手机确认码');
+                        } else {
+                            self.hideMsg();
+                        }
+
                         if (!/^\d{6}$/.test(s)) {
-                           return self.showMsg('请输入6位手机确认码');
+                            return;
                         }
 
                         //登录
