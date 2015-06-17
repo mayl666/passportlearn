@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketException;
 import java.util.Map;
 
 /**
@@ -64,7 +65,17 @@ public class HystrixQQAuthMethod extends ConnectHttpClient {
         } catch (OAuthProblemException e) {
             stopWatch(stopWatch, url, "failed");
             throw e;
-        } catch (Exception e) {
+        }catch (SocketException ske) {
+            log.error("HystrixCommonMethod socked error");
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ioe) {
+                }
+            }
+            return null;
+        }
+        catch (Exception e) {
             log.warn("[HttpClient4] Execute Http Request Exception! RequestBody:" + request.getBody(), e);
             stopWatch(stopWatch, url, "failed");
             throw new OAuthProblemException(ErrorUtil.HTTP_CLIENT_REQEUST_FAIL);
