@@ -296,7 +296,7 @@ public class SGHttpClient {
             if (hystrixQQCommand != null) {
                 hystrixQQCommand.abortHttpRequest();
             }
-            throw new RuntimeException(HystrixConstant.FALLBACK_REASON_CANNOT_FALLBACK+",url="+ url);
+            throw new RuntimeException("HystrixQQCommand "+HystrixConstant.FALLBACK_REASON_CANNOT_FALLBACK+",url="+ url);
         }
 
     }

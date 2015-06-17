@@ -214,7 +214,7 @@ public class ConnectHttpClient extends SGHttpClient {
             if (hystrixQQConnectCommand != null) {
                 hystrixQQConnectCommand.abortHttpRequest();
             }
-            throw new RuntimeException(HystrixConstant.FALLBACK_REASON_CANNOT_FALLBACK + ",url=" + url);
+            throw new RuntimeException("HystrixQQConnectCommand "+HystrixConstant.FALLBACK_REASON_CANNOT_FALLBACK + ",url=" + url);
         }
 
     }

@@ -71,7 +71,7 @@ public class OAuthHttpClient {
             if (hystrixQQOAuthCommand != null) {
                 hystrixQQOAuthCommand.abortHttpRequest();
             }
-            throw new OAuthProblemException(HystrixConstant.FALLBACK_REASON_CANNOT_FALLBACK + ",url=" + url);
+            throw new OAuthProblemException("HystrixQQAuthCommand "+HystrixConstant.FALLBACK_REASON_CANNOT_FALLBACK + ",url=" + url);
         }
 
     }
