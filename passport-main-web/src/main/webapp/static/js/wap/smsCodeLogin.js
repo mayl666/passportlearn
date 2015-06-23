@@ -47,7 +47,6 @@ define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', '.
                 $captchaWrapper: $('#captcha-wrapper'),
                 $username: $('#username'),
                 $sms: $('#sms'),
-                $token: $('#token'),
                 $captchaImg: $('#captcha-img-check'),
                 $captcha: $('#captcha'),
                 $sendsms: $('.sendsms'),
@@ -100,7 +99,6 @@ define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', '.
                         var u = $.trim(self.$username.val());
                         var c = $.trim(self.$captcha.val());
                         var s = $.trim(self.$sms.val());
-                        var token = $.trim(self.$token.val());
 
                         if (!u || !s) {
                             return self.showMsg('请输入用户名/手机确认码');
