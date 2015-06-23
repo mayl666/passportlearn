@@ -159,6 +159,36 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
+    public void incSmsCodeLoginTimes(final String mobile, final String ip, boolean isSuccess) throws ServiceException {
+        try {
+            if (isSuccess) {
+                discardTaskExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        String username_hKey = CacheConstant.CACHE_PREFIX_SMS_CODE_LOGIN_NUM + mobile;
+                        hRecordTimes(username_hKey, CacheConstant.CACHE_SUCCESS_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
+                        if (!Strings.isNullOrEmpty(ip)) {
+                            String ip_hKey = CacheConstant.CACHE_PREFIX_IP_LOGINNUM + ip;
+                            hRecordTimes(ip_hKey, CacheConstant.CACHE_SUCCESS_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
+                        }
+                    }
+                });
+            } else {
+                String username_hKey = CacheConstant.CACHE_PREFIX_SMS_CODE_LOGIN_NUM + mobile;
+                hRecordTimes(username_hKey, CacheConstant.CACHE_FAILED_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
+                if (!Strings.isNullOrEmpty(ip)) {
+                    String ip_hKey = CacheConstant.CACHE_PREFIX_IP_LOGINNUM + ip;
+                    hRecordTimes(ip_hKey, CacheConstant.CACHE_FAILED_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
+                }
+
+            }
+        } catch (Exception e) {
+            logger.error("incSmsCodeLoginTimes," + mobile + "," + ip + "," + isSuccess, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
     public boolean isLoginTimesForBlackList(String username, String ip) throws ServiceException {
         try {
             //username
@@ -468,6 +498,18 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             return hCheckTimesByKey(userName_hKey, CacheConstant.CACHE_FAILED_KEY, LoginConstant.LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
         } catch (Exception e) {
             logger.error("loginFailedTimesNeedCaptcha," + username + "," + ip, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean smsCodeLoginFailedNeedCaptcha(String mobile, String ip) throws ServiceException {
+        try {
+            // 根据username判断是否需要弹出验证码
+            String userName_hKey = CacheConstant.CACHE_PREFIX_SMS_CODE_LOGIN_NUM + mobile;
+            return hCheckTimesByKey(userName_hKey, CacheConstant.CACHE_FAILED_KEY, LoginConstant.MESSAGE_LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
+        } catch (Exception e) {
+            logger.error("smsCodeLoginFailedNeedCaptcha error, mobile:{},ip:{}" + mobile, ip, e);
             throw new ServiceException(e);
         }
     }
@@ -1001,7 +1043,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public void incTrySmsCodeFailTimes(final String mobile, final int clientId) {
         try {
             if (!Strings.isNullOrEmpty(mobile)) {
-                String cacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_CHECK_FAIL_NUM + mobile+ "_" + clientId;
+                String cacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_CHECK_FAIL_NUM + mobile + "_" + clientId;
                 recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             } else {
                 logger.warn("incTrySmsCodeFailTimes warning, mobile is null");
@@ -1015,7 +1057,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public void incGetSmsCodeTimes(final String mobile, final int clientId) {
         try {
             if (!Strings.isNullOrEmpty(mobile)) {
-                String cacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_GET_NUM + mobile+ "_" + clientId;
+                String cacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_GET_NUM + mobile + "_" + clientId;
                 recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
             } else {
                 logger.warn("incGetSmsCodeTimes warning,mobile is null or empty.");

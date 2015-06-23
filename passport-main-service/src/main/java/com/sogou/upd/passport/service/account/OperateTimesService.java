@@ -46,6 +46,17 @@ public interface OperateTimesService {
      */
     public void incLoginTimes(final String username, final String ip, final boolean isSuccess) throws ServiceException;
 
+
+    /**
+     * 记录短信登录，成功或者失败次数
+     *
+     * @param mobile
+     * @param ip
+     * @param isSuccess
+     * @throws ServiceException
+     */
+    public void incSmsCodeLoginTimes(final String mobile, final String ip, final boolean isSuccess) throws ServiceException;
+
     /**
      * 记录一天内修改密码的次数
      *
@@ -142,6 +153,17 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public boolean loginFailedTimesNeedCaptcha(String username, String ip) throws ServiceException;
+
+
+    /**
+     * 手机短信登录，登录失败次数超过限制，需要输入验证码
+     *
+     * @param mobile
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean smsCodeLoginFailedNeedCaptcha(String mobile, String ip) throws ServiceException;
 
     /**
      * 记录提及反馈次数

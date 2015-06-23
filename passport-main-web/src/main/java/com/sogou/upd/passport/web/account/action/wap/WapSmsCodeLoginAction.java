@@ -44,10 +44,6 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
     private static final Logger LOGGER = LoggerFactory.getLogger(WapSmsCodeLoginAction.class);
 
     @Autowired
-    private LoginManager loginManager;
-    @Autowired
-    private WapLoginManager wapLoginManager;
-    @Autowired
     private SmsCodeLoginManager smsCodeLoginManager;
 
     @RequestMapping(value = "/smsCodeLogin/index")
@@ -124,12 +120,12 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                 WapRegAction.setSgidCookie(response, sgid);
 
                 writeResultToResponse(response, result);
-                loginManager.doAfterLoginSuccess(loginParams.getMobile(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
+                smsCodeLoginManager.doAfterLoginSuccess(loginParams.getMobile(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
                 return "empty";
             } else {
                 //如果校验用户名和密码失败，且是因为需要验证码，则置验证码为1，即需要验证码
                 int isNeedCaptcha = 0;
-                loginManager.doAfterLoginFailed(loginParams.getMobile(), ip, result.getCode());
+                smsCodeLoginManager.doAfterLoginFailed(loginParams.getMobile(), ip, result.getCode());
                 //校验是否需要验证码
                 if (result.getCode() == ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE) {
                     isNeedCaptcha = 1;
@@ -140,7 +136,7 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                     return getErrorReturnStr(loginParams, result.getMessage(), isNeedCaptcha);
                 }
                 //否则，还需要校验是否需要弹出验证码
-                boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getMobile(), getIp(request));
+                boolean needCaptcha = smsCodeLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getMobile(), getIp(request));
                 if (needCaptcha) {
                     isNeedCaptcha = 1;
                 }

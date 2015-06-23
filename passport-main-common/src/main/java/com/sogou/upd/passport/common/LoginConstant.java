@@ -36,6 +36,14 @@ public class LoginConstant {
      * 连续登陆失败多少次需要用户在登陆时输入验证码 >=
      */
     public static final int LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT = 3;
+
+
+    /**
+     * 短信登录，失败1次，需要输入验证码
+     */
+    public static final int MESSAGE_LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT = 1;
+
+
     /**
      * 某IP连续登陆失败多少次需要用户在登陆时输入验证码 >=
      */

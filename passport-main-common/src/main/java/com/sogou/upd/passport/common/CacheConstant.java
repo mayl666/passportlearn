@@ -151,6 +151,8 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_SMS_CODE_LOGIN = "SP.MOBILE:SMS_CODE_LOGIN_";//手机短信登录，mobile与sms code 映射
     public static final String CACHE_PREFIX_SMS_CODE_GET_NUM = "SP.MOBILE:SMS_CODE_GET_NUM_";//手机短信登录，请求短信校验码次数,5次/天
     public static final String CACHE_PREFIX_SMS_CODE_CHECK_FAIL_NUM = "SP.MOBILE:SMS_CODE_CHECK_FAIL_NUM_"; //手机短信登录，尝试短信校验码次数，10次/天
+    public static final String CACHE_PREFIX_SMS_CODE_LOGIN_NUM="SP.MOBILE:SMS_CODE_LOGINNUM_HASH_";//手机短信登录，登录次数
+
 
 
 }

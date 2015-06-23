@@ -3,6 +3,7 @@ package com.sogou.upd.passport.manager.account.impl;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.LoginConstant;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -10,6 +11,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
+import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.SmsCodeLoginManager;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.form.SmsCodeLoginParams;
@@ -42,6 +44,8 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
     private RegManager regManager;
     @Autowired
     private SessionServerManager sessionServerManager;
+    @Autowired
+    private SecureManager secureManager;
 
     @Autowired
     private SmsCodeLoginService smsCodeLoginService;
@@ -113,7 +117,7 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
 
         try {
             //校验是否需要验证码
-            if (operateTimesService.loginFailedTimesNeedCaptcha(mobile, ip)) {
+            if (operateTimesService.smsCodeLoginFailedNeedCaptcha(mobile, ip)) {
                 if (Strings.isNullOrEmpty(captchaCode)) {
                     LOGGER.warn("smsCodeLogin need captchaCode! username:{},ip:{},token:{}", new Object[]{mobile, ip, token});
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
@@ -173,5 +177,28 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
             result.setSuccess(false);
         }
         return result;
+    }
+
+    @Override
+    public boolean needCaptchaCheck(String client_id, String username, String ip) {
+        if (operateTimesService.smsCodeLoginFailedNeedCaptcha(username, ip)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId) {
+        //记录登陆次数
+        operateTimesService.incSmsCodeLoginTimes(username, ip, true);
+        //用户登陆记录
+        secureManager.logActionRecord(passportId, clientId, AccountModuleEnum.LOGIN, ip, null);
+    }
+
+    @Override
+    public void doAfterLoginFailed(final String mobile, final String ip, String errCode) {
+        if (ErrorUtil.ERROR_CODE_SMS_CODE_ERROR.equalsIgnoreCase(errCode)) {
+            operateTimesService.incSmsCodeLoginTimes(mobile, ip, false);
+        }
     }
 }
