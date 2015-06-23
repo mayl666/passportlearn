@@ -86,7 +86,12 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
     @Override
     protected T run() throws Exception {
         httpRequestBase = getRequestBase(request, requestMethod);
-        return HystrixQQAuthMethod.execute(request, headers, requestMethod, responseClass, httpRequestBase);
+        try{
+            return HystrixQQAuthMethod.execute(request, headers, requestMethod, responseClass, httpRequestBase);
+        }catch (OAuthProblemException e){
+            fallbackReason="errorCode:"+e.getError()+",errorDesc:"+e.getDescription();
+            return null;
+        }
 
     }
 
