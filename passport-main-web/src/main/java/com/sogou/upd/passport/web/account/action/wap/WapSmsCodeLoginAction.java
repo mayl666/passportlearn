@@ -124,12 +124,12 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                 WapRegAction.setSgidCookie(response, sgid);
 
                 writeResultToResponse(response, result);
-                loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
+                loginManager.doAfterLoginSuccess(loginParams.getMobile(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
                 return "empty";
             } else {
                 //如果校验用户名和密码失败，且是因为需要验证码，则置验证码为1，即需要验证码
                 int isNeedCaptcha = 0;
-                loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
+                loginManager.doAfterLoginFailed(loginParams.getMobile(), ip, result.getCode());
                 //校验是否需要验证码
                 if (result.getCode() == ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE) {
                     isNeedCaptcha = 1;
