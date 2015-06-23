@@ -5,6 +5,7 @@ import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.hystrix.HystrixQQAuthCommand;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
@@ -41,7 +42,7 @@ public class OAuthHttpClient {
                 try {
                     return revokeHystrixOAuthQQ(request, requestMethod, responseClass, headers);
                 } catch (Exception e) {
-                    throw new OAuthProblemException(e.getMessage());
+                    throw new OAuthProblemException(ErrorUtil.HTTP_CLIENT_REQEUST_FAIL,e.getMessage());
                 }
             }
 
