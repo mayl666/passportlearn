@@ -51,6 +51,8 @@ public class HystrixConfigFactory {
     public static final String PROPERTY_KAFKA_SEMAPHORE_THRESHOLD = "kafkaSemaphoreThreshold";
     public static final String PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD = "fallbackSemaphoreThreshold";
 
+    public static final String PROPERTY_QQ_DELAY="qqDelay";
+
 
     private static Props properties = new Props();
     protected static ConcurrentMap<String, String> hystrixConfigMap = Maps.newConcurrentMap();
@@ -97,6 +99,9 @@ public class HystrixConfigFactory {
                 setProperties(hystrixConfigMap, properties, PROPERTY_BREAKER_FORCE_OPEN, HystrixConstant.DEFAULT_BREAKER_FORCE_OPEN);
                 setProperties(hystrixConfigMap, properties, PROPERTY_BREAKER_FORCE_CLOSE, HystrixConstant.DEFAULT_BREAKER_FORCE_CLOSE);
                 setProperties(hystrixConfigMap,properties,PROPERTY_BREAKER_SLEEP_WINDOW,HystrixConstant.DEFAULT_BREAKER_SLEEP_WINDOW);
+
+                setProperties(hystrixConfigMap,properties,PROPERTY_QQ_DELAY,HystrixConstant.DEFAULT_QQ_DELAY);
+
                 //打印参数
                 logProperties();
             }
@@ -154,5 +159,6 @@ public class HystrixConfigFactory {
         logger.warn(PROPERTY_BREAKER_FORCE_OPEN + ":" + getProperty(PROPERTY_BREAKER_FORCE_OPEN));
         logger.warn(PROPERTY_BREAKER_FORCE_CLOSE + ":" + getProperty(PROPERTY_BREAKER_FORCE_CLOSE));
         logger.warn(PROPERTY_BREAKER_SLEEP_WINDOW+":"+getProperty(PROPERTY_BREAKER_SLEEP_WINDOW));
+        logger.warn(PROPERTY_QQ_DELAY+":"+getProperty(PROPERTY_QQ_DELAY));
     }
 }
