@@ -221,7 +221,7 @@ public class LoginManagerImpl implements LoginManager {
 
     @Override
     public void doAfterLoginFailed(final String username, final String ip, String errCode) {
-        if (USERNAME_PWD_ERROR.equals(errCode)) {
+        if (USERNAME_PWD_ERROR.equals(errCode) || ErrorUtil.ERROR_CODE_SMS_CODE_ERROR.equalsIgnoreCase(errCode)) {
             operateTimesService.incLoginTimes(username, ip, false);
         }
     }

@@ -344,7 +344,7 @@ public class ErrorUtil {
     //短信登录， 手机校验码请求过于频繁
     public static final String ERROR_CODE_SMS_CODE_GET_FREQUENCY = "21001";
 
-    //短信登录，手机校验码 尝试次数过多
+    //短信登录，手机校验码尝试次数过多
     public static final String ERROR_CODE_SMS_CODE_TRY_FREQUENCY = "21002";
 
     //短信登录，验证码已过期,请重新获取
