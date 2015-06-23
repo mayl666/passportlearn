@@ -66,7 +66,7 @@ public class HystrixQQAuthMethod extends ConnectHttpClient {
             stopWatch(stopWatch, url, "failed");
             throw e;
         }catch (SocketException ske) {
-            log.error("HystrixCommonMethod socked error");
+            log.warn("HystrixQQAuthMethod socked error");
             if (in != null) {
                 try {
                     in.close();
@@ -76,7 +76,7 @@ public class HystrixQQAuthMethod extends ConnectHttpClient {
             return null;
         }
         catch (Exception e) {
-            log.warn("[HttpClient4] Execute Http Request Exception! RequestBody:" + request.getBody(), e);
+            log.warn("[HystrixQQAuthMethod] Execute Http Request Exception! RequestBody:" + request.getBody(), e);
             stopWatch(stopWatch, url, "failed");
             throw new OAuthProblemException(ErrorUtil.HTTP_CLIENT_REQEUST_FAIL);
         } finally {
@@ -84,7 +84,7 @@ public class HystrixQQAuthMethod extends ConnectHttpClient {
                 try {
                     in.close();
                 } catch (IOException e) {
-                    log.error("[HttpClient4] Close input stream IOException!", e);
+                    log.error("[HystrixQQAuthMethod] Close input stream IOException!", e);
                     stopWatch(stopWatch, url, "failed");
                     throw new OAuthProblemException(ErrorUtil.HTTP_CLIENT_REQEUST_FAIL);
                 }
