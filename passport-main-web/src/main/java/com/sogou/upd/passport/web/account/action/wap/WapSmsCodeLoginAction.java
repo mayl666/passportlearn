@@ -148,10 +148,6 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                     defaultMessage = "您登陆过于频繁，请稍后再试。";
                 }
                 if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
-                    if (needCaptcha && result.getCode() != ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR) {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                        result.setMessage("验证码错误或已过期");
-                    }
                     writeResultToResponse(response, result);
                     return "empty";
                 }
