@@ -64,7 +64,7 @@ public class OAuthHttpClient {
                 if (hystrixQQOAuthCommand != null) {
                     fallbackReason = hystrixQQOAuthCommand.getFallbackReason();
                 }
-                throw new OAuthProblemException(fallbackReason + ",url=" + url);
+                throw new OAuthProblemException(fallbackReason);
             }
 
             return hystrixResponse;
