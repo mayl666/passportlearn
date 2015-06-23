@@ -82,7 +82,7 @@ public class SimulateQqDelay extends BaseController {
 
 //        return "{\"ret\":0,\"msg\":\"\",\"access_token\":\"77173AA3B1793AD01D62F8B210291190\",\"expires_in\":7776000,\"refresh_token\":\"B7A87A6A4B7464E6C83CB3274CAEAD2F\",\"openid\":\"E74BEC2F5729AB12495986504FA64826\",\"userinfo\":{\"nickname\":\"Dolphin\",\"gender\":\"female\",\"faceurl40\":\"http://q.qlogo.cn/qqapp/100294784/E74BEC2F5729AB12495986504FA64826/40\",\"faceurl100\":\"http://q.qlogo.cn/qqapp/100294784/E74BEC2F5729AB12495986504FA64826/100\"}}";
 
-        return "{\"msg\":\"invalid change the token password\",\"errcode\":\"100045\"}}";
+        return "{\"msg\":\"invalid change the token password\",\"ret\":\"100045\"}}";
 
 
     }
