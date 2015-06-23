@@ -93,7 +93,7 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                 model.addAttribute("isNeedCaptcha", 1);
                 model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
             }
-            model.addAttribute("username", wapIndexParams.getUsername());
+            model.addAttribute("mobile", wapIndexParams.getMobile());
             //TODO return what?
             return "wap/login_wap";
         }
@@ -140,7 +140,7 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                     return getErrorReturnStr(loginParams, result.getMessage(), isNeedCaptcha);
                 }
                 //否则，还需要校验是否需要弹出验证码
-                boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
+                boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getMobile(), getIp(request));
                 if (needCaptcha) {
                     isNeedCaptcha = 1;
                 }
@@ -165,7 +165,7 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
             LOGGER.error("smsCodeLogin error,message:{}", e.getMessage());
         } finally {
             //用户登录log
-            UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), ip);
+            UserOperationLog userOperationLog = new UserOperationLog(loginParams.getMobile(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), ip);
             String refer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", refer);
             UserOperationLogUtil.log(userOperationLog);
@@ -233,7 +233,7 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
         }
         returnStr.append("&needCaptcha=" + isNeedCaptcha);
         if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
-            returnStr.append("&username=" + loginParams.getUsername());
+            returnStr.append("&mobile=" + loginParams.getMobile());
         }
         return returnStr.toString();
     }
