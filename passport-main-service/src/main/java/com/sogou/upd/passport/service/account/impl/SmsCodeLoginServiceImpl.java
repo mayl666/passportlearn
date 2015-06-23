@@ -155,7 +155,8 @@ public class SmsCodeLoginServiceImpl implements SmsCodeLoginService {
     private void delCache(final String mobile, final int clientId) {
         //验证成功，清除缓存
         redisUtils.delete(CacheConstant.CACHE_PREFIX_SMS_CODE_LOGIN + mobile + "_" + clientId);
-        redisUtils.delete(CacheConstant.CACHE_PREFIX_SMS_CODE_GET_NUM + mobile + "_" + clientId);
-        redisUtils.delete(CacheConstant.CACHE_PREFIX_SMS_CODE_CHECK_FAIL_NUM + mobile + "_" + clientId);
+
+//        redisUtils.delete(CacheConstant.CACHE_PREFIX_SMS_CODE_GET_NUM + mobile + "_" + clientId);
+//        redisUtils.delete(CacheConstant.CACHE_PREFIX_SMS_CODE_CHECK_FAIL_NUM + mobile + "_" + clientId);
     }
 }

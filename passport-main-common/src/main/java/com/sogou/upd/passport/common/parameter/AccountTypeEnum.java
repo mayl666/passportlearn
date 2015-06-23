@@ -74,7 +74,8 @@ public enum AccountTypeEnum {
     }
 
     public static boolean isConnect(int provider) {
-        if (provider != PHONE.getValue() && provider != EMAIL.getValue() && provider != SOHU.getValue() && provider != SOGOU.getValue() && provider != UNKNOWN.getValue()) {
+        if (provider != PHONE.getValue() && provider != EMAIL.getValue()
+                && provider != SOHU.getValue() && provider != SOGOU.getValue() && provider != UNKNOWN.getValue() && provider != MESSAGELOGIN.getValue()) {
             return true;
         } else {
             return false;

@@ -968,6 +968,8 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
                 }
             } else {
+                //记录请求sms code的次数
+                recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
                 return false;
             }
         } catch (Exception e) {
