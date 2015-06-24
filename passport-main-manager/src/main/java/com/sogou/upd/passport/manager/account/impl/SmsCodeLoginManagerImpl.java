@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.ToolUUIDUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -138,7 +139,7 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
                     String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
                     if (Strings.isNullOrEmpty(passportId)) {
                         //初始化账号信息 Account、 AccountInfo、 MobilePassportMapping
-                        Account account = accountService.initialAccount(mobile, null, true, ip, AccountTypeEnum.MESSAGELOGIN.getValue());
+                        Account account = accountService.initialAccount(mobile, ToolUUIDUtil.genreateUUidWithOutSplit(), true, ip, AccountTypeEnum.MESSAGELOGIN.getValue());
                         if (account != null) {
                             passportId = account.getPassportId();
                             AccountInfo accountInfo = new AccountInfo(passportId, new Date(), new Date());

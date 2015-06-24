@@ -193,14 +193,6 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
     }
 
 
-    private String getSuccessReturnStr(String ru, String token) {
-        String deRu = Coder.decodeUTF8(ru);
-        if (deRu.contains("?")) {
-            return deRu + "&sgid=" + token;
-        }
-        return deRu + "?sgid=" + token;
-    }
-
     private String getErrorReturnStr(WapSmsCodeLoginParams loginParams, String errorMsg, int isNeedCaptcha) {
         StringBuilder returnStr = new StringBuilder();
         returnStr.append("redirect:/wap/smsCodeLogin/index?");
@@ -230,15 +222,6 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
         return returnStr.toString();
     }
 
-    private void buildModuleReturnStr(boolean hasError, String ru, String errorMsg, String client_id, String skin, String v, boolean needCaptcha, Model model) {
-        model.addAttribute("errorMsg", errorMsg);
-        model.addAttribute("hasError", hasError);
-        model.addAttribute("ru", Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_INDEX_URL) : Coder.encodeUTF8(ru));
-        model.addAttribute("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_SKIN_GREEN : skin);
-        model.addAttribute("needCaptcha", needCaptcha);
-        model.addAttribute("v", Strings.isNullOrEmpty(v) ? WapConstant.WAP_COLOR : v);
-        model.addAttribute("client_id", client_id);
-    }
 
     private String getIndexErrorReturnStr(String ru, String errorMsg) {
         if (!Strings.isNullOrEmpty(ru)) {

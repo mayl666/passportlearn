@@ -110,7 +110,7 @@ public class AccountServiceImpl implements AccountService {
             account.setAccountType(provider);
             account.setFlag(AccountStatusEnum.REGULAR.getValue());
             //增加 短信登录类型
-            if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider) || AccountTypeEnum.isMessageLogin(provider)) {
+            if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider)) {
                 //对于第三方账号和sohu域账号来讲，无密码  搜狗账号迁移完成后，需要增加一个值表示无密码
                 account.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
             } else {
