@@ -1007,11 +1007,11 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                     return true;
                 } else {
                     //记录请求sms code的次数
-                    recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                    recordTimes(cacheKey, DateAndNumTimesConstant.TIME_FIVEMINUTES);
                 }
             } else {
                 //记录请求sms code的次数
-                recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                recordTimes(cacheKey, DateAndNumTimesConstant.TIME_FIVEMINUTES);
                 return false;
             }
         } catch (Exception e) {
