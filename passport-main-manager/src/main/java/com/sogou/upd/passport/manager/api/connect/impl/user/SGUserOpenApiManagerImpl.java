@@ -92,7 +92,8 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     private Result obtainConnectOriginalUserInfo(String passportId, int clientId, String thirdAppId) throws ServiceException, IOException, OAuthProblemException {
         Result result = new APIResultSupport(false);
         ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId);
-        if (connectUserInfoVO == null) {
+        // 登录时更新缓存，origin为空，所以获取用户信息时需判断origin是否为空
+        if (connectUserInfoVO == null || CollectionUtils.isEmpty(connectUserInfoVO.getOriginal())) {
             result = sgConnectApiManager.obtainConnectToken(passportId, clientId, thirdAppId);
             ConnectToken connectToken;
             if (result.isSuccess()) {
