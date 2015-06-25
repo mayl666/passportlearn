@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.exception.ConnectException;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created with IntelliJ IDEA.
@@ -40,6 +42,11 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
     @Autowired
     private ConnectConfigService connectConfigService;
 
+    @Autowired
+    private DBShardRedisUtils dbShardRedisUtils;
+
+    private static final String CACHE_PREFIX_PICFACE = "SP:OPENID_PICFACE_";
+
     @Override
     public Result handleConnectOpenApi(String sgUrl, Map<String, String> tokenMap, Map<String, Object> paramsMap, String thirdAppId) {
         Result result = new APIResultSupport(false);
@@ -53,8 +60,27 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
             String protocol = CommonConstant.HTTPS;
             String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
             QQHttpClient qqHttpClient = new QQHttpClient();
-            String resp = qqHttpClient.api(apiUrl, serverName, sigMap, protocol);
-            result = buildCommonResultByStrategy(platform, resp);
+            if("/v3/user/get_pinyin".equalsIgnoreCase(apiUrl)){
+                String cacheKey = buildResultCacheKey(tokenMap.get("open_id").toString());
+                String resp = dbShardRedisUtils.get(cacheKey);
+                if(Strings.isNullOrEmpty(resp)){
+                    resp = qqHttpClient.api(apiUrl, serverName, sigMap, protocol);
+                        if (!Strings.isNullOrEmpty(resp)) {
+                            ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
+                            HashMap<String, Object> maps = objectMapper.readValue(resp, HashMap.class);
+                            if (!CollectionUtils.isEmpty(maps) && "0".equals(String.valueOf(maps.get("ret"))) && maps.containsKey("result")) {
+                                HashMap<String,Object> tmp = (HashMap<String, Object>) maps.get("result");
+                                if(!CollectionUtils.isEmpty(tmp) && tmp.containsKey("PinYinData") && Strings.isNullOrEmpty(String.valueOf(tmp.containsKey("PinYinData")))) {
+                                    dbShardRedisUtils.setStringWithinSeconds(cacheKey,resp, TimeUnit.HOURS.toSeconds(8));
+                                }
+                            }
+                        }
+                }
+                result = buildCommonResultByStrategy(platform, resp);
+            } else {
+                String resp = qqHttpClient.api(apiUrl, serverName, sigMap, protocol);
+                result = buildCommonResultByStrategy(platform, resp);
+            }
             //对第三方API调用失败记录log
             if (ErrorUtil.ERR_CODE_CONNECT_FAILED.equals(result.getCode()) && apiUrl.contains("get_pinyin")) {
                 logger.warn("handleConnectOpenApi error. apiUrl:{},openId:{},sigMap:{},paramsMap:{}", new Object[]{apiUrl, tokenMap.get("open_id").toString(), sigMap.toString(), paramsMap.toString()});
@@ -135,4 +161,11 @@ public class ConnectProxyOpenApiManagerImpl extends BaseProxyManager implements 
     private boolean isOpenid(String openid) {
         return (openid.length() == 32) && openid.matches("^[0-9A-Fa-f]+$");
     }
+
+
+
+    private String buildResultCacheKey(String openid){
+         return CACHE_PREFIX_PICFACE + openid;
+    }
+
 }
