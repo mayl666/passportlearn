@@ -60,7 +60,7 @@ public class SinaUserAPIResponse extends UserAPIResponse {
         user.setGender(formGender(getParam(SinaOAuth.GENDER)));
         user.setUserDesc(getParam(SinaOAuth.DESC));
         user.setProvince(sinaProvinceCache.get(provinceID));
-        user.setCity(formCity(provinceID, cityID));
+//        user.setCity(formCity(provinceID, cityID));
         user.setRegion(getParam(SinaOAuth.LOCATION));
         user.setOriginal(parameters);
         return user;
