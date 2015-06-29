@@ -88,19 +88,22 @@ public class SinaUserAPIResponse extends UserAPIResponse {
     }
 
     private static void obtainSinaProvinces() {
-        String url = SinaOAuth.SINA_PROVINCES_FORMAT_URL;
-        RequestModel requestModel = new RequestModel(url);
-        Map provincesMap = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
-        List<Map> provincesList = (List<Map>) provincesMap.get("provinces");
-        // 省份map，{11=北京}
-        for (Map province : provincesList) {
-            Integer id = (Integer) province.get("id");
-            String name = (String) province.get("name");
-            name = StringUtil.exchangeToUf8(name);
-            sinaProvinceCache.putIfAbsent(id, name);
-            // 城市map，{11={1=海淀}}
-            List<Map<String, String>> cityList = (List<Map<String, String>>) province.get("citys");
-            sinaCityCache.putIfAbsent(id, cityList);
+        try {
+            String url = SinaOAuth.SINA_PROVINCES_FORMAT_URL;
+            RequestModel requestModel = new RequestModel(url);
+            Map provincesMap = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+            List<Map> provincesList = (List<Map>) provincesMap.get("provinces");
+            // 省份map，{11=北京}
+            for (Map province : provincesList) {
+                Integer id = (Integer) province.get("id");
+                String name = (String) province.get("name");
+                name = StringUtil.exchangeToUf8(name);
+                sinaProvinceCache.putIfAbsent(id, name);
+                // 城市map，{11={1=海淀}}
+                List<Map<String, String>> cityList = (List<Map<String, String>>) province.get("citys");
+                sinaCityCache.putIfAbsent(id, cityList);
+            }
+        }catch (Exception e){
         }
     }
 
