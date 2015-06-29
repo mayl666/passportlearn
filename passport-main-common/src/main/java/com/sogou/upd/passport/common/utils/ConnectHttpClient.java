@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.common.utils;
 
 import com.google.common.base.Strings;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
@@ -140,13 +141,16 @@ public class ConnectHttpClient extends SGHttpClient {
         //对QQapi调用hystrix
         String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
         Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
-        Boolean hystrixQQHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
-        //关闭ConnectHttpClient的hystrix开关
-        hystrixQQHystrixEnabled=false;
-        if (hystrixGlobalEnabled && hystrixQQHystrixEnabled) {
+        Boolean hystrixQQEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
+
+        if (hystrixGlobalEnabled && hystrixQQEnabled) {
             String qqUrl = requestModel.getUrl();
             if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
-                return new HystrixQQConnectCommand(requestModel, httpClient).execute();
+                try {
+                    return revokeHystrixConnectQQ(requestModel);
+                } catch (Exception e) {
+                    throw new RuntimeException(e.getMessage());
+                }
             }
         }
 
@@ -186,6 +190,33 @@ public class ConnectHttpClient extends SGHttpClient {
             tag += "(slow)";
         }
         stopWatch.stop(tag, message);
+    }
+
+
+    //调用HystrixQQConnectCommand
+    public static HttpEntity revokeHystrixConnectQQ(RequestModel requestModel) throws Exception {
+
+        HystrixQQConnectCommand hystrixQQConnectCommand = null;
+        String fallbackReason = "";
+        String url = requestModel.getUrl();
+        try {
+            hystrixQQConnectCommand = new HystrixQQConnectCommand(requestModel, httpClient);
+            HttpEntity hystrixResponse = hystrixQQConnectCommand.execute();
+            if (null == hystrixResponse) {
+                if (hystrixQQConnectCommand != null) {
+                    fallbackReason = hystrixQQConnectCommand.getFallbackReason();
+                }
+                throw new RuntimeException(fallbackReason + ",url=" + url);
+            }
+
+            return hystrixResponse;
+        } catch (HystrixRuntimeException he) {
+            if (hystrixQQConnectCommand != null) {
+                hystrixQQConnectCommand.abortHttpRequest();
+            }
+            throw new RuntimeException("HystrixQQConnectCommand "+HystrixConstant.FALLBACK_REASON_CANNOT_FALLBACK + ",url=" + url);
+        }
+
     }
 
 }

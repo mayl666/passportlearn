@@ -19,9 +19,11 @@ import org.slf4j.LoggerFactory;
 public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
 
     private String infoToLog;
+    private String fallbackReason;
 
     private static final Logger logger = LoggerFactory.getLogger("hystrixLogger");
     private static final Logger kafkaLogger = LoggerFactory.getLogger("userLoggerKafka");
+    private static final String COMMOND_FALLBACK_PREFIX = "HystrixKafkaSemaphoresCommand fallback ";
 
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_CACHE_ENABLED));
     private static boolean requestLogEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_LOG_ENABLED));
@@ -51,6 +53,7 @@ public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
                         .withFallbackIsolationSemaphoreMaxConcurrentRequests(fallbackSemaphoreThreshold)));
 
         this.infoToLog = infoToLog;
+        this.fallbackReason=null;
 
     }
 
@@ -66,17 +69,39 @@ public class HystrixKafkaSemaphoresCommand extends HystrixCommand<Void> {
         boolean isShortCircuited = isResponseShortCircuited();
         boolean isRejected = isResponseRejected();
         boolean isTimeout = isResponseTimedOut();
-//        boolean isFailed = isFailedExecution();
-        if (isTimeout) {
-            logger.error("HystrixKafkaSemaphoresCommand fallback isTimeout");
+        boolean isFailed = isFailedExecution();
+
+        if (isShortCircuited) {
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_SHORT_CIRCUITED;
         } else if (isRejected) {
-            logger.error("HystrixKafkaSemaphoresCommand fallback isRejected");
-        } else if (isShortCircuited) {
-            logger.error("HystrixKafkaSemaphoresCommand fallback isShortCircuited");
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_REJECTED;
+        } else if (isFailed) {
+            Throwable e = getFailedExecutionException();
+            String exceptionMsg = "";
+            if (e != null) {
+                exceptionMsg = e.getMessage();
+            }
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_EXCUTE_FAILED + ",msg=" + exceptionMsg;
+        } else if (isTimeout) {
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_TIMEOUT;
         } else {
-//            logger.error("HystrixKafkaSemaphoresCommand fallback unknown");
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_UNKNOWN_REASON;
         }
+
+        // 记录fallback原因
+        if (fallbackReason != null) {
+            if (isFailed) {
+                logger.error(COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_EXCUTE_FAILED);
+            } else {
+                logger.error(fallbackReason);
+            }
+        }
+
         return null;
+    }
+
+    public String getFallbackReason() {
+        return fallbackReason;
     }
 
 }
