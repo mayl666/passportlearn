@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.HystrixConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +19,12 @@ import org.slf4j.LoggerFactory;
 public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
 
     private static final Logger logger = LoggerFactory.getLogger("hystrixLogger");
-    private static RequestModel requestModel;
-    private static HttpClient httpClient;
+    private static final String COMMOND_FALLBACK_PREFIX = "HystrixQQCommand fallback ";
+
+    private RequestModel requestModel;
+    private HttpClient httpClient;
+    private HttpRequestBase httpRequest;
+    private String fallbackReason;
 
 
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_CACHE_ENABLED));
@@ -31,7 +36,7 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
     private static int qqTimeout = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_TIMEOUT));
     private static int qqSgRequestVolumeThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_SG_REQUESTVOLUME));
     private static final int fallbackSemaphoreThreshold = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD));
-    private static final int breakerSleepWindow=Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_SLEEP_WINDOW));
+    private static final int breakerSleepWindow = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_BREAKER_SLEEP_WINDOW));
 
     public HystrixQQCommand(RequestModel requestModel, HttpClient httpClient) {
 
@@ -55,11 +60,16 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
         );
         this.requestModel = requestModel;
         this.httpClient = httpClient;
+        this.httpRequest = null;
+        this.fallbackReason = null;
+
     }
 
     @Override
     protected HttpEntity run() throws Exception {
-        return HystrixCommonMethod.execute(requestModel, httpClient);
+        httpRequest = HystrixCommonMethod.getHttpRequest(requestModel);
+        HttpEntity response = HystrixCommonMethod.execute(requestModel, httpClient, httpRequest);
+        return response;
     }
 
     @Override
@@ -67,19 +77,48 @@ public class HystrixQQCommand extends HystrixCommand<HttpEntity> {
         boolean isShortCircuited = isResponseShortCircuited();
         boolean isRejected = isResponseRejected();
         boolean isTimeout = isResponseTimedOut();
-//        boolean isFailed = isFailedExecution();
-        if (isTimeout) {
-            logger.error("HystrixQQCommand fallback isTimeout");
+        boolean isFailed = isFailedExecution();
+
+        if (isShortCircuited) {
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_SHORT_CIRCUITED;
         } else if (isRejected) {
-            logger.error("HystrixQQCommand fallback isRejected");
-        } else if (isShortCircuited) {
-            logger.error("HystrixQQCommand fallback isShortCircuited");
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_REJECTED;
+        } else if (isFailed) {
+            Throwable e = getFailedExecutionException();
+            String exceptionMsg = "";
+            if (e != null) {
+                exceptionMsg = e.getMessage();
+            }
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_EXCUTE_FAILED + ",msg=" + exceptionMsg;
+        } else if (isTimeout) {
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_TIMEOUT;
         } else {
-//            logger.error("HystrixQQCommand fallback unknown");
+            fallbackReason = COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_UNKNOWN_REASON;
         }
 
-        throw new UnsupportedOperationException("HystrixQQCommand:No fallback available.");
+        // 记录fallback原因
+        if (fallbackReason != null) {
+            if (isFailed) {
+                logger.error(COMMOND_FALLBACK_PREFIX + HystrixConstant.FALLBACK_REASON_EXCUTE_FAILED);
+            } else {
+                logger.error(fallbackReason);
+            }
+        }
+
+        if (httpRequest != null) {
+            httpRequest.abort();
+        }
+        return null;
     }
 
 
+    public void abortHttpRequest() {
+        if (httpRequest != null) {
+            httpRequest.abort();
+        }
+    }
+
+    public String getFallbackReason() {
+        return fallbackReason;
+    }
 }

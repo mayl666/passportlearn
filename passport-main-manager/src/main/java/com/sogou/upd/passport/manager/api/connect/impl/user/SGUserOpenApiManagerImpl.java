@@ -18,6 +18,7 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,21 +92,22 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
     private Result obtainConnectOriginalUserInfo(String passportId, int clientId, String thirdAppId) throws ServiceException, IOException, OAuthProblemException {
         Result result = new APIResultSupport(false);
         ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId);
-        if (connectUserInfoVO == null) {
+        // 登录时更新缓存，origin为空，所以获取用户信息时需判断origin是否为空
+        if (connectUserInfoVO == null || CollectionUtils.isEmpty(connectUserInfoVO.getOriginal())) {
             result = sgConnectApiManager.obtainConnectToken(passportId, clientId, thirdAppId);
             ConnectToken connectToken;
             if (result.isSuccess()) {
                 connectToken = (ConnectToken) result.getModels().get("connectToken");
                 int provider = AccountTypeEnum.getAccountType(passportId).getValue();
                 ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
-                if(connectConfig == null){
+                if (connectConfig == null) {
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                     return result;
                 }
                 String appKey = connectConfig.getAppKey();
                 //读第三方api获取第三方用户信息,并更新搜狗DB的connect_token表
                 connectUserInfoVO = connectAuthService.getConnectUserInfo(provider, appKey, connectToken);
-                if (connectUserInfoVO != null) {
+                if (connectUserInfoVO != null && !MapUtils.isEmpty(connectUserInfoVO.getOriginal())) {
                     //原始信息写缓存
                     connectAuthService.initialOrUpdateConnectUserInfo(connectToken.getPassportId(), connectUserInfoVO);
                 } else {
@@ -125,7 +127,7 @@ public class SGUserOpenApiManagerImpl implements UserOpenApiManager {
         Result result = new APIResultSupport(false);
         int provider = AccountTypeEnum.getAccountType(passportId).getValue();
         ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
-        if(connectConfig == null){
+        if (connectConfig == null) {
             result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
             return result;
         }

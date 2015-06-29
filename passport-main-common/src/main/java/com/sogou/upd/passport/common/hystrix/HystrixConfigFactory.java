@@ -96,7 +96,8 @@ public class HystrixConfigFactory {
                 setProperties(hystrixConfigMap, properties, PROPERTY_KAFKA_CHOOSE_THREAD_MODE, HystrixConstant.DEFAULT_KAFKA_CHOOSE_THREAD_MODE);
                 setProperties(hystrixConfigMap, properties, PROPERTY_BREAKER_FORCE_OPEN, HystrixConstant.DEFAULT_BREAKER_FORCE_OPEN);
                 setProperties(hystrixConfigMap, properties, PROPERTY_BREAKER_FORCE_CLOSE, HystrixConstant.DEFAULT_BREAKER_FORCE_CLOSE);
-                setProperties(hystrixConfigMap,properties,PROPERTY_BREAKER_SLEEP_WINDOW,HystrixConstant.DEFAULT_BREAKER_SLEEP_WINDOW);
+                setProperties(hystrixConfigMap, properties, PROPERTY_BREAKER_SLEEP_WINDOW, HystrixConstant.DEFAULT_BREAKER_SLEEP_WINDOW);
+
                 //打印参数
                 logProperties();
             }
@@ -153,6 +154,6 @@ public class HystrixConfigFactory {
         logger.warn(PROPERTY_KAFKA_CHOOSE_THREAD_MODE + ":" + getProperty(PROPERTY_KAFKA_CHOOSE_THREAD_MODE));
         logger.warn(PROPERTY_BREAKER_FORCE_OPEN + ":" + getProperty(PROPERTY_BREAKER_FORCE_OPEN));
         logger.warn(PROPERTY_BREAKER_FORCE_CLOSE + ":" + getProperty(PROPERTY_BREAKER_FORCE_CLOSE));
-        logger.warn(PROPERTY_BREAKER_SLEEP_WINDOW+":"+getProperty(PROPERTY_BREAKER_SLEEP_WINDOW));
+        logger.warn(PROPERTY_BREAKER_SLEEP_WINDOW + ":" + getProperty(PROPERTY_BREAKER_SLEEP_WINDOW));
     }
 }
