@@ -11,6 +11,7 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.parameters.SinaOAuth;
 import com.sogou.upd.passport.oauth2.openresource.validator.impl.SinaAPIValidator;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class SinaUserAPIResponse extends UserAPIResponse {
         user.setGender(formGender(getParam(SinaOAuth.GENDER)));
         user.setUserDesc(getParam(SinaOAuth.DESC));
         user.setProvince(sinaProvinceCache.get(provinceID));
-//        user.setCity(formCity(provinceID, cityID));
+        user.setCity(formCity(provinceID, cityID));
         user.setRegion(getParam(SinaOAuth.LOCATION));
         user.setOriginal(parameters);
         return user;
@@ -77,11 +78,13 @@ public class SinaUserAPIResponse extends UserAPIResponse {
     private String formCity(Integer provinceID, String cityID) {
         List<Map<String, String>> cityList = sinaCityCache.get(provinceID);
         String city = "未知";
-        for (Map<String, String> map : cityList) {
-            city = map.get(cityID);
-            if (!Strings.isNullOrEmpty(city)) {
-                city = StringUtil.exchangeToUf8(city);
-                break;
+        if (!CollectionUtils.isEmpty(cityList)) {
+            for (Map<String, String> map : cityList) {
+                city = map.get(cityID);
+                if (!Strings.isNullOrEmpty(city)) {
+                    city = StringUtil.exchangeToUf8(city);
+                    break;
+                }
             }
         }
         return city;
@@ -103,7 +106,7 @@ public class SinaUserAPIResponse extends UserAPIResponse {
                 List<Map<String, String>> cityList = (List<Map<String, String>>) province.get("citys");
                 sinaCityCache.putIfAbsent(id, cityList);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
         }
     }
 
