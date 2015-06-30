@@ -74,7 +74,6 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
 
         if (WapConstant.WAP_SIMPLE.equals(wapIndexParams.getV())) {
             response.setHeader("Content-Type", "text/vnd.wap.wml;charset=utf-8");
-            //TODO return what?
             return "wap/index_simple";
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             return "wap/index_smscode_login_touch";
@@ -90,7 +89,6 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                 model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
             }
             model.addAttribute("mobile", wapIndexParams.getMobile());
-            //TODO return what?
             return "wap/login_wap";
         }
 
