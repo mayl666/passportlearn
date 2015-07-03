@@ -72,21 +72,22 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
         Result result = new APIResultSupport(false);
         String ip = IpLocationUtil.getIp(request);
 
-        //增加白名单处理 ，如果ip在白名单中，直接返回true
-        String whiteListKey = CacheConstant.CACHE_PREFIX_LOGIN_WHITELIST;
-        Set<String> whiteList = redisUtils.smember(whiteListKey);
-        if (CollectionUtils.isNotEmpty(whiteList)) {
-            if (whiteList.contains(ip)) {
-                return true;
-            }
-        }
-
         String client_id = ServletRequestUtils.getStringParameter(request, CommonConstant.CLIENT_ID, StringUtils.EMPTY);
         String username = ServletRequestUtils.getStringParameter(request, CommonConstant.USERNAME, StringUtils.EMPTY);
         if (Strings.isNullOrEmpty(ip)) {
             return true;
         } else {
             try {
+                //增加白名单处理 ，如果ip在白名单中，直接返回true
+                String whiteListKey = CacheConstant.CACHE_PREFIX_LOGIN_WHITELIST;
+                Set<String> whiteList = redisUtils.smember(whiteListKey);
+                if (CollectionUtils.isNotEmpty(whiteList)) {
+                    if (whiteList.contains(ip)) {
+                        return true;
+                    }
+                }
+
+
                 String key = buildDenyIpKey(ip);
                 String cacheValue = redisUtils.get(key);
                 if (Strings.isNullOrEmpty(cacheValue)) {
