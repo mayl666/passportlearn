@@ -18,6 +18,7 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.annotation.RiskControlSecurity;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -69,6 +71,15 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
         }
         Result result = new APIResultSupport(false);
         String ip = IpLocationUtil.getIp(request);
+
+        //增加白名单处理 ，如果ip在白名单中，直接返回true
+        String whiteListKey = CacheConstant.CACHE_PREFIX_LOGIN_WHITELIST;
+        Set<String> whiteList = redisUtils.smember(whiteListKey);
+        if (CollectionUtils.isNotEmpty(whiteList)) {
+            if (whiteList.contains(ip)) {
+                return true;
+            }
+        }
 
         String client_id = ServletRequestUtils.getStringParameter(request, CommonConstant.CLIENT_ID, StringUtils.EMPTY);
         String username = ServletRequestUtils.getStringParameter(request, CommonConstant.USERNAME, StringUtils.EMPTY);
