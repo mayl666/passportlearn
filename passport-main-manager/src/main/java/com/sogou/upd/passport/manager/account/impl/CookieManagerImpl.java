@@ -186,8 +186,8 @@ public class CookieManagerImpl implements CookieManager {
         //默认为false
         boolean setNewCookie = false;
         try {
-            String appModuleReplace = redisUtils.get(CacheConstant.CACHE_KEY_MODULE_APP_REPLACE);
-
+//            String appModuleReplace = redisUtils.get(CacheConstant.CACHE_KEY_MODULE_APP_REPLACE);
+            String appModuleReplace ="2002:1|1120:1|2000:1|1065:1|2003:1|1099:1|2006:1|2017:1|1115:1|1024:1|1105:1|1044:1|2011:1|2007:1|1086:1|2013:1|2015:1|2005:1|1100:1|1121:1|2016:1|2012:1|1119:1|1110:1|2010:1|2009:1|2020:1";
             Map<String, String> appsMap = Maps.newConcurrentMap();
             if (!Strings.isNullOrEmpty(appModuleReplace)) {
                 appsMap = Splitter.on(KEY_SPLITER).withKeyValueSeparator(VALUE_SPLITER).split(appModuleReplace);

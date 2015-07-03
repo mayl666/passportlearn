@@ -87,7 +87,6 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                     }
                 }
 
-
                 String key = buildDenyIpKey(ip);
                 String cacheValue = redisUtils.get(key);
                 if (Strings.isNullOrEmpty(cacheValue)) {
