@@ -43,6 +43,9 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
     private String fallbackReason;
 
 
+    protected String errorCode = null ;
+
+
     private static boolean requestCacheEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConfigFactory.PROPERTY_REQUEST_CACHE_ENABLED));
     private static boolean requestLogEnable = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_REQUEST_LOG_ENABLED));
     private static int errorThresholdPercentage = Integer.parseInt(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_ERROR_THRESHOLD_PERCENTAGE));
@@ -83,6 +86,11 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
         this.fallbackReason = null;
     }
 
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+
     @Override
     protected T run() throws Exception {
         httpRequestBase = getRequestBase(request, requestMethod);
@@ -90,6 +98,7 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
             return HystrixQQAuthMethod.execute(request, headers, requestMethod, responseClass, httpRequestBase);
         }catch (OAuthProblemException e){
             fallbackReason="code="+e.getError()+","+e.getDescription();
+            errorCode = e.getError();
             return null;
         }
 

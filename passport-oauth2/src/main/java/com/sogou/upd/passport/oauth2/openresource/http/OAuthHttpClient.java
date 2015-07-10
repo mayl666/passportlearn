@@ -62,6 +62,9 @@ public class OAuthHttpClient {
             T hystrixResponse = (T) hystrixQQOAuthCommand.execute();
             if (null == hystrixResponse) {
                 if (hystrixQQOAuthCommand != null) {
+                    if(!Strings.isNullOrEmpty(hystrixQQOAuthCommand.getErrorCode())){
+                        throw new OAuthProblemException(hystrixQQOAuthCommand.getErrorCode());
+                    }
                     fallbackReason = hystrixQQOAuthCommand.getFallbackReason();
                 }
                 throw new OAuthProblemException(fallbackReason);
