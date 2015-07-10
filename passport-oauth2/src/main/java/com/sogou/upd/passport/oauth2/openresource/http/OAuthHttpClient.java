@@ -41,8 +41,8 @@ public class OAuthHttpClient {
             if (!Strings.isNullOrEmpty(oAuthUrl) && oAuthUrl.contains(hystrixQQurl)) {
                 try {
                     return revokeHystrixOAuthQQ(request, requestMethod, responseClass, headers);
-                } catch (Exception e) {
-                    throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_FAILED,e.getMessage());
+                }catch (OAuthProblemException ex1) {
+                    throw new OAuthProblemException(ex1.getError());
                 }
             }
 
@@ -52,7 +52,7 @@ public class OAuthHttpClient {
     }
 
     //调用HystrixQQOAuthCommand
-    public static <T extends OAuthClientResponse> T revokeHystrixOAuthQQ(OAuthClientRequest request, String requestMethod, Class<T> responseClass, Map<String, String> headers) throws Exception {
+    public static <T extends OAuthClientResponse> T revokeHystrixOAuthQQ(OAuthClientRequest request, String requestMethod, Class<T> responseClass, Map<String, String> headers) throws OAuthProblemException {
 
         HystrixQQAuthCommand hystrixQQOAuthCommand = null;
         String fallbackReason = "";
