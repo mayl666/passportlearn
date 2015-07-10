@@ -42,7 +42,7 @@ public class OAuthHttpClient {
                 try {
                     return revokeHystrixOAuthQQ(request, requestMethod, responseClass, headers);
                 } catch (Exception e) {
-                    throw new OAuthProblemException(ErrorUtil.HTTP_CLIENT_REQEUST_FAIL,e.getMessage());
+                    throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_FAILED,e.getMessage());
                 }
             }
 
