@@ -48,6 +48,12 @@ public class ManagerHelper {
         return code;
     }
 
+    public static void main(String args[]){
+        long a = System.currentTimeMillis();
+        System.out.println(a);
+         System.out.print(generatorCode("6F54B0CA1B0198C6FB33D35B2A635A58@qq.sohu.com",2010,"<6Cxph3Un'BaWsL7g'U.VLd|s?tZC)",a));
+    }
+
     /**
      * 内部接口方法签名生成
      *

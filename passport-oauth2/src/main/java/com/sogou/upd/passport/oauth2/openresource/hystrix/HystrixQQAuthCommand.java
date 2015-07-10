@@ -90,7 +90,7 @@ public class HystrixQQAuthCommand<T extends OAuthClientResponse> extends Hystrix
             return HystrixQQAuthMethod.execute(request, headers, requestMethod, responseClass, httpRequestBase);
         }catch (OAuthProblemException e){
             fallbackReason="code="+e.getError()+","+e.getDescription();
-            return null;
+            throw new OAuthProblemException(e.getError());
         }
 
     }
