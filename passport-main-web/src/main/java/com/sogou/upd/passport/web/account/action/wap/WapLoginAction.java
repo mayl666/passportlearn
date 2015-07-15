@@ -91,6 +91,10 @@ public class WapLoginAction extends BaseController {
         model.addAttribute("errorMsg", wapIndexParams.getErrorMsg());
         model.addAttribute("isNeedCaptcha", wapIndexParams.getNeedCaptcha());
         model.addAttribute("skin", wapIndexParams.getSkin());
+        if(!Strings.isNullOrEmpty(wapIndexParams.getType())){
+            model.addAttribute("type",wapIndexParams.getType());//type=phone时，页面显示手机号登录
+        }
+
         //生成token
         String token = RandomStringUtils.randomAlphanumeric(48);
         model.addAttribute("token", token);

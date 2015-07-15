@@ -36,6 +36,7 @@ public class WapIndexParams {
     //因为登录是wap2.0的html5共用的，两边命名没统一，所以mobile和username都表示手机号
     private String mobile;//wap2.0用到
     private String username;//wap2.0用到
+    private String type;//wap页面只用手机号登录时，type=phone，如本地生活
 
     public String getRu() {
         return ru;
@@ -99,5 +100,13 @@ public class WapIndexParams {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

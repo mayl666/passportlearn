@@ -32,6 +32,8 @@ public class WapConstant {
     public static final String WAP_SKIN_SE = "se";
     //输入法的手游H5页面使用
     public static final String WAP_SKIN_ORANGE = "orange";
+    //搜索本地生活定制shenghuo为橙色，色值#fe6847
+    public static final String WAP_SKIN_SHENGHUO="shenghuo";
 
     //默认登录来源
     public static final String WAP_INDEX = "http://wap.sogou.com/";
