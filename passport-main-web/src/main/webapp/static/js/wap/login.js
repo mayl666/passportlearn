@@ -19,6 +19,9 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
 
     var ru = Utils.getRu();
     var passParamsStr = Utils.getPassThroughParams();
+    var params = utils.getUrlParams(),
+        isPhone = /phone|tel|/i.test(params.type || ''),
+        duanxinRedirectUrl = 'http://m.account.sogou.com/wap/smsCodeLogin/index?' + passParamsStr;
 
     //This class operate list of history.
     var LoginHistory = {
@@ -83,7 +86,11 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
         $captcha: $('#captcha'),
         $msg: $('.msg'),
         __mLogining:false,
-        init: function() {
+        init: function () {
+            if (isPhone) {
+                this.$username.prev().html('手机号：');
+                this.$username.attr('placeholder', '手机号');
+            }
             LoginHistory.init();
 
             LoginHistory.on(LoginHistory.SELECTEVENT,this.onHistorySelect,this);
@@ -91,6 +98,10 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
                 e.preventDefault();
                 history.back();
             });
+            //https://account.sogou.com/connect/login?provider=qq&type=wap&display=mobile&client_id=2012&v=5&skin=orange&ru=http%3A%2F%2F8.sogou.com%2F
+
+            //TODO手机号码登录跳转url
+            $('.trd-phone').attr('href', duanxinRedirectUrl);
             $('.trd-qq').attr('href','https://account.sogou.com/connect/login?provider=qq&type=wap&display=mobile&' + passParamsStr );
             $('.reglink').attr('href','/wap/reg?'+passParamsStr);
             $('.forgot').attr('href', '/wap/findpwd?'+passParamsStr);
@@ -176,7 +187,11 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
 
                         //ru&&location.assign(decodeURIComponent(ru));
                     } else {
-                        self.showMsg(data.statusText);
+                        if (isPhone && data.status === '10009') {
+                            self.showMsg(data.statusText + ',<a href="' + duanxinRedirectUrl + '">采用短信验证码登录</a>');
+                        } else {
+                            self.showMsg(data.statusText);
+                        }
                         if (data.status == '20221' || data.status == '20257') {
                             self.$captcha.empty().focus();
                             self.showCaptcha();
@@ -201,7 +216,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
             this.$captchaWrapper.removeClass('hide');
             this.$captchaImg.attr('src', Form.getCaptcha(token));
         },
-        showMsg: function(msg,normal) {
+        showMsg: function (msg, normal, isHTML) {
             if(normal){
                 this.$msg.find('.circle').removeClass('hide red').addClass('green');
                 this.$msg.find('.circle .sprite').removeClass('sprite-wrong').addClass('sprite-right');
@@ -211,7 +226,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
                 this.$msg.find('.circle .sprite').removeClass('sprite-right').addClass('sprite-wrong');
 
             }
-            this.$msg.find('.info').text(msg);
+            this.$msg.find('.info').html(msg);
             return this;
         }
     };
