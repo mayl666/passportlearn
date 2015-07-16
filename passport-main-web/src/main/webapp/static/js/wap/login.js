@@ -19,7 +19,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
 
     var ru = Utils.getRu();
     var passParamsStr = Utils.getPassThroughParams();
-    var params = utils.getUrlParams(),
+    var params = Utils.getUrlParams(),
         isPhone = /phone|tel|/i.test(params.type || ''),
         duanxinRedirectUrl = 'http://m.account.sogou.com/wap/smsCodeLogin/index?' + passParamsStr;
 
@@ -103,11 +103,12 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
             //TODO手机号码登录跳转url
             $('.trd-phone').attr('href', duanxinRedirectUrl);
             $('.trd-qq').attr('href','https://account.sogou.com/connect/login?provider=qq&type=wap&display=mobile&' + passParamsStr );
+
             $('.reglink').attr('href','/wap/reg?'+passParamsStr);
             $('.forgot').attr('href', '/wap/findpwd?'+passParamsStr);
 
             var phone;
-            if(phone=Utils.getUrlParams().phone){
+            if(phone=params.phone){
                 this.$username.val(phone);
             }
 
