@@ -32,8 +32,9 @@ define(['./utils'], function(Utils) {
                 case /semob|se/i.test(name):
                     name = 'se';
                     break;
-				case /shenghuo|sh|/i.test(name):
-					name = 'sh';
+                case /shenghuo|sh|/i.test(name):
+                    name = 'sh';
+                    break;
                 default:
                     name = null;
             }

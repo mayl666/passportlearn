@@ -20,8 +20,12 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
     var ru = Utils.getRu();
     var passParamsStr = Utils.getPassThroughParams();
     var params = Utils.getUrlParams(),
+        //是否是手机登录模式
         isPhone = /phone|tel|/i.test(params.type || ''),
         duanxinRedirectUrl = 'http://m.account.sogou.com/wap/smsCodeLogin/index?' + passParamsStr;
+    var reg = {
+        phone: /^1[1-9][0-9]{9}$/
+    };
 
     //This class operate list of history.
     var LoginHistory = {
@@ -89,6 +93,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
         init: function () {
             if (isPhone) {
                 this.$username.prev().html('手机号：');
+                this.$password.prev().html('密&nbsp;码：');
                 this.$username.attr('placeholder', '手机号');
             }
             LoginHistory.init();
@@ -151,7 +156,10 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
                 var c = $.trim(self.$captcha.val());
 
                 if (!u || !p) {
-                    return self.showMsg('请输入用户名或密码');
+                    return self.showMsg(isPhone ? '请输入手机号和密码' : '请输入用户名或密码');
+                }
+                if (isPhone&&!reg.phone.test(u)) {
+                    return self.showMsg('请输入正确的手机号');
                 }
 
                 if(p.length<6){
@@ -188,11 +196,12 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
 
                         //ru&&location.assign(decodeURIComponent(ru));
                     } else {
-                        if (isPhone && data.status === '10009') {
-                            self.showMsg(data.statusText + ',<a href="' + duanxinRedirectUrl + '">采用短信验证码登录</a>');
-                        } else {
-                            self.showMsg(data.statusText);
-                        }
+                        //if (isPhone && data.status === '10009') {
+                        //    self.showMsg(data.statusText + ',<a href="' + duanxinRedirectUrl + '">采用短信验证码登录</a>');
+                        //} else {
+                        //    self.showMsg(data.statusText);
+                        //}
+                        self.showMsg(data.statusText);
                         if (data.status == '20221' || data.status == '20257') {
                             self.$captcha.empty().focus();
                             self.showCaptcha();
