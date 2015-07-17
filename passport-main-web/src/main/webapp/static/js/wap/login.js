@@ -21,7 +21,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
     var passParamsStr = Utils.getPassThroughParams();
     var params = Utils.getUrlParams(),
         //是否是手机登录模式
-        isPhone = /phone|tel|/i.test(params.type || ''),
+        isPhone = /phone|tel/i.test(params.type || ''),
         duanxinRedirectUrl = 'http://m.account.sogou.com/wap/smsCodeLogin/index?' + passParamsStr;
     var reg = {
         phone: /^1[1-9][0-9]{9}$/
