@@ -1,6 +1,8 @@
 package com.sogou.upd.passport.oauth2.openresource.hystrix;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.utils.ConnectHttpClient;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -10,7 +12,10 @@ import com.sogou.upd.passport.oauth2.openresource.response.OAuthClientResponseFa
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.perf4j.StopWatch;
 import org.perf4j.slf4j.Slf4JStopWatch;
@@ -58,6 +63,11 @@ public class HystrixQQAuthMethod extends ConnectHttpClient {
             String contentType = null;
             if (contentTypeHeader != null) {
                 contentType = contentTypeHeader.toString();
+            }
+            if (!Strings.isNullOrEmpty(requestMethod) && HttpConstant.HttpMethod.GET.equals(requestMethod)) {
+                if (url.indexOf("?") > 0) {
+                    url = url.substring(0, url.indexOf("?"));
+                }
             }
             stopWatch(stopWatch, url, "success");
             return OAuthClientResponseFactory.createCustomResponse(responseBody, contentType, response.getStatusLine()
