@@ -13,7 +13,7 @@
  */
 define([], function () {
 
-    var client_id = 1120;
+    var client_id = 1024;
     var noop = function () {
     };
 
