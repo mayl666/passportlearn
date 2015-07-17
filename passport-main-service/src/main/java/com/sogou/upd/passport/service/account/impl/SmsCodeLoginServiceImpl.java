@@ -40,16 +40,14 @@ public class SmsCodeLoginServiceImpl implements SmsCodeLoginService {
         Result result = new APIResultSupport(false);
         try {
             //验证请求校验码次数是否超限
-            //临时方案：所以code存储的时候都用client=1024与前端interface.js保持一致
-            int fakeClientId=1024;
-            boolean checkGetIfBeyond = operateTimesService.checkGetSmsCodeNumIfBeyond(mobile, fakeClientId);
+            boolean checkGetIfBeyond = operateTimesService.checkGetSmsCodeNumIfBeyond(mobile, clientId);
             if (checkGetIfBeyond) {
                 result.setCode(ErrorUtil.ERROR_CODE_SMS_CODE_GET_FREQUENCY);
                 result.setMessage(CommonConstant.SMS_CODE_GET_FREQUENCY);
                 return result;
             }
 
-            String smsCodeCacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_LOGIN + mobile + "_" + fakeClientId;
+            String smsCodeCacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_LOGIN + mobile + "_" + clientId;
             String smsCodeVal = redisUtils.get(smsCodeCacheKey);
             if (Strings.isNullOrEmpty(smsCodeVal)) {
                 //生成校验码 6位的
