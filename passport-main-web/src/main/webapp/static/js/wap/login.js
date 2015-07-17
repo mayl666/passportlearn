@@ -94,7 +94,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
             if (isPhone) {
                 this.$username.prev().html('手机号：');
                 this.$password.prev().html('密&nbsp;码：');
-                this.$username.attr('placeholder', '手机号');
+                this.$username.attr('placeholder', '请输入您的手机号');
             }
             LoginHistory.init();
 
