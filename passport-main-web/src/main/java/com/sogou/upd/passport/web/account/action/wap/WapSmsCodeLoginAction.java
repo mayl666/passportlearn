@@ -177,6 +177,7 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
             }
             int client_id = Integer.parseInt(params.getClient_id());
             result = smsCodeLoginManager.sendSmsCode(params.getMobile(), client_id, params.getToken(), params.getCaptcha());
+            model.addAttribute("client_id", params.getClient_id());
         } catch (Exception e) {
             logger.error("sendSmsCode error,mobile is " + params.getMobile(), e);
         } finally {
