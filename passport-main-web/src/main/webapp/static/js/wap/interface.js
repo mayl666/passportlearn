@@ -11,9 +11,9 @@
  * @version 0.1.0
  * @since 0.1.0
  */
-define([], function () {
+define(['./utils'], function (Utils) {
 
-    var client_id = 1024;
+    var client_id = Utils.getUrlParams().client_id || 1024;
     var noop = function () {
     };
 
