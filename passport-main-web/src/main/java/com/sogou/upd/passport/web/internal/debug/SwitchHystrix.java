@@ -33,7 +33,7 @@ public class SwitchHystrix extends BaseController {
     public String switchHystrix(HttpServletRequest request, HttpServletResponse response, SwitchHystrixParams params) {
 
         String operateIp = getIp(request);
-        String nahongxuIp = "10.129.41.23";
+        String nahongxuIp = "10.129.149.226";
         if (!nahongxuIp.equals(operateIp)) {
             return "operate ip is denied";
         }
