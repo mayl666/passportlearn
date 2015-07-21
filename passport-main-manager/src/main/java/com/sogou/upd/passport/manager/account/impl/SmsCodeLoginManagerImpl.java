@@ -71,6 +71,13 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
     public Result sendSmsCode(final String mobile, final int client_id, final String token, final String captcha) {
         Result result = new APIResultSupport(false);
         try {
+            //必须验证验证码 ，除了client_id=1044
+            if((client_id!= CommonConstant.PC_CLIENTID )&&(Strings.isNullOrEmpty(token)||Strings.isNullOrEmpty(captcha))){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
+                result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
+                return result;
+            }
+
             //验证请求验证码是否超限制
             result = commonManager.checkMobileSendSMSInBlackList(mobile, String.valueOf(client_id));
             if (!result.isSuccess()) {
