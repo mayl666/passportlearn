@@ -24,7 +24,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
         isPhone = /phone|tel/i.test(params.type || ''),
         duanxinRedirectUrl = 'http://m.account.sogou.com/wap/smsCodeLogin/index?' + passParamsStr;
     var reg = {
-        phone: /^1[1-9][0-9]{9}$/
+        phone: /(^[0-9]{3,4}-[0-9]{3,8}$)|^(13[0-9]|14[0-9]|15[0-9]|18[0-9]|17[0-9])\d{8}$/
     };
 
     //This class operate list of history.
