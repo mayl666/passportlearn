@@ -71,8 +71,8 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
     public Result sendSmsCode(final String mobile, final int client_id, final String token, final String captcha) {
         Result result = new APIResultSupport(false);
         try {
-            //必须验证验证码 ，除了client_id=1044
-            if((client_id!= CommonConstant.PC_CLIENTID )&&(Strings.isNullOrEmpty(token)||Strings.isNullOrEmpty(captcha))){
+            //必须验证验证码 ，若token、captcha为空，则提示错误“请输入验证码”
+            if((Strings.isNullOrEmpty(token)||Strings.isNullOrEmpty(captcha))){
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
                 result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
                 return result;
