@@ -127,12 +127,10 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
             //校验是否需要验证码
             if (operateTimesService.smsCodeLoginFailedNeedCaptcha(mobile, ip)) {
                 if (Strings.isNullOrEmpty(captchaCode)) {
-                    LOGGER.warn("smsCodeLogin need captchaCode! username:{},ip:{},token:{}", new Object[]{mobile, ip, token});
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
                     return result;
                 }
                 if (!accountService.checkCaptchaCodeIsVaild(token, captchaCode)) {
-                    LOGGER.warn("smsCodeLogin captchaCode is wrong! username:{},ip:{},token:{},captchaCode:{}", new Object[]{mobile, ip, token, captchaCode});
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
                     return result;
                 }
