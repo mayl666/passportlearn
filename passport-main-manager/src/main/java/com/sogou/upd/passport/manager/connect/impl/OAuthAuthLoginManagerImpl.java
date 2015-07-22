@@ -623,19 +623,17 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
 
     private String buildWapSuccessRu(String ru, String sgid, String userid) {
         Map params = Maps.newHashMap();
-        String acountType = SSOScanAccountType.getSSOScanAccountType(userid);
-        String acountTypeEncode = null;
+        String accountType = SSOScanAccountType.getSSOScanAccountType(userid);
+        String accountTypeEncode = null;
         try {
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
-            acountTypeEncode = URLEncoder.encode(acountType, CommonConstant.DEFAULT_CHARSET);
+            accountTypeEncode = URLEncoder.encode(accountType, CommonConstant.DEFAULT_CHARSET);
         } catch (Exception e) {
-            logger.error("Url decode Exception! ru:" + ru);
-            ru = CommonConstant.DEFAULT_WAP_URL;
+            logger.error("acountType decode Exception! acountType:" + accountType);
         }
         //ru后缀一个sgid
         params.put(LoginConstant.COOKIE_SGID, sgid);
-        if (null != acountTypeEncode) {
-            params.put(LoginConstant.SSO_ACCOUNT_TYPE, acountTypeEncode);
+        if (null != accountTypeEncode) {
+            params.put(LoginConstant.SSO_ACCOUNT_TYPE, accountTypeEncode);
         }
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
