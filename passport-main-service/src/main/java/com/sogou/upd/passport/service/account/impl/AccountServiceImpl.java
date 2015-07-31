@@ -342,6 +342,17 @@ public class AccountServiceImpl implements AccountService {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPassword(passwdSign);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+                //TODO 搜狗输入法数据库泄漏
+                String key = null;
+                try{
+                    key = "SP.PASSPORTID:SOGOULEAKLIST_" + account.getPassportId();
+                    if(redisUtils.checkKeyIsExist(key)){
+                        redisUtils.delete(key);
+                    }
+                } catch (Exception e){
+                    logger.error("sogou leak passportid reset passport del redis error : " + key);
+                }
+
                 return true;
             }
         } catch (Exception e) {

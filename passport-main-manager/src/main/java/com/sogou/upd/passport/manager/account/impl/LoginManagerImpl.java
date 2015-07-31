@@ -8,6 +8,8 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.common.utils.TokenRedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -64,6 +67,12 @@ public class LoginManagerImpl implements LoginManager {
     private CommonManager commonManager;
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private TokenRedisUtils tokenRedisUtils;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @Override
     public Result checkUser(String username, int clientId) throws Exception {
@@ -139,10 +148,28 @@ public class LoginManagerImpl implements LoginManager {
         return result;
     }
 
+    //TODO 搜狗输入法数据泄漏
+    public boolean isSogouLeakList(String username){
+        String key = "SP.PASSPORTID:SOGOULEAKLIST_" + username;
+        if(redisUtils.checkKeyIsExist(key)){
+             return true;
+        }
+        return false;
+    }
+
     @Override
     public Result authUser(String username, String ip, String pwdMD5) {
-        //校验username是否在账户黑名单中
         Result result = new APIResultSupport(false);
+        //TODO 搜狗输入法数据泄漏
+        try {
+            if(isSogouLeakList(username)){
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LEAKLIST_RISK);
+                return result;
+            }
+        } catch (Exception e){
+            logger.error("sogou leak passportid search redis error : " + username);
+        }
+        //校验username是否在账户黑名单中
         if (isLoginUserInBlackList(username, ip)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
             return result;
