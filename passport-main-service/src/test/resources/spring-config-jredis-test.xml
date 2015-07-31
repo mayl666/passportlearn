@@ -16,10 +16,10 @@
     </bean>
     <bean id="cacheConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <!--<property name="hostName" value="10.12.139.205"/>-->
-        <!--<property name="port" value="6379"/>-->
-        <property name="hostName" value="10.146.24.45"/>
-        <property name="port" value="6359"/>
+        <property name="hostName" value="10.12.139.205"/>
+        <property name="port" value="6379"/>
+        <!--<property name="hostName" value="10.146.24.45"/>-->
+        <!--<property name="port" value="6359"/>-->
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->
         <!--<property name="database" value="${redis.default.db}"></property>-->
@@ -55,26 +55,26 @@
         <constructor-arg index="0" value="10.146.24.129"/>
         <constructor-arg index="1" value="6399" type="int"/>
     </bean>
-    <!--<bean id="jedisShardInfo_204" class="redis.clients.jedis.JedisShardInfo">-->
-        <!--<constructor-arg index="0" value="10.12.139.204"/>-->
-        <!--<constructor-arg index="1" value="6379" type="int"/>-->
-    <!--</bean>-->
-    <!--<bean id="jedisShardInfo_205" class="redis.clients.jedis.JedisShardInfo">-->
-        <!--<constructor-arg index="0" value="10.12.139.205"/>-->
-        <!--<constructor-arg index="1" value="6379" type="int"/>-->
-    <!--</bean>-->
+    <bean id="jedisShardInfo_204" class="redis.clients.jedis.JedisShardInfo">
+        <constructor-arg index="0" value="10.12.139.204"/>
+        <constructor-arg index="1" value="6379" type="int"/>
+    </bean>
+    <bean id="jedisShardInfo_205" class="redis.clients.jedis.JedisShardInfo">
+        <constructor-arg index="0" value="10.12.139.205"/>
+        <constructor-arg index="1" value="6379" type="int"/>
+    </bean>
     <bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">
         <constructor-arg index="0" ref="cachePoolConfig"/>
         <constructor-arg index="1">
             <list>
-                <!--<ref bean="jedisShardInfo_204"/>-->
-                <!--<ref bean="jedisShardInfo_205"/>-->
-                <ref bean="jedisShardInfo_1"/>
-                <ref bean="jedisShardInfo_2"/>
-                <ref bean="jedisShardInfo_3"/>
-                <ref bean="jedisShardInfo_4"/>
-                <ref bean="jedisShardInfo_5"/>
-                <ref bean="jedisShardInfo_6"/>
+                <ref bean="jedisShardInfo_204"/>
+                <ref bean="jedisShardInfo_205"/>
+                <!--<ref bean="jedisShardInfo_1"/>-->
+                <!--<ref bean="jedisShardInfo_2"/>-->
+                <!--<ref bean="jedisShardInfo_3"/>-->
+                <!--<ref bean="jedisShardInfo_4"/>-->
+                <!--<ref bean="jedisShardInfo_5"/>-->
+                <!--<ref bean="jedisShardInfo_6"/>-->
             </list>
         </constructor-arg>
     </bean>
@@ -118,8 +118,8 @@
     </bean>
     <bean id="tokenConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <!--<property name="hostName" value="10.12.139.205"/>-->
-        <property name="hostName" value="10.146.28.19"/>
+        <property name="hostName" value="10.12.139.205"/>
+        <!--<property name="hostName" value="10.146.28.19"/>-->
         <!--<property name="port" value="6379"/>-->
         <property name="port" value="6359"/>
         <!--<property name="password" value="${redis.pass}"/>-->
@@ -135,8 +135,8 @@
 
     <!--热切换redis-->
     <bean id="monitor" class="com.sogou.upd.passport.zk.Monitor" destroy-method="destory">
-        <!--<constructor-arg name="zks" value="10.136.24.136:2181"/>-->
-        <constructor-arg name="zks" value="10.136.24.121:2181,10.136.24.122:2181,10.136.24.123:2181"/>
+        <constructor-arg name="zks" value="10.136.24.136:2181"/>
+        <!--<constructor-arg name="zks" value="10.136.24.121:2181,10.136.24.122:2181,10.136.24.123:2181"/>-->
     </bean>
     <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">
         <constructor-arg name="monitor" ref="monitor"/>
