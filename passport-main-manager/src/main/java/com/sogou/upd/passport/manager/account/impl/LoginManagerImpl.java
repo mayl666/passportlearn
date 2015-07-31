@@ -160,9 +160,10 @@ public class LoginManagerImpl implements LoginManager {
     @Override
     public Result authUser(String username, String ip, String pwdMD5) {
         Result result = new APIResultSupport(false);
+        String passportId = getIndividPassportIdByUsername(username);
         //TODO 搜狗输入法数据泄漏
         try {
-            if(isSogouLeakList(username)){
+            if(isSogouLeakList(passportId)){
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LEAKLIST_RISK);
                 return result;
             }
@@ -174,7 +175,7 @@ public class LoginManagerImpl implements LoginManager {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
             return result;
         }
-        String passportId = getIndividPassportIdByUsername(username);
+
         //封装参数
         AuthUserApiParams authUserApiParams = new AuthUserApiParams();
         authUserApiParams.setUserid(passportId);
