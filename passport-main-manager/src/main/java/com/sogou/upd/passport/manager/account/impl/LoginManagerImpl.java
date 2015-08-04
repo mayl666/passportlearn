@@ -152,7 +152,10 @@ public class LoginManagerImpl implements LoginManager {
     public boolean isSogouLeakList(String username){
         String key = "SP.PASSPORTID:SOGOULEAKLIST_" + username;
         if(redisUtils.checkKeyIsExist(key)){
-             redisUtils.delete(key);
+            AccountDomainEnum accountDomain=AccountDomainEnum.getAccountDomain(username);
+            if(accountDomain==AccountDomainEnum.SOHU){
+                redisUtils.delete(key);
+            }
              return true;
         }
         return false;
