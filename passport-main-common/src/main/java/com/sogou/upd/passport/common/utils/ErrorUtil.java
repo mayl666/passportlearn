@@ -404,7 +404,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED, "账号未登录，请先登录");
         ERR_CODE_MSG_MAP.put(ERR_CODE_VERIFY_PASSWORD_FREQUENCY_LIMIT, "当日密码输入错误次数过多");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST, "您登录过于频繁,请稍后再试");
-        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LEAKLIST_RISK,"您的登陆账号存在异常，请找回密码！");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_LEAKLIST_RISK,"您的账号可能存在风险，请您修改密码！");
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_NOT_MATCH_SMSCODE, "验证码错误或已过期");
         ERR_CODE_MSG_MAP.put(ERR_CODE_ACCOUNT_PHONE_OBTAIN_FIELDS, "手机账号不存在或手机号未被绑定");
