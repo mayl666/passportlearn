@@ -34,4 +34,14 @@ public interface AccountInfoService {
      */
     public boolean updateAccountInfo(AccountInfo accountInfo);
 
+    /**
+     * 解除绑定邮箱 passport 后台使用 不要删除！
+     *
+     * @param accountInfo
+     * @param email
+     * @return
+     * @throws ServiceException
+     */
+    public boolean updateBindMEmail(AccountInfo accountInfo, String email) throws ServiceException;
+
 }

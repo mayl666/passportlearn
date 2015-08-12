@@ -123,6 +123,15 @@ public interface AccountService {
     public boolean modifyMobileByAccount(Account account, String newMobile);
 
     /**
+     * 修改解除绑定手机
+     *
+     * @param account
+     * @param newMobile
+     * @return
+     */
+    public boolean modifyMobile(Account account, String newMobile);
+
+    /**
      * 首次绑定
      * 修改account和mobile_passportId_mapping
      *

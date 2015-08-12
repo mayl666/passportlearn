@@ -315,6 +315,10 @@ public class ErrorUtil {
     public static final String ERR_CODE_PROBLEM_INSERT_FAILED = "30601";
     //用户提及反馈的次数超限
     public static final String ERR_CODE_PROBLEM_ADDTIMES_LIMITED = "30605";
+    //关闭反馈失败
+    public static final String ERR_CODE_PROBLEM_CLOSE_FAILED = "30603";
+    //提交反馈评论失败
+    public static final String ERR_CODE_PROBLEMANSWER_INSERT_FAILED = "30602";
 
     /* ============================================================================ */
     /*  sohu+接口相关错误代码                                                            */
@@ -354,6 +358,11 @@ public class ErrorUtil {
 
     //短信登录，验证码错误
     public static final String ERROR_CODE_SMS_CODE_ERROR = "21004";
+
+    //解除绑定邮箱失败 错误码定义需要有一些跨度 方便扩展！！！
+    public static final String ERR_CODE_EMAIL_UNBIND_FAIL = "40001";
+
+
 
 
     public ErrorUtil() {
@@ -510,6 +519,8 @@ public class ErrorUtil {
 
         //反馈相关
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_INSERT_FAILED, "提交用户反馈失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEMANSWER_INSERT_FAILED, "提交反馈评论失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_CLOSE_FAILED, "更新反馈状态失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_PROBLEM_ADDTIMES_LIMITED, "您一天内提交反馈的次数超过限制");
 
         //sohu+相关接口
@@ -537,6 +548,9 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERROR_CODE_SMS_CODE_TRY_FREQUENCY, "验证码尝试次数过多,请稍后再试");
         ERR_CODE_MSG_MAP.put(ERROR_CODE_SMS_CODE_OVER_DUE, "验证码已过期,请重新获取");
         ERR_CODE_MSG_MAP.put(ERROR_CODE_SMS_CODE_ERROR, "验证码错误");
+
+
+        ERR_CODE_MSG_MAP.put(ERR_CODE_EMAIL_UNBIND_FAIL, "解除密保邮箱失败");
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {

@@ -48,6 +48,17 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
         return passportId;
     }
 
+    @Override
+    public String queryPassportIdByUsername(String username) throws ServiceException {
+        String passportId;
+        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+            passportId = queryPassportIdByMobile(username);
+        } else {
+            passportId = username;
+        }
+        return passportId;
+    }
+
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initMobileMapping", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean initialMobilePassportMapping(String mobile, String passportId) throws ServiceException {

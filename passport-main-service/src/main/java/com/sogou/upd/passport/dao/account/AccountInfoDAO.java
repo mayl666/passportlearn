@@ -120,4 +120,18 @@ public interface AccountInfoDAO {
                                  @SQLParam("accountInfo") AccountInfo account_info)
             throws DataAccessException;
 
+
+    /**
+     * 修改绑定邮箱
+     *
+     * @param email
+     * @param passport_id
+     * @return
+     * @throws DataAccessException
+     */
+    @SQL("update " +
+            TABLE_NAME +
+            " set email=:email where passport_id=:passport_id")
+    public int updateBindEmail(@SQLParam("email") String email, @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
+
 }

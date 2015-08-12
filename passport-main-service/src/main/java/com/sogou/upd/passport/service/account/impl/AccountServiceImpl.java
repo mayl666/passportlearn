@@ -533,6 +533,23 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public boolean modifyMobile(Account account, String newMobile) throws ServiceException {
+        try {
+            String passportId = account.getPassportId();
+            int row = accountDAO.updateMobile(newMobile, passportId);
+            if (row != 0) {
+                String cacheKey = buildAccountKey(passportId);
+                account.setMobile(newMobile);
+                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Override
     public boolean modifyBindMobile(Account account, String newMobile) throws ServiceException {
         try {
             String passportId = account.getPassportId();

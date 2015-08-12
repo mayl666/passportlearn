@@ -21,6 +21,14 @@ public interface MobilePassportMappingService {
     public String queryPassportIdByMobile(String mobile) throws ServiceException;
 
     /**
+     * 根据用户名
+     * @param username
+     * @return
+     * @throws ServiceException
+     */
+    public String queryPassportIdByUsername(String username) throws ServiceException;
+
+    /**
      * 插入一条mobile和passportId的映射关系
      *
      * @param mobile
