@@ -149,8 +149,8 @@ form{font-size: 14px;color: #333;padding: 0 10px;margin-bottom: 20px;}
 .showpass{position: absolute;left: -9999em;visibility: hidden;}
 .forgot,.rules{color: #2976d3;}
 .rules{text-decoration: underline;}
-.captcha-img{height:80%;}
-.clp{padding-left: 0 !important;}
+.captcha-img{height:80%;width: 90px;}
+.clp{padding-left: 0 !important;width: 168px;}
 .crp{padding-right: 0 !important;}
 .history li{height: 40px;}
 .history .check{width: 4em;}
