@@ -87,6 +87,7 @@ form{font-size: 14px;color: #333;padding: 0 10px;margin-bottom: 20px;}
 .row label{width: 5em;color: #000;}
 .row input{-webkit-user-modify: read-write-plaintext-only;border: 0;outline: none;background: none;padding: 0;padding-left: 15px;font-size: 15px;}
 .row .indicator{width: 40px;}
+.tip.f-m {margin:0 4px; }
 .tools{height: 40px;color: #999;}
 .circle{
   width: 20px;
