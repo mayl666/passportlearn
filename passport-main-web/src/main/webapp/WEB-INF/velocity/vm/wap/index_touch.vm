@@ -7,15 +7,15 @@
 <meta name="MobileOptimized" content="320"/>
 <meta name="format-detection" content="telephone=no"/>
 <title>登录-搜狗通行证</title>
-<link rel="stylesheet" href="/./static/css/wap/main.css?t=313740"/>
+<link rel="stylesheet" href="/./static/css/wap/main.css?t=847734"/>
 </head>
 <body>
 
 
 #if($display != "native")
 <nav class="f-f f-vc">
-    <a href="#" class="backlink f-f f-hc f-vc">〈</a>
-    <div class="f-1 f-f f-hc f-vc">登录搜狗帐号</div>
+    <a href="#" class="backlink f-f f-hc f-vc"></a>
+    <div class="f-1 f-f f-hc f-vc f-title">登录搜狗帐号</div>
     <a href="/wap/reg" class="f-f f-vc f-hc reglink">注册</a>
 </nav>
 #end
@@ -70,12 +70,12 @@
 <a href="https://account.sogou.com/connect/login?client_id=1024&provider=qq&type=wap&display=mobile&ru=http%3A%2F%2Fm.sogou.com%3Fclient_id%3D1024%26v%3D5" class="f-f f-vc trd trd-phone">
     <span class="sprite sprite-phone icon"></span>
     <span class="block f-1">短信验证登录</span>
-    <span class="block r tc">&gt;</span>
+    <span class="block r tc"></span>
 </a>
 <a href="https://account.sogou.com/connect/login?client_id=1024&provider=qq&type=wap&display=mobile&ru=http%3A%2F%2Fm.sogou.com%3Fclient_id%3D1024%26v%3D5" class="f-f f-vc trd trd-qq">
     <span class="sprite sprite-qq icon"></span>
     <span class="block f-1">腾讯QQ登录</span>
-    <span class="block r tc">&gt;</span>
+    <span class="block r tc"></span>
 </a>
 </div>
 <script>var token = '${token}';</script>
@@ -91,7 +91,7 @@
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=638257" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=569631" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"

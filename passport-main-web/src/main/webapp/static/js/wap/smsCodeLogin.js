@@ -28,6 +28,11 @@ define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', '.
                     this.$captchaImg.click(function () {
                         self.refreshCaptcha();
                     });
+                    this.opt.$container.on('click,touchstart',function(e){
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					});
                 },
                 onBeforeOk: function () {
                     return /^\w+$/.test(this.$input.val());
