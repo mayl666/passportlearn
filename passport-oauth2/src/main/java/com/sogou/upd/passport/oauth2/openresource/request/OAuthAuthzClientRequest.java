@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.oauth2.openresource.request;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
@@ -95,6 +96,14 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
         // client端状态值
         public AuthenticationRequestBuilder setState(String state) {
             this.parameters.put(OAuth.OAUTH_STATE, state);
+            return this;
+        }
+
+        //设置微信二维码框样式
+        public AuthenticationRequestBuilder setHref(String href){
+            if(!Strings.isNullOrEmpty(href)){
+                this.parameters.put(OAuth.OAUTH_HREF,href);
+            }
             return this;
         }
 

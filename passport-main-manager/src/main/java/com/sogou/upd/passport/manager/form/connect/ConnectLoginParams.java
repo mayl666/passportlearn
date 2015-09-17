@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.form.connect;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.validation.constraints.Domain;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDisplay;
@@ -50,6 +51,8 @@ public class ConnectLoginParams {
      */
     private String format;
 
+    private String href;     //css样式的url，用于微信登录时产品定制微信扫描二维码的图框大小
+
     @AssertTrue(message = "Client_id不允许为空")
     private boolean isEmptyClientId() {
         return !Strings.isNullOrEmpty(appid) || !Strings.isNullOrEmpty(client_id);
@@ -80,6 +83,18 @@ public class ConnectLoginParams {
             return false;
         }
         return true;
+    }
+
+    @AssertTrue(message = "不支持样式定制")
+    private boolean isSupportHref(){
+        if(!Strings.isNullOrEmpty(href)){
+            if((Strings.isNullOrEmpty(provider))||(!provider.equalsIgnoreCase(AccountTypeEnum.WEIXIN.toString()))){
+               return false;
+            }
+
+        }
+        return true;
+
     }
 
     public String getProvider() {
@@ -209,4 +224,13 @@ public class ConnectLoginParams {
     public void setFormat(String format) {
         this.format = format;
     }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
+
 }

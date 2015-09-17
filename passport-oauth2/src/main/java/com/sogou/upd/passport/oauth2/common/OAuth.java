@@ -40,6 +40,7 @@ public class OAuth {
     public static final String OAUTH_PASSWORD_TYPE = "pwd_type";
     public static final String OAUTH_SCOPE = "scope";
     public static final String OAUTH_STATE = "state";
+    public static final String OAUTH_HREF="href";   //微信二维码样式
     public static final String OAUTH_DISPLAY = "display"; // 样式
     public static final String OAUTH_TAOBAO_DISPLAY = "view"; // taobao样式
     public static final String OAUTH_QQ_WAP_DISPLAY = "g_ut"; // 样式
