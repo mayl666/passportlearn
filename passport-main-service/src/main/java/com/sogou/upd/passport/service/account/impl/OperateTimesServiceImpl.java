@@ -904,6 +904,8 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 if (checkIpTimes) {
                     redisUtils.setWithinSeconds(ip_black_key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                     return true;
+                } else {
+                    incGetPairTokenTimes(username,ip);
                 }
             }
             return false;
