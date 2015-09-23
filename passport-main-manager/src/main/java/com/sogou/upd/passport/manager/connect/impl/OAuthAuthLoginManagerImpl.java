@@ -139,12 +139,14 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 display = "mobile";
             }
 
+            //定制微信二维码大小样式
+            String href=connectLoginParams.getHref();
             OAuthAuthzClientRequest.AuthenticationRequestBuilder builder = OAuthAuthzClientRequest
                     .authorizationLocation(oAuthConsumer.getWebUserAuthzUrl()).setAppKey(appKey, provider)
                     .setRedirectURI(redirectURL)
                     .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
                     .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
-                    .setState(state);
+                    .setState(state).setHref(href);
 
             if (AccountTypeEnum.QQ.getValue() == provider) {
                 builder.setShowAuthItems(QQOAuth.NO_AUTH_ITEMS);       // qq为搜狗产品定制化页面，隐藏授权信息
