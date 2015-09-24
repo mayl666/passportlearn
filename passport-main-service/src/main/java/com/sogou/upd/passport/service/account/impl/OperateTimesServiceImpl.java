@@ -893,14 +893,14 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
             //检查次数是否在黑名单当中
             String username_hKey = CacheConstant.CACHE_PREFIX_USERNAME_GETPAIRTOKENNUM + username;
-            boolean checkTimes = checkTimesByKey(username_hKey, LoginConstant.GETPAIRTOKEN_USERNAME_EXCEED_MAX_LIMIT_COUNT);
+            boolean checkTimes = checkTimesByKey(username_hKey, 2);
             if (checkTimes) {
                 redisUtils.setWithinSeconds(username_black_key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                 return true;
             }
             if (!Strings.isNullOrEmpty(ip)) {
                 String ip_hKey = CacheConstant.CACHE_PREFIX_IP_GETPAIRTOKENNUM + ip;
-                boolean checkIpTimes = checkTimesByKey(ip_hKey, LoginConstant.GETPAIRTOKEN_IP_EXCEED_MAX_LIMIT_COUNT);
+                boolean checkIpTimes = checkTimesByKey(ip_hKey, 2);
                 if (checkIpTimes) {
                     redisUtils.setWithinSeconds(ip_black_key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                     return true;
