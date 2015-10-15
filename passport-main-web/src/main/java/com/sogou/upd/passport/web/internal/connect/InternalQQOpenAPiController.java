@@ -70,8 +70,8 @@ public class InternalQQOpenAPiController extends BaseController {
                 result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
                 return result.toString();
             }
-//            result = qqOpenAPIManager.getQQFriends(userId, tKey, third_appid);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            result = qqOpenAPIManager.getQQFriends(userId, tKey, third_appid);
+//            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result.toString();
         } catch (Exception e) {
             logger.error("get qq friends error. ", e);
