@@ -16,8 +16,8 @@
     </bean>
     <bean id="cacheConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <property name="hostName" value="10.12.139.205"/>
-        <property name="port" value="6379"/>
+        <property name="hostName" value="a.redis.sogou-op.org"/>
+        <property name="port" value="1509"/>
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->
         <!--<property name="database" value="${redis.default.db}"></property>-->
@@ -116,8 +116,8 @@
     </bean>
     <bean id="tokenConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <property name="hostName" value="10.12.139.205"/>
-        <property name="port" value="6379"/>
+        <property name="hostName" value="a.redis.sogou-op.org"/>
+        <property name="port" value="1509"/>
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->
         <!--<property name="database" value="${redis.default.db}"></property>-->
