@@ -346,11 +346,15 @@ public class AccountServiceImpl implements AccountService {
                 String key = null;
                 try{
                     key = "SP.PASSPORTID:SOGOULEAKLIST_" + account.getPassportId();
+                    if(account.getFlag()==AccountStatusEnum.LEAKED.getValue()){
+                        dbShardRedisUtils.delete(cacheKey);
+                        accountDAO.updateState(AccountStatusEnum.REGULAR.getValue(),passportId);
+                    }
                     if(redisUtils.checkKeyIsExist(key)){
                         redisUtils.delete(key);
                     }
                 } catch (Exception e){
-                    logger.error("sogou leak passportid reset passport del redis error : " + key);
+                    logger.error("sogou leak passportid reset passport handle error : " + passportId);
                 }
 
                 return true;
