@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -87,7 +86,7 @@ public class LoginManagerImpl implements LoginManager {
                 result.setSuccess(false); //表示账号已存在
                 result.setCode(ErrorUtil.ERR_CODE_USER_ID_EXIST);
             } else {
-                result = registerApiManager.checkUser(username, clientId);
+                result = registerApiManager.checkAccountExist(username, clientId);
             }
             buildLoginResult(result);
         } catch (ServiceException e) {
@@ -103,6 +102,13 @@ public class LoginManagerImpl implements LoginManager {
             result.setSuccess(true);
             return result;
         }
+
+        //风险账号处理
+        if (!result.isSuccess() && ErrorUtil.ERR_CODE_ACCOUNT_LEAKLIST_RISK.equals(result.getCode())) {
+            result.setSuccess(false);
+            return result;
+        }
+
         //注册checkuser返回结果为true，表示账号不存在，需要转成登录的结果
         if (result.isSuccess()) {
             result.setSuccess(false);
@@ -149,14 +155,14 @@ public class LoginManagerImpl implements LoginManager {
     }
 
     //TODO 搜狗输入法数据泄漏
-    public boolean isSogouLeakList(String username){
+    public boolean isSogouLeakList(String username) {
         String key = "SP.PASSPORTID:SOGOULEAKLIST_" + username;
-        if(redisUtils.checkKeyIsExist(key)){
-            AccountDomainEnum accountDomain=AccountDomainEnum.getAccountDomain(username);
-            if(accountDomain==AccountDomainEnum.SOHU){
+        if (redisUtils.checkKeyIsExist(key)) {
+            AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(username);
+            if (accountDomain == AccountDomainEnum.SOHU) {
                 redisUtils.delete(key);
             }
-             return true;
+            return true;
         }
         return false;
     }
@@ -167,11 +173,11 @@ public class LoginManagerImpl implements LoginManager {
         String passportId = getIndividPassportIdByUsername(username);
         //TODO 搜狗输入法数据泄漏
         try {
-            if(isSogouLeakList(passportId)){
+            if (isSogouLeakList(passportId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LEAKLIST_RISK);
                 return result;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("sogou leak passportid search redis error : " + username);
         }
         //校验username是否在账户黑名单中

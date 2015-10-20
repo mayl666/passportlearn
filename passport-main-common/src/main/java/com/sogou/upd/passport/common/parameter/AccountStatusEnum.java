@@ -11,7 +11,8 @@ public enum AccountStatusEnum {
 
     DISABLED(0), // 未激活
     REGULAR(1), // 正式用户
-    KILLED(2); // 封杀用户
+    KILLED(2), // 封杀用户
+    LEAKED(3);//风险账号
 
     public int value;
 

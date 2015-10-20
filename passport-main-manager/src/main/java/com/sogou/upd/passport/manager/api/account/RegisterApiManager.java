@@ -43,4 +43,12 @@ public interface RegisterApiManager {
      * @return
      */
     public Result regMobileUser(RegMobileApiParams regMobileApiParams);
+
+    /**
+     * 检查账号是否已经注册，与checkUser有区别，checkUser如果accountFlag!=1,认为账号不存在
+     * @param username
+     * @param clientId
+     * @return
+     */
+    public Result checkAccountExist(String username, int clientId) ;
 }

@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -180,6 +181,57 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
         }
         return result;
     }
+
+    @Override
+    public Result checkAccountExist(String username, int clientId) {
+        Result result = new APIResultSupport(false);
+        try {
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
+            if (AccountDomainEnum.SOHU.equals(domain) || AccountDomainEnum.THIRD.equals(domain)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                return result;
+            }
+            if (username.indexOf("@") == -1) {
+                //判断是否是手机号注册
+                if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
+                    username = username + CommonConstant.SOGOU_SUFFIX;
+                }
+            }
+            //如果是手机账号注册
+            if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+                String passportId = mobilePassportMappingService.queryPassportIdByMobile(username);
+                if (!Strings.isNullOrEmpty(passportId)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    result.setDefaultModel("userid", passportId);
+                    return result;
+                }
+            } else {
+                //如果是外域或个性账号注册
+                Account account = accountService.queryAccountByPassportId(username.toLowerCase());
+                if (account != null) {
+                    if(account.getFlag()== AccountStatusEnum.LEAKED.getValue()){
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LEAKLIST_RISK);
+                        return result;
+                    }
+                    result.setCode(ErrorUtil.ERR_CODE_USER_ID_EXIST);
+                    result.setDefaultModel("flag", String.valueOf(account.getFlag()));
+                    result.setDefaultModel("userid", account.getPassportId());
+                    return result;
+                }
+            }
+            if (CommonHelper.isExplorerToken(clientId)) {
+                result = isSohuplusUser(username);
+            } else {
+                result.setSuccess(true);
+                result.setMessage("操作成功");
+            }
+        } catch (ServiceException e) {
+            logger.error("Check account is exists Exception, username:" + username, e);
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
 
     /*
      * client=1044的username为个性域名或手机号
