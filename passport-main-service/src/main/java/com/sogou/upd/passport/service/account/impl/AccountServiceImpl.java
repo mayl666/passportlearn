@@ -342,20 +342,8 @@ public class AccountServiceImpl implements AccountService {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPassword(passwdSign);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-                //TODO 搜狗输入法数据库泄漏
-                String key = null;
-                try{
-                    key = "SP.PASSPORTID:SOGOULEAKLIST_" + account.getPassportId();
-                    if(account.getFlag()==AccountStatusEnum.LEAKED.getValue()){
-                        dbShardRedisUtils.delete(cacheKey);
-                        accountDAO.updateState(AccountStatusEnum.REGULAR.getValue(),passportId);
-                    }
-                    if(redisUtils.checkKeyIsExist(key)){
-                        redisUtils.delete(key);
-                    }
-                } catch (Exception e){
-                    logger.error("sogou leak passportid reset passport handle error : " + passportId);
-                }
+                //输入法泄露数据处理，修改密码后解除限制
+                removeLeakUser(account,passportId);
 
                 return true;
             }
@@ -738,6 +726,24 @@ public class AccountServiceImpl implements AccountService {
             throw new ServiceException(e);
         }
         return false;
+    }
+
+    //输入法泄露数据处理，修改密码后解除限制
+    public void removeLeakUser(Account account,String passportId){
+        String leakKey = null;
+        String cacheKey = buildAccountKey(passportId);
+        try{
+            leakKey = CacheConstant.CACHE_PREFIX_USER_LEAKLIST + account.getPassportId();
+            if(account.getFlag()==AccountStatusEnum.LEAKED.getValue()){
+                dbShardRedisUtils.delete(cacheKey);
+                accountDAO.updateState(AccountStatusEnum.REGULAR.getValue(),passportId);
+            }
+            if(redisUtils.checkKeyIsExist(leakKey)){
+                redisUtils.delete(leakKey);
+            }
+        } catch (Exception e){
+            logger.error("sogou leak passportid reset passport handle error : " + passportId);
+        }
     }
 
 }
