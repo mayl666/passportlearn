@@ -8,7 +8,6 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.TokenRedisUtils;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.CommonManager;
@@ -70,8 +69,6 @@ public class LoginManagerImpl implements LoginManager {
     @Autowired
     private TokenRedisUtils tokenRedisUtils;
 
-    @Autowired
-    private RedisUtils redisUtils;
 
     @Override
     public Result checkUser(String username, int clientId) throws Exception {
@@ -154,32 +151,12 @@ public class LoginManagerImpl implements LoginManager {
         return result;
     }
 
-    //TODO 搜狗输入法数据泄漏
-    public boolean isSogouLeakList(String username) {
-        String key = "SP.PASSPORTID:SOGOULEAKLIST_" + username;
-        if (redisUtils.checkKeyIsExist(key)) {
-            AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(username);
-            if (accountDomain == AccountDomainEnum.SOHU) {
-                redisUtils.delete(key);
-            }
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public Result authUser(String username, String ip, String pwdMD5) {
         Result result = new APIResultSupport(false);
         String passportId = getIndividPassportIdByUsername(username);
-        //TODO 搜狗输入法数据泄漏
-        try {
-            if (isSogouLeakList(passportId)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LEAKLIST_RISK);
-                return result;
-            }
-        } catch (Exception e) {
-            logger.error("sogou leak passportid search redis error : " + username);
-        }
+
         //校验username是否在账户黑名单中
         if (isLoginUserInBlackList(username, ip)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);

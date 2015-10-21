@@ -67,6 +67,8 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_GETPAIRTOKEN__IP_BLACK_ = "SP.GETPAIRTOKEN.IP:BLACK_";
     //IP网段黑名单
     public static final String CACHE_PREFIX_IP_SUBIPBLACKLIST = "SP.IP:SUBIPBLACKLIST_KEY";
+    //检查是否在泄露账号列表中
+    public static final String CACHE_PREFIX_USER_LEAKLIST="SP.PASSPORTID:SOGOULEAKLIST_";
 
     /*================绑定密保限制相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_BINDNUM = "SP.PASSPORTID:BINDNUM_"; // passportId与当日设置密保次数

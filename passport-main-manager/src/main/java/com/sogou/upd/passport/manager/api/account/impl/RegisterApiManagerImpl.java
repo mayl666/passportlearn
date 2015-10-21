@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -11,6 +12,7 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.validation.constraints.UserNameValidator;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -53,6 +55,10 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
     @Autowired
     private UserNameValidator userNameValidator;
 
+    @Autowired
+    private RedisUtils redisUtils;
+
+
     @Override
     public Result regMailUser(final RegEmailApiParams params) {
         Result result = new APIResultSupport(false);
@@ -63,7 +69,7 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
             int clientId = params.getClient_id();
             AccountDomainEnum emailType = AccountDomainEnum.getAccountDomain(username);
             //搜狗邮箱关闭，不允许注册
-            if (clientId == CommonConstant.MAIL_CLIENTID ) {
+            if (clientId == CommonConstant.MAIL_CLIENTID) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED);
                 return result;
@@ -209,10 +215,16 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                 //如果是外域或个性账号注册
                 Account account = accountService.queryAccountByPassportId(username.toLowerCase());
                 if (account != null) {
-                    if(account.getFlag()== AccountStatusEnum.LEAKED.getValue()){
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LEAKLIST_RISK);
-                        return result;
+                    //检查是否是输入法泄露账号
+                    try {
+                        if (isSogouLeakList(username, account)) {
+                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LEAKLIST_RISK);
+                            return result;
+                        }
+                    } catch (Exception e) {
+                        logger.error("sogou leak passportid search  error : " + username);
                     }
+
                     result.setCode(ErrorUtil.ERR_CODE_USER_ID_EXIST);
                     result.setDefaultModel("flag", String.valueOf(account.getFlag()));
                     result.setDefaultModel("userid", account.getPassportId());
@@ -280,7 +292,7 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
         try {
             //搜狗邮箱关闭，不允许注册
             int clientId = regMobileApiParams.getClient_id();
-            if (clientId == CommonConstant.MAIL_CLIENTID ) {
+            if (clientId == CommonConstant.MAIL_CLIENTID) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_SOGOU_MAIL_CLOSED_REG_FAILED);
                 return result;
@@ -308,4 +320,25 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
         }
         return result;
     }
+
+    //TODO 搜狗输入法数据泄漏
+    public boolean isSogouLeakList(String username, Account account) {
+        //活跃用户检查是否在限制列表中
+        String key = CacheConstant.CACHE_PREFIX_USER_LEAKLIST + username;
+        if (redisUtils.checkKeyIsExist(key)) {
+            AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(username);
+            if (accountDomain == AccountDomainEnum.SOHU) {
+                redisUtils.delete(key);
+            }
+            return true;
+        }
+
+        //不活跃用户检查是否在限制列表中
+        if (account != null && account.getFlag() == AccountStatusEnum.LEAKED.getValue()) {
+            return true;
+        }
+
+        return false;
+    }
+
 }
