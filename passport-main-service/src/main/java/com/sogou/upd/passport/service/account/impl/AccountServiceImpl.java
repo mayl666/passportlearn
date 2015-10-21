@@ -731,8 +731,8 @@ public class AccountServiceImpl implements AccountService {
     //输入法泄露数据处理，修改密码后解除限制
     public void removeLeakUser(Account account,String passportId){
         String leakKey = null;
-        String cacheKey = buildAccountKey(passportId);
         try{
+            String cacheKey = buildAccountKey(passportId);
             leakKey = CacheConstant.CACHE_PREFIX_USER_LEAKLIST + account.getPassportId();
             if(account.getFlag()==AccountStatusEnum.LEAKED.getValue()){
                 dbShardRedisUtils.delete(cacheKey);
