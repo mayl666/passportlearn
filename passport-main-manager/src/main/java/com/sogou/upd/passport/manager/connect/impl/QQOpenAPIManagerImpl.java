@@ -17,7 +17,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
-import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.manager.api.connect.ConnectApiManager;
 import com.sogou.upd.passport.manager.connect.QQOpenAPIManager;
 import com.sogou.upd.passport.model.app.ConnectConfig;
@@ -53,8 +52,10 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     private String QQ_RET_CODE = "0";
     private String QQ_RET_CODE_FOR_MODIFY_PASSPORT = "-73";
     private String QQ_RET_CODE_FOR_TOKEN_EXPIRE = "100014";
+    private String QQ_RET_CODE_FOR_TOKEN_INVALID = "100015";
+    private String QQ_RET_CODE_FOR_NO_AUTHORITY = "100030";
 
-        private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:8888/internal/qq/friends_aesinfo";
+    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:8888/internal/qq/friends_aesinfo";
 //    private static final String GET_QQ_FRIENDS_AES_URL = "http://qqfriends.gz.1251021740.clb.myqcloud.com/internal/qq/friends_aesinfo";
 
     public static final String TKEY_SECURE_KEY = "adfab231rqwqerq";
@@ -74,9 +75,9 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
 
     public Result getQQFriends(String userid, String tkey, String third_appid) throws Exception {
         String cacheKey = buildQQFriendsCacheKey(userid, third_appid);
-        List cachelist = dbShardRedisUtils.getObject(cacheKey,List.class);
+        List cachelist = dbShardRedisUtils.getObject(cacheKey, List.class);
         Result result = new APIResultSupport(false);
-        if(null != cachelist){
+        if (null != cachelist) {
             result.setSuccess(true);
             result.setDefaultModel("items", cachelist);
             return result;
@@ -97,14 +98,17 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
                     if (QQ_RET_CODE.equals(ret)) {
                         result.setSuccess(true);
                         if (map.containsKey("items")) {
-                            List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid,userid);
+                            List<Map<String, Object>> list = changePassportId((List<Map<String, Object>>) map.get("items"), third_appid, userid);
                             result.setDefaultModel("items", list);
                             dbShardRedisUtils.setObjectWithinSeconds(cacheKey, list, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                         }
-                    } else if(QQ_RET_CODE_FOR_MODIFY_PASSPORT.equals(ret)){
+                    } else if (QQ_RET_CODE_FOR_MODIFY_PASSPORT.equals(ret)) {
                         result.setCode(ErrorUtil.ERR_CODE_CONNECT_TOKEN_PWDERROR);
-                    } else if(QQ_RET_CODE_FOR_TOKEN_EXPIRE.equals(ret)){
-                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID);} else {
+                    } else if (QQ_RET_CODE_FOR_TOKEN_EXPIRE.equals(ret) || QQ_RET_CODE_FOR_TOKEN_INVALID.equals(ret)) {
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID);
+                    } else if (QQ_RET_CODE_FOR_NO_AUTHORITY.equals(ret)) {
+                        result.setCode(ErrorUtil.ERR_CODE_CONNECT_REQUEST_NO_AUTHORITY);
+                    } else {
 
                         logger.error("return value error ：" + map.toString());
                         if (map.containsKey("msg")) {
@@ -168,7 +172,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
         return connectUserInfoVO;
     }
 
-    public List<Map<String, Object>> changePassportId(List<Map<String, Object>> list, String third_appid ,String userid) {
+    public List<Map<String, Object>> changePassportId(List<Map<String, Object>> list, String third_appid, String userid) {
         if (!CollectionUtils.isEmpty(list)) {
             List<Map<String, Object>> removeList = new ArrayList<Map<String, Object>>();
             for (int i = 0; i < list.size(); i++) {
