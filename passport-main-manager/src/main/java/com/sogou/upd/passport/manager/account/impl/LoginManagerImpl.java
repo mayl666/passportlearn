@@ -80,6 +80,17 @@ public class LoginManagerImpl implements LoginManager {
                 return result;
             }
             if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+                //检查是否是输入法泄露账号
+                try {
+                    if (registerApiManager.isSogouLeakList(passportId, null)) {
+                        result.setSuccess(false);
+                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LEAKLIST_RISK);
+                        return result;
+                    }
+                } catch (Exception e) {
+                    logger.error("sohu leak passportid search  error : " + username);
+                }
+
                 result.setSuccess(false); //表示账号已存在
                 result.setCode(ErrorUtil.ERR_CODE_USER_ID_EXIST);
             } else {

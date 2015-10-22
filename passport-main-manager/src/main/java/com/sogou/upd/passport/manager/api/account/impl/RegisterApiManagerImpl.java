@@ -322,6 +322,7 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
     }
 
     //TODO 搜狗输入法数据泄漏
+    @Override
     public boolean isSogouLeakList(String username, Account account) {
         //活跃用户检查是否在限制列表中
         String key = CacheConstant.CACHE_PREFIX_USER_LEAKLIST + username;
