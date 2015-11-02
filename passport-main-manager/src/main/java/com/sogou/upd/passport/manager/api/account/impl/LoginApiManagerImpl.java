@@ -12,6 +12,7 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
+import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.TokenService;
 import org.slf4j.Logger;
@@ -61,12 +62,17 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
             if (AccountDomainEnum.SOHU.equals(domain)) {
                 //正常时，开关值为true，调用搜狐API校验搜狐域账号用户名和密码;当搜狐接口异常时，开关值false，返回异常；
                 if (ManagerHelper.authUserBySOHUSwitcher()) {
+                    //停止新的搜狐账号登录,若存在，去搜狐校验，若不存在直接返回10009
+                    Account account = accountService.queryAccountByPassportId(passportId);
+                    if (null == account) {
+                        result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                        return result;
+                    }
                     //主账号是sohu域账号调用sohu api校验用户名和密码
                     result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                    //sohu域账号校验密码成功后，初始化一条sohu域记录
-                    if (result.isSuccess()) {
-                        accountService.initSOHUAccount(passportId, authUserApiParams.getIp());
-                    }
+//                    if (result.isSuccess()) {
+//                        accountService.initSOHUAccount(passportId, authUserApiParams.getIp());
+//                    }
                 } else {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_API_FAILED);
                     return result;

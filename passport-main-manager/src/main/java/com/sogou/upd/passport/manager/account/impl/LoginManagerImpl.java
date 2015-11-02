@@ -202,9 +202,11 @@ public class LoginManagerImpl implements LoginManager {
             String uniqname = "";
             if (account != null) {
                 uniqname = account.getUniqname();
-            } else if (AccountDomainEnum.SOHU == AccountDomainEnum.getAccountDomain(roamPassportId)) {
-                accountService.initSOHUAccount(roamPassportId, ip);
-            } else {
+            }
+//            else if (AccountDomainEnum.SOHU == AccountDomainEnum.getAccountDomain(roamPassportId)) {
+//                accountService.initSOHUAccount(roamPassportId, ip);
+//            }
+            else {
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }

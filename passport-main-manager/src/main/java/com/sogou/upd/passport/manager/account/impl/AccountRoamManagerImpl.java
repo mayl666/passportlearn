@@ -149,18 +149,18 @@ public class AccountRoamManagerImpl implements AccountRoamManager {
             Account account = accountService.queryAccountByPassportId(roamPassportId);
             if (account == null) {
                 //标注 20140806 对于在sg 数据库不存在的第三方账号、为减少对数据的影响、仍然支持种cookie、此处对于不存在的第三方账号后续要处理。
-                if (accountDomain == AccountDomainEnum.SOGOU) {
+                if (accountDomain == AccountDomainEnum.SOGOU ||accountDomain == AccountDomainEnum.SOHU) {
                     //返回result
                     result.setCode(ErrorUtil.INVALID_ACCOUNT);
                     return result;
                 }
-                //若搜狐域账号、初始化一条无密码的搜狐域Account
-                if (accountDomain == AccountDomainEnum.SOHU) {
-                    if (!accountService.initSOHUAccount(roamPassportId, createIp)) {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-                        return result;
-                    }
-                }
+//                //若搜狐域账号、初始化一条无密码的搜狐域Account
+//                if (accountDomain == AccountDomainEnum.SOHU) {
+//                    if (!accountService.initSOHUAccount(roamPassportId, createIp)) {
+//                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+//                        return result;
+//                    }
+//                }
             } else if (accountDomain == AccountDomainEnum.PHONE || accountDomain == AccountDomainEnum.OTHER) {
                 result.setSuccess(true);
                 return result;
