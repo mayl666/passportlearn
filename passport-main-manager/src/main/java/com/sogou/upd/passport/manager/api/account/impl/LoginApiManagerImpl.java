@@ -58,22 +58,9 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                 return result;
             }
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
-            if (AccountDomainEnum.SOHU.equals(domain)) {
-                //正常时，开关值为true，调用搜狐API校验搜狐域账号用户名和密码;当搜狐接口异常时，开关值false，返回异常；
-                if (ManagerHelper.authUserBySOHUSwitcher()) {
-                    //主账号是sohu域账号调用sohu api校验用户名和密码
-                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                    //sohu域账号校验密码成功后，初始化一条sohu域记录
-                    if (result.isSuccess()) {
-                        accountService.initSOHUAccount(passportId, authUserApiParams.getIp());
-                    }
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_API_FAILED);
-                    return result;
-                }
-            } else {
-                result = sgLoginApiManager.webAuthUser(authUserApiParams);
-            }
+            //搜狐账号也在搜狗校验
+            result = sgLoginApiManager.webAuthUser(authUserApiParams);
+
         } catch (Exception e) {
             logger.error("bothAuthUser Exception", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);

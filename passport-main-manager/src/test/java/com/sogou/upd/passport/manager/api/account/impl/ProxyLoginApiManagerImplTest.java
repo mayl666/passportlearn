@@ -24,30 +24,6 @@ public class ProxyLoginApiManagerImplTest extends BaseTest {
     private LoginApiManager proxyLoginApiManager;
 
     @Test
-    public void testAuthUser() {
-        try {
-            AuthUserApiParams authUserParameters = new AuthUserApiParams();
-            authUserParameters.setUserid("sandy400@game.sohu.com");
-            authUserParameters.setClient_id(1100);
-//            authUserParameters.setIp("10.129.192.193");
-            authUserParameters.setPassword(Coder.encryptMD5("343512729"));
-//            Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
-
-//
-//            AuthUserApiParams authUserParameters = new AuthUserApiParams();
-//            authUserParameters.setUserid("techchina@17173.com");
-//            authUserParameters.setClient_id(1120);
-//            authUserParameters.setIp("10.129.192.193");
-////            authUserParameters.setPassword("e355b0428c262b7c883a724a002bf8b8");
-//            authUserParameters.setPassword(Coder.encryptMD5("cd98203213"));
-            Result result = proxyLoginApiManager.webAuthUser(authUserParameters);
-            System.out.println("resultStr:"+result);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
     public void testGetCookieInfo() {
         String userId = "testliu94608@sogou.com";
         try {
