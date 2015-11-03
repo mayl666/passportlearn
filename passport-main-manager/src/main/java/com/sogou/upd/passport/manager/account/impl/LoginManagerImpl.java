@@ -80,6 +80,14 @@ public class LoginManagerImpl implements LoginManager {
                 return result;
             }
             if (AccountDomainEnum.SOHU.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+                //检查账号是否存在
+                Account account = accountService.queryAccountByPassportId(passportId);
+                if (null == account) {
+                    result.setSuccess(false);
+                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                    return result;
+                }
+
                 //检查是否是输入法泄露账号
                 try {
                     if (registerApiManager.isSogouLeakList(passportId, null)) {
