@@ -5,8 +5,6 @@ import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.account.BindApiManager;
-import com.sogou.upd.passport.manager.api.account.ProxyApiManagerImpl;
-import com.sogou.upd.passport.manager.api.account.form.BaseMoblieApiParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.service.account.AccountService;
 import junit.framework.Assert;
@@ -42,7 +40,7 @@ public class BindApiManagerTest extends BaseTest {
         String accountNotExistStr = "{\"data\":{},\"statusText\":\"账号不存在\",\"status\":\"20205\"}";
         Result accountNotExistExpectedResult = new APIResultSupport(false, ErrorUtil.INVALID_ACCOUNT);
         Account account = accountService.queryNormalAccount("shopengzhi@sogou.com");
-        Result accountNotExistActualResult = bindApiManager.bindMobile("shopengzhi@sogou.com", new_bind_mobile,account);
+        Result accountNotExistActualResult = bindApiManager.bindMobile("shopengzhi@sogou.com", new_bind_mobile, account);
         Assert.assertEquals(accountNotExistExpectedResult.toString(), accountNotExistActualResult.toString());
         //手机号已绑定或已注册
         String mobileNotBind = "{\"data\":{},\"statusText\":\"绑定密保手机失败\",\"status\":\"20289\"}";
@@ -54,15 +52,15 @@ public class BindApiManagerTest extends BaseTest {
         String accountBinded = "{\"data\":{},\"statusText\":\"绑定密保手机失败\",\"status\":\"20289\"}";
         Result accountBindedExpectedResult = new APIResultSupport(false, ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDMOBILE_FAILED);
         account = accountService.queryNormalAccount(mobile_userid_sogou);
-        Result accountBindedActualResult = bindApiManager.bindMobile(mobile_userid_sogou, new_bind_mobile,account);
+        Result accountBindedActualResult = bindApiManager.bindMobile(mobile_userid_sogou, new_bind_mobile, account);
         Assert.assertEquals(accountBindedExpectedResult.toString(), accountBindedActualResult.toString());
         //解绑
         accountService.deleteOrUnbindMobile(binded_mobile);
         //sogou账号首次绑定成功
         String bindMobileStr = "{\"data\":{},\"statusText\":\"操作成功\",\"status\":\"0\"}";
-        Result bindMobileExpectedResult = new APIResultSupport(true,"0", "操作成功");
+        Result bindMobileExpectedResult = new APIResultSupport(true, "0", "操作成功");
         account = accountService.queryNormalAccount(mobile_userid_sogou);
-        Result bindMobileActualResult = bindApiManager.bindMobile(mobile_userid_sogou, binded_mobile,account);
+        Result bindMobileActualResult = bindApiManager.bindMobile(mobile_userid_sogou, binded_mobile, account);
         Assert.assertEquals(bindMobileExpectedResult.toString(), bindMobileActualResult.toString());
     }
 
