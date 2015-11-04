@@ -32,14 +32,14 @@ public class SHPPUrlConstant {
     // 手机浏览器/authtoken接口返回结果后会302到setcookie接口，这个必须为http，所以此处也为http，得到location的也为http
     public static final String HTTPS_SET_COOKIE = BASE_URL + "act/setcookie";//用于前端设置cookie
     public static final String HTTP_SET_COOKIE = "http://passport.sohu.com/act/setcookie";//用于前端设置cookie
-    public static final String CHECK_USER = BASE_INTERNAL_URL + "checkuser";//查询用户名是否注册过
+//    public static final String CHECK_USER = BASE_INTERNAL_URL + "checkuser";//查询用户名是否注册过
 
     /*================================注册相关=======================================*/
     public static final String GET_COOKIE_VALUE_FROM_SOHU = BASE_INTERNAL_URL + "getcookieinfo";
 
     /*================================手机绑定相关=======================================*/
-    //查询手机号绑定的账号
-    public static final String MOBILE_GET_USERID = BASE_INTERNAL_URL + "wapgetuserid";
+//    //查询手机号绑定的账号
+//    public static final String MOBILE_GET_USERID = BASE_INTERNAL_URL + "wapgetuserid";
 
     /*================================修改密码=======================================*/
     //获取用户信息

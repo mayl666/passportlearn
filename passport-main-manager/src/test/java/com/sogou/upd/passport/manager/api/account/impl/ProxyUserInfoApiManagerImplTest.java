@@ -64,15 +64,15 @@ public class ProxyUserInfoApiManagerImplTest extends BaseTest {
 //        System.out.println("avatar result:" + result1);
     }
 
-    @Test
-    public void testCheckUniqName() {
-        UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
-
-//        String name="%E4%B8%AD%E6%96%87323212";
-        String name = "lvdongtian";
-        updateUserUniqnameApiParams.setUniqname(name);
-        Result result = proxyUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
-        System.out.println("result输出结果为:" + result.toString());
-    }
+//    @Test
+//    public void testCheckUniqName() {
+//        UpdateUserUniqnameApiParams updateUserUniqnameApiParams = new UpdateUserUniqnameApiParams();
+//
+////        String name="%E4%B8%AD%E6%96%87323212";
+//        String name = "lvdongtian";
+//        updateUserUniqnameApiParams.setUniqname(name);
+//        Result result = proxyUserInfoApiManager.checkUniqName(updateUserUniqnameApiParams);
+//        System.out.println("result输出结果为:" + result.toString());
+//    }
 
 }

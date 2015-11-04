@@ -176,16 +176,17 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     @Override
     public Result checkUniqName(UpdateUserUniqnameApiParams updateUserUniqnameApiParams) {
-        if (updateUserUniqnameApiParams.getUniqname() == null || "".equals(updateUserUniqnameApiParams.getUniqname())) {
-            throw new IllegalArgumentException("用户昵称不能为空");
-        }
-        updateUserUniqnameApiParams.setUniqname(updateUserUniqnameApiParams.getUniqname());
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "info");
-        requestModelXml.addParams(updateUserUniqnameApiParams);
-        Result result = executeResult(requestModelXml, updateUserUniqnameApiParams.getUniqname());
-        if (result.isSuccess()) {
-            result.setMessage("昵称未被占用");
-        }
-        return result;
+//        if (updateUserUniqnameApiParams.getUniqname() == null || "".equals(updateUserUniqnameApiParams.getUniqname())) {
+//            throw new IllegalArgumentException("用户昵称不能为空");
+//        }
+//        updateUserUniqnameApiParams.setUniqname(updateUserUniqnameApiParams.getUniqname());
+//        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.UPDATE_USER_UNIQNAME, "info");
+//        requestModelXml.addParams(updateUserUniqnameApiParams);
+//        Result result = executeResult(requestModelXml, updateUserUniqnameApiParams.getUniqname());
+//        if (result.isSuccess()) {
+//            result.setMessage("昵称未被占用");
+//        }
+//        return result;
+        return null;
     }
 }

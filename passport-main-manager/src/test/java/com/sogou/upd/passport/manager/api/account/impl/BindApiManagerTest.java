@@ -35,14 +35,6 @@ public class BindApiManagerTest extends BaseTest {
     private static final String wrong_mobile = "1360x0x0x01";
     private static final String no_mobile = "13601010101";
 
-    @Test
-    public void testGetPassportId(){
-        BaseMoblieApiParams params = new BaseMoblieApiParams();
-        params.setMobile("13071155730");
-        ProxyApiManagerImpl manager = new ProxyApiManagerImpl();
-        Result resultSH = manager.getPassportIdByMobile(params);
-        System.out.println(resultSH.toString());
-    }
 
     @Test
     public void testBindMobile() {

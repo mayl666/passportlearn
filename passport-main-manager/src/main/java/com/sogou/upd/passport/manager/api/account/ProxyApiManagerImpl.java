@@ -35,16 +35,16 @@ public class ProxyApiManagerImpl extends BaseProxyManager {
     @Autowired
     private CommonManager commonManager;
 
-    /**
-     * 搜狐接口，根据手机号获取主账号
-     * @param baseMoblieApiParams
-     * @return
-     */
-    public Result getPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams) {
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_GET_USERID, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParams(baseMoblieApiParams);
-        return executeResult(requestModelXml, baseMoblieApiParams.getMobile());
-    }
+//    /**
+//     * 搜狐接口，根据手机号获取主账号
+//     * @param baseMoblieApiParams
+//     * @return
+//     */
+//    public Result getPassportIdByMobile(BaseMoblieApiParams baseMoblieApiParams) {
+//        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.MOBILE_GET_USERID, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+//        requestModelXml.addParams(baseMoblieApiParams);
+//        return executeResult(requestModelXml, baseMoblieApiParams.getMobile());
+//    }
 
     /**
      * 搜狐接口，检查账号是否存在
@@ -52,13 +52,14 @@ public class ProxyApiManagerImpl extends BaseProxyManager {
      * @return
      */
     public Result checkUser(CheckUserApiParams checkUserApiParams) {
-        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.CHECK_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-        requestModelXml.addParams(checkUserApiParams);
-        Result result = executeResult(requestModelXml);
-        if (!result.isSuccess()) {
-            result.setDefaultModel("userid", checkUserApiParams.getUserid());
-        }
-        return result;
+//        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.CHECK_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+//        requestModelXml.addParams(checkUserApiParams);
+//        Result result = executeResult(requestModelXml);
+//        if (!result.isSuccess()) {
+//            result.setDefaultModel("userid", checkUserApiParams.getUserid());
+//        }
+//        return result;
+        return null;
     }
 
     /**
