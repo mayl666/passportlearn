@@ -61,8 +61,8 @@ public class SHPPUrlConstant {
     public static final String SOHU_WAP_FINDPWD_URL = "http://m.passport.sohu.com/f";
 
     /*================================第三方开放平台相关url=======================================*/
-    //第三方发图片微博或分享
-    public static final String CONNECT_SHARE_PIC = BASE_OPEN_API_URL + "api/share/add_pic";
+//    //第三方发图片微博或分享
+//    public static final String CONNECT_SHARE_PIC = BASE_OPEN_API_URL + "api/share/add_pic";
     //第三方获取用户好友/互粉
     public static final String GET_CONNECT_FRIENDS_INFO = BASE_OPEN_API_URL + "api/friendship/friends";
 }
