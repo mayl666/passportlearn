@@ -34,41 +34,41 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/internal/connect/friends")
 public class FriendsOpenApiController extends BaseController {
 
-    private static Logger logger = LoggerFactory.getLogger(FriendsOpenApiController.class);
-
-    @Autowired
-    private FriendsOpenApiManager proxyFriendsOpenApiManager;
-
-    /**
-     * 获取第三方平台的用户好友列表和互相关注的列表
-     *
-     * @param params
-     * @return
-     */
-    @InterfaceSecurity
-    @RequestMapping(value = "/friendship/friends", method = RequestMethod.POST)
-    @ResponseBody
-    public Object getUserFriendship(FriendsOpenApiParams params, HttpServletRequest request) {
-        Result result = new APIResultSupport(false);
-        try {
-            // 参数校验
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
-            }
-            BaseOpenApiParams baseOpenApiParams = new OpenApiParamsHelper().createBaseForm(params);
-            result = proxyFriendsOpenApiManager.getUserFriends(baseOpenApiParams);
-        } catch (Exception e) {
-            logger.error("getUserFriendship:Get User Friendship  For Internal Is Failed,Openid is " + params.getOpenid(), e);
-        } finally {
-            //记录log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), params.getUser_ip());
-            UserOperationLogUtil.log(userOperationLog);
-        }
-
-        return result.toString();
-    }
+//    private static Logger logger = LoggerFactory.getLogger(FriendsOpenApiController.class);
+//
+//    @Autowired
+//    private FriendsOpenApiManager proxyFriendsOpenApiManager;
+//
+//    /**
+//     * 获取第三方平台的用户好友列表和互相关注的列表
+//     *
+//     * @param params
+//     * @return
+//     */
+//    @InterfaceSecurity
+//    @RequestMapping(value = "/friendship/friends", method = RequestMethod.POST)
+//    @ResponseBody
+//    public Object getUserFriendship(FriendsOpenApiParams params, HttpServletRequest request) {
+//        Result result = new APIResultSupport(false);
+//        try {
+//            // 参数校验
+//            String validateResult = ControllerHelper.validateParams(params);
+//            if (!Strings.isNullOrEmpty(validateResult)) {
+//                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+//                result.setMessage(validateResult);
+//                return result.toString();
+//            }
+//            BaseOpenApiParams baseOpenApiParams = new OpenApiParamsHelper().createBaseForm(params);
+//            result = proxyFriendsOpenApiManager.getUserFriends(baseOpenApiParams);
+//        } catch (Exception e) {
+//            logger.error("getUserFriendship:Get User Friendship  For Internal Is Failed,Openid is " + params.getOpenid(), e);
+//        } finally {
+//            //记录log
+//            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), params.getUser_ip());
+//            UserOperationLogUtil.log(userOperationLog);
+//        }
+//
+//        return result.toString();
+//    }
 
 }
