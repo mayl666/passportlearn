@@ -15,7 +15,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonProcessingException;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -191,74 +190,4 @@ public class BaseActionTest extends TestCase {
 
     private static final String key = "yRWHIkB$2.9Esk>7mBNIFEcr:8\\[Cv";
 
-    @Test
-    public void testPostXml() throws Exception {
-        long ct = System.currentTimeMillis();
-        String code = "alva396@sohu.com" + appId + key + ct;
-        code = Coder.encryptMD5(code);
-        String url = "http://internal.passport.sohu.com/interface/getuserinfo";
-        StringBuffer sb = new StringBuffer();
-        sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-        sb.append("<register>\n"
-                + "    <userid>alva396@sohu.com</userid>\n"
-                + "    <appid>1100</appid>\n"
-                + "    <ct>" + ct + "</ct>\n"
-                + "    <code>" + code + "</code>\n"
-                + "    <password></password>\n"
-                + "    <passwordtype></passwordtype>\n"
-                + "    <question></question>\n"
-                + "    <answer></answer>\n"
-                + "    <email></email>\n"
-                + "    <mobile></mobile>\n"
-                + "    <createip></createip>\n"
-                + "    <uniqname></uniqname>\n"
-                + "    <regappid></regappid>\n"
-                + "</register>");
-        String result = sendPostXml(url, sb.toString());
-        System.out.println(result);
-    }
-
-    @Test
-    public void testGetCheck() throws Exception {
-        long ct = System.currentTimeMillis();
-        String code = appId + key + ct;
-        code = Coder.encryptMD5(code);
-        String url = "http://internal.passport.sohu.com/interface/getuserinfo";
-        StringBuffer sb = new StringBuffer();
-        sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-        sb.append("<register>\n"
-                + "    <userid></userid>\n"
-                + "    <appid>1100</appid>\n"
-                + "    <ct>" + ct + "</ct>\n"
-                + "    <code>" + code + "</code>\n"
-                + "    <uniqname>汽车驾驶模拟器1946在搜狐</uniqname>\n"
-                + "</register>");
-        String result = sendPostXml(url, sb.toString());
-        String userid = result.substring(result.indexOf("<userid>") + 8, result.lastIndexOf("</userid>"));
-        System.out.println(userid);
-        System.out.println(result);
-    }
-
-    public static void main(String[] args) {
-        String key = "shipengzhi1986@sogou.com";
-        long ts = System.currentTimeMillis();
-        String secret = "c3%uH@FSOIkeopP23#wk_hUj7^?\"OP";
-        try {
-            String code = Coder.encryptMD5(key + ts + secret);
-            System.out.println("ts:" + ts);
-            System.out.println("code:" + code);
-
-            String cookie = "da3636f186364a30bc132bfb7f87ba0d";
-            String cookie_md5 = Coder.encryptMD5(cookie);
-            System.out.println("=====cookie_md5 :" + cookie_md5 + "======= cookie_md5 length : " + cookie_md5.length() + "=======cookie length : " + cookie.length());
-
-            String cookie_base64 = Coder.encryptBase64(cookie);
-            System.out.println("=====cookie base64 :" + cookie_base64);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-    }
 }

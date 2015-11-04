@@ -50,118 +50,119 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
 
     @Override
     public Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams) {
-        Result result = null;
-        try {
-            //搜狐真实姓名 username,搜狗fullname
-            String fields = getUserInfoApiparams.getFields();
-            if (!Strings.isNullOrEmpty(fields) && fields.contains("fullname")) {
-                fields = fields.replace("fullname", "username");
-                getUserInfoApiparams.setFields(fields);
-            }
-
-            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-            String[] fieldList = fields.split(",");
-            for (String field : fieldList) {
-                if (SUPPORT_FIELDS_MAP.contains(field)) {
-                    requestModelXml.addParam(field, "");
-                }
-            }
-            requestModelXml.addParams(getUserInfoApiparams);
-            requestModelXml.deleteParams("imagesize");
-
-            if (PhoneUtil.verifyPhoneNumberFormat(getUserInfoApiparams.getUserid())) {
-                requestModelXml.addParam("usertype", 1);
-            }
-            requestModelXml.deleteParams("fields");
-            requestModelXml = this.replaceGetUserInfoParams(requestModelXml);
-            result = getUserInfoResultHandel(this.executeResult(requestModelXml));
-
-            if (result.isSuccess()) {
-                //获取完把搜狐真实姓名username替换成 搜狗的fullname
-                String fullname = (String) result.getModels().get("username");
-                if (!Strings.isNullOrEmpty(fullname)) {
-                    //搜狐真实姓名变为utf-8编码
-                    result.setDefaultModel("fullname", fullname);
-                    result.getModels().remove("username");
-                }
-
-                //替换搜狐的个人头像
-                String avatarurl = result.getModels().get("avatarurl") != null ? (String) result.getModels().get("avatarurl") : null;
-                result.setDefaultModel("avatarurl", avatarurl);
-            }
-        } catch (Exception e) {
-        }
-        return getUserInfoResultHandel(result);
+//        Result result = null;
+//        try {
+//            //搜狐真实姓名 username,搜狗fullname
+//            String fields = getUserInfoApiparams.getFields();
+//            if (!Strings.isNullOrEmpty(fields) && fields.contains("fullname")) {
+//                fields = fields.replace("fullname", "username");
+//                getUserInfoApiparams.setFields(fields);
+//            }
+//
+//            RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_USER_INFO, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+//            String[] fieldList = fields.split(",");
+//            for (String field : fieldList) {
+//                if (SUPPORT_FIELDS_MAP.contains(field)) {
+//                    requestModelXml.addParam(field, "");
+//                }
+//            }
+//            requestModelXml.addParams(getUserInfoApiparams);
+//            requestModelXml.deleteParams("imagesize");
+//
+//            if (PhoneUtil.verifyPhoneNumberFormat(getUserInfoApiparams.getUserid())) {
+//                requestModelXml.addParam("usertype", 1);
+//            }
+//            requestModelXml.deleteParams("fields");
+//            requestModelXml = this.replaceGetUserInfoParams(requestModelXml);
+//            result = getUserInfoResultHandel(this.executeResult(requestModelXml));
+//
+//            if (result.isSuccess()) {
+//                //获取完把搜狐真实姓名username替换成 搜狗的fullname
+//                String fullname = (String) result.getModels().get("username");
+//                if (!Strings.isNullOrEmpty(fullname)) {
+//                    //搜狐真实姓名变为utf-8编码
+//                    result.setDefaultModel("fullname", fullname);
+//                    result.getModels().remove("username");
+//                }
+//
+//                //替换搜狐的个人头像
+//                String avatarurl = result.getModels().get("avatarurl") != null ? (String) result.getModels().get("avatarurl") : null;
+//                result.setDefaultModel("avatarurl", avatarurl);
+//            }
+//        } catch (Exception e) {
+//        }
+//        return getUserInfoResultHandel(result);
+        return null;
     }
 
-    /**
-     * SHPP参数名和SGPP参数名不一样，在这里做了相关的转换
-     *
-     * @param requestModelXml
-     * @return
-     */
-    private RequestModelXml replaceGetUserInfoParams(final RequestModelXml requestModelXml) {
-        //todo email、mobile、question兼容搜狗流程获取安全信息的参数
-        if (requestModelXml.containsKey("sec_email") || requestModelXml.containsKey("email")) {
-            requestModelXml.addParam("email", "");
-            requestModelXml.addParam("emailflag", "");
-            requestModelXml.deleteParams("sec_email");
-        }
-        if (requestModelXml.containsKey("sec_mobile") || requestModelXml.containsKey("mobile")) {
-            requestModelXml.addParam("mobile", "");
-            requestModelXml.addParam("mobileflag", "");
-            requestModelXml.deleteParams("sec_mobile");
-        }
-        if (requestModelXml.containsKey("sec_ques") || requestModelXml.containsKey("question")) {
-            requestModelXml.addParam("question", "");
-            requestModelXml.deleteParams("sec_ques");
-        }
-        return requestModelXml;
-    }
+//    /**
+//     * SHPP参数名和SGPP参数名不一样，在这里做了相关的转换
+//     *
+//     * @param requestModelXml
+//     * @return
+//     */
+//    private RequestModelXml replaceGetUserInfoParams(final RequestModelXml requestModelXml) {
+//        //todo email、mobile、question兼容搜狗流程获取安全信息的参数
+//        if (requestModelXml.containsKey("sec_email") || requestModelXml.containsKey("email")) {
+//            requestModelXml.addParam("email", "");
+//            requestModelXml.addParam("emailflag", "");
+//            requestModelXml.deleteParams("sec_email");
+//        }
+//        if (requestModelXml.containsKey("sec_mobile") || requestModelXml.containsKey("mobile")) {
+//            requestModelXml.addParam("mobile", "");
+//            requestModelXml.addParam("mobileflag", "");
+//            requestModelXml.deleteParams("sec_mobile");
+//        }
+//        if (requestModelXml.containsKey("sec_ques") || requestModelXml.containsKey("question")) {
+//            requestModelXml.addParam("question", "");
+//            requestModelXml.deleteParams("sec_ques");
+//        }
+//        return requestModelXml;
+//    }
 
-    /**
-     * SHPP所使用的一些数据名称和SGPP
-     *
-     * @param result
-     * @return
-     */
-    private Result getUserInfoResultHandel(final Result result) {
-        if (!result.isSuccess()) {
-            return result;
-        }
-        //判断手机和邮箱是否是绑定的同时将SHPP的相关属性转换为SGPP的属性
-        Map<String, String> map = result.getModels();
-
-        if (map.containsKey("email")) {
-            String email = map.get("email");
-            String emailflag = map.get("emailflag");
-            if (StringUtil.isBlank(emailflag) || !emailflag.trim().equals("1")) {
-                email = "";
-            }
-            map.put("sec_email", email);
-            map.remove("email");
-            map.remove("emailflag");
-        }
-
-        if (map.containsKey("mobile")) {
-            String mobile = map.get("mobile");
-            String mobileflag = map.get("mobileflag");
-            if (StringUtil.isBlank(mobileflag) || !mobileflag.trim().equals("1")) {
-                mobile = "";
-            }
-            map.put("sec_mobile", mobile);
-            map.remove("mobile");
-            map.remove("mobileflag");
-        }
-
-        if (map.containsKey("question")) {
-            String question = map.get("question");
-            map.put("sec_ques", question);
-            map.remove("question");
-        }
-        result.setModels(map);
-        return result;
-    }
+//    /**
+//     * SHPP所使用的一些数据名称和SGPP
+//     *
+//     * @param result
+//     * @return
+//     */
+//    private Result getUserInfoResultHandel(final Result result) {
+//        if (!result.isSuccess()) {
+//            return result;
+//        }
+//        //判断手机和邮箱是否是绑定的同时将SHPP的相关属性转换为SGPP的属性
+//        Map<String, String> map = result.getModels();
+//
+//        if (map.containsKey("email")) {
+//            String email = map.get("email");
+//            String emailflag = map.get("emailflag");
+//            if (StringUtil.isBlank(emailflag) || !emailflag.trim().equals("1")) {
+//                email = "";
+//            }
+//            map.put("sec_email", email);
+//            map.remove("email");
+//            map.remove("emailflag");
+//        }
+//
+//        if (map.containsKey("mobile")) {
+//            String mobile = map.get("mobile");
+//            String mobileflag = map.get("mobileflag");
+//            if (StringUtil.isBlank(mobileflag) || !mobileflag.trim().equals("1")) {
+//                mobile = "";
+//            }
+//            map.put("sec_mobile", mobile);
+//            map.remove("mobile");
+//            map.remove("mobileflag");
+//        }
+//
+//        if (map.containsKey("question")) {
+//            String question = map.get("question");
+//            map.put("sec_ques", question);
+//            map.remove("question");
+//        }
+//        result.setModels(map);
+//        return result;
+//    }
 
 
     @Override
