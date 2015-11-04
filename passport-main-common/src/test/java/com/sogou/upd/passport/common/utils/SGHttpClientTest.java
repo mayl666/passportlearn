@@ -197,22 +197,6 @@ public class SGHttpClientTest {
         System.out.println(result);
     }
 
-    @Test
-    public void testAuthTestModelUser() throws Exception {
-        RequestModel requestModel = new RequestModelXml("http://internal.passport.sohu.com/interface/authuser", "info");
-        String userid = "upd_test@sogou.com";
-        long ct = System.currentTimeMillis();
-        String code = userid + appId + key + ct;
-        code = Coder.encryptMD5(code);
-        requestModel.addParam("userid", userid);
-        requestModel.addParam("appid", appId);
-        requestModel.addParam("password", "testtest");
-        requestModel.addParam("ct", ct);
-        requestModel.addParam("code", code);
-        requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-        Result result = SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Result.class);
-        System.out.println(result);
-    }
 
     @Test
     public void testXmlTresultoBean() {
