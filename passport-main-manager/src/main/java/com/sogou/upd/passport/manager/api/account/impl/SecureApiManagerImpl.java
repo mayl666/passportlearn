@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -39,6 +40,11 @@ public class SecureApiManagerImpl implements SecureApiManager {
 
     @Override
     public Result updatePwd(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
+       //搜狐域账号校验旧密码时，要先md5再与数据库里比较
+        AccountDomainEnum accountDomainEnum=AccountDomainEnum.getAccountDomain(passportId);
+        if(AccountDomainEnum.SOHU==accountDomainEnum){
+            oldPwd=DigestUtils.md5Hex(oldPwd.getBytes());
+        }
         Result result = accountService.verifyUserPwdVaild(passportId, oldPwd, true);
         if (!result.isSuccess()) {
             operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.RESETPWD);
