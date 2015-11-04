@@ -336,6 +336,11 @@ public class AccountServiceImpl implements AccountService {
         try {
             String passportId = account.getPassportId();
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMD5);
+            //若为搜狐账号，修改密码时直接存md5,不加盐
+            AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
+            if (AccountDomainEnum.SOHU == accountDomain) {
+                passwdSign = PwdGenerator.generatorSohuPwd(password);
+            }
             int row = accountDAO.updatePassword(passwdSign, passportId);
             pcAccountTokenService.batchRemoveAccountToken(passportId, true);
             if (row != 0) {
@@ -343,7 +348,7 @@ public class AccountServiceImpl implements AccountService {
                 account.setPassword(passwdSign);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 //输入法泄露数据处理，修改密码后解除限制
-                removeLeakUser(account,passportId);
+                removeLeakUser(account, passportId);
 
                 return true;
             }
@@ -729,19 +734,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     //输入法泄露数据处理，修改密码后解除限制
-    public void removeLeakUser(Account account,String passportId){
+    public void removeLeakUser(Account account, String passportId) {
         String leakKey = null;
-        try{
+        try {
             String cacheKey = buildAccountKey(passportId);
             leakKey = CacheConstant.CACHE_PREFIX_USER_LEAKLIST + account.getPassportId();
-            if(account.getFlag()==AccountStatusEnum.LEAKED.getValue()){
+            if (account.getFlag() == AccountStatusEnum.LEAKED.getValue()) {
                 dbShardRedisUtils.delete(cacheKey);
-                accountDAO.updateState(AccountStatusEnum.REGULAR.getValue(),passportId);
+                accountDAO.updateState(AccountStatusEnum.REGULAR.getValue(), passportId);
             }
-            if(redisUtils.checkKeyIsExist(leakKey)){
+            if (redisUtils.checkKeyIsExist(leakKey)) {
                 redisUtils.delete(leakKey);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("sogou leak passportid reset passport handle error : " + passportId);
         }
     }

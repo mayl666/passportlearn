@@ -223,8 +223,8 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
         switch (domain) {
-            case SOHU:
-                return "redirect:" + SOHU_RESETPWD_URL;
+//            case SOHU:
+//                return "redirect:" + SOHU_RESETPWD_URL;
             case THIRD:
                 return "redirect:/";
         }
@@ -294,9 +294,9 @@ public class SecureAction extends BaseController {
                 return result;
             }
             switch (AccountDomainEnum.getAccountDomain(passportId)) {
-                case SOHU:
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
-                    return result.toString();
+//                case SOHU:
+//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+//                    return result.toString();
                 case THIRD:
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
                     return result.toString();

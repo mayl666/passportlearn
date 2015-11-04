@@ -48,6 +48,24 @@ public class PwdGenerator {
     }
 
     /**
+     * sohu导入账号，用户修改密码时，存password的md5
+     * @param pwd sohu password plain
+     * @return 存在数据库中的sohu账号密码的md5
+     * @throws Exception
+     */
+    public static String generatorSohuPwd(String pwd) throws Exception{
+        try{
+            String sohuMd5Pwd=DigestUtils.md5Hex(pwd.getBytes());
+            return sohuMd5Pwd;
+
+        }catch (Exception e){
+            logger.error("sohu password generator faail,password:{}",pwd);
+            throw e;
+        }
+
+    }
+
+    /**
      * 校验密码正确性
      *
      * @param pwd       密码
