@@ -60,45 +60,46 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode, boolean isHttps) {
-        Result result = new APIResultSupport(false);
-        try {
-            String ru = createCookieUrlApiParams.getRu();
-            String userId = createCookieUrlApiParams.getUserid();
-            if (isRuEncode) {
-                ru = URLEncoder.encode(ru, "UTF-8");
-            }
-            long ct = System.currentTimeMillis();
-            String code = userId + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
-            code = Coder.encryptMD5GBK(code);
-            String shUrl = SHPPUrlConstant.HTTP_SET_COOKIE;
-            if (isHttps) {
-                shUrl = SHPPUrlConstant.HTTPS_SET_COOKIE;
-            }
-            RequestModel requestModel = new RequestModel(shUrl);
-            requestModel.addParam("userid", userId);
-            requestModel.addParam("appid", SHPPUrlConstant.APP_ID);
-            requestModel.addParam("ct", ct);
-            requestModel.addParam("code", code);
-            requestModel.addParam("ru", ru);
-            requestModel.addParam("persistentcookie", createCookieUrlApiParams.getPersistentcookie());
-            requestModel.addParam("domain", createCookieUrlApiParams.getDomain());
-            result.setDefaultModel("requestModel", requestModel);
-
-            StringBuilder urlBuilder = new StringBuilder(shUrl);
-            urlBuilder.append("?").append("userid=").append(URLEncoder.encode(userId, "UTF-8"))
-                    .append("&appid=").append(SHPPUrlConstant.APP_ID)
-                    .append("&ct=").append(ct)
-                    .append("&code=").append(code)
-                    .append("&ru=").append(ru)
-                    .append("&persistentcookie=").append(createCookieUrlApiParams.getPersistentcookie())
-                    .append("&domain=" + createCookieUrlApiParams.getDomain());
-            result.setDefaultModel("url", urlBuilder.toString());
-            result.setSuccess(true);
-        } catch (Exception e) {
-            log.error("buildCreateCookieUrl error userid:" + createCookieUrlApiParams.getUserid() + " ru=" + createCookieUrlApiParams.getRu(), e);
-            result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-        }
-        return result;
+//        Result result = new APIResultSupport(false);
+//        try {
+//            String ru = createCookieUrlApiParams.getRu();
+//            String userId = createCookieUrlApiParams.getUserid();
+//            if (isRuEncode) {
+//                ru = URLEncoder.encode(ru, "UTF-8");
+//            }
+//            long ct = System.currentTimeMillis();
+//            String code = userId + SHPPUrlConstant.APP_ID + SHPPUrlConstant.APP_KEY + ct;
+//            code = Coder.encryptMD5GBK(code);
+//            String shUrl = SHPPUrlConstant.HTTP_SET_COOKIE;
+//            if (isHttps) {
+//                shUrl = SHPPUrlConstant.HTTPS_SET_COOKIE;
+//            }
+//            RequestModel requestModel = new RequestModel(shUrl);
+//            requestModel.addParam("userid", userId);
+//            requestModel.addParam("appid", SHPPUrlConstant.APP_ID);
+//            requestModel.addParam("ct", ct);
+//            requestModel.addParam("code", code);
+//            requestModel.addParam("ru", ru);
+//            requestModel.addParam("persistentcookie", createCookieUrlApiParams.getPersistentcookie());
+//            requestModel.addParam("domain", createCookieUrlApiParams.getDomain());
+//            result.setDefaultModel("requestModel", requestModel);
+//
+//            StringBuilder urlBuilder = new StringBuilder(shUrl);
+//            urlBuilder.append("?").append("userid=").append(URLEncoder.encode(userId, "UTF-8"))
+//                    .append("&appid=").append(SHPPUrlConstant.APP_ID)
+//                    .append("&ct=").append(ct)
+//                    .append("&code=").append(code)
+//                    .append("&ru=").append(ru)
+//                    .append("&persistentcookie=").append(createCookieUrlApiParams.getPersistentcookie())
+//                    .append("&domain=" + createCookieUrlApiParams.getDomain());
+//            result.setDefaultModel("url", urlBuilder.toString());
+//            result.setSuccess(true);
+//        } catch (Exception e) {
+//            log.error("buildCreateCookieUrl error userid:" + createCookieUrlApiParams.getUserid() + " ru=" + createCookieUrlApiParams.getRu(), e);
+//            result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+//        }
+//        return result;
+        return null;
     }
 
     @Override

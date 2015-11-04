@@ -22,7 +22,7 @@ public class SHPPUrlConstant {
     /*  搜狐Passport内部接口URL地址                                                  */
     /* ============================================================================ */
     // 内部接口基本url
-    private static final String BASE_INTERNAL_URL = "http://internal.passport.sohu.com/interface/";
+//    private static final String BASE_INTERNAL_URL = "http://internal.passport.sohu.com/interface/";
     private static final String BASE_URL = "https://passport.sohu.com/";
 //    // 第三方开放平台代理API基本url
 //    private static final String BASE_OPEN_API_URL = "http://internal.passport.sohu.com/openlogin/";
@@ -30,8 +30,8 @@ public class SHPPUrlConstant {
     /*================================登录相关=======================================*/
 //    public static final String AUTH_USER = BASE_INTERNAL_URL + "authuser"; //检查用户名密码是否正确
     // 手机浏览器/authtoken接口返回结果后会302到setcookie接口，这个必须为http，所以此处也为http，得到location的也为http
-    public static final String HTTPS_SET_COOKIE = BASE_URL + "act/setcookie";//用于前端设置cookie
-    public static final String HTTP_SET_COOKIE = "http://passport.sohu.com/act/setcookie";//用于前端设置cookie
+//    public static final String HTTPS_SET_COOKIE = BASE_URL + "act/setcookie";//用于前端设置cookie
+//    public static final String HTTP_SET_COOKIE = "http://passport.sohu.com/act/setcookie";//用于前端设置cookie
 //    public static final String CHECK_USER = BASE_INTERNAL_URL + "checkuser";//查询用户名是否注册过
 
     /*================================注册相关=======================================*/
