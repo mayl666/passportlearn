@@ -466,7 +466,7 @@ public class CookieManagerImpl implements CookieManager {
             return result;
         }
 
-        if (!"0".equals(ppCookieParams.getLivetime())) {
+//        if (!"0".equals(ppCookieParams.getLivetime())) {
 //            int maxAge = (int) DateAndNumTimesConstant.TWO_WEEKS;
 //            long expire = DateUtil.generatorVaildTime(maxAge) / 1000;
 ////            ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
@@ -478,7 +478,7 @@ public class CookieManagerImpl implements CookieManager {
             ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
             ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
             ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN);
-        }
+//        }
         //response 回去的时候设置一个p3p的header,用来定义IE的跨域问题,解决IE的iframe里跨域无法种cookie的bug。
         response.setHeader("P3P", "CP=CAO PSA OUR");
         result.setSuccess(true);
