@@ -44,7 +44,7 @@ public class ResetPwdAction extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(ResetPwdAction.class);
 
-    private static final String SOHU_FINDPWD_URL = SHPPUrlConstant.SOHU_FINDPWD_URL;
+//    private static final String SOHU_FINDPWD_URL = SHPPUrlConstant.SOHU_FINDPWD_URL;
 
     @Autowired
     private SecureManager secureManager;
