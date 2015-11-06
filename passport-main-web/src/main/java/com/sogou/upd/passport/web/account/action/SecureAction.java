@@ -19,6 +19,7 @@ import com.sogou.upd.passport.web.account.form.security.WebBindQuesParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -341,6 +342,11 @@ public class SecureAction extends BaseController {
                 case THIRD:
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                     return result.toString();
+            }
+            //搜狐域账号校验旧密码时，要先md5再与数据库里比较
+            AccountDomainEnum accountDomainEnum=AccountDomainEnum.getAccountDomain(userId);
+            if(AccountDomainEnum.SOHU==accountDomainEnum){
+                password= DigestUtils.md5Hex(password.getBytes());
             }
             result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
             return result.toString();
