@@ -77,9 +77,9 @@ public class EmailSecureAction extends BaseController {
                 ru = CommonConstant.DEFAULT_INDEX_URL;
             }
             switch (AccountDomainEnum.getAccountDomain(passportId)) {
-                case SOHU:
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                    return result.toString();
+//                case SOHU:
+//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+//                    return result.toString();
                 case THIRD:
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                     return result.toString();
