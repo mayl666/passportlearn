@@ -49,7 +49,7 @@ public class SHPPUrlConstant {
 
     /*================================安全中心操作URL=======================================*/
     // 修改密码
-    public static final String SOHU_RESETPWD_URL = BASE_URL + "security/manage_password"; //sohu新页面
+//    public static final String SOHU_RESETPWD_URL = BASE_URL + "security/manage_password"; //sohu新页面
     // 修改密保邮箱
     public static final String SOHU_BINDEMAIL_URL = BASE_URL + "security/bind_email";    //sohu新页面
     // 修改密保手机
