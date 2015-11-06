@@ -19,6 +19,7 @@ import com.sogou.upd.passport.web.account.form.security.WebModifyMobileParams;
 import com.sogou.upd.passport.web.account.form.security.WebSmsParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -174,6 +175,11 @@ public class MobileSecureAction extends BaseController {
             result = verifyMobileSecureIsAllowed(result, passportId);
             if (!result.isSuccess()) {
                 return result.toString();
+            }
+            //搜狐域账号校验旧密码时，要先md5再与数据库里比较
+            AccountDomainEnum accountDomainEnum=AccountDomainEnum.getAccountDomain(passportId);
+            if(AccountDomainEnum.SOHU==accountDomainEnum){
+                password= DigestUtils.md5Hex(password.getBytes());
             }
             result = secureManager.bindMobileByPassportId(passportId, clientId, newMobile, smsCode, password, modifyIp);
             return result.toString();
