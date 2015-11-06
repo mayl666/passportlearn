@@ -108,8 +108,8 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
         switch (domain) {
-            case SOHU:
-                return "redirect:" + SOHU_BINDEMAIL_URL;
+//            case SOHU:
+//                return "redirect:" + SOHU_BINDEMAIL_URL;
             case THIRD:
                 return "redirect:/";
         }
