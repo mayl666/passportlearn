@@ -87,7 +87,7 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                 return result;
             }
             //正式注册时需要检测用户是否已经注册过
-            result = checkUser(username, clientId);
+            result = checkUser(username, clientId, false);
             if (!result.isSuccess()) {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
@@ -143,13 +143,15 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
     }
 
     @Override
-    public Result checkUser(String username, int clientId) {
+    public Result checkUser(String username, int clientId, boolean acceptSohuDomain) {
         Result result = new APIResultSupport(false);
         try {
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
             if (AccountDomainEnum.SOHU.equals(domain) || AccountDomainEnum.THIRD.equals(domain)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
-                return result;
+                if (acceptSohuDomain == false || AccountDomainEnum.THIRD.equals(domain)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                    return result;
+                }
             }
             if (username.indexOf("@") == -1) {
                 //判断是否是手机号注册
@@ -271,7 +273,7 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
         Result result = new APIResultSupport(false);
         try {
             //检测手机号是否已经注册或绑定
-            result = checkUser(mobile, clientId);
+            result = checkUser(mobile, clientId, false);
             if (!result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);

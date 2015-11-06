@@ -50,7 +50,7 @@ public class RegisterApiManagerTest extends BaseTest {
     public void testCheckUser_1() throws IOException {
         String expectResult = "{\"statusText\":\"操作成功\",\"data\":{},\"status\":\"0\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = registerApiManager.checkUser(both_no_username, clientId);
+        Result actualResult = registerApiManager.checkUser(both_no_username, clientId,false);
         APIResultForm actualFrom = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualFrom));
     }
@@ -62,7 +62,7 @@ public class RegisterApiManagerTest extends BaseTest {
     public void testCheckUser_2() throws IOException {
         String expectResult = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + username_sogou + "\"},\"status\":\"20294\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = registerApiManager.checkUser(mobile_2, clientId);
+        Result actualResult = registerApiManager.checkUser(mobile_2, clientId,false);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualForm));
     }
@@ -74,7 +74,7 @@ public class RegisterApiManagerTest extends BaseTest {
     public void testCheckUser_3() throws IOException {
         String expectResult = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + username_mail + "\"},\"status\":\"20294\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = registerApiManager.checkUser(username_mail, clientId);
+        Result actualResult = registerApiManager.checkUser(username_mail, clientId,false);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualForm));
     }
@@ -88,7 +88,7 @@ public class RegisterApiManagerTest extends BaseTest {
     public void testCheckUser_4() throws IOException {
         String expectResult = "{\"statusText\":\"用户名已经存在\",\"data\":{\"flag\":\"1\",\"userid\":\"" + mobile_2 + "@sohu.com\"},\"status\":\"20294\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = registerApiManager.checkUser(mobile_2+"@sohu.com", clientId);
+        Result actualResult = registerApiManager.checkUser(mobile_2+"@sohu.com", clientId,false);
         APIResultForm actualForm = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualForm));
     }
@@ -100,7 +100,7 @@ public class RegisterApiManagerTest extends BaseTest {
     public void testCheckUser_5() throws IOException {
         String expectResult = "{\"data\":{\"userid\":\"" + both_no_gexing + "\"},\"statusText\":\"非法userid\",\"status\":\"20239\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = registerApiManager.checkUser(both_no_gexing, clientId);
+        Result actualResult = registerApiManager.checkUser(both_no_gexing, clientId,false);
         APIResultForm actualFrom = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualFrom));
     }
@@ -112,7 +112,7 @@ public class RegisterApiManagerTest extends BaseTest {
     public void testCheckUser_6() throws IOException {
         String expectResult = "{\"data\":{\"userid\":\"" + wrong_format + "\"},\"statusText\":\"非法userid\",\"status\":\"20239\"}";
         APIResultForm expectForm = JacksonJsonMapperUtil.getMapper().readValue(expectResult.toString(), APIResultForm.class);
-        Result actualResult = registerApiManager.checkUser(wrong_format, clientId);
+        Result actualResult = registerApiManager.checkUser(wrong_format, clientId,false);
         APIResultForm actualFrom = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
         Assert.assertTrue(expectForm.equals(actualFrom));
     }
@@ -123,7 +123,7 @@ public class RegisterApiManagerTest extends BaseTest {
      */
     @Test
     public void testCheckUser_7() throws IOException {
-        Result actualResult = registerApiManager.checkUser("sogou", clientId);
+        Result actualResult = registerApiManager.checkUser("sogou", clientId,false);
         APIResultForm actualFrom = JacksonJsonMapperUtil.getMapper().readValue(actualResult.toString(), APIResultForm.class);
     }
 

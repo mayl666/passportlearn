@@ -462,7 +462,7 @@ public class RegAction extends BaseController {
             return result;
         }
         //检查用户名是否存在
-        result = registerApiManager.checkUser(username, clientId);
+        result = registerApiManager.checkUser(username, clientId,false);
         return result;
     }
 

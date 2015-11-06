@@ -295,7 +295,7 @@ public class WapResetPwdAction extends BaseController {
                 return result.toString();
             }
             int client_id = Integer.parseInt(params.getClient_id());
-            result = registerApiManager.checkUser(passportId, client_id);
+            result = registerApiManager.checkUser(passportId, client_id,false);
             if (result.isSuccess()) {  //用户不存在
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);

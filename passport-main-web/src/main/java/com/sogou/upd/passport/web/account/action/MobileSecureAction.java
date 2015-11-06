@@ -101,7 +101,7 @@ public class MobileSecureAction extends BaseController {
                 return result.toString();
             }
             //双读，检查新手机是否允许绑定
-            result = registerApiManager.checkUser(newMobile, clientId);
+            result = registerApiManager.checkUser(newMobile, clientId,false);
             if (!result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);

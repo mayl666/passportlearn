@@ -378,7 +378,7 @@ public class PCOAuth2AccountController extends BaseController {
             return result;
         }
         //检查用户是否存在
-        result = registerApiManager.checkUser(username, CommonConstant.PC_CLIENTID);
+        result = registerApiManager.checkUser(username, CommonConstant.PC_CLIENTID,false);
         return result;
     }
 
