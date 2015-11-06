@@ -284,7 +284,6 @@ public class DateUtil {
 
     public static String getDateByTimeStamp(long timestamp) {
         Long timestampMs = timestamp * 1000;
-//        String date = new java.text.SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss").format(new java.util.Date(timestampMs));
         String date = new java.text.SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss", Locale.US).format(new java.util.Date(timestampMs));
         return date;
     }
