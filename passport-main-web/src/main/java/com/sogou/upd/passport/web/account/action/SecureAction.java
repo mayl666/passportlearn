@@ -37,8 +37,8 @@ public class SecureAction extends BaseController {
 
 //    private static final String SOHU_RESETPWD_URL = SHPPUrlConstant.SOHU_RESETPWD_URL;
 //    private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
-    private static final String SOHU_BINDMOBILE_URL = SHPPUrlConstant.SOHU_BINDMOBILE_URL;
-    private static final String SOHU_BINDQUES_URL = SHPPUrlConstant.SOHU_BINDQUES_URL;
+//    private static final String SOHU_BINDMOBILE_URL = SHPPUrlConstant.SOHU_BINDMOBILE_URL;
+//    private static final String SOHU_BINDQUES_URL = SHPPUrlConstant.SOHU_BINDQUES_URL;
 
     @Autowired
     private SecureManager secureManager;
@@ -188,8 +188,8 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
         switch (domain) {
-            case SOHU:
-                return "redirect:" + SOHU_BINDQUES_URL;
+//            case SOHU:
+//                return "redirect:" + SOHU_BINDQUES_URL;
             case THIRD:
                 return "redirect:/";
         }
@@ -335,9 +335,9 @@ public class SecureAction extends BaseController {
             String newAnswer = params.getNew_answer();
             String modifyIp = getIp(request);
             switch (AccountDomainEnum.getAccountDomain(userId)) {
-                case SOHU:
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                    return result.toString();
+//                case SOHU:
+//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+//                    return result.toString();
                 case THIRD:
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                     return result.toString();

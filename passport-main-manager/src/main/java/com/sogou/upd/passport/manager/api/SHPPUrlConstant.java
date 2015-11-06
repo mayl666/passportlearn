@@ -53,8 +53,8 @@ public class SHPPUrlConstant {
     // 修改密保邮箱
 //    public static final String SOHU_BINDEMAIL_URL = BASE_URL + "security/bind_email";    //sohu新页面
     // 修改密保手机
-    public static final String SOHU_BINDMOBILE_URL = BASE_URL + "security/bind_mobile";  //sohu新页面
-    public static final String SOHU_BINDQUES_URL = BASE_URL + "security/questions";      //sohu新页面
+//    public static final String SOHU_BINDMOBILE_URL = BASE_URL + "security/bind_mobile";  //sohu新页面
+//    public static final String SOHU_BINDQUES_URL = BASE_URL + "security/questions";      //sohu新页面
     // 找回密码
     public static final String SOHU_FINDPWD_URL = BASE_URL + "password/forget";          //sohu新页面
     // 搜狐wap版找回密码
