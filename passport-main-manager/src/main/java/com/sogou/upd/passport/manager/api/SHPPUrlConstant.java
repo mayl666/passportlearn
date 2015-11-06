@@ -58,7 +58,7 @@ public class SHPPUrlConstant {
     // 找回密码
 //    public static final String SOHU_FINDPWD_URL = BASE_URL + "password/forget";          //sohu新页面
     // 搜狐wap版找回密码
-    public static final String SOHU_WAP_FINDPWD_URL = "http://m.passport.sohu.com/f";
+    public static final String SOHU_WAP_FINDPWD_URL = "https://m.passport.sohu.com/f";
 
     /*================================第三方开放平台相关url=======================================*/
 //    //第三方发图片微博或分享
