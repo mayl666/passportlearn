@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 public class SecureAction extends BaseController {
 
 //    private static final String SOHU_RESETPWD_URL = SHPPUrlConstant.SOHU_RESETPWD_URL;
-    private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
+//    private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
     private static final String SOHU_BINDMOBILE_URL = SHPPUrlConstant.SOHU_BINDMOBILE_URL;
     private static final String SOHU_BINDQUES_URL = SHPPUrlConstant.SOHU_BINDQUES_URL;
 
@@ -147,8 +147,8 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
         switch (domain) {
-            case SOHU:
-                return "redirect:" + SOHU_BINDMOBILE_URL;
+//            case SOHU:
+//                return "redirect:" + SOHU_BINDMOBILE_URL;
             case THIRD:
                 return "redirect:/";
             case PHONE:

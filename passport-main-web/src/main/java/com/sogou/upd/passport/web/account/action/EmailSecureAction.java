@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/web/security")
 public class EmailSecureAction extends BaseController {
 
-    private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
+//    private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
 
     @Autowired
     private SecureManager secureManager;
