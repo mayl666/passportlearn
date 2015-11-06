@@ -112,8 +112,8 @@ public class EmailSecureAction extends BaseController {
             int clientId = Integer.parseInt(params.getClient_id());
             String scode = params.getScode();
             switch (AccountDomainEnum.getAccountDomain(passportId)) {
-                case SOHU:
-                    return "redirect:" + SOHU_BINDEMAIL_URL;
+//                case SOHU:
+//                    return "redirect:" + SOHU_BINDEMAIL_URL;
                 case THIRD:
                     return "redirect:/web/security";
             }
