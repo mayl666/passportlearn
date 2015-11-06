@@ -271,14 +271,14 @@ public class WapResetPwdAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result.toString();
             }
-            //主账号是搜狐域用户跳转到sohu的wap页面
-            if (AccountDomainEnum.SOHU.equals(domain)) {
-                result.setSuccess(true);
-                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-                String url = SHPPUrlConstant.SOHU_WAP_FINDPWD_URL + "?client_id=" + result.getModels().get("client_id") + "&ru=" + result.getModels().get("ru");
-                result.setDefaultModel("url", url);
-                return result.toString();
-            }
+//            //主账号是搜狐域用户跳转到sohu的wap页面
+//            if (AccountDomainEnum.SOHU.equals(domain)) {
+//                result.setSuccess(true);
+//                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+//                String url = SHPPUrlConstant.SOHU_WAP_FINDPWD_URL + "?client_id=" + result.getModels().get("client_id") + "&ru=" + result.getModels().get("ru");
+//                result.setDefaultModel("url", url);
+//                return result.toString();
+//            }
             //校验验证码
             if (!checkManager.checkCaptcha(params.getCaptcha(), params.getToken())) {
                 result.setDefaultModel("userid", passportId);
@@ -295,7 +295,7 @@ public class WapResetPwdAction extends BaseController {
                 return result.toString();
             }
             int client_id = Integer.parseInt(params.getClient_id());
-            result = registerApiManager.checkUser(passportId, client_id,false);
+            result = registerApiManager.checkUser(passportId, client_id,true);
             if (result.isSuccess()) {  //用户不存在
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
@@ -311,6 +311,7 @@ public class WapResetPwdAction extends BaseController {
                     return result.toString();    //跳转至其它方式找回首页
                 case OTHER:
                 case SOGOU:
+                case SOHU:
                 case INDIVID: //主账号是外域/搜狗域/个性账号，则查询它的密保邮箱/手机返回，有则返回；无则返回通过客服找回
                     result = getSecureInfo(passportId, client_id); //返回密保邮箱或手机及模糊处理过的
                     result = setRuAndClientId(result, params.getRu(), params.getClient_id());
