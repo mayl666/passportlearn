@@ -23,7 +23,7 @@ public class SHPPUrlConstant {
     /* ============================================================================ */
     // 内部接口基本url
 //    private static final String BASE_INTERNAL_URL = "http://internal.passport.sohu.com/interface/";
-    private static final String BASE_URL = "https://passport.sohu.com/";
+//    private static final String BASE_URL = "https://passport.sohu.com/";
 //    // 第三方开放平台代理API基本url
 //    private static final String BASE_OPEN_API_URL = "http://internal.passport.sohu.com/openlogin/";
 
@@ -57,8 +57,8 @@ public class SHPPUrlConstant {
 //    public static final String SOHU_BINDQUES_URL = BASE_URL + "security/questions";      //sohu新页面
     // 找回密码
 //    public static final String SOHU_FINDPWD_URL = BASE_URL + "password/forget";          //sohu新页面
-    // 搜狐wap版找回密码
-    public static final String SOHU_WAP_FINDPWD_URL = "https://m.passport.sohu.com/f";
+//    // 搜狐wap版找回密码
+//    public static final String SOHU_WAP_FINDPWD_URL = "https://m.passport.sohu.com/f";
 
     /*================================第三方开放平台相关url=======================================*/
 //    //第三方发图片微博或分享

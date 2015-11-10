@@ -28,25 +28,6 @@ public class SGHttpClientTest {
 
     private static final String userId = "upd_test@sogou.com";
 
-    @Test
-    public void testBuildSetCookieUrl() throws Exception {
-        String ru = "http%3a%2f%2fie.sogou.com";
-        String userId = "shipengzhi1986@sogou.com";
-        String domain = "sogou.com";
-        long ct = System.currentTimeMillis();
-        String code = userId + appId + key + ct;
-        code = Coder.encryptMD5(code);
-        String url = "http://passport.sohu.com/act/setcookie?";
-        url += "userid=" + userId;
-        url += "&appid=" + appId;
-        url += "&ru=" + ru;
-        url += "&domain=" + domain;
-        url += "&ct=" + ct;
-        url += "&code=" + code;
-        System.out.println(url);
-        Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
-        System.out.println(headers);
-    }
 
     @Test
     public void testCreateCode() throws Exception {
@@ -105,29 +86,6 @@ public class SGHttpClientTest {
         String result = SGHttpClient.executeStr(requestModel);
         System.out.println(result);
     }
-
-
-    @Test
-    public void testSetCookie() throws Exception {
-        String ru = "http%3a%2f%2fie.sogou.com";
-        String userId = "shipengzhi1986@sogou.com";
-        String domain = "sogou.com";
-        long ct = System.currentTimeMillis();
-        String code = userId + appId + key + ct;
-        code = Coder.encryptMD5(code);
-        String url = "http://passport.sohu.com/act/setcookie";
-
-        RequestModel requestModel = new RequestModel(url);
-        requestModel.addParam("userid", userId);
-        requestModel.addParam("ct", ct);
-        requestModel.addParam("code", code);
-        requestModel.addParam("appid", appId);
-        requestModel.addParam("ru", ru);
-        requestModel.addParam("domain", domain);
-        String result = SGHttpClient.executeStr(requestModel);
-        System.out.println(result);
-    }
-
 
 
     @Test
