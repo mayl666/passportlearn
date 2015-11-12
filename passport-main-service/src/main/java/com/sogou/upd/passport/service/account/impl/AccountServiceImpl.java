@@ -7,10 +7,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
+import com.sogou.upd.passport.common.parameter.*;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
@@ -224,7 +221,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException {
+    public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5,SohuPasswordType sohuPwdType) throws ServiceException {
         Result result = new APIResultSupport(false);
         Account userAccount;
         try {
@@ -245,14 +242,14 @@ public class AccountServiceImpl implements AccountService {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 return result;
             }
-            result = verifyUserPwdValidByPasswordType(userAccount, password, needMD5);
+            result = verifyUserPwdValidByPasswordType(userAccount, password, needMD5,sohuPwdType);
             return result;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
     }
 
-    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5) {
+    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5,SohuPasswordType sohuPwdType) {
         Result result = new APIResultSupport(false);
         String passwordType = String.valueOf(account.getPasswordtype());
         String storedPwd = account.getPassword();
@@ -268,6 +265,8 @@ public class AccountServiceImpl implements AccountService {
                 case 2:   //Crypt(password,salt)
                     pwdIsTrue = PwdGenerator.verify(password, needMD5, storedPwd);
                     break;
+                case 5:     //sohu crypt
+                    pwdIsTrue= PwdGenerator.verifySohuPwd(storedPwd,password,sohuPwdType);
             }
             if (pwdIsTrue) {
                 result.setSuccess(true);
@@ -336,11 +335,6 @@ public class AccountServiceImpl implements AccountService {
         try {
             String passportId = account.getPassportId();
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMD5);
-            //若为搜狐账号，修改密码时直接存md5,不加盐
-            AccountDomainEnum accountDomain = AccountDomainEnum.getAccountDomain(passportId);
-            if (AccountDomainEnum.SOHU == accountDomain) {
-                passwdSign = PwdGenerator.generatorSohuPwd(password);
-            }
             int row = accountDAO.updatePassword(passwdSign, passportId);
             pcAccountTokenService.batchRemoveAccountToken(passportId, true);
             if (row != 0) {

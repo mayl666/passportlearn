@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.sogou.upd.passport.BaseTest;
+import com.sogou.upd.passport.common.parameter.SohuPasswordType;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -42,7 +43,7 @@ public class SecureApiManagerImplTest extends BaseTest {
         Assert.assertEquals(pwdErrorExpectedResult.toString(), pwdErrorActualResult.toString());
 
         Result recoveryResult = secureApiManager.updatePwd(passportId, clientId, newPwd, oldPwd, modifyIp);
-        Result endResult = accountService.verifyUserPwdVaild(passportId, oldPwd, true);
+        Result endResult = accountService.verifyUserPwdVaild(passportId, oldPwd, true, SohuPasswordType.TEXT);
         Assert.assertTrue(endResult.isSuccess());
     }
 

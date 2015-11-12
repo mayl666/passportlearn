@@ -343,11 +343,7 @@ public class SecureAction extends BaseController {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                     return result.toString();
             }
-            //搜狐域账号校验旧密码时，要先md5再与数据库里比较
-            AccountDomainEnum accountDomainEnum=AccountDomainEnum.getAccountDomain(userId);
-            if(AccountDomainEnum.SOHU==accountDomainEnum){
-                password= DigestUtils.md5Hex(password.getBytes());
-            }
+
             result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
             return result.toString();
         } finally {
