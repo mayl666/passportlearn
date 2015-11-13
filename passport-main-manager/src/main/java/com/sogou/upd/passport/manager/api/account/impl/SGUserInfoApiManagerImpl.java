@@ -296,20 +296,20 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     //更新用户昵称信息
                     result = updateAccountNickName(account, params.getUniqname());
                 }
-            } else if (accountDomain == AccountDomainEnum.SOHU) {
-                //如果是搜狐矩阵账号，则插入到account表一条无密码的记录,插入成功、涉及到用户信息更改的话，在继续执行更新操作
-                Account insertSoHuAccount = accountService.initialAccount(params.getUserid(), null, false, params.getModifyip(), AccountTypeEnum.SOHU.getValue());
-                if (insertSoHuAccount == null) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-                    return result;
-                } else {
-                    //更新用户非昵称信息，性别、所在地、生日、真实姓名、身份证
-                    result = updateAccountInfo(params);
-                    if (!Strings.isNullOrEmpty(params.getUniqname())) {
-                        //更新用户昵称信息
-                        result = updateAccountNickName(insertSoHuAccount, params.getUniqname());
-                    }
-                }
+//            } else if (accountDomain == AccountDomainEnum.SOHU) {
+//                //如果是搜狐矩阵账号，则插入到account表一条无密码的记录,插入成功、涉及到用户信息更改的话，在继续执行更新操作
+//                Account insertSoHuAccount = accountService.initialAccount(params.getUserid(), null, false, params.getModifyip(), AccountTypeEnum.SOHU.getValue());
+//                if (insertSoHuAccount == null) {
+//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+//                    return result;
+//                } else {
+//                    //更新用户非昵称信息，性别、所在地、生日、真实姓名、身份证
+//                    result = updateAccountInfo(params);
+//                    if (!Strings.isNullOrEmpty(params.getUniqname())) {
+//                        //更新用户昵称信息
+//                        result = updateAccountNickName(insertSoHuAccount, params.getUniqname());
+//                    }
+//                }
             } else {
                 //记录Log 跟踪数据同步延时情况
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
