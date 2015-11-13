@@ -90,22 +90,22 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                         result.setCode(ErrorUtil.ERR_CODE_UPLOAD_PHOTO);
                         return result;
                     }
-                } else if (domain == AccountDomainEnum.SOHU) {
-                    //如果是搜狐矩阵账号、则初始化至account表
-                    Account initAccount = new Account();
-                    initAccount.setPassportId(passportId);
-                    initAccount.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
-                    initAccount.setAccountType(AccountTypeEnum.SOHU.getValue());
-                    initAccount.setFlag(AccountStatusEnum.REGULAR.getValue());
-                    initAccount.setAvatar(imgURL);
-                    initAccount.setRegIp(ip);
-                    initAccount.setRegTime(new Date());
-
-                    boolean initSuccess = accountService.initAccount(initAccount);
-                    if (!initSuccess) {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-                        return result;
-                    }
+//                } else if (domain == AccountDomainEnum.SOHU) {
+//                    //如果是搜狐矩阵账号、则初始化至account表
+//                    Account initAccount = new Account();
+//                    initAccount.setPassportId(passportId);
+//                    initAccount.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
+//                    initAccount.setAccountType(AccountTypeEnum.SOHU.getValue());
+//                    initAccount.setFlag(AccountStatusEnum.REGULAR.getValue());
+//                    initAccount.setAvatar(imgURL);
+//                    initAccount.setRegIp(ip);
+//                    initAccount.setRegTime(new Date());
+//
+//                    boolean initSuccess = accountService.initAccount(initAccount);
+//                    if (!initSuccess) {
+//                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+//                        return result;
+//                    }
                 } else {
                     //账号不存在
                     result.setCode(ErrorUtil.INVALID_ACCOUNT);
