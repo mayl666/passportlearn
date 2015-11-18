@@ -25,7 +25,8 @@ public enum AccountTypeEnum {
     SOHU(9),  //sohu域账号
     WEIXIN(10),//微信
     HUAWEI(11),//华为
-    MESSAGELOGIN(12);//手机短信登录
+    MESSAGELOGIN(12),//手机短信登录
+    XIAOMI(13);//小米
 
     // provider数字与字符串映射字典表
     private static BiMap<String, Integer> PROVIDER_MAPPING_DICT = HashBiMap.create();
@@ -43,7 +44,7 @@ public enum AccountTypeEnum {
         PROVIDER_MAPPING_DICT.put("weixin", WEIXIN.getValue());
         PROVIDER_MAPPING_DICT.put("huawei", HUAWEI.getValue());
         PROVIDER_MAPPING_DICT.put("messagelogin", MESSAGELOGIN.getValue());
-
+        PROVIDER_MAPPING_DICT.put("xiaomi",XIAOMI.getValue());
     }
 
     private int value;
@@ -123,6 +124,9 @@ public enum AccountTypeEnum {
         }
         if (username.endsWith("huawei.sohu.com")) {
             return HUAWEI;
+        }
+        if(username.endsWith("xiaomi.sohu.com")){
+            return XIAOMI;
         }
 
         return UNKNOWN;

@@ -143,6 +143,11 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             request = BaiduUserAPIRequest.apiLocation(url, BaiduUserAPIRequest.BaiduUserAPIBuilder.class)
                     .setAccessToken(accessToken).buildQueryMessage(BaiduUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, BaiduUserAPIResponse.class);
+        } else if(provider==AccountTypeEnum.XIAOMI.getValue()){
+            Long xiaomiClientId=Long.parseLong(appKey);
+            request=XiaomiUserAPIRequest.apiLocation(url,XiaomiUserAPIRequest.XiaomiUserAPIBuilder.class)
+                    .setClientId(xiaomiClientId).setToken(accessToken).buildQueryMessage(XiaomiUserAPIRequest.class);
+            response=OAuthHttpClient.execute(request,XiaomiUserAPIResponse.class);
         } else {
             throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
         }

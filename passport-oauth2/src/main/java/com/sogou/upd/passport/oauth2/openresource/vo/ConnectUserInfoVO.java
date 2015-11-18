@@ -23,6 +23,15 @@ public class ConnectUserInfoVO {
     private String city; // 市
     private String region; // 区
     private String unionid; // 用户唯一标识  微信开平用到
+    private String userid;  //用户id，小米平台用到
+
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
 
     private Map<String, Object> original;//第三方返回的原始json串
 
