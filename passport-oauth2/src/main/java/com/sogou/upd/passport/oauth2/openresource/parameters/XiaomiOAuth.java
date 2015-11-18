@@ -25,6 +25,12 @@ public class XiaomiOAuth {
      */
     public static final String NICK="miliaoNick";
     public static final String USER_ID="userId";
-    public static final String AVATAR_URL="miliaoIcon";
+    public static final String AVATAR_URL="miliaoIcon"; //50*50
+    public static final String AVATAR_URL_ORIG="miliaoIcon_orig"; //550*550
+    public static final String AVATAR_URL_75="miliaoIcon_75";
+    public static final String AVATAR_URL_90="miliaoIcon_90";
+    public static final String AVATAR_URL_120="miliaoIcon_120";
+    public static final String AVATAR_URL_320="miliaoIcon_320";
+
 
 }
