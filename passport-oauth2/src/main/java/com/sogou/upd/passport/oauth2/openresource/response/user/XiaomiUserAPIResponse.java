@@ -28,7 +28,8 @@ public class XiaomiUserAPIResponse extends UserAPIResponse {
             parameters = JacksonJsonMapperUtil.getMapper().readValue(this.body, Map.class);
             Object dataValue=parameters.get(XiaomiOAuth.DATA);
             if(null!=dataValue){
-                Map userDataMap=JacksonJsonMapperUtil.getMapper().readValue(String.valueOf(dataValue), Map.class);
+                String dataStr=JsonUtil.obj2Json(dataValue);
+                Map userDataMap=JacksonJsonMapperUtil.getMapper().readValue(dataStr, Map.class);
                 parameters.putAll(userDataMap);
                 parameters.remove(XiaomiOAuth.DATA);
             }
