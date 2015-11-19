@@ -23,6 +23,7 @@ public class XiaomiOAuth {
     /*
     USERAPI 响应参数
      */
+    public static final String XIAOMI_TOKEN_START="&&&START&&&";
     public static final String NICK="miliaoNick";
     public static final String USER_ID="userId";
     public static final String AVATAR_URL="miliaoIcon"; //50*50
