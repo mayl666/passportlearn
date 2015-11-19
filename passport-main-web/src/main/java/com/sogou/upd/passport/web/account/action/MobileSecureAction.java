@@ -19,6 +19,7 @@ import com.sogou.upd.passport.web.account.form.security.WebModifyMobileParams;
 import com.sogou.upd.passport.web.account.form.security.WebSmsParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -100,7 +101,7 @@ public class MobileSecureAction extends BaseController {
                 return result.toString();
             }
             //双读，检查新手机是否允许绑定
-            result = registerApiManager.checkUser(newMobile, clientId);
+            result = registerApiManager.checkUser(newMobile, clientId,false);
             if (!result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
@@ -228,9 +229,9 @@ public class MobileSecureAction extends BaseController {
             case PHONE:
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
                 return result;
-            case SOHU:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                return result;
+//            case SOHU:
+//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+//                return result;
             case THIRD:
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result;

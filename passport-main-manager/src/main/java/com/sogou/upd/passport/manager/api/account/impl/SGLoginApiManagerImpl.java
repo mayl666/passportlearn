@@ -7,6 +7,7 @@ import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.math.RSAEncoder;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.SohuPasswordType;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -83,7 +84,7 @@ public class SGLoginApiManagerImpl extends BaseProxyManager implements LoginApiM
             if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(userId))) {
                 userId = userId + CommonConstant.SOGOU_SUFFIX;
             }
-            Result verifyUserResult = accountService.verifyUserPwdVaild(userId, authUserApiParams.getPassword(), false);
+            Result verifyUserResult = accountService.verifyUserPwdVaild(userId, authUserApiParams.getPassword(), false, SohuPasswordType.MD5);
             if (verifyUserResult.isSuccess()) {
                 result.setSuccess(true);
                 result.setMessage("登录成功");

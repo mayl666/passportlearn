@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.parameter.SohuPasswordType;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
@@ -62,7 +63,7 @@ public interface AccountService {
      *
      * @return 用户名或密码不匹配，则返回null
      */
-    public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException;
+    public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5,SohuPasswordType sohuPwdType) throws ServiceException;
 
     /**
      * 根据passportId删除Account表缓存和数据库
@@ -210,6 +211,6 @@ public interface AccountService {
      * @return
      * @throws ServiceException
      */
-    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5) throws ServiceException;
+    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5,SohuPasswordType sohuPwdType) throws ServiceException;
 
 }

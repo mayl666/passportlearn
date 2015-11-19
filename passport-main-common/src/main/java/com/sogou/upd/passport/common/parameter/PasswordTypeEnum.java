@@ -11,7 +11,8 @@ public enum PasswordTypeEnum {
     ORIGINAL(0),     //原始密码
     MD5(1),           //MD5加密
     CRYPT(2),         //crypt(MD5（password）, salt)salt salt=8位随机的a-zA-Z0-9
-    NOPASSWORD(4);    //为了避免与搜狐账号的密码类型冲突，等搜狗账号迁移完成后，需增加一个表示无密码的值
+    NOPASSWORD(4),    //为了避免与搜狐账号的密码类型冲突，等搜狗账号迁移完成后，需增加一个表示无密码的值
+    SOHUCRYPT(5);      //搜狐迁移账号按照搜狐校验算法
 
     private int value;
 

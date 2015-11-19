@@ -262,7 +262,7 @@ public class RegisterApiController extends BaseController {
             if (regManager.checkUserExistInBlack(userid, createIp)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
             } else {
-                result = registerApiManager.checkUser(userid, params.getClient_id());
+                result = registerApiManager.checkUser(userid, params.getClient_id(),false);
                 if (PhoneUtil.verifyPhoneNumberFormat(userid)) {
                     if (!result.isSuccess()) {
                         result.setDefaultModel("flag", "1");

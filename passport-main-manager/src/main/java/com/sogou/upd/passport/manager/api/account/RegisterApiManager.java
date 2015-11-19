@@ -34,11 +34,11 @@ public interface RegisterApiManager {
     /**
      * 检查用户名是否已经被注册
      * userid可以为xxx@sogou.com、xxx@sohu.com、xxx@126.com、xxx@qq.sohu.com
-     * 不允许为13621009174@sohu.com，如果是手机账号需要调用wapgetuserid接口
-     *
+     * 当acceptSohuDomain=false时，不允许为13621009174@sohu.com，如果是手机账号需要调用wapgetuserid接口
+     *当acceptSohuDomain=true时，允许搜狐账号，该值为true主要是由于搜狐账号导入passport，便于找回密码操作
      * @return
      */
-    public Result checkUser(String username, int clientId);
+    public Result checkUser(String username, int clientId,boolean acceptSohuDomain);
 
     /**
      * 手机号直接注册，不经验证码——地图专用接口

@@ -7,10 +7,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
+import com.sogou.upd.passport.common.parameter.*;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
@@ -224,7 +221,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException {
+    public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5,SohuPasswordType sohuPwdType) throws ServiceException {
         Result result = new APIResultSupport(false);
         Account userAccount;
         try {
@@ -245,14 +242,14 @@ public class AccountServiceImpl implements AccountService {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 return result;
             }
-            result = verifyUserPwdValidByPasswordType(userAccount, password, needMD5);
+            result = verifyUserPwdValidByPasswordType(userAccount, password, needMD5,sohuPwdType);
             return result;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
     }
 
-    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5) {
+    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5,SohuPasswordType sohuPwdType) {
         Result result = new APIResultSupport(false);
         String passwordType = String.valueOf(account.getPasswordtype());
         String storedPwd = account.getPassword();
@@ -268,6 +265,8 @@ public class AccountServiceImpl implements AccountService {
                 case 2:   //Crypt(password,salt)
                     pwdIsTrue = PwdGenerator.verify(password, needMD5, storedPwd);
                     break;
+                case 5:     //sohu crypt
+                    pwdIsTrue= PwdGenerator.verifySohuPwd(storedPwd,password,sohuPwdType);
             }
             if (pwdIsTrue) {
                 result.setSuccess(true);
@@ -343,7 +342,7 @@ public class AccountServiceImpl implements AccountService {
                 account.setPassword(passwdSign);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 //输入法泄露数据处理，修改密码后解除限制
-                removeLeakUser(account,passportId);
+                removeLeakUser(account, passportId);
 
                 return true;
             }
@@ -729,19 +728,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     //输入法泄露数据处理，修改密码后解除限制
-    public void removeLeakUser(Account account,String passportId){
+    public void removeLeakUser(Account account, String passportId) {
         String leakKey = null;
-        try{
+        try {
             String cacheKey = buildAccountKey(passportId);
             leakKey = CacheConstant.CACHE_PREFIX_USER_LEAKLIST + account.getPassportId();
-            if(account.getFlag()==AccountStatusEnum.LEAKED.getValue()){
+            if (account.getFlag() == AccountStatusEnum.LEAKED.getValue()) {
                 dbShardRedisUtils.delete(cacheKey);
-                accountDAO.updateState(AccountStatusEnum.REGULAR.getValue(),passportId);
+                accountDAO.updateState(AccountStatusEnum.REGULAR.getValue(), passportId);
             }
-            if(redisUtils.checkKeyIsExist(leakKey)){
+            if (redisUtils.checkKeyIsExist(leakKey)) {
                 redisUtils.delete(leakKey);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("sogou leak passportid reset passport handle error : " + passportId);
         }
     }

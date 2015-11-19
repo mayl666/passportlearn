@@ -20,9 +20,10 @@ public class ProxyInfoOpenApiManagerImpl extends BaseProxyManager implements Inf
 
     @Override
     public Result addUserShareOrPic(BaseApiParams baseApiParams) {
-        RequestModelJSON requestModelJSON = new RequestModelJSON(SHPPUrlConstant.CONNECT_SHARE_PIC);
-        requestModelJSON.convertObjectToMap(baseApiParams);
-        return executeResult(requestModelJSON);
+//        RequestModelJSON requestModelJSON = new RequestModelJSON(SHPPUrlConstant.CONNECT_SHARE_PIC);
+//        requestModelJSON.convertObjectToMap(baseApiParams);
+//        return executeResult(requestModelJSON);
+        return null;
     }
 
 }

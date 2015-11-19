@@ -44,7 +44,7 @@ public class ResetPwdAction extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(ResetPwdAction.class);
 
-    private static final String SOHU_FINDPWD_URL = SHPPUrlConstant.SOHU_FINDPWD_URL;
+//    private static final String SOHU_FINDPWD_URL = SHPPUrlConstant.SOHU_FINDPWD_URL;
 
     @Autowired
     private SecureManager secureManager;
@@ -109,8 +109,8 @@ public class ResetPwdAction extends BaseController {
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             switch (domain) {
                 //主账号是sohu域/外域/手机号的去sohu找回密码
-                case SOHU:
-                    return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_INDEX_URL;
+//                case SOHU:
+//                    return "redirect:" + SOHU_FINDPWD_URL + "?ru=" + CommonConstant.DEFAULT_INDEX_URL;
                 case THIRD:
                     return "redirect:/web/findpwd";
                 case UNKNOWN:
@@ -133,7 +133,7 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/index";
             }
-            result = registerApiManager.checkUser(passportId, Integer.parseInt(params.getClient_id()));
+            result = registerApiManager.checkUser(passportId, Integer.parseInt(params.getClient_id()),true);//允许搜狐账号
             if (result.isSuccess()) {
                 result.setSuccess(false);
                 result.setDefaultModel("userid", username);
@@ -430,7 +430,7 @@ public class ResetPwdAction extends BaseController {
                 model.addAttribute("data", result.toString());
                 return "/recover/type";
             }
-            result = registerApiManager.checkUser(passportId, Integer.parseInt(params.getClient_id()));
+            result = registerApiManager.checkUser(passportId, Integer.parseInt(params.getClient_id()),true);
             if (result.isSuccess()) {  //账号不存在
                 result = buildErrorResult(result, params, null, ErrorUtil.INVALID_ACCOUNT);
                 model.addAttribute("data", result.toString());

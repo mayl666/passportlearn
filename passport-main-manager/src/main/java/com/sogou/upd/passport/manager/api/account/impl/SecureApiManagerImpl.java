@@ -2,7 +2,9 @@ package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.parameter.SohuPasswordType;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -39,7 +41,8 @@ public class SecureApiManagerImpl implements SecureApiManager {
 
     @Override
     public Result updatePwd(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
-        Result result = accountService.verifyUserPwdVaild(passportId, oldPwd, true);
+
+        Result result = accountService.verifyUserPwdVaild(passportId, oldPwd, true, SohuPasswordType.TEXT);
         if (!result.isSuccess()) {
             operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.RESETPWD);
             return result;
@@ -57,7 +60,7 @@ public class SecureApiManagerImpl implements SecureApiManager {
     public Result updateQues(String passportId, int clientId, String password, String newQues, String newAnswer, String modifyIp) {
         Result result = new APIResultSupport(false);
         try {
-            Result authUserResult = accountService.verifyUserPwdVaild(passportId, password, true);
+            Result authUserResult = accountService.verifyUserPwdVaild(passportId, password, true,SohuPasswordType.TEXT);
             authUserResult.setDefaultModel(null);
             if (!authUserResult.isSuccess()) {
                 operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.SECURE);

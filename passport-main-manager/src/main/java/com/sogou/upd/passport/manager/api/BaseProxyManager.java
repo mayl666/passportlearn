@@ -154,10 +154,10 @@ public class BaseProxyManager {
         map.remove(SHPPUrlConstant.RESULT_STATUS);
         map.remove("uid");
         map.remove("uuid");
-        //如果是获取用户信息链接，忽略uniqname
-        if (!url.equals(SHPPUrlConstant.GET_USER_INFO)) {
-            map.remove("uniqname");
-        }
+//        //如果是获取用户信息链接，忽略uniqname
+//        if (!url.equals(SHPPUrlConstant.GET_USER_INFO)) {
+//            map.remove("uniqname");
+//        }
         map.remove("errmsg");
     }
 

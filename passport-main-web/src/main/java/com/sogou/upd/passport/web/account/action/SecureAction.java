@@ -19,6 +19,7 @@ import com.sogou.upd.passport.web.account.form.security.WebBindQuesParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,10 +36,10 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/web/security")
 public class SecureAction extends BaseController {
 
-    private static final String SOHU_RESETPWD_URL = SHPPUrlConstant.SOHU_RESETPWD_URL;
-    private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
-    private static final String SOHU_BINDMOBILE_URL = SHPPUrlConstant.SOHU_BINDMOBILE_URL;
-    private static final String SOHU_BINDQUES_URL = SHPPUrlConstant.SOHU_BINDQUES_URL;
+//    private static final String SOHU_RESETPWD_URL = SHPPUrlConstant.SOHU_RESETPWD_URL;
+//    private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
+//    private static final String SOHU_BINDMOBILE_URL = SHPPUrlConstant.SOHU_BINDMOBILE_URL;
+//    private static final String SOHU_BINDQUES_URL = SHPPUrlConstant.SOHU_BINDQUES_URL;
 
     @Autowired
     private SecureManager secureManager;
@@ -108,8 +109,8 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
         switch (domain) {
-            case SOHU:
-                return "redirect:" + SOHU_BINDEMAIL_URL;
+//            case SOHU:
+//                return "redirect:" + SOHU_BINDEMAIL_URL;
             case THIRD:
                 return "redirect:/";
         }
@@ -147,8 +148,8 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
         switch (domain) {
-            case SOHU:
-                return "redirect:" + SOHU_BINDMOBILE_URL;
+//            case SOHU:
+//                return "redirect:" + SOHU_BINDMOBILE_URL;
             case THIRD:
                 return "redirect:/";
             case PHONE:
@@ -188,8 +189,8 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
         switch (domain) {
-            case SOHU:
-                return "redirect:" + SOHU_BINDQUES_URL;
+//            case SOHU:
+//                return "redirect:" + SOHU_BINDQUES_URL;
             case THIRD:
                 return "redirect:/";
         }
@@ -223,8 +224,8 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
         switch (domain) {
-            case SOHU:
-                return "redirect:" + SOHU_RESETPWD_URL;
+//            case SOHU:
+//                return "redirect:" + SOHU_RESETPWD_URL;
             case THIRD:
                 return "redirect:/";
         }
@@ -294,9 +295,9 @@ public class SecureAction extends BaseController {
                 return result;
             }
             switch (AccountDomainEnum.getAccountDomain(passportId)) {
-                case SOHU:
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
-                    return result.toString();
+//                case SOHU:
+//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+//                    return result.toString();
                 case THIRD:
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
                     return result.toString();
@@ -335,13 +336,14 @@ public class SecureAction extends BaseController {
             String newAnswer = params.getNew_answer();
             String modifyIp = getIp(request);
             switch (AccountDomainEnum.getAccountDomain(userId)) {
-                case SOHU:
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                    return result.toString();
+//                case SOHU:
+//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+//                    return result.toString();
                 case THIRD:
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                     return result.toString();
             }
+
             result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
             return result.toString();
         } finally {

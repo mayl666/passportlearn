@@ -119,5 +119,6 @@ public class RuValidatorTest {
         url = "https://www.a.2228wxy.com.cn/web?a=3&b=4";
         result = ru.isValid(url, null);
         Assert.assertEquals(true, result);
+
     }
 }

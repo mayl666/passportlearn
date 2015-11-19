@@ -1,18 +1,14 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.BaseTest;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.APIResultForm;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import junit.framework.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
