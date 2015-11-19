@@ -19,6 +19,7 @@ public class XiaomiOAuth {
     public static final String CODE="code";
     public static final String DESCRIPTION="description";
     public static final String SUCCESS_CODE="0";
+    public static final String OPENID="openId";
 
     /*
     USERAPI 响应参数

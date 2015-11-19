@@ -42,7 +42,7 @@ public class XiaomiJSONAccessTokenResponse extends OAuthAccessTokenResponse {
 
     public OAuthTokenVO getOAuthTokenVO() {
         OAuthTokenVO oAuthTokenVO = new OAuthTokenVO(getAccessToken(), getExpiresIn(), getRefreshToken(), getScope());
-        oAuthTokenVO.setOpenid(String.valueOf(this.parameters.get(OAuth.OAUTH_OPENID)));
+        oAuthTokenVO.setOpenid(String.valueOf(this.parameters.get(XiaomiOAuth.OPENID)));
         return oAuthTokenVO;
     }
 }
