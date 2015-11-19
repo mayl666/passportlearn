@@ -17,7 +17,7 @@ public enum SSOScanAccountType {
     BAIDU(5, "baidu", "百度"),
     WEIXIN(6, "weixin", "微信"),
     HUAWEI(7, "huawei", "华为"),
-    XIAOMI(8,"xiaomi","小米");
+    XIAOMI(8,"xiaomi","XIAOMI");
 
     private int value;
     private String enDescription;
