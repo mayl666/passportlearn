@@ -16,7 +16,8 @@ public enum SSOScanAccountType {
     RENREN(4, "renren", "人人"),
     BAIDU(5, "baidu", "百度"),
     WEIXIN(6, "weixin", "微信"),
-    HUAWEI(7, "huawei", "华为");
+    HUAWEI(7, "huawei", "华为"),
+    XIAOMI(8,"xiaomi","小米");
 
     private int value;
     private String enDescription;
@@ -68,6 +69,10 @@ public enum SSOScanAccountType {
 
             if (accountType == AccountTypeEnum.HUAWEI) {
                 return HUAWEI.getZhDescription();
+            }
+
+            if(accountType==AccountTypeEnum.XIAOMI){
+                return XIAOMI.getZhDescription();
             }
 
             return UNKNOWN.getZhDescription();
