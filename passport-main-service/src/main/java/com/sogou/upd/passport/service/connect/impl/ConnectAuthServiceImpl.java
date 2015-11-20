@@ -204,8 +204,11 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             try{
                 int provider = AccountTypeEnum.getAccountType(passportId).getValue();
                 String originInfoKey=buildOriginalConnectInfoCacheKey(passportId,provider);
-                OriginalConnectInfo connectOriginInfo=new OriginalConnectInfo(connectUserInfoVO);
-                dbShardRedisUtils.setObjectWithinSeconds(originInfoKey, connectOriginInfo, DateAndNumTimesConstant.ONE_MONTH);
+                OriginalConnectInfo connectOriginInfo=convertToOriginalInfo(connectUserInfoVO);
+                if(connectOriginInfo!=null){
+                    dbShardRedisUtils.setObjectWithinSeconds(originInfoKey, connectOriginInfo, DateAndNumTimesConstant.ONE_MONTH);
+                }
+
             }catch (Exception e){
                 logger.error("init OriginalConnectInfo failed,passport_id="+passportId);
             }
@@ -233,6 +236,25 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
     private String buildOriginalConnectInfoCacheKey(String passportId, int provider) {
         return  CacheConstant.CACHE_PREFIX_PASSPORTID_ORIGINAL_CONNECTINFO + passportId + "_" + provider;
+    }
+    private OriginalConnectInfo convertToOriginalInfo(ConnectUserInfoVO connectUserInfoVO){
+        try {
+            OriginalConnectInfo orginalInfo=new OriginalConnectInfo();
+            if(connectUserInfoVO!=null){
+                orginalInfo.setConnectUniqname(connectUserInfoVO.getNickname());
+                orginalInfo.setAvatarLarge(connectUserInfoVO.getAvatarLarge());
+                orginalInfo.setAvatarMiddle(connectUserInfoVO.getAvatarMiddle());
+                orginalInfo.setAvatarSmall(connectUserInfoVO.getAvatarSmall());
+                orginalInfo.setGender(String.valueOf(connectUserInfoVO.getGender()));
+                return orginalInfo;
+            }else {
+                return null;
+            }
+        }catch (Exception e){
+            logger.error("ConnectAuthService.convertToOriginalInfo failed ",e);
+            return null;
+        }
+
     }
 
 }

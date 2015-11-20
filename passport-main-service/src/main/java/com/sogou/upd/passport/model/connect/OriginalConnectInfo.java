@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.model.connect;
 
-import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
-
 /**
  * 第三方用户信息.
  * User: nahongxu
@@ -17,23 +15,16 @@ public class OriginalConnectInfo {
     private String avatarLarge;  // 第三方头像（大图）
     private String gender;   // 性别。 0-女，1-男，默认为1
 
-    public OriginalConnectInfo(ConnectUserInfoVO connectUserInfoVO) {
-        if(connectUserInfoVO!=null) {
-            this.connectUniqname = connectUserInfoVO.getNickname();
-            this.avatarLarge = connectUserInfoVO.getAvatarLarge();
-            this.avatarSmall = connectUserInfoVO.getAvatarSmall();
-            this.avatarMiddle = connectUserInfoVO.getAvatarMiddle();
-            this.gender = String.valueOf(connectUserInfoVO.getGender());
-        }
+    public OriginalConnectInfo(ConnectToken connectToken) {
+        this.connectUniqname = connectToken.getConnectUniqname();
+        this.avatarLarge = connectToken.getAvatarLarge();
+        this.avatarSmall = connectToken.getAvatarSmall();
+        this.avatarMiddle = connectToken.getAvatarMiddle();
+        this.gender = connectToken.getGender();
 
     }
 
-    public OriginalConnectInfo(ConnectToken connectToken) {
-        this.connectUniqname=connectToken.getConnectUniqname();
-        this.avatarLarge=connectToken.getAvatarLarge();
-        this.avatarSmall=connectToken.getAvatarSmall();
-        this.avatarMiddle=connectToken.getAvatarMiddle();
-        this.gender=connectToken.getGender();
+    public OriginalConnectInfo(){
 
     }
 
