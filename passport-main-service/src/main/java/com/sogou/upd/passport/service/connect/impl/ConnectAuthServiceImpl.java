@@ -11,6 +11,7 @@ import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
+import com.sogou.upd.passport.model.connect.OriginalConnectInfo;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
@@ -199,6 +200,15 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         try {
             String cacheKey = buildConnectUserInfoCacheKey(passportId);
             dbShardRedisUtils.setObjectWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
+            //同时更新connect orgin信息，失败不影响其他环节，主要是为实时获取用户信息接口考虑
+            try{
+                int provider = AccountTypeEnum.getAccountType(passportId).getValue();
+                String originInfoKey=buildOriginalConnectInfoCacheKey(passportId,provider);
+                OriginalConnectInfo connectOriginInfo=new OriginalConnectInfo(connectUserInfoVO);
+                dbShardRedisUtils.setObjectWithinSeconds(originInfoKey, connectOriginInfo, DateAndNumTimesConstant.ONE_MONTH);
+            }catch (Exception e){
+                logger.error("init OriginalConnectInfo failed,passport_id="+passportId);
+            }
             return true;
         } catch (Exception e) {
             logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error.passportId:" + passportId, e);
@@ -220,6 +230,9 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
 
     private String buildConnectUserInfoCacheKey(String passportId) {
         return CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO + passportId;
+    }
+    private String buildOriginalConnectInfoCacheKey(String passportId, int provider) {
+        return  CacheConstant.CACHE_PREFIX_PASSPORTID_ORIGINAL_CONNECTINFO + passportId + "_" + provider;
     }
 
 }
