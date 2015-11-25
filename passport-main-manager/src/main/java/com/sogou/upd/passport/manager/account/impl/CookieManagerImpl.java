@@ -189,23 +189,23 @@ public class CookieManagerImpl implements CookieManager {
         boolean setNewCookie = false;
         try {
             //目前只有搜狗邮箱仍然采用搜狐的cookie，其余应用均采用搜狗cookie
-//            if (CommonConstant.MAIL_CLIENTID != cookieApiParams.getClient_id()) {
+            if (CommonConstant.MAIL_CLIENTID != cookieApiParams.getClient_id()) {
                 result = createSGCookie(cookieApiParams);
                 if (result.isSuccess()) {
                     ppinf = (String) result.getModels().get("ppinf");
                     pprdig = (String) result.getModels().get("pprdig");
                 }
-//            } else {
-//                result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-//                if (result.isSuccess()) {
-//                    ppinf = (String) result.getModels().get("ppinf");
-//                    pprdig = (String) result.getModels().get("pprdig");
-//                } else {
-//                    result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-//                    result.setMessage(ErrorUtil.ERR_CODE_MSG_MAP.get(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED));
-//                    return result;
-//                }
-//            }
+            } else {
+                result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+                if (result.isSuccess()) {
+                    ppinf = (String) result.getModels().get("ppinf");
+                    pprdig = (String) result.getModels().get("pprdig");
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+                    result.setMessage(ErrorUtil.ERR_CODE_MSG_MAP.get(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED));
+                    return result;
+                }
+            }
 
             //web端生成cookie后、种下cookie 、桌面端不同
             if (cookieApiParams.getCreateAndSet() == CREATE_COOKIE_AND_SET) {

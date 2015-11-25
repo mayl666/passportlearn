@@ -104,44 +104,44 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result getCookieInfo(CookieApiParams cookieApiParams) {
-//        Result result = new APIResultSupport(false);
-//
-//        if (Strings.isNullOrEmpty(cookieApiParams.getPersistentcookie())) {
-//            cookieApiParams.setPersistentcookie(String.valueOf(1));
-//        }
-//
-//        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_COOKIE_VALUE_FROM_SOHU, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-//        requestModelXml.addParams(cookieApiParams);
-//        requestModelXml.getParams().put("result_type", "json");       //sohu 传 xml参数，返回json
-//        Result getCookieInfoResult = executeResult(requestModelXml);
-//        if (getCookieInfoResult.isSuccess()) {
-//            Object obj = getCookieInfoResult.getModels().get("data");
-//            if (obj != null && obj instanceof List) {
-//                List<Map<String, String>> listMap = (List<Map<String, String>>) obj;
-//                if (CollectionUtils.isNotEmpty(listMap)) {
-//                    for (Map<String, String> map : listMap) {
-//                        String key = map.get("name");
-//                        String value = map.get("value");
-//                        if ("ppinf".equals(key)) {
-//                            result.getModels().put("ppinf", value);
-//                        }
-//                        if ("pprdig".equals(key)) {
-//                            result.getModels().put("pprdig", value);
-//                        }
-//                        if ("passport".equals(key)) {
-//                            result.getModels().put("passport", value);
-//                        }
-//                    }
-//                }
-//            }
-//            result.setSuccess(true);
-//            result.setMessage("获取cookie成功");
-//            result.setDefaultModel("userid", cookieApiParams.getUserid());
-//        } else {
-//            result = getCookieInfoResult;
-//        }
-//        return result;
-        return null;
+        Result result = new APIResultSupport(false);
+
+        if (Strings.isNullOrEmpty(cookieApiParams.getPersistentcookie())) {
+            cookieApiParams.setPersistentcookie(String.valueOf(1));
+        }
+
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.GET_COOKIE_VALUE_FROM_SOHU, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(cookieApiParams);
+        requestModelXml.getParams().put("result_type", "json");       //sohu 传 xml参数，返回json
+        Result getCookieInfoResult = executeResult(requestModelXml);
+        if (getCookieInfoResult.isSuccess()) {
+            Object obj = getCookieInfoResult.getModels().get("data");
+            if (obj != null && obj instanceof List) {
+                List<Map<String, String>> listMap = (List<Map<String, String>>) obj;
+                if (CollectionUtils.isNotEmpty(listMap)) {
+                    for (Map<String, String> map : listMap) {
+                        String key = map.get("name");
+                        String value = map.get("value");
+                        if ("ppinf".equals(key)) {
+                            result.getModels().put("ppinf", value);
+                        }
+                        if ("pprdig".equals(key)) {
+                            result.getModels().put("pprdig", value);
+                        }
+                        if ("passport".equals(key)) {
+                            result.getModels().put("passport", value);
+                        }
+                    }
+                }
+            }
+            result.setSuccess(true);
+            result.setMessage("获取cookie成功");
+            result.setDefaultModel("userid", cookieApiParams.getUserid());
+        } else {
+            result = getCookieInfoResult;
+        }
+        return result;
+//        return null;
     }
 
     @Override
