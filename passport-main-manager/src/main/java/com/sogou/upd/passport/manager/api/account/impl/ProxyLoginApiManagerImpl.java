@@ -38,19 +38,19 @@ public class ProxyLoginApiManagerImpl extends BaseProxyManager implements LoginA
 
     @Override
     public Result webAuthUser(AuthUserApiParams authUserParameters) {
-//        String userId = authUserParameters.getUserid();
-//        if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(userId))) {
-//            userId = userId + CommonConstant.SOGOU_SUFFIX;
-//            authUserParameters.setUserid(userId);
-//        }
-//        if (PhoneUtil.verifyPhoneNumberFormat(userId)) {
-//            authUserParameters.setUsertype(1); // 手机号
-//        }
-//        authUserParameters.setPwdtype(1); // 密码为MD5
-//        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
-//        requestModelXml.addParams(authUserParameters);
-//        return executeResult(requestModelXml);
-        return null;
+        String userId = authUserParameters.getUserid();
+        if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(userId))) {
+            userId = userId + CommonConstant.SOGOU_SUFFIX;
+            authUserParameters.setUserid(userId);
+        }
+        if (PhoneUtil.verifyPhoneNumberFormat(userId)) {
+            authUserParameters.setUsertype(1); // 手机号
+        }
+        authUserParameters.setPwdtype(1); // 密码为MD5
+        RequestModelXml requestModelXml = new RequestModelXml(SHPPUrlConstant.AUTH_USER, SHPPUrlConstant.DEFAULT_REQUEST_ROOTNODE);
+        requestModelXml.addParams(authUserParameters);
+        return executeResult(requestModelXml);
+//        return null;
     }
 
     @Override

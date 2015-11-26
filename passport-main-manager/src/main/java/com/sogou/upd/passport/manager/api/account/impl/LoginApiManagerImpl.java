@@ -61,6 +61,23 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             //搜狐账号也在搜狗校验
             result = sgLoginApiManager.webAuthUser(authUserApiParams);
+            if(result.isSuccess()){
+                return result;
+            }
+
+            //搜狐17173继续去搜狐校验
+            if((!result.isSuccess())&&(AccountDomainEnum.SOHU.equals(domain))) {
+                //停止新的搜狐账号登录,若存在，去搜狐校验，若不存在直接返回10009
+                Account account = accountService.queryAccountByPassportId(passportId);
+                if (null == account) {
+                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                    return result;
+                }
+
+                result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+
+            }
+
 
         } catch (Exception e) {
             logger.error("bothAuthUser Exception", e);
