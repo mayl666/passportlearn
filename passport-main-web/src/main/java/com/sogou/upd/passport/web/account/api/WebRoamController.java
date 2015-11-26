@@ -78,24 +78,24 @@ public class WebRoamController extends BaseController {
             return;
         }
         try {
-//            result = accountRoamManager.createRoamKey(sLoginPassportId);
-//            if (result.isSuccess()) {
-//                String r_key = (String) result.getModels().get("r_key");
-//                Map params = Maps.newHashMap();
-//                params.put("client_id", clientId);
-//                params.put("r_key", r_key);
-//                params.put("ru", ru);
-//                response.sendRedirect(ServletUtil.applyOAuthParametersString(SG_WEB_ROAM_URL, params));
-//                return;
-//            } else {
-//                returnErrMsg(response, ru, result.getCode(), result.getMessage());
-//                return;
-//            }
-            //搜狗与搜狐内网隔离，关闭漫游接口，全部返回10002失败
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            returnErrMsg(response, ru, result.getCode(), result.getMessage());
-            return;
+            result = accountRoamManager.createRoamKey(sLoginPassportId);
+            if (result.isSuccess()) {
+                String r_key = (String) result.getModels().get("r_key");
+                Map params = Maps.newHashMap();
+                params.put("client_id", clientId);
+                params.put("r_key", r_key);
+                params.put("ru", ru);
+                response.sendRedirect(ServletUtil.applyOAuthParametersString(SG_WEB_ROAM_URL, params));
+                return;
+            } else {
+                returnErrMsg(response, ru, result.getCode(), result.getMessage());
+                return;
+            }
+//            //搜狗与搜狐内网隔离，关闭漫游接口，全部返回10002失败
+//            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+//            result.setMessage(validateResult);
+//            returnErrMsg(response, ru, result.getCode(), result.getMessage());
+//            return;
 
 
         } catch (Exception e) {
@@ -133,19 +133,19 @@ public class WebRoamController extends BaseController {
             if (hostHolder.isLogin()) {
                 sgLgUserId = hostHolder.getPassportId();
             }
-//            result = accountRoamManager.webRoam(response, sgLgUserId, r_key, ru, createIp, Integer.parseInt(clientId));
-//            if (result.isSuccess()) {
-//                response.sendRedirect(ru);
-//                return;
-//            } else {
-//                returnErrMsg(response, ru, result.getCode(), result.getMessage());
-//                return;
-//            }
-            //搜狗与搜狐内网隔离，关闭漫游接口，全部返回10002失败
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            returnErrMsg(response, ru, result.getCode(), result.getMessage());
-            return;
+            result = accountRoamManager.webRoam(response, sgLgUserId, r_key, ru, createIp, Integer.parseInt(clientId));
+            if (result.isSuccess()) {
+                response.sendRedirect(ru);
+                return;
+            } else {
+                returnErrMsg(response, ru, result.getCode(), result.getMessage());
+                return;
+            }
+//            //搜狗与搜狐内网隔离，关闭漫游接口，全部返回10002失败
+//            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+//            result.setMessage(validateResult);
+//            returnErrMsg(response, ru, result.getCode(), result.getMessage());
+//            return;
         } catch (Exception e) {
             LOGGER.error(" web_roam error.userId:{},r_key:{},ru", new Object[]{result.getModels().get("userId"), r_key, ru}, e);
         } finally {
