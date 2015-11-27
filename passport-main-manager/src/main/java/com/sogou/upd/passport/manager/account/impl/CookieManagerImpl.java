@@ -13,6 +13,7 @@ import com.sogou.upd.passport.common.parameter.ConnectDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
+import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -196,15 +197,21 @@ public class CookieManagerImpl implements CookieManager {
                     pprdig = (String) result.getModels().get("pprdig");
                 }
             } else {
-                result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-                if (result.isSuccess()) {
-                    ppinf = (String) result.getModels().get("ppinf");
-                    pprdig = (String) result.getModels().get("pprdig");
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-                    result.setMessage(ErrorUtil.ERR_CODE_MSG_MAP.get(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED));
+                if(ManagerHelper.authUserBySOHUSwitcher()){
+                    result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+                    if (result.isSuccess()) {
+                        ppinf = (String) result.getModels().get("ppinf");
+                        pprdig = (String) result.getModels().get("pprdig");
+                    } else {
+                        result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+                        result.setMessage(ErrorUtil.ERR_CODE_MSG_MAP.get(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED));
+                        return result;
+                    }
+                }else{
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_API_FAILED);
                     return result;
                 }
+
             }
 
             //web端生成cookie后、种下cookie 、桌面端不同

