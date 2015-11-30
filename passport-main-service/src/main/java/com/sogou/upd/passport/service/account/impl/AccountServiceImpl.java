@@ -284,6 +284,34 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    /**
+     * 只更新db和redis中的用户密码，不清除pc端token
+     * @param account
+     * @param password
+     * @param needMd5
+     * @return
+     * @throws ServiceException
+     */
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updatePassword", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public boolean updatePwd(Account account, String password, boolean needMd5) throws ServiceException {
+        try {
+            String passportId = account.getPassportId();
+            String passwdSign = PwdGenerator.generatorStoredPwd(password, needMd5);
+            int row = accountDAO.updatePassword(passwdSign, passportId);
+            if (row != 0) {
+                String cacheKey = buildAccountKey(passportId);
+                account.setPassword(passwdSign);
+                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+
     private boolean verifyPwdWithOriginal(String password, String storedPwd) {
         if (storedPwd.equals(password)) {
             return true;

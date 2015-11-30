@@ -213,4 +213,14 @@ public interface AccountService {
      */
     public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5,SohuPasswordType sohuPwdType) throws ServiceException;
 
+
+    /**
+     * 只更新db和redis中的用户密码，不清除pc端token
+     * @param account
+     * @param password
+     * @param needMd5
+     * @return
+     * @throws ServiceException
+     */
+    public boolean updatePwd(Account account,String password,boolean needMd5) throws ServiceException;
 }

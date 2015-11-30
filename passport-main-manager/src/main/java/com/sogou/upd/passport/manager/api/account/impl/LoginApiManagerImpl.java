@@ -79,8 +79,10 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                 String passwordStored=account.getPassword();
                 if(Strings.isNullOrEmpty(passwordStored) && ManagerHelper.authUserBySOHUSwitcher()){
                     result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+                    String pwdParam = authUserApiParams.getPassword();
                     if(result.isSuccess()){
-                        sohuSpecialLogger.warn(passportId+"\t"+authUserApiParams.getPassword());
+                        accountService.updatePwd(account, pwdParam, false);
+                        sohuSpecialLogger.warn(passportId+"\t"+pwdParam);
                     }
                 }
 
