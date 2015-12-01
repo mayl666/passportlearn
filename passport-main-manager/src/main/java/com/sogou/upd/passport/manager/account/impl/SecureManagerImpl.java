@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -84,8 +85,6 @@ public class SecureManagerImpl implements SecureManager {
     private CommonManagerImpl commonManager;
     @Autowired
     private RegManager regManager;
-    @Autowired
-    private PhotoUtils photoUtils;
 
     private ExecutorService service = Executors.newFixedThreadPool(10);
 
@@ -217,10 +216,10 @@ public class SecureManagerImpl implements SecureManager {
             if (result.isSuccess()) {
                 String uniqname = String.valueOf(result.getModels().get("uniqname"));
                 result.getModels().put("uniqname", Coder.encode(Strings.isNullOrEmpty(uniqname) ? userId : uniqname, "UTF-8"));
-                Result photoResult = photoUtils.obtainPhoto(String.valueOf(result.getModels().get("avatarurl")), "50");
-                if (photoResult.isSuccess()) {
-                    result.getModels().put("avatarurl", photoResult.getModels());
-                }
+                //这里写成这样是因为原来代码的bug，以后前端改一下，直接取avatarurl，不要取avatarurl.img_50
+                Map<String, String> tmp = new HashMap<String, String>();
+                tmp.put("img_50", (String)result.getModels().get("avatarurl"));
+                result.getModels().put("avatarurl", tmp);
             } else {
                 result.getModels().put("uniqname", Coder.encode(userId, "UTF-8"));
             }

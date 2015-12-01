@@ -37,8 +37,7 @@ public class PhotoUtils {
 
     private String storageEngineURL;
     private int timeout = 5000;               // timeout毫秒数
-    private String appid;
-    private Map<String, String> sizeToAppIdMap = null;
+    final private String appid = "100140008";
     private List<String> listCDN = null;
 
     //图片名生成规则
@@ -52,16 +51,6 @@ public class PhotoUtils {
     static final Logger logger = LoggerFactory.getLogger(PhotoUtils.class);
 
     public void init() {
-        /**
-         * 30x30     100140006
-         * 50x50     100140007
-         * 180x180   100140008
-         */
-        sizeToAppIdMap = new HashMap<String, String>();
-        sizeToAppIdMap.put("30", "100140006");
-        sizeToAppIdMap.put("50", "100140007");
-        sizeToAppIdMap.put("180", "100140008");
-
         //初始化cdn列表
         listCDN = new ArrayList<String>();
         listCDN.add("http://img01.sogoucdn.com");
@@ -81,25 +70,6 @@ public class PhotoUtils {
         return sb.toString();
     }
 
-    //获取size对应的appId
-    public String getAppIdBySize(String size) {
-        return sizeToAppIdMap.get(size);
-    }
-
-    //获取所有图片尺寸
-    public String[] getAllImageSize() {
-        Map<String, String> map = getAllAppId();
-
-        String[] imgSize = map.keySet().toArray(new String[map.size()]);
-
-        return imgSize;
-    }
-
-    //获取所有appId
-    public Map<String, String> getAllAppId() {
-        return sizeToAppIdMap;
-    }
-
     //随机获取cdn域名
     public String getCdnURL() {
         return listCDN.get(RandomUtils.nextInt(listCDN.size()));
@@ -114,7 +84,6 @@ public class PhotoUtils {
                 ByteArrayBody byteArrayBody = new ByteArrayBody(picBytes, picNameInURL);
                 reqEntity.addPart("f1", byteArrayBody);
                 try {
-                    reqEntity.addPart("appid", new StringBody(appid));
                     reqEntity.addPart("sign_f1", new StringBody(picNameInURL));
                 } catch (UnsupportedEncodingException e) {
                     logger.error(e.getMessage(), e);
@@ -124,7 +93,6 @@ public class PhotoUtils {
             case 1://网络文件上传
                 try {
                     reqEntity.addPart("url1", new StringBody(webUrl));
-                    reqEntity.addPart("appid", new StringBody(appid));
                     reqEntity.addPart("sign_url1", new StringBody(picNameInURL));
                 } catch (UnsupportedEncodingException e) {
                     logger.error(e.getMessage(), e);
@@ -147,39 +115,19 @@ public class PhotoUtils {
             logger.error(response.getStatusLine().toString());
             return false;
         }
-        HttpEntity entity = response.getEntity();
-        if (entity != null) {
-            try {
-                String json = EntityUtils.toString(entity);
-                logger.info("OP-IMG-PLATFORM-RESPONSE:\n" + json);
-                JSONArray arr = JSONArray.fromObject(json);
-                if (arr.size() != appid.split(",").length) {
-                    return false;
-                }
-
-                for (int i = 0; i < arr.size(); i++) {
-                    JSONObject single = arr.getJSONObject(i);
-                    String status = single.getString("status");
-                    if (!"0".equals(status)) {
-                        return false;
-                    }
-                }
-            } catch (IOException e) {
-                logger.error("uploadImg ioException:" + e.getMessage(), e);
-            } finally {
-                try {
-                    EntityUtils.consume(entity);
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        }
         return true;
     }
 
-    //拼接url
-    public String accessURLTemplate(String picNameInURL) {
-        return new StringBuilder("%s").append("/app/a/%s").append("/").append(picNameInURL).toString();
+    //返回图像名称
+    public String accessURLTemplate(String imgName) {
+        return imgName;
+    }
+
+    String getImgName(String url) {
+        if (url.indexOf("%s") >= 0) {
+            return url.substring(url.lastIndexOf('/') + 1);
+        }
+        return url;
     }
 
     //判断后缀
@@ -199,45 +147,42 @@ public class PhotoUtils {
         return false;
     }
 
-    public Result obtainPhoto(String imageUrl, String size) {
+    public Result obtainPhoto(String imageUrl, String sizes) {
         Result result = new APIResultSupport(false);
         try {
-            String[] sizeArry = null;
-            //获取size对应的appId
-            if (!Strings.isNullOrEmpty(size)) {
-                //检测是否是支持的尺寸
-                sizeArry = size.split(",");
+            String[] sizeArry = sizes.split(",");
 
-                if (ArrayUtils.isNotEmpty(sizeArry)) {
-                    for (int i = 0; i < sizeArry.length; i++) {
-                        if (Strings.isNullOrEmpty(getAppIdBySize(sizeArry[i]))) {
-                            result.setCode(ErrorUtil.ERR_CODE_ERROR_IMAGE_SIZE);
-                            return result;
-                        }
-                    }
-                } else {
-                    //为空获取所有的尺寸
-                    sizeArry = getAllImageSize();
-                }
-                if (!Strings.isNullOrEmpty(imageUrl) && ArrayUtils.isNotEmpty(sizeArry)) {
-                    result.setSuccess(true);
-                    for (int i = 0; i < sizeArry.length; i++) {
-                        //随机获取cdn域名
-                        String cdnUrl = getCdnURL();
-                        //获取图片尺寸
-                        String clientId = getAppIdBySize(sizeArry[i]);
+            //检测是否是支持的尺寸
+            if (ArrayUtils.isEmpty(sizeArry)) {
+                result.setCode(ErrorUtil.ERR_CODE_ERROR_IMAGE_SIZE);
+                return result;
+            }
 
-                        String photoURL = String.format(imageUrl, cdnUrl, clientId);
-                        if (!Strings.isNullOrEmpty(photoURL)) {
-                            result.setDefaultModel("img_" + sizeArry[i], photoURL);
-                        }
-                    }
-                    return result;
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
+            for (String sizeString : sizeArry) {
+                int size = Integer.parseInt(sizeString);
+                if (size < 30 || size > 180) {
+                    result.setCode(ErrorUtil.ERR_CODE_ERROR_IMAGE_SIZE);
                     return result;
                 }
             }
+
+            if (Strings.isNullOrEmpty(imageUrl)) {
+                result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
+                return result;
+            }
+
+            for (String sizeString : sizeArry) {
+                int size = Integer.parseInt(sizeString);
+                //随机获取cdn域名
+                String cdnUrl = getCdnURL();
+
+                String photoURL = String.format("%s/v2/thumb/resize/w/%d/h/%d/t/0/?appid=%s&name=%s",
+                        cdnUrl, size, size, appid, getImgName(imageUrl));
+                if (!Strings.isNullOrEmpty(photoURL)) {
+                    result.setDefaultModel("img_" + size, photoURL);
+                }
+            }
+            result.setSuccess(true);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             result.setCode(ErrorUtil.ERR_CODE_OBTAIN_PHOTO);
@@ -274,14 +219,6 @@ public class PhotoUtils {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
-    }
-
-    public String getAppid() {
-        return appid;
-    }
-
-    public void setAppid(String appid) {
-        this.appid = appid;
     }
 
     public String getStorageEngineURL() {

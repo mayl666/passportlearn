@@ -21,8 +21,6 @@ import java.util.UUID;
 @Ignore
 @ContextConfiguration(locations = {"classpath:spring-config-image.xml"})
 public class ImgTest extends AbstractJUnit4SpringContextTests {
-    private static final String TEST_KEY = "TEST_REDIS_KEY";
-    private static final String TEST_SUB_KEY = "TEST_REDIS_SUB_KEY";
 
     @Inject
     private PhotoUtils photoUtils;
@@ -40,7 +38,7 @@ public class ImgTest extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void testUploadDefaultAvatar() {
-        File file=new File("C:\\Users\\shipengzhi\\Desktop\\Pictures\\default_avatar_large.png");
+        File file=new File("C:\\Users\\xieyilun\\Desktop\\a.jpg");
         try {
             String imgName = "default_avatar";
             boolean flag = photoUtils.uploadImg(imgName, IOUtils.toByteArray(new FileInputStream(file)), null, "0");
@@ -51,9 +49,9 @@ public class ImgTest extends AbstractJUnit4SpringContextTests {
             String mid_avatar = (String) getPhotoResult.getModels().get("img_50");
             String tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
 
-            System.out.println("large_avatar:"+large_avatar);
-            System.out.println("mid_avatar:"+mid_avatar);
-            System.out.println("tiny_avatar:"+tiny_avatar);
+            System.out.println("large_avatar:" + large_avatar);
+            System.out.println("mid_avatar:" + mid_avatar);
+            System.out.println("tiny_avatar:" + tiny_avatar);
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
