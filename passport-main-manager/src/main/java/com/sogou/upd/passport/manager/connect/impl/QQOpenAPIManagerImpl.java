@@ -77,7 +77,7 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
         String cacheKey = buildQQFriendsCacheKey(userid, third_appid);
         List cachelist = dbShardRedisUtils.getObject(cacheKey, List.class);
         Result result = new APIResultSupport(false);
-        if (null != cachelist) {
+        if ((null != cachelist)&&(!cachelist.isEmpty())) {
             result.setSuccess(true);
             result.setDefaultModel("items", cachelist);
             return result;
