@@ -109,6 +109,11 @@ public enum AccountDomainEnum {
         if (userId.endsWith("@focus.cn")) {
             return userId;
         }
+
+        if(AccountDomainEnum.SOHU==AccountDomainEnum.getAccountDomain(userId)){
+            return userId;
+        }
+
         if (AccountDomainEnum.THIRD == AccountDomainEnum.getAccountDomain(userId)) {
             return userId;
         }
