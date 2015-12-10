@@ -222,5 +222,5 @@ public interface AccountService {
      * @return
      * @throws ServiceException
      */
-    public boolean updatePwd(Account account,String password,boolean needMd5) throws ServiceException;
+    public boolean updatePwd(String passportId,Account account,String password,boolean needMd5) throws ServiceException;
 }

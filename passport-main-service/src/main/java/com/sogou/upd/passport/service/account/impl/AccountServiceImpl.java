@@ -294,9 +294,8 @@ public class AccountServiceImpl implements AccountService {
      */
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updatePassword", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
-    public boolean updatePwd(Account account, String password, boolean needMd5) throws ServiceException {
+    public boolean updatePwd(String passportId,Account account, String password, boolean needMd5) throws ServiceException {
         try {
-            String passportId = account.getPassportId();
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMd5);
             int row = accountDAO.updatePassword(passwdSign, passportId);
             if (row != 0) {
