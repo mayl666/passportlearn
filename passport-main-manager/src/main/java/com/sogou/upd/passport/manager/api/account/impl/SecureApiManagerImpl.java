@@ -49,7 +49,7 @@ public class SecureApiManagerImpl implements SecureApiManager {
         }
         Account account = (Account) result.getDefaultModel();
         result.setModels(Maps.newHashMap());
-        if (!accountService.resetPassword(account, newPwd, true)) {
+        if (!accountService.resetPassword(passportId,account, newPwd, true)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             result.setSuccess(false);
         }

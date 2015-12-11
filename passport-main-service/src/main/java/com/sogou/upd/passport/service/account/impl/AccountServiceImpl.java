@@ -217,6 +217,16 @@ public class AccountServiceImpl implements AccountService {
 
         }
 
+        //TODO:修复迁移过程中的脏数据,后续去掉
+        AccountDomainEnum accountDomain=AccountDomainEnum.getAccountDomain(passportId);
+        if(accountDomain==AccountDomainEnum.SOHU){
+            int pwdType=account.getPasswordtype();
+            if(pwdType!=5){
+                account.setPasswordtype(5);
+                logger.warn("SOHU DIRTY DATA:"+passportId);
+            }
+        }
+
         return account;
     }
 
@@ -358,9 +368,13 @@ public class AccountServiceImpl implements AccountService {
 
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_resetPassword", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
-    public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException {
+    public boolean resetPassword(String sohuPassportId,Account account, String password, boolean needMD5) throws ServiceException {
         try {
             String passportId = account.getPassportId();
+            AccountDomainEnum accountDomain=AccountDomainEnum.getAccountDomain(passportId);
+            if(accountDomain==AccountDomainEnum.SOHU){
+                passportId=sohuPassportId;//sohu 账号区分大小写
+            }
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMD5);
             int row = accountDAO.updatePassword(passwdSign, passportId);
             pcAccountTokenService.batchRemoveAccountToken(passportId, true);

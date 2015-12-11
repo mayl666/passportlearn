@@ -77,7 +77,7 @@ public interface AccountService {
     /**
      * 重置密码
      */
-    public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException;
+    public boolean resetPassword(String sohuPassportId,Account account, String password, boolean needMD5) throws ServiceException;
 
     /**
      * 激活验证邮件

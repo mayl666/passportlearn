@@ -273,7 +273,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
-            if (!accountService.resetPassword(account, password, true)) {
+            if (!accountService.resetPassword(passportId,account, password, true)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
                 return result;
             }

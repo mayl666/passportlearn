@@ -116,7 +116,7 @@ public class AccountServiceTest extends BaseTest {
     @Test
     public void testResetPassword() {
         Account account = accountService.queryNormalAccount(PASSPORT_ID);
-        boolean flag = accountService.resetPassword(account, PASSWORD, true);
+        boolean flag = accountService.resetPassword(PASSPORT_ID,account, PASSWORD, true);
         if (flag != false) {
             System.out.println("重置成功...");
         } else {
