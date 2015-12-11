@@ -218,14 +218,17 @@ public class AccountServiceImpl implements AccountService {
         }
 
         //TODO:修复迁移过程中的脏数据,后续去掉
-        AccountDomainEnum accountDomain=AccountDomainEnum.getAccountDomain(passportId);
-        if(accountDomain==AccountDomainEnum.SOHU){
-            int pwdType=account.getPasswordtype();
-            if(pwdType!=5){
-                account.setPasswordtype(5);
-                logger.warn("SOHU DIRTY DATA:"+passportId);
+        if(null!=account){
+            AccountDomainEnum accountDomain=AccountDomainEnum.getAccountDomain(passportId);
+            if(accountDomain==AccountDomainEnum.SOHU){
+                int pwdType=account.getPasswordtype();
+                if(pwdType!=5){
+                    account.setPasswordtype(5);
+                    logger.warn("SOHU DIRTY DATA:"+passportId);
+                }
             }
         }
+
 
         return account;
     }
