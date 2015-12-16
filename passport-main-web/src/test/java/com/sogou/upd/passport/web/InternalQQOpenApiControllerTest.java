@@ -39,23 +39,4 @@ public class InternalQQOpenApiControllerTest {
         System.out.println("========================================================");
     }
 
-    @Test
-    public void testQcloud() throws Exception {
-        String qCloudUrl = "http://115.159.57.127:8888/internal/qq/friends_aesinfo";
-        String userId = "E74BEC2F5729AB12495986504FA64826@qq.sohu.com";
-        int clientId = 2040;
-        String third_appid = null;
-        String tKey = "";
-
-        RequestModel requestModel = new RequestModel(qCloudUrl);
-        requestModel.addParam("userid", userId);
-        requestModel.addParam("tKey", tKey);
-        requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-//            String returnVal = SGHttpClient.executeStr(requestModel);
-        String returnVal = ApacheAsynHttpClient.executeStr(requestModel);
-//            asyncHttpClientService.sendPreparePost(GET_QQ_FRIENDS_AES_URL);
-        String str = AES.decryptURLSafeString(returnVal, QQOpenAPIManagerImpl.TKEY_SECURE_KEY);
-        System.out.println("result:" + str);
-
-    }
 }
