@@ -32,10 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -56,8 +53,8 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
     private String QQ_RET_CODE_FOR_NO_AUTHORITY = "100030";
 
 //    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.155.61:8888/internal/qq/friends_aesinfo";
-//    private static final String GET_QQ_FRIENDS_AES_URL = "http://115.159.57.127:8888/internal/qq/friends_aesinfo";//new-cloud-01
-    private static final String GET_QQ_FRIENDS_AES_URL = "http://203.195.255.86:8888/internal/qq/friends_aesinfo";//new-cloud-02
+    private static final String GET_QQ_FRIENDS_AES_URL_00 = "http://115.159.57.127:8888/internal/qq/friends_aesinfo";//new-cloud-01
+    private static final String GET_QQ_FRIENDS_AES_URL_01 = "http://203.195.255.86:8888/internal/qq/friends_aesinfo";//new-cloud-02
 //    private static final String GET_QQ_FRIENDS_AES_URL = "http://qqfriends.gz.1251021740.clb.myqcloud.com/internal/qq/friends_aesinfo";
 
     public static final String TKEY_SECURE_KEY = "adfab231rqwqerq";
@@ -85,7 +82,8 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
             return result;
         } else {
             result = new APIResultSupport(false);
-            RequestModel requestModel = new RequestModel(GET_QQ_FRIENDS_AES_URL);
+
+            RequestModel requestModel = new RequestModel(balanceQcloudUrl());
             requestModel.addParam("userid", userid);
             requestModel.addParam("tKey", tkey);
             requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
@@ -221,6 +219,13 @@ public class QQOpenAPIManagerImpl implements QQOpenAPIManager {
             String url = String.valueOf(value);
             return url.substring(0, url.lastIndexOf("/")) + "/" + size;
         }
+    }
+
+    private String balanceQcloudUrl(){
+        String qcloudUrl=GET_QQ_FRIENDS_AES_URL_00;
+        boolean flag=new Random().nextBoolean();
+        qcloudUrl=flag?GET_QQ_FRIENDS_AES_URL_00:GET_QQ_FRIENDS_AES_URL_01;
+        return qcloudUrl;
     }
 
 }
