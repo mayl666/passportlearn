@@ -32,26 +32,31 @@ public class SwitchHystrix extends BaseController {
     @ResponseBody
     public String switchHystrix(HttpServletRequest request, HttpServletResponse response, SwitchHystrixParams params) {
 
-        String operateIp = getIp(request);
-        String nahongxuIp = "10.129.204.218";
-        if (!nahongxuIp.equals(operateIp)) {
-            return "operate ip is denied";
-        }
+//        String operateIp = getIp(request);
+//        String nahongxuIp = "10.129.204.218";
+//        if (!nahongxuIp.equals(operateIp)) {
+//            return "operate ip is denied";
+//        }
 
         Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
         Boolean hystrixQQHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
         Boolean hystrixKafkaHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED));
-        logger.warn("before swich,globalEnabled:" + hystrixGlobalEnabled + ",qqEnabled:" + hystrixQQHystrixEnabled + ",kafkaEnabled:" + hystrixKafkaHystrixEnabled);
+        String qCloudIpPort=HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QCLOUD_IP_PORT);
+
+        logger.warn("before switch,globalEnabled:" + hystrixGlobalEnabled + ",qqEnabled:" + hystrixQQHystrixEnabled + ",kafkaEnabled:" + hystrixKafkaHystrixEnabled);
+        logger.warn("before switch,qcloud ip port:" +qCloudIpPort);
 
         HystrixConfigFactory.modifyProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED, params.getGlobalEnabled().toString());
         HystrixConfigFactory.modifyProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED, params.getQqHystrixEnabled().toString());
         HystrixConfigFactory.modifyProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED, params.getKafkaHystrixEnabled().toString());
+        HystrixConfigFactory.modifyProperty(HystrixConstant.PROPERTY_QCLOUD_IP_PORT,params.getQcloudIpPort());
 
         hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
         hystrixQQHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
         hystrixKafkaHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED));
-        logger.warn("after swich,globalEnabled:" + hystrixGlobalEnabled + ",qqEnabled:" + hystrixQQHystrixEnabled + ",kafkaEnabled:" + hystrixKafkaHystrixEnabled);
-
+        qCloudIpPort=HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QCLOUD_IP_PORT);
+        logger.warn("after switch,globalEnabled:" + hystrixGlobalEnabled + ",qqEnabled:" + hystrixQQHystrixEnabled + ",kafkaEnabled:" + hystrixKafkaHystrixEnabled);
+        logger.warn("after switch,qcloud ip port:" +qCloudIpPort);
         return "switch hystrix success";
     }
 
