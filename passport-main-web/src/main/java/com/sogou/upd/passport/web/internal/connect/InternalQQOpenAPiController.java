@@ -70,7 +70,6 @@ public class InternalQQOpenAPiController extends BaseController {
                 result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
                 return result.toString();
             }
-            logger.warn("test tkey is:"+tKey);
             result = qqOpenAPIManager.getQQFriends(userId, tKey, third_appid);
 //            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result.toString();
