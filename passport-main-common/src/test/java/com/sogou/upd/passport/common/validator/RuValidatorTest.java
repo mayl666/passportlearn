@@ -120,5 +120,25 @@ public class RuValidatorTest {
         result = ru.isValid(url, null);
         Assert.assertEquals(true, result);
 
+        url="http://8888you.cn";
+        result = ru.isValid(url, null);
+        Assert.assertEquals(true, result);
+
+        url="https://8888you.cn";
+        result = ru.isValid(url, null);
+        Assert.assertEquals(true, result);
+
+        url = "https://8888you.cn/web?a=3&b=4";
+        result = ru.isValid(url, null);
+        Assert.assertEquals(true, result);
+
+        url = "https://a.8888you.cn/web?a=3&b=4";
+        result = ru.isValid(url, null);
+        Assert.assertEquals(true, result);
+
+        url = "https://www.a.8888you.cn/web?a=3&b=4";
+        result = ru.isValid(url, null);
+        Assert.assertEquals(true, result);
+
     }
 }
