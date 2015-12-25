@@ -141,7 +141,7 @@ input[type="checkbox"], input[type="checkbox"]:checked {
     -webkit-appearance: none;
     width: 16px;
     height: 16px;
-    background: url(checkbox.png?t=451675) 0 0 no-repeat;
+    background: url(checkbox.png?t=451675?t=) 0 0 no-repeat;
 }
 
 input[type="checkbox"]:checked {
@@ -152,7 +152,6 @@ input[type="checkbox"]:checked {
     display: inline-block;
     width: 120px;
     height: 34px;
-    line-height: 34px;
     font-size: 15px;
     font-weight: bold;
     text-align: center;
@@ -217,7 +216,7 @@ input[type="checkbox"]:checked {
     width: 100%;
     height: 204px;
     margin: 0 auto;
-    background: url(big_bg.png?t=819134) 50% 22px no-repeat;
+    background: url(big_bg.png?t=819134?t=) 50% 22px no-repeat;
     overflow: hidden;
 }
 
@@ -241,7 +240,7 @@ input[type="checkbox"]:checked {
 
 .login-con legend {
     height: 16px;
-    background: url(logo.png?t=568336) no-repeat left 50px;
+    background: url(logo.png?t=568336?t=) no-repeat left 50px;
     padding: 50px 0 20px 22px;
     font-weight: bold;
     font-size: 14px;
@@ -312,7 +311,7 @@ input[type="checkbox"]:checked {
     width: auto;
     color: #ff0000;
     z-index: 2;
-    background: url(input_mask.png?t=264422) left;
+    background: url(input_mask.png?t=264422?t=) left;
 }
 
 .chk-tips {
@@ -367,7 +366,7 @@ input[type="checkbox"]:checked {
     background: transparent;
     width: 170px;
     z-index: 3;
-    -webkit-border-image: url(outside_border.png?t=729632) 8 9 5 9 stretch;
+    -webkit-border-image: url(outside_border.png?t=729632?t=) 8 9 5 9 stretch;
     border-width: 1px 1px 3px 1px;
 }
 
@@ -387,7 +386,7 @@ input[type="checkbox"]:checked {
 }
 
 .outside-weibo, .outside-renren, .outside-qq, .outside-tb, .outside-arrow, .left-arrow, .chk-right {
-    background: url(outside.png?t=682827) no-repeat;
+    background: url(outside.png?t=682827?t=) no-repeat;
     width: 30px;
     height: 30px;
 }
@@ -438,7 +437,7 @@ input[type="checkbox"]:checked {
     left: 0;
     background: #fff;
     z-index: 3;
-    -webkit-border-image: url(outside_border.png?t=729632) 8 9 5 9 stretch;
+    -webkit-border-image: url(outside_border.png?t=729632?t=) 8 9 5 9 stretch;
     border-width: 1px 1px 3px 1px;
     color: #999;
 }
@@ -494,7 +493,7 @@ input[type="checkbox"]:checked {
 .user-id .ppselecter li.hover .del {
     display: inline-block;
     text-decoration: none;
-    background: url(clos.png?t=543426) 0 0 no-repeat;
+    background: url(clos.png?t=543426?t=) 0 0 no-repeat;
 }
 
 .user-id .ppselecter li.hover .del:hover {
@@ -571,7 +570,7 @@ input[type="checkbox"]:checked {
     height: 345px;
     overflow: hidden;
     position: relative;
-    background: url(404.jpg?t=) no-repeat center;
+    background: url(404.jpg?t=?t=) no-repeat center;
 }
 
 .page-404-btn {
@@ -589,7 +588,7 @@ input[type="checkbox"]:checked {
     width: 22px;
     height: 30px;
     line-height: 31px;
-    background: url(right.png?t=328962) 100% 50% no-repeat;
+    background: url(right.png?t=328962?t=) 100% 50% no-repeat;
 }
 
 .position-tips span.x {
@@ -616,7 +615,7 @@ input[type="checkbox"]:checked {
     position: absolute;
     width: 30px;
     height: 30px;
-    background: url(select_icon.png?t=638512) 0 0 no-repeat;
+    background: url(select_icon.png?t=638512?t=) 0 0 no-repeat;
     right: 0;
     top: 0;
 }
