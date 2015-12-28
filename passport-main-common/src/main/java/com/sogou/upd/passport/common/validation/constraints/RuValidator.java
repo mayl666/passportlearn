@@ -39,7 +39,7 @@ public class RuValidator implements ConstraintValidator<Ru, String> {
             return false;
         }
         try {
-            Pattern p = Pattern.compile("(^(https?:\\/\\/)?[\\w\\-.]+\\.(sogou\\.com|sohu\\.com|qq\\.com|soso\\.com|go2map\\.com|pinyin\\.cn|teemo\\.cn)($|\\?|\\/|\\\\|:[\\d]))|(^(https?:\\/\\/)?+(2288wxy\\.com\\.cn)($|\\?|\\/|\\\\|:[\\d]))", Pattern.CASE_INSENSITIVE);
+            Pattern p = Pattern.compile("(^(https?:\\/\\/)?[\\w\\-.]+\\.(sogou\\.com|sohu\\.com|qq\\.com|soso\\.com|go2map\\.com|pinyin\\.cn|teemo\\.cn)($|\\?|\\/|\\\\|:[\\d]))|(^(https?:\\/\\/)?+(2288wxy\\.com\\.cn|8888you\\.cn)($|\\?|\\/|\\\\|:[\\d]))", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(value);
             return matcher.find();
         } catch (Exception e) {
