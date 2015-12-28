@@ -39,8 +39,8 @@ public class HystrixConstant {
     public static final String DEFAULT_FALLBACK_SEMAPHORE_THRESHOLD = "10";
 
     //好友链腾讯云ip，port
-    public static final String DEFAULT_QCLOUD_IP_PORT="115.159.57.127:8888";
-
+//    public static final String DEFAULT_QCLOUD_IP_PORT="115.159.57.127:8888";
+    public static final String DEFAULT_QCLOUD_IP_PORT="203.195.255.86:8888";
 
     //property name
     public static final String PROPERTY_GLOBAL_ENABLED = "globalEnabled";
