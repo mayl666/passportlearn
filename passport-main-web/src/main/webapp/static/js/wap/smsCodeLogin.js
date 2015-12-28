@@ -165,7 +165,7 @@ define(['./interface', '../lib/tpl' , './local', '../lib/emitter', './utils', '.
                 },
                 showCaptcha: function () {
                     this.$captchaWrapper.removeClass('hide');
-                    this.$captchaImg.attr('src', Form.getCaptcha(token));
+                    this.$captchaImg.attr('src', Form.getCaptcha(token = SuperUtils.uuid()));
                 },
                 showMsg: function (msg, normal) {
                     if (normal) {
