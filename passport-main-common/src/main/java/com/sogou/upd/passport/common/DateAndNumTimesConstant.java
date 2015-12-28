@@ -36,6 +36,7 @@ public class DateAndNumTimesConstant {
     // 短信登录
     public static final int GET_SMS_CODE_LOGIN_LIMIT = 5; //短信登录，请求短信校验码次数限制 5次/天
     public static final int TRY_SMS_CODE_LIMIT = 10;//短信登录，尝试短信校验码次数限制 10次/天
+    public static final int SMSLOGIN_CAPTCHA_LIMIT = 2;//手机短验登录每天超过2次就出现图片验证码
 
 
 }

@@ -1070,6 +1070,30 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
     }
 
+    @Override
+    public boolean checkSMSnNeedCaptcha(final String mobile, final int clientId) {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_SMSLOGIN_CAPTCHA_LIMIT + mobile + "_" + clientId;
+            if (redisUtils.checkKeyIsExist(cacheKey)) {
+                //校验请求次数是否超限制
+                if (checkTimesByKey(cacheKey, DateAndNumTimesConstant.SMSLOGIN_CAPTCHA_LIMIT)) {
+                    return true;
+                } else {
+                    //记录请求sms code的次数
+                    recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                }
+            } else {
+                //记录请求sms code的次数
+                recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("checkSMSnNeedCaptcha error. mobile:{}", mobile);
+            return false;
+        }
+        return false;
+    }
+
 
     private static String buildGetPairtokenBlackKeyStr(String username) {
         return CacheConstant.CACHE_PREFIX_GETPAIRTOKEN_USERNAME_BLACK_ + username;

@@ -71,16 +71,19 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
     public Result sendSmsCode(final String mobile, final int client_id, final String token, final String captcha) {
         Result result = new APIResultSupport(false);
         try {
-            //必须验证验证码 ，若token、captcha为空，则提示错误“请输入验证码”
-            if((Strings.isNullOrEmpty(token)||Strings.isNullOrEmpty(captcha))){
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
-                result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
-                return result;
-            }
+//            //必须验证验证码 ，若token、captcha为空，则提示错误“请输入验证码”
+//            if((Strings.isNullOrEmpty(token)||Strings.isNullOrEmpty(captcha))){
+//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
+//                result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
+//                return result;
+//            }
+
 
             //验证请求验证码是否超限制
-            result = commonManager.checkMobileSendSMSInBlackList(mobile, String.valueOf(client_id));
-            if (!result.isSuccess()) {
+//            result = commonManager.checkMobileSendSMSInBlackList(mobile, String.valueOf(client_id));
+            boolean needSmsCaptcha=operateTimesService.checkSMSnNeedCaptcha(mobile,client_id);
+            if (needSmsCaptcha) {
+//            if (!result.isSuccess()) {
                 //如果token和captcha都不为空，则校验是否匹配
                 if (!Strings.isNullOrEmpty(token) && !Strings.isNullOrEmpty(captcha)) {
                     result = regManager.checkCaptchaToken(token, captcha);
@@ -91,6 +94,7 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
                         return result;
                     }
                 } else {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
                     result.setDefaultModel("token", RandomStringUtils.randomAlphanumeric(48));
                     return result;
                 }
