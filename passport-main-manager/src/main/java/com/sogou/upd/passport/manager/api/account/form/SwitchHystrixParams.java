@@ -24,6 +24,8 @@ public class SwitchHystrixParams extends BaseApiParams {
     @NotBlank(message = "kafka开关不能为空")
     protected Boolean kafkaHystrixEnabled;
 
+    protected String qcloudIpPort;
+
     public String getUserid() {
         return userid;
     }
@@ -56,4 +58,11 @@ public class SwitchHystrixParams extends BaseApiParams {
         this.kafkaHystrixEnabled = kafkaHystrixEnabled;
     }
 
+    public String getQcloudIpPort() {
+        return qcloudIpPort;
+    }
+
+    public void setQcloudIpPort(String qcloudIpPort) {
+        this.qcloudIpPort = qcloudIpPort;
+    }
 }

@@ -51,6 +51,9 @@ public class HystrixConfigFactory {
     public static final String PROPERTY_KAFKA_SEMAPHORE_THRESHOLD = "kafkaSemaphoreThreshold";
     public static final String PROPERTY_FALLBACK_SEMAPHORE_THRESHOLD = "fallbackSemaphoreThreshold";
 
+    //好友链qCloud ip port
+    public static final String PROPERTY_QCLOUD_IP_PORT="qCloudIpPort";
+
 
     private static Props properties = new Props();
     protected static ConcurrentMap<String, String> hystrixConfigMap = Maps.newConcurrentMap();
@@ -97,6 +100,8 @@ public class HystrixConfigFactory {
                 setProperties(hystrixConfigMap, properties, PROPERTY_BREAKER_FORCE_OPEN, HystrixConstant.DEFAULT_BREAKER_FORCE_OPEN);
                 setProperties(hystrixConfigMap, properties, PROPERTY_BREAKER_FORCE_CLOSE, HystrixConstant.DEFAULT_BREAKER_FORCE_CLOSE);
                 setProperties(hystrixConfigMap, properties, PROPERTY_BREAKER_SLEEP_WINDOW, HystrixConstant.DEFAULT_BREAKER_SLEEP_WINDOW);
+                //腾讯云好友链ip、port
+                setProperties(hystrixConfigMap, properties, PROPERTY_QCLOUD_IP_PORT, HystrixConstant.DEFAULT_QCLOUD_IP_PORT);
 
                 //打印参数
                 logProperties();
@@ -155,5 +160,6 @@ public class HystrixConfigFactory {
         logger.warn(PROPERTY_BREAKER_FORCE_OPEN + ":" + getProperty(PROPERTY_BREAKER_FORCE_OPEN));
         logger.warn(PROPERTY_BREAKER_FORCE_CLOSE + ":" + getProperty(PROPERTY_BREAKER_FORCE_CLOSE));
         logger.warn(PROPERTY_BREAKER_SLEEP_WINDOW + ":" + getProperty(PROPERTY_BREAKER_SLEEP_WINDOW));
+        logger.warn(PROPERTY_QCLOUD_IP_PORT+getProperty(PROPERTY_QCLOUD_IP_PORT));
     }
 }
