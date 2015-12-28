@@ -1077,7 +1077,6 @@ public class OperateTimesServiceImpl implements OperateTimesService {
             if (redisUtils.checkKeyIsExist(cacheKey)) {
                 //校验请求次数是否超限制
                 if (checkTimesByKey(cacheKey, DateAndNumTimesConstant.SMSLOGIN_CAPTCHA_LIMIT)) {
-                    recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
                     return true;
                 } else {
                     //记录请求sms code的次数
