@@ -41,7 +41,7 @@ public class LoginConstant {
     /**
      * 短信登录，失败1次，需要输入验证码
      */
-    public static final int MESSAGE_LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT = 2;
+    public static final int MESSAGE_LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT = 1;
 
 
     /**
