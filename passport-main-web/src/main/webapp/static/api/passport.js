@@ -8,5 +8,5 @@
     if (undefined !== window.__sogoujsStartLoading) {
         window.__sogoujsStartLoading = +new Date;
     }
-    document.write('<script type="text/javascript" src="'+ passhref +'/api/sogou.js?t=2015122534"></script>');
+    document.write('<script type="text/javascript" src="'+ passhref +'/api/sogou.js?t=2016010439"></script>');
 })();

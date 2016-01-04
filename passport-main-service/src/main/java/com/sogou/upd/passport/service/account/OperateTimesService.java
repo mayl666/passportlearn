@@ -412,5 +412,13 @@ public interface OperateTimesService {
      *
      * @param mobile
      */
+
     public void incGetSmsCodeTimes(final String mobile, final int clientId);
+    /**
+     * 手机短验登录，判断是否需要出现图片验证码
+     * @param mobile
+     * @param clientId
+     * @return
+     */
+    public boolean checkSMSnNeedCaptcha(final String mobile, final int clientId);
 }
