@@ -67,8 +67,8 @@
           p:connectionFactory-ref="cacheConnectionFactory"/>
     <bean id="cacheConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <!--<property name="hostName" value="${passport.redis.url}"/>-->
-        <!--<property name="port" value="${passport.redis.port}"/>-->
+        <property name="hostName" value="${passport.redis.url}"/>
+        <property name="port" value="${passport.redis.port}"/>
         <constructor-arg index="0" ref="cachePoolConfig"/>
     </bean>
     <bean id="cachePoolConfig" class="redis.clients.jedis.JedisPoolConfig">
@@ -115,8 +115,8 @@
           p:connectionFactory-ref="tokenConnectionFactory"/>
     <bean id="tokenConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <!--<property name="hostName" value="${passport.tokenRedis.url}"/>-->
-        <!--<property name="port" value="${passport.tokenRedis.port}"/>-->
+        <property name="hostName" value="${passport.tokenRedis.url}"/>
+        <property name="port" value="${passport.tokenRedis.port}"/>
         <constructor-arg index="0" ref="tokenPoolConfig"/>
     </bean>
     <bean id="tokenPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
@@ -132,15 +132,15 @@
     </bean>
 
     <!--热切换redis-->
-    <bean id="monitor" class="com.sogou.upd.passport.zk.Monitor" destroy-method="destory">
-        <constructor-arg name="zks" value="${zks}"/>
-    </bean>
-    <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">
-        <constructor-arg name="monitor" ref="monitor"/>
-        <constructor-arg name="cachePath" value="${cacheRedisZkPath}"/>
-        <constructor-arg name="tokenPath" value="${tokenRedisZkPath}"/>
-        <constructor-arg name="tokenConnectionFactory" ref="tokenConnectionFactory"/>
-        <constructor-arg name="cacheConnectionFactory" ref="cacheConnectionFactory"/>
-    </bean>
+    <!--<bean id="monitor" class="com.sogou.upd.passport.zk.Monitor" destroy-method="destory">-->
+        <!--<constructor-arg name="zks" value="${zks}"/>-->
+    <!--</bean>-->
+    <!--<bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">-->
+        <!--<constructor-arg name="monitor" ref="monitor"/>-->
+        <!--<constructor-arg name="cachePath" value="${cacheRedisZkPath}"/>-->
+        <!--<constructor-arg name="tokenPath" value="${tokenRedisZkPath}"/>-->
+        <!--<constructor-arg name="tokenConnectionFactory" ref="tokenConnectionFactory"/>-->
+        <!--<constructor-arg name="cacheConnectionFactory" ref="cacheConnectionFactory"/>-->
+    <!--</bean>-->
 
 </beans>
