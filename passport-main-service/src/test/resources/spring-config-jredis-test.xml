@@ -32,28 +32,28 @@
     </bean>
 
     <bean id="jedisShardInfo_1" class="redis.clients.jedis.JedisShardInfo">
-        <constructor-arg index="0" value="10.146.200.127"/>
-        <constructor-arg index="1" value="6369" type="int"/>
+        <constructor-arg index="0" value="a.redis.sogou"/>
+        <constructor-arg index="1" value="1606" type="int"/>
     </bean>
     <bean id="jedisShardInfo_2" class="redis.clients.jedis.JedisShardInfo">
-        <constructor-arg index="0" value="10.146.200.127"/>
-        <constructor-arg index="1" value="6379" type="int"/>
+        <constructor-arg index="0" value="a.redis.sogou"/>
+        <constructor-arg index="1" value="1607" type="int"/>
     </bean>
     <bean id="jedisShardInfo_3" class="redis.clients.jedis.JedisShardInfo">
-        <constructor-arg index="0" value="10.146.200.127"/>
-        <constructor-arg index="1" value="6389" type="int"/>
+        <constructor-arg index="0" value="a.redis.sogou"/>
+        <constructor-arg index="1" value="1608" type="int"/>
     </bean>
     <bean id="jedisShardInfo_4" class="redis.clients.jedis.JedisShardInfo">
-        <constructor-arg index="0" value="10.146.200.127"/>
-        <constructor-arg index="1" value="6399" type="int"/>
+        <constructor-arg index="0" value="a.redis.sogou"/>
+        <constructor-arg index="1" value="1609" type="int"/>
     </bean>
     <bean id="jedisShardInfo_5" class="redis.clients.jedis.JedisShardInfo">
-        <constructor-arg index="0" value="10.146.24.128"/>
-        <constructor-arg index="1" value="6389" type="int"/>
+        <constructor-arg index="0" value="a.redis.sogou"/>
+        <constructor-arg index="1" value="1610" type="int"/>
     </bean>
     <bean id="jedisShardInfo_6" class="redis.clients.jedis.JedisShardInfo">
-        <constructor-arg index="0" value="10.146.24.129"/>
-        <constructor-arg index="1" value="6399" type="int"/>
+        <constructor-arg index="0" value="a.redis.sogou"/>
+        <constructor-arg index="1" value="1611" type="int"/>
     </bean>
     <bean id="jedisShardInfo_204" class="redis.clients.jedis.JedisShardInfo">
         <constructor-arg index="0" value="a.redis.sogou-op.org"/>

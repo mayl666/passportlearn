@@ -19,7 +19,7 @@ import java.util.Map;
  * Date: 13-10-31
  * Time: 下午11:14
  */
-@Component
+//@Component
 public class RedisMonitor {
 
     private static final Logger log = LoggerFactory.getLogger(RedisMonitor.class);
