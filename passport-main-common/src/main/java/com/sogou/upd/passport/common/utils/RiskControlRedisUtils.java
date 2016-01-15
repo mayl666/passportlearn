@@ -45,7 +45,7 @@ public class RiskControlRedisUtils {
     public Map<String, String> hGetAll(String cacheKey) {
         try {
             BoundHashOperations boundHashOperations = redisTemplate.boundHashOps(cacheKey);
-            Map<String, Object> res = boundHashOperations.entries();
+            Map<String, String> res = boundHashOperations.entries();
             if (MapUtils.isEmpty(res)) {
                 redisMissLogger.info("hGetAll cache miss, key:" + cacheKey);
             }
