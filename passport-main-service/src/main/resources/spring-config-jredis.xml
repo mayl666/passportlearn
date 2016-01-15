@@ -143,4 +143,28 @@
         <!--<constructor-arg name="cacheConnectionFactory" ref="cacheConnectionFactory"/>-->
     <!--</bean>-->
 
+    <!-- riskcontrol redis utils-->
+    <bean id="riskControlRedisUtils" class="com.sogou.upd.passport.common.utils.RiskControlRedisUtils">
+        <property name="redisTemplate" ref="riskRedisTemplate"/>
+    </bean>
+    <bean id="riskRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
+          p:connectionFactory-ref="riskRedisConnectionFactory"/>
+    <bean id="riskRedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:usePool="true">
+        <property name="hostName" value="${passport.riskRedis.url}"/>
+        <property name="port" value="${passport.riskRedis.port}"/>
+        <constructor-arg index="0" ref="riskRedisPoolConfig"/>
+    </bean>
+    <bean id="riskRedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="1600"/>
+        <property name="maxIdle" value="400"/>
+        <property name="minIdle" value="400"/>
+        <property name="maxWaitMillis" value="1000"/>
+        <property name="testOnBorrow" value="false"/>
+        <!--30分钟跑一次idle object eviction线程-->
+        <property name="timeBetweenEvictionRunsMillis" value="180000" />
+        <!-- 解决java.net.SocketTimeoutException: connect timed out-->
+        <property name="lifo" value="false" />
+    </bean>
+
 </beans>

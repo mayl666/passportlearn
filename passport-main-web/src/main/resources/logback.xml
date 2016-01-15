@@ -246,6 +246,22 @@
         <appender-ref ref="tokenRedisMissAppender"/>
     </logger>
 
+
+    <!--风控redisMiss-->
+    <appender name="riskRedisMissAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/riskRedisMiss/riskRedisMiss.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>14</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d %msg %n</pattern>
+        </encoder>
+    </appender>
+    <logger name="riskRedisMissLogger" level="info" additivity="false">
+        <appender-ref ref="riskRedisMissAppender"/>
+    </logger>
+
+
     <!--start:httpClient性能log-->
     <appender name="httpclientFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

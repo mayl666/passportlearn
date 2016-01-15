@@ -1,20 +1,15 @@
 package com.sogou.upd.passport.web.inteceptor;
 
 import com.google.common.base.Strings;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
-import com.sogou.upd.passport.common.MongodbConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
-import com.sogou.upd.passport.common.mongodb.util.MongoServerUtil;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.IpLocationUtil;
-import com.sogou.upd.passport.common.utils.JodaTimeUtil;
-import com.sogou.upd.passport.common.utils.RedisUtils;
+import com.sogou.upd.passport.common.utils.*;
+import com.sogou.upd.passport.common.validation.constraints.RiskControlConstant;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.annotation.RiskControlSecurity;
@@ -31,6 +26,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -51,8 +47,11 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
     private static final String DENY_CACHE_HIT = "1";
     private static final String DENY_SET_CACHE = "0";
 
+//    @Autowired
+//    public MongoServerUtil mongoServerUtil;
+
     @Autowired
-    public MongoServerUtil mongoServerUtil;
+    public RiskControlRedisUtils riskControlRedisUtils;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -89,22 +88,27 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
 
                 String key = buildDenyIpKey(ip);
                 String cacheValue = redisUtils.get(key);
+                String riskIpkey = buildRiskIpKey(ip);
+                String sharedExportIpKey = buildSharedExportIpKey(ip);
                 if (Strings.isNullOrEmpty(cacheValue)) {
-                    BasicDBObject basicDBObject = new BasicDBObject();
-                    basicDBObject.put(MongodbConstant.IP, ip);
-                    DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION, basicDBObject);
-                    if (null != resultObject) {
-                        String regional = String.valueOf(resultObject.get(MongodbConstant.REGIONAL));
-                        String endTimeStr = String.valueOf(resultObject.get(MongodbConstant.DENY_END_TIME));
+//                    BasicDBObject basicDBObject = new BasicDBObject();
+//                    basicDBObject.put(MongodbConstant.IP, ip);
+//                    DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION, basicDBObject);
+                    Map<String, Object> riskIpData = riskControlRedisUtils.hGetAll(riskIpkey);
+                    if (null != riskIpData) {
+                        String regional = String.valueOf(riskIpData.get(RiskControlConstant.REGIONAL));
+                        String endTimeStr = String.valueOf(riskIpData.get(RiskControlConstant.DENY_END_TIME));
                         if (!Strings.isNullOrEmpty(endTimeStr) && !Strings.isNullOrEmpty(regional)) {
                             //共用出口IP 标记
                             boolean isSharedIp = false;
                             //国内、国外IP 标记
                             boolean isForeignIp = true;
-                            if (MongodbConstant.CHINA_IP.equalsIgnoreCase(regional)) {
+                            if (RiskControlConstant.CHINA_IP.equalsIgnoreCase(regional)) {
                                 isForeignIp = false;
-                                DBObject dbObject = mongoServerUtil.findOne(MongodbConstant.IP_SHARED_EXPORT_DATABASE, basicDBObject);
-                                if (null != dbObject) {
+//                                DBObject dbObject = mongoServerUtil.findOne(MongodbConstant.IP_SHARED_EXPORT_DATABASE, basicDBObject);
+                                Map<String, Object> sharedIpExportData = riskControlRedisUtils.hGetAll(sharedExportIpKey);
+
+                                if (null != sharedIpExportData) {
                                     isSharedIp = true;
                                 }
                             }
@@ -114,7 +118,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                                 DateTime denyEndTime = JodaTimeUtil.parseToDateTime(endTimeStr, JodaTimeUtil.SECOND);
                                 DateTime nowDateTime = new DateTime();
                                 if (denyEndTime.isAfter(nowDateTime)) {
-                                    String message = buildDenyLogMessage(nowDateTime.toDate(), resultObject);
+                                    String message = buildDenyLogMessage(nowDateTime.toDate(), riskIpData);
                                     fileLog.warn(message);
                                     result.setCode(ErrorUtil.ERROR_CODE_RISK_CONTROL_DENY_IP);
 
@@ -185,14 +189,36 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
     private static String buildDenyLogMessage(Date date, DBObject dbObject) {
         StringBuffer msg = new StringBuffer();
         msg.append(JodaTimeUtil.format(date, JodaTimeUtil.SECOND)).append(LOG_JOINER_STR);
-        msg.append(dbObject.get(MongodbConstant.IP)).append(LOG_JOINER_STR);
-        msg.append(dbObject.get(MongodbConstant.REGIONAL)).append(LOG_JOINER_STR);
-        msg.append(dbObject.get(MongodbConstant.COUNTRY)).append(LOG_JOINER_STR);
-        msg.append(dbObject.get(MongodbConstant.SUBVISION)).append(LOG_JOINER_STR);
-        msg.append(dbObject.get(MongodbConstant.CITY)).append(LOG_JOINER_STR);
-        msg.append(dbObject.get(MongodbConstant.DENY_START_TIME)).append(LOG_JOINER_STR);
-        msg.append(dbObject.get(MongodbConstant.DENY_END_TIME)).append(LOG_JOINER_STR);
-        msg.append(dbObject.get(MongodbConstant.RATE)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(RiskControlConstant.IP)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(RiskControlConstant.REGIONAL)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(RiskControlConstant.COUNTRY)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(RiskControlConstant.SUBVISION)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(RiskControlConstant.CITY)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(RiskControlConstant.DENY_START_TIME)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(RiskControlConstant.DENY_END_TIME)).append(LOG_JOINER_STR);
+        msg.append(dbObject.get(RiskControlConstant.RATE)).append(LOG_JOINER_STR);
+        msg.append(DENY_SET_CACHE);
+        return msg.toString();
+    }
+
+    /**
+     * 封装封禁日志信息:mongo 切换成redis
+     *
+     * @param date
+     * @param mapData
+     * @return
+     */
+    private static String buildDenyLogMessage(Date date, Map mapData) {
+        StringBuffer msg = new StringBuffer();
+        msg.append(JodaTimeUtil.format(date, JodaTimeUtil.SECOND)).append(LOG_JOINER_STR);
+        msg.append(mapData.get(RiskControlConstant.IP)).append(LOG_JOINER_STR);
+        msg.append(mapData.get(RiskControlConstant.REGIONAL)).append(LOG_JOINER_STR);
+        msg.append(mapData.get(RiskControlConstant.COUNTRY)).append(LOG_JOINER_STR);
+        msg.append(mapData.get(RiskControlConstant.SUBVISION)).append(LOG_JOINER_STR);
+        msg.append(mapData.get(RiskControlConstant.CITY)).append(LOG_JOINER_STR);
+        msg.append(mapData.get(RiskControlConstant.DENY_START_TIME)).append(LOG_JOINER_STR);
+        msg.append(mapData.get(RiskControlConstant.DENY_END_TIME)).append(LOG_JOINER_STR);
+        msg.append(mapData.get(RiskControlConstant.RATE)).append(LOG_JOINER_STR);
         msg.append(DENY_SET_CACHE);
         return msg.toString();
     }
@@ -232,4 +258,25 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
     private static String buildDenyIpKey(String ip) {
         return CacheConstant.CACHE_PREFIX_DENY_IP + ip;
     }
+
+    /**
+     * 查询风险ip的key，由mongodb切换成redis
+     *
+     * @param ip
+     * @return
+     */
+    private static String buildRiskIpKey(String ip) {
+        return CacheConstant.CACHE_PREFIX_RISK_IP + ip;
+    }
+
+    /**
+     * 查询国内出口ip的key，由mongodb切换成redis
+     *
+     * @param ip
+     * @return
+     */
+    private static String buildSharedExportIpKey(String ip) {
+        return CacheConstant.CACHE_PREFIX_SHARDED_EXIPORT + ip;
+    }
+
 }
