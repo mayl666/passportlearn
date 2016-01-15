@@ -94,10 +94,10 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
 //                    BasicDBObject basicDBObject = new BasicDBObject();
 //                    basicDBObject.put(MongodbConstant.IP, ip);
 //                    DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION, basicDBObject);
-                    Map<String, Object> riskIpData = riskControlRedisUtils.hGetAll(riskIpkey);
+                    Map<String, String> riskIpData = riskControlRedisUtils.hGetAll(riskIpkey);
                     if (null != riskIpData) {
-                        String regional = String.valueOf(riskIpData.get(RiskControlConstant.REGIONAL));
-                        String endTimeStr = String.valueOf(riskIpData.get(RiskControlConstant.DENY_END_TIME));
+                        String regional = riskIpData.get(RiskControlConstant.REGIONAL);
+                        String endTimeStr = riskIpData.get(RiskControlConstant.DENY_END_TIME);
                         if (!Strings.isNullOrEmpty(endTimeStr) && !Strings.isNullOrEmpty(regional)) {
                             //共用出口IP 标记
                             boolean isSharedIp = false;
@@ -106,7 +106,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                             if (RiskControlConstant.CHINA_IP.equalsIgnoreCase(regional)) {
                                 isForeignIp = false;
 //                                DBObject dbObject = mongoServerUtil.findOne(MongodbConstant.IP_SHARED_EXPORT_DATABASE, basicDBObject);
-                                Map<String, Object> sharedIpExportData = riskControlRedisUtils.hGetAll(sharedExportIpKey);
+                                Map<String, String> sharedIpExportData = riskControlRedisUtils.hGetAll(sharedExportIpKey);
 
                                 if (null != sharedIpExportData) {
                                     isSharedIp = true;

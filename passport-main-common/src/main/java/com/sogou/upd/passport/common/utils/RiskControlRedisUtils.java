@@ -42,7 +42,7 @@ public class RiskControlRedisUtils {
 * 获取hash中所有的映射关系
 */
     @Profiled(el = true, logger = "rediesTimingLogger", tag = "risk_redies_hGetAll", timeThreshold = 10, normalAndSlowSuffixesEnabled = true)
-    public Map<String, Object> hGetAll(String cacheKey) {
+    public Map<String, String> hGetAll(String cacheKey) {
         try {
             BoundHashOperations boundHashOperations = redisTemplate.boundHashOps(cacheKey);
             Map<String, Object> res = boundHashOperations.entries();
