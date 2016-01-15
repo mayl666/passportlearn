@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.inteceptor;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.mongodb.DBObject;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
@@ -95,7 +96,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
 //                    basicDBObject.put(MongodbConstant.IP, ip);
 //                    DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION, basicDBObject);
                     Map<String, String> riskIpData = riskControlRedisUtils.hGetAll(riskIpkey);
-                    if (null != riskIpData) {
+                    if (riskIpData!=null && !riskIpData.isEmpty()) {
                         String regional = riskIpData.get(RiskControlConstant.REGIONAL);
                         String endTimeStr = riskIpData.get(RiskControlConstant.DENY_END_TIME);
                         if (!Strings.isNullOrEmpty(endTimeStr) && !Strings.isNullOrEmpty(regional)) {
@@ -108,7 +109,7 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
 //                                DBObject dbObject = mongoServerUtil.findOne(MongodbConstant.IP_SHARED_EXPORT_DATABASE, basicDBObject);
                                 Map<String, String> sharedIpExportData = riskControlRedisUtils.hGetAll(sharedExportIpKey);
 
-                                if (null != sharedIpExportData) {
+                                if (null != sharedIpExportData && sharedIpExportData.isEmpty()) {
                                     isSharedIp = true;
                                 }
                             }
