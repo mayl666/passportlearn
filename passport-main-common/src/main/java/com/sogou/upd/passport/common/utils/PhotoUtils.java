@@ -106,6 +106,7 @@ public class PhotoUtils {
         HttpResponse response = null;
         try {
             response = httpClient.execute(httpPost);
+            response.getEntity().getContent().close();
         } catch (IOException e) {
             logger.warn("uploadImg ioException:" + e.getMessage(), e);
             return false;
