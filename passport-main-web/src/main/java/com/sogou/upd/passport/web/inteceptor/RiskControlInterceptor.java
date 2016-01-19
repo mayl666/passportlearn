@@ -136,6 +136,8 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
                                 } else {
                                     return true;
                                 }
+                            }else {
+                                return true;
                             }
                         } else {
                             return true;
