@@ -70,6 +70,8 @@ public class RiskControlInterceptor extends HandlerInterceptorAdapter {
         }
         Result result = new APIResultSupport(false);
         String ip = IpLocationUtil.getIp(request);
+        //ip设为国外ip
+        ip="189.63.47.107";
 
         String client_id = ServletRequestUtils.getStringParameter(request, CommonConstant.CLIENT_ID, StringUtils.EMPTY);
         String username = ServletRequestUtils.getStringParameter(request, CommonConstant.USERNAME, StringUtils.EMPTY);
