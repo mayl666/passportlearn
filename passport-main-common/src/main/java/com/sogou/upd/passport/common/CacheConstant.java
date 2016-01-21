@@ -68,7 +68,7 @@ public class CacheConstant {
     //IP网段黑名单
     public static final String CACHE_PREFIX_IP_SUBIPBLACKLIST = "SP.IP:SUBIPBLACKLIST_KEY";
     //检查是否在泄露账号列表中
-    public static final String CACHE_PREFIX_USER_LEAKLIST="SP.PASSPORTID:SOGOULEAKLIST_";
+    public static final String CACHE_PREFIX_USER_LEAKLIST = "SP.PASSPORTID:SOGOULEAKLIST_";
 
     /*================绑定密保限制相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_BINDNUM = "SP.PASSPORTID:BINDNUM_"; // passportId与当日设置密保次数
@@ -143,6 +143,11 @@ public class CacheConstant {
     /*=================风控系统===================================*/
     //封禁IP key 前缀
     public static final String CACHE_PREFIX_DENY_IP = "SP.DENY_IP:IP_";
+    //由mongo切换成redis后，风险IP key前缀
+    public static final String CACHE_PREFIX_RISK_IP = "SP.RISK_IP_HASH_";
+    //由mongo切换成redis后，国内出口IP key前缀
+    public static final String CACHE_PREFIX_SHARDED_EXIPORT = "SP.SHARED_EXPORT_IP_HASH_";
+
 
     /*=================包签名相关缓存常量===================================*/
     public static final String CACHE_PREFIX_PACKAGENAME_PACKAGEINFO = "SP.PACKAGENAME:PACKAGEINFO_";//包名与包签名信息映射
@@ -153,8 +158,8 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_SMS_CODE_LOGIN = "SP.MOBILE:SMS_CODE_LOGIN_";//手机短信登录，mobile与sms code 映射
     public static final String CACHE_PREFIX_SMS_CODE_GET_NUM = "SP.MOBILE:SMS_CODE_GET_NUM_";//手机短信登录，请求短信校验码次数,5次/天
     public static final String CACHE_PREFIX_SMS_CODE_CHECK_FAIL_NUM = "SP.MOBILE:SMS_CODE_CHECK_FAIL_NUM_"; //手机短信登录，尝试短信校验码次数，10次/天
-    public static final String CACHE_PREFIX_SMS_CODE_LOGIN_NUM="SP.MOBILE:SMS_CODE_LOGINNUM_HASH_";//手机短信登录，登录次数
-    public static final String CACHE_PREFIX_SMSLOGIN_CAPTCHA_LIMIT="SP.MOBILE:SMSLOGIN_CAPTCHA_LIMIT_";//手机短验登录每天超过2次就出现图片验证码
+    public static final String CACHE_PREFIX_SMS_CODE_LOGIN_NUM = "SP.MOBILE:SMS_CODE_LOGINNUM_HASH_";//手机短信登录，登录次数
+    public static final String CACHE_PREFIX_SMSLOGIN_CAPTCHA_LIMIT = "SP.MOBILE:SMSLOGIN_CAPTCHA_LIMIT_";//手机短验登录每天超过2次就出现图片验证码
 
 
 }

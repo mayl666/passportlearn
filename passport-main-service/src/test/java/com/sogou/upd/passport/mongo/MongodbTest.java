@@ -6,6 +6,7 @@ import com.mongodb.DBObject;
 import com.sogou.upd.passport.BaseTest;
 import com.sogou.upd.passport.common.MongodbConstant;
 import com.sogou.upd.passport.common.mongodb.util.MongoServerUtil;
+import com.sogou.upd.passport.common.validation.constraints.RiskControlConstant;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,11 +29,11 @@ public class MongodbTest extends BaseTest {
         String ip = "127.0.0.1";
 
         BasicDBObject basicDBObject = new BasicDBObject();
-        basicDBObject.put(MongodbConstant.IP, ip);
+        basicDBObject.put(RiskControlConstant.IP, ip);
         DBObject resultObject = mongoServerUtil.findOne(MongodbConstant.RISK_CONTROL_COLLECTION, basicDBObject);
         if (null != resultObject) {
-            String regional = String.valueOf(resultObject.get(MongodbConstant.REGIONAL));
-            String endTimeStr = String.valueOf(resultObject.get(MongodbConstant.DENY_END_TIME));
+            String regional = String.valueOf(resultObject.get(RiskControlConstant.REGIONAL));
+            String endTimeStr = String.valueOf(resultObject.get(RiskControlConstant.DENY_END_TIME));
             if (!Strings.isNullOrEmpty(endTimeStr) && !Strings.isNullOrEmpty(regional)) {
                 System.out.println("denyEndTime :" + endTimeStr);
             }
