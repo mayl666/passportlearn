@@ -18,7 +18,7 @@ import java.util.Map;
  * Date: 14-11-6
  * Time: 下午7:43
  */
-@Component
+//@Component
 public class DBZkSwitchMonitor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DBZkSwitchMonitor.class);

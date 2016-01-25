@@ -112,12 +112,12 @@
     <!--<constructor-arg name="zks" value="10.136.24.136:2181"/>-->
     <!--</bean>-->
 
-    <bean id="dbZkWitchMonitor" class="com.sogou.upd.passport.zk.DBZkSwitchMonitor" destroy-method="destroy">
-    <constructor-arg name="dbMonitor" ref="dbMonitor"/>
-    <constructor-arg name="dataSourceZkPath" value="/sogou_passport/datasource/properties"/>
-    <constructor-arg name="masterDataSource" ref="masterDataSource"/>
-    <constructor-arg name="slaveDataSource" ref="slaveDataSource"/>
-    </bean>
+    <!--<bean id="dbZkWitchMonitor" class="com.sogou.upd.passport.zk.DBZkSwitchMonitor" destroy-method="destroy">-->
+    <!--<constructor-arg name="dbMonitor" ref="dbMonitor"/>-->
+    <!--<constructor-arg name="dataSourceZkPath" value="/sogou_passport/datasource/properties"/>-->
+    <!--<constructor-arg name="masterDataSource" ref="masterDataSource"/>-->
+    <!--<constructor-arg name="slaveDataSource" ref="slaveDataSource"/>-->
+    <!--</bean>-->
 
     <bean id="jade.dataSourceFactory" class="net.paoding.rose.jade.dataaccess.datasource.MasterSlaveDataSourceFactory">
         <constructor-arg type="javax.sql.DataSource" ref="masterDataSource"/>
