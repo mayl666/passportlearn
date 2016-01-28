@@ -98,6 +98,20 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     }
 
     @Override
+    public boolean deleteSmsCache(String mobile, AccountModuleEnum module) throws ServiceException {
+        boolean flag = true;
+        try {
+            String cacheKey = buildCacheKeyForSmsCode(mobile, module);
+            redisUtils.delete(cacheKey);
+        } catch (Exception e) {
+            flag = false;
+            logger.error("[SMS] service method deleteSmsCache error.{}", e);
+            new ServiceException(e);
+        }
+        return flag;
+    }
+
+    @Override
     public Result sendSmsCode(String mobile, int clientId, AccountModuleEnum module) throws ServiceException {
         Result result = new APIResultSupport(false);
         try {
@@ -241,7 +255,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
             }
 
             //清除验证码的缓存
-            deleteSmsCache(mobile, clientId);
+            deleteSmsCache(mobile, module);
             result.setSuccess(true);
 //            result.setMessage("短信随机码验证成功！");
             return result;

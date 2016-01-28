@@ -3,12 +3,9 @@ package com.sogou.upd.passport.common.utils;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.lang.math.JVMRandom;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -16,8 +13,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +31,6 @@ public class PhotoUtils {
     private static final HttpClient httpClient = SGHttpClient.httpClient;
 
     private String storageEngineURL;
-    private int timeout = 5000;               // timeout毫秒数
     final private String appid = "100140008";
     private List<String> listCDN = null;
 
@@ -111,6 +105,7 @@ public class PhotoUtils {
             logger.warn("uploadImg ioException:" + e.getMessage(), e);
             return false;
         }
+
         int statusCode = response.getStatusLine().getStatusCode();
         if (HttpStatus.SC_OK != statusCode) {
             logger.error(response.getStatusLine().toString());
@@ -218,15 +213,7 @@ public class PhotoUtils {
         this.storageEngineURL = storageEngineURL;
     }
 
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
-
     public String getStorageEngineURL() {
         return storageEngineURL;
-    }
-
-    public int getTimeout() {
-        return timeout;
     }
 }

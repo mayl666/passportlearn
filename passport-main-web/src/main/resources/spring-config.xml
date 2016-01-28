@@ -81,6 +81,11 @@
             <bean class="com.sogou.upd.passport.web.inteceptor.RiskControlInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>
+            <mvc:mapping path="/api/**"/>
+            <!-- 响应预编码  -->
+            <bean class="com.sogou.upd.passport.web.inteceptor.PreEncodeInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
             <mvc:mapping path="/internal/**"/>
             <!-- 内部接口code和ct校验 -->
             <bean class="com.sogou.upd.passport.web.inteceptor.InterfaceSecurityInteceptor"/>
@@ -110,7 +115,13 @@
         </property>
     </bean>
 
+
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="webBindingInitializer">
+            <bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+                <property name="conversionService" ref="conversionService" />
+            </bean>
+        </property>
         <property name="messageConverters">
             <list>
                 <ref bean="stringHttpMessageConverter"/>
@@ -118,6 +129,7 @@
             </list>
         </property>
     </bean>
+    <bean id="conversionService" class="org.springframework.format.support.DefaultFormattingConversionService"/>
 
     <!--metrics监控初始化-->
     <bean id="metrics" class="com.codahale.metrics.MetricRegistry"/>

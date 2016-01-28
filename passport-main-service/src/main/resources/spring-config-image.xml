@@ -7,7 +7,6 @@
 
     <bean id="photoUtils" class="com.sogou.upd.passport.common.utils.PhotoUtils" init-method="init">
         <property name="storageEngineURL" value="${img.storage.url}"/>
-        <property name="timeout" value="5000"/>
     </bean>
 
 </beans>

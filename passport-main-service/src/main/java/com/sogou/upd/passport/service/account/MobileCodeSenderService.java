@@ -32,6 +32,14 @@ public interface MobileCodeSenderService {
     public boolean deleteSmsCache(final String mobile, final int clientId);
 
     /**
+     * 校验完成后清除sms缓存信息
+     * @param mobile
+     * @param module
+     * @return
+     */
+    public boolean deleteSmsCache(final String mobile, final AccountModuleEnum module);
+
+    /**
      * 发送短信验证码
      *
      * @param mobile
