@@ -220,7 +220,18 @@ public class ErrorUtil {
     public static final String ERR_CODE_USER_ID_EXIST = "20294";
     // 今日绑定次数已超过10次
     public static final String ERR_CODE_ACCOUNTSECURE_BINDNUM_LIMITED = "20295";
-
+    // 当前密保手机错误
+    public static final String ERR_CODE_ACCOUNTSECURE_CHECKPHONE_FAILED = "40296";
+    // 解绑密保邮件失败
+    public static final String ERR_CODE_ACCOUNTSECURE_UNBINDEMAIL_FAILED = "40297";
+    // 解绑邮箱申请链接失效
+    public static final String ERR_CODE_ACCOUNTSECURE_UNBINDEMAIL_URL_FAILED = "40298";
+    // 不能使用密码验证
+    public static final String ERR_CODE_ACCOUNTSECURE_VERIFYPASSWORD_NOTALLOWED = "40299";
+    // 生成安全码失败
+    public static final String ERR_CODE_ACCOUNTSECURE_GENERATE_SCODE_FAILED = "40300";
+    // 安全码无效
+    public static final String ERR_CODE_ACCOUNTSECURE_VERIFY_SCODE_FAILED = "40301";
 
     /* ============================================================================ */
     /*  profile 服务的错误代码                                                       */
