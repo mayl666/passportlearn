@@ -17,7 +17,9 @@ public enum SSOScanAccountType {
     BAIDU(5, "baidu", "百度"),
     WEIXIN(6, "weixin", "微信"),
     HUAWEI(7, "huawei", "华为"),
-    XIAOMI(8,"xiaomi","XIAOMI");
+    XIAOMI(8,"xiaomi","XIAOMI"),
+    FACEBOOK(9,"facebook","facebook"),
+    LINE(10,"line","line");
 
     private int value;
     private String enDescription;
@@ -73,6 +75,14 @@ public enum SSOScanAccountType {
 
             if(accountType==AccountTypeEnum.XIAOMI){
                 return XIAOMI.getZhDescription();
+            }
+
+            if(accountType==AccountTypeEnum.FACEBOOK){
+                return FACEBOOK.getZhDescription();
+            }
+
+            if(accountType==AccountTypeEnum.LINE){
+                return LINE.getZhDescription();
             }
 
             return UNKNOWN.getZhDescription();

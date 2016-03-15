@@ -30,6 +30,9 @@ public class AfterAuthParams {
     private Integer appid_type; //如果appidtype=1，则根据应用传入的client_id查询相关的第三方appid；如果appidtype=0，则使用sogou passport的appid；
     private String third_appid; //如果应用使用独立appid，需要传入不同第三方对应的appid； 如果不传，表示使用passport的appid；
     private String uniqname; //华为账号登陆时会传入uniqanme，服务端存储
+    private String large_avatar;//facebook、line账号登录时会传入，服务端存储
+    private String mid_avatar;//facebook、line账号登录时会传入，服务端存储
+    private String small_avatar;//facebook、line账号登录时会传入，服务端存储
 
     private String type= "wap"; //wap表示手机app使用第三方SSO登录，返回sgid； token表示桌面客户端拿到第三方openid、accesstoken来登录，返回token；
 
@@ -135,5 +138,29 @@ public class AfterAuthParams {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getLarge_avatar() {
+        return large_avatar;
+    }
+
+    public void setLarge_avatar(String large_avatar) {
+        this.large_avatar = large_avatar;
+    }
+
+    public String getMid_avatar() {
+        return mid_avatar;
+    }
+
+    public void setMid_avatar(String mid_avatar) {
+        this.mid_avatar = mid_avatar;
+    }
+
+    public String getSmall_avatar() {
+        return small_avatar;
+    }
+
+    public void setSmall_avatar(String small_avatar) {
+        this.small_avatar = small_avatar;
     }
 }
