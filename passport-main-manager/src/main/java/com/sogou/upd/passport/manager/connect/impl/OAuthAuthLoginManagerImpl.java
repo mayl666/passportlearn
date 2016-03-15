@@ -409,7 +409,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     if(AccountTypeEnum.FACEBOOK.getValue()==provider || AccountTypeEnum.LINE.getValue()==provider){
                         connectUserInfoVO.setAvatarLarge(authParams.getLarge_avatar());
                         connectUserInfoVO.setAvatarMiddle(authParams.getMid_avatar());
-                        connectUserInfoVO.setAvatarSmall(authParams.getSmall_avatar());
+                        connectUserInfoVO.setAvatarSmall(authParams.getTiny_avatar());
                     }
                 } else {
                     if (qqManagerCooperate(type, provider)) {    // QQ管家和输入法合作，传入openkey(也就是accesstoken）来登录，使用开平API，不能使用互联API，openkey有效期为2小时

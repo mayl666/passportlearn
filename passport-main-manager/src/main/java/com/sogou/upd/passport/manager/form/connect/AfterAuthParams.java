@@ -32,7 +32,7 @@ public class AfterAuthParams {
     private String uniqname; //华为账号登陆时会传入uniqanme，服务端存储
     private String large_avatar;//facebook、line账号登录时会传入，服务端存储
     private String mid_avatar;//facebook、line账号登录时会传入，服务端存储
-    private String small_avatar;//facebook、line账号登录时会传入，服务端存储
+    private String tiny_avatar;//facebook、line账号登录时会传入，服务端存储
 
     private String type= "wap"; //wap表示手机app使用第三方SSO登录，返回sgid； token表示桌面客户端拿到第三方openid、accesstoken来登录，返回token；
 
@@ -156,11 +156,11 @@ public class AfterAuthParams {
         this.mid_avatar = mid_avatar;
     }
 
-    public String getSmall_avatar() {
-        return small_avatar;
+    public String getTiny_avatar() {
+        return tiny_avatar;
     }
 
-    public void setSmall_avatar(String small_avatar) {
-        this.small_avatar = small_avatar;
+    public void setTiny_avatar(String tiny_avatar) {
+        this.tiny_avatar = tiny_avatar;
     }
 }
