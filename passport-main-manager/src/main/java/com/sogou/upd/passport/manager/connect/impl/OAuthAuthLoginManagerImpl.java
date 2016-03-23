@@ -379,7 +379,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     return result;
                 }
                 OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-                if (oAuthConsumer == null && AccountTypeEnum.HUAWEI.getValue() != provider) {   //华为账号不用取oAuthConsumer
+                if (oAuthConsumer == null && !isSpetialProvider(provider)) {   //华为,facebook,line账号不用取oAuthConsumer
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                     return result;
                 }
@@ -402,9 +402,15 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 //2.获取第三方个人资料
                 OAuthTokenVO oAuthTokenVO = new OAuthTokenVO();
                 ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
-                if (AccountTypeEnum.HUAWEI.getValue() == provider) {  //华为账号只有昵称，且由SDK传入
+                if (isSpetialProvider(provider)) {  //华为账号只有昵称，且由SDK传入
                     String uniqname = authParams.getUniqname();
                     connectUserInfoVO.setNickname(uniqname);
+                    //facebook和line账号还要设置头像
+                    if(AccountTypeEnum.FACEBOOK.getValue()==provider || AccountTypeEnum.LINE.getValue()==provider){
+                        connectUserInfoVO.setAvatarLarge(authParams.getLarge_avatar());
+                        connectUserInfoVO.setAvatarMiddle(authParams.getMid_avatar());
+                        connectUserInfoVO.setAvatarSmall(authParams.getTiny_avatar());
+                    }
                 } else {
                     if (qqManagerCooperate(type, provider)) {    // QQ管家和输入法合作，传入openkey(也就是accesstoken）来登录，使用开平API，不能使用互联API，openkey有效期为2小时
                         connectUserInfoVO = qqOpenAPIManager.getQQUserInfo(openId, accessToken, connectConfig);
@@ -782,6 +788,20 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
 
     private boolean qqManagerCooperate(String type, int provider) {
         return ConnectTypeEnum.TOKEN.toString().equals(type) && AccountTypeEnum.QQ.getValue() == provider;
+    }
+
+    /**
+     * 特殊的第三方，不走完整的oauth：华为，facebook,line
+     * 客户端登录时将用户信息传到服务端，服务端存储，不与第三方交互
+     * @param provider
+     * @return
+     */
+    private boolean isSpetialProvider(int provider){
+        if(AccountTypeEnum.HUAWEI.getValue() == provider || AccountTypeEnum.FACEBOOK.getValue() == provider
+                ||AccountTypeEnum.LINE.getValue() == provider){
+            return true;
+        }
+        return false;
     }
 
 }
