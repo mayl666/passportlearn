@@ -14,7 +14,7 @@
         <property name="jdbcUrl">
             <!--<value>jdbc:mysql://passport01.upd.mysql.db:3306/sogou_passport?characterEncoding=utf-8</value>-->
             <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
-            <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
+            <value>jdbc:mysql://10.142.81.130:3306/sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
             <value>sogou_passport</value>
@@ -63,7 +63,7 @@
         <property name="jdbcUrl">
             <!--<value>jdbc:mysql://passport01.lvs.upd.mysql.db:3306/sogou_passport?characterEncoding=utf-8</value>-->
             <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
-            <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
+            <value>jdbc:mysql://10.142.81.130:3306/sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
             <value>sogou_passport</value>
