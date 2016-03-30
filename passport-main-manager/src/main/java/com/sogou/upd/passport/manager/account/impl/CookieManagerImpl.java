@@ -12,8 +12,10 @@ import com.sogou.upd.passport.common.math.RSAEncoder;
 import com.sogou.upd.passport.common.parameter.ConnectDomainEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.*;
-import com.sogou.upd.passport.manager.ManagerHelper;
+import com.sogou.upd.passport.common.utils.DateUtil;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.common.utils.ToolUUIDUtil;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
@@ -78,12 +80,12 @@ public class CookieManagerImpl implements CookieManager {
 
     @Autowired
     private CommonManager commonManager;
-    @Autowired
-    private LoginApiManager proxyLoginApiManager;
+    //    @Autowired
+//    private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginApiManager sgLoginApiManager;
-    @Autowired
-    private RedisUtils redisUtils;
+//    @Autowired
+//    private RedisUtils redisUtils;
 
     @Override
     public Result setCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int maxAge) {
@@ -189,30 +191,30 @@ public class CookieManagerImpl implements CookieManager {
         //默认为false
         boolean setNewCookie = false;
         try {
-            //目前只有搜狗邮箱仍然采用搜狐的cookie，其余应用均采用搜狗cookie
-            if (CommonConstant.MAIL_CLIENTID != cookieApiParams.getClient_id()) {
-                result = createSGCookie(cookieApiParams);
-                if (result.isSuccess()) {
-                    ppinf = (String) result.getModels().get("ppinf");
-                    pprdig = (String) result.getModels().get("pprdig");
-                }
-            } else {
-                if(ManagerHelper.authUserBySOHUSwitcher()){
-                    result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-                    if (result.isSuccess()) {
-                        ppinf = (String) result.getModels().get("ppinf");
-                        pprdig = (String) result.getModels().get("pprdig");
-                    } else {
-                        result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-                        result.setMessage(ErrorUtil.ERR_CODE_MSG_MAP.get(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED));
-                        return result;
-                    }
-                }else{
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_API_FAILED);
-                    return result;
-                }
-
+            //搜狗邮箱登录已经不再支持，全部走搜狗cookie
+//            if (CommonConstant.MAIL_CLIENTID != cookieApiParams.getClient_id()) {
+            result = createSGCookie(cookieApiParams);
+            if (result.isSuccess()) {
+                ppinf = (String) result.getModels().get("ppinf");
+                pprdig = (String) result.getModels().get("pprdig");
             }
+//            } else {
+//                if(ManagerHelper.authUserBySOHUSwitcher()){
+//                    result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
+//                    if (result.isSuccess()) {
+//                        ppinf = (String) result.getModels().get("ppinf");
+//                        pprdig = (String) result.getModels().get("pprdig");
+//                    } else {
+//                        result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
+//                        result.setMessage(ErrorUtil.ERR_CODE_MSG_MAP.get(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED));
+//                        return result;
+//                    }
+//                }else{
+//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_API_FAILED);
+//                    return result;
+//                }
+//
+//            }
 
             //web端生成cookie后、种下cookie 、桌面端不同
             if (cookieApiParams.getCreateAndSet() == CREATE_COOKIE_AND_SET) {
@@ -258,8 +260,8 @@ public class CookieManagerImpl implements CookieManager {
      * 格式: ver|create_time|expire_time|info|hash|rsa
      * 其中, hash 随便填, 并不使用(但要有), 而 rsa 为 pprdig的值.
      * 存在passport cookie时, 也需要有ppinfo cookie, 值并不使用(但要有)
-     * <p/>
-     * <p/>
+     * <p>
+     * <p>
      * ver=5的 那passport “ver|create_time|expire_time|info” 这些就是按照sginf来生成，hash 可以是随机的字符串 ，
      * rsa是按照sgrdig方式来生成 ，同时 ppinfo 必须要传，可以是随机生成的字符串吧
      *
@@ -517,7 +519,7 @@ public class CookieManagerImpl implements CookieManager {
 
     /**
      * 生成ppinf中的参数value
-     * <p/>
+     * <p>
      * 数据格式：clientid:4:2009|crt:10:1409652043|refnick:27:%E5%8D%90%E9%99%B6%E5%8D%8D|trust:1:1|userid:44:5EED6E92B98534E2B74020F85C875186@qq.sohu.com|uniqname:27:%E5%8D%90%E9%99%B6%E5%8D%8D|
      *
      * @param cookieApiParams
