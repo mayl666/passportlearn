@@ -59,7 +59,7 @@ public class SSOCookieController extends BaseController {
                     return buildJsonpResult(cb, result);
                 }
                 returnErrMsg(response, ssoCookieParams.getRu(), result.getCode(), result.getMessage());
-                return "empty";
+                return "";
             }
             result = cookieManager.setSSOCookie(response, ssoCookieParams);
             // 如果cb参数不为空，则返回jsonp函数，不需要重定向
@@ -68,12 +68,12 @@ public class SSOCookieController extends BaseController {
             }
             if (!result.isSuccess()) {
                 returnErrMsg(response, ru, result.getCode(), result.getMessage());
-                return "empty";
+                return "";
             }
             if (!StringUtils.isBlank(ru)) {
                 response.sendRedirect(ru);
             }
-            return "empty";
+            return "";
         } finally {
             log(request, "sso_setcookie", ru, result.getCode());
         }
