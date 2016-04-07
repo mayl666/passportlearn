@@ -39,7 +39,7 @@ public enum ConnectDomainEnum {
         DOMAIN_LIST.add(PINYIN_CN.toString());
         DOMAIN_LIST.add(TEEMO.toString());
 
-        DOMAIN_SSOCOOKIE_URL_MAP.put(HAO.toString(), "http://account.hao.qq.com/sso/setcookie");
+        DOMAIN_SSOCOOKIE_URL_MAP.put(HAO.toString(), "https://account.hao.qq.com/sso/setcookie");
         DOMAIN_SSOCOOKIE_URL_MAP.put(DAOHANG.toString(), "https://account.daohang.qq.com/sso/setcookie");
         DOMAIN_SSOCOOKIE_URL_MAP.put(SHURUFA.toString(), "http://account.shurufa.qq.com/sso/setcookie");
         DOMAIN_SSOCOOKIE_URL_MAP.put(PINYIN_CN.toString(), "http://account.qq.pinyin.cn/sso/setcookie");
