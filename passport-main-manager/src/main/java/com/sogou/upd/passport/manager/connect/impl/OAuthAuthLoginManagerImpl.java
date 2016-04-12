@@ -392,13 +392,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     accessToken = oAuthTokenVO.getAccessToken();
                     expiresIn = oAuthTokenVO.getExpiresIn();
                     refreshToken = oAuthTokenVO.getRefreshToken();
-                }/* else {
+                } else {
                     //验证code是否有效
                     result = checkCodeIsCorrect(authParams, req);
                     if (!result.isSuccess()) {
                         return result;
                     }
-                }*/
+                }
                 //2.获取第三方个人资料
                 OAuthTokenVO oAuthTokenVO = new OAuthTokenVO();
                 ConnectUserInfoVO connectUserInfoVO = new ConnectUserInfoVO();
