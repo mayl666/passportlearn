@@ -18,6 +18,7 @@ import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.user.*;
+import com.sogou.upd.passport.oauth2.openresource.response.OAuthClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
 import com.sogou.upd.passport.oauth2.openresource.response.user.*;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
@@ -135,6 +136,15 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                     .setAccessToken(accessToken).buildQueryMessage(WeiXinUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, WeiXinUserAPIResponse.class);
         } else if (provider == AccountTypeEnum.SINA.getValue()) {
+            request = SinaUserAPIRequest.apiLocation(oAuthConsumer.getTokenInfo(), SinaUserAPIRequest.SinaUserAPIBuilder.class)
+                    .setAccessToken(accessToken).buildBodyMessage(SinaUserAPIRequest.class);
+            OAuthClientResponse tmpResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, SinaTokenAPIResponse.class);
+            if (!tmpResponse.getParam("uid").equals(openid))
+            {
+                String error_code = ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID;
+                throw OAuthProblemException.error(error_code);
+            }
+
             request = SinaUserAPIRequest.apiLocation(url, SinaUserAPIRequest.SinaUserAPIBuilder.class).setUid(openid)
                     .setAccessToken(accessToken).buildQueryMessage(SinaUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, SinaUserAPIResponse.class);
