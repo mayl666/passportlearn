@@ -52,6 +52,7 @@ public class OAuthConsumerFactory {
         oAuthConsumer.setRefreshAccessTokenUrl(getURL("refreshAccessTokenUrl", providerStr));
         oAuthConsumer.setCallbackUrl(getURL("callbackUrl", providerStr));
         oAuthConsumer.setUserInfo(getURL("userInfo", providerStr));
+        oAuthConsumer.setTokenInfo(getURL("tokenInfo", providerStr));
 
         oAuthConsumer.setWapUserAuthzUrl(getURL("wap_userAuthzUrl", providerStr));
         return oAuthConsumer;
