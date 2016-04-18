@@ -27,7 +27,7 @@ public class ConnectManagerHelper {
      */
     public static String constructRedirectURL(String pCallbackUrl, ConnectLoginRedirectParams redirectParams) {
         try {
-            Map<String, Object> callbackParamMap = Maps.newHashMap();
+            Map<String, Object> callbackParamMap = Maps.newTreeMap();
             String ru = URLEncoder.encode(redirectParams.getRu(), CommonConstant.DEFAULT_CHARSET);
             callbackParamMap.put(CommonConstant.RESPONSE_RU, ru);
             callbackParamMap.put("client_id", redirectParams.getClient_id());
