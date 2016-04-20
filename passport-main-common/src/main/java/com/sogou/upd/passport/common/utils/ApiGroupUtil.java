@@ -36,6 +36,7 @@ public class ApiGroupUtil {
         apiGroupMap.put("/connect/callback/qq", LOGIN);
         apiGroupMap.put("/connect/callback/taobao", LOGIN);
         apiGroupMap.put("/connect/callback/baidu", LOGIN);
+        apiGroupMap.put("/connect/callback/weixin", LOGIN);
         apiGroupMap.put("/connect/sso/afterauth/weixin", LOGIN);
         apiGroupMap.put("/connect/sso/afterauth/sina", LOGIN);
         apiGroupMap.put("/connect/sso/afterauth/qq", LOGIN);
