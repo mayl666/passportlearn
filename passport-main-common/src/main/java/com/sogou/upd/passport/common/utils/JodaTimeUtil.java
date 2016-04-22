@@ -6,7 +6,6 @@ import org.joda.time.Interval;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import scala.Tuple3;
 
 import java.util.Date;
 

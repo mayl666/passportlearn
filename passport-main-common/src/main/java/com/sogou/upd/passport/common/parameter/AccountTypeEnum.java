@@ -28,7 +28,8 @@ public enum AccountTypeEnum {
     MESSAGELOGIN(12),//手机短信登录
     XIAOMI(13),//小米
     FACEBOOK(14),//facebook
-    LINE(15);//line
+    LINE(15),//line
+    SMARTISAN(16);//锤子
 
     // provider数字与字符串映射字典表
     private static BiMap<String, Integer> PROVIDER_MAPPING_DICT = HashBiMap.create();
@@ -49,6 +50,7 @@ public enum AccountTypeEnum {
         PROVIDER_MAPPING_DICT.put("xiaomi",XIAOMI.getValue());
         PROVIDER_MAPPING_DICT.put("facebook",FACEBOOK.getValue());
         PROVIDER_MAPPING_DICT.put("line",LINE.getValue());
+        PROVIDER_MAPPING_DICT.put("smartisan",SMARTISAN.getValue());
     }
 
     private int value;
@@ -137,6 +139,10 @@ public enum AccountTypeEnum {
         }
         if(username.endsWith("line.sohu.com")){
             return LINE;
+        }
+
+        if(username.endsWith("smartisan.sohu.com")){
+            return SMARTISAN;
         }
 
         return UNKNOWN;

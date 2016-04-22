@@ -140,7 +140,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             }
 
             //定制微信二维码大小样式
-            String href=connectLoginParams.getHref();
+            String href = connectLoginParams.getHref();
             OAuthAuthzClientRequest.AuthenticationRequestBuilder builder = OAuthAuthzClientRequest
                     .authorizationLocation(oAuthConsumer.getWebUserAuthzUrl()).setAppKey(appKey, provider)
                     .setRedirectURI(redirectURL)
@@ -379,7 +379,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     return result;
                 }
                 OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-                if (oAuthConsumer == null && !isSpetialProvider(provider)) {   //华为,facebook,line账号不用取oAuthConsumer
+                if (oAuthConsumer == null && !isSpetialProvider(provider)) {   //华为,facebook,line,smartisan账号不用取oAuthConsumer
                     result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
                     return result;
                 }
@@ -405,8 +405,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 if (isSpetialProvider(provider)) {  //华为账号只有昵称，且由SDK传入
                     String uniqname = authParams.getUniqname();
                     connectUserInfoVO.setNickname(uniqname);
-                    //facebook和line账号还要设置头像
-                    if(AccountTypeEnum.FACEBOOK.getValue()==provider || AccountTypeEnum.LINE.getValue()==provider){
+                    //搜狗输入法海外及OEM还要设置头像
+                    if (isSGOEMProvider(provider)) {
                         connectUserInfoVO.setAvatarLarge(authParams.getLarge_avatar());
                         connectUserInfoVO.setAvatarMiddle(authParams.getMid_avatar());
                         connectUserInfoVO.setAvatarSmall(authParams.getTiny_avatar());
@@ -793,12 +793,26 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     /**
      * 特殊的第三方，不走完整的oauth：华为，facebook,line
      * 客户端登录时将用户信息传到服务端，服务端存储，不与第三方交互
+     *
      * @param provider
      * @return
      */
-    private boolean isSpetialProvider(int provider){
-        if(AccountTypeEnum.HUAWEI.getValue() == provider || AccountTypeEnum.FACEBOOK.getValue() == provider
-                ||AccountTypeEnum.LINE.getValue() == provider){
+    private boolean isSpetialProvider(int provider) {
+        if (AccountTypeEnum.HUAWEI.getValue() == provider || AccountTypeEnum.FACEBOOK.getValue() == provider
+                || AccountTypeEnum.LINE.getValue() == provider || AccountTypeEnum.SMARTISAN.getValue() == provider) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     *搜狗输入法海外及OEM版本特殊provider
+     * 需要设置头像等用户信息
+     * @param provider
+     * @return
+     */
+    private boolean isSGOEMProvider(int provider) {
+        if (AccountTypeEnum.FACEBOOK.getValue() == provider || AccountTypeEnum.LINE.getValue() == provider || AccountTypeEnum.SMARTISAN.getValue() == provider) {
             return true;
         }
         return false;

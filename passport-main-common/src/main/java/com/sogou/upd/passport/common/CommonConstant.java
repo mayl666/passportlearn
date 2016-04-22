@@ -158,6 +158,7 @@ public class CommonConstant {
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.XIAOMI.toString());
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.FACEBOOK.toString());
         SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.LINE.toString());
+        SUPPORT_PROVIDER_LIST.add(AccountTypeEnum.SMARTISAN.toString());
     }
 
 }
