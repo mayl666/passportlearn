@@ -4,6 +4,8 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -41,6 +43,8 @@ public interface ConnectConfigService {
      * @throws ServiceException
      */
     public ConnectConfig queryConnectConfigByClientId(int clientId, int provider) throws ServiceException;
+
+    public List<ConnectConfig> ListConnectConfigByClientId(int clientId) throws ServiceException;
 
     /**
      * 更新ConnectConfig
