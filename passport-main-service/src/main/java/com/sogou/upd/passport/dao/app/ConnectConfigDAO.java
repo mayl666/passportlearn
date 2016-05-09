@@ -6,6 +6,8 @@ import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
 import org.springframework.dao.DataAccessException;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: shipengzhi
@@ -42,6 +44,14 @@ public interface ConnectConfigDAO {
             TABLE_NAME +
             " where client_id=:client_id and provider=:provider")
     public ConnectConfig getConnectConfigByClientIdAndProvider(@SQLParam("client_id") int client_id, @SQLParam("provider") int provider) throws
+            DataAccessException;
+
+    @SQL("select " +
+            ALL_FIELD +
+            " from " +
+            TABLE_NAME +
+            " where client_id=:client_id")
+    public List<ConnectConfig> listConnectConfigByClientId(@SQLParam("client_id") int client_id) throws
             DataAccessException;
 
     @SQL("select " +

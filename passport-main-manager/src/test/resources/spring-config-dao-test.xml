@@ -14,13 +14,13 @@
         <property name="jdbcUrl">
             <!--<value>jdbc:mysql://passport01.upd.mysql.db:3306/sogou_passport?characterEncoding=utf-8</value>-->
             <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
-            <value>jdbc:mysql://10.142.81.130:3306/sogou_passport?characterEncoding=utf-8</value>
+            <value>jdbc:mysql://j01.ci.zw.ted:3306/sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
             <value>sogou_passport</value>
         </property>
         <property name="password">
-            <value>sogou_passport</value>
+            <value>714a878b7c0f801eb9676d</value>
         </property>
         <property name="driverClass">
             <value>c3p0</value>
@@ -63,13 +63,13 @@
         <property name="jdbcUrl">
             <!--<value>jdbc:mysql://passport01.lvs.upd.mysql.db:3306/sogou_passport?characterEncoding=utf-8</value>-->
             <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
-            <value>jdbc:mysql://10.142.81.130:3306/sogou_passport?characterEncoding=utf-8</value>
+            <value>jdbc:mysql://j01.ci.zw.ted:3306/sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
             <value>sogou_passport</value>
         </property>
         <property name="password">
-            <value>sogou_passport</value>
+            <value>714a878b7c0f801eb9676d</value>
         </property>
         <property name="driverClass">
             <value>c3p0</value>

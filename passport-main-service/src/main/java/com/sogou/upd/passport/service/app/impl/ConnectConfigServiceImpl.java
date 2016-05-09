@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -154,6 +155,15 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
             throw new ServiceException(e);
         }
         return connectConfig;
+    }
+
+    @Override
+    public List<ConnectConfig> ListConnectConfigByClientId(int clientId) throws ServiceException {
+        try {
+            return connectConfigDAO.listConnectConfigByClientId(clientId);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override
