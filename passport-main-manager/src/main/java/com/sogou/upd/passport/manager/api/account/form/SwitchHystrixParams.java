@@ -3,6 +3,8 @@ package com.sogou.upd.passport.manager.api.account.form;
 import com.sogou.upd.passport.manager.api.BaseApiParams;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Min;
+
 /**
  * Created with IntelliJ IDEA.
  * User: nahongxu
@@ -10,7 +12,13 @@ import org.hibernate.validator.constraints.NotBlank;
  * Time: 下午3:59
  * To change this template use File | Settings | File Templates.
  */
-public class SwitchHystrixParams extends BaseApiParams {
+public class SwitchHystrixParams  {
+
+    @Min(0)
+    protected int client_id; //应用id
+
+    @Min(0)
+    protected long ct; //单位为毫秒
 
     @NotBlank(message = "userid不能为空")
     protected String userid;
@@ -64,5 +72,21 @@ public class SwitchHystrixParams extends BaseApiParams {
 
     public void setQcloudIpPort(String qcloudIpPort) {
         this.qcloudIpPort = qcloudIpPort;
+    }
+
+    public int getClient_id() {
+        return client_id;
+    }
+
+    public void setClient_id(int client_id) {
+        this.client_id = client_id;
+    }
+
+    public long getCt() {
+        return ct;
+    }
+
+    public void setCt(long ct) {
+        this.ct = ct;
     }
 }

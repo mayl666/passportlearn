@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 public class SwitchHystrix extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger("hystrixLogger");
 
-    @InterfaceSecurity
+//    @InterfaceSecurity
     @RequestMapping(value = "/hystrix/switch", method = RequestMethod.POST)
     @ResponseBody
     public String switchHystrix(HttpServletRequest request, HttpServletResponse response, SwitchHystrixParams params) {
