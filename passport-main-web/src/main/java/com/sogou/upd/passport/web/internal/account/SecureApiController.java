@@ -3,17 +3,19 @@ package com.sogou.upd.passport.web.internal.account;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.SecureManager;
-import com.sogou.upd.passport.manager.api.account.form.BaseResetPwdApiParams;
-import com.sogou.upd.passport.manager.api.account.form.ModuleBlackListParams;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
+import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
-import com.sogou.upd.passport.manager.moduleblacklist.ModuleBlackListManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -48,9 +50,10 @@ public class SecureApiController extends BaseController {
     private SecureManager secureManager;
     @Autowired
     private ConfigureManager configureManager;
-
     @Autowired
-    private ModuleBlackListManager moduleBlackListManager;
+    private SessionServerManager sessionServerManager;
+    @Autowired
+    private RegisterApiManager registerApiManager;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -106,6 +109,105 @@ public class SecureApiController extends BaseController {
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(params.getMobile(), String.valueOf(clientId), result.getCode(), ip);
             userOperationLog.putOtherMessage("lists", lists);
+            userOperationLog.putOtherMessage("result", result.toString());
+            UserOperationLogUtil.log(userOperationLog);
+        }
+    }
+
+    @RequestMapping(value = "/sendsms", method = RequestMethod.GET)
+    @ResponseBody
+    @InterfaceSecurity
+    public Object sendSmsNewMobile(HttpServletRequest request, SendSmsApiParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        int clientId = params.getClient_id();
+        String sgid = params.getSgid();
+        String mobile = params.getMobile();
+        String ip = params.getCreateip();
+        String passportId = "UNKNOWN";
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+
+            result = sessionServerManager.getPassportIdBySgid(sgid, ip);
+            if (!result.isSuccess()) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
+                return result.toString();
+            }
+
+            passportId = (String)result.getModels().get("passport_id");
+
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+            if (domain == AccountDomainEnum.PHONE) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
+                return result;
+            }
+
+            if (domain == AccountDomainEnum.THIRD) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
+                return result;
+            }
+            //双读，检查新手机是否允许绑定
+            result = registerApiManager.checkUser(mobile, clientId, false);
+            if (!result.isSuccess()) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
+                result.setMessage("手机号已绑定其他账号");
+                return result.toString();
+            }
+            result = secureManager.sendMobileCode(mobile, clientId, AccountModuleEnum.SECURE);
+            return result.toString();
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, String.valueOf(clientId), result.getCode(), ip);
+            userOperationLog.putOtherMessage("mobile", mobile);
+            userOperationLog.putOtherMessage("sgid", sgid);
+            userOperationLog.putOtherMessage("result", result.toString());
+            UserOperationLogUtil.log(userOperationLog);
+        }
+    }
+
+    /**
+     * 绑定密保手机
+     */
+    @RequestMapping(value = "/bindmobile", method = RequestMethod.POST)
+    @ResponseBody
+    @InterfaceSecurity
+    public String bindmobile(HttpServletRequest request, BindMobileApiParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        int clientId = params.getClient_id();
+        String sgid = params.getSgid();
+        String mobile = params.getMobile();
+        String ip = params.getCreateip();
+        String passportId = "UNKNOWN";
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+
+            result = sessionServerManager.getPassportIdBySgid(sgid, ip);
+            if (!result.isSuccess()) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
+                return result.toString();
+            }
+
+            passportId = (String)result.getModels().get("passport_id");
+
+            result = secureManager.bindMobileByPassportId(passportId, clientId, mobile, params.getSmscode(), params.getPassword(), false, ip);
+            return result.toString();
+        } catch (Exception e) {
+            log.error("bind mobile fail!", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result.toString();
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, String.valueOf(clientId), result.getCode(), ip);
+            userOperationLog.putOtherMessage("mobile", mobile);
+            userOperationLog.putOtherMessage("sgid", sgid);
             userOperationLog.putOtherMessage("result", result.toString());
             UserOperationLogUtil.log(userOperationLog);
         }

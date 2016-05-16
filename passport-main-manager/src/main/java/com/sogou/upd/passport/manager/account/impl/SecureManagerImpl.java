@@ -522,7 +522,7 @@ public class SecureManagerImpl implements SecureManager {
 
     @Override
     public Result bindMobileByPassportId(String passportId, int clientId, String newMobile,
-                                         String smsCode, String password, String modifyIp) throws Exception {
+                                         String smsCode, String password, boolean needMD5, String modifyIp) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             Result smsCodeAndSecureResult = checkBindMobileSmsCodeAndSecure(passportId, clientId, newMobile, smsCode, modifyIp);
@@ -533,7 +533,12 @@ public class SecureManagerImpl implements SecureManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKPWDFAIL_LIMIT);
                 return result;
             }
-            result = accountService.verifyUserPwdVaild(passportId, password, true, SohuPasswordType.TEXT);
+            if (needMD5) {
+                result = accountService.verifyUserPwdVaild(passportId, password, true, SohuPasswordType.TEXT);
+            }
+            else {
+                result = accountService.verifyUserPwdVaild(passportId, password, false, SohuPasswordType.MD5);
+            }
             if (!result.isSuccess()) {
                 operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.SECURE);
                 return result;
@@ -561,6 +566,12 @@ public class SecureManagerImpl implements SecureManager {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             return result;
         }
+    }
+
+    @Override
+    public Result bindMobileByPassportId(String passportId, int clientId, String newMobile,
+                                         String smsCode, String password, String modifyIp) throws Exception {
+        return bindMobileByPassportId(passportId, clientId, newMobile, smsCode, password, true, modifyIp);
     }
 
     private Result checkBindMobileSmsCodeAndSecure(String passportId, int clientId, String newMobile, String smsCode, String modifyIp) {
