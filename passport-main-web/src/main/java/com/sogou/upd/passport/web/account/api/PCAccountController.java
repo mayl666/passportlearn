@@ -248,7 +248,7 @@ public class PCAccountController extends BaseController {
         String ru = authPcTokenParams.getRu();
         String ua = getHeaderUserAgent(request);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            if (!Strings.isNullOrEmpty(ru)) {
+            if (!Strings.isNullOrEmpty(ru)&&!validateResult.contains("域名不正确")) {
                 response.sendRedirect(buildRedirectUrl(ru, 1)); //status=1表示参数错误
                 return;
             }
