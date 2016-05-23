@@ -140,7 +140,8 @@ public class ConnectCallbackController extends BaseConnectController {
                 model.addAttribute(CommonConstant.INSTANCE_ID, redirectParams.getTs());
                 return viewUrl;
             } else {
-                res.sendRedirect(viewUrl + "?errorCode=" + result.getCode() + "&errorMsg=" + Coder.encodeUTF8(result.getMessage()));
+                String errMsg = result.getMessage() == null ? "thirdpart custom error" : result.getMessage();
+                res.sendRedirect(viewUrl + "?errorCode=" + result.getCode() + "&errorMsg=" + Coder.encodeUTF8(errMsg));
                 return "empty";
             }
         }
