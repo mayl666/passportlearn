@@ -25,6 +25,7 @@ import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
 import com.sogou.upd.passport.manager.connect.QQOpenAPIManager;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.manager.form.connect.AfterAuthParams;
+import com.sogou.upd.passport.manager.form.connect.ConnectAfterAuthParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginRedirectParams;
 import com.sogou.upd.passport.model.OAuthConsumer;
@@ -526,6 +527,63 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         } catch (Exception exp) {
             logger.error("handle oauth authroize code system error!", exp);
             result = buildErrorResult(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "handle oauth authroize code system error!");
+        }
+        return result;
+    }
+
+    @Override
+    public Result handleConnectAfterauth(ConnectAfterAuthParams params, String providerStr, String ip) {
+        Result result = new APIResultSupport(false);
+
+        try {
+            String openId = params.getOpenid();
+            String accessToken = params.getAccess_token();
+            String refreshToken = params.getRefresh_token();
+            long expiresIn = params.getExpires_in();
+            int clientId = params.getClient_id();
+            int provider = AccountTypeEnum.getProvider(providerStr);
+            String thirdAppId = params.getThird_appid();
+            if (AccountTypeEnum.isConnect(provider)) {
+                ConnectConfig connectConfig = queryConnectConfig(thirdAppId, null, clientId, provider);
+                if (connectConfig == null) {
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
+                    return result;
+                }
+                OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
+                ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
+                if (connectUserInfoVO == null) {
+                    result.setCode(ErrorUtil.ERR_CODE_CONNECT_GET_USERINFO_ERROR);
+                    return result;
+                }
+                OAuthTokenVO oAuthTokenVO = new OAuthTokenVO();
+                String uniqname = connectUserInfoVO.getNickname();
+                oAuthTokenVO.setAccessToken(accessToken);
+                oAuthTokenVO.setRefreshToken(refreshToken);
+                oAuthTokenVO.setOpenid(openId);
+                oAuthTokenVO.setExpiresIn(expiresIn);
+                oAuthTokenVO.setNickName(uniqname);
+                oAuthTokenVO.setIp(ip);
+                oAuthTokenVO.setConnectUserInfoVO(connectUserInfoVO);
+                oAuthTokenVO.setUnionId(connectUserInfoVO.getUnionid());
+                Result connectAccountResult = sgConnectApiManager.buildConnectAccount(connectConfig.getAppKey(), provider, oAuthTokenVO);
+                if (!connectAccountResult.isSuccess()) {
+                    return connectAccountResult;
+                }
+                ConnectToken connectToken = (ConnectToken) connectAccountResult.getModels().get("connectToken");
+                String passportId = connectToken.getPassportId();
+                result.setDefaultModel("userid", passportId);
+                result.setSuccess(true);
+            }
+            else {
+                result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
+            }
+        } catch (OAuthProblemException ope) {
+            logger.error("handle oauth authroize token error!", ope);
+            result = buildErrorResult(ope.getError(), ope.getDescription());
+        }
+        catch (Exception e) {
+            logger.error("handle afterauth error :", e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;
     }

@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.connect;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.form.connect.AfterAuthParams;
+import com.sogou.upd.passport.manager.form.connect.ConnectAfterAuthParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginRedirectParams;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
@@ -44,5 +45,7 @@ public interface OAuthAuthLoginManager {
      * @return
      */
     public Result handleSSOAfterauth(HttpServletRequest req, AfterAuthParams params, String providerStr, String ip);
+
+    public Result handleConnectAfterauth(ConnectAfterAuthParams params, String providerStr, String ip);
 
 }

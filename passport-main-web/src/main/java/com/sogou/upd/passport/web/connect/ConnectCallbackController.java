@@ -7,15 +7,19 @@ import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.connect.OAuthAuthLoginManager;
+import com.sogou.upd.passport.manager.form.connect.ConnectAfterAuthParams;
 import com.sogou.upd.passport.manager.form.connect.ConnectLoginRedirectParams;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.web.BaseConnectController;
+import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -145,6 +149,55 @@ public class ConnectCallbackController extends BaseConnectController {
                 return "empty";
             }
         }
+    }
+
+    @RequestMapping("/afterauth/{providerStr}")
+    public String handleCallbackRedirect(HttpServletRequest req, HttpServletResponse res,
+                                         @PathVariable("providerStr") String providerStr,
+                                         ConnectAfterAuthParams params) throws IOException {
+        Result result = new APIResultSupport(false);
+        String ru = params.getRu();
+        ru = Strings.isNullOrEmpty(ru) ? CommonConstant.DEFAULT_INDEX_URL : ru;
+        ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            res.sendRedirect(ru  + "?errorCode=" + result.getCode() + "&errorMsg=" + Coder.encodeUTF8(result.getMessage()));
+            return "empty";
+        }
+
+        result = oAuthAuthLoginManager.handleConnectAfterauth(params, providerStr, getIp(req));
+        if (result.isSuccess()) {
+            int clientId = params.getClient_id();
+            String clientIdStr = String.valueOf(clientId);
+            String passportId = (String) result.getModels().get("userid");
+
+            //module 替换
+            CookieApiParams cookieApiParams = new CookieApiParams();
+            cookieApiParams.setUserid(passportId);
+            cookieApiParams.setClient_id(clientId);
+            cookieApiParams.setRu(ru);
+            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+            cookieApiParams.setPersistentcookie(String.valueOf(1));
+            cookieApiParams.setIp(getIp(req));
+            cookieApiParams.setMaxAge((int) DateAndNumTimesConstant.TWO_WEEKS);
+            cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
+            cookieApiParams.setUniqname((String) result.getModels().get("refnick"));
+            cookieApiParams.setRefnick((String) result.getModels().get("refnick"));
+            cookieManager.createCookie(res, cookieApiParams);
+
+            //用户第三方登录log
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, req.getRequestURI(), clientIdStr, result.getCode(), getIp(req));
+            userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(req));
+            userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(req, "YYID"));
+            UserOperationLogUtil.log(userOperationLog);
+
+            res.sendRedirect(ru);
+            return "empty";
+        }
+        res.sendRedirect(ru  + "?errorCode=" + result.getCode() + "&errorMsg=" + Coder.encodeUTF8(result.getMessage()));
+        return "empty";
     }
 
     private ConnectLoginRedirectParams parseRedirectUrl(ConnectLoginRedirectParams redirectParams) {
