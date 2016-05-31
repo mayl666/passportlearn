@@ -1,18 +1,23 @@
 package com.sogou.upd.passport.manager.form.connect;
 
 import com.sogou.upd.passport.common.validation.constraints.Ru;
+import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by xieyilun on 2016/5/25.
  */
 public class ConnectAfterAuthParams {
+    @NotBlank(message = "openid不能为空")
     private String openid;
+    @NotBlank(message = "access_token不能为空")
     private String access_token;
     @Min(0)
     private long expires_in;
+    @NotNull(message = "client_id不允许为空!")
     @Min(0)
     private int client_id;
     @Min(0)
