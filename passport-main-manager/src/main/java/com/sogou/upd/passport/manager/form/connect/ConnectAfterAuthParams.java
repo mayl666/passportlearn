@@ -18,8 +18,7 @@ public class ConnectAfterAuthParams {
     @Min(0)
     private long expires_in;
     @NotNull(message = "client_id不允许为空!")
-    @Min(0)
-    private int client_id;
+    private Integer client_id;
     @Min(0)
     private String refresh_token;
     private String type= "wap";
@@ -52,11 +51,11 @@ public class ConnectAfterAuthParams {
         this.expires_in = expires_in;
     }
 
-    public int getClient_id() {
+    public Integer getClient_id() {
         return client_id;
     }
 
-    public void setClient_id(int client_id) {
+    public void setClient_id(Integer client_id) {
         this.client_id = client_id;
     }
 
