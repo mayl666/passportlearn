@@ -571,6 +571,22 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 }
                 ConnectToken connectToken = (ConnectToken) connectAccountResult.getModels().get("connectToken");
                 String passportId = connectToken.getPassportId();
+                //写session 数据库
+                if (ConnectTypeEnum.WAP.toString().equals(params.getType())) {
+                    Result sessionResult = sessionServerManager.createSession(passportId);
+                    if (sessionResult.isSuccess()) {
+                        String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+                        if (!Strings.isNullOrEmpty(sgid)) {
+                            result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                            result.setSuccess(true);
+                            result.setMessage("success");
+                            removeParam(result);
+                        } else {
+                            result.setCode(ErrorUtil.ERR_CODE_CREATE_SGID_FAILED);
+                            return result;
+                        }
+                    }
+                }
                 result.setDefaultModel("userid", passportId);
                 result.setSuccess(true);
             }
