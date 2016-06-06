@@ -186,6 +186,8 @@ public class ConnectCallbackController extends BaseConnectController {
             cookieApiParams.setUniqname((String) result.getModels().get("refnick"));
             cookieApiParams.setRefnick((String) result.getModels().get("refnick"));
             cookieManager.createCookie(res, cookieApiParams);
+            String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
+            ServletUtil.setCookie(res, LoginConstant.COOKIE_SGID, sgid, (int) DateAndNumTimesConstant.SIX_MONTH, CommonConstant.SOGOU_ROOT_DOMAIN);
 
             //用户第三方登录log
             UserOperationLog userOperationLog = new UserOperationLog(passportId, req.getRequestURI(), clientIdStr, result.getCode(), getIp(req));
