@@ -589,15 +589,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 }
                 result.setDefaultModel("userid", passportId);
                 result.setSuccess(true);
-            }
-            else {
+            } else {
                 result.setCode(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
             }
         } catch (OAuthProblemException ope) {
             logger.error("handle oauth authroize token error!", ope);
             result = buildErrorResult(ope.getError(), ope.getDescription());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("handle afterauth error :", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
@@ -880,8 +878,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     }
 
     /**
-     *搜狗输入法海外及OEM版本特殊provider
+     * 搜狗输入法海外及OEM版本特殊provider
      * 需要设置头像等用户信息
+     *
      * @param provider
      * @return
      */
