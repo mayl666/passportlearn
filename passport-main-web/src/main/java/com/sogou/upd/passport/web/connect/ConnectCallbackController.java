@@ -65,6 +65,11 @@ public class ConnectCallbackController extends BaseConnectController {
                 return "empty";
             }
         }
+
+        if (AccountTypeEnum.WEIXINMP.getValue() == AccountTypeEnum.getProvider(providerStr)) {
+            providerStr=AccountTypeEnum.getProviderStr(AccountTypeEnum.WEIXIN.getValue());
+        }
+
         String type = redirectParams.getType();
         String clientIdStr = String.valueOf(redirectParams.getClient_id());
         String ua = redirectParams.getUser_agent();
