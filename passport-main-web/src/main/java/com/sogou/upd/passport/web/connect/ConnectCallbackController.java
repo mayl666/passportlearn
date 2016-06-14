@@ -203,7 +203,8 @@ public class ConnectCallbackController extends BaseConnectController {
             res.sendRedirect(ru);
             return "empty";
         }
-        res.sendRedirect(ru  + "?errorCode=" + result.getCode() + "&errorMsg=" + Coder.encodeUTF8(result.getMessage()));
+        String errMsg = result.getMessage() == null ? "thirdpart custom error" : result.getMessage();
+        res.sendRedirect(ru  + "?errorCode=" + result.getCode() + "&errorMsg=" + Coder.encodeUTF8(errMsg));
         return "empty";
     }
 
