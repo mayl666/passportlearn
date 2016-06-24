@@ -142,8 +142,12 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
 
             //定制微信二维码大小样式
             String href = connectLoginParams.getHref();
+
+            String sinaMobileUrl = "https://open.weibo.cn/oauth2/authorize";
+
             OAuthAuthzClientRequest.AuthenticationRequestBuilder builder = OAuthAuthzClientRequest
-                    .authorizationLocation(oAuthConsumer.getWebUserAuthzUrl()).setAppKey(appKey, provider)
+                    .authorizationLocation(isSinaMobile(connectLoginParams.getClient_id(), display, provider)? sinaMobileUrl : oAuthConsumer.getWebUserAuthzUrl())
+                    .setAppKey(appKey, provider)
                     .setRedirectURI(redirectURL)
                     .setResponseType(ResponseTypeEnum.CODE).setScope(scope)
                     .setDisplay(display, provider).setForceLogin(connectLoginParams.isForcelogin(), provider)
@@ -891,4 +895,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         return false;
     }
 
+    private boolean isSinaMobile(String client_id, String display, int provider)
+    {
+        if (!client_id.equals("2021"))
+            return false;
+        return display.equals("mobile") && AccountTypeEnum.SINA.getValue() == provider;
+    }
 }
