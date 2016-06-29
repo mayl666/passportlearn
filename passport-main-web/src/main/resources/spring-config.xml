@@ -81,17 +81,11 @@
             <bean class="com.sogou.upd.passport.web.inteceptor.RiskControlInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>
-            <mvc:mapping path="/api/**"/>
-            <!-- 响应预编码  -->
-            <bean class="com.sogou.upd.passport.web.inteceptor.PreEncodeInterceptor"/>
-        </mvc:interceptor>
-        <mvc:interceptor>
             <mvc:mapping path="/internal/**"/>
             <!-- 内部接口code和ct校验 -->
             <bean class="com.sogou.upd.passport.web.inteceptor.InterfaceSecurityInteceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
-
 
     <bean id="stringHttpMessageConverter"
           class="org.springframework.http.converter.StringHttpMessageConverter">

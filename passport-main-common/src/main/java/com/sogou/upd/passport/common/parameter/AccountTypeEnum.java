@@ -1,6 +1,5 @@
 package com.sogou.upd.passport.common.parameter;
 
-
 import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -63,6 +62,10 @@ public enum AccountTypeEnum {
 
     public int getValue() {
         return value;
+    }
+
+    public static BiMap<String, Integer> getProviderMap() {
+        return HashBiMap.create(PROVIDER_MAPPING_DICT);
     }
 
     public static int getProvider(String providerStr) {

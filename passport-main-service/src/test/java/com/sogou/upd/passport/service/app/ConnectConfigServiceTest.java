@@ -20,16 +20,4 @@ public class ConnectConfigServiceTest extends BaseTest {
 
     @Inject
     private ConnectConfigService connectConfigService;
-
-    @Test
-    public void testModifyConnectConfig() {
-        ConnectConfig connectConfig = new ConnectConfig();
-        connectConfig.setClientId(1001);
-        connectConfig.setProvider(4);
-        connectConfig.setAppKey("3363779877");
-        connectConfig.setAppSecret("201cf182fc60b872bea8da76c8af5b4c");
-        connectConfig.setScope("");
-        boolean success = connectConfigService.modifyConnectConfig(connectConfig);
-        Assert.assertTrue(success);
-    }
 }

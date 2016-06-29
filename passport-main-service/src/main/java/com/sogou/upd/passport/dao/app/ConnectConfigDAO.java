@@ -27,17 +27,6 @@ public interface ConnectConfigDAO {
      */
     String ALL_FIELD = " id, client_id, provider, app_key, app_secret, scope, create_time ";
 
-    /**
-     * 值列表
-     */
-    String VALUE_FIELD = " :connectConfig.id, :connectConfig.clientId, :connectConfig.provider, :connectConfig.appKey, :connectConfig.appSecret, :connectConfig.scope, :connectConfig.createTime ";
-
-    /**
-     * 修改字段列表
-     */
-    String UPDATE_FIELD = " client_id = :connectConfig.clientId, provider = :connectConfig.provider, app_key = :connectConfig.appKey, app_secret = :connectConfig.appSecret, scope = :connectConfig.scope ";
-
-
     @SQL("select " +
             ALL_FIELD +
             " from " +
@@ -46,7 +35,7 @@ public interface ConnectConfigDAO {
     public ConnectConfig getConnectConfigByClientIdAndProvider(@SQLParam("client_id") int client_id, @SQLParam("provider") int provider) throws
             DataAccessException;
 
-    @SQL("select " +
+    @SQL("select" +
             ALL_FIELD +
             " from " +
             TABLE_NAME +
@@ -62,13 +51,42 @@ public interface ConnectConfigDAO {
     public ConnectConfig getConnectConfigByAppIdAndProvider(@SQLParam("app_key") String appId, @SQLParam("provider") int provider) throws
             DataAccessException;
 
+    @SQL("insert into" +
+            TABLE_NAME +
+            "set client_id=:client_id, " +
+            "provider=:provider, " +
+            "app_key=:app_key, " +
+            "app_secret=:app_secret, " +
+            "scope=:scope")
+    public int insertConnectConfig(@SQLParam("client_id") int client_id,
+                                   @SQLParam("provider") int provider,
+                                   @SQLParam("app_key") String app_key,
+                                   @SQLParam("app_secret") String app_secret,
+                                   @SQLParam("scope") String scope) throws DataAccessException;
+
     /**
      * 更新用户状态表
      */
-    @SQL("update " +
+    @SQL("update" +
             TABLE_NAME +
-            " set " +
-            UPDATE_FIELD
-            + "where client_id=:connectConfig.clientId and provider=:connectConfig.provider")
-    public int updateConnectConfig(@SQLParam("connectConfig") ConnectConfig connectConfig) throws DataAccessException;
+            "set scope=:scope " +
+            "where client_id=:client_id " +
+            "and provider=:provider " +
+            "and app_key=:app_key")
+    public int updateConnectConfig(@SQLParam("client_id") int client_id,
+                                   @SQLParam("provider") int provider,
+                                   @SQLParam("app_key") String app_key,
+                                   @SQLParam("scope") String scope) throws DataAccessException;
+
+    /**
+     * 删除配置项
+     */
+    @SQL("delete from" + TABLE_NAME  +
+            "where client_id=:client_id " +
+            "and provider=:provider " +
+            "and app_key=:app_key")
+    public int deleteConnectConfig(@SQLParam("client_id") int client_id,
+                                   @SQLParam("provider") int provider,
+                                   @SQLParam("app_key") String app_key) throws DataAccessException;
+
 }

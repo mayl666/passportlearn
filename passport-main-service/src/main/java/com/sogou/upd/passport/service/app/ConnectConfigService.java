@@ -44,13 +44,45 @@ public interface ConnectConfigService {
      */
     public ConnectConfig queryConnectConfigByClientId(int clientId, int provider) throws ServiceException;
 
-    public List<ConnectConfig> ListConnectConfigByClientId(int clientId) throws ServiceException;
-
     /**
-     * 更新ConnectConfig
-     * @param connectConfig
+     * 获取指定应用的所有connectConfig，仅供passport-roc使用
+     * @param clientId
      * @return
      * @throws ServiceException
      */
-    public boolean modifyConnectConfig(ConnectConfig connectConfig) throws ServiceException;
+    public List<ConnectConfig> ListConnectConfigByClientId(int clientId) throws ServiceException;
+
+    /**
+     * 添加connectConfig，仅供passport-roc使用
+     * @param client_id
+     * @param provider
+     * @param app_key
+     * @param app_secret
+     * @param scope
+     * @return
+     * @throws ServiceException
+     */
+    public boolean insertConnectConfig(int client_id, int provider,
+                                       String app_key, String app_secret, String scope) throws ServiceException;
+
+    /**
+     * 更新ConnectConfig的scope，仅供passport-roc使用
+     * @param client_id
+     * @param provider
+     * @param app_key
+     * @param scope
+     * @return
+     * @throws ServiceException
+     */
+    public boolean updateScope(int client_id, int provider, String app_key, String scope) throws ServiceException;
+
+    /**
+     * 删除connectConfig，仅供passport-roc使用
+     * @param client_id
+     * @param provider
+     * @param app_key
+     * @return
+     * @throws ServiceException
+     */
+    public boolean deleteConnectConfig(int client_id, int provider, String app_key) throws ServiceException;
 }

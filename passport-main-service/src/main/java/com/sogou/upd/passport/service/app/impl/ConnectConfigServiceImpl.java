@@ -44,7 +44,7 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
 
     public ConnectConfigServiceImpl() {
         connectCacheByAppId = CacheBuilder.newBuilder()
-                .refreshAfterWrite(CacheConstant.CACHE_REFRESH_INTERVAL, TimeUnit.MINUTES)
+                .expireAfterWrite(CacheConstant.CACHE_REFRESH_INTERVAL, TimeUnit.MINUTES)
                 .build(new CacheLoader<String, ConnectConfig>() {
                     @Override
                     public ConnectConfig load(String key) throws Exception {
@@ -53,7 +53,7 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
                 });
 
         connectCacheByClientId = CacheBuilder.newBuilder()
-                .refreshAfterWrite(CacheConstant.CACHE_REFRESH_INTERVAL, TimeUnit.MINUTES)
+                .expireAfterWrite(CacheConstant.CACHE_REFRESH_INTERVAL, TimeUnit.MINUTES)
                 .build(new CacheLoader<String, ConnectConfig>() {
                     @Override
                     public ConnectConfig load(String key) throws Exception {
@@ -167,12 +167,45 @@ public class ConnectConfigServiceImpl implements ConnectConfigService {
     }
 
     @Override
-    public boolean modifyConnectConfig(ConnectConfig connectConfig) throws ServiceException {
+    public boolean insertConnectConfig(int client_id, int provider,
+                                       String app_key, String app_secret, String scope) throws ServiceException {
         try {
-            int row = connectConfigDAO.updateConnectConfig(connectConfig);
+            int row = connectConfigDAO.insertConnectConfig(client_id, provider, app_key, app_secret, scope);
             if (row > 0) {
-                String cacheKey = buildConnectConfigCacheKey(connectConfig.getClientId(), connectConfig.getProvider());
-                redisUtils.setWithinSeconds(cacheKey, connectConfig, DateAndNumTimesConstant.ONE_MONTH);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateScope(int client_id, int provider, String app_key, String scope) throws ServiceException {
+        try {
+            int row = connectConfigDAO.updateConnectConfig(client_id, provider, app_key, scope);
+            if (row > 0) {
+                String cacheKey = buildConnectConfigCacheKey(client_id, provider);
+                redisUtils.delete(cacheKey);
+                cacheKey = buildConnectConfigCacheKeyByAppId(app_key, provider);
+                redisUtils.delete(cacheKey);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean deleteConnectConfig(int client_id, int provider, String app_key) throws ServiceException {
+        try {
+            int row = connectConfigDAO.deleteConnectConfig(client_id, provider, app_key);
+            if (row > 0) {
+                String cacheKey = buildConnectConfigCacheKey(client_id, provider);
+                redisUtils.delete(cacheKey);
+                cacheKey = buildConnectConfigCacheKeyByAppId(app_key, provider);
+                redisUtils.delete(cacheKey);
                 return true;
             }
         } catch (Exception e) {
