@@ -9,9 +9,7 @@ import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.SmsCodeLoginManager;
-import com.sogou.upd.passport.manager.account.WapLoginManager;
 import com.sogou.upd.passport.manager.form.WapSmsCodeLoginParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
@@ -99,7 +97,10 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
         try {
-            loginParams.setRu(Coder.decodeUTF8(loginParams.getRu()));
+            if (null != loginParams.getRu()) {
+                loginParams.setRu(Coder.decodeUTF8(loginParams.getRu()));
+            }
+
             //参数验证
             String validateResult = ControllerHelper.validateParams(loginParams);
             if (!Strings.isNullOrEmpty(validateResult)) {
