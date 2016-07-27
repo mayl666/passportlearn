@@ -318,8 +318,17 @@ public class SecureManagerImpl implements SecureManager {
         return result;
     }
 
+    /**
+     * 检查更新密码时的验证码和安全策略
+     * @param passportId
+     * @param clientId
+     * @param token
+     * @param captcha
+     * @param modifyIp
+     * @return
+     */
     private Result checkUpdatePwdCaptchaAndSecure(String passportId, int clientId, String token, String captcha, String modifyIp) {
-        Result result = new APIResultSupport(true);
+        Result result = new APIResultSupport(false);
         try {
             if (!accountService.checkCaptchaCode(token, captcha)) {    //判断验证码
                 logger.debug("[webRegister captchaCode wrong warn]:passportId=" + passportId + ", modifyIp=" + modifyIp + ", token=" + token + ", captchaCode=" + captcha);
@@ -327,15 +336,19 @@ public class SecureManagerImpl implements SecureManager {
                 return result;
             }
 
-            if (operateTimesService.checkIPLimitResetPwd(modifyIp)) {    //检查是否在ip黑名单里
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
-                return result;
+            if (!operateTimesService.checkLoginUserInWhiteList(passportId, modifyIp)) {    // 检查是否在白名单里
+                if (operateTimesService.checkIPLimitResetPwd(modifyIp)) {    //检查是否在ip黑名单里
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST);
+                    return result;
+                }
+
+                if (operateTimesService.checkLimitResetPwd(passportId, clientId)) {   //检查修改密码次数是否超限
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
+                    return result;
+                }
             }
 
-            if (operateTimesService.checkLimitResetPwd(passportId, clientId)) {   //检查修改密码次数是否超限
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_LIMITED);
-                return result;
-            }
+            result.setSuccess(true);
         } catch (ServiceException e) {
             logger.error("UpdatePwd Captcha Or Secure Fail, passportId:" + passportId, e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
