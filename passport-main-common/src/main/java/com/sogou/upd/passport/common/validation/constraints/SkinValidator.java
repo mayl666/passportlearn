@@ -27,6 +27,7 @@ public class SkinValidator implements ConstraintValidator<Skin, String> {
         SUPPORT_SKIN.add(WapConstant.WAP_SKIN_SE);  //手机浏览器APP使用
         SUPPORT_SKIN.add(WapConstant.WAP_SKIN_ORANGE); //输入法的手游H5页面使用
         SUPPORT_SKIN.add(WapConstant.WAP_SKIN_SHENGHUO);//搜索本地生活wap页面定制
+        SUPPORT_SKIN.add(WapConstant.WAP_SKIN_READ);//搜狗阅读wap页面定制
     }
 
     @Override

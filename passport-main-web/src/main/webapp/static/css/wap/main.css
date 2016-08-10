@@ -34,6 +34,10 @@ nav{
     background:#ff6949;
 }
 
+.skin_read nav {
+    background:#ee5048;
+}
+
 .skin_x1 nav{
   background: #39c6f3;
 }
@@ -152,6 +156,17 @@ form{font-size: 14px;color: #333;padding: 0 10px;margin-bottom: 20px;}
 .skin_sh .submit,.skin_sh .submit:active{
     background: #ff6949;
 }
+
+.skin_read input.submit,.skin_read input.submit:active{
+    -webkit-appearance:none;
+    appearance:none;
+    outline:none;
+}
+
+.skin_read .submit,.skin_read .submit:active{
+    background: #ee5048;
+}
+
 
 .skin_orange .submit,.skin_orange .submit:active{
     background: #ff6600;

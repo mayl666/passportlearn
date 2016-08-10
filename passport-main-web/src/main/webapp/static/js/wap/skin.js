@@ -35,6 +35,9 @@ define(['./utils'], function(Utils) {
                 case /shenghuo|sh/i.test(name):
                     name = 'sh';
                     break;
+                case /read|sgread/i.test(name):
+                    name = 'read';
+                    break;
                 default:
                     name = null;
             }
