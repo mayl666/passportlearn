@@ -63,30 +63,30 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             //搜狐账号也在搜狗校验
             result = sgLoginApiManager.webAuthUser(authUserApiParams);
-            if(result.isSuccess()){
-                return result;
-            }
+//            if(result.isSuccess()){
+//                return result;
+//            }
 
-            //搜狐17173继续去搜狐校验
-            if((!result.isSuccess())&&(AccountDomainEnum.SOHU.equals(domain))) {
-                //停止新的搜狐账号登录,若存在，去搜狐校验，若不存在直接返回10009
-                Account account = accountService.queryAccountByPassportId(passportId);
-                if (null == account) {
-                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
-                    return result;
-                }
-
-                String passwordStored=account.getPassword();
-                if(Strings.isNullOrEmpty(passwordStored) && ManagerHelper.authUserBySOHUSwitcher()){
-                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-                    String pwdParam = authUserApiParams.getPassword();
-                    if(result.isSuccess()){
-                        accountService.updatePwd(passportId,account, pwdParam, false);
-                        sohuSpecialLogger.warn(passportId+"\t"+pwdParam);
-                    }
-                }
-
-            }
+            //停止去搜狐校验
+//            if((!result.isSuccess())&&(AccountDomainEnum.SOHU.equals(domain))) {
+//                //停止新的搜狐账号登录,若存在，去搜狐校验，若不存在直接返回10009
+//                Account account = accountService.queryAccountByPassportId(passportId);
+//                if (null == account) {
+//                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
+//                    return result;
+//                }
+//
+//                String passwordStored=account.getPassword();
+//                if(Strings.isNullOrEmpty(passwordStored) && ManagerHelper.authUserBySOHUSwitcher()){
+//                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
+//                    String pwdParam = authUserApiParams.getPassword();
+//                    if(result.isSuccess()){
+//                        accountService.updatePwd(passportId,account, pwdParam, false);
+//                        sohuSpecialLogger.warn(passportId+"\t"+pwdParam);
+//                    }
+//                }
+//
+//            }
 
 
         } catch (Exception e) {
