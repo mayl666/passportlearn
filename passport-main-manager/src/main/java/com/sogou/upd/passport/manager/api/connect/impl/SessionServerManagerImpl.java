@@ -64,6 +64,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
         Result result = new APIResultSupport(false);
 
         String sgid = null;
+        SessionResult sessionResult = null;
         try {
             //创建sgid
             sgid = SessionServerUtil.createSessionSid(passportId);
@@ -86,20 +87,20 @@ public class SessionServerManagerImpl implements SessionServerManager {
 
             String resultRequest = SGHttpClient.executeStr(requestModel);
             if (!Strings.isNullOrEmpty(resultRequest)) {
-                SessionResult sessionResult = jsonMapper.readValue(resultRequest, SessionResult.class);
-                if (result != null) {
-                    if ("0".equals(sessionResult.getStatus())) {
-                        result.setSuccess(true);
-                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
-                        return result;
-                    }
+                sessionResult = jsonMapper.readValue(resultRequest, SessionResult.class);
+                if ("0".equals(sessionResult.getStatus())) {
+                    result.setSuccess(true);
+                    result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                    return result;
                 }
             }
         } catch (Exception e) {
             if (logger.isDebugEnabled()) {
                 logger.debug("createSessionSid " + "passportId:" + passportId + ",sid:" + sgid);
             }
+            logger.error("createSession error! passportId:" + passportId + ",sid:" + sgid + ",sessionResult:" + sessionResult, e);
         }
+        logger.warn("createSession error! passportId:" + passportId + ",sid:" + sgid + ",sessionResult:" + sessionResult);
         result.setCode(ErrorUtil.ERR_CODE_CREATE_SGID_FAILED);
         return result;
     }
