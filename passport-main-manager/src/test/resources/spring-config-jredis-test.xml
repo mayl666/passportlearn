@@ -16,7 +16,7 @@
     </bean>
     <bean id="cacheConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <property name="hostName" value="a.redis.sogou-op.org"/>
+        <property name="hostName" value="a.redis.sogou"/>
         <property name="port" value="1509"/>
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->
@@ -54,11 +54,11 @@
         <!--<constructor-arg index="1" value="6399" type="int"/>-->
     <!--</bean>-->
     <bean id="jedisShardInfo_204" class="redis.clients.jedis.JedisShardInfo">
-        <constructor-arg index="0" value="a.redis.sogou-op.org"/>
+        <constructor-arg index="0" value="a.redis.sogou"/>
         <constructor-arg index="1" value="1509" type="int"/>
     </bean>
     <bean id="jedisShardInfo_205" class="redis.clients.jedis.JedisShardInfo">
-        <constructor-arg index="0" value="a.redis.sogou-op.org"/>
+        <constructor-arg index="0" value="a.redis.sogou"/>
         <constructor-arg index="1" value="1509" type="int"/>
     </bean>
     <bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">
@@ -92,7 +92,7 @@
     </bean>
     <bean id="kvConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <property name="hostName" value="tair.store.z.sogou-op.org"/>
+        <property name="hostName" value="kv.sogou"/>
         <property name="port" value="6379"/>
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->

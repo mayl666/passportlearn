@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>passport-main-service</artifactId>
-    <version>1.1</version>
+    <version>1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>passport-main-service</name>
@@ -132,7 +132,7 @@
         <dependency>
             <artifactId>passport-main-common</artifactId>
             <groupId>sogou-passport</groupId>
-            <version>1.1</version>
+            <version>1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <artifactId>passport-oauth2</artifactId>

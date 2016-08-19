@@ -1,5 +1,7 @@
 package com.sogou.upd.passport.manager.api;
 
+import org.springframework.beans.factory.annotation.Value;
+
 /**
  * User: mayan
  * Date: 13-12-4

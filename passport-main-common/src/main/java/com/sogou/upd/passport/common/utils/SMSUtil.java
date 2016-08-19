@@ -21,7 +21,7 @@ public class SMSUtil {
     public static final
     String
             SMS_PROXY =
-            "http://sms.sogou-op.org/portal/mobile/smsproxy.php";
+            "http://sms.sogou/portal/mobile/smsproxy.php";
 
     public static final long SEND_SMS_INTERVAL = 1000 * 60; // 发送短信验证码的间隔，1分钟只能发1条短信，单位ms
 
