@@ -94,7 +94,7 @@
     </bean>
     <bean id="kvConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <property name="hostName" value="tair.sogou"/>
+        <property name="hostName" value="kv.sogou"/>
         <property name="port" value="6379"/>
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->
