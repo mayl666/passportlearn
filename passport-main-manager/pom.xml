@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>passport-main-manager</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
 
     <name>passport-main-manager</name>
@@ -22,17 +22,17 @@
         <dependency>
             <artifactId>passport-main-service</artifactId>
             <groupId>sogou-passport</groupId>
-            <version>1.2-SNAPSHOT</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <artifactId>passport-main-common</artifactId>
             <groupId>sogou-passport</groupId>
-            <version>1.2-SNAPSHOT</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <artifactId>passport-oauth2</artifactId>
             <groupId>sogou-passport</groupId>
-            <version>1.0</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
