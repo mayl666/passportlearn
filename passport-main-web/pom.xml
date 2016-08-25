@@ -21,19 +21,19 @@
         <dependency>
             <artifactId>passport-main-common</artifactId>
             <groupId>sogou-passport</groupId>
-            <version>1.2-SNAPSHOT</version>
+            <version>1.2</version>
         </dependency>
 
         <dependency>
             <artifactId>passport-main-manager</artifactId>
             <groupId>sogou-passport</groupId>
-            <version>1.1-SNAPSHOT</version>
+            <version>1.2</version>
         </dependency>
 
         <dependency>
             <artifactId>passport-oauth2</artifactId>
             <groupId>sogou-passport</groupId>
-            <version>1.0</version>
+            <version>1.2</version>
         </dependency>
 
     </dependencies>
