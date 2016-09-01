@@ -124,6 +124,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String redirectURL;
             if (AccountTypeEnum.WEIXIN.getValue() == provider) { //微信不能把redirectURL里的参数带到回跳接口，需要通过state存储并获取
                 redirectURL = pCallbackUrl;
+                String ru = URLEncoder.encode(redirectParams.getRu(), CommonConstant.DEFAULT_CHARSET);
+                redirectParams.setRu(ru);
                 redisUtils.set(state, redirectParams, 30, TimeUnit.MINUTES);
             } else {
                 redirectURL = ConnectManagerHelper.constructRedirectURL(pCallbackUrl, redirectParams);
