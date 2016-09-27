@@ -50,6 +50,7 @@ public class WeiXinUserAPIResponse extends UserAPIResponse {
         user.setProvince(getParam(WeiXinOAuth.PROVINCE));
         user.setCity(getParam(WeiXinOAuth.CITY));
         user.setUnionid(getParam(WeiXinOAuth.UNIONID));
+        user.setWeixinOpenId(getParam(WeiXinOAuth.OPENID));
         user.setOriginal(parameters);
         return user;
     }

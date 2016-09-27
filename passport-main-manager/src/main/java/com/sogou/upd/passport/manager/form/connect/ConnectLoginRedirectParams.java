@@ -22,9 +22,11 @@ public class ConnectLoginRedirectParams {
     private String user_agent;   //输入法PC客户端根据ua判断显示不同的错误页面
     private String v;   //浏览器PC客户端根据v判断显示新旧UI样式
     private String third_appid; //应用传递自己的第三方appid
+    private boolean needWeixinOpenId = false; // 需要获取微信 openId
 
     //必须有无参的构造函数，不然servlet报错
     public ConnectLoginRedirectParams() {
+
     }
 
     public ConnectLoginRedirectParams(ConnectLoginParams connectLoginParams, String ip, String userAgent) {
@@ -128,4 +130,13 @@ public class ConnectLoginRedirectParams {
     public void setThird_appid(String third_appid) {
         this.third_appid = third_appid;
     }
+
+    public boolean isNeedWeixinOpenId() {
+        return needWeixinOpenId;
+    }
+
+    public void setNeedWeixinOpenId(boolean needWeixinOpenId) {
+        this.needWeixinOpenId = needWeixinOpenId;
+    }
+
 }

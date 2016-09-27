@@ -23,6 +23,7 @@ public class ConnectUserInfoVO {
     private String city; // 市
     private String region; // 区
     private String unionid; // 用户唯一标识  微信开平用到
+    private String weixinOpenId; // 用户唯一标识  微信开平用到
 
 
     private Map<String, Object> original;//第三方返回的原始json串
@@ -113,5 +114,13 @@ public class ConnectUserInfoVO {
 
     public void setUnionid(String unionid) {
         this.unionid = unionid;
+    }
+
+    public String getWeixinOpenId() {
+        return weixinOpenId;
+    }
+
+    public void setWeixinOpenId(String weixinOpenId) {
+        this.weixinOpenId = weixinOpenId;
     }
 }

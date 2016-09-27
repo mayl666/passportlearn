@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.connect.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
@@ -17,6 +18,8 @@ import com.sogou.upd.passport.manager.api.SessionServerUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
+
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +64,10 @@ public class SessionServerManagerImpl implements SessionServerManager {
 
     @Override
     public Result createSession(String passportId) {
+        return createSession(passportId, null);
+    }
+
+    public Result createSession(String passportId, String weixinOpenId) {
         Result result = new APIResultSupport(false);
 
         String sgid = null;
@@ -73,6 +80,10 @@ public class SessionServerManagerImpl implements SessionServerManager {
 
             Map<String, String> map = Maps.newHashMap();
             map.put("passport_id", passportId);
+            if(StringUtils.isNotBlank(weixinOpenId)) {
+              map.put("weixin_openid", weixinOpenId);
+            }
+
             params.put("user_info", jsonMapper.writeValueAsString(map));
 
             RequestModel requestModel = new RequestModel(SessionServerUrlConstant.CREATE_SESSION);

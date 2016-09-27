@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.connect.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.LoginConstant;
@@ -51,13 +52,13 @@ import com.sogou.upd.passport.service.account.TokenService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -67,6 +68,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created with IntelliJ IDEA.
@@ -296,7 +299,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                     }
                 } else if (ConnectTypeEnum.WAP.toString().equals(type)) {
                     //写session 数据库
-                    result = buildWapResult(result, connectUserInfoVO, userId, passportId, type, ru, thirdInfo, uniqname, v);
+                    result = buildWapResult(result, connectUserInfoVO, userId, passportId, type, ru, thirdInfo, uniqname, v, redirectParams.isNeedWeixinOpenId());
                 } else {
                     result.setSuccess(true);
                     result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
@@ -321,7 +324,17 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     }
 
     private Result buildWapResult(Result result, ConnectUserInfoVO connectUserInfoVO, String userId, String passportId, String type, String ru, String thirdInfo, String uniqname, String v) {
-        Result sessionResult = sessionServerManager.createSession(userId);
+        return buildWapResult(result, connectUserInfoVO, userId, passportId, type, ru, thirdInfo, uniqname, v, false);
+    }
+
+    private Result buildWapResult(Result result, ConnectUserInfoVO connectUserInfoVO, String userId, String passportId, String type, String ru, String thirdInfo, String uniqname, String v, boolean isNeedWeixinOpenId) {
+        Result sessionResult;
+        if(isNeedWeixinOpenId) { // 需要保存微信 openId
+            String weixinOpenId = connectUserInfoVO.getWeixinOpenId();
+            sessionResult = sessionServerManager.createSession(userId, weixinOpenId);
+        } else { // 不需要保存微信 openId
+            sessionResult = sessionServerManager.createSession(userId);
+        }
         if (!sessionResult.isSuccess()) {
             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId, v);
             return result;
