@@ -308,7 +308,7 @@ public class SecureApiController extends BaseController {
      */
     @RequestMapping(value = "/getsecinfo", method = RequestMethod.POST)
     @ResponseBody
-    public Object querySecureInfo(HttpServletRequest request, BaseUserApiParams params) throws Exception {
+    public String querySecureInfo(HttpServletRequest request, BaseUserApiParams params) throws Exception {
         Result result = new APIResultSupport(false);
         //用户输入的账号
         String passportId = params.getUserid();
@@ -318,7 +318,7 @@ public class SecureApiController extends BaseController {
             if (!Strings.isNullOrEmpty(validateResult)) {
                 result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
                 result.setMessage(validateResult);
-                return result;
+                return result.toString();
             }
             
             //默认是sogou.com
@@ -334,25 +334,25 @@ public class SecureApiController extends BaseController {
                 case THIRD:
                 case UNKNOWN:
                     result.setCode(ErrorUtil.INVALID_ACCOUNT);
-                    return result;
+                    return result.toString();
             }
             result.setDefaultModel("userid", passportId);
             boolean checkTimes = resetPwdManager.checkFindPwdTimes(passportId).isSuccess();
             if (!checkTimes) {
                 result.setDefaultModel("userid", passportId);
                 result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
-                return result;
+                return result.toString();
             }
             result = registerApiManager.checkUser(passportId, clientId,true);//允许搜狐账号
             if (result.isSuccess()) {
                 result.setSuccess(false);
                 result.setDefaultModel("userid", passportId);
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
-                return result;
+                return result.toString();
             }
             result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
             if (!result.isSuccess()) {
-                return result;
+                return result.toString();
             }
             AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
             //记录找回密码次数
@@ -393,7 +393,7 @@ public class SecureApiController extends BaseController {
             userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
             UserOperationLogUtil.log(userOperationLog);
         }
-        return result;
+        return result.toString();
     }
     
     /**
