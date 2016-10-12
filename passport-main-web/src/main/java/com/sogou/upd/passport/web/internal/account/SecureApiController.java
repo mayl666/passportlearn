@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -12,14 +13,20 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.BaseResetPwdApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
+import com.sogou.upd.passport.manager.api.account.form.ModuleBlackListParams;
+import com.sogou.upd.passport.manager.api.account.form.SendSmsApiParams;
+import com.sogou.upd.passport.manager.api.account.form.UpdatePswParams;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
@@ -30,10 +37,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
+import static com.sogou.upd.passport.common.parameter.AccountDomainEnum.THIRD;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -278,5 +288,53 @@ public class SecureApiController extends BaseController {
             UserOperationLogUtil.log(userOperationLog);
         }
     }
-
+    
+    /**
+     * 修改密码
+     *
+     * @param updateParams 传入的参数
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/updatepwd", method = RequestMethod.POST)
+    @ResponseBody
+    public Object updatePwd(HttpServletRequest request, UpdatePswParams updateParams)
+      throws Exception {
+        Result result = new APIResultSupport(false);
+    
+        // 参数校验
+        String validateResult = ControllerHelper.validateParams(updateParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+    
+        String passportId = updateParams.getUserid();
+        String clientId = String.valueOf(updateParams.getClient_id());
+        String password = updateParams.getPassword();
+        String newPwd = updateParams.getNewpwd();
+        String ip = updateParams.getIp();
+        
+        try {
+            if(AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                    return result.toString();
+            }
+    
+            UpdatePwdParameters updatePwdParameters = new UpdatePwdParameters();
+            updatePwdParameters.setClient_id(clientId);
+            updatePwdParameters.setPassport_id(passportId);
+            updatePwdParameters.setPassword(password);
+            updatePwdParameters.setNewpwd(newPwd);
+            updatePwdParameters.setIp(ip);
+            
+            result = secureManager.updateWebPwd(updatePwdParameters);
+            return result.toString();
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), clientId, result.getCode(), ip);
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
+        }
+    }
 }
