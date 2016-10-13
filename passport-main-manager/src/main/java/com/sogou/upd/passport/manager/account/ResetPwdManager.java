@@ -32,6 +32,18 @@ public interface ResetPwdManager {
      * @throws Exception
      */
     public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail, String ru, String scode) throws Exception;
+    /**
+     * 重置密码（邮件方式）——1.发送重置密码申请验证邮件
+     *
+     * @param passportId
+     * @param clientId
+     * @param useRegEmail 邮件选择方式，true为注册邮箱，false为绑定邮箱
+     * @param ru          用户传递的ru参数
+     * @param scode       安全码
+     * @param rtp  redirect to passport 是否跳转到 passport
+     * @throws Exception
+     */
+    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail, String ru, String scode, Boolean rtp) throws Exception;
 
     /**
      * 重置密码时发送验证邮件

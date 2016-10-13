@@ -219,7 +219,7 @@ public class ResetPwdAction extends BaseController {
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
-            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false, params.getRu(), params.getScode());
+            result = resetPwdManager.sendEmailResetPwdByPassportId(passportId, clientId, false, params.getRu(), params.getScode(), params.isRtp());
             result.setDefaultModel("scode", commonManager.getSecureCode(passportId, clientId,CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
             result.setDefaultModel("userid", passportId);
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());
@@ -319,7 +319,7 @@ public class ResetPwdAction extends BaseController {
                 result.setMessage(validateResult);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 model.addAttribute("data", result.toString());
-                if(params.isRePassport()) { // 跳转到 passport 页面
+                if(params.isRtp()) { // 跳转到 passport 页面
                     return "/recover/index";
                 } else {
                     return "redirect:" + params.getRu();
@@ -333,7 +333,7 @@ public class ResetPwdAction extends BaseController {
                 result.setDefaultModel("userid", passportId);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 model.addAttribute("data", result.toString());
-                if(params.isRePassport()) { // 跳转到 passport 页面
+                if(params.isRtp()) { // 跳转到 passport 页面
                     return "/recover/reset";
                 } else {
                     return "redirect:" + params.getRu();
@@ -347,7 +347,7 @@ public class ResetPwdAction extends BaseController {
         } finally {
             log(request, params.getUsername(), result.getCode());
         }
-        if(params.isRePassport()) { // 跳转到 passport 页面
+        if(params.isRtp()) { // 跳转到 passport 页面
             return "/recover/index";
         } else {
             return "redirect:" + params.getRu();

@@ -22,7 +22,7 @@ public class BaseWebResetPwdParams extends BaseWebParams {
     protected String ru;
     @NotBlank(message = "安全码不能为空")
     protected String scode;
-    protected boolean rePassport = true; // 是否跳转到 passport 页面
+    protected boolean rtp = true; // redirect to passport 是否跳转到 passport，若否则直接跳回 ru
 
     public String getScode() {
         return scode;
@@ -54,11 +54,11 @@ public class BaseWebResetPwdParams extends BaseWebParams {
         this.ru = ru;
     }
     
-    public boolean isRePassport() {
-        return rePassport;
+    public boolean isRtp() {
+        return rtp;
     }
     
-    public void setRePassport(boolean rePassport) {
-        this.rePassport = rePassport;
+    public void setRtp(boolean rtp) {
+        this.rtp = rtp;
     }
 }
