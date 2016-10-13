@@ -372,7 +372,11 @@ public class ResetPwdAction extends BaseController {
                 result.setMessage(validateResult);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 model.addAttribute("data", result.toString());
-                return "/recover/end";
+                if(params.isRtp()) { // 跳转到 passport 页面
+                  return "/recover/end";
+                } else {
+                  return "redirect:" + params.getRu();
+                }
             }
             String passportId = params.getUsername();
             int clientId = Integer.parseInt(params.getClient_id());
@@ -381,7 +385,11 @@ public class ResetPwdAction extends BaseController {
             if (!result.isSuccess()) {
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 model.addAttribute("data", result.toString());
-                return "/recover/end";
+                if(params.isRtp()) { // 跳转到 passport 页面
+                  return "/recover/end";
+                } else {
+                  return "redirect:" + params.getRu();
+                }
             }
         } catch (Exception e) {
             logger.error("resetPwd Is Failed,Username is " + params.getUsername(), e);
@@ -391,7 +399,11 @@ public class ResetPwdAction extends BaseController {
         result.setCode(ErrorUtil.SUCCESS);
         result = setRuAndClientId(result, params.getRu(), params.getClient_id());
         model.addAttribute("data", result.toString());
-        return "/recover/end";
+        if(params.isRtp()) { // 跳转到 passport 页面
+          return "/recover/end";
+        } else {
+          return "redirect:" + params.getRu();
+        }
     }
 
     /**
