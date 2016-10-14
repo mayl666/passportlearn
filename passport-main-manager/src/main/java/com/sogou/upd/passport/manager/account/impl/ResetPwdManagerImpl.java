@@ -124,6 +124,14 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
     @Override
     public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail, String ru, String scode)
             throws Exception {
+        return sendEmailResetPwdByPassportId(passportId, clientId, useRegEmail, ru, scode, true);
+    }
+    /*
+     * 重置密码（邮件方式）——1.发送重置密码申请验证邮件
+     */
+    @Override
+    public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail, String ru, String scode, Boolean rtp)
+            throws Exception {
         Result result = new APIResultSupport(false);
         try {
             AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
@@ -132,7 +140,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 return result;
             }
             AccountModuleEnum module = AccountModuleEnum.RESETPWD;
-            ActiveEmailDO activeEmailDO = new ActiveEmailDO(passportId, clientId, ru, module, null, false);
+            ActiveEmailDO activeEmailDO = new ActiveEmailDO(passportId, clientId, ru, module, null, false, rtp);
             if (useRegEmail) {
                 // 使用注册邮箱
                 boolean isOtherDomain = (AccountDomainEnum.getAccountDomain(passportId) == AccountDomainEnum.OTHER);

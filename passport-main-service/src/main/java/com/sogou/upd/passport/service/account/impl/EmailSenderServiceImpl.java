@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
@@ -17,6 +18,7 @@ import com.sogou.upd.passport.service.account.EmailSenderService;
 import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import com.sogou.upd.passport.service.account.dataobject.WapActiveEmailDO;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +99,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         String prefix = CommonConstant.DEFAULT_INDEX_URL;
         String passportId = activeEmailDO.getPassportId();
         String ru = Strings.isNullOrEmpty(activeEmailDO.getRu()) ? prefix : activeEmailDO.getRu();
+        Boolean rtp = activeEmailDO.isRtp();
 
         StringBuilder activeUrl = new StringBuilder();
         activeUrl.append(prefix);
@@ -120,6 +123,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
                 activeUrl.append("&skin=" + wapActiveEmailDO.getSkin());
         }
         activeUrl.append("&ru=" + Coder.encodeUTF8(ru));
+        activeUrl.append("&rtp=" + rtp);
         return activeUrl.toString();
     }
 

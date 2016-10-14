@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CacheConstant;
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -10,16 +12,27 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.common.utils.ServletUtil;
+import com.sogou.upd.passport.manager.account.CommonManager;
+import com.sogou.upd.passport.manager.account.ResetPwdManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.BaseResetPwdApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BaseUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.BindMobileApiParams;
+import com.sogou.upd.passport.manager.api.account.form.ModuleBlackListParams;
+import com.sogou.upd.passport.manager.api.account.form.SendSmsApiParams;
+import com.sogou.upd.passport.manager.api.account.form.UpdatePswParams;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.manager.form.UserNamePwdMappingParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
@@ -30,10 +43,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -54,6 +68,10 @@ public class SecureApiController extends BaseController {
     private SessionServerManager sessionServerManager;
     @Autowired
     private RegisterApiManager registerApiManager;
+    @Autowired
+    private CommonManager commonManager;
+    @Autowired
+    private ResetPwdManager resetPwdManager;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -278,5 +296,152 @@ public class SecureApiController extends BaseController {
             UserOperationLogUtil.log(userOperationLog);
         }
     }
-
+    
+    
+    /**
+     * 找回密码时获取用户安全信息
+     * 返回的信息包含密保手机、密保邮箱、及密保问题（找回密码不会用到此返回结果）
+     *
+     * @param params
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getsecinfo", method = RequestMethod.POST)
+    @ResponseBody
+    public String querySecureInfo(HttpServletRequest request, BaseUserApiParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        //用户输入的账号
+        String passportId = params.getUserid();
+        int clientId = params.getClient_id();
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+            
+            //默认是sogou.com
+            AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(passportId);
+            
+            if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
+                passportId = passportId + CommonConstant.SOGOU_SUFFIX;
+            }
+            //查询主账号：@sogou.com/外域/第三方账号返回原样，手机账号返回绑定的主账号，若无主账号则返回手机号+@sohu.com
+            passportId = commonManager.getPassportIdByUsername(passportId);
+            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
+            switch (domain) {
+                case THIRD:
+                case UNKNOWN:
+                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                    return result.toString();
+            }
+            result.setDefaultModel("userid", passportId);
+            boolean checkTimes = resetPwdManager.checkFindPwdTimes(passportId).isSuccess();
+            if (!checkTimes) {
+                result.setDefaultModel("userid", passportId);
+                result.setCode(ErrorUtil.ERR_CODE_FINDPWD_LIMITED);
+                return result.toString();
+            }
+            result = registerApiManager.checkUser(passportId, clientId,true);//允许搜狐账号
+            if (result.isSuccess()) {
+                result.setSuccess(false);
+                result.setDefaultModel("userid", passportId);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                return result.toString();
+            }
+            result = secureManager.queryAccountSecureInfo(passportId, clientId, true);
+            if (!result.isSuccess()) {
+                return result.toString();
+            }
+            AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
+            //记录找回密码次数
+            resetPwdManager.incFindPwdTimes(passportId);
+            
+            // 转换安全信息
+          // 如果用户的密保手机和密保邮箱存在，则返回模糊处理的手机号/密保邮箱及完整手机号/邮箱加密后的md5串
+          if (accountSecureInfoVO != null) {
+            String sec_mobile = (String) result.getModels().get("sec_mobile");
+            String sec_email = (String) result.getModels().get("sec_email");
+            if (AccountDomainEnum.OTHER.equals(domain)) {
+              if (!passportId.equals(sec_email)) { //如果passportId是外域，则注册邮箱是它本身,当注册邮箱和密保邮箱不一样时，才返回注册邮箱
+                result.setDefaultModel("reg_process_email", accountSecureInfoVO.getReg_email());
+                result.setDefaultModel("reg_email_md5", DigestUtils.md5Hex(passportId));
+              }
+            }
+            if (!Strings.isNullOrEmpty(sec_mobile)) {
+              result.setDefaultModel("sec_process_mobile", accountSecureInfoVO.getSec_mobile());
+              result.setDefaultModel("sec_mobile_md5", DigestUtils.md5Hex(sec_mobile.getBytes()));
+              result.getModels().remove("sec_mobile"); //为了账号安全，不返回完整的手机号
+            }
+            if (!Strings.isNullOrEmpty(sec_email)) {
+              result.setDefaultModel("sec_process_email", accountSecureInfoVO.getSec_email());
+              result.setDefaultModel("sec_email_md5", DigestUtils.md5Hex(sec_email.getBytes()));
+              result.getModels().remove("sec_email"); //为了账号安全，不返回完整的密保邮箱
+            }
+          }
+            
+            result.setDefaultModel("scode", commonManager.getSecureCode(passportId, clientId,CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            logger.error("querySecureInfo Is Failed,Username is " + passportId, e);
+        } finally {
+            //用户登录log
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(),
+                                                                     String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID), result.getCode(), getIp(request));
+            userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+            UserOperationLogUtil.log(userOperationLog);
+        }
+        return result.toString();
+    }
+    
+    /**
+     * 修改密码
+     *
+     * @param updateParams 传入的参数
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/updatepwd", method = RequestMethod.POST)
+    @ResponseBody
+    public Object updatePwd(HttpServletRequest request, UpdatePswParams updateParams)
+      throws Exception {
+        Result result = new APIResultSupport(false);
+    
+        // 参数校验
+        String validateResult = ControllerHelper.validateParams(updateParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+    
+        String passportId = updateParams.getUserid();
+        String clientId = String.valueOf(updateParams.getClient_id());
+        String password = updateParams.getPassword();
+        String newPwd = updateParams.getNewpwd();
+        String ip = updateParams.getIp();
+        
+        try {
+            if(AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(passportId))) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                    return result.toString();
+            }
+    
+            UpdatePwdParameters updatePwdParameters = new UpdatePwdParameters();
+            updatePwdParameters.setClient_id(clientId);
+            updatePwdParameters.setPassport_id(passportId);
+            updatePwdParameters.setPassword(password);
+            updatePwdParameters.setNewpwd(newPwd);
+            updatePwdParameters.setIp(ip);
+            
+            result = secureManager.updateWebPwd(updatePwdParameters);
+            return result.toString();
+        } finally {
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), clientId, result.getCode(), ip);
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
+        }
+    }
 }
