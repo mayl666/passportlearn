@@ -5,6 +5,7 @@ import com.sogou.upd.passport.common.model.ActiveEmail;
 import com.sohu.sendcloud.Message;
 import com.sohu.sendcloud.SendCloud;
 import com.sohu.sendcloud.SmtpApiHeader;
+
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;

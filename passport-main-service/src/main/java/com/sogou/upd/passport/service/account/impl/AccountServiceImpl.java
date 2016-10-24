@@ -20,6 +20,7 @@ import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -395,9 +396,14 @@ public class AccountServiceImpl implements AccountService {
         }
         return false;
     }
-
+    
     @Override
     public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException {
+        return sendActiveEmail(username, passpord, clientId, ip, ru, null);
+    }
+    
+    @Override
+    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru, String lang) throws ServiceException {
         boolean flag = true;
         try {
             String token = SecureCodeGenerator.generatorSecureCode(username, clientId);
@@ -423,7 +429,11 @@ public class AccountServiceImpl implements AccountService {
             map.put("activeUrl", activeUrl);
             map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             activeEmail.setMap(map);
-            activeEmail.setTemplateFile("activemail.vm");
+            if(StringUtils.equalsIgnoreCase(lang, "en")) {
+                activeEmail.setTemplateFile("activemail-en.vm");
+            } else {
+                activeEmail.setTemplateFile("activemail.vm");
+            }
             activeEmail.setSubject("激活您的搜狗通行证帐户");
             activeEmail.setCategory("register");
             activeEmail.setToEmail(username);

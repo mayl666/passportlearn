@@ -20,6 +20,9 @@ public class ResendActiveMailParams {
 
     @NotBlank(message = "账号不允许为空!")
     private String username;
+    
+    /** 语言 英文为 en */
+    private String lang;
 
     public String getClient_id() {
         return client_id;
@@ -35,5 +38,13 @@ public class ResendActiveMailParams {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+    
+    public String getLang() {
+        return lang;
+    }
+    
+    public void setLang(String lang) {
+        this.lang = lang;
     }
 }

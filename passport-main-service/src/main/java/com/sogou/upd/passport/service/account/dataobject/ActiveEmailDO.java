@@ -27,6 +27,8 @@ public class ActiveEmailDO {
     
     protected boolean rtp = true; // redirect to passport 是否跳转到 passport，若否则直接跳回 ru
     
+    protected String lang;
+    
     public ActiveEmailDO(String passportId, int clientId, String ru, AccountModuleEnum module, String toEmail, boolean saveEmail) {
         this.passportId = passportId;
         this.clientId = clientId;
@@ -36,8 +38,8 @@ public class ActiveEmailDO {
         this.saveEmail = saveEmail;
     }
     
-    public ActiveEmailDO(String passportId, int clientId, String ru,
-                         AccountModuleEnum module, String toEmail, boolean saveEmail, boolean rtp) {
+    public ActiveEmailDO(String passportId, int clientId, String ru, AccountModuleEnum module,
+                         String toEmail, boolean saveEmail, boolean rtp, String lang) {
         this.passportId = passportId;
         this.clientId = clientId;
         this.ru = ru;
@@ -45,6 +47,7 @@ public class ActiveEmailDO {
         this.toEmail = toEmail;
         this.saveEmail = saveEmail;
         this.rtp = rtp;
+        this.lang = lang;
     }
     
     public String getPrefix() {
@@ -106,5 +109,12 @@ public class ActiveEmailDO {
     public void setRtp(boolean rtp) {
         this.rtp = rtp;
     }
-
+    
+    public String getLang() {
+        return lang;
+    }
+    
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
 }

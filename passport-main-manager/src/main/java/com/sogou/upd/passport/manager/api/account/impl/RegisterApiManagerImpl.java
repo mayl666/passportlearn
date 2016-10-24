@@ -106,7 +106,7 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                     break;
                 case OTHER://外域邮件注册
                     String ru = params.getRu();
-                    boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip, ru);
+                    boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip, ru, params.getLang());
                     if (isSendSuccess) {
                         result.setSuccess(true);
                         result.setMessage("注册成功");

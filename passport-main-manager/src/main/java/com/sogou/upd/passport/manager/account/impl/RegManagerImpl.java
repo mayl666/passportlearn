@@ -305,7 +305,8 @@ public class RegManagerImpl implements RegManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SENDEMAIL_LIMITED);
                 return result;
             }
-            boolean isSendSuccess = accountService.sendActiveEmail(username, null, clientId, null, CommonConstant.EMAIL_REG_VERIFY_URL);
+            boolean isSendSuccess = accountService.sendActiveEmail(username, null, clientId, null,
+                                                                   CommonConstant.EMAIL_REG_VERIFY_URL, resendActiveMailParams.getLang());
             if (isSendSuccess) {
                 if (emailSenderService.incLimitForSendEmail(null, clientId, AccountModuleEnum.REGISTER, username)) {
                     result.setSuccess(true);

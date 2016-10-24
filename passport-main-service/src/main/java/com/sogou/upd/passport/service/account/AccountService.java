@@ -89,6 +89,14 @@ public interface AccountService {
     /**
      * 激活验证邮件
      *
+     * @param lang 邮件语言，空或其他为中文，en为英文
+     * @return Result格式的返回值, 成功或失败，返回提示信息
+     */
+    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru, String lang) throws ServiceException;
+
+    /**
+     * 激活验证邮件
+     *
      * @return
      */
     public boolean activeEmail(String username, String token, int clientId) throws ServiceException;

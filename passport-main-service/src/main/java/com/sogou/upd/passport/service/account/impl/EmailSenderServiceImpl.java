@@ -19,6 +19,7 @@ import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import com.sogou.upd.passport.service.account.dataobject.WapActiveEmailDO;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,14 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             map.put("activeUrl", activeUrl);
             map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             activeEmail.setMap(map);
-            activeEmail.setTemplateFile(module.getDirect() + ".vm");
+            String lang = activeEmailDO.getLang();
+            String templateFile;
+            if(StringUtils.equalsIgnoreCase(lang, "en")) {
+                templateFile = module.getDirect() + "-en.vm";
+            } else {
+                templateFile = module.getDirect() + ".vm";
+            }
+            activeEmail.setTemplateFile(templateFile);
             activeEmail.setSubject(subjects.get(module));
             activeEmail.setCategory(module.getDirect());
             activeEmail.setToEmail(address);
