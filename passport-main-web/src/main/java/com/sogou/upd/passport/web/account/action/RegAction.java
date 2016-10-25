@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -30,6 +31,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import com.sogou.upd.passport.web.account.form.RegUserNameParams;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +41,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.net.URLDecoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URLDecoder;
 
 /**
  * web注册 User: mayan Date: 13-6-7 Time: 下午5:48
@@ -320,20 +323,31 @@ public class RegAction extends BaseController {
             cookieApiParams.setUniqname(StringUtils.EMPTY);
             cookieApiParams.setMaxAge(-1);
             cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
-
+    
             result = cookieManager.createCookie(response, cookieApiParams);
             if (result.isSuccess()) {
                 String ru = activeParams.getRu();
                 if (Strings.isNullOrEmpty(ru) || CommonConstant.EMAIL_REG_VERIFY_URL.equals(ru)) {
                     ru = CommonConstant.DEFAULT_INDEX_URL;
                 }
-                response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=0&ru=" + ru + "&client_id=" + clientId);
-                return;
+    
+                if(activeParams.isRtp()) { // 跳转到 passport 页面
+                    response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=0&ru=" + ru + "&client_id=" + clientId);
+                    return ;
+                } else {
+                    response.sendRedirect(activeParams.getRu() + "?code=0&client_id=" + clientId
+                                          + "$userId=" + activeParams.getPassport_id());
+                    return ;
+                }
             }
         }
-        response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode() + "&client_id=" + clientId);
-        return;
-
+    
+        if(activeParams.isRtp()) { // 跳转到 passport 页面
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode() + "&client_id=" + clientId);
+        } else {
+            response.sendRedirect(activeParams.getRu() + "?code=" + result.getCode() + "&client_id=" + clientId
+                                  + "$userId=" + activeParams.getPassport_id());
+        }
     }
 
     /**
