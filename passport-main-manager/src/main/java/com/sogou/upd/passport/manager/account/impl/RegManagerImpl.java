@@ -76,6 +76,7 @@ public class RegManagerImpl implements RegManager {
             String password = regParams.getPassword();
             String captcha = regParams.getCaptcha();
             String ru = regParams.getRu();
+            String lang = regParams.getLang();
             //判断是否是个性账号
             if (username.indexOf("@") == -1) {
                 //判断是否是手机号注册
@@ -100,6 +101,7 @@ public class RegManagerImpl implements RegManager {
                     ru = Strings.isNullOrEmpty(ru) ? LOGIN_INDEX_URL : ru;
                     RegEmailApiParams regEmailApiParams = buildRegMailProxyApiParams(username, password, ip,
                             clientId, ru);
+                    regEmailApiParams.setLang(lang);
                     result = registerApiManager.regMailUser(regEmailApiParams);
                     break;
                 case PHONE://手机号
