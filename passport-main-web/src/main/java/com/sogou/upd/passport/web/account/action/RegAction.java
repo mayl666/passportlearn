@@ -336,7 +336,7 @@ public class RegAction extends BaseController {
                     return ;
                 } else {
                     response.sendRedirect(activeParams.getRu() + "?code=0&client_id=" + clientId
-                                          + "$userId=" + activeParams.getPassport_id());
+                                          + "&userId=" + activeParams.getPassport_id());
                     return ;
                 }
             }
@@ -346,7 +346,7 @@ public class RegAction extends BaseController {
             response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode() + "&client_id=" + clientId);
         } else {
             response.sendRedirect(activeParams.getRu() + "?code=" + result.getCode() + "&client_id=" + clientId
-                                  + "$userId=" + activeParams.getPassport_id());
+                                  + "&userId=" + activeParams.getPassport_id());
         }
     }
 
