@@ -31,6 +31,7 @@ public class WebRegisterParams extends BaseRegUserNameParams {
     @URL
     @Ru
     private String ru;//回跳url
+    private boolean rtp = true; // redirect to passport 是否跳转到 passport，若否则直接跳回 ru
     /** 语言 英文为 en */
     private String lang;
 
@@ -106,7 +107,15 @@ public class WebRegisterParams extends BaseRegUserNameParams {
     public void setRu(String ru) {
         this.ru = ru;
     }
-    
+  
+    public boolean isRtp() {
+        return rtp;
+    }
+  
+    public void setRtp(boolean rtp) {
+        this.rtp = rtp;
+    }
+  
     public String getLang() {
         return lang;
     }

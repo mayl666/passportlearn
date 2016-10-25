@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
@@ -26,6 +27,7 @@ import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import com.sogou.upd.passport.service.account.SnamePassportMappingService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +108,8 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                     break;
                 case OTHER://外域邮件注册
                     String ru = params.getRu();
-                    boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip, ru, params.getLang());
+                    boolean isSendSuccess = accountService.sendActiveEmail(username, password, clientId, ip, ru,
+                                                                           params.isRtp(), params.getLang());
                     if (isSendSuccess) {
                         result.setSuccess(true);
                         result.setMessage("注册成功");

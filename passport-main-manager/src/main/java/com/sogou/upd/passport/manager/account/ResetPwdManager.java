@@ -47,7 +47,7 @@ public interface ResetPwdManager {
      * @throws Exception
      */
     public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail,
-                                                String ru, String scode, Boolean rtp, String lang) throws Exception;
+                                                String ru, String scode, boolean rtp, String lang) throws Exception;
 
     /**
      * 重置密码时发送验证邮件

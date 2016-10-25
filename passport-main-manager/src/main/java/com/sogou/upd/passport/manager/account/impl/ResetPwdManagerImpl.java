@@ -132,7 +132,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
      */
     @Override
     public Result sendEmailResetPwdByPassportId(String passportId, int clientId, boolean useRegEmail, String ru,
-                                                String scode, Boolean rtp, String lang)
+                                                String scode, boolean rtp, String lang)
             throws Exception {
         Result result = new APIResultSupport(false);
         try {

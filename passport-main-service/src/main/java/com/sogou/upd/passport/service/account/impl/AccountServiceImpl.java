@@ -399,11 +399,11 @@ public class AccountServiceImpl implements AccountService {
     
     @Override
     public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException {
-        return sendActiveEmail(username, passpord, clientId, ip, ru, null);
+        return sendActiveEmail(username, passpord, clientId, ip, ru, true, null);
     }
     
     @Override
-    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru, String lang) throws ServiceException {
+    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru, boolean rtp, String lang) throws ServiceException {
         boolean flag = true;
         try {
             String token = SecureCodeGenerator.generatorSecureCode(username, clientId);
@@ -415,6 +415,7 @@ public class AccountServiceImpl implements AccountService {
                 ru = CommonConstant.DEFAULT_INDEX_URL;
             }
             activeUrl += "&ru=" + Coder.encodeUTF8(ru);
+            activeUrl += "&rtp=" + rtp;
             String cacheKey = buildCacheKey(username);
             Map<String, String> mapParam = new HashMap<>();
             //设置连接失效时间

@@ -107,7 +107,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         String prefix = CommonConstant.DEFAULT_INDEX_URL;
         String passportId = activeEmailDO.getPassportId();
         String ru = Strings.isNullOrEmpty(activeEmailDO.getRu()) ? prefix : activeEmailDO.getRu();
-        Boolean rtp = activeEmailDO.isRtp();
+        boolean rtp = activeEmailDO.isRtp();
 
         StringBuilder activeUrl = new StringBuilder();
         activeUrl.append(prefix);
