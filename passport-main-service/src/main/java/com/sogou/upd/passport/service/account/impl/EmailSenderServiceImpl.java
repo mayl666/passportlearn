@@ -44,6 +44,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     // TODO:绑定验证URL待修改，考虑以后其他验证EMAIL的URL
     private static final String PASSPORT_EMAIL_URL_SUFFIX = "/checkemail?";
     private static final Map<AccountModuleEnum, String> subjects = AccountModuleEnum.buildEmailSubjects();
+    private static final Map<AccountModuleEnum, String> enSubjects = AccountModuleEnum.buildEnEmailSubjects();
 
     private static final String CACHE_PREFIX_PASSPORTID_EMAILSCODE = CacheConstant.CACHE_PREFIX_PASSPORTID_EMAILSCODE;
     private static final String CACHE_PREFIX_PASSPORTID_SENDEMAILNUM = CacheConstant.CACHE_PREFIX_PASSPORTID_SENDEMAILNUM;
@@ -72,14 +73,13 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             activeEmail.setMap(map);
             String lang = activeEmailDO.getLang();
-            String templateFile;
             if(StringUtils.equalsIgnoreCase(lang, "en")) {
-                templateFile = module.getDirect() + "-en.vm";
+                activeEmail.setTemplateFile(module.getDirect() + "-en.vm");
+                activeEmail.setSubject(enSubjects.get(module));
             } else {
-                templateFile = module.getDirect() + ".vm";
+                activeEmail.setTemplateFile(module.getDirect() + ".vm");
+                activeEmail.setSubject(subjects.get(module));
             }
-            activeEmail.setTemplateFile(templateFile);
-            activeEmail.setSubject(subjects.get(module));
             activeEmail.setCategory(module.getDirect());
             activeEmail.setToEmail(address);
             mailUtils.sendEmail(activeEmail);

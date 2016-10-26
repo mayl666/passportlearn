@@ -432,10 +432,11 @@ public class AccountServiceImpl implements AccountService {
             activeEmail.setMap(map);
             if(StringUtils.equalsIgnoreCase(lang, "en")) {
                 activeEmail.setTemplateFile("activemail-en.vm");
+                activeEmail.setSubject("activate your sogou account");
             } else {
                 activeEmail.setTemplateFile("activemail.vm");
+                activeEmail.setSubject("激活您的搜狗通行证帐户");
             }
-            activeEmail.setSubject("激活您的搜狗通行证帐户");
             activeEmail.setCategory("register");
             activeEmail.setToEmail(username);
             mailUtils.sendEmail(activeEmail);
