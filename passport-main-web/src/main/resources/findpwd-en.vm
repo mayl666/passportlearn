@@ -17,8 +17,7 @@
     </style>
 </head>
 <body>
-<img src="http://account.sogou.com/static/img/index/logo.png" border="0"/>
-<br><br>Dear users,<br><br>
+Dear users,<br><br>
 &nbsp;&nbsp;&nbsp;&nbsp;Welcome to join Sogou Pass!
 <br><br>We have received your password recovery email verification request, please click the link below to reset your password:<br><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="$activeUrl">$activeUrl</a><br><br>

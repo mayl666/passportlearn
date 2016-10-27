@@ -17,8 +17,7 @@
     </style>
 </head>
 <body>
-<img src="http://account.sogou.com/static/img/index/logo.png" border="0"/>
-<br><br>Dear users,<br><br>
+Dear users,<br><br>
 &nbsp;&nbsp;&nbsp;&nbsp;Thank you for registering Sogou Pass, please click the following link to activate the account:
 &nbsp;&nbsp;&nbsp;&nbsp;<a href="$activeUrl">$activeUrl</a><br><br>
 &nbsp;&nbsp;&nbsp;&nbsp;(If the above link can’t be clicked, please copy the address manually into the browser address bar to access. If the message was sent to you in error, you don’t need to take any action.)<br><br>
