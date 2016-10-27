@@ -20,6 +20,7 @@ import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -395,9 +396,14 @@ public class AccountServiceImpl implements AccountService {
         }
         return false;
     }
-
+    
     @Override
     public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException {
+        return sendActiveEmail(username, passpord, clientId, ip, ru, true, null);
+    }
+    
+    @Override
+    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru, boolean rtp, String lang) throws ServiceException {
         boolean flag = true;
         try {
             String token = SecureCodeGenerator.generatorSecureCode(username, clientId);
@@ -409,6 +415,7 @@ public class AccountServiceImpl implements AccountService {
                 ru = CommonConstant.DEFAULT_INDEX_URL;
             }
             activeUrl += "&ru=" + Coder.encodeUTF8(ru);
+            activeUrl += "&rtp=" + rtp;
             String cacheKey = buildCacheKey(username);
             Map<String, String> mapParam = new HashMap<>();
             //设置连接失效时间
@@ -423,8 +430,13 @@ public class AccountServiceImpl implements AccountService {
             map.put("activeUrl", activeUrl);
             map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             activeEmail.setMap(map);
-            activeEmail.setTemplateFile("activemail.vm");
-            activeEmail.setSubject("激活您的搜狗通行证帐户");
+            if(StringUtils.equalsIgnoreCase(lang, "en")) {
+                activeEmail.setTemplateFile("activemail-en.vm");
+                activeEmail.setSubject("activate your sogou account");
+            } else {
+                activeEmail.setTemplateFile("activemail.vm");
+                activeEmail.setSubject("激活您的搜狗通行证帐户");
+            }
             activeEmail.setCategory("register");
             activeEmail.setToEmail(username);
             mailUtils.sendEmail(activeEmail);

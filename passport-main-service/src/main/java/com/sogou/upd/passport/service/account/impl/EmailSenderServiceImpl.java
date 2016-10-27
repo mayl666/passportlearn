@@ -19,6 +19,7 @@ import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import com.sogou.upd.passport.service.account.dataobject.WapActiveEmailDO;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     // TODO:绑定验证URL待修改，考虑以后其他验证EMAIL的URL
     private static final String PASSPORT_EMAIL_URL_SUFFIX = "/checkemail?";
     private static final Map<AccountModuleEnum, String> subjects = AccountModuleEnum.buildEmailSubjects();
+    private static final Map<AccountModuleEnum, String> enSubjects = AccountModuleEnum.buildEnEmailSubjects();
 
     private static final String CACHE_PREFIX_PASSPORTID_EMAILSCODE = CacheConstant.CACHE_PREFIX_PASSPORTID_EMAILSCODE;
     private static final String CACHE_PREFIX_PASSPORTID_SENDEMAILNUM = CacheConstant.CACHE_PREFIX_PASSPORTID_SENDEMAILNUM;
@@ -70,8 +72,14 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             map.put("activeUrl", activeUrl);
             map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             activeEmail.setMap(map);
-            activeEmail.setTemplateFile(module.getDirect() + ".vm");
-            activeEmail.setSubject(subjects.get(module));
+            String lang = activeEmailDO.getLang();
+            if(StringUtils.equalsIgnoreCase(lang, "en")) {
+                activeEmail.setTemplateFile(module.getDirect() + "-en.vm");
+                activeEmail.setSubject(enSubjects.get(module));
+            } else {
+                activeEmail.setTemplateFile(module.getDirect() + ".vm");
+                activeEmail.setSubject(subjects.get(module));
+            }
             activeEmail.setCategory(module.getDirect());
             activeEmail.setToEmail(address);
             mailUtils.sendEmail(activeEmail);
@@ -99,7 +107,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         String prefix = CommonConstant.DEFAULT_INDEX_URL;
         String passportId = activeEmailDO.getPassportId();
         String ru = Strings.isNullOrEmpty(activeEmailDO.getRu()) ? prefix : activeEmailDO.getRu();
-        Boolean rtp = activeEmailDO.isRtp();
+        boolean rtp = activeEmailDO.isRtp();
 
         StringBuilder activeUrl = new StringBuilder();
         activeUrl.append(prefix);
