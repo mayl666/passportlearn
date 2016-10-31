@@ -64,7 +64,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
 
     private Map<String, String> buildHttpSessionParam(String sgid, int clientId) {
 
-        AppConfig appConfig = appConfigService.queryAppConfigByClientId(CommonConstant.SGPP_DEFAULT_CLIENTID);
+        AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
 
         String serverSecret = appConfig.getServerSecret();
         long ct = System.currentTimeMillis();
