@@ -62,6 +62,24 @@ public class SessionServerManagerImpl implements SessionServerManager {
         return params;
     }
 
+    private Map<String, String> buildHttpSessionParam(String sgid, int clientId) {
+
+        AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
+
+        String serverSecret = appConfig.getServerSecret();
+        long ct = System.currentTimeMillis();
+
+        String code = ManagerHelper.generatorCode(sgid, clientId, serverSecret, ct);
+
+        Map<String, String> params = Maps.newHashMap();
+
+        params.put("client_id", String.valueOf(clientId));
+        params.put("code", code);
+        params.put("ct", String.valueOf(ct));
+        params.put(LoginConstant.COOKIE_SGID, sgid);
+        return params;
+    }
+
     @Override
     public Result createSession(String passportId) {
         return createSession(passportId, null);
@@ -174,12 +192,8 @@ public class SessionServerManagerImpl implements SessionServerManager {
     }
 
     @Override
-    public Result verifySid(String sgid, int clientId, String code, long ct, String ip) {
-        Map<String, String> params = Maps.newHashMap();
-        params.put("client_id", String.valueOf(clientId));
-        params.put("code", code);
-        params.put("ct", String.valueOf(ct));
-        params.put(LoginConstant.COOKIE_SGID, sgid);
+    public Result verifySid(String sgid, int clientId, String ip) {
+        Map<String, String> params = buildHttpSessionParam(sgid, clientId);
         params.put("user_ip", ip);
     
         return verifySid(params);

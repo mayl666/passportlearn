@@ -5,11 +5,13 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
+import com.sogou.upd.passport.model.mobileoperation.TerminalAttribute;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
-import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import com.sogou.upd.passport.web.session.form.VerifySgidParam;
 
 import org.slf4j.Logger;
@@ -34,6 +36,8 @@ public class SessionApiController extends BaseController {
   private SessionServerManager sessionServerManager;
   @Autowired
   private ConfigureManager configureManager;
+  @Autowired
+  private CheckManager checkManager;
   
   /**
    * sgid校验接口
@@ -42,7 +46,6 @@ public class SessionApiController extends BaseController {
    * @param params
    * @return
    */
-  @InterfaceSecurity
   @RequestMapping(value = "/verify_sid")
   @ResponseBody
   public String verifySid(HttpServletRequest request, VerifySgidParam params) {
@@ -61,13 +64,29 @@ public class SessionApiController extends BaseController {
       result.setCode(ErrorUtil.INVALID_CLIENTID);
       return result.toString();
     }
-    
+  
+    String udid = "";
     String ip = getIp(request);
+  
+    //解析cinfo信息
+    TerminalAttribute terminalAttribute = null;
+    try {
+      terminalAttribute = new TerminalAttribute(request);
+      udid = terminalAttribute.getUdid();
+    } catch (ServiceException e) {
+      udid = "";
+    }
+  
+    //验证code是否有效
+    boolean isVaildCode = checkManager.checkMappCode(udid, clientId, params.getCt(), params.getCode());
+    if (!isVaildCode) {
+      result.setCode(ErrorUtil.INTERNAL_REQUEST_INVALID);
+      return result.toString();
+    }
     
     try {
       // 调用 session server 校验 sgid
-      result = sessionServerManager.verifySid(params.getSgid(), clientId,
-                                              params.getCode(), params.getCt(), ip);
+      result = sessionServerManager.verifySid(params.getSgid(), clientId, ip);
     } catch (Exception e) {
       logger.error("/session/verify_sid failed, sgid:" + params.getSgid(), e);
       result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
