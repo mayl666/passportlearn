@@ -202,7 +202,11 @@ public class SessionServerManagerImpl implements SessionServerManager {
                 Map mapResult = jsonMapper.readValue(resultRequest, Map.class);
                 String status = (String) mapResult.get("status");
                 String statusText = (String) mapResult.get("statusText");
+                
                 result.setCode(status);
+                if(StringUtils.equals(status, "0")) {
+                    result.setSuccess(true);
+                }
                 result.setMessage(statusText);
                 result.setModels((Map) mapResult.get("data"));
                 
