@@ -86,8 +86,7 @@ public class SessionApiController extends BaseController {
     
     try {
       // 调用 session server 校验 sgid
-      result = sessionServerManager.verifySid(params.getSgid(), clientId,
-                                              params.getCode(), params.getCt(), ip);
+      result = sessionServerManager.verifySid(params.getSgid(), clientId, ip);
     } catch (Exception e) {
       logger.error("/session/verify_sid failed, sgid:" + params.getSgid(), e);
       result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
