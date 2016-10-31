@@ -12,4 +12,6 @@ public interface SessionServerManager {
      public Result createSession(String passportId, String weixinOpenId);
      public Result removeSession(String sgid);
      public Result getPassportIdBySgid(String sgid,String ip);
+     public Result verifySid(String sgid,String ip);
+     public Result verifySid(String sgid, int clientId, String code, long ct, String ip);
 }
