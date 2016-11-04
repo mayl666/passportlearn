@@ -277,6 +277,7 @@ public class AccountServiceImpl implements AccountService {
                     pwdIsTrue = verifyPwdWithMD5(password, storedPwd);
                     break;
                 case 2:   //Crypt(password,salt)
+                case 4:   // 第三方登陆账号
                     pwdIsTrue = PwdGenerator.verify(password, needMD5, storedPwd);
                     break;
                 case 5:     //sohu crypt
