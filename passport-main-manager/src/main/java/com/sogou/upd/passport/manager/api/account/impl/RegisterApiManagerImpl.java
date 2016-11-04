@@ -197,13 +197,6 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
     public Result checkAccountExist(String username, int clientId) {
         Result result = new APIResultSupport(false);
         try {
-            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
-            if (AccountDomainEnum.SOHU.equals(domain) ||
-                (AccountDomainEnum.THIRD.equals(domain) && !username.matches(".+@qq\\.sohu\\.com$"))) {
-                 // 非 QQ 第三方账号不允许此操作
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
-                return result;
-            }
             if (username.indexOf("@") == -1) {
                 //判断是否是手机号注册
                 if (!PhoneUtil.verifyPhoneNumberFormat(username)) {
@@ -219,8 +212,20 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                     return result;
                 }
             } else {
-                //如果是外域或个性账号注册
-                Account account = accountService.queryAccountByPassportId(username.toLowerCase());
+                Account account;
+              
+                AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
+                if (AccountDomainEnum.SOHU.equals(domain) || (AccountDomainEnum.THIRD.equals(domain))) {
+                    if(!username.matches(".+@qq\\.sohu\\.com$")) {  // 非QQ
+                         // 非 QQ 第三方账号不允许此操作
+                         result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                         return result;
+                    }
+                    account = accountService.queryAccountByPassportId(username);
+                } else {
+                    //如果是外域或个性账号注册
+                    account = accountService.queryAccountByPassportId(username.toLowerCase());
+                }
                 if (account != null) {
                     //检查是否是输入法泄露账号
                     try {
