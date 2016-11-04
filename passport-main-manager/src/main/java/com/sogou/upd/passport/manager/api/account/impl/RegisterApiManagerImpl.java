@@ -198,7 +198,9 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
         Result result = new APIResultSupport(false);
         try {
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
-            if (AccountDomainEnum.SOHU.equals(domain) || AccountDomainEnum.THIRD.equals(domain)) {
+            if (AccountDomainEnum.SOHU.equals(domain) ||
+                (AccountDomainEnum.THIRD.equals(domain) && !username.matches(".+@qq\\.sohu\\.com$"))) {
+                 // 非 QQ 第三方账号不允许此操作
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
                 return result;
             }

@@ -49,6 +49,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static com.sogou.upd.passport.common.parameter.AccountDomainEnum.THIRD;
+
 /**
  * User: ligang201716@sogou-inc.com
  * Date: 13-6-7
@@ -164,7 +166,7 @@ public class SecureApiController extends BaseController {
                 return result;
             }
 
-            if (domain == AccountDomainEnum.THIRD) {
+            if (domain == THIRD) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result;
             }
@@ -423,9 +425,12 @@ public class SecureApiController extends BaseController {
         String ip = updateParams.getIp();
         
         try {
-            if(AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(passportId))) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
-                    return result.toString();
+            // 用户名的所属域
+            AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(passportId);
+            if(THIRD.equals(accountDomainEnum) && !passportId.matches(".+@qq\\.sohu\\.com$")) {   // 第三方登陆
+                // 非 QQ 第三方账号不允许此操作
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                return result.toString();
             }
     
             UpdatePwdParameters updatePwdParameters = new UpdatePwdParameters();

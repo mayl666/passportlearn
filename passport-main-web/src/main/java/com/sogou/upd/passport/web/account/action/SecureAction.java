@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -9,7 +10,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
@@ -19,7 +19,7 @@ import com.sogou.upd.passport.web.account.form.security.WebBindQuesParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
-import org.apache.commons.codec.digest.DigestUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+
+import static com.sogou.upd.passport.common.parameter.AccountDomainEnum.THIRD;
 
 /**
  * User: hujunfei Date: 13-4-28 Time: 下午1:51 安全中心（修改密码，修改密保手机，修改密保问题，修改密保邮箱）
@@ -66,7 +68,7 @@ public class SecureAction extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
         // 第三方账号不显示安全信息
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.THIRD) {
+        if (AccountDomainEnum.getAccountDomain(userId) == THIRD) {
             // result.setDefaultModel("disable", true);
             // result.setSuccess(true);
             // model.addAttribute("data", result.toString());
@@ -294,14 +296,15 @@ public class SecureAction extends BaseController {
                 result.setMessage(validateResult);
                 return result;
             }
-            switch (AccountDomainEnum.getAccountDomain(passportId)) {
-//                case SOHU:
-//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
-//                    return result.toString();
-                case THIRD:
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
-                    return result.toString();
+            
+            // 用户名的所属域
+            AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(passportId);
+            if(THIRD.equals(accountDomainEnum) && !passportId.matches(".+@qq\\.sohu\\.com$")) {   // 第三方登陆
+                // 非 QQ 第三方账号不允许此操作
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                return result.toString();
             }
+            
             result = secureManager.updateWebPwd(updateParams);
             return result.toString();
         } finally {
