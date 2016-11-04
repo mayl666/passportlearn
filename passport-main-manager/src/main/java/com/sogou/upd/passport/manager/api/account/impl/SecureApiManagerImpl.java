@@ -1,8 +1,8 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.parameter.SohuPasswordType;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -11,9 +11,11 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
+import com.sogou.upd.passport.service.account.AccountHelper;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,13 +43,41 @@ public class SecureApiManagerImpl implements SecureApiManager {
 
     @Override
     public Result updatePwd(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
-
-        Result result = accountService.verifyUserPwdVaild(passportId, oldPwd, true, SohuPasswordType.TEXT);
-        if (!result.isSuccess()) {
-            operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.RESETPWD);
-            return result;
+        Result result = new APIResultSupport(false);
+        Account account;
+        if (passportId.matches(".+@qq\\.sohu\\.com$")) {    // QQ 账号
+            // 第三方账号由于使用进使用 oauth2 协议，所以不需要验证原密码
+            account = accountService.queryAccountByPassportId(passportId);
+            if (account == null) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                return result;
+            }
+            if (AccountHelper.isDisabledAccount(account)) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);
+                return result;
+            }
+            if (AccountHelper.isKilledAccount(account)) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+                return result;
+            }
+    
+            result.setSuccess(true);
+            result.setMessage("操作成功");
+            result.setDefaultModel("userid", account.getPassportId());
+            result.setDefaultModel("uniqName", account.getUniqname());
+            result.setDefaultModel(account);
+        } else {    // 验证密码
+            result = accountService.verifyUserPwdVaild(passportId, oldPwd, true, SohuPasswordType.TEXT);
+            if (!result.isSuccess()) {
+                operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.RESETPWD);
+                return result;
+            }
+            account = (Account) result.getDefaultModel();
         }
-        Account account = (Account) result.getDefaultModel();
+        
         result.setModels(Maps.newHashMap());
         if (!accountService.resetPassword(passportId,account, newPwd, true)) {
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);

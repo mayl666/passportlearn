@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -24,6 +25,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.PcAccountWebParams;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +37,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Calendar;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Calendar;
+
+import static com.sogou.upd.passport.common.parameter.AccountDomainEnum.THIRD;
 
 /**
  * 桌面端登录流程Controller
@@ -122,10 +127,14 @@ public class PCAccountController extends BaseController {
             return "1";
         }
         String userId = pcGetTokenParams.getUserid();
-        //不允许第三方格式的账号登录
-        if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(userId))) {
+        
+        // 用户名的所属域
+        AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(userId);
+        if(THIRD.equals(accountDomainEnum) && !userId.matches(".+@qq\\.sohu\\.com$")) {   // 第三方登陆
+            // 非 QQ 第三方账号不允许此操作
             return "1";
         }
+        
         String ip = getIp(request);
         String appId = pcGetTokenParams.getAppid();
         String ts = pcGetTokenParams.getTs();
@@ -166,10 +175,14 @@ public class PCAccountController extends BaseController {
             return getReturnStr(cb, "1");
         }
         String userId = reqParams.getUserid();
-        //不允许第三方格式的账号登录
-        if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(userId))) {
+    
+        // 用户名的所属域
+        AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(userId);
+        if(THIRD.equals(accountDomainEnum) && !userId.matches(".+@qq\\.sohu\\.com$")) {   // 第三方登陆
+            // 非 QQ 第三方账号不允许此操作
             return "1";
         }
+        
         //getpairtoken允许个性账号、手机号登陆；gettoken不允许
         userId = loginManager.getIndividPassportIdByUsername(userId);
         reqParams.setUserid(userId);
