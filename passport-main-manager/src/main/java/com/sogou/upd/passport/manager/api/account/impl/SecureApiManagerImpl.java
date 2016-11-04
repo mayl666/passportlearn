@@ -63,6 +63,12 @@ public class SecureApiManagerImpl implements SecureApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 return result;
             }
+    
+            result.setSuccess(true);
+            result.setMessage("操作成功");
+            result.setDefaultModel("userid", account.getPassportId());
+            result.setDefaultModel("uniqName", account.getUniqname());
+            result.setDefaultModel(account);
         } else {    // 验证密码
             result = accountService.verifyUserPwdVaild(passportId, oldPwd, true, SohuPasswordType.TEXT);
             if (!result.isSuccess()) {
