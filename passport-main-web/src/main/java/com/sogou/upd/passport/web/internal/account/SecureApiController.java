@@ -267,7 +267,7 @@ public class SecureApiController extends BaseController {
 //            long expireTime = (System.currentTimeMillis() / 1000) + EXPIRE_TIME;
 
             //获取Redis中保存的黑名单数据
-            Set<String> set = new HashSet<>();
+            Set<String> set = redisUtils.smember(CacheConstant.CACHE_KEY_BLACKLIST);
             for(int i=0;i<CacheConstant.BLACKLIST_SET_SIZE;i++){
                 set.addAll(redisUtils.smember(CacheConstant.CACHE_KEY_BLACKLIST +i));
             }
