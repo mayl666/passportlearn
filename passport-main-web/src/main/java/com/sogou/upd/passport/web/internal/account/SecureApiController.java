@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -266,7 +267,10 @@ public class SecureApiController extends BaseController {
 //            long expireTime = (System.currentTimeMillis() / 1000) + EXPIRE_TIME;
 
             //获取Redis中保存的黑名单数据
-            Set<String> set = redisUtils.smember(CacheConstant.CACHE_KEY_BLACKLIST);
+            Set<String> set = new HashSet<>();
+            for(int i=0;i<CacheConstant.BLACKLIST_SET_SIZE;i++){
+                set.addAll(redisUtils.smember(CacheConstant.CACHE_KEY_BLACKLIST +i));
+            }
 
 //            if (params.getIs_delta() != 0 || params.getIs_delta() != 1) {
 //                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
