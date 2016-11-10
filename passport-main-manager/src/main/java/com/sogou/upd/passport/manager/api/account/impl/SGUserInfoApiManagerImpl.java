@@ -130,7 +130,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     
                             // 注册时间
                             if (ArrayUtils.contains(paramArray, "regTime")) {
-                                Date regTime = (Date) accountResult.getModels().get("regTime");
+                                Date regTime = account.getRegTime();
                                 String regTimeStr = (regTime == null) ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(regTime);
                                 result.setDefaultModel("regTime", regTimeStr);
                                 paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "regTime"));
