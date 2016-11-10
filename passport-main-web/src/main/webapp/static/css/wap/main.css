@@ -212,6 +212,7 @@ a.trd .r{width: 40px;color: #ccc; height:100%;background-position:-45px 6px; ove
 }
 
 input#sms{width:50%;}
+input#captcha{width:50%;}
 .sendsms{padding: 0 0.5em;height: 25px;line-height: 25px;color: #fff;font-size: 12px;background: #4bab29;border-radius: 4px;margin-right: 9px;min-width: 60px;}
 .sendsms.disabled,.sendsms:active{background: #8ccf75}
 
