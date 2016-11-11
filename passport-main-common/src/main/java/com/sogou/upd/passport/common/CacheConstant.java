@@ -133,6 +133,7 @@ public class CacheConstant {
 
     /*=================黑名单列表===================================*/
     public static final String CACHE_KEY_BLACKLIST = "BLACKLIST";
+    public static final int BLACKLIST_SET_SIZE = 128;
     /*=================QQ好友链===================================*/
     public static final String CACHE_KEY_QQ_FRIENDS = "SP.QQFRIENDS:RETURNVAL_";
 

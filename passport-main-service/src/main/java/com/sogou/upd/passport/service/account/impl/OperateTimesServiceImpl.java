@@ -13,6 +13,7 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.black.BlackItem;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.black.BlackItemService;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -993,7 +994,9 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     public void updatePwdSuccessSetModuleBlack(String passportId, long seconds) {
         try {
             long timeStamp = (System.currentTimeMillis() / 1000) + seconds;
-            redisUtils.sadd(CacheConstant.CACHE_KEY_BLACKLIST, passportId + CommonConstant.MODULE_BLACK_LIST_DATA_JOINER + timeStamp);
+            String value = passportId + CommonConstant.MODULE_BLACK_LIST_DATA_JOINER + timeStamp;
+            int setIndex = getBlacklistSetIndex(value);
+            redisUtils.sadd(CacheConstant.CACHE_KEY_BLACKLIST + setIndex,value);
         } catch (Exception e) {
             logger.error("updatePwdSuccessSetModuleBlack error. passportId:{}", passportId);
         }
@@ -1129,5 +1132,12 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
     private static String buildIPLoginTimesKeyStr(String ip) {
         return CacheConstant.CACHE_PREFIX_IP_LOGINNUM + ip;
+    }
+
+    private static int getBlacklistSetIndex(String blackValue){
+        String stringHash = DigestUtils.md5Hex(blackValue);
+        int modInt = Integer.parseInt(stringHash.substring(0, 2), 16);
+        int setIndex = modInt % CacheConstant.BLACKLIST_SET_SIZE;
+        return setIndex;
     }
 }

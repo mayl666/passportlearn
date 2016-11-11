@@ -1,8 +1,8 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -18,6 +18,7 @@ import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -125,6 +126,14 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                             //处理第三方gender信息
                             if ((domain == AccountDomainEnum.THIRD) && (StringUtils.contains(fields, "gender"))) {
                                 result.setDefaultModel("gender", accountResult.getModels().get("gender"));
+                            }
+    
+                            // 注册时间
+                            if (ArrayUtils.contains(paramArray, "regTime")) {
+                                Date regTime = account.getRegTime();
+                                String regTimeStr = (regTime == null) ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(regTime);
+                                result.setDefaultModel("regTime", regTimeStr);
+                                paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "regTime"));
                             }
 
                             result.setDefaultModel("userid", passportId);
