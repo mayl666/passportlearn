@@ -455,4 +455,7 @@ public class StringUtil {
         return value.contains(containStr) ? value.replace(containStr, exchangeStr) : value;
     }
 
+    public static String replaceHttpToHttps(String url) {
+        return StringUtils.replace(url, "http:", "https:");
+    }
 }

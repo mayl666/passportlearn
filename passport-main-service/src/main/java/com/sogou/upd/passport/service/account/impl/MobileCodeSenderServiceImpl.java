@@ -295,12 +295,12 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     }
 
     private String buildCacheKeyForSmsFailLimit(String mobile, int clientId, AccountModuleEnum module) {
-        return CACHE_PREFIX_MOBILE_CHECKSMSFAIL + module + "_" + clientId + "_" + mobile + "_" +
+        return CACHE_PREFIX_MOBILE_CHECKSMSFAIL + module + "_" + mobile + "_" +
                 DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
     }
 
     private String buildCacheKeyForSmsLimit(String mobile, int clientId, AccountModuleEnum module) {
-        return CACHE_PREFIX_ACCOUNT_SENDNUM + module + "_" + clientId + "_" + mobile +
+        return CACHE_PREFIX_ACCOUNT_SENDNUM + module + "_" + mobile +
                 DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
     }
 }
