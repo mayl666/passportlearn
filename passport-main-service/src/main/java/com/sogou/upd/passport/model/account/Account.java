@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.model.account;
 
-import com.sogou.upd.passport.common.lang.StringUtil;
-
 import java.util.Date;
 
 /**
@@ -136,7 +134,7 @@ public class Account {
     }
 
     public String getAvatar() {
-        return StringUtil.replaceHttpToHttps(avatar);
+        return avatar;
     }
 
     public void setAvatar(String avatar) {

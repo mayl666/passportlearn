@@ -85,7 +85,7 @@ public class ConnectUserInfoVO {
     }
 
     public String getAvatarSmall() {
-        return StringUtil.replaceHttpToHttps(avatarSmall);
+        return avatarSmall;
     }
 
     public void setAvatarSmall(String avatarSmall) {
@@ -93,7 +93,7 @@ public class ConnectUserInfoVO {
     }
 
     public String getAvatarMiddle() {
-        return StringUtil.replaceHttpToHttps(avatarMiddle);
+        return avatarMiddle;
     }
 
     public void setAvatarMiddle(String avatarMiddle) {
@@ -101,7 +101,7 @@ public class ConnectUserInfoVO {
     }
 
     public String getAvatarLarge() {
-        return StringUtil.replaceHttpToHttps(avatarLarge);
+        return avatarLarge;
     }
 
     public void setAvatarLarge(String avatarLarge) {
