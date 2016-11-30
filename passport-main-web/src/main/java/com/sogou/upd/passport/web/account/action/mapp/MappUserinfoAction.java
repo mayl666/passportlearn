@@ -91,6 +91,8 @@ public class MappUserinfoAction extends BaseController {
             }
             GetUserInfoApiparams getUserinfoParams=buildMappGetUserInfoApiparams(params,passportId);
             result = sgUserInfoApiManager.getUserInfo(getUserinfoParams);
+    
+            processAvatarUrl(request, result);
             removeUseless(result);
 
         }catch (Exception e){

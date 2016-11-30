@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.Result;
@@ -10,6 +11,7 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
@@ -17,10 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Map;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 public class BaseController {
 
@@ -188,5 +191,39 @@ public class BaseController {
         }
         Joiner.MapJoiner joiner = Joiner.on(CommonConstant.JOINER_SEPARATOR).withKeyValueSeparator(CommonConstant.KEY_VALUE_SEPARATOR);
         return joiner.join(cookieMap);
+    }
+    
+    /**
+     * 对头像地址进行 http / https 协议转换
+     * @param request
+     * @param result
+     */
+    protected void processAvatarUrl(HttpServletRequest request, Result result) {
+        if(result == null) {
+            return ;
+        }
+        
+        String avatarurl = (String) result.getModels().get("avatarurl");
+        String tiny_avatar = (String) result.getModels().get("tiny_avatar");
+        String mid_avatar = (String) result.getModels().get("mid_avatar");
+        String large_avatar = (String) result.getModels().get("large_avatar");
+        
+        String protocol = getProtocol(request);
+        if(StringUtils.equals(CommonConstant.HTTP, protocol)) {
+            avatarurl = StringUtil.replaceHttpsToHttp(avatarurl);
+            tiny_avatar = StringUtil.replaceHttpsToHttp(tiny_avatar);
+            mid_avatar = StringUtil.replaceHttpsToHttp(mid_avatar);
+            large_avatar = StringUtil.replaceHttpsToHttp(large_avatar);
+        } else if(StringUtils.equals(CommonConstant.HTTPS, protocol)) {
+            avatarurl = StringUtil.replaceHttpToHttps(avatarurl);
+            tiny_avatar = StringUtil.replaceHttpToHttps(tiny_avatar);
+            mid_avatar = StringUtil.replaceHttpToHttps(mid_avatar);
+            large_avatar = StringUtil.replaceHttpToHttps(large_avatar);
+        }
+        
+        result.setDefaultModel("avatarurl", avatarurl);
+        result.setDefaultModel("tiny_avatar", tiny_avatar);
+        result.setDefaultModel("mid_avatar", mid_avatar);
+        result.setDefaultModel("large_avatar", large_avatar);
     }
 }
