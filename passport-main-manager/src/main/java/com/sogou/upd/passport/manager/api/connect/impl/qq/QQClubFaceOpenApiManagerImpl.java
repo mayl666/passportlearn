@@ -40,7 +40,7 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
         String resp;
         try {
             //QQ提供的openapi服务器
-            String serverName = CommonConstant.QQ_SERVER_NAME_GRAPH;
+            String serverName = CommonConstant.QQ_SERVER_IP;
             //应用的基本信息，搜狗在QQ的第三方appid与appkey
             String userId = qqParams.getUserid();
             int provider = AccountTypeEnum.getAccountType(userId).getValue();

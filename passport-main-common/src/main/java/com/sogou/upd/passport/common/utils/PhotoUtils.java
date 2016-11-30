@@ -47,10 +47,10 @@ public class PhotoUtils {
     public void init() {
         //初始化cdn列表
         listCDN = new ArrayList<String>();
-        listCDN.add("http://img01.sogoucdn.com");
-        listCDN.add("http://img02.sogoucdn.com");
-        listCDN.add("http://img03.sogoucdn.com");
-        listCDN.add("http://img04.sogoucdn.com");
+        listCDN.add("https://img01.sogoucdn.com");
+        listCDN.add("https://img02.sogoucdn.com");
+        listCDN.add("https://img03.sogoucdn.com");
+        listCDN.add("https://img04.sogoucdn.com");
     }
 
     //图片名生成
