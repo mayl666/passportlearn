@@ -204,30 +204,25 @@ public class BaseController {
         }
         
         String protocol = getProtocol(request);
-        
-        if(result.getModels().containsKey("avatarurl")) {
-            String avatarurl = (String) result.getModels().get("avatarurl");
-            avatarurl = StringUtils.equals(CommonConstant.HTTPS, protocol) ?
-                        StringUtil.replaceHttpToHttps(avatarurl) : StringUtil.replaceHttpsToHttp(avatarurl);
-            result.setDefaultModel("avatarurl", avatarurl);
-        }
-        if(result.getModels().containsKey("tiny_avatar")) {
-            String tiny_avatar = (String) result.getModels().get("tiny_avatar");
-            tiny_avatar = StringUtils.equals(CommonConstant.HTTPS, protocol) ?
-                        StringUtil.replaceHttpToHttps(tiny_avatar) : StringUtil.replaceHttpsToHttp(tiny_avatar);
-            result.setDefaultModel("tiny_avatar", tiny_avatar);
-        }
-        if(result.getModels().containsKey("mid_avatar")) {
-            String mid_avatar = (String) result.getModels().get("mid_avatar");
-            mid_avatar = StringUtils.equals(CommonConstant.HTTPS, protocol) ?
-                        StringUtil.replaceHttpToHttps(mid_avatar) : StringUtil.replaceHttpsToHttp(mid_avatar);
-            result.setDefaultModel("mid_avatar", mid_avatar);
-        }
-        if(result.getModels().containsKey("large_avatar")) {
-            String large_avatar = (String) result.getModels().get("large_avatar");
-            large_avatar = StringUtils.equals(CommonConstant.HTTPS, protocol) ?
-                        StringUtil.replaceHttpToHttps(large_avatar) : StringUtil.replaceHttpsToHttp(large_avatar);
-            result.setDefaultModel("large_avatar", large_avatar);
+    
+        processUrl(result, "avatarurl", protocol);
+        processUrl(result, "tiny_avatar", protocol);
+        processUrl(result, "mid_avatar", protocol);
+        processUrl(result, "large_avatar", protocol);
+    }
+    
+    /**
+     * 对 url 进行协议转换。将 url 中协议转换为参数 protocol 的协议。
+     * @param result
+     * @param key
+     * @param protocol http https
+     */
+    protected void processUrl(Result result, String key, String protocol) {
+        if(result.getModels().containsKey(key)) {
+            String url = (String) result.getModels().get(key);
+            url = StringUtils.equals(CommonConstant.HTTPS, protocol) ?
+                        StringUtil.replaceHttpToHttps(url) : StringUtil.replaceHttpsToHttp(url);
+            result.setDefaultModel(key, url);
         }
     }
 }
