@@ -203,27 +203,31 @@ public class BaseController {
             return ;
         }
         
-        String avatarurl = (String) result.getModels().get("avatarurl");
-        String tiny_avatar = (String) result.getModels().get("tiny_avatar");
-        String mid_avatar = (String) result.getModels().get("mid_avatar");
-        String large_avatar = (String) result.getModels().get("large_avatar");
-        
         String protocol = getProtocol(request);
-        if(StringUtils.equals(CommonConstant.HTTP, protocol)) {
-            avatarurl = StringUtil.replaceHttpsToHttp(avatarurl);
-            tiny_avatar = StringUtil.replaceHttpsToHttp(tiny_avatar);
-            mid_avatar = StringUtil.replaceHttpsToHttp(mid_avatar);
-            large_avatar = StringUtil.replaceHttpsToHttp(large_avatar);
-        } else if(StringUtils.equals(CommonConstant.HTTPS, protocol)) {
-            avatarurl = StringUtil.replaceHttpToHttps(avatarurl);
-            tiny_avatar = StringUtil.replaceHttpToHttps(tiny_avatar);
-            mid_avatar = StringUtil.replaceHttpToHttps(mid_avatar);
-            large_avatar = StringUtil.replaceHttpToHttps(large_avatar);
-        }
         
-        result.setDefaultModel("avatarurl", avatarurl);
-        result.setDefaultModel("tiny_avatar", tiny_avatar);
-        result.setDefaultModel("mid_avatar", mid_avatar);
-        result.setDefaultModel("large_avatar", large_avatar);
+        if(result.getModels().containsKey("avatarurl")) {
+            String avatarurl = (String) result.getModels().get("avatarurl");
+            avatarurl = StringUtils.equals(CommonConstant.HTTPS, protocol) ?
+                        StringUtil.replaceHttpToHttps(avatarurl) : StringUtil.replaceHttpsToHttp(avatarurl);
+            result.setDefaultModel("avatarurl", avatarurl);
+        }
+        if(result.getModels().containsKey("tiny_avatar")) {
+            String tiny_avatar = (String) result.getModels().get("tiny_avatar");
+            tiny_avatar = StringUtils.equals(CommonConstant.HTTPS, protocol) ?
+                        StringUtil.replaceHttpToHttps(tiny_avatar) : StringUtil.replaceHttpsToHttp(tiny_avatar);
+            result.setDefaultModel("tiny_avatar", tiny_avatar);
+        }
+        if(result.getModels().containsKey("mid_avatar")) {
+            String mid_avatar = (String) result.getModels().get("mid_avatar");
+            mid_avatar = StringUtils.equals(CommonConstant.HTTPS, protocol) ?
+                        StringUtil.replaceHttpToHttps(mid_avatar) : StringUtil.replaceHttpsToHttp(mid_avatar);
+            result.setDefaultModel("mid_avatar", mid_avatar);
+        }
+        if(result.getModels().containsKey("large_avatar")) {
+            String large_avatar = (String) result.getModels().get("large_avatar");
+            large_avatar = StringUtils.equals(CommonConstant.HTTPS, protocol) ?
+                        StringUtil.replaceHttpToHttps(large_avatar) : StringUtil.replaceHttpsToHttp(large_avatar);
+            result.setDefaultModel("large_avatar", large_avatar);
+        }
     }
 }
