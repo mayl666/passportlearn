@@ -1,11 +1,14 @@
 package com.sogou.upd.passport.manager.form;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
+import com.sogou.upd.passport.common.validation.constraints.Skin;
 import com.sogou.upd.passport.common.validation.constraints.V;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Min;
 
 /**
@@ -17,26 +20,33 @@ public class WapLoginParams extends UsernameParams {
      */
     @NotBlank(message = "请输入密码！")
     private String password;
-
     /**
      * 验证码 用户连续3次登陆失败需要输入验证码
      */
     private String captcha;//验证码
     private String token;//标识码
-
+    @Skin
+    private String skin; //皮肤
     @NotBlank(message = "client_id不允许为空!")
     @Min(0)
     private String client_id;
 
-//    @NotBlank
+    //    @NotBlank
     @URL
     @Ru
-    private String ru;//登陆来源
-
+    private String ru = WapConstant.WAP_INDEX;//登陆来源
 
     @NotBlank(message = "v is null")
     @V
     private String v = WapConstant.WAP_COLOR;//wap版本:1-简易版；2-炫彩版；5-触屏版
+
+    @AssertTrue(message = "用户名不能为空")
+    private boolean isUserNameNotAllowedNull() {
+        if (Strings.isNullOrEmpty(username)) {   // wap登录时，username不能为空
+            return false;
+        }
+        return true;
+    }
 
     public String getRu() {
         return ru;
@@ -84,5 +94,13 @@ public class WapLoginParams extends UsernameParams {
 
     public void setClient_id(String client_id) {
         this.client_id = client_id;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
     }
 }

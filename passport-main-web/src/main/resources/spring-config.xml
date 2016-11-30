@@ -32,6 +32,7 @@
     <import resource="classpath:spring-config-jredis.xml"/>
     <import resource="classpath:spring-config-image.xml"/>
     <import resource="classpath:spring-config-mail.xml"/>
+    <import resource="classpath:spring-config-mongodb.xml"/>
 
     <!--<import resource="spring-config-mail.xml"/>-->
 
@@ -75,12 +76,16 @@
             <bean class="com.sogou.upd.passport.web.inteceptor.LoginRequiredInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <!-- 风控  -->
+            <bean class="com.sogou.upd.passport.web.inteceptor.RiskControlInterceptor"/>
+        </mvc:interceptor>
+        <mvc:interceptor>
             <mvc:mapping path="/internal/**"/>
             <!-- 内部接口code和ct校验 -->
             <bean class="com.sogou.upd.passport.web.inteceptor.InterfaceSecurityInteceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
-
 
     <bean id="stringHttpMessageConverter"
           class="org.springframework.http.converter.StringHttpMessageConverter">
@@ -89,7 +94,8 @@
                 <value>text/plain;charset=UTF-8</value>
             </list>
         </property>
-        <property name="writeAcceptCharset" value="false"/>  <!--解决响应头Accept-Charset很大，耗费流量的问题-->
+        <property name="writeAcceptCharset" value="false"/>
+        <!--解决响应头Accept-Charset很大，耗费流量的问题-->
     </bean>
 
 
@@ -103,7 +109,13 @@
         </property>
     </bean>
 
+
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="webBindingInitializer">
+            <bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+                <property name="conversionService" ref="conversionService" />
+            </bean>
+        </property>
         <property name="messageConverters">
             <list>
                 <ref bean="stringHttpMessageConverter"/>
@@ -111,6 +123,7 @@
             </list>
         </property>
     </bean>
+    <bean id="conversionService" class="org.springframework.format.support.DefaultFormattingConversionService"/>
 
     <!--metrics监控初始化-->
     <bean id="metrics" class="com.codahale.metrics.MetricRegistry"/>
@@ -121,7 +134,9 @@
     <!-- 配置Velocity视图解析器 -->
     <bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
         <property name="cache" value="false"/>
-        <property name="order"><value>1</value></property>
+        <property name="order">
+            <value>1</value>
+        </property>
         <property name="suffix">
             <value>.vm</value>
         </property>
@@ -136,7 +151,9 @@
     <!-- 配置Velocity视图解析器 -->
     <bean id="wapVelocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
         <property name="cache" value="false"/>
-        <property name="order"><value>2</value></property>
+        <property name="order">
+            <value>2</value>
+        </property>
         <property name="suffix">
             <value>.wml</value>
         </property>
@@ -171,32 +188,32 @@
     <!--<bean id="userLogJob" class="com.sogou.upd.passport.common.utils.UserLogTimerUtil"></bean>-->
     <!--&lt;!&ndash; 定义调用对象和调用对象的方法 &ndash;&gt;-->
     <!--<bean id="userLogTask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">-->
-        <!--&lt;!&ndash; 调用的类 &ndash;&gt;-->
-        <!--<property name="targetObject">-->
-            <!--<ref bean="userLogJob"/>-->
-        <!--</property>-->
-        <!--&lt;!&ndash; 调用类中的方法 &ndash;&gt;-->
-        <!--<property name="targetMethod">-->
-            <!--<value>run</value>-->
-        <!--</property>-->
+    <!--&lt;!&ndash; 调用的类 &ndash;&gt;-->
+    <!--<property name="targetObject">-->
+    <!--<ref bean="userLogJob"/>-->
+    <!--</property>-->
+    <!--&lt;!&ndash; 调用类中的方法 &ndash;&gt;-->
+    <!--<property name="targetMethod">-->
+    <!--<value>run</value>-->
+    <!--</property>-->
     <!--</bean>-->
     <!--&lt;!&ndash; 定义触发时间 &ndash;&gt;-->
     <!--<bean id="userLogTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">-->
-        <!--<property name="jobDetail">-->
-            <!--<ref bean="userLogTask"/>-->
-        <!--</property>-->
-        <!--&lt;!&ndash; cron表达式 &ndash;&gt;-->
-        <!--<property name="cronExpression">-->
-            <!--<value>0 * 17 * * ?</value>-->
-        <!--</property>-->
+    <!--<property name="jobDetail">-->
+    <!--<ref bean="userLogTask"/>-->
+    <!--</property>-->
+    <!--&lt;!&ndash; cron表达式 &ndash;&gt;-->
+    <!--<property name="cronExpression">-->
+    <!--<value>0 * 17 * * ?</value>-->
+    <!--</property>-->
     <!--</bean>-->
     <!--&lt;!&ndash; 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序  &ndash;&gt;-->
     <!--<bean id="startQuertz" lazy-init="false" autowire="no"-->
-          <!--class="org.springframework.scheduling.quartz.SchedulerFactoryBean">-->
-        <!--<property name="triggers">-->
-            <!--<list>-->
-                <!--<ref bean="userLogTrigger"/>-->
-            <!--</list>-->
-        <!--</property>-->
+    <!--class="org.springframework.scheduling.quartz.SchedulerFactoryBean">-->
+    <!--<property name="triggers">-->
+    <!--<list>-->
+    <!--<ref bean="userLogTrigger"/>-->
+    <!--</list>-->
+    <!--</property>-->
     <!--</bean>-->
 </beans>

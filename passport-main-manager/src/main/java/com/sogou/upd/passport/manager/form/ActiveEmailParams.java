@@ -21,6 +21,7 @@ public class ActiveEmailParams {
     @URL
     @Ru
     private String ru;
+    private boolean rtp = true; // redirect to passport 是否跳转到 passport，若否则直接跳回 ru
 
     public String getClient_id() {
         return client_id;
@@ -52,5 +53,13 @@ public class ActiveEmailParams {
 
     public void setRu(String ru) {
         this.ru = ru;
+    }
+    
+    public boolean isRtp() {
+        return rtp;
+    }
+    
+    public void setRtp(boolean rtp) {
+        this.rtp = rtp;
     }
 }

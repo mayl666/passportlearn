@@ -28,25 +28,6 @@ public class SGHttpClientTest {
 
     private static final String userId = "upd_test@sogou.com";
 
-    @Test
-    public void testBuildSetCookieUrl() throws Exception {
-        String ru = "http%3a%2f%2fie.sogou.com";
-        String userId = "shipengzhi1986@sogou.com";
-        String domain = "sogou.com";
-        long ct = System.currentTimeMillis();
-        String code = userId + appId + key + ct;
-        code = Coder.encryptMD5(code);
-        String url = "http://passport.sohu.com/act/setcookie?";
-        url += "userid=" + userId;
-        url += "&appid=" + appId;
-        url += "&ru=" + ru;
-        url += "&domain=" + domain;
-        url += "&ct=" + ct;
-        url += "&code=" + code;
-        System.out.println(url);
-        Header[] headers = HttpClientUtil.getResponseHeadersWget(url);
-        System.out.println(headers);
-    }
 
     @Test
     public void testCreateCode() throws Exception {
@@ -61,26 +42,6 @@ public class SGHttpClientTest {
 
 
     @Test
-    public void testUpdatePwd() throws Exception {
-        RequestModel requestModel = new RequestModelXml("http://internal.passport.sohu.com/interface/updatepwd", "info");
-        long ct = System.currentTimeMillis();
-        String code = userId + appId + key + ct;
-        code = Coder.encryptMD5(code);
-        requestModel.addParam("userid", userId);
-        requestModel.addParam("password", "testtest1");
-        requestModel.addParam("appid", appId);
-        requestModel.addParam("ct", ct);
-        requestModel.addParam("code", code);
-        requestModel.addParam("modifyip", "10.1.164.160");
-        requestModel.addParam("newquestion", "测试啊，我是来测试的");
-        requestModel.addParam("newanswer", "测试成功");
-        requestModel.addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0");
-        requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-        String result = SGHttpClient.executeStr(requestModel);
-        System.out.println(result);
-    }
-
-    @Test
     public void testGet() {
         RequestModel requestModel = new RequestModel("http://www.sogou.com");
         String result = SGHttpClient.executeStr(requestModel);
@@ -88,24 +49,6 @@ public class SGHttpClientTest {
     }
 
     static String bindEmail = "34310327@qq.com";
-
-    @Test
-    public void testBindEmail() throws Exception {
-        RequestModel requestModel = new RequestModelXml("http://internal.passport.sohu.com/interface/bindemail", "info");
-        long ct = System.currentTimeMillis();
-        String code = userId + appId + key + ct;
-        code = Coder.encryptMD5(code);
-        requestModel.addParam("userid", userId);
-        requestModel.addParam("password", Coder.encryptMD5("testtest1"));
-        requestModel.addParam("appid", appId);
-        requestModel.addParam("ct", ct);
-        requestModel.addParam("code", code);
-        requestModel.addParam("newbindemail", bindEmail);
-        requestModel.addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0");
-        requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-        String result = SGHttpClient.executeStr(requestModel);
-        System.out.println(result);
-    }
 
 
     @Test
@@ -144,75 +87,6 @@ public class SGHttpClientTest {
         System.out.println(result);
     }
 
-    @Test
-    public void testGetCookieValue() throws Exception {
-        RequestModel requestModel = new RequestModel("http://internal.passport.sohu.com/act/getcookievalue");
-        String userid = "shipengzhi1986@sogou.com";
-        long ct = System.currentTimeMillis();
-        String code = userid + "a80d&p4^9t" + ct;
-        code = Coder.encryptMD5(code);
-        requestModel.addParam("userid", userid);
-        requestModel.addParam("ct", ct);
-        requestModel.addParam("code", code);
-        requestModel.addParam("ip", "10.129.192.211");
-        requestModel.addParam("persistentcookie", "0");
-        requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-        String result = SGHttpClient.executeStr(requestModel);
-        System.out.println(result);
-    }
-
-    @Test
-    public void testSetCookie() throws Exception {
-        String ru = "http%3a%2f%2fie.sogou.com";
-        String userId = "shipengzhi1986@sogou.com";
-        String domain = "sogou.com";
-        long ct = System.currentTimeMillis();
-        String code = userId + appId + key + ct;
-        code = Coder.encryptMD5(code);
-        String url = "http://passport.sohu.com/act/setcookie";
-
-        RequestModel requestModel = new RequestModel(url);
-        requestModel.addParam("userid", userId);
-        requestModel.addParam("ct", ct);
-        requestModel.addParam("code", code);
-        requestModel.addParam("appid", appId);
-        requestModel.addParam("ru", ru);
-        requestModel.addParam("domain", domain);
-        String result = SGHttpClient.executeStr(requestModel);
-        System.out.println(result);
-    }
-
-    @Test
-    public void testGetCookieKey() throws Exception {
-        RequestModel requestModel = new RequestModel("http://internal.passport.sohu.com/act/getcookiekey");
-        long ct = System.currentTimeMillis();
-        String code = appId + key + ct;
-        code = Coder.encryptMD5(code);
-        requestModel.addParam("appid", appId);
-        requestModel.addParam("ct", ct);
-        requestModel.addParam("code", code);
-        requestModel.addParam("date", "2013-06-08");
-        requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-        String result = SGHttpClient.executeStr(requestModel);
-        System.out.println(result);
-    }
-
-    @Test
-    public void testAuthTestModelUser() throws Exception {
-        RequestModel requestModel = new RequestModelXml("http://internal.passport.sohu.com/interface/authuser", "info");
-        String userid = "upd_test@sogou.com";
-        long ct = System.currentTimeMillis();
-        String code = userid + appId + key + ct;
-        code = Coder.encryptMD5(code);
-        requestModel.addParam("userid", userid);
-        requestModel.addParam("appid", appId);
-        requestModel.addParam("password", "testtest");
-        requestModel.addParam("ct", ct);
-        requestModel.addParam("code", code);
-        requestModel.setHttpMethodEnum(HttpMethodEnum.POST);
-        Result result = SGHttpClient.executeBean(requestModel, HttpTransformat.xml, Result.class);
-        System.out.println(result);
-    }
 
     @Test
     public void testXmlTresultoBean() {

@@ -21,6 +21,14 @@ public interface MobilePassportMappingService {
     public String queryPassportIdByMobile(String mobile) throws ServiceException;
 
     /**
+     * 根据用户名
+     * @param username
+     * @return
+     * @throws ServiceException
+     */
+    public String queryPassportIdByUsername(String username) throws ServiceException;
+
+    /**
      * 插入一条mobile和passportId的映射关系
      *
      * @param mobile
@@ -39,8 +47,4 @@ public interface MobilePassportMappingService {
      */
     public boolean deleteMobilePassportMapping(String mobile) throws ServiceException;
 
-    /**
-     * 根据passportId删除mobile和passportid的映射关系的缓存，增量数据迁移的内部debug接口使用
-     */
-    public boolean deleteMobilePassportMappingCache(String mobile) throws ServiceException;
 }

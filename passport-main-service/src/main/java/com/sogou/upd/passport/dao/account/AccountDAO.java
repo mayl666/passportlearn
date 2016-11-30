@@ -135,15 +135,4 @@ public interface AccountDAO {
     public int deleteAccountByPassportId(@ShardBy @SQLParam("passport_id") String passport_id) throws
             DataAccessException;
 
-
-    /**
-     * account_base_info 表昵称、头像迁移至 account_0~32表,更新用户头像、昵称信息
-     */
-    @SQL("update " +
-            TABLE_NAME +
-            " set uniqname=:uniqname,avatar=:avatar where passport_id=:passport_id")
-    public int updateNickNameAndAvatar(@SQLParam("uniqname") String uniqname,
-                                       @SQLParam("avatar") String avatar,
-                                       @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
-
 }

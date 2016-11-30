@@ -23,7 +23,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = SkinValidator.class)
 @Documented
 public @interface Skin {
-    String message() default "皮肤值错误";
+    String message() default "error skin";
 
     Class<?>[] groups() default {};
 

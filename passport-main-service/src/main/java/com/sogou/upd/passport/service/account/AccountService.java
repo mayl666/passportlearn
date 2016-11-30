@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.parameter.SohuPasswordType;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
@@ -20,6 +21,7 @@ public interface AccountService {
 
     /**
      * 初始化非第三方用户账号
+     * @param username 用户的唯一标识
      */
     public Account initialAccount(String username, String password, boolean needMD5, String ip, int provider)
             throws ServiceException;
@@ -50,15 +52,6 @@ public interface AccountService {
     public Account queryAccountByPassportId(String passportId) throws ServiceException;
 
     /**
-     * 检测密码修改次数是否超出每天限制
-     *
-     * @param passportId
-     * @return 不超出返回true，超出返回false
-     * @throws ServiceException
-     */
-    public boolean checkLimitResetPwd(String passportId) throws ServiceException;
-
-    /**
      * 验证账号的有效性，返回正常用户
      *
      * @return 验证不通过，则返回null
@@ -70,12 +63,7 @@ public interface AccountService {
      *
      * @return 用户名或密码不匹配，则返回null
      */
-    public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException;
-
-    /**
-     * 根据passportId删除Account表的缓存，增量数据迁移的内部debug接口使用
-     */
-    public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException;
+    public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5,SohuPasswordType sohuPwdType) throws ServiceException;
 
     /**
      * 根据passportId删除Account表缓存和数据库
@@ -89,7 +77,7 @@ public interface AccountService {
     /**
      * 重置密码
      */
-    public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException;
+    public boolean resetPassword(String sohuPassportId,Account account, String password, boolean needMD5) throws ServiceException;
 
     /**
      * 激活验证邮件
@@ -97,6 +85,15 @@ public interface AccountService {
      * @return Result格式的返回值, 成功或失败，返回提示信息
      */
     public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException;
+
+    /**
+     * 激活验证邮件
+     *
+     * @param lang 邮件语言，空或其他为中文，en为英文
+     * @return Result格式的返回值, 成功或失败，返回提示信息
+     */
+    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru,
+                                   boolean rtp, String lang) throws ServiceException;
 
     /**
      * 激活验证邮件
@@ -134,6 +131,15 @@ public interface AccountService {
      * @throws ServiceException
      */
     public boolean modifyMobileByAccount(Account account, String newMobile);
+
+    /**
+     * 修改解除绑定手机
+     *
+     * @param account
+     * @param newMobile
+     * @return
+     */
+    public boolean modifyMobile(Account account, String newMobile);
 
     /**
      * 首次绑定
@@ -214,6 +220,16 @@ public interface AccountService {
      * @return
      * @throws ServiceException
      */
-    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5) throws ServiceException;
+    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5,SohuPasswordType sohuPwdType) throws ServiceException;
 
+
+    /**
+     * 只更新db和redis中的用户密码，不清除pc端token
+     * @param account
+     * @param password
+     * @param needMd5
+     * @return
+     * @throws ServiceException
+     */
+    public boolean updatePwd(String passportId,Account account,String password,boolean needMd5) throws ServiceException;
 }

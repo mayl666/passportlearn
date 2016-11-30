@@ -24,8 +24,6 @@ public class AccountInfoManagerTest extends BaseTest {
 
     @Autowired
     private AccountInfoManager accountInfoManager;
-    @Autowired
-    private OAuth2ResourceManager oAuth2ResourceManager;
 
     private String uniqname_update = "测试昵称" + new Random().nextInt(1000);
     private String fullname_update = "测试全称" + new Random().nextInt(1000);

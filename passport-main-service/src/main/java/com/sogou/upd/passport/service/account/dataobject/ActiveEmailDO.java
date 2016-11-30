@@ -24,7 +24,11 @@ public class ActiveEmailDO {
     protected String toEmail;  //发送邮件的对象
 
     protected boolean saveEmail = false; //是否保存发送邮件对象与scode的对应关系,默认不保存，值为false，绑定邮箱是为true
-
+    
+    protected boolean rtp = true; // redirect to passport 是否跳转到 passport，若否则直接跳回 ru
+    
+    protected String lang;
+    
     public ActiveEmailDO(String passportId, int clientId, String ru, AccountModuleEnum module, String toEmail, boolean saveEmail) {
         this.passportId = passportId;
         this.clientId = clientId;
@@ -33,7 +37,19 @@ public class ActiveEmailDO {
         this.toEmail = toEmail;
         this.saveEmail = saveEmail;
     }
-
+    
+    public ActiveEmailDO(String passportId, int clientId, String ru, AccountModuleEnum module,
+                         String toEmail, boolean saveEmail, boolean rtp, String lang) {
+        this.passportId = passportId;
+        this.clientId = clientId;
+        this.ru = ru;
+        this.module = module;
+        this.toEmail = toEmail;
+        this.saveEmail = saveEmail;
+        this.rtp = rtp;
+        this.lang = lang;
+    }
+    
     public String getPrefix() {
         return CommonConstant.DEFAULT_INDEX_URL;
     }
@@ -85,5 +101,20 @@ public class ActiveEmailDO {
     public void setSaveEmail(boolean saveEmail) {
         this.saveEmail = saveEmail;
     }
-
+  
+    public boolean isRtp() {
+        return rtp;
+    }
+    
+    public void setRtp(boolean rtp) {
+        this.rtp = rtp;
+    }
+    
+    public String getLang() {
+        return lang;
+    }
+    
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
 }

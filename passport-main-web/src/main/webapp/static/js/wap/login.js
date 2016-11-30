@@ -19,6 +19,13 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
 
     var ru = Utils.getRu();
     var passParamsStr = Utils.getPassThroughParams();
+    var params = Utils.getUrlParams(),
+        //是否是手机登录模式
+        isPhone = /phone|tel/i.test(params.type || ''),
+        duanxinRedirectUrl = 'http://m.account.sogou.com/wap/smsCodeLogin/index?' + passParamsStr;
+    var reg = {
+        phone: /(^[0-9]{3,4}-[0-9]{3,8}$)|^(13[0-9]|14[0-9]|15[0-9]|18[0-9]|17[0-9])\d{8}$/
+    };
 
     //This class operate list of history.
     var LoginHistory = {
@@ -83,7 +90,12 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
         $captcha: $('#captcha'),
         $msg: $('.msg'),
         __mLogining:false,
-        init: function() {
+        init: function () {
+            if (isPhone) {
+                this.$username.prev().html('手机号：');
+                this.$password.prev().html('密&nbsp;码：');
+                this.$username.attr('placeholder', '请输入您的手机号');
+            }
             LoginHistory.init();
 
             LoginHistory.on(LoginHistory.SELECTEVENT,this.onHistorySelect,this);
@@ -91,12 +103,17 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
                 e.preventDefault();
                 history.back();
             });
+            //https://account.sogou.com/connect/login?provider=qq&type=wap&display=mobile&client_id=2012&v=5&skin=orange&ru=http%3A%2F%2F8.sogou.com%2F
+
+            //TODO手机号码登录跳转url
+            $('.trd-phone').attr('href', duanxinRedirectUrl);
             $('.trd-qq').attr('href','https://account.sogou.com/connect/login?provider=qq&type=wap&display=mobile&' + passParamsStr );
+
             $('.reglink').attr('href','/wap/reg?'+passParamsStr);
             $('.forgot').attr('href', '/wap/findpwd?'+passParamsStr);
 
             var phone;
-            if(phone=Utils.getUrlParams().phone){
+            if(phone=params.phone){
                 this.$username.val(phone);
             }
 
@@ -139,7 +156,10 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
                 var c = $.trim(self.$captcha.val());
 
                 if (!u || !p) {
-                    return self.showMsg('请输入用户名或密码');
+                    return self.showMsg(isPhone ? '请输入手机号和密码' : '请输入用户名或密码');
+                }
+                if (isPhone&&!reg.phone.test(u)) {
+                    return self.showMsg('请输入正确的手机号');
                 }
 
                 if(p.length<6){
@@ -176,6 +196,11 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
 
                         //ru&&location.assign(decodeURIComponent(ru));
                     } else {
+                        //if (isPhone && data.status === '10009') {
+                        //    self.showMsg(data.statusText + ',<a href="' + duanxinRedirectUrl + '">采用短信验证码登录</a>');
+                        //} else {
+                        //    self.showMsg(data.statusText);
+                        //}
                         self.showMsg(data.statusText);
                         if (data.status == '20221' || data.status == '20257') {
                             self.$captcha.empty().focus();
@@ -201,7 +226,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
             this.$captchaWrapper.removeClass('hide');
             this.$captchaImg.attr('src', Form.getCaptcha(token));
         },
-        showMsg: function(msg,normal) {
+        showMsg: function (msg, normal, isHTML) {
             if(normal){
                 this.$msg.find('.circle').removeClass('hide red').addClass('green');
                 this.$msg.find('.circle .sprite').removeClass('sprite-wrong').addClass('sprite-right');
@@ -211,7 +236,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
                 this.$msg.find('.circle .sprite').removeClass('sprite-right').addClass('sprite-wrong');
 
             }
-            this.$msg.find('.info').text(msg);
+            this.$msg.find('.info').html(msg);
             return this;
         }
     };

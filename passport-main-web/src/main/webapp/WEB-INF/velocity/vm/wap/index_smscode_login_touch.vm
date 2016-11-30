@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta id="viewport" name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="MobileOptimized" content="320"/>
+<meta name="format-detection" content="telephone=no"/>
+<title>登录-搜狗通行证</title>
+<link rel="stylesheet" href="/./static/css/wap/main.css?t=805864"/>
+</head>
+<body>
+
+
+#if($display != "native")
+<nav class="f-f f-vc">
+    <a href="#" class="backlink f-f f-hc f-vc"></a>
+    <div class="f-1 f-f f-hc f-vc f-title">手机短信登录</div>
+    <a href="/wap/reg" class="f-f f-vc f-hc reglink">注册</a>
+</nav>
+#end
+
+<form action="＃" method="post" class="block">
+<div class="msg f-f f-vc">
+    <div class="circle red f-f f-hc f-vc hide"><div class="sprite sprite-wrong"></div></div>
+    <div class="info"></div>
+</div>
+<div class="rows">
+
+<!--username-->
+<div class="row f-f f-vc">
+    <label for="username" class="h-fil f-f f-hr f-vc">手机号：</label>
+    <input type="text" name="username" id="username" class="block h-fil f-1" placeholder="请输入您的手机号" autocomplete="off"/>
+    <a href="#" class="block indicator hide" tabindex="1"></a>
+</div>
+<!--smscode-->
+<div class="row f-f f-vc">
+    <label for="sms" class="h-fil f-f f-hr f-vc">确认码：</label>
+    <input type="text" name="sms" id="sms" class="block h-fil f-1" placeholder="短信确认码" autocomplete="off" tabindex="2"/>
+    <a href="#" class="sendsms block tc">发送验证码</a>
+    <a href="#" class="block indicator hide"></a>
+</div>
+<!--captcha-->
+<div class="row f-f f-vc hide" id="captcha-wrapper">
+    <label for="captcha" class="h-fil f-f f-hr f-vc">验证码：</label>
+    <input type="text" name="captcha" id="captcha" class="block h-fil f-1" placeholder="请输入验证码" autocomplete="off" tabindex="3"/>
+    <img id="captcha-img-check" border="0" class="captcha-img block"/>
+    <a href="#" class="block indicator hide"></a>
+</div>
+
+</div>
+<div class="tools f-f f-vc">
+</div>
+<!--button-->
+<div class="f-f">
+    <input type="submit" class="block submit f-1 tc" tabindex="5" value="登录"/>
+</div>
+</form>
+<div class="mask hide"></div>
+<div class="dialog hide" id="captchaDialog">
+    <div class="content">
+        <h4 class="tc">请输入图片验证码</h4>
+        <div class="tip p15 f-f f-vc row f-m">
+            <input type="text" class="f-1 h-fil clp"/>
+            <img id="captcha-img" border="0" class="captcha-img block"/>
+        </div>
+    </div>
+    <div class="buttons f-f f-vc">
+        <a href="#" class="x f-f f-hc f-vc h-fil f-1" style="border-right:0">确定</a>
+    </div>
+</div>
+<script>var token = '${token}';</script>
+
+</body>
+<script src="/static/js/lib/mursa.js?t=140248"></script>
+<script src="/./static/js/wap.js?t=674249" charset="utf-8"></script>
+<script>
+    require.config({
+    baseUrl:"/./static/js"
+});
+
+require(['wap'] , function(module){
+    module['index_smscode_login_touch']();
+});
+</script>
+</html>

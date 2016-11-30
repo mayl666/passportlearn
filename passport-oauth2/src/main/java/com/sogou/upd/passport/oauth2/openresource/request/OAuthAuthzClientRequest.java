@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.oauth2.openresource.request;
 
+import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.oauth2.common.OAuth;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
@@ -50,8 +51,12 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
         }
 
         // 第三方appkey
-        public AuthenticationRequestBuilder setAppKey(String appKey) {
-            this.parameters.put(OAuth.OAUTH_CLIENT_ID, appKey);
+        public AuthenticationRequestBuilder setAppKey(String appKey, int provider) {
+            if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+                this.parameters.put(OAuth.OAUTH_WEIXIN_CLIENT_ID, appKey);
+            } else {
+                this.parameters.put(OAuth.OAUTH_CLIENT_ID, appKey);
+            }
             return this;
         }
 
@@ -91,6 +96,14 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
         // client端状态值
         public AuthenticationRequestBuilder setState(String state) {
             this.parameters.put(OAuth.OAUTH_STATE, state);
+            return this;
+        }
+
+        //设置微信二维码框样式
+        public AuthenticationRequestBuilder setHref(String href){
+            if(!Strings.isNullOrEmpty(href)){
+                this.parameters.put(OAuth.OAUTH_HREF,href);
+            }
             return this;
         }
 
@@ -134,13 +147,21 @@ public class OAuthAuthzClientRequest extends OAuthClientRequest {
             return this;
         }
 
-        public TokenRequestBuilder setAppKey(String appKey) {
-            this.parameters.put(OAuth.OAUTH_CLIENT_ID, appKey);
+        public TokenRequestBuilder setAppKey(String appKey, int provider) {
+            if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+                this.parameters.put(OAuth.OAUTH_WEIXIN_CLIENT_ID, appKey);
+            } else {
+                this.parameters.put(OAuth.OAUTH_CLIENT_ID, appKey);
+            }
             return this;
         }
 
-        public TokenRequestBuilder setAppSecret(String appSecret) {
-            this.parameters.put(OAuth.OAUTH_CLIENT_SECRET, appSecret);
+        public TokenRequestBuilder setAppSecret(String appSecret, int provider) {
+            if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+                this.parameters.put(OAuth.OAUTH_WEIXIN_CLIENT_SECRET, appSecret);
+            } else {
+                this.parameters.put(OAuth.OAUTH_CLIENT_SECRET, appSecret);
+            }
             return this;
         }
 

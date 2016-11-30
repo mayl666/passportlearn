@@ -2,8 +2,12 @@ package com.sogou.upd.passport.web;
 
 
 import com.google.common.base.Strings;
-
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.HystrixConstant;
+import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
+import com.sogou.upd.passport.common.hystrix.HystrixKafkaSemaphoresCommand;
+import com.sogou.upd.passport.common.hystrix.HystrixKafkaThreadCommand;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -35,6 +39,10 @@ public class UserOperationLogUtil {
     private static final Logger userOperationLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
     private static Logger userLogger = userOperationLogger;
 
+    //把useLogger分离开：local+kafka
+    private static Logger userLocalLogger = LoggerFactory.getLogger("userLoggerLocal");
+    private static Logger userKafkaLogger = LoggerFactory.getLogger("userLoggerKafka");
+
     private static String NEXTLINE = "%0A"; // \n换行符的UTF-8编码
     private static String TAB = "%09"; // \t制表符的UTF-8编码
 
@@ -63,11 +71,11 @@ public class UserOperationLogUtil {
      * @param userOperationLog
      */
     public static void log(UserOperationLog userOperationLog) {
-        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap(), userLogger);
+        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap(), userLogger,userOperationLog.getUdid());
     }
 
     public static void log(UserOperationLog userOperationLog, Logger authEmailUserLogger) {
-        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap(), authEmailUserLogger);
+        log(userOperationLog.getPassportId(), userOperationLog.getUserOperation(), userOperationLog.getClientId(), userOperationLog.getIp(), userOperationLog.getResultCode(), userOperationLog.getOtherMessageMap(), authEmailUserLogger,userOperationLog.getUdid());
     }
 
     /**
@@ -80,7 +88,7 @@ public class UserOperationLogUtil {
      * @param resultCode   执行结果码
      * @param otherMessage 其它信息
      */
-    public static void log(String passportId, String operation, String clientId, String ip, String resultCode, Map<String, String> otherMessage, Logger operationLogger) {
+    public static void log(String passportId, String operation, String clientId, String ip, String resultCode, Map<String, String> otherMessage, Logger operationLogger,String udid) {
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                     .getRequest();
@@ -138,11 +146,32 @@ public class UserOperationLogUtil {
                 log.append("\t").append(StringUtil.defaultIfEmpty(otherMsgJson, "-"));
             }
             log.append("\t").append(StringUtil.defaultIfEmpty(request.getHeader("X-Http-Real-Port"), "-"));
-            userLogger.info(log.toString());
-        } catch (Exception e) {
+            log.append("\t").append(StringUtil.defaultIfEmpty(udid, "-"));
+//            userLogger.info(log.toString());
+
+            userLocalLogger.info(log.toString());
+            //调用hystrix 线程隔离kafka command
+            Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
+            Boolean hystrixKafkaHystrixEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_HYSTRIX_ENABLED));
+            if (hystrixGlobalEnabled && hystrixKafkaHystrixEnabled) {
+                Boolean kafkaChooseThreadMode = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_KAFKA_CHOOSE_THREAD_MODE));
+                if (kafkaChooseThreadMode) {
+                    new HystrixKafkaThreadCommand(log.toString()).execute();
+                } else {
+                    new HystrixKafkaSemaphoresCommand(log.toString()).execute();
+                }
+
+            } else {
+                userKafkaLogger.info(log.toString());
+            }
+
+        }catch(HystrixRuntimeException he){
+            logger.error("HystrixKafka "+HystrixConstant.FALLBACK_REASON_CANNOT_FALLBACK);
+        }catch (Exception e) {
             logger.error("UserOperationLogUtil.log error", e);
         }
     }
+
 
     private static String getLocalIp(HttpServletRequest request) {
         try {

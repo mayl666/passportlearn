@@ -3,7 +3,6 @@ package com.sogou.upd.passport.web.account.action;
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
-import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -19,6 +18,7 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
+import com.sogou.upd.passport.web.annotation.RiskControlSecurity;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -98,83 +98,88 @@ public class LoginAction extends BaseController {
      *
      * @param loginParams 传入的参数
      */
+    @RiskControlSecurity
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(HttpServletRequest request, HttpServletResponse response, Model model, WebLoginParams loginParams)
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
-        //参数验证
-        String validateResult = ControllerHelper.validateParams(loginParams);
-        if (!Strings.isNullOrEmpty(validateResult)) {
-            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
+        String domain = loginParams.getDomain();
+        String userId = loginParams.getUsername();
+        try {
+            //参数验证
+            String validateResult = ControllerHelper.validateParams(loginParams);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                result.setDefaultModel("xd", loginParams.getXd());
+                model.addAttribute("data", result.toString());
+                return "/login/api";
+            }
+            result = loginManager.accountLogin(loginParams, ip, request.getScheme());
+            if (result.isSuccess()) {
+                userId = result.getModels().get("userid").toString();
+                String uniqName = StringUtils.EMPTY;
+                if (result.getModels().get("uniqName") != null) {
+                    uniqName = result.getModels().get("uniqName").toString();
+                }
+                int clientId = Integer.parseInt(loginParams.getClient_id());
+                int autoLogin = loginParams.getAutoLogin();
+                int sogouMaxAge = autoLogin == 0 ? -1 : (int) DateAndNumTimesConstant.TWO_WEEKS;
+                String sogouRu = loginParams.getRu();
+                if (Strings.isNullOrEmpty(sogouRu)) {
+                    sogouRu = CommonConstant.DEFAULT_INDEX_URL;
+                }
+                //最初版本
+//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
+                //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie  module 替换
+//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName);
+                CookieApiParams cookieApiParams = new CookieApiParams();
+                cookieApiParams.setUserid(userId);
+                cookieApiParams.setClient_id(clientId);
+                cookieApiParams.setRu(sogouRu);
+                cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
+                cookieApiParams.setPersistentcookie(String.valueOf(1));
+                cookieApiParams.setIp(ip);
+                cookieApiParams.setUniqname(uniqName);
+                cookieApiParams.setMaxAge(sogouMaxAge);
+                cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
+                result = cookieManager.createCookie(response, cookieApiParams);
+                if (result.isSuccess()) {
+                    result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
+                    result.setDefaultModel("userid", userId);
+                    loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
+                    if (!Strings.isNullOrEmpty(domain)) {
+                        String creeateSSOCookieUrl = cookieManager.buildCreateSSOCookieUrl(domain, clientId, userId, uniqName, uniqName, sogouRu, ip);
+                        result.setDefaultModel("crossdomainurl", creeateSSOCookieUrl);
+                    }
+                }
+            } else {
+                loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
+                //校验是否需要验证码
+                boolean needCaptcha = loginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
+                if (needCaptcha) {
+                    result.setDefaultModel("needCaptcha", true);
+                }
+                if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
+                    result.setMessage("您登陆过于频繁，请稍后再试。");
+                }
+            }
             result.setDefaultModel("xd", loginParams.getXd());
             model.addAttribute("data", result.toString());
             return "/login/api";
+        } finally {
+            //用户登录log
+
+            UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
+            userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+            userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(request, "YYID"));
+            userOperationLog.putOtherMessage("module", loginParams.getModule());
+            userOperationLog.putOtherMessage("cookie", getCookies(request));
+            userOperationLog.putOtherMessage("User-Agent", getUserAgent(request));
+            UserOperationLogUtil.log(userOperationLog);
         }
-        String userId = loginParams.getUsername();
-        result = loginManager.accountLogin(loginParams, ip, request.getScheme());
-        //用户登录log
-        UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), loginParams.getClient_id(), result.getCode(), getIp(request));
-        userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
-        userOperationLog.putOtherMessage("yyid", ServletUtil.getCookie(request, "YYID"));
-        UserOperationLogUtil.log(userOperationLog);
-        if (result.isSuccess()) {
-            userId = result.getModels().get("userid").toString();
-            String uniqName = StringUtils.EMPTY;
-            if (result.getModels().get("uniqname") != null) {
-                uniqName = result.getModels().get("uniqname").toString();
-            }
-
-            int clientId = Integer.parseInt(loginParams.getClient_id());
-            int autoLogin = loginParams.getAutoLogin();
-            int sogouMaxAge = autoLogin == 0 ? -1 : (int) DateAndNumTimesConstant.TWO_WEEKS;
-            String sogouRu = loginParams.getRu();
-            if (Strings.isNullOrEmpty(sogouRu)) {
-                sogouRu = CommonConstant.DEFAULT_INDEX_URL;
-            }
-
-            //最初版本
-//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
-            //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie  module 替换
-//            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge, uniqName);
-
-            CookieApiParams cookieApiParams = new CookieApiParams();
-            cookieApiParams.setUserid(userId);
-            cookieApiParams.setClient_id(clientId);
-            cookieApiParams.setRu(sogouRu);
-            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-            cookieApiParams.setPersistentcookie(String.valueOf(1));
-            cookieApiParams.setIp(ip);
-            cookieApiParams.setUniqname(uniqName);
-            cookieApiParams.setMaxAge(sogouMaxAge);
-            cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
-
-//            CookieApiParams cookieApiParams = buildCookieApiParams(userId, clientId, sogouRu, ip, sogouMaxAge);
-//            cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-//            cookieApiParams.setPersistentcookie(String.valueOf(1));
-
-            result = cookieManager.createCookie(response, cookieApiParams);
-            if (result.isSuccess()) {
-                result.setDefaultModel(CommonConstant.RESPONSE_RU, sogouRu);
-                result.setDefaultModel("userid", userId);
-                loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, clientId);
-            }
-        } else {
-            loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
-            //校验是否需要验证码
-            boolean needCaptcha = loginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
-            if (needCaptcha) {
-                result.setDefaultModel("needCaptcha", true);
-            }
-            if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
-                result.setMessage("您登陆过于频繁，请稍后再试。");
-            }
-        }
-        result.setDefaultModel("xd", loginParams.getXd());
-        model.addAttribute("data", result.toString());
-        return "/login/api";
     }
 
     /**
@@ -184,11 +189,7 @@ public class LoginAction extends BaseController {
     @RequestMapping(value = "/logout_js", method = RequestMethod.GET)
     public void logoutInjs(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "client_id", required = false) String client_id)
             throws Exception {
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PASSPORT);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINFO);
-
+        cookieManager.clearCookie(response);
         String userId = hostHolder.getPassportId();
 
         //用于记录log
@@ -205,11 +206,8 @@ public class LoginAction extends BaseController {
     @RequestMapping(value = "/logout_redirect", method = RequestMethod.GET)
     public ModelAndView logoutWithRu(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "ru", required = false) String ru, @RequestParam(value = "client_id", required = false) String client_id)
             throws Exception {
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PASSPORT);
-        ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINFO);
 
+        cookieManager.clearCookie(response);
         String userId = hostHolder.getPassportId();
 
         //用于记录log
@@ -221,7 +219,7 @@ public class LoginAction extends BaseController {
         RuValidator ruValidator = new RuValidator();
         if (StringUtil.isBlank(ru) || !ruValidator.isValid(ru, null)) {
             if (StringUtil.isBlank(referer)) {
-                referer = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+                referer = CommonConstant.DEFAULT_INDEX_URL;
             }
             ru = referer;
         }

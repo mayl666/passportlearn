@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.connect.impl.qq;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -35,7 +36,7 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
     private ConnectConfigService connectConfigService;
 
     @Override
-    public String executeQQOpenApi(String openId, String openKey, QQClubFaceOpenApiParams qqParams) throws Exception {
+    public String executeQQOpenApi(String openId, String openKey, QQClubFaceOpenApiParams qqParams, String thirdAppId) throws Exception {
         String resp;
         try {
             //QQ提供的openapi服务器
@@ -43,7 +44,10 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
             //应用的基本信息，搜狗在QQ的第三方appid与appkey
             String userId = qqParams.getUserid();
             int provider = AccountTypeEnum.getAccountType(userId).getValue();
-            ConnectConfig connectConfig = connectConfigService.querySpecifyConnectConfig(CommonConstant.SGPP_DEFAULT_CLIENTID, provider);
+            ConnectConfig connectConfig = connectConfigService.queryConnectConfigByAppId(thirdAppId, provider);
+            if (connectConfig == null) {
+                throw new Exception("thirdAppid error, thirdAppid:" + thirdAppId);
+            }
             String sgAppKey = connectConfig.getAppKey();     //搜狗在QQ的appid
             String sgAppSecret = connectConfig.getAppSecret(); //搜狗在QQ的appkey
             OpenApiV3 sdkSG = createOpenApiByApp(sgAppKey, sgAppSecret, serverName);
@@ -78,7 +82,7 @@ public class QQClubFaceOpenApiManagerImpl extends BaseProxyManager implements QQ
                 params.putAll(maps);
             }
             //目前QQ SDK只提供了post请求，且已经与QQ确认过，他们目前所有的开放接口post请求都可以正确访问
-            String method = CommonConstant.CONNECT_METHOD_POST;
+            String method = HttpConstant.HttpMethod.POST;
             resp = sdk.api(scriptName, params, protocol, method);
         } catch (IOException ioe) {
             logger.error("Transfer Object To Map Failed :", ioe);

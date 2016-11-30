@@ -28,7 +28,7 @@ public class ZkTest extends BaseTest {
                 Thread.sleep(1);
                 System.out.println("10000----------");
             } catch (InterruptedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }

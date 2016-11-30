@@ -5,7 +5,6 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.utils.ConnectHttpClient;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthClientResponse;
@@ -43,10 +42,10 @@ public class HttpClient4 extends ConnectHttpClient {
         //性能分析
         StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
         URI location;
-        String url="";
+        String url = "";
         try {
             location = new URI(request.getLocationUri());
-            url= request.getLocationUri();
+            url = request.getLocationUri();
         } catch (URISyntaxException e) {
             // URL表达式错误
             log.error("[HttpClient4] URL syntax error :", e);
@@ -62,8 +61,8 @@ public class HttpClient4 extends ConnectHttpClient {
                 ((HttpPost) req).setEntity(entity);
             } else {
                 req = new HttpGet(location);
-                if(url.indexOf("?") >0){
-                    url = url.substring(0,url.indexOf("?"));
+                if (url.indexOf("?") > 0) {
+                    url = url.substring(0, url.indexOf("?"));
                 }
             }
             if (headers != null && !headers.isEmpty()) {
@@ -77,7 +76,7 @@ public class HttpClient4 extends ConnectHttpClient {
             HttpEntity entity = response.getEntity();
             if (entity != null) {
                 in = entity.getContent();
-                responseBody = EntityUtils.toString(entity, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                responseBody = EntityUtils.toString(entity, CommonConstant.DEFAULT_CHARSET);
                 contentTypeHeader = entity.getContentType();
             }
             String contentType = null;
@@ -91,7 +90,7 @@ public class HttpClient4 extends ConnectHttpClient {
             stopWatch(stopWatch, url, "failed");
             throw e;
         } catch (Exception e) {
-            log.warn("[HttpClient4] Execute Http Request Exception!", e);
+            log.warn("[HttpClient4] Execute Http Request Exception! RequestBody:" + request.getBody(), e);
             stopWatch(stopWatch, url, "failed");
             throw new OAuthProblemException(ErrorUtil.HTTP_CLIENT_REQEUST_FAIL);
         } finally {

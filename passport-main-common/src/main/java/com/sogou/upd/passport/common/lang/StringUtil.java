@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -152,23 +150,22 @@ public class StringUtil {
     }
 
     /**
-     * 根据传入的url，将参数以map形式返回
+     * 输入:"a=xxx$b=xxx&c=xxx"
+     * 输出：HashMap
      *
-     * @param spec
      * @return
      */
-    public static Map extractParameterMap(String spec) {
+    public static Map parseFormatStringToMap(String str) {
         Map map = Maps.newHashMap();
-        try {
-            URL url = new URL(spec);
-            String query = url.getQuery();
-            String[] paramArray = query.split("&");
-            for (String paramMap : paramArray) {
-                String[] params = paramMap.split("=");
+        if (Strings.isNullOrEmpty(str)) {
+            return map;
+        }
+        String[] paramArray = str.split("&");
+        for (String paramPair : paramArray) {
+            String[] params = paramPair.split("=");
+            if (params.length == 2) {
                 map.put(params[0], params[1]);
             }
-        } catch (MalformedURLException e) {
-            logger.error("parse url exception, url:" + spec, e);
         }
         return map;
     }
@@ -193,8 +190,8 @@ public class StringUtil {
     public static String strToUTF8(String str) throws UnsupportedEncodingException {
         String s = "";
         if (!StringUtils.isEmpty(str)) {
-            byte[] bytes = str.getBytes(CommonConstant.DEFAULT_CONTENT_CHARSET);
-            s = new String(bytes, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            byte[] bytes = str.getBytes(CommonConstant.DEFAULT_CHARSET);
+            s = new String(bytes, CommonConstant.DEFAULT_CHARSET);
         }
         return s;
     }
@@ -398,7 +395,12 @@ public class StringUtil {
      * @return
      */
     public static String processEmail(String email) {
-        return processStr(email, 2, 1, "@", 1);
+        String prefix = email.substring(0, email.indexOf("@"));
+        if (prefix.length() <= 3) {
+            return processStr(email, 1, 1, "@", 1);
+        } else {
+            return processStr(email, 2, 1, "@", 1);
+        }
     }
 
     /**
@@ -448,4 +450,9 @@ public class StringUtil {
         }
         return value;
     }
+
+    public static String exchangeIfContains(String value, String containStr, String exchangeStr) {
+        return value.contains(containStr) ? value.replace(containStr, exchangeStr) : value;
+    }
+
 }

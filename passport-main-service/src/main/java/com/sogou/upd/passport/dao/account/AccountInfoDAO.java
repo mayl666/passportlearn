@@ -83,19 +83,6 @@ public interface AccountInfoDAO {
 
 
     /**
-     * 修改绑定邮箱
-     *
-     * @param email
-     * @param passport_id
-     * @return
-     * @throws DataAccessException
-     */
-    @SQL("update " +
-            TABLE_NAME +
-            " set email=:email where passport_id=:passport_id")
-    public int updateBindEmail(@SQLParam("email") String email, @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
-
-    /**
      * 修改密保问题和答案，若passport_id不存在则插入新记录
      */
     @SQL(
@@ -133,16 +120,18 @@ public interface AccountInfoDAO {
                                  @SQLParam("accountInfo") AccountInfo account_info)
             throws DataAccessException;
 
+
     /**
-     * 数据迁移过程中，修复数据使用，以后可删除
+     * 修改绑定邮箱
      *
+     * @param email
      * @param passport_id
-     * @param birthday
      * @return
      * @throws DataAccessException
      */
-    @SQL("update " + TABLE_NAME + "set birthday=:birthday where passport_id=:passport_id")
-    public int updateBirthday(@ShardBy @SQLParam("passport_id") String passport_id,
-                              @SQLParam("birthday") String birthday)
-            throws DataAccessException;
+    @SQL("update " +
+            TABLE_NAME +
+            " set email=:email where passport_id=:passport_id")
+    public int updateBindEmail(@SQLParam("email") String email, @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
+
 }

@@ -9,6 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>passport-main-service</artifactId>
+    <version>1.2</version>
     <packaging>jar</packaging>
 
     <name>passport-main-service</name>
@@ -29,13 +30,6 @@
             <groupId>c3p0</groupId>
             <artifactId>c3p0</artifactId>
             <version>0.9.1.2</version>
-        </dependency>
-
-        <!-- REDIS-->
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-redis</artifactId>
-            <version>1.0.3.RELEASE</version>
         </dependency>
 
         <!--DAL-by shipengzhi-->
@@ -116,7 +110,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache</groupId>
+            <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>2.9.1</version>
         </dependency>
@@ -138,12 +132,12 @@
         <dependency>
             <artifactId>passport-main-common</artifactId>
             <groupId>sogou-passport</groupId>
-            <version>1.0</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <artifactId>passport-oauth2</artifactId>
             <groupId>sogou-passport</groupId>
-            <version>1.0</version>
+            <version>1.2</version>
         </dependency>
 
     </dependencies>
@@ -166,8 +160,11 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <delete file="src/main/resources/deploy_config.properties" />
-                                <copy file="${app_config_file}" tofile="src/main/resources/deploy_config.properties" />
+                                <delete file="src/main/resources/deploy_config.properties"/>
+                                <copy file="${config_file}" tofile="src/main/resources/deploy_config.properties"/>
+                                <delete file="src/main/resources/mapp_deploy_config.properties"/>
+                                <copy file="${mapp_config_file}"
+                                      tofile="src/main/resources/mapp_deploy_config.properties"/>
                             </tasks>
                         </configuration>
                     </execution>
@@ -180,9 +177,12 @@
         <profile>
             <id>dev</id>
             <properties>
-                <app_config_file>
+                <config_file>
                     src/main/resources/deploy_config_DEV.properties
-                </app_config_file>
+                </config_file>
+                <mapp_config_file>
+                    src/main/resources/mapp_deploy_config_DEV.properties
+                </mapp_config_file>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -191,17 +191,23 @@
         <profile>
             <id>test</id>
             <properties>
-                <app_config_file>
+                <config_file>
                     src/main/resources/deploy_config_TEST.properties
-                </app_config_file>
+                </config_file>
+                <mapp_config_file>
+                    src/main/resources/mapp_deploy_config_TEST.properties
+                </mapp_config_file>
             </properties>
         </profile>
         <profile>
             <id>prod</id>
             <properties>
-                <app_config_file>
+                <config_file>
                     src/main/resources/deploy_config_PROD.properties
-                </app_config_file>
+                </config_file>
+                <mapp_config_file>
+                    src/main/resources/mapp_deploy_config_PROD.properties
+                </mapp_config_file>
             </properties>
         </profile>
     </profiles>

@@ -1,18 +1,14 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
-import com.google.common.base.Strings;
 import com.sogou.upd.passport.BaseTest;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.result.APIResultForm;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
-import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import junit.framework.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,8 +24,6 @@ import java.util.Random;
 //@Ignore
 public class UserInfoApiManagerImplTest extends BaseTest {
 
-    @Autowired
-    private UserInfoApiManager proxyUserInfoApiManager;
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
 
@@ -49,10 +43,6 @@ public class UserInfoApiManagerImplTest extends BaseTest {
     private String username = fullname;
     //获取用户信息
     private static final String fields = "province,city,gender,birthday,fullname,personalid,uniqname,mobile,email,question";
-
-    private static final int clientId = CommonConstant.SGPP_DEFAULT_CLIENTID;
-    private static final String serverSecret = CommonConstant.SGPP_DEFAULT_SERVER_SECRET;
-
 
     /**
      * 更新用户信息

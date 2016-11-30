@@ -23,14 +23,19 @@ public class OAuthConsumerFactory {
 
     private static Props properties = null;
 
-    protected static ConcurrentMap<String, OAuthConsumer> consumerMap = Maps.newConcurrentMap();
+    final protected static ConcurrentMap<String, OAuthConsumer> consumerMap = Maps.newConcurrentMap();
 
     public static OAuthConsumer getOAuthConsumer(int provider) throws IOException {
 
         String providerStr = AccountTypeEnum.getProviderStr(provider);
-        OAuthConsumer oAuthConsumer = consumerMap.get(buildConsumerKey(providerStr));
+        OAuthConsumer oAuthConsumer;
+        synchronized (consumerMap) {
+            oAuthConsumer = consumerMap.get(buildConsumerKey(providerStr));
+        }
         if (oAuthConsumer == null) {
-            oAuthConsumer = newResource(RESOURCE_NAME, providerStr);
+            synchronized (OAuthConsumerFactory.class) {
+                oAuthConsumer = newResource(RESOURCE_NAME, providerStr);
+            }
             consumerMap.putIfAbsent(buildConsumerKey(providerStr), oAuthConsumer);
         }
         return oAuthConsumer;
@@ -47,6 +52,7 @@ public class OAuthConsumerFactory {
         oAuthConsumer.setRefreshAccessTokenUrl(getURL("refreshAccessTokenUrl", providerStr));
         oAuthConsumer.setCallbackUrl(getURL("callbackUrl", providerStr));
         oAuthConsumer.setUserInfo(getURL("userInfo", providerStr));
+        oAuthConsumer.setTokenInfo(getURL("tokenInfo", providerStr));
 
         oAuthConsumer.setWapUserAuthzUrl(getURL("wap_userAuthzUrl", providerStr));
         return oAuthConsumer;

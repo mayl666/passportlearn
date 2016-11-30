@@ -2,9 +2,10 @@ package com.sogou.upd.passport.manager.form.connect;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.validation.constraints.Domain;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.oauth2.common.types.ConnectDisplay;
-import com.sogou.upd.passport.oauth2.common.types.ConnectDomainEnum;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.URL;
@@ -39,12 +40,21 @@ public class ConnectLoginParams {
     private String ts;   //终端的实例ID
 
     private String viewPage; // qq为搜狗产品定制化页面， sgIME为输入法PC端弹泡样式
-    private String domain;   // qq导航所用，种附加域的cookie
+    @Domain
+    private String domain;   // 非sogou.com域名的业务线使用，登录成功后种非sogou.com域的cookie
+    private String thirdInfo = "";   // thirdInfo=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
+    private String third_appid; //如果应用使用独立appid，则传入第三方appid值，并且根据不同的第三方传递不同的appid； 默认使用passport的appid；
 
-    private String thirdInfo="";   // thirdInfo=0或1；0表示去搜狗通行证个人信息，1表示获取第三方个人信息
+    private String v; //浏览器根据v判断显示新旧UI
+    /**以下三个参数用于修改qq登陆自动计时功能
+     *  User: Zhangbangcheng
+     */
+    private String format;
+
+    private String href;     //css样式的url，用于微信登录时产品定制微信扫描二维码的图框大小
 
     @AssertTrue(message = "Client_id不允许为空")
-    private boolean isEmptyClientId(){
+    private boolean isEmptyClientId() {
         return !Strings.isNullOrEmpty(appid) || !Strings.isNullOrEmpty(client_id);
     }
 
@@ -75,12 +85,16 @@ public class ConnectLoginParams {
         return true;
     }
 
-    @AssertTrue(message = "不支持的domain")
-    private boolean isSupportDomain() {
-        if (domain != null && !ConnectDomainEnum.isSupportDomain(domain)) {
-            return false;
+    @AssertTrue(message = "不支持样式定制")
+    private boolean isSupportHref(){
+        if(!Strings.isNullOrEmpty(href)){
+            if((Strings.isNullOrEmpty(provider))||(!provider.equalsIgnoreCase(AccountTypeEnum.WEIXIN.toString()))){
+               return false;
+            }
+
         }
         return true;
+
     }
 
     public String getProvider() {
@@ -112,13 +126,13 @@ public class ConnectLoginParams {
     }
 
     public void setDisplay(String display) {
-        if(Strings.isNullOrEmpty(display)){
-            if(ConnectTypeEnum.WAP.toString().equals(getType())){
-                this.display="mobile";
+        if (Strings.isNullOrEmpty(display)) {
+            if (ConnectTypeEnum.WAP.toString().equals(getType())) {
+                this.display = "mobile";
             } else {
-                this.display="page";
+                this.display = "page";
             }
-        }else {
+        } else {
             this.display = display;
         }
     }
@@ -186,4 +200,37 @@ public class ConnectLoginParams {
     public void setThirdInfo(String thirdInfo) {
         this.thirdInfo = thirdInfo;
     }
+
+    public String getV() {
+        return v;
+    }
+
+    public void setV(String v) {
+        this.v = v;
+    }
+
+    public String getThird_appid() {
+        return third_appid;
+    }
+
+    public void setThird_appid(String third_appid) {
+        this.third_appid = third_appid;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
+
 }

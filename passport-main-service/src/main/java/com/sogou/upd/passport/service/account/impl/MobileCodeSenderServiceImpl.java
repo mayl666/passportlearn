@@ -98,6 +98,20 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     }
 
     @Override
+    public boolean deleteSmsCache(String mobile, AccountModuleEnum module) throws ServiceException {
+        boolean flag = true;
+        try {
+            String cacheKey = buildCacheKeyForSmsCode(mobile, module);
+            redisUtils.delete(cacheKey);
+        } catch (Exception e) {
+            flag = false;
+            logger.error("[SMS] service method deleteSmsCache error.{}", e);
+            new ServiceException(e);
+        }
+        return flag;
+    }
+
+    @Override
     public Result sendSmsCode(String mobile, int clientId, AccountModuleEnum module) throws ServiceException {
         Result result = new APIResultSupport(false);
         try {
@@ -107,13 +121,14 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
             }
             String cacheKeySendNum = buildCacheKeyForSmsLimit(mobile, clientId, module);
 
-            //生成随机数
-            String randomCode = RandomStringUtils.randomNumeric(5);
+
             //写入缓存
             String cacheKey = buildCacheKeyForSmsCode(mobile, module);
             //初始化缓存映射
             Map<String, String> cacheMap = redisUtils.hGetAll(cacheKey);
             if (MapUtils.isEmpty(cacheMap) || !StringUtil.checkIsDigit(cacheMap.get("sendTime"))) {
+                //生成随机数
+                String randomCode = RandomStringUtils.randomNumeric(5);
                 //读取短信内容
                 String smsText = appConfigService.querySmsText(clientId, randomCode);
                 if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
@@ -137,12 +152,16 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MINUTELIMIT);
                     return result;
                 }
+                // 使用原来验证码
+                String randomCode = cacheMap.get("smsCode");
                 //读取短信内容
+                if (Strings.isNullOrEmpty(randomCode)) {
+                    randomCode = RandomStringUtils.randomNumeric(5);
+                }
                 String smsText = appConfigService.querySmsText(clientId, randomCode);
                 if (!Strings.isNullOrEmpty(smsText) && SMSUtil.sendSMS(mobile, smsText)) {
                     //更新缓存
                     updateSmsCacheInfo(cacheKeySendNum, cacheKey, String.valueOf(curtime), randomCode);
-
                     result.setSuccess(true);
                     result.setMessage("验证码已发送至" + mobile);
                     return result;
@@ -189,8 +208,8 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
                 String strValue = mapResult.get("smsCode");
                 if (StringUtils.isNotBlank(strValue) && strValue.equals(smsCode)) {
                     return true;
-                }else{
-                  setSmsFailLimited(mobile, clientId, module);
+                } else {
+                    setSmsFailLimited(mobile, clientId, module);
                 }
             }
             return false;
@@ -221,19 +240,6 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
     }
 
     @Override
-    public Map<String, String> getCacheMapByKey(String cacheKey) throws ServiceException {
-        Map<String, String> mapCacheResult = null;
-        try {
-            mapCacheResult = redisUtils.hGetAll(cacheKey);
-        } catch (Exception e) {
-            logger.error("[SMS] service method getCacheMapByKey error.{}", e);
-            new ServiceException(e);
-        }
-
-        return mapCacheResult;
-    }
-
-    @Override
     public Result checkSmsCode(String mobile, int clientId, AccountModuleEnum module, String smsCode) throws ServiceException {
         Result result = new APIResultSupport(false);
         try {
@@ -249,7 +255,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
             }
 
             //清除验证码的缓存
-            deleteSmsCache(mobile, clientId);
+            deleteSmsCache(mobile, module);
             result.setSuccess(true);
 //            result.setMessage("短信随机码验证成功！");
             return result;
@@ -290,11 +296,11 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
 
     private String buildCacheKeyForSmsFailLimit(String mobile, int clientId, AccountModuleEnum module) {
         return CACHE_PREFIX_MOBILE_CHECKSMSFAIL + module + "_" + clientId + "_" + mobile + "_" +
-               DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+                DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
     }
 
     private String buildCacheKeyForSmsLimit(String mobile, int clientId, AccountModuleEnum module) {
         return CACHE_PREFIX_ACCOUNT_SENDNUM + module + "_" + clientId + "_" + mobile +
-               DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
+                DateUtil.format(new Date(), DateUtil.DATE_FMT_0);
     }
 }

@@ -1,0 +1,4 @@
+com.sogou.passport.logback-kafka-1.1.jar
+com.sohu.sendcloud-1.0.6.jar
+de.bitzeche.logback.logback-scribe-1.0.2.jar
+com.sogou.passport.rose-jade-1.2.jar

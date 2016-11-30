@@ -9,6 +9,10 @@ import com.sogou.upd.passport.model.account.Account;
  */
 public class AccountHelper {
     public static boolean isNormalAccount(Account account) {
+        //泄露数据刨除在外
+        if(account.getFlag()== AccountStatusEnum.LEAKED.getValue()){
+            return true;
+        }
         return account.getFlag() == AccountStatusEnum.REGULAR.getValue();
     }
 

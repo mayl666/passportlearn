@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="format-detection" content="telephone=no">
+    <title>注册</title>
+    <link rel="stylesheet" href="/./static/css/wap/wap.css?t=221968" />
+</head>
+<body class="skin_$skin">
+
+<div class="login-wrap">
+        <div class="header">免费注册搜狗通行证</div>
+        #if($hasError)
+        <div class="orange-skin">$!errorMsg</div>
+        #end
+        <div class="login-table">
+            <form action="/wap2/sendsms" method="post">
+                <table>
+                    <tr>
+                        <td>请输入您的手机号</td>
+                    </tr>
+                    <tr>
+                        <td><div class="login-input max-w">
+                        <input type="hidden" name="client_id" value="$!client_id">
+                        <input type="hidden" name="ru" value="$!ru">
+                        <input type="hidden" name="v" value="$!v">
+                        <input type="hidden" name="skin" value="$!skin">
+                        <input type="text" name="mobile" value="$!mobile"/>
+                        </div></td>
+                    </tr>
+                    #if($needCaptcha)
+                    <tr>
+                        <td>验证码</td>
+                    </tr>
+                    <tr>
+                        <td><div class="login-input wt-92">
+                        <input type="hidden" value="$!token" name="token">
+                        <input type="text" name="captcha" value=""/>
+                        </div>
+                        <img src="$!captchaUrl" class="yzm" height="24" width="53" alt="" />
+                        <a href="/wap/reg?username=$!username&mobile=$!mobile&password=$!password&v=$!v&skin=$!skin&client_id=$!client_id&ru=$!ru&needCaptcha=1">换一张</a></td>
+                        </td>
+                    </tr>
+                    #end
+                    <tr>
+                        <td><button type="submit" class="sub-btn msg-btn">发送短信验证码</button></td>
+                    </tr>
+                    
+                </table>
+                
+            </form>
+        </div>
+
+ <div class="footer">
+&lt; 炫彩版<i>|</i><a href="/wap/reg?v=5&skin=$!skin&client_id=$!client_id&ru=$!ru">触屏版</a>  &gt;
+<p>Copyright &copy;2015 sogou.com</p>
+</div>
+</body>
+</html>

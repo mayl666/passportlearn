@@ -2,14 +2,18 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CommonHelper;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.exception.ServiceException;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
+import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.manager.form.PcAuthTokenParams;
 import com.sogou.upd.passport.manager.form.PcPairTokenParams;
 import com.sogou.upd.passport.manager.form.PcRefreshTokenParams;
@@ -44,6 +48,10 @@ public class PCAccountManagerImpl implements PCAccountManager {
     private AppConfigService appConfigService;
     @Autowired
     private OperateTimesService operateTimesService;
+    @Autowired
+    private SessionServerManager sessionServerManager;
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
     @Override
     public Result createPairToken(PcPairTokenParams pcTokenParams, String ip) {
@@ -173,6 +181,43 @@ public class PCAccountManagerImpl implements PCAccountManager {
             logger.error("verifyRefreshToken fail", e);
             return false;
         }
+    }
+
+    @Override
+    public Result swapRefreshToken(String passportId, int clientId, String instanceId, String refreshToken) {
+        Result result = new APIResultSupport(false);
+        try {
+            //验证refreshtoken
+            if (pcAccountService.verifyRefreshToken(passportId, clientId, instanceId, refreshToken) ||
+                    pcAccountService.verifyPCOldRefreshToken(passportId, clientId, instanceId, refreshToken)) {
+                //生成sgid
+                Result sessionResult = sessionServerManager.createSession(passportId);
+                if (sessionResult.isSuccess()) {
+                    String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+                    result.setDefaultModel(LoginConstant.COOKIE_SGID, sgid);
+                    result.setSuccess(true);
+                } else {
+                    result.setCode(ErrorUtil.ERR_CODE_CREATE_SGID_FAILED);
+                    return result;
+                }
+                //获取用户信息
+                ObtainAccountInfoParams params = new ObtainAccountInfoParams(String.valueOf(clientId), passportId, "uniqname,avatarurl");
+                Result accountInfoResult = accountInfoManager.getUserInfo(params);
+                if (accountInfoResult.isSuccess()) {
+                    String uniqname = (String) accountInfoResult.getModels().get("uniqname");
+                    String avatarurl = (String) accountInfoResult.getModels().get("avatarurl");
+                    result.setDefaultModel("avatarurl", Strings.isNullOrEmpty(avatarurl) ? "" : avatarurl);
+                    result.setDefaultModel("uniqname", Strings.isNullOrEmpty(uniqname) ? "" : uniqname);
+                }
+            } else {
+                result.setCode(ErrorUtil.ERR_REFRESH_TOKEN);
+            }
+        } catch (Exception e) {
+            logger.error("swap refreshToken fail,passportId:{},refreshtoken:{},instanceId:{},clientId:{}",
+                    passportId, refreshToken, instanceId, clientId, e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+        }
+        return result;
     }
 
     @Override

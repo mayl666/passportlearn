@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.web.account.form;
 
+import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import com.sogou.upd.passport.common.validation.constraints.V;
@@ -23,12 +24,12 @@ public class BaseWapResetPwdParams {
     protected String client_id = String.valueOf(SHPPUrlConstant.APP_ID);
     @URL
     @Ru
-    protected String ru;
+    protected String ru = CommonConstant.DEFAULT_WAP_URL;
     @NotBlank(message = "v参数不可为空")
     @V
     protected String v = WapConstant.WAP_TOUCH;
 //    @Skin
-    protected String skin;
+    protected String skin = WapConstant.WAP_SKIN_GREEN;
 
     public String getRu() {
         return ru;

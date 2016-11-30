@@ -19,7 +19,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <springframework.version>3.1.2.RELEASE</springframework.version>
+        <springframework.version>3.2.6.RELEASE</springframework.version>
         <junit.version>4.8.2</junit.version>
         <rabbitmq.version>3.0.4</rabbitmq.version>
         <dubbo.version>2.0.14</dubbo.version>
@@ -58,6 +58,11 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
+            <version>${springframework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
             <version>${springframework.version}</version>
         </dependency>
         <dependency>
@@ -106,11 +111,6 @@
         </dependency>
 
         <!-- common -->
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.1</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -277,6 +277,24 @@
             <artifactId>logback-kafka</artifactId>
             <version>1.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <!--hystrix依赖调用-->
+        <dependency>
+            <groupId>com.netflix.hystrix</groupId>
+            <artifactId>hystrix-core</artifactId>
+            <version>1.3.20</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.netflix.hystrix</groupId>
+            <artifactId>hystrix-metrics-event-stream</artifactId>
+            <version>1.3.20</version>
+        </dependency>
     </dependencies>
 
     <distributionManagement>
@@ -306,6 +324,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.1.1</version>
+                <configuration>
+                    <packagingExcludes>
+                        WEB-INF/lib/slf4j-simple*.jar,
+                        WEB-INF/lib/slf4j-log4j*.jar
+                    </packagingExcludes>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>

@@ -6,12 +6,15 @@ import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
 import com.sogou.upd.passport.dao.connect.ConnectTokenDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.connect.ConnectToken;
+import com.sogou.upd.passport.model.connect.OriginalConnectInfo;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: shipengzhi Date: 13-3-24 Time: 下午8:08 To change this template
@@ -28,13 +31,14 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
     private DBShardRedisUtils dbShardRedisUtils;
 
     private static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = CacheConstant.CACHE_PREFIX_PASSPORTID_CONNECTTOKEN;
+    private static final String CACHE_PREFIX_PASSPORTID_ORIGINAL_CONNECTINFO = CacheConstant.CACHE_PREFIX_PASSPORTID_ORIGINAL_CONNECTINFO;
 
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initialConnectToken", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean initialConnectToken(ConnectToken connectToken) throws ServiceException {
         int row;
+        String passportId = connectToken.getPassportId();
         try {
-            String passportId = connectToken.getPassportId();
             row = connectTokenDAO.insertAccountConnect(passportId, connectToken);
             if (row != 0) {
                 String cacheKey = buildConnectTokenCacheKey(passportId, connectToken.getProvider(), connectToken.getAppKey());
@@ -44,7 +48,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
                 return false;
             }
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method insertAccountConnect error.{}", e);
+            logger.error("[ConnectToken] service method insertAccountConnect error. passportId:" + passportId, e);
             throw new ServiceException(e);
         }
     }
@@ -53,8 +57,8 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
     @Override
     public boolean updateConnectToken(ConnectToken connectToken) throws ServiceException {
         int row;
+        String passportId = connectToken.getPassportId();
         try {
-            String passportId = connectToken.getPassportId();
             row = connectTokenDAO.updateConnectToken(passportId, connectToken);
             if (row != 0) {
                 String cacheKey = buildConnectTokenCacheKey(passportId, connectToken.getProvider(), connectToken.getAppKey());
@@ -64,7 +68,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
                 return false;
             }
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method updateConnectToken error.{}", e);
+            logger.error("[ConnectToken] service method updateConnectToken error. passportId:" + passportId, e);
             throw new ServiceException(e);
         }
     }
@@ -77,7 +81,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
             dbShardRedisUtils.setObjectWithinSeconds(cacheKey, connectToken, DateAndNumTimesConstant.ONE_MONTH);
             return true;
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error.{}", e);
+            logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error. passportId:" + passportId, e);
             return false;
         }
     }
@@ -90,7 +94,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
             ConnectToken connectToken = dbShardRedisUtils.getObject(cacheKey, ConnectToken.class);
             return connectToken;
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method obtainCachedConnectToken error.{}", e);
+            logger.error("[ConnectToken] service method obtainCachedConnectToken error. passportId:" + passportId + " provider:" + provider + " appKey:" + appKey, e);
             return null;
         }
     }
@@ -99,8 +103,8 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
     @Override
     public boolean insertOrUpdateConnectToken(ConnectToken connectToken) throws ServiceException {
         int row;
+        String passportId = connectToken.getPassportId();
         try {
-            String passportId = connectToken.getPassportId();
             row = connectTokenDAO.insertOrUpdateAccountConnect(passportId, connectToken);
             if (row != 0) {
                 String cacheKey = buildConnectTokenCacheKey(passportId, connectToken.getProvider(), connectToken.getAppKey());
@@ -110,7 +114,7 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
                 return false;
             }
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method insertAccountConnect error.passportId " + connectToken.getPassportId(), e);
+            logger.error("[ConnectToken] service method insertAccountConnect error. passportId " + passportId, e);
             throw new ServiceException(e);
         }
     }
@@ -133,12 +137,42 @@ public class ConnectTokenServiceImpl implements ConnectTokenService {
             }
             return connectToken;
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method querySpecifyOpenId error.{}", e);
+            logger.error("[ConnectToken] service method querySpecifyOpenId error. passportId:" + passportId + " provider:" + provider + " appKey:" + appKey, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryOriginalConnectInfo", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public OriginalConnectInfo queryOriginalConnectInfo(String passportId, int provider) throws ServiceException {
+        OriginalConnectInfo connectInfo;
+        String cacheKey = buildOriginalConnectInfoCacheKey(passportId, provider);
+        List<ConnectToken> connectTokenList;
+        try {
+            connectInfo = dbShardRedisUtils.getObject(cacheKey, OriginalConnectInfo.class);
+            if (connectInfo == null) {
+                //读取数据库
+                connectTokenList = connectTokenDAO.getConnectTokenList(passportId, provider);
+                if ((connectTokenList != null) && (connectTokenList.size() > 0)) {
+                    connectInfo = new OriginalConnectInfo(connectTokenList.get(0));
+                }
+                if (connectInfo == null) {
+                    return null;
+                }
+                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, connectInfo, DateAndNumTimesConstant.ONE_MONTH);
+            }
+            return connectInfo;
+        } catch (Exception e) {
+            logger.error("[ConnectToken] service method querySpecifyOpenId error. passportId:" + passportId + " provider:" + provider, e);
             throw new ServiceException(e);
         }
     }
 
     private String buildConnectTokenCacheKey(String passportId, int provider, String appKey) {
         return CACHE_PREFIX_PASSPORTID_CONNECTTOKEN + passportId + "_" + provider + "_" + appKey;
+    }
+
+    private String buildOriginalConnectInfoCacheKey(String passportId, int provider) {
+        return CACHE_PREFIX_PASSPORTID_ORIGINAL_CONNECTINFO + passportId + "_" + provider;
     }
 }

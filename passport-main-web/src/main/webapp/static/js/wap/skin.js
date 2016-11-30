@@ -23,8 +23,20 @@ define(['./utils'], function(Utils) {
                 case /caipiao|cp|red|lottery/i.test(name):
                     name = 'cp';
                     break;
+                case /orange/i.test(name):
+                    name = 'orange';
+                    break;
                 case /cyan|x1/i.test(name):
                     name = 'x1';
+                    break;
+                case /semob|se/i.test(name):
+                    name = 'se';
+                    break;
+                case /shenghuo|sh/i.test(name):
+                    name = 'sh';
+                    break;
+                case /read|sgread/i.test(name):
+                    name = 'read';
                     break;
                 default:
                     name = null;

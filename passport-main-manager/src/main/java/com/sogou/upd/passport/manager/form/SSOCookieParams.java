@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.manager.form;
 
+import com.sogou.upd.passport.common.validation.constraints.Domain;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -20,10 +21,12 @@ public class SSOCookieParams {
     @NotBlank(message = "code2不允许为空")
     protected String code2;
     @NotBlank(message = "domain不允许为空")
+    @Domain
     private String domain;       //所种cookie的域
-
     @Ru
     protected String ru;
+
+    private String cb; //非搜狗域种cookie成功后的jsonp回调函数，如果cb不为空，则返回json，不做ru跳转
 
     public String getSginf() {
         return sginf;
@@ -71,5 +74,13 @@ public class SSOCookieParams {
 
     public void setDomain(String domain) {
         this.domain = domain;
+    }
+
+    public String getCb() {
+        return cb;
+    }
+
+    public void setCb(String cb) {
+        this.cb = cb;
     }
 }

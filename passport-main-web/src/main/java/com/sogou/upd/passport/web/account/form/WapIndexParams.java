@@ -24,15 +24,19 @@ public class WapIndexParams {
     @Min(0)
     private String client_id = String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID);
 
-//    @NotBlank(message = "ru is null")
+    //    @NotBlank(message = "ru is null")
     @URL
     @Ru
     private String ru = WapConstant.WAP_INDEX;//登陆来源
     @Skin
-    private String skin;
+    private String skin = WapConstant.WAP_SKIN_GREEN;
 
     private String errorMsg;//错误信息
     private int needCaptcha;//是否需要输入验证码:0-不需要；1-需要
+    //因为登录是wap2.0的html5共用的，两边命名没统一，所以mobile和username都表示手机号
+    private String mobile;//wap2.0用到
+    private String username;//wap2.0用到
+    private String type;//wap页面只用手机号登录时，type=phone，如本地生活
 
     public String getRu() {
         return ru;
@@ -80,5 +84,29 @@ public class WapIndexParams {
 
     public void setSkin(String skin) {
         this.skin = skin;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

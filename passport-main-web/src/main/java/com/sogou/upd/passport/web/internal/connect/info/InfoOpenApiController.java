@@ -34,41 +34,41 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/internal/connect/info")
 public class InfoOpenApiController extends BaseController {
 
-    private static Logger logger = LoggerFactory.getLogger(InfoOpenApiController.class);
-
-    @Autowired
-    private InfoOpenApiManager proxyInfoOpenApiManager;
-
-    /**
-     * 第三方发图片微博，或者发图片分享
-     *
-     * @param params
-     * @return
-     */
-    @InterfaceSecurity
-    @RequestMapping(value = "/share/add_pic", method = RequestMethod.POST)
-    @ResponseBody
-    public Object addUserShareOrPic(InfoOpenApiParams params, HttpServletRequest request) {
-        Result result = new APIResultSupport(false);
-        try {
-            // 参数校验
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
-            }
-            BaseOpenApiParams baseOpenApiParams = new OpenApiParamsHelper().createBaseForm(params);
-            result = proxyInfoOpenApiManager.addUserShareOrPic(baseOpenApiParams);
-        } catch (Exception e) {
-            logger.error("addUserShareOrPic:Add User Share Picture For Internal Is Failed,Userid is " + params.getUserid(), e);
-        } finally {
-            //记录log
-            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), params.getUser_ip());
-            UserOperationLogUtil.log(userOperationLog);
-        }
-
-        return result.toString();
-    }
+//    private static Logger logger = LoggerFactory.getLogger(InfoOpenApiController.class);
+//
+//    @Autowired
+//    private InfoOpenApiManager proxyInfoOpenApiManager;
+//
+//    /**
+//     * 第三方发图片微博，或者发图片分享
+//     *
+//     * @param params
+//     * @return
+//     */
+//    @InterfaceSecurity
+//    @RequestMapping(value = "/share/add_pic", method = RequestMethod.POST)
+//    @ResponseBody
+//    public Object addUserShareOrPic(InfoOpenApiParams params, HttpServletRequest request) {
+//        Result result = new APIResultSupport(false);
+//        try {
+//            // 参数校验
+//            String validateResult = ControllerHelper.validateParams(params);
+//            if (!Strings.isNullOrEmpty(validateResult)) {
+//                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+//                result.setMessage(validateResult);
+//                return result.toString();
+//            }
+//            BaseOpenApiParams baseOpenApiParams = new OpenApiParamsHelper().createBaseForm(params);
+//            result = proxyInfoOpenApiManager.addUserShareOrPic(baseOpenApiParams);
+//        } catch (Exception e) {
+//            logger.error("addUserShareOrPic:Add User Share Picture For Internal Is Failed,Userid is " + params.getUserid(), e);
+//        } finally {
+//            //记录log
+//            UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), request.getRequestURI(), String.valueOf(params.getClient_id()), result.getCode(), params.getUser_ip());
+//            UserOperationLogUtil.log(userOperationLog);
+//        }
+//
+//        return result.toString();
+//    }
 
 }

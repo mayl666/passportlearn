@@ -13,6 +13,7 @@ public class OAuthConsumer {
     private String accessTokenUrl;
     private String refreshAccessTokenUrl; // renren支持
     private String callbackUrl;
+    private String tokenInfo; //sina支持
 
     private String wapUserAuthzUrl;  //qq wap支持
 
@@ -69,5 +70,13 @@ public class OAuthConsumer {
 
     public void setWapUserAuthzUrl(String wapUserAuthzUrl) {
         this.wapUserAuthzUrl = wapUserAuthzUrl;
+    }
+
+    public String getTokenInfo() {
+        return tokenInfo;
+    }
+
+    public void setTokenInfo(String tokenInfo) {
+        this.tokenInfo = tokenInfo;
     }
 }

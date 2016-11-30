@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title>搜狗通行证</title>
-        <link rel="stylesheet" href="/./static/css/main.css?t=961983" type="text/css" />
+        <link rel="stylesheet" href="/./static/css/main.css?t=464609" type="text/css" />
     </head>
     <body >
         <div class="header" id="Header">
@@ -143,7 +143,7 @@
 <p>彩票：<span class="red">kfcp@sogou-inc.com或010-56898998</span></p>
 <p>小说：<span class="red">客服QQ群 263958053</span></p>
 <p>游戏：<span class="red">企业QQ 2851050936</span></p>
-<p>壁纸：<span class="red">客服QQ群 227986177</span></p>
+<p>糖猫：<span class="red">客服QQ群 339074366</span></p>
 <p>其他：<span class="red">passportkf@sogou-inc.com</span></p>
             </form>
 
@@ -163,12 +163,12 @@
         
         <div class="footer">
     <div class="inner">
-        <a href="/web/problem/addProblem">意见反馈</a>&nbsp;&nbsp;Copyright &copy;&nbsp;2014 Sogou.com.&nbsp;All Rights Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
+        <a href="/web/problem/addProblem">意见反馈</a>&nbsp;&nbsp;Copyright &copy;&nbsp;2015 Sogou.com.&nbsp;All Rights Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
     </div>
 </div>
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
-    <script type="text/javascript" src="/./static/js/recover.js?t=2014091040"></script>
+    <script type="text/javascript" src="/./static/js/recover.js?t=2016010439"></script>
     
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">

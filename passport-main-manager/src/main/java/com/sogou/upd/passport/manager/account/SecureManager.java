@@ -109,6 +109,9 @@ public interface SecureManager {
      */
     public Result checkMobileCodeOldForBinding(String userId, int clientId, String smsCode) throws Exception;
 
+    public Result bindMobileByPassportId(String passportId, int clientId, String newMobile,
+                                         String smsCode, String password, boolean needMD5, String modifyIp) throws Exception;
+
     /**
      * 绑定密保手机——2.首次绑定密保手机，验证密码、新绑定手机短信码，绑定新手机号
      *

@@ -98,7 +98,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
         Result result = new APIResultSupport(true);
         //校验验证码
         if (needCaptchaCheck(clientId, username, ip)) {
-            if(Strings.isNullOrEmpty(captchaCode)){
+            if (Strings.isNullOrEmpty(captchaCode)) {
                 logger.info("[checkCaptchaVaild needd captchaCode]:username=" + username + ", ip=" + ip + ", token=" + token + ", captchaCode=" + captchaCode);
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE);
@@ -120,7 +120,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
         try {
             //根据获取第三方个人资料验证token的有效性
             int provider = AccountTypeEnum.QQ.getValue();
-            ConnectConfig connectConfig = connectConfigService.queryConnectConfig(client_id, provider);
+            ConnectConfig connectConfig = connectConfigService.queryDefaultConnectConfig(provider);
             OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
 
             ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, accessToken, oAuthConsumer);
@@ -187,23 +187,10 @@ public class WapLoginManagerImpl implements WapLoginManager {
     }
 
     @Override
-    public Result removeSession(String sgid) {
-        Result result = sessionServerManager.removeSession(sgid);
-        return result;
-    }
-
-    @Override
     public boolean needCaptchaCheck(String client_id, String username, String ip) {
         if (operateTimesService.loginFailedTimesNeedCaptcha(username, ip)) {
             return true;
         }
         return false;
     }
-
-    @Override
-    public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId) {
-        //记录登陆次数
-        operateTimesService.incLoginTimes(username, ip, true);
-    }
-
 }

@@ -11,10 +11,11 @@
  * @version 0.1.0
  * @since 0.1.0
  */
-define([], function() {
+define(['./utils'], function (Utils) {
 
-    var client_id = 1024;
-    var noop = function() {};
+    var client_id = Utils.getUrlParams().client_id || 1024;
+    var noop = function () {
+    };
 
     function checkNeedCaptcha(username, callback) {
 
@@ -27,11 +28,12 @@ define([], function() {
             },
             cache: false,
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
                 if ('string' === typeof data) {
                     try {
                         data = JSON.parse(data);
-                    } catch (e) {}
+                    } catch (e) {
+                    }
                 }
 
                 if (data && data.data && data.data.needCaptcha) {
@@ -40,7 +42,7 @@ define([], function() {
                     return callback(false);
                 }
             },
-            error: function() {
+            error: function () {
                 return callback(false);
             }
         });
@@ -66,12 +68,12 @@ define([], function() {
             type: 'post',
             data: options,
             dataType: 'json',
-            error: function() {
+            error: function () {
                 return callback(false, {
                     'statusText': '登录失败'
                 });
             },
-            success: function(data) {
+            success: function (data) {
                 if (data && !+data.status)
                     return callback(true, data.data);
                 else
@@ -80,6 +82,45 @@ define([], function() {
         });
 
     }
+
+
+    /**
+     * 短信登录
+     * @param params
+     * @param callback
+     * @return {*}
+     */
+    function smsCodeLogin(params, callback) {
+        var options = {
+            client_id: client_id,
+            v: 0,
+            ru: 'http://wap.sogou.com'
+        };
+
+        callback = callback || noop;
+
+        $.extend(options, params);
+
+        return $.ajax({
+            url: '/wap/smsCode/login',
+            type: 'post',
+            data: options,
+            dataType: 'json',
+            error: function () {
+                return callback(false, {
+                    'statusText': '登录失败'
+                });
+            },
+            success: function (data) {
+                if (data && !+data.status)
+                    return callback(true, data.data);
+                else
+                    return callback(false, data);
+            }
+        });
+    }
+
+
     /**
      * For register
      * @param  {[type]}   username [description]
@@ -95,7 +136,7 @@ define([], function() {
                 username: username
             },
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
                 if ('string' === typeof data) {
                     try {
                         data = JSON.parse(data);
@@ -129,7 +170,7 @@ define([], function() {
             data: options,
             type: 'post',
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
 
                 if ('string' === typeof data) {
                     try {
@@ -148,7 +189,7 @@ define([], function() {
                     return callback(false, data);
                 }
             },
-            error: function() {
+            error: function () {
                 return callback(false, {
                     'statusText': '发送失败'
                 });
@@ -170,7 +211,7 @@ define([], function() {
             type: 'post',
             data: options,
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
 
                 if ('string' === typeof data) {
                     try {
@@ -188,7 +229,7 @@ define([], function() {
                     return callback(false, data);
                 }
             },
-            error: function() {
+            error: function () {
                 return callback(false, {
                     'statusText': '提交失败'
                 });
@@ -210,7 +251,7 @@ define([], function() {
             data: options,
             type: 'post',
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
 
                 if ('string' === typeof data) {
                     try {
@@ -229,7 +270,57 @@ define([], function() {
                     return callback(false, data);
                 }
             },
-            error: function() {
+            error: function () {
+                return callback(false, {
+                    'statusText': '发送失败'
+                });
+            }
+        });
+    }
+
+
+    /**
+     * 短信登录,发送验证码
+     *
+     * add by chengang & 2015-06-11
+     *
+     * @param params
+     * @param callback
+     */
+    function smsCodeLoginSendSms(params, callback) {
+        var options = {
+            client_id: client_id
+        };
+
+        $.extend(options, params);
+
+        callback = callback || noop;
+
+        return $.ajax({
+            url: '/wap/smsCodeLogin/sendSms',
+            data: options,
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+
+                if ('string' === typeof data) {
+                    try {
+                        data = JSON.parse(data);
+                    } catch (e) {
+                        data = {
+                            status: 1,
+                            statusText: '格式错误'
+                        };
+                    }
+                }
+
+                if (data && !+data.status) {
+                    return callback(true);
+                } else {
+                    return callback(false, data);
+                }
+            },
+            error: function () {
                 return callback(false, {
                     'statusText': '发送失败'
                 });
@@ -251,7 +342,7 @@ define([], function() {
             type: 'post',
             data: options,
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
 
                 if ('string' === typeof data) {
                     try {
@@ -269,7 +360,7 @@ define([], function() {
                     return callback(false, data);
                 }
             },
-            error: function() {
+            error: function () {
                 return callback(false, {
                     'statusText': '提交失败'
                 });
@@ -290,7 +381,7 @@ define([], function() {
             type: 'post',
             data: options,
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
 
                 if ('string' === typeof data) {
                     try {
@@ -308,7 +399,7 @@ define([], function() {
                     return callback(false, data);
                 }
             },
-            error: function() {
+            error: function () {
                 return callback(false, {
                     'statusText': '提交失败'
                 });
@@ -329,7 +420,7 @@ define([], function() {
             type: 'post',
             data: options,
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
 
                 if ('string' === typeof data) {
                     try {
@@ -347,7 +438,7 @@ define([], function() {
                     return callback(false, data);
                 }
             },
-            error: function() {
+            error: function () {
                 return callback(false, {
                     'statusText': '提交失败'
                 });
@@ -368,7 +459,7 @@ define([], function() {
             type: 'post',
             data: options,
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
 
                 if ('string' === typeof data) {
                     try {
@@ -387,7 +478,7 @@ define([], function() {
                     return callback(false, data);
                 }
             },
-            error: function() {
+            error: function () {
                 return callback(false, {
                     'statusText': '注册失败'
                 });
@@ -400,6 +491,7 @@ define([], function() {
         checkNeedCaptcha: checkNeedCaptcha,
         getCaptcha: getCaptcha,
         login: login,
+        smsCodeLogin: smsCodeLogin,
         checkusername: checkusername,
         sendsms: sendsms,
         checksms: checksms,
@@ -407,6 +499,7 @@ define([], function() {
         findpwdSendmail: findpwdSendmail,
         register: register,
         reset: reset,
-        findpwdSendsms: findpwdSendsms
+        findpwdSendsms: findpwdSendsms,
+        smsCodeLoginSendSms: smsCodeLoginSendSms
     };
 });

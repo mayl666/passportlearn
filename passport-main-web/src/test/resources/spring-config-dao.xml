@@ -12,13 +12,13 @@
     <bean id="masterDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="jdbcUrl">
-            <value>jdbc:mysql://10.11.211.18:3306/test_sogou_passport?characterEncoding=utf-8</value>
+            <value>jdbc:mysql://j01.ci.zw.ted:3306/test_sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
             <value>sogou_passport</value>
         </property>
         <property name="password">
-            <value>sogou_passport</value>
+            <value>714a878b7c0f801eb9676d</value>
         </property>
         <property name="driverClass">
             <value>c3p0</value>
@@ -50,13 +50,13 @@
     <bean id="slaveDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" >
         <property name="jdbcUrl">
-            <value>jdbc:mysql://10.11.211.18:3306/test_sogou_passport?characterEncoding=utf-8</value>
+            <value>jdbc:mysql://j01.ci.zw.ted:3306/test_sogou_passport?characterEncoding=utf-8</value>
         </property>
         <property name="user">
             <value>sogou_passport</value>
         </property>
         <property name="password">
-            <value>sogou_passport</value>
+            <value>714a878b7c0f801eb9676d</value>
         </property>
         <property name="driverClass">
             <value>c3p0</value>

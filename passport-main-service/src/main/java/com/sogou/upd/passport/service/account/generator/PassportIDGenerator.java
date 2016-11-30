@@ -33,7 +33,7 @@ public class PassportIDGenerator {
         String passportID;
         if (AccountTypeEnum.isPhone(username, provider)) {  //手机号
             passportID = username + SEPARATOR_1 + "sohu.com";
-        } else if (AccountTypeEnum.isConnect(provider)) {  //第三方
+        } else if (AccountTypeEnum.isConnect(provider)) {  //第三方 由于微信一个开发者账号下多个Appid的unionid一样，所以微信是unionid；其他第三方均为openid
             passportID = username + SEPARATOR_1 + AccountTypeEnum.getProviderStr(provider) + ".sohu.com";
         } else if (AccountDomainEnum.INDIVID.equals(AccountDomainEnum.getAccountDomain(username))) { //个性账号
             passportID = username + SEPARATOR_1 + "sogou.com";
@@ -42,29 +42,5 @@ public class PassportIDGenerator {
         }
 
         return passportID;
-    }
-
-    public static PassportIDInfoDO parsePassportId(String passportId) throws ServiceException {
-        String[] info = passportId.split(SEPARATOR_1);
-        if (info.length != 2) {
-            logger.error("[DOException] PassportId Format Error! passportId:{}", passportId);
-            throw new ServiceException();
-        } else {
-            PassportIDInfoDO passportIDInfoDO = new PassportIDInfoDO();
-            String firstSegment = info[0];
-            String secondSegment = info[1];
-            String[] secondSegmentArray = secondSegment.split(SEPARATOR_2);
-            if (PhoneUtil.verifyPhoneNumberFormat(firstSegment)) {
-                passportIDInfoDO.setUid(firstSegment);
-                passportIDInfoDO.setAccountTypeStr(AccountTypeEnum.PHONE.toString());
-            } else if (secondSegmentArray.length == 3) {
-                passportIDInfoDO.setUid(firstSegment);
-                passportIDInfoDO.setAccountTypeStr(secondSegmentArray[0]);
-            } else {
-                passportIDInfoDO.setUid(passportId);
-                passportIDInfoDO.setAccountTypeStr(AccountTypeEnum.EMAIL.toString());
-            }
-            return passportIDInfoDO;
-        }
     }
 }

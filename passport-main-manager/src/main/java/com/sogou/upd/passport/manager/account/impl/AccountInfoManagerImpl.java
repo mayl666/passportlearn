@@ -19,8 +19,7 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.form.AccountInfoParams;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.model.account.Account;
-import com.sogou.upd.passport.model.app.ConnectConfig;
-import com.sogou.upd.passport.model.connect.ConnectToken;
+import com.sogou.upd.passport.model.connect.OriginalConnectInfo;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
@@ -91,25 +90,25 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                         result.setCode(ErrorUtil.ERR_CODE_UPLOAD_PHOTO);
                         return result;
                     }
-                } else if (domain == AccountDomainEnum.SOHU) {
-                    //如果是搜狐矩阵账号、则初始化至account表
-                    Account initAccount = new Account();
-                    initAccount.setPassportId(passportId);
-                    initAccount.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
-                    initAccount.setAccountType(AccountTypeEnum.SOHU.getValue());
-                    initAccount.setFlag(AccountStatusEnum.REGULAR.getValue());
-                    initAccount.setAvatar(imgURL);
-                    initAccount.setRegIp(ip);
-                    initAccount.setRegTime(new Date());
-
-                    boolean initSuccess = accountService.initAccount(initAccount);
-                    if (!initSuccess) {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-                        return result;
-                    }
+//                } else if (domain == AccountDomainEnum.SOHU) {
+//                    //如果是搜狐矩阵账号、则初始化至account表
+//                    Account initAccount = new Account();
+//                    initAccount.setPassportId(passportId);
+//                    initAccount.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
+//                    initAccount.setAccountType(AccountTypeEnum.SOHU.getValue());
+//                    initAccount.setFlag(AccountStatusEnum.REGULAR.getValue());
+//                    initAccount.setAvatar(imgURL);
+//                    initAccount.setRegIp(ip);
+//                    initAccount.setRegTime(new Date());
+//
+//                    boolean initSuccess = accountService.initAccount(initAccount);
+//                    if (!initSuccess) {
+//                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+//                        return result;
+//                    }
                 } else {
                     //账号不存在
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
                     return result;
                 }
                 result.setSuccess(true);
@@ -137,8 +136,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
      */
     @Override
     public Result updateUserInfo(AccountInfoParams infoParams, String ip) {
-        UpdateUserInfoApiParams updateUserInfoApiParams = null;
-        updateUserInfoApiParams = buildUpdateUserInfoApiParams(infoParams, ip);
+        UpdateUserInfoApiParams updateUserInfoApiParams = buildUpdateUserInfoApiParams(infoParams, ip);
         Result result = sgUserInfoApiManager.updateUserInfo(updateUserInfoApiParams);
         return result;
     }
@@ -156,6 +154,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     @Override
     public Result getUserInfo(ObtainAccountInfoParams params) {
         GetUserInfoApiparams infoApiparams = buildGetUserInfoApiparams(params);
+        infoApiparams.setImagesize("30,50,180");
         Result result = sgUserInfoApiManager.getUserInfo(infoApiparams);
         return result;
     }
@@ -186,9 +185,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             //第三方账号
             if (domain == AccountDomainEnum.THIRD) {
                 if (Strings.isNullOrEmpty(uniqname)) {
-                    ConnectToken connectToken = getConnectToken(passportId, clientId);
-                    if (connectToken != null) {
-                        uniqname = connectToken.getConnectUniqname();
+                    OriginalConnectInfo connectInfo = getOriginalConnectInfo(passportId);
+                    if (connectInfo != null) {
+                        uniqname = connectInfo.getConnectUniqname();
                         //判断uniqname,若为空，则调用 getDefaultUniqname 方法
                         if (Strings.isNullOrEmpty(uniqname)) {
                             uniqname = getDefaultUniqname(passportId, uniqname);
@@ -216,7 +215,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         NickNameAndAvatarVO nameAndAvatarVO = new NickNameAndAvatarVO();
         String uniqname = "";
         String avatarurl = "";
-
+        String gender = "0";
         String passportId = params.getUserid();
         int clientId = params.getClient_id();
         try {
@@ -229,25 +228,33 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
                 //第三方
                 if (domain == AccountDomainEnum.THIRD) {
                     if (Strings.isNullOrEmpty(uniqname) || Strings.isNullOrEmpty(avatarurl)) {
-                        ConnectToken connectToken = getConnectToken(passportId, clientId);
-                        if (connectToken != null) {
+                        OriginalConnectInfo connectInfo = getOriginalConnectInfo(passportId);
+                        if (connectInfo != null) {
                             if (Strings.isNullOrEmpty(uniqname)) {
-                                uniqname = connectToken.getConnectUniqname();
+                                uniqname = connectInfo.getConnectUniqname();
                                 //判断uniqname,若为空，则调用 getDefaultUniqname 方法
                                 if (Strings.isNullOrEmpty(uniqname)) {
                                     uniqname = getDefaultUniqname(passportId, uniqname);
                                 }
                             }
                             if (Strings.isNullOrEmpty(avatarurl)) {
-                                nameAndAvatarVO.setLarge_avatar(connectToken.getAvatarLarge());
-                                nameAndAvatarVO.setMid_avatar(connectToken.getAvatarMiddle());
-                                nameAndAvatarVO.setTiny_avatar(connectToken.getAvatarSmall());
+                                nameAndAvatarVO.setLarge_avatar(connectInfo.getAvatarLarge());
+                                nameAndAvatarVO.setMid_avatar(connectInfo.getAvatarMiddle());
+                                nameAndAvatarVO.setTiny_avatar(connectInfo.getAvatarSmall());
                             } else {
                                 obtainPhotoSizeUrl(nameAndAvatarVO, avatarurl);
+                            }
+                            //处理gender信息，默认为0
+                            if (!Strings.isNullOrEmpty(connectInfo.getGender())) {
+                                gender = connectInfo.getGender();
                             }
                         }
                     } else {
                         obtainPhotoSizeUrl(nameAndAvatarVO, avatarurl);
+                    }
+                    // 处理gender信息，默认为0
+                    if (StringUtils.contains(params.getFields(), "gender")) {
+                        result.setDefaultModel("gender", gender);
                     }
                 } else {
                     //非第三方账号
@@ -262,7 +269,7 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
             } else if (domain == AccountDomainEnum.SOHU) {
                 setUniqNameAndAvatarResult(result, params.getFields(), nameAndAvatarVO, passportId);
             } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result;
             }
             result.getModels().put("account", account);
@@ -321,21 +328,14 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
     }
 
     /**
-     * 获取用户 ConnectToken信息
-     *
-     * @param userId
-     * @param clientId
-     * @return
+     * 获取第三方用户原始信息
      */
-    private ConnectToken getConnectToken(String userId, int clientId) {
-        //从connect_token中获取
+    private OriginalConnectInfo getOriginalConnectInfo(String userId) {
+        //
         int provider = AccountTypeEnum.getAccountType(userId).getValue();
-        ConnectConfig connectConfig = connectConfigService.queryConnectConfig(clientId, provider);
-        ConnectToken connectToken = null;
-        if (connectConfig != null) {
-            connectToken = connectTokenService.queryConnectToken(userId, provider, connectConfig.getAppKey());
-        }
-        return connectToken;
+        OriginalConnectInfo connectInfo = connectTokenService.queryOriginalConnectInfo(userId, provider);
+
+        return connectInfo;
     }
 
     /**
@@ -374,7 +374,9 @@ public class AccountInfoManagerImpl implements AccountInfoManager {
         GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
         infoApiparams.setFields(params.getFields());
         infoApiparams.setUserid(params.getUsername());
-//        infoApiparams.setClient_id(Integer.parseInt(params.getClient_id()));
+        if (!Strings.isNullOrEmpty(params.getImagesize())) {
+            infoApiparams.setImagesize(params.getImagesize());
+        }
         return infoApiparams;
     }
 

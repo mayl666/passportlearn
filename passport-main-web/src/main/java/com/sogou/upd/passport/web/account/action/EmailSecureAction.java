@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/web/security")
 public class EmailSecureAction extends BaseController {
 
-    private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
+//    private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
 
     @Autowired
     private SecureManager secureManager;
@@ -74,12 +74,12 @@ public class EmailSecureAction extends BaseController {
             String modifyIp = getIp(request);
             String ru = params.getRu();
             if (Strings.isNullOrEmpty(ru)) {
-                ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+                ru = CommonConstant.DEFAULT_INDEX_URL;
             }
             switch (AccountDomainEnum.getAccountDomain(passportId)) {
-                case SOHU:
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                    return result.toString();
+//                case SOHU:
+//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+//                    return result.toString();
                 case THIRD:
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                     return result.toString();
@@ -112,8 +112,8 @@ public class EmailSecureAction extends BaseController {
             int clientId = Integer.parseInt(params.getClient_id());
             String scode = params.getScode();
             switch (AccountDomainEnum.getAccountDomain(passportId)) {
-                case SOHU:
-                    return "redirect:" + SOHU_BINDEMAIL_URL;
+//                case SOHU:
+//                    return "redirect:" + SOHU_BINDEMAIL_URL;
                 case THIRD:
                     return "redirect:/web/security";
             }

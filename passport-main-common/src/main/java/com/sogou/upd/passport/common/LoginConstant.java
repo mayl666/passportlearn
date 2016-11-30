@@ -13,6 +13,13 @@ public class LoginConstant {
     //用户登陆的信息
     public static final String COOKIE_SGID = "sgid";
 
+    //SSO登录常量
+    public static final String SSO_TOKEN = "token";
+    public static final String SSO_OLD_SID = "oldsgid";
+    public static final String SSO_NEW_SID = "newsgid";
+    public static final String SSO_VOUCHER = "voucher";
+    public static final String SSO_ACCOUNT_TYPE = "accouttype";
+
     //PPINF 的数字签名
     public static final String COOKIE_PPRDIG = "pprdig";
     //passport cookie
@@ -29,6 +36,14 @@ public class LoginConstant {
      * 连续登陆失败多少次需要用户在登陆时输入验证码 >=
      */
     public static final int LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT = 3;
+
+
+    /**
+     * 短信登录，失败1次，需要输入验证码
+     */
+    public static final int MESSAGE_LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT = 1;
+
+
     /**
      * 某IP连续登陆失败多少次需要用户在登陆时输入验证码 >=
      */
@@ -147,12 +162,12 @@ public class LoginConstant {
     /**
      * 内部接口 检查用户是否存在 一小时限制 50
      */
-    public static final int CHECK_USER_EXIST_INTERNAL_USER_LIMIT = 20;
+    public static final int CHECK_USER_EXIST_INTERNAL_USER_LIMIT = 50;
 
     /**
-     * 内部接口 检查用户是否存在 一小时限制某用户IP 20次
+     * 内部接口 检查用户是否存在 一小时限制某用户IP 100次
      */
-    public static final int CHECK_USER_EXIST_INTERNAL_IP_LIMIT = 20;
+    public static final int CHECK_USER_EXIST_INTERNAL_IP_LIMIT = 100;
 
 
 }

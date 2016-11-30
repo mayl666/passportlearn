@@ -65,16 +65,18 @@ define(['./interface', '../lib/tpl' , './utils',  './skin' , './common'], functi
 					password: u,
                     username: self.__data.userid,
                     scode: self.__data.scode,
-                    ru:decodeURIComponent(ru)
+                    ru:decodeURIComponent(ru),
+                    client_id: Utils.getUrlParams()['client_id']
 				}, function(result, data) {
 					self.__mChanging = false;
 					if (result) {
 						self.showMsg('恭喜您，重置密码成功！', true);
                         setTimeout(function(){
-                            location.href = '/wap/index?' + passParamsStr;
-                        },2000);
+                           location.assign(decodeURIComponent(ru));
+                           // location.href = '/wap/index?' + passParamsStr;
+                        },2e3);
 					} else {
-						self.showMsg(data.statusText);
+						self.showMsg(data.statusText); 
 						if (data.status == '20221' || data.status == '20216') {
 							self.$sms.empty().focus();
 						} else {

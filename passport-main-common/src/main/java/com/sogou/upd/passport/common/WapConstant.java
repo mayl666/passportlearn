@@ -24,6 +24,20 @@ public class WapConstant {
      */
     public static final String WAP_TOUCH = "5";
 
+    // wap版颜色为绿色
+    public static final String WAP_SKIN_GREEN = "green";
+    // wap版颜色为红色
+    public static final String WAP_SKIN_RED = "red";
+    //wap版颜色与浏览器统一
+    public static final String WAP_SKIN_SE = "se";
+    //输入法的手游H5页面使用
+    public static final String WAP_SKIN_ORANGE = "orange";
+    //搜索本地生活定制shenghuo为橙色，色值#fe6847
+    public static final String WAP_SKIN_SHENGHUO = "shenghuo";
+    //搜狗阅读短验登录定制
+    public static final String WAP_SKIN_READ = "read";
+
+
     //默认登录来源
     public static final String WAP_INDEX = "http://wap.sogou.com/";
 

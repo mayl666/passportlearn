@@ -36,7 +36,7 @@ public class ServletUtil {
         boolean isContainsQuery = messageUrl.contains("?");
         StringBuilder url = new StringBuilder(messageUrl);
         StringBuilder query = new StringBuilder(format(params.entrySet(),
-                CommonConstant.DEFAULT_CONTENT_CHARSET));
+                CommonConstant.DEFAULT_CHARSET));
         if (!Strings.isNullOrEmpty(query.toString())) {
             if (isContainsQuery) {
                 url.append("&").append(query);
@@ -130,44 +130,44 @@ public class ServletUtil {
     }
 
 
-    public static void setCookie(HttpServletResponse response, String key, String value, int second, String domain) {
-        saveCookie(response, key, value, second, "/", domain);
+    public static Cookie setCookie(HttpServletResponse response, String key, String value, int second, String domain) {
+        return saveCookie(response, key, value, second, "/", domain);
     }
 
-    public static void setCookie(HttpServletResponse response, String key, String value, int second) {
-        saveCookie(response, key, value, second, "/");
+    public static Cookie setCookie(HttpServletResponse response, String key, String value, int second) {
+        return saveCookie(response, key, value, second, "/");
     }
 
-    public static void saveCookie(HttpServletResponse response, String key, String value,
+    public static Cookie saveCookie(HttpServletResponse response, String key, String value,
                                   int second, String path) {
-        saveCookie(response, key, value, second, path, defaultDomain);
+        return saveCookie(response, key, value, second, path, defaultDomain);
     }
 
-    public static void saveCookie(HttpServletResponse response, String key, String value,
+    public static Cookie saveCookie(HttpServletResponse response, String key, String value,
                                   int second, String path, String domain) {
         Cookie cookie = new Cookie(key, value);
         cookie.setDomain(domain);
         cookie.setPath(path);
         cookie.setMaxAge(second); // 默认为-1,
         response.addCookie(cookie);
+        return cookie;
     }
 
-    public static void clearCookie(HttpServletResponse response, String key) {
-        clearCookie(response, key, 0, "/", defaultDomain);
+    public static Cookie clearCookie(HttpServletResponse response, String key) {
+        return clearCookie(response, key, 0, "/", defaultDomain);
     }
 
-    public static void clearCookie(HttpServletResponse response, String key, String domain) {
-        clearCookie(response, key, 0, "/", domain);
+    public static Cookie clearCookie(HttpServletResponse response, String key, String domain) {
+        return clearCookie(response, key, 0, "/", domain);
     }
 
-
-    public static void clearCookie(HttpServletResponse response, String key, int second,
+    public static Cookie clearCookie(HttpServletResponse response, String key, int second,
                                    String path, String domain) {
         Cookie cookie = new Cookie(key, null);
         cookie.setPath(path);
         cookie.setMaxAge(second);
         cookie.setDomain(domain);
         response.addCookie(cookie);
+        return cookie;
     }
-
 }

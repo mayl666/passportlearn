@@ -7,16 +7,17 @@
 
     <!-- cache redis util definition -->
     <bean id="cachePoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="200"/>
+        <property name="maxTotal" value="200"/>
         <property name="maxIdle" value="100"/>
         <property name="minIdle" value="50"/>
-        <property name="maxWait" value="1000"/>
+        <property name="maxWaitMillis" value="1000"/>
         <property name="testOnBorrow" value="true"/>
+        <property name="lifo" value="false" />
     </bean>
     <bean id="cacheConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <property name="hostName" value="10.12.139.205"/>
-        <property name="port" value="6379"/>
+        <property name="hostName" value="a.redis.sogou"/>
+        <property name="port" value="1509"/>
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->
         <!--<property name="database" value="${redis.default.db}"></property>-->
@@ -29,36 +30,36 @@
     </bean>
 
     <!--<bean id="jedisShardInfo_1" class="redis.clients.jedis.JedisShardInfo">-->
-    <!--<constructor-arg index="0" value="10.146.200.127"/>-->
-    <!--<constructor-arg index="1" value="6369" type="int"/>-->
+        <!--<constructor-arg index="0" value="10.146.200.127"/>-->
+        <!--<constructor-arg index="1" value="6369" type="int"/>-->
     <!--</bean>-->
     <!--<bean id="jedisShardInfo_2" class="redis.clients.jedis.JedisShardInfo">-->
-    <!--<constructor-arg index="0" value="10.146.200.127"/>-->
-    <!--<constructor-arg index="1" value="6379" type="int"/>-->
+        <!--<constructor-arg index="0" value="10.146.200.127"/>-->
+        <!--<constructor-arg index="1" value="6379" type="int"/>-->
     <!--</bean>-->
     <!--<bean id="jedisShardInfo_3" class="redis.clients.jedis.JedisShardInfo">-->
-    <!--<constructor-arg index="0" value="10.146.200.127"/>-->
-    <!--<constructor-arg index="1" value="6389" type="int"/>-->
+        <!--<constructor-arg index="0" value="10.146.200.127"/>-->
+        <!--<constructor-arg index="1" value="6389" type="int"/>-->
     <!--</bean>-->
     <!--<bean id="jedisShardInfo_4" class="redis.clients.jedis.JedisShardInfo">-->
-    <!--<constructor-arg index="0" value="10.146.200.127"/>-->
-    <!--<constructor-arg index="1" value="6399" type="int"/>-->
+        <!--<constructor-arg index="0" value="10.146.200.127"/>-->
+        <!--<constructor-arg index="1" value="6399" type="int"/>-->
     <!--</bean>-->
     <!--<bean id="jedisShardInfo_5" class="redis.clients.jedis.JedisShardInfo">-->
-    <!--<constructor-arg index="0" value="10.146.24.128"/>-->
-    <!--<constructor-arg index="1" value="6389" type="int"/>-->
+        <!--<constructor-arg index="0" value="10.146.24.128"/>-->
+        <!--<constructor-arg index="1" value="6389" type="int"/>-->
     <!--</bean>-->
     <!--<bean id="jedisShardInfo_6" class="redis.clients.jedis.JedisShardInfo">-->
-    <!--<constructor-arg index="0" value="10.146.24.129"/>-->
-    <!--<constructor-arg index="1" value="6399" type="int"/>-->
+        <!--<constructor-arg index="0" value="10.146.24.129"/>-->
+        <!--<constructor-arg index="1" value="6399" type="int"/>-->
     <!--</bean>-->
     <bean id="jedisShardInfo_204" class="redis.clients.jedis.JedisShardInfo">
-        <constructor-arg index="0" value="10.12.139.204"/>
-        <constructor-arg index="1" value="6379" type="int"/>
+        <constructor-arg index="0" value="a.redis.sogou"/>
+        <constructor-arg index="1" value="1509" type="int"/>
     </bean>
     <bean id="jedisShardInfo_205" class="redis.clients.jedis.JedisShardInfo">
-        <constructor-arg index="0" value="10.12.139.205"/>
-        <constructor-arg index="1" value="6379" type="int"/>
+        <constructor-arg index="0" value="a.redis.sogou"/>
+        <constructor-arg index="1" value="1509" type="int"/>
     </bean>
     <bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">
         <constructor-arg index="0" ref="cachePoolConfig"/>
@@ -82,15 +83,16 @@
 
     <!-- kv redis util definition -->
     <bean id="kvPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="200"/>
+        <property name="maxTotal" value="200"/>
         <property name="maxIdle" value="100"/>
         <property name="minIdle" value="50"/>
-        <property name="maxWait" value="1000"/>
+        <property name="maxWaitMillis" value="1000"/>
         <property name="testOnBorrow" value="true"/>
+        <property name="lifo" value="false" />
     </bean>
     <bean id="kvConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <property name="hostName" value="tair.store.z.sogou-op.org"/>
+        <property name="hostName" value="kv.sogou"/>
         <property name="port" value="6379"/>
         <!--<property name="password" value="${redis.pass}"/>-->
         <!--<property name="timeout" value="${redis.timeout}"/>-->
@@ -105,11 +107,12 @@
 
     <!-- token redis utils-->
     <bean id="tokenPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="200"/>
+        <property name="maxTotal" value="200"/>
         <property name="maxIdle" value="100"/>
         <property name="minIdle" value="50"/>
-        <property name="maxWait" value="1000"/>
+        <property name="maxWaitMillis" value="1000"/>
         <property name="testOnBorrow" value="true"/>
+        <property name="lifo" value="false" />
     </bean>
     <bean id="tokenConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
@@ -126,41 +129,16 @@
         <property name="redisTemplate" ref="tokenTemplate"/>
     </bean>
 
-    <!-- db redis utils-->
-    <bean id="dbPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="200"/>
-        <property name="maxIdle" value="100"/>
-        <property name="minIdle" value="50"/>
-        <property name="maxWait" value="1000"/>
-        <property name="testOnBorrow" value="true"/>
-    </bean>
-    <bean id="dbConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-          p:usePool="true">
-        <property name="hostName" value="10.12.139.205"/>
-        <property name="port" value="6379"/>
-        <!--<property name="password" value="${redis.pass}"/>-->
-        <!--<property name="timeout" value="${redis.timeout}"/>-->
-        <!--<property name="database" value="${redis.default.db}"></property>-->
-        <constructor-arg index="0" ref="dbPoolConfig"/>
-    </bean>
-    <bean id="dbTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
-          p:connectionFactory-ref="dbConnectionFactory"/>
-    <bean id="dbRedisUtils" class="com.sogou.upd.passport.common.utils.DBRedisUtils">
-        <property name="redisTemplate" ref="dbTemplate"/>
-    </bean>
-
     <!--热切换redis-->
     <bean id="monitor" class="com.sogou.upd.passport.zk.Monitor" destroy-method="destory">
         <constructor-arg name="zks" value="10.136.24.136:2181"/>
     </bean>
     <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">
         <constructor-arg name="monitor" ref="monitor"/>
-        <constructor-arg name="cachePath" value="${cacheRedisZkPath}"/>
-        <constructor-arg name="tokenPath" value="${tokenRedisZkPath}"/>
-        <constructor-arg name="dbCachePath" value="${dbCacheRedisZkPath}"/>
+        <constructor-arg name="cachePath" value="/sogou_passport/redis_info/redis_node/cache"/>
+        <constructor-arg name="tokenPath" value="/sogou_passport/redis_info/redis_node/token"/>
         <constructor-arg name="tokenConnectionFactory" ref="tokenConnectionFactory"/>
         <constructor-arg name="cacheConnectionFactory" ref="cacheConnectionFactory"/>
-        <constructor-arg name="dbCacheConnectionFactory" ref="dbConnectionFactory"/>
     </bean>
 
 </beans>

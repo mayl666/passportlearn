@@ -47,11 +47,11 @@ public class CoreKvUtils {
             ValueOperations<String, String> valueOperations = coreKvTemplate.opsForValue();
             valueOperations.set(storeKey, value);
         } catch (Exception e) {
-            logger.error("[Cache] set cache fail, key:" + key + " value:" + value, e);
+            logger.error("[CoreKvCache] set cache fail, key:" + key + " value:" + value, e);
             try {
                 delete(key);
             } catch (Exception ex) {
-                logger.error("[Cache] set and delete cache fail, key:" + key + " value:" + value, e);
+                logger.error("[CoreKvCache] set and delete cache fail, key:" + key + " value:" + value, e);
                 throw e;
             }
         }

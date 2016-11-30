@@ -158,6 +158,7 @@ public class HttpClientUtil {
             return Pair.of(code, body);
         } catch (Exception e) {
             String message = e.getClass().getName() + "|" + e.getMessage();
+            logger.error("doWget", e);
             return Pair.of(0, message);
         } finally {
             method.releaseConnection();
@@ -218,7 +219,7 @@ public class HttpClientUtil {
 
     private static String read(Reader reader) throws IOException {
         StringBuilder cache = new StringBuilder();
-        char[] buf = new char[1024];
+        char[] buf = new char[100000*1024];
         int l;
         while ((l = reader.read(buf)) > 0)
             cache.append(buf, 0, l);
@@ -251,21 +252,6 @@ public class HttpClientUtil {
         shClient = new HttpClient(shManager);
     }
 
-    public static void main(String[] args) throws Exception {
-        Map<String, String> postData = Maps.newHashMap();
-        postData.put("appid", "1003");
-        postData.put("account", "18610017622");
-        postData.put("signature", "tj6sEa2BFKeoFd1pSNFqOZVFSwZLmvldAgvOt_Ojoqs");
-        postData.put("nickname", "戴菲菲");
-
-        String urlStr = "http://passport.sohu.com/act/setcookie?userid=wg494943628@sogou.com&appid=1120&ct=1382384218435&code=ffee354f18ef84cf73b4655a37ddd528&ru=http://profile.pinyin.sogou.com/&persistentcookie=0&domain=sogou.com";
-        URL url = new URL(urlStr);
-        Header[] headers = getResponseHeadersWget(urlStr);
-        System.out.println("protocol:" + url.getProtocol());
-        System.out.println("host:" + url.getHost());
-        System.out.println("path:" + url.getPath());
-        System.out.println("uri:" + url.toURI().getScheme());
-    }
 
 
 }

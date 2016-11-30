@@ -56,6 +56,7 @@ public class QQLightOpenApiController extends BaseConnectController {
         String resultString = "";
         String passportId = params.getUserid();
         int clientId = params.getClient_id();
+        String thirdAppId = params.getThird_appid();
         try {
             // 仅支持qq账号调用此接口
             if (AccountTypeEnum.getAccountType(passportId) != AccountTypeEnum.QQ) {
@@ -70,7 +71,7 @@ public class QQLightOpenApiController extends BaseConnectController {
                 return result.toString();
             }
             //调用sohu接口，获取QQ token，openid等参数
-            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
+            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId, thirdAppId);
             resultString = openResult.toString();
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
@@ -79,7 +80,7 @@ public class QQLightOpenApiController extends BaseConnectController {
                 String accessToken = connectToken.getAccessToken();
                 String resp;
                 if (!Strings.isNullOrEmpty(openId) && !Strings.isNullOrEmpty(accessToken)) {
-                    resp = sgQQLightOpenApiManager.executeQQOpenApi(openId, accessToken, params);
+                    resp = sgQQLightOpenApiManager.executeQQOpenApi(openId, accessToken, params, thirdAppId);
                     if (!Strings.isNullOrEmpty(resp)) {
                         resultString = resp;
                         result.setSuccess(true);

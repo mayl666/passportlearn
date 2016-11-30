@@ -47,12 +47,16 @@
         <constructor-arg index="1" value="${passport.dbredis.shard6.port}" type="int"/>
     </bean>
     <bean id="dbShardPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="1200"/>
+        <property name="maxTotal" value="1800"/>
         <!-- 由于shard，这里配置一定要注意，过小会导致资源竞争 -->
-        <property name="maxIdle" value="600"/>
-        <property name="minIdle" value="300"/>
-        <property name="maxWait" value="1000"/>
+        <property name="maxIdle" value="400"/>
+        <property name="minIdle" value="400"/>
+        <property name="maxWaitMillis" value="1000"/>
         <property name="testOnBorrow" value="false"/>
+        <!--30分钟跑一次idle object eviction线程-->
+        <property name="timeBetweenEvictionRunsMillis" value="180000" />
+        <!-- 解决java.net.SocketTimeoutException: connect timed out-->
+        <property name="lifo" value="false" />
     </bean>
 
     <!-- cache redis util definition -->
@@ -63,16 +67,20 @@
           p:connectionFactory-ref="cacheConnectionFactory"/>
     <bean id="cacheConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <!--<property name="hostName" value="${passport.redis.url}"/>-->
-        <!--<property name="port" value="${passport.redis.port}"/>-->
+        <property name="hostName" value="${passport.redis.url}"/>
+        <property name="port" value="${passport.redis.port}"/>
         <constructor-arg index="0" ref="cachePoolConfig"/>
     </bean>
     <bean id="cachePoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="200"/>
-        <property name="maxIdle" value="100"/>
-        <property name="minIdle" value="50"/>
-        <property name="maxWait" value="1000"/>
+        <property name="maxTotal" value="1600"/>
+        <property name="maxIdle" value="300"/>
+        <property name="minIdle" value="300"/>
+        <property name="maxWaitMillis" value="1000"/>
         <property name="testOnBorrow" value="false"/>
+        <!--30分钟跑一次idle object eviction线程-->
+        <property name="timeBetweenEvictionRunsMillis" value="180000" />
+        <!-- 解决java.net.SocketTimeoutException: connect timed out-->
+        <property name="lifo" value="false" />
     </bean>
 
     <!-- 核心kv redis util definition -->
@@ -88,11 +96,15 @@
         <constructor-arg index="0" ref="kvPoolConfig"/>
     </bean>
     <bean id="kvPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="200"/>
-        <property name="maxIdle" value="100"/>
-        <property name="minIdle" value="50"/>
-        <property name="maxWait" value="1000"/>
+        <property name="maxTotal" value="400"/>
+        <property name="maxIdle" value="200"/>
+        <property name="minIdle" value="200"/>
+        <property name="maxWaitMillis" value="1000"/>
         <property name="testOnBorrow" value="false"/>
+        <!--30分钟跑一次idle object eviction线程-->
+        <!--<property name="timeBetweenEvictionRunsMillis" value="180000" />-->
+        <!-- 解决java.net.SocketTimeoutException: connect timed out-->
+        <property name="lifo" value="false" />
     </bean>
 
     <!-- token redis utils-->
@@ -103,50 +115,56 @@
           p:connectionFactory-ref="tokenConnectionFactory"/>
     <bean id="tokenConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
           p:usePool="true">
-        <!--<property name="hostName" value="${passport.tokenRedis.url}"/>-->
-        <!--<property name="port" value="${passport.tokenRedis.port}"/>-->
+        <property name="hostName" value="${passport.tokenRedis.url}"/>
+        <property name="port" value="${passport.tokenRedis.port}"/>
         <constructor-arg index="0" ref="tokenPoolConfig"/>
     </bean>
     <bean id="tokenPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="200"/>
-        <property name="maxIdle" value="100"/>
-        <property name="minIdle" value="50"/>
-        <property name="maxWait" value="1000"/>
+        <property name="maxTotal" value="1600"/>
+        <property name="maxIdle" value="400"/>
+        <property name="minIdle" value="400"/>
+        <property name="maxWaitMillis" value="1000"/>
         <property name="testOnBorrow" value="false"/>
-    </bean>
-
-    <!-- db redis utils-->
-    <bean id="dbRedisUtils" class="com.sogou.upd.passport.common.utils.DBRedisUtils">
-        <property name="redisTemplate" ref="dbTemplate"/>
-    </bean>
-    <bean id="dbTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
-          p:connectionFactory-ref="dbConnectionFactory"/>
-    <bean id="dbConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-          p:usePool="true">
-        <!--<property name="hostName" value="${passport.tokenRedis.url}"/>-->
-        <!--<property name="port" value="${passport.tokenRedis.port}"/>-->
-        <constructor-arg index="0" ref="dbPoolConfig"/>
-    </bean>
-    <bean id="dbPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxActive" value="200"/>
-        <property name="maxIdle" value="100"/>
-        <property name="minIdle" value="50"/>
-        <property name="maxWait" value="1000"/>
-        <property name="testOnBorrow" value="false"/>
+        <!--30分钟跑一次idle object eviction线程-->
+        <property name="timeBetweenEvictionRunsMillis" value="180000" />
+        <!-- 解决java.net.SocketTimeoutException: connect timed out-->
+        <property name="lifo" value="false" />
     </bean>
 
     <!--热切换redis-->
-    <bean id="monitor" class="com.sogou.upd.passport.zk.Monitor" destroy-method="destory">
-        <constructor-arg name="zks" value="${zks}"/>
+    <!--<bean id="monitor" class="com.sogou.upd.passport.zk.Monitor" destroy-method="destory">-->
+        <!--<constructor-arg name="zks" value="${zks}"/>-->
+    <!--</bean>-->
+    <!--<bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">-->
+        <!--<constructor-arg name="monitor" ref="monitor"/>-->
+        <!--<constructor-arg name="cachePath" value="${cacheRedisZkPath}"/>-->
+        <!--<constructor-arg name="tokenPath" value="${tokenRedisZkPath}"/>-->
+        <!--<constructor-arg name="tokenConnectionFactory" ref="tokenConnectionFactory"/>-->
+        <!--<constructor-arg name="cacheConnectionFactory" ref="cacheConnectionFactory"/>-->
+    <!--</bean>-->
+
+    <!-- riskcontrol redis utils-->
+    <bean id="riskControlRedisUtils" class="com.sogou.upd.passport.common.utils.RiskControlRedisUtils">
+        <property name="redisTemplate" ref="riskRedisTemplate"/>
     </bean>
-    <bean id="redisMonitor" class="com.sogou.upd.passport.zk.RedisMonitor" destroy-method="destroy">
-        <constructor-arg name="monitor" ref="monitor"/>
-        <constructor-arg name="cachePath" value="${cacheRedisZkPath}"/>
-        <constructor-arg name="tokenPath" value="${tokenRedisZkPath}"/>
-        <constructor-arg name="dbCachePath" value="${dbCacheRedisZkPath}"/>
-        <constructor-arg name="tokenConnectionFactory" ref="tokenConnectionFactory"/>
-        <constructor-arg name="cacheConnectionFactory" ref="cacheConnectionFactory"/>
-        <constructor-arg name="dbCacheConnectionFactory" ref="dbConnectionFactory"/>
+    <bean id="riskRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
+          p:connectionFactory-ref="riskRedisConnectionFactory"/>
+    <bean id="riskRedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:usePool="true">
+        <property name="hostName" value="${passport.riskRedis.url}"/>
+        <property name="port" value="${passport.riskRedis.port}"/>
+        <constructor-arg index="0" ref="riskRedisPoolConfig"/>
+    </bean>
+    <bean id="riskRedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="256"/>
+        <property name="maxIdle" value="64"/>
+        <property name="minIdle" value="64"/>
+        <property name="maxWaitMillis" value="1000"/>
+        <property name="testOnBorrow" value="false"/>
+        <!--30分钟跑一次idle object eviction线程-->
+        <property name="timeBetweenEvictionRunsMillis" value="180000" />
+        <!-- 解决java.net.SocketTimeoutException: connect timed out-->
+        <property name="lifo" value="false" />
     </bean>
 
 </beans>

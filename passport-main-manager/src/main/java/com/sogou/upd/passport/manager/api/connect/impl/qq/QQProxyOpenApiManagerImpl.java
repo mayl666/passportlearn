@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.api.connect.impl.qq;
 
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
@@ -71,18 +72,18 @@ public class QQProxyOpenApiManagerImpl extends BaseProxyManager implements QQPro
                 sigMap.put(dataKey, maps.get(dataKey));
             }
             //TODO 根据应用的请求方式
-            String method = CommonConstant.CONNECT_METHOD_POST;
+            String method = HttpConstant.HttpMethod.POST;
             String resp;
             try {
                 resp = qqApi(openApiParams, sigMap, protocol, method);
                 result.setDefaultModel(resp);
             } catch (Exception e) {
-                logger.error("executeQQOpenApi Is Failed:", e);
+                logger.error("get qq userinfo Is Failed:", e);
                 result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
             }
             return result;
         } catch (Exception e) {
-            logger.error("executeQQOpenApi Is Failed,openId is " + openApiParams.getOpenId(), e);
+            logger.error("get qq userinfo Is Failed,openId is " + openApiParams.getOpenId(), e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }
         return result;

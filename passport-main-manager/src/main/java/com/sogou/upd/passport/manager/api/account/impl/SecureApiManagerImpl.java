@@ -1,18 +1,25 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
+import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
+import com.sogou.upd.passport.common.parameter.SohuPasswordType;
+import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.LogUtil;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.api.account.SecureApiManager;
-import com.sogou.upd.passport.manager.api.account.form.GetSecureInfoApiParams;
-import com.sogou.upd.passport.manager.api.account.form.ResetPasswordBySecQuesApiParams;
-import com.sogou.upd.passport.manager.api.account.form.UpdateQuesApiParams;
+import com.sogou.upd.passport.model.account.Account;
+import com.sogou.upd.passport.model.account.AccountInfo;
+import com.sogou.upd.passport.service.account.AccountHelper;
+import com.sogou.upd.passport.service.account.AccountInfoService;
+import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.OperateTimesService;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,48 +34,82 @@ public class SecureApiManagerImpl implements SecureApiManager {
 
     private static final Logger logger = LoggerFactory.getLogger(SecureApiManagerImpl.class);
 
-    private static final Logger checkWriteLogger = LoggerFactory.getLogger("com.sogou.upd.passport.bothWriteSyncErrorLogger");
-
     @Autowired
-    private SecureApiManager sgSecureApiManager;
+    private AccountService accountService;
     @Autowired
-    private SecureApiManager proxySecureApiManager;
+    private OperateTimesService operateTimesService;
     @Autowired
-    private TaskExecutor discardTaskExecutor;
+    private AccountInfoService accountInfoService;
 
     @Override
-    public Result updatePwd(final String passportId, final int clientId, final String oldPwd, final String newPwd, final String modifyIp) {
-        Result result = sgSecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
-        AccountDomainEnum domainType = AccountDomainEnum.getAccountDomain(passportId);
-        //搜狗账号修改密码双写,写入搜狐逻辑为异步，避免搜狐服务不可用影响搜狗
-        if (result.isSuccess() && (AccountDomainEnum.SOGOU.equals(domainType) || AccountDomainEnum.INDIVID.equals(domainType))) {
-            discardTaskExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    Result shResult = proxySecureApiManager.updatePwd(passportId, clientId, oldPwd, newPwd, modifyIp);
-                    if (!shResult.isSuccess()) {
-                        LogUtil.buildErrorLog(checkWriteLogger, AccountModuleEnum.RESETPWD, "updatePwd", CommonConstant.SGSUCCESS_SHERROR, passportId, shResult.getCode(), shResult.toString());
-                    }
-                }
-            });
+    public Result updatePwd(String passportId, int clientId, String oldPwd, String newPwd, String modifyIp) {
+        Result result = new APIResultSupport(false);
+        Account account;
+        if (passportId.matches(".+@qq\\.sohu\\.com$")) {    // QQ 账号
+            // 第三方账号由于使用进使用 oauth2 协议，所以不需要验证原密码
+            account = accountService.queryAccountByPassportId(passportId);
+            if (account == null) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                return result;
+            }
+            if (AccountHelper.isDisabledAccount(account)) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NO_ACTIVED_FAILED);
+                return result;
+            }
+            if (AccountHelper.isKilledAccount(account)) {
+                result.setSuccess(false);
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
+                return result;
+            }
+    
+            result.setSuccess(true);
+            result.setMessage("操作成功");
+            result.setDefaultModel("userid", account.getPassportId());
+            result.setDefaultModel("uniqName", account.getUniqname());
+            result.setDefaultModel(account);
+        } else {    // 验证密码
+            result = accountService.verifyUserPwdVaild(passportId, oldPwd, true, SohuPasswordType.TEXT);
+            if (!result.isSuccess()) {
+                operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.RESETPWD);
+                return result;
+            }
+            account = (Account) result.getDefaultModel();
+        }
+        
+        result.setModels(Maps.newHashMap());
+        if (!accountService.resetPassword(passportId,account, newPwd, true)) {
+            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
+            result.setSuccess(false);
         }
         return result;
     }
 
     @Override
-    public Result updateQues(UpdateQuesApiParams updateQuesApiParams) {
-        Result result = sgSecureApiManager.updateQues(updateQuesApiParams);
-        return result;
-    }
-
-    @Override
-    public Result getUserSecureInfo(GetSecureInfoApiParams getSecureInfoApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Result resetPasswordByQues(ResetPasswordBySecQuesApiParams resetPasswordBySecQuesApiParams) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Result updateQues(String passportId, int clientId, String password, String newQues, String newAnswer, String modifyIp) {
+        Result result = new APIResultSupport(false);
+        try {
+            Result authUserResult = accountService.verifyUserPwdVaild(passportId, password, true,SohuPasswordType.TEXT);
+            authUserResult.setDefaultModel(null);
+            if (!authUserResult.isSuccess()) {
+                operateTimesService.incLimitCheckPwdFail(passportId, clientId, AccountModuleEnum.SECURE);
+                return authUserResult;
+            }
+            newAnswer = DigestUtils.md5Hex(newAnswer.getBytes(CommonConstant.DEFAULT_CHARSET));
+            AccountInfo accountInfo = accountInfoService.modifyQuesByPassportId(passportId, newQues, newAnswer);
+            if (accountInfo == null) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNTSECURE_BINDQUES_FAILED);
+                return result;
+            }
+            result.setSuccess(true);
+            result.setMessage("操作成功");
+            return result;
+        } catch (Exception e) {
+            logger.error("Update Question fail! passportId:" + passportId, e);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            return result;
+        }
     }
 
 }

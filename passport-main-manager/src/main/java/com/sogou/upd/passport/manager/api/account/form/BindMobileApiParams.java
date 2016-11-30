@@ -1,59 +1,49 @@
 package com.sogou.upd.passport.manager.api.account.form;
 
-import com.sogou.upd.passport.common.validation.constraints.Phone;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * 绑定手机账号的参数类
- * User: ligang201716@sogou-inc.com
- * Date: 13-6-7
- * Time: 上午10:25
+ * Created by xieyilun on 2016/5/12.
  */
-public class BindMobileApiParams extends BaseUserApiParams {
+public class BindMobileApiParams extends BaseMoblieApiParams {
+    @NotBlank(message = "sgid不允许为空")
+    String sgid;
+    @NotBlank(message = "密码不允许为空")
+    protected String password;
+    @NotBlank(message = "验证码不允许为空!")
+    protected String smscode;
+    @NotBlank(message = "createip不允许为空!")
+    private String createip;
 
-    //原来绑定的手机号
-    @Phone
-    private String oldMobile;
-
-    //老手机的验证码
-    private String oldCaptcha;
-
-    //新手机号
-    @Phone
-    private String newMobile;
-
-    //新绑定手机号的验证码
-    private String newCaptcha;
-
-
-    public String getOldMobile() {
-        return oldMobile;
+    public String getCreateip() {
+        return createip;
     }
 
-    public void setOldMobile(String oldMobile) {
-        this.oldMobile = oldMobile;
+    public void setCreateip(String createip) {
+        this.createip = createip;
     }
 
-    public String getOldCaptcha() {
-        return oldCaptcha;
+    public String getSgid() {
+        return sgid;
     }
 
-    public void setOldCaptcha(String oldCaptcha) {
-        this.oldCaptcha = oldCaptcha;
+    public void setSgid(String sgid) {
+        this.sgid = sgid;
     }
 
-    public String getNewMobile() {
-        return newMobile;
+    public String getPassword() {
+        return password;
     }
 
-    public void setNewMobile(String newMobile) {
-        this.newMobile = newMobile;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getNewCaptcha() {
-        return newCaptcha;
+    public String getSmscode() {
+        return smscode;
     }
 
-    public void setNewCaptcha(String newCaptcha) {
-        this.newCaptcha = newCaptcha;
+    public void setSmscode(String smscode) {
+        this.smscode = smscode;
     }
 }

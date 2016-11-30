@@ -82,14 +82,4 @@ public interface ConnectAuthService {
      */
     public ConnectUserInfoVO getConnectUserInfo(int provider, String appKey, ConnectToken connectToken) throws IOException, OAuthProblemException;
 
-    /**
-     * 验证accessToken是否有效
-     *
-     * @param openid
-     * @param accessToken
-     * @return
-     * @throws IOException
-     * @throws OAuthProblemException
-     */
-    public OAuthTokenVO verifyAccessToken(String openid, String accessToken, ConnectConfig connectConfig) throws IOException, OAuthProblemException;
 }

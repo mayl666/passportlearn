@@ -13,6 +13,7 @@ import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.black.BlackItem;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.black.BlackItemService;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -24,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -111,33 +111,6 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         return false;
     }
 
-    @Override
-    public boolean checkTimesByKeyList(List<String> keyList, List<Integer> maxList) throws ServiceException {
-        if (CollectionUtils.isEmpty(keyList) || CollectionUtils.isEmpty(maxList)) {
-            return false;
-        }
-        try {
-            List<String> valueList = redisUtils.multiGet(keyList);
-            if (!CollectionUtils.isEmpty(keyList)) {
-                int num = 0, valueSize = valueList.size(), maxSize = maxList.size();
-                for (int i = 0; i < valueSize && i < maxSize; i++) {
-                    String value = valueList.get(i);
-                    if (!Strings.isNullOrEmpty(value)) {
-                        num = Integer.valueOf(value);
-                        if (num >= maxList.get(i)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            logger.error("checkNumByKey:" + keyList.toString() + ",maxList:" + maxList.toString(), e);
-            throw new ServiceException(e);
-        }
-        return false;
-    }
-
-
     private void incLoginSuccessTimes(final String username, final String ip) throws ServiceException {
         try {
             discardTaskExecutor.execute(new Runnable() {
@@ -187,35 +160,65 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
+    public void incSmsCodeLoginTimes(final String mobile, final String ip, boolean isSuccess) throws ServiceException {
+        try {
+            if (isSuccess) {
+                discardTaskExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        String username_hKey = CacheConstant.CACHE_PREFIX_SMS_CODE_LOGIN_NUM + mobile;
+                        hRecordTimes(username_hKey, CacheConstant.CACHE_SUCCESS_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
+                        if (!Strings.isNullOrEmpty(ip)) {
+                            String ip_hKey = CacheConstant.CACHE_PREFIX_IP_LOGINNUM + ip;
+                            hRecordTimes(ip_hKey, CacheConstant.CACHE_SUCCESS_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
+                        }
+                    }
+                });
+            } else {
+                String username_hKey = CacheConstant.CACHE_PREFIX_SMS_CODE_LOGIN_NUM + mobile;
+                hRecordTimes(username_hKey, CacheConstant.CACHE_FAILED_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
+                if (!Strings.isNullOrEmpty(ip)) {
+                    String ip_hKey = CacheConstant.CACHE_PREFIX_IP_LOGINNUM + ip;
+                    hRecordTimes(ip_hKey, CacheConstant.CACHE_FAILED_KEY, DateAndNumTimesConstant.TIME_ONEHOUR);
+                }
+
+            }
+        } catch (Exception e) {
+            logger.error("incSmsCodeLoginTimes," + mobile + "," + ip + "," + isSuccess, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
     public boolean isLoginTimesForBlackList(String username, String ip) throws ServiceException {
         try {
             //username
             int num = 0;
-            String userName_hKey = buildUserNameLoginTimesKeyStr(username);
-            Map<String, String> username_hmap = redisUtils.hGetAll(userName_hKey);
-            if (!MapUtils.isEmpty(username_hmap)) {
-                String username_failedNum = username_hmap.get(CacheConstant.CACHE_FAILED_KEY);
-                if (!Strings.isNullOrEmpty(username_failedNum)) {
-                    num = Integer.parseInt(username_failedNum);
-                    if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
-                        blackItemService.addIPOrUsernameToLoginBlackList(username, BlackItem.FAILED_LIMIT, false);
-                        redisUtils.delete(userName_hKey);
-                        return true;
+            if (!Strings.isNullOrEmpty(username)) {
+                String userName_hKey = buildUserNameLoginTimesKeyStr(username);
+                Map<String, String> username_hmap = redisUtils.hGetAll(userName_hKey);
+                if (!MapUtils.isEmpty(username_hmap)) {
+                    String username_failedNum = username_hmap.get(CacheConstant.CACHE_FAILED_KEY);
+                    if (!Strings.isNullOrEmpty(username_failedNum)) {
+                        num = Integer.parseInt(username_failedNum);
+                        if (num >= LoginConstant.LOGIN_FAILED_EXCEED_MAX_LIMIT_COUNT) {
+                            blackItemService.addIPOrUsernameToLoginBlackList(username, BlackItem.FAILED_LIMIT, false);
+                            redisUtils.delete(userName_hKey);
+                            return true;
+                        }
+                    }
+                    String username_successNum = username_hmap.get(CacheConstant.CACHE_SUCCESS_KEY);
+                    if (!Strings.isNullOrEmpty(username_successNum)) {
+                        num = Integer.parseInt(username_successNum);
+                        if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
+                            blackItemService.addIPOrUsernameToLoginBlackList(username, BlackItem.SUCCESS_LIMIT, false);
+                            redisUtils.delete(userName_hKey);
+                            return true;
+
+                        }
                     }
                 }
-                String username_successNum = username_hmap.get(CacheConstant.CACHE_SUCCESS_KEY);
-                if (!Strings.isNullOrEmpty(username_successNum)) {
-                    num = Integer.parseInt(username_successNum);
-                    if (num >= LoginConstant.LOGIN_SUCCESS_EXCEED_MAX_LIMIT_COUNT) {
-                        blackItemService.addIPOrUsernameToLoginBlackList(username, BlackItem.SUCCESS_LIMIT, false);
-                        redisUtils.delete(userName_hKey);
-                        return true;
-
-                    }
-                }
-
             }
-
             if (!Strings.isNullOrEmpty(ip)) {      //  根据ip判断是否进入黑名单
                 String ip_hKey = buildIPLoginTimesKeyStr(ip);
                 Map<String, String> ip_hmap = redisUtils.hGetAll(ip_hKey);
@@ -309,7 +312,7 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
         //ip与cookie映射
         String ipCookieKey = CacheConstant.CACHE_PREFIX_REGISTER_IPBLACKLIST + ip + "_null";
-        recordTimes(ipCookieKey, DateAndNumTimesConstant.TIME_ONEDAY);
+        recordTimes(ipCookieKey, DateAndNumTimesConstant.TIME_ONEHOUR);
     }
 
     @Override
@@ -501,6 +504,18 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     }
 
     @Override
+    public boolean smsCodeLoginFailedNeedCaptcha(String mobile, String ip) throws ServiceException {
+        try {
+            // 根据username判断是否需要弹出验证码
+            String userName_hKey = CacheConstant.CACHE_PREFIX_SMS_CODE_LOGIN_NUM + mobile;
+            return hCheckTimesByKey(userName_hKey, CacheConstant.CACHE_FAILED_KEY, LoginConstant.MESSAGE_LOGIN_FAILED_NEED_CAPTCHA_LIMIT_COUNT);
+        } catch (Exception e) {
+            logger.error("smsCodeLoginFailedNeedCaptcha error, mobile:{},ip:{}" + mobile, ip, e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
     public long incAddProblemTimes(String ip) throws ServiceException {
         try {
             if (Strings.isNullOrEmpty(ip)) {
@@ -607,14 +622,16 @@ public class OperateTimesServiceImpl implements OperateTimesService {
     @Override
     public boolean isUserInBlackList(String username, String ip) throws ServiceException {
         try {
-            String username_black_key = buildLoginUserNameBlackKeyStr(username);
-            String value = redisUtils.get(username_black_key);
-            if (CommonConstant.LOGIN_IN_BLACKLIST.equals(value)) {
-                return true;
+            if (!Strings.isNullOrEmpty(username)) {
+                String username_black_key = buildLoginUserNameBlackKeyStr(username);
+                String value = redisUtils.get(username_black_key);
+                if (CommonConstant.LOGIN_IN_BLACKLIST.equals(value)) {
+                    return true;
+                }
             }
             if (!StringUtils.isBlank(ip)) {
                 String ip_black_key = buildLoginIPBlackKeyStr(ip);
-                value = redisUtils.get(ip_black_key);
+                String value = redisUtils.get(ip_black_key);
                 if (CommonConstant.LOGIN_IN_BLACKLIST.equals(value)) {
                     return true;
                 }
@@ -888,6 +905,8 @@ public class OperateTimesServiceImpl implements OperateTimesService {
                 if (checkIpTimes) {
                     redisUtils.setWithinSeconds(ip_black_key, CommonConstant.LOGIN_IN_BLACKLIST, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
                     return true;
+                } else {
+                    incGetPairTokenTimes(username,ip);
                 }
             }
             return false;
@@ -971,6 +990,114 @@ public class OperateTimesServiceImpl implements OperateTimesService {
         }
     }
 
+    @Override
+    public void updatePwdSuccessSetModuleBlack(String passportId, long seconds) {
+        try {
+            long timeStamp = (System.currentTimeMillis() / 1000) + seconds;
+            String value = passportId + CommonConstant.MODULE_BLACK_LIST_DATA_JOINER + timeStamp;
+            int setIndex = getBlacklistSetIndex(value);
+            redisUtils.sadd(CacheConstant.CACHE_KEY_BLACKLIST + setIndex,value);
+        } catch (Exception e) {
+            logger.error("updatePwdSuccessSetModuleBlack error. passportId:{}", passportId);
+        }
+    }
+
+    @Override
+    public boolean checkGetSmsCodeNumIfBeyond(final String mobile, final int clientId) {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_GET_NUM + mobile + "_" + clientId;
+            if (redisUtils.checkKeyIsExist(cacheKey)) {
+                //校验请求次数是否超限制
+                if (checkTimesByKey(cacheKey, DateAndNumTimesConstant.GET_SMS_CODE_LOGIN_LIMIT)) {
+                    return true;
+                } else {
+                    //记录请求sms code的次数
+                    recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                }
+            } else {
+                //记录请求sms code的次数
+                recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("checkGetSmsCodeNumIfBeyond error. mobile:{}", mobile);
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean checkTrySmsCodeNumIfBeyond(final String mobile, final int clientId) {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_CHECK_FAIL_NUM + mobile + "_" + clientId;
+            if (redisUtils.checkKeyIsExist(cacheKey)) {
+                if (checkTimesByKey(cacheKey, DateAndNumTimesConstant.TRY_SMS_CODE_LIMIT)) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("checkTrySmsCodeNumIfBeyond error, mobile:{}", mobile);
+            return false;
+        }
+        return false;
+    }
+
+    @Override
+    public void incTrySmsCodeFailTimes(final String mobile, final int clientId) {
+        try {
+            if (!Strings.isNullOrEmpty(mobile)) {
+                String cacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_CHECK_FAIL_NUM + mobile + "_" + clientId;
+                recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            } else {
+                logger.warn("incTrySmsCodeFailTimes warning, mobile is null");
+            }
+        } catch (Exception e) {
+            logger.error("incTrySmsCodeFailTimes error. mobile:{}", mobile);
+        }
+    }
+
+    @Override
+    public void incGetSmsCodeTimes(final String mobile, final int clientId) {
+        try {
+            if (!Strings.isNullOrEmpty(mobile)) {
+                String cacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_GET_NUM + mobile + "_" + clientId;
+                recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+            } else {
+                logger.warn("incGetSmsCodeTimes warning,mobile is null or empty.");
+            }
+        } catch (Exception e) {
+            logger.error("incGetSmsCodeTimes error,mobile:{}", mobile);
+        }
+
+    }
+
+    @Override
+    public boolean checkSMSnNeedCaptcha(final String mobile, final int clientId) {
+        try {
+            String cacheKey = CacheConstant.CACHE_PREFIX_SMSLOGIN_CAPTCHA_LIMIT + mobile + "_" + clientId;
+            if (redisUtils.checkKeyIsExist(cacheKey)) {
+                //校验请求次数是否超限制
+                if (checkTimesByKey(cacheKey, DateAndNumTimesConstant.SMSLOGIN_CAPTCHA_LIMIT)) {
+                    return true;
+                } else {
+                    //记录请求sms code的次数
+                    recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                }
+            } else {
+                //记录请求sms code的次数
+                recordTimes(cacheKey, DateAndNumTimesConstant.TIME_ONEDAY);
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("checkSMSnNeedCaptcha error. mobile:{}", mobile);
+            return false;
+        }
+        return false;
+    }
+
+
     private static String buildGetPairtokenBlackKeyStr(String username) {
         return CacheConstant.CACHE_PREFIX_GETPAIRTOKEN_USERNAME_BLACK_ + username;
     }
@@ -1005,5 +1132,12 @@ public class OperateTimesServiceImpl implements OperateTimesService {
 
     private static String buildIPLoginTimesKeyStr(String ip) {
         return CacheConstant.CACHE_PREFIX_IP_LOGINNUM + ip;
+    }
+
+    private static int getBlacklistSetIndex(String blackValue){
+        String stringHash = DigestUtils.md5Hex(blackValue);
+        int modInt = Integer.parseInt(stringHash.substring(0, 2), 16);
+        int setIndex = modInt % CacheConstant.BLACKLIST_SET_SIZE;
+        return setIndex;
     }
 }

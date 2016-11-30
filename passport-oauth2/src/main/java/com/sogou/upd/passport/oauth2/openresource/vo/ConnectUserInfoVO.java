@@ -14,19 +14,19 @@ import java.util.Map;
 public class ConnectUserInfoVO {
 
     private String nickname;
-    public String avatarSmall;
-    public String avatarMiddle;
-    public String avatarLarge;
-    public String userDesc;
-    public int gender; // 0-女，1-男
-    public String country; // 国家  微信开平用到
-    public String province; // 省
-    public String city; // 市
-    public String region; // 区
-    public String unionid; // 用户唯一标识  微信开平用到
-    public String privilege; // 用户特权信息  微信开平用到
+    private String avatarSmall;
+    private String avatarMiddle;
+    private String avatarLarge;
+    private String userDesc;
+    private int gender; // 0-女，1-男
+    private String province; // 省
+    private String city; // 市
+    private String region; // 区
+    private String unionid; // 用户唯一标识  微信开平用到
+    private String weixinOpenId; // 用户唯一标识  微信开平用到
 
-    public Map<String, Object> original;//第三方返回的原始json串
+
+    private Map<String, Object> original;//第三方返回的原始json串
 
     public String getNickname() {
         return nickname;
@@ -108,14 +108,6 @@ public class ConnectUserInfoVO {
         this.avatarLarge = avatarLarge;
     }
 
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
     public String getUnionid() {
         return unionid;
     }
@@ -124,11 +116,11 @@ public class ConnectUserInfoVO {
         this.unionid = unionid;
     }
 
-    public String getPrivilege() {
-        return privilege;
+    public String getWeixinOpenId() {
+        return weixinOpenId;
     }
 
-    public void setPrivilege(String privilege) {
-        this.privilege = privilege;
+    public void setWeixinOpenId(String weixinOpenId) {
+        this.weixinOpenId = weixinOpenId;
     }
 }

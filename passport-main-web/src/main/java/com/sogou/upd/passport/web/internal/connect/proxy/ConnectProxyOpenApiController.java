@@ -75,14 +75,14 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
+            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId, null);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
                 Map<String, String> tokenMap = covertObjectToMap(connectToken);
                 if (!CollectionUtils.isEmpty(tokenMap)) {
                     tokenMap.put("client_id", String.valueOf(clientId));
-                    result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, null);
+                    result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, null, null);
                 }
             } else {
                 result = openResult;
@@ -92,9 +92,6 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, uri, String.valueOf(clientId), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage("connectResult", result.toString());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
@@ -102,65 +99,63 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
 
     /**
      * 输入法获取QQ用户的词库
-     *
+     *2016-06-14 经qq输入法同意，下线该接口
      * @param request
      * @param params  第三方开放平台接口所需参数
      * @return
      * @throws Exception
      */
-    @InterfaceSecurity
-    @RequestMapping(value = "/qq/user/qzone/picface", method = RequestMethod.POST)
-    @ResponseBody
-    public Object qzoneGetUserPicface(HttpServletRequest request, ConnectProxyOpenApiParams params) throws Exception {
-        Result result = new APIResultSupport(false);
-        String passportId = params.getUserid();
-        int clientId = params.getClient_id();
-        String uri = request.getRequestURI();
-        try {
-            // 仅支持qq账号调用此接口
-            if (AccountTypeEnum.getAccountType(passportId) != AccountTypeEnum.QQ) {
-                result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
-                return result.toString();
-            }
-            // 参数校验
-            String validateResult = ControllerHelper.validateParams(params);
-            if (!Strings.isNullOrEmpty(validateResult)) {
-                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                result.setMessage(validateResult);
-                return result.toString();
-            }
-            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
-            if (openResult.isSuccess()) {
-                //获取用户的openId/openKey
-                ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
-                Map<String, String> tokenMap = covertObjectToMap(connectToken);
-                if (!CollectionUtils.isEmpty(tokenMap)) {
-                    tokenMap.put("client_id", String.valueOf(clientId));
-                    Object paramsObj = params.getParams();
-                    HashMap<String, Object> paramMap = new HashMap<>();
-                    ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
-                    if (paramsObj != null) {
-                        paramMap = objectMapper.readValue(paramsObj.toString(), HashMap.class);
-                    }
-                    paramMap.put("pf", "qzone");
-                    paramMap.put("format", "json");
-                    result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, paramMap);
-                }
-            } else {
-                result = openResult;
-            }
-        } catch (Exception e) {
-            logger.error("qzoneConnectProxyOpenApi Is Failed,UserId is " + passportId, e);
-            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
-        } finally {
-            UserOperationLog userOperationLog = new UserOperationLog(passportId, uri, String.valueOf(clientId), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage("connectResult", result.toString());
-            UserOperationLogUtil.log(userOperationLog);
-        }
-        return result.toString();
-    }
+//    @InterfaceSecurity
+//    @RequestMapping(value = "/qq/user/qzone/picface", method = RequestMethod.POST)
+//    @ResponseBody
+//    public Object qzoneGetUserPicface(HttpServletRequest request, ConnectProxyOpenApiParams params) throws Exception {
+//        Result result = new APIResultSupport(false);
+//        String passportId = params.getUserid();
+//        int clientId = params.getClient_id();
+//        String uri = request.getRequestURI();
+//        String thirdAppId = params.getThird_appid();
+//        try {
+//            // 仅支持qq账号调用此接口
+//            if (AccountTypeEnum.getAccountType(passportId) != AccountTypeEnum.QQ) {
+//                result.setCode(ErrorUtil.ERR_CODE_CONNECT_NOT_SUPPORTED);
+//                return result.toString();
+//            }
+//            // 参数校验
+//            String validateResult = ControllerHelper.validateParams(params);
+//            if (!Strings.isNullOrEmpty(validateResult)) {
+//                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+//                result.setMessage(validateResult);
+//                return result.toString();
+//            }
+//            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId, thirdAppId);
+//            if (openResult.isSuccess()) {
+//                //获取用户的openId/openKey
+//                ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
+//                Map<String, String> tokenMap = covertObjectToMap(connectToken);
+//                if (!CollectionUtils.isEmpty(tokenMap)) {
+//                    tokenMap.put("client_id", String.valueOf(clientId));
+//                    Object paramsObj = params.getParams();
+//                    HashMap<String, Object> paramMap = new HashMap<>();
+//                    ObjectMapper objectMapper = JacksonJsonMapperUtil.getMapper();
+//                    if (paramsObj != null) {
+//                        paramMap = objectMapper.readValue(paramsObj.toString(), HashMap.class);
+//                    }
+//                    paramMap.put("pf", "qzone");
+//                    paramMap.put("format", "json");
+//                    result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, paramMap, thirdAppId);
+//                }
+//            } else {
+//                result = openResult;
+//            }
+//        } catch (Exception e) {
+//            logger.error("qzoneConnectProxyOpenApi Is Failed,UserId is " + passportId, e);
+//            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+//        } finally {
+//            UserOperationLog userOperationLog = new UserOperationLog(passportId, uri, String.valueOf(clientId), result.getCode(), getIp(request));
+//            UserOperationLogUtil.log(userOperationLog);
+//        }
+//        return result.toString();
+//    }
 
     /**
      * 获取用户QQ微博未读消息数
@@ -191,7 +186,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
+            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId, null);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
@@ -200,7 +195,7 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 paramMap.put("pf", "tapp");
                 if (!CollectionUtils.isEmpty(tokenMap)) {
                     tokenMap.put("client_id", String.valueOf(clientId));
-                    result = connectProxyOpenApiManager.handleConnectOpenApi(url, tokenMap, paramMap);
+                    result = connectProxyOpenApiManager.handleConnectOpenApi(url, tokenMap, paramMap, null);
                 }
             } else {
                 result = openResult;
@@ -210,9 +205,6 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, url, String.valueOf(clientId), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage("connectResult", result.toString());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
@@ -247,14 +239,14 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId);
+            Result openResult = sgConnectApiManager.obtainConnectToken(passportId, clientId, null);
             if (openResult.isSuccess()) {
                 //获取用户的openId/openKey
                 ConnectToken connectToken = (ConnectToken) openResult.getModels().get("connectToken");
                 Map<String, String> tokenMap = covertObjectToMap(connectToken);
                 if (!CollectionUtils.isEmpty(tokenMap)) {
                     tokenMap.put("client_id", String.valueOf(clientId));
-                    result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, null);
+                    result = connectProxyOpenApiManager.handleConnectOpenApi(uri, tokenMap, null, null);
                 }
             } else {
                 result = openResult;
@@ -264,9 +256,6 @@ public class ConnectProxyOpenApiController extends BaseConnectController {
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, uri, String.valueOf(clientId), result.getCode(), getIp(request));
-            String referer = request.getHeader("referer");
-            userOperationLog.putOtherMessage("ref", referer);
-            userOperationLog.putOtherMessage("connectResult", result.toString());
             UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();

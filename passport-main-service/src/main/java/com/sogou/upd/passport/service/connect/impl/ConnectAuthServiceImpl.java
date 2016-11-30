@@ -11,16 +11,19 @@ import com.sogou.upd.passport.model.OAuthConsumer;
 import com.sogou.upd.passport.model.OAuthConsumerFactory;
 import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.model.connect.ConnectToken;
+import com.sogou.upd.passport.model.connect.OriginalConnectInfo;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.user.*;
+import com.sogou.upd.passport.oauth2.openresource.response.OAuthClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
 import com.sogou.upd.passport.oauth2.openresource.response.user.*;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
+import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
 import org.slf4j.Logger;
@@ -47,7 +50,6 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     @Autowired
     private ConnectTokenService connectTokenService;
 
-
     @Override
     public OAuthAccessTokenResponse obtainAccessTokenByCode(int provider, String code, ConnectConfig connectConfig, OAuthConsumer oAuthConsumer,
                                                             String redirectUrl) throws IOException, OAuthProblemException {
@@ -55,22 +57,26 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         String appKey = connectConfig.getAppKey();
         String appSecret = connectConfig.getAppSecret();
 
-        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getAccessTokenUrl())
-                .setAppKey(appKey).setAppSecret(appSecret).setRedirectURI(redirectUrl).setCode(code)
-                .setGrantType(GrantTypeEnum.AUTHORIZATION_CODE).buildBodyMessage(OAuthAuthzClientRequest.class);
+        OAuthAuthzClientRequest.TokenRequestBuilder builder = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getAccessTokenUrl())
+                .setAppKey(appKey, provider).setAppSecret(appSecret, provider).setRedirectURI(redirectUrl).setCode(code)
+                .setGrantType(GrantTypeEnum.AUTHORIZATION_CODE);
         OAuthAccessTokenResponse oauthResponse;
         if (provider == AccountTypeEnum.QQ.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, QQJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, QQJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.SINA.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, SinaJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, SinaJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.RENREN.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, RenrenJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, RenrenJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.TAOBAO.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, TaobaoJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, TaobaoJSONAccessTokenResponse.class);
         } else if (provider == AccountTypeEnum.BAIDU.getValue()) {
-            oauthResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, BaiduJSONAccessTokenResponse.class);
+            oauthResponse = OAuthHttpClient.execute(builder.buildBodyMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.POST, BaiduJSONAccessTokenResponse.class);
+        } else if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+            oauthResponse = OAuthHttpClient.execute(builder.buildQueryMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.GET, WeixinJSONAccessTokenResponse.class);
+        } else if (provider == AccountTypeEnum.XIAOMI.getValue()) {
+            oauthResponse = OAuthHttpClient.execute(builder.buildQueryMessage(OAuthAuthzClientRequest.class), HttpConstant.HttpMethod.GET, XiaomiJSONAccessTokenResponse.class);
         } else {
-            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+            throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
         }
         return oauthResponse;
     }
@@ -88,10 +94,10 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         if (AccountTypeEnum.WEIXIN.getValue() == provider) {
             //微信的刷新token为GET方式
             request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getRefreshAccessTokenUrl())
-                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey).setRefreshToken(refreshToken).buildQueryMessage(OAuthAuthzClientRequest.class);
+                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey, provider).setRefreshToken(refreshToken).buildQueryMessage(OAuthAuthzClientRequest.class);
         } else {
             request = OAuthAuthzClientRequest.tokenLocation(oAuthConsumer.getRefreshAccessTokenUrl())
-                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey).setAppSecret(appSecret)
+                    .setGrantType(GrantTypeEnum.REFRESH_TOKEN).setAppKey(appKey, provider).setAppSecret(appSecret, provider)
                     .setRefreshToken(refreshToken).buildBodyMessage(OAuthAuthzClientRequest.class);
         }
         OAuthAccessTokenResponse response;
@@ -105,7 +111,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         } else if (AccountTypeEnum.WEIXIN.getValue() == provider) {
             response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONAccessTokenResponse.class);
         } else {
-            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+            throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
         }
         OAuthTokenVO oAuthTokenVO = response.getOAuthTokenVO();
         return oAuthTokenVO;
@@ -130,6 +136,15 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                     .setAccessToken(accessToken).buildQueryMessage(WeiXinUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, WeiXinUserAPIResponse.class);
         } else if (provider == AccountTypeEnum.SINA.getValue()) {
+            request = SinaUserAPIRequest.apiLocation(oAuthConsumer.getTokenInfo(), SinaUserAPIRequest.SinaUserAPIBuilder.class)
+                    .setAccessToken(accessToken).buildBodyMessage(SinaUserAPIRequest.class);
+            OAuthClientResponse tmpResponse = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.POST, SinaTokenAPIResponse.class);
+            if (!tmpResponse.getParam("uid").equals(openid))
+            {
+                String error_code = ErrorUtil.ERR_CODE_CONNECT_TOKEN_INVALID;
+                throw OAuthProblemException.error(error_code);
+            }
+
             request = SinaUserAPIRequest.apiLocation(url, SinaUserAPIRequest.SinaUserAPIBuilder.class).setUid(openid)
                     .setAccessToken(accessToken).buildQueryMessage(SinaUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, SinaUserAPIResponse.class);
@@ -141,13 +156,29 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             request = BaiduUserAPIRequest.apiLocation(url, BaiduUserAPIRequest.BaiduUserAPIBuilder.class)
                     .setAccessToken(accessToken).buildQueryMessage(BaiduUserAPIRequest.class);
             response = OAuthHttpClient.execute(request, BaiduUserAPIResponse.class);
+        } else if (provider == AccountTypeEnum.XIAOMI.getValue()) {
+            Long xiaomiClientId = Long.parseLong(appKey);
+            request = XiaomiUserAPIRequest.apiLocation(url, XiaomiUserAPIRequest.XiaomiUserAPIBuilder.class)
+                    .setClientId(xiaomiClientId).setToken(accessToken).buildQueryMessage(XiaomiUserAPIRequest.class);
+            response = OAuthHttpClient.execute(request, XiaomiUserAPIResponse.class);
         } else {
-            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
+            throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
         }
         if (response != null) {
             userProfileFromConnect = response.toUserInfo();
+            initialOrUpdateConnectUserInfo(provider, openid, userProfileFromConnect);
         }
         return userProfileFromConnect;
+    }
+
+    public void initialOrUpdateConnectUserInfo(int provider, String openId, ConnectUserInfoVO connectUserInfoVO) {
+        String unionId = openId;
+        if (provider == AccountTypeEnum.WEIXIN.getValue()) {
+            unionId = connectUserInfoVO.getUnionid();
+        }
+        String passportId = PassportIDGenerator.generator(unionId, provider);
+        //更新缓存
+        initialOrUpdateConnectUserInfo(passportId, connectUserInfoVO);
     }
 
     @Override
@@ -175,32 +206,25 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
-    public OAuthTokenVO verifyAccessToken(String openid, String accessToken, ConnectConfig connectConfig) throws IOException, OAuthProblemException {
-        int provider = connectConfig.getProvider();
-        OAuthConsumer oAuthConsumer = OAuthConsumerFactory.getOAuthConsumer(provider);
-        if (oAuthConsumer == null) {
-            return null;
-        }
-        OAuthAuthzClientRequest request = OAuthAuthzClientRequest.verifyTokenLocation(oAuthConsumer.getWebUserAuthzUrl())
-                .setOpenid(openid).setAccessToken(accessToken).buildQueryMessage(OAuthAuthzClientRequest.class);
-        OAuthTokenVO oAuthTokenVO;
-        if (provider == AccountTypeEnum.WEIXIN.getValue()) {
-            WeixinJSONVerifyAccessTokenResponse response = OAuthHttpClient.execute(request, HttpConstant.HttpMethod.GET, WeixinJSONVerifyAccessTokenResponse.class);
-            oAuthTokenVO = response.getOAuthTokenVO();
-        } else {
-            throw new OAuthProblemException(ErrorUtil.UNSUPPORT_THIRDPARTY);
-        }
-        return oAuthTokenVO;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public boolean initialOrUpdateConnectUserInfo(String passportId, ConnectUserInfoVO connectUserInfoVO) throws ServiceException {
         try {
             String cacheKey = buildConnectUserInfoCacheKey(passportId);
             dbShardRedisUtils.setObjectWithinSeconds(cacheKey, connectUserInfoVO, DateAndNumTimesConstant.TIME_ONEDAY);
+            //同时更新connect orgin信息，失败不影响其他环节，主要是为实时获取用户信息接口考虑
+            try{
+                int provider = AccountTypeEnum.getAccountType(passportId).getValue();
+                String originInfoKey=buildOriginalConnectInfoCacheKey(passportId,provider);
+                OriginalConnectInfo connectOriginInfo=convertToOriginalInfo(connectUserInfoVO);
+                if(connectOriginInfo!=null){
+                    dbShardRedisUtils.setObjectWithinSeconds(originInfoKey, connectOriginInfo, DateAndNumTimesConstant.ONE_MONTH);
+                }
+
+            }catch (Exception e){
+                logger.error("init OriginalConnectInfo failed,passport_id="+passportId);
+            }
             return true;
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error.{}", e);
+            logger.error("[ConnectToken] service method initialOrUpdateConnectUserInfo error.passportId:" + passportId, e);
             return false;
         }
     }
@@ -212,13 +236,35 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             ConnectUserInfoVO connectUserInfoVO = dbShardRedisUtils.getObject(cacheKey, ConnectUserInfoVO.class);
             return connectUserInfoVO;
         } catch (Exception e) {
-            logger.error("[ConnectToken] service method obtainCachedConnectUserInfo error.{}", e);
+            logger.error("[ConnectToken] service method obtainCachedConnectUserInfo error.passportId:" + passportId, e);
             return null;
         }
     }
 
     private String buildConnectUserInfoCacheKey(String passportId) {
         return CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO + passportId;
+    }
+    private String buildOriginalConnectInfoCacheKey(String passportId, int provider) {
+        return  CacheConstant.CACHE_PREFIX_PASSPORTID_ORIGINAL_CONNECTINFO + passportId + "_" + provider;
+    }
+    private OriginalConnectInfo convertToOriginalInfo(ConnectUserInfoVO connectUserInfoVO){
+        try {
+            OriginalConnectInfo orginalInfo=new OriginalConnectInfo();
+            if(connectUserInfoVO!=null){
+                orginalInfo.setConnectUniqname(connectUserInfoVO.getNickname());
+                orginalInfo.setAvatarLarge(connectUserInfoVO.getAvatarLarge());
+                orginalInfo.setAvatarMiddle(connectUserInfoVO.getAvatarMiddle());
+                orginalInfo.setAvatarSmall(connectUserInfoVO.getAvatarSmall());
+                orginalInfo.setGender(String.valueOf(connectUserInfoVO.getGender()));
+                return orginalInfo;
+            }else {
+                return null;
+            }
+        }catch (Exception e){
+            logger.error("ConnectAuthService.convertToOriginalInfo failed ",e);
+            return null;
+        }
+
     }
 
 }

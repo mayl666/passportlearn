@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  * Date: 13-10-31
  * Time: 下午9:56
  */
-@Component
+//@Component
 public class Monitor {
 
     private static final Logger log = LoggerFactory.getLogger(Monitor.class);

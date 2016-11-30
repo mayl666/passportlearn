@@ -1,6 +1,11 @@
 package com.sogou.upd.passport.common.utils;
 
+import com.google.common.base.Strings;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.HystrixConstant;
+import com.sogou.upd.passport.common.hystrix.HystrixConfigFactory;
+import com.sogou.upd.passport.common.hystrix.HystrixQQCommand;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.httpclient.RequestModel;
 import com.sogou.upd.passport.common.parameter.HttpMethodEnum;
@@ -45,12 +50,11 @@ import java.util.ArrayList;
  */
 public class SGHttpClient {
 
-
     protected static final HttpClient httpClient;
     /**
      * 最大连接数
      */
-    protected final static int MAX_TOTAL_CONNECTIONS = 1000;
+    protected final static int MAX_TOTAL_CONNECTIONS = 1500;
     /**
      * 获取连接的最大等待时间
      */
@@ -58,7 +62,7 @@ public class SGHttpClient {
     /**
      * 每个路由最大连接数
      */
-    protected final static int MAX_ROUTE_CONNECTIONS = 200;
+    protected final static int MAX_ROUTE_CONNECTIONS = 500;
     /**
      * 读取超时时间
      */
@@ -102,7 +106,9 @@ public class SGHttpClient {
             case xml:
                 t = XMLUtil.xmlToBean(value, type);
                 break;
-        }       ArrayList list = new ArrayList();list.iterator();
+        }
+        ArrayList list = new ArrayList();
+        list.iterator();
         return t;
     }
 
@@ -117,7 +123,7 @@ public class SGHttpClient {
         try {
             String charset = EntityUtils.getContentCharSet(httpEntity);
             if (StringUtil.isBlank(charset)) {
-                charset = CommonConstant.DEFAULT_CONTENT_CHARSET;
+                charset = CommonConstant.DEFAULT_CHARSET;
             }
             String value = EntityUtils.toString(httpEntity, charset);
             if (!StringUtil.isBlank(value)) {
@@ -182,23 +188,40 @@ public class SGHttpClient {
             throw new NullPointerException("requestModel 不能为空");
         }
         HttpRequestBase httpRequest = getHttpRequest(requestModel);
-        InputStream in=null;
+
+        //对QQapi调用hystrix
+        String hystrixQQurl = HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_URL);
+        Boolean hystrixGlobalEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_GLOBAL_ENABLED));
+        Boolean hystrixQQEnabled = Boolean.parseBoolean(HystrixConfigFactory.getProperty(HystrixConstant.PROPERTY_QQ_HYSTRIX_ENABLED));
+
+        if (hystrixGlobalEnabled && hystrixQQEnabled) {
+            String qqUrl = requestModel.getUrl();
+            if (!Strings.isNullOrEmpty(qqUrl) && qqUrl.contains(hystrixQQurl)) {
+                try {
+                    return revokeHystrixQQ(requestModel);
+                } catch (Exception e) {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+        }
+
+        InputStream in = null;
         try {
             HttpResponse httpResponse = httpClient.execute(httpRequest);
-            in=httpResponse.getEntity().getContent();
+            in = httpResponse.getEntity().getContent();
             int responseCode = httpResponse.getStatusLine().getStatusCode();
             //302如何处理
             if (responseCode == RESPONSE_SUCCESS_CODE) {
                 return httpResponse.getEntity();
             }
-            String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CONTENT_CHARSET);
-            String result= EntityUtils.toString(httpResponse.getEntity(),CommonConstant.DEFAULT_CONTENT_CHARSET);
-            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:"+result);
+            String params = EntityUtils.toString(requestModel.getRequestEntity(), CommonConstant.DEFAULT_CHARSET);
+            String result = EntityUtils.toString(httpResponse.getEntity(), CommonConstant.DEFAULT_CHARSET);
+            throw new RuntimeException("http response error code: " + responseCode + " url:" + requestModel.getUrl() + " params:" + params + "  result:" + result);
         } catch (Exception e) {
-            if(in!=null){
-                try{
+            if (in != null) {
+                try {
                     in.close();
-                }catch(IOException ioe){
+                } catch (IOException ioe) {
                 }
             }
             throw new RuntimeException("http request error ", e);
@@ -252,10 +275,36 @@ public class SGHttpClient {
         stopWatch.stop(tag, message);
     }
 
+    //调用hystrixQQCommand
+    public static HttpEntity revokeHystrixQQ(RequestModel requestModel) throws Exception {
+
+        HystrixQQCommand hystrixQQCommand = null;
+        String fallbackReason="";
+        String url=requestModel.getUrl();
+        try {
+            hystrixQQCommand = new HystrixQQCommand(requestModel, httpClient);
+            HttpEntity hystrixResponse = hystrixQQCommand.execute();
+            if (null == hystrixResponse) {
+                if (hystrixQQCommand != null) {
+                    fallbackReason=hystrixQQCommand.getFallbackReason();
+                }
+                throw new RuntimeException(fallbackReason+",url="+url);
+            }
+
+            return hystrixResponse;
+        } catch (HystrixRuntimeException he) {
+            if (hystrixQQCommand != null) {
+                hystrixQQCommand.abortHttpRequest();
+            }
+            throw new RuntimeException("HystrixQQCommand "+HystrixConstant.FALLBACK_REASON_CANNOT_FALLBACK+",url="+ url);
+        }
+
+    }
+
     /*
- * 避免HttpClient的”SSLPeerUnverifiedException: peer not authenticated”异常
- * 不用导入SSL证书
- */
+    * 避免HttpClient的”SSLPeerUnverifiedException: peer not authenticated”异常
+    * 不用导入SSL证书
+    */
     public static class WebClientDevWrapper {
 
         public static org.apache.http.client.HttpClient wrapClient(org.apache.http.client.HttpClient base) {
@@ -275,8 +324,8 @@ public class SGHttpClient {
                 ctx.init(null, new TrustManager[]{tm}, null);
                 SSLSocketFactory ssf = new SSLSocketFactory(ctx, SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
                 SchemeRegistry registry = new SchemeRegistry();
-                registry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
-                registry.register(new Scheme("https", 443, ssf));
+                registry.register(new Scheme(CommonConstant.HTTP, 80, PlainSocketFactory.getSocketFactory()));
+                registry.register(new Scheme(CommonConstant.HTTPS, 443, ssf));
                 ThreadSafeClientConnManager mgr = new ThreadSafeClientConnManager(registry);
 
                 HttpParams params = base.getParams();
@@ -285,6 +334,16 @@ public class SGHttpClient {
                 HttpClientParams.setCookiePolicy(params, CookiePolicy.IGNORE_COOKIES); //忽略header里的cookie，解决ResponseProcessCookies(134): Invalid cookie header
                 HttpConnectionParams.setConnectionTimeout(params, WAIT_TIMEOUT);
                 HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT);
+                //当应用程序希望降低网络延迟并提高性能时，它们可以关闭Nagle算法
+                // 加了以后没看到明显优化
+//                HttpConnectionParams.setTcpNoDelay(params, true);
+                // "旧连接"检查,为了确保该“被重用”的连接确实有效，会在重用之前对其进行有效性检查。这个检查大概会花费15-30毫秒。关闭该检查举措，会稍微提升传输速度
+                // 加了这个配置以后，响应明显变慢，TIME_WAIT增多，所以不要用
+//                HttpConnectionParams.setStaleCheckingEnabled(params, false);
+
+                // "持续握手",遭到服务器拒绝应答的情况下，如果发送整个请求体，则会大大降低效率。此时，可以先发送部分请求进行试探，如果服务器愿意接收，则继续发送请求体。
+                // 仅HTTP 1.1支持，所以不要用
+//                HttpProtocolParams.setUseExpectContinue(params, true);
 
                 return new DefaultHttpClient(mgr, params);
             } catch (Exception ex) {

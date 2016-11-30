@@ -12,20 +12,6 @@ import com.sogou.upd.passport.model.account.Account;
  * To change this template use File | Settings | File Templates.
  */
 public interface CommonManager {
-    /**
-     * 用户注册时ip次数的累加
-     *
-     * @param ip
-     * @param uuidName
-     */
-    public void incRegTimes(String ip, String uuidName);
-
-    /**
-     * 内部接口注册的ip次数累加
-     *
-     * @param ip
-     */
-    public void incRegTimesForInternal(String ip, int client_id);
 
     /**
      * 检验code是否正确
@@ -61,14 +47,27 @@ public interface CommonManager {
     public String getPassportIdByUsername(String username) throws Exception;
 
     /**
-     * 获取重置密码时的安全码
+     * 获取安全码
      *
      * @param passportId
      * @param clientId
+     * @param cacheKey
      * @return
      * @throws ServiceException
      */
-    public String getSecureCodeResetPwd(String passportId, int clientId) throws ServiceException;
+    public String getSecureCode(String passportId, int clientId, String cacheKey) throws ServiceException;
+
+    /**
+     * 校验安全码
+     *
+     * @param passportId
+     * @param clientId
+     * @param secureCode
+     * @param cacheKey
+     * @return
+     * @throws ServiceException
+     */
+    public boolean checkSecureCode(String passportId, int clientId, String secureCode, String cacheKey) throws ServiceException;
 
     /**
      * 根据passportId查询account

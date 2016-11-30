@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -9,7 +10,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.form.UpdatePwdParameters;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
@@ -19,6 +19,7 @@ import com.sogou.upd.passport.web.account.form.security.WebBindQuesParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +29,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static com.sogou.upd.passport.common.parameter.AccountDomainEnum.THIRD;
+
 /**
  * User: hujunfei Date: 13-4-28 Time: 下午1:51 安全中心（修改密码，修改密保手机，修改密保问题，修改密保邮箱）
  */
@@ -35,10 +38,10 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/web/security")
 public class SecureAction extends BaseController {
 
-    private static final String SOHU_RESETPWD_URL = SHPPUrlConstant.SOHU_RESETPWD_URL;
-    private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
-    private static final String SOHU_BINDMOBILE_URL = SHPPUrlConstant.SOHU_BINDMOBILE_URL;
-    private static final String SOHU_BINDQUES_URL = SHPPUrlConstant.SOHU_BINDQUES_URL;
+//    private static final String SOHU_RESETPWD_URL = SHPPUrlConstant.SOHU_RESETPWD_URL;
+//    private static final String SOHU_BINDEMAIL_URL = SHPPUrlConstant.SOHU_BINDEMAIL_URL;
+//    private static final String SOHU_BINDMOBILE_URL = SHPPUrlConstant.SOHU_BINDMOBILE_URL;
+//    private static final String SOHU_BINDQUES_URL = SHPPUrlConstant.SOHU_BINDQUES_URL;
 
     @Autowired
     private SecureManager secureManager;
@@ -65,13 +68,17 @@ public class SecureAction extends BaseController {
         int clientId = Integer.parseInt(params.getClient_id());
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
         // 第三方账号不显示安全信息
-        if (AccountDomainEnum.getAccountDomain(userId) == AccountDomainEnum.THIRD) {
+        if (AccountDomainEnum.getAccountDomain(userId) == THIRD) {
             // result.setDefaultModel("disable", true);
             // result.setSuccess(true);
             // model.addAttribute("data", result.toString());
             return "redirect:/";
         } else {
             result = secureManager.queryAccountSecureInfo(userId, clientId, true);
+            //查询账号安全信息页面，密保邮箱、手机模糊处理
+            if (result.isSuccess()) {
+                processSecureMailMobile(result);
+            }
         }
         result.setDefaultModel("username", accountInfoManager.getUniqName(userId, clientId, true));
         if (domain == AccountDomainEnum.PHONE) {
@@ -104,12 +111,16 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
         switch (domain) {
-            case SOHU:
-                return "redirect:" + SOHU_BINDEMAIL_URL;
+//            case SOHU:
+//                return "redirect:" + SOHU_BINDEMAIL_URL;
             case THIRD:
                 return "redirect:/";
         }
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
+        //绑定邮箱页面，密保邮箱、手机模糊处理
+        if (result.isSuccess()) {
+            processSecureMailMobile(result);
+        }
         result.setDefaultModel("username", result.getModels().get("uniqname"));
 //        result.setDefaultModel("username", accountInfoManager.getUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
@@ -139,14 +150,18 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
         switch (domain) {
-            case SOHU:
-                return "redirect:" + SOHU_BINDMOBILE_URL;
+//            case SOHU:
+//                return "redirect:" + SOHU_BINDMOBILE_URL;
             case THIRD:
                 return "redirect:/";
             case PHONE:
                 return "redirect:/web/security";
         }
         result = secureManager.queryAccountSecureInfo(userId, clientId, true);
+        //绑定手机页面，密保邮箱、手机模糊处理
+        if (result.isSuccess()) {
+            processSecureMailMobile(result);
+        }
         result.setDefaultModel("username", result.getModels().get("uniqname"));
 //        result.setDefaultModel("username", accountInfoManager.getUniqName(userId, clientId));
         if (domain == AccountDomainEnum.PHONE) {
@@ -176,8 +191,8 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
         switch (domain) {
-            case SOHU:
-                return "redirect:" + SOHU_BINDQUES_URL;
+//            case SOHU:
+//                return "redirect:" + SOHU_BINDQUES_URL;
             case THIRD:
                 return "redirect:/";
         }
@@ -211,8 +226,8 @@ public class SecureAction extends BaseController {
         AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(userId);
 
         switch (domain) {
-            case SOHU:
-                return "redirect:" + SOHU_RESETPWD_URL;
+//            case SOHU:
+//                return "redirect:" + SOHU_RESETPWD_URL;
             case THIRD:
                 return "redirect:/";
         }
@@ -281,14 +296,15 @@ public class SecureAction extends BaseController {
                 result.setMessage(validateResult);
                 return result;
             }
-            switch (AccountDomainEnum.getAccountDomain(passportId)) {
-                case SOHU:
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
-                    return result.toString();
-                case THIRD:
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
-                    return result.toString();
+            
+            // 用户名的所属域
+            AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(passportId);
+            if(THIRD.equals(accountDomainEnum) && !passportId.matches(".+@qq\\.sohu\\.com$")) {   // 第三方登陆
+                // 非 QQ 第三方账号不允许此操作
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+                return result.toString();
             }
+            
             result = secureManager.updateWebPwd(updateParams);
             return result.toString();
         } finally {
@@ -323,13 +339,14 @@ public class SecureAction extends BaseController {
             String newAnswer = params.getNew_answer();
             String modifyIp = getIp(request);
             switch (AccountDomainEnum.getAccountDomain(userId)) {
-                case SOHU:
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                    return result.toString();
+//                case SOHU:
+//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+//                    return result.toString();
                 case THIRD:
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                     return result.toString();
             }
+
             result = secureManager.modifyQuesByPassportId(userId, clientId, password, newQues, newAnswer, modifyIp);
             return result.toString();
         } finally {

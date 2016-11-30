@@ -7,10 +7,7 @@ import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
-import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
+import com.sogou.upd.passport.common.parameter.*;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.*;
@@ -23,6 +20,7 @@ import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.perf4j.aop.Profiled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +42,8 @@ public class AccountServiceImpl implements AccountService {
     private static final int expire = 30 * DateAndNumTimesConstant.ONE_DAY_INSECONDS;
 
     private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
+    private static final String POSTFIX_PINYIN_MIGRATE = "_pinyinPP_";   //SOGOU输入法昵称迁移，为保证昵称唯一性加的后缀
+    private String POSTFIX_PINYIN_FORMAT = "(.+)" + POSTFIX_PINYIN_MIGRATE + "[0-9][0-9][0-9][0-9]$"; //加后缀的昵称，虽然在redis和数据库中存有后缀，返回给接口时要去掉
 
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Autowired
@@ -107,6 +107,7 @@ public class AccountServiceImpl implements AccountService {
             account.setRegIp(ip);
             account.setAccountType(provider);
             account.setFlag(AccountStatusEnum.REGULAR.getValue());
+            //增加 短信登录类型
             if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider)) {
                 //对于第三方账号和sohu域账号来讲，无密码  搜狗账号迁移完成后，需要增加一个值表示无密码
                 account.setPasswordtype(PasswordTypeEnum.NOPASSWORD.getValue());
@@ -204,11 +205,37 @@ public class AccountServiceImpl implements AccountService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+
+        //如果昵称符合POSTFIX_PINYIN_FORMAT，为输入法迁移数据，去掉后缀再返回
+        if (null != account) {
+            String uniqname = account.getUniqname();
+            if (!Strings.isNullOrEmpty(uniqname)) {
+                if (uniqname.matches(POSTFIX_PINYIN_FORMAT)) {
+                    int endIndex = uniqname.indexOf(POSTFIX_PINYIN_MIGRATE);
+                    account.setUniqname(uniqname.substring(0, endIndex));
+                }
+            }
+
+        }
+
+        //TODO:修复迁移过程中的脏数据,后续去掉
+        if(null!=account){
+            AccountDomainEnum accountDomain=AccountDomainEnum.getAccountDomain(passportId);
+            if(accountDomain==AccountDomainEnum.SOHU){
+                int pwdType=account.getPasswordtype();
+                if(pwdType!=5){
+                    account.setPasswordtype(5);
+                    logger.warn("SOHU DIRTY DATA:"+passportId);
+                }
+            }
+        }
+
+
         return account;
     }
 
     @Override
-    public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5) throws ServiceException {
+    public Result verifyUserPwdVaild(String passportId, String password, boolean needMD5,SohuPasswordType sohuPwdType) throws ServiceException {
         Result result = new APIResultSupport(false);
         Account userAccount;
         try {
@@ -229,14 +256,14 @@ public class AccountServiceImpl implements AccountService {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 return result;
             }
-            result = verifyUserPwdValidByPasswordType(userAccount, password, needMD5);
+            result = verifyUserPwdValidByPasswordType(userAccount, password, needMD5,sohuPwdType);
             return result;
         } catch (Exception e) {
             throw new ServiceException(e);
         }
     }
 
-    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5) {
+    public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5,SohuPasswordType sohuPwdType) {
         Result result = new APIResultSupport(false);
         String passwordType = String.valueOf(account.getPasswordtype());
         String storedPwd = account.getPassword();
@@ -250,8 +277,11 @@ public class AccountServiceImpl implements AccountService {
                     pwdIsTrue = verifyPwdWithMD5(password, storedPwd);
                     break;
                 case 2:   //Crypt(password,salt)
+                case 4:   // 第三方登陆账号
                     pwdIsTrue = PwdGenerator.verify(password, needMD5, storedPwd);
                     break;
+                case 5:     //sohu crypt
+                    pwdIsTrue= PwdGenerator.verifySohuPwd(storedPwd,password,sohuPwdType);
             }
             if (pwdIsTrue) {
                 result.setSuccess(true);
@@ -268,6 +298,33 @@ public class AccountServiceImpl implements AccountService {
             throw new ServiceException(e);
         }
     }
+
+    /**
+     * 只更新db和redis中的用户密码，不清除pc端token
+     * @param account
+     * @param password
+     * @param needMd5
+     * @return
+     * @throws ServiceException
+     */
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updatePassword", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public boolean updatePwd(String passportId,Account account, String password, boolean needMd5) throws ServiceException {
+        try {
+            String passwdSign = PwdGenerator.generatorStoredPwd(password, needMd5);
+            int row = accountDAO.updatePassword(passwdSign, passportId);
+            if (row != 0) {
+                String cacheKey = buildAccountKey(passportId);
+                account.setPassword(passwdSign);
+                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
 
     private boolean verifyPwdWithOriginal(String password, String storedPwd) {
         if (storedPwd.equals(password)) {
@@ -300,17 +357,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean deleteAccountCacheByPassportId(String passportId) throws ServiceException {
-        try {
-            String cacheKey = buildAccountKey(passportId);
-            dbShardRedisUtils.delete(cacheKey);
-            return true;
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    @Override
     public boolean deleteAccountByPassportId(String passportId) throws ServiceException {
         try {
             int row = accountDAO.deleteAccountByPassportId(passportId);
@@ -325,30 +371,15 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    @Override
-    public boolean checkLimitResetPwd(String passportId) throws ServiceException {
-        try {
-            String cacheKey = buildResetPwdCacheKey(passportId);
-            String checkNumStr = redisUtils.get(cacheKey);
-            if (!Strings.isNullOrEmpty(checkNumStr)) {
-                int checkNum = Integer.parseInt(checkNumStr);
-                if (checkNum > DateAndNumTimesConstant.RESETPWD_NUM) {
-                    // 当日验证码输入错误次数不超过上限
-                    return false;
-                }
-            }
-            return true;
-        } catch (Exception e) {
-            // throw new ServiceException(e);
-            return true;
-        }
-    }
-
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_resetPassword", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
-    public boolean resetPassword(Account account, String password, boolean needMD5) throws ServiceException {
+    public boolean resetPassword(String sohuPassportId,Account account, String password, boolean needMD5) throws ServiceException {
         try {
             String passportId = account.getPassportId();
+            AccountDomainEnum accountDomain=AccountDomainEnum.getAccountDomain(passportId);
+            if(accountDomain==AccountDomainEnum.SOHU){
+                passportId=sohuPassportId;//sohu 账号区分大小写
+            }
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMD5);
             int row = accountDAO.updatePassword(passwdSign, passportId);
             pcAccountTokenService.batchRemoveAccountToken(passportId, true);
@@ -356,6 +387,9 @@ public class AccountServiceImpl implements AccountService {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPassword(passwdSign);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+                //输入法泄露数据处理，修改密码后解除限制
+                removeLeakUser(account, passportId);
+
                 return true;
             }
         } catch (Exception e) {
@@ -363,9 +397,14 @@ public class AccountServiceImpl implements AccountService {
         }
         return false;
     }
-
+    
     @Override
     public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException {
+        return sendActiveEmail(username, passpord, clientId, ip, ru, true, null);
+    }
+    
+    @Override
+    public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru, boolean rtp, String lang) throws ServiceException {
         boolean flag = true;
         try {
             String token = SecureCodeGenerator.generatorSecureCode(username, clientId);
@@ -377,6 +416,7 @@ public class AccountServiceImpl implements AccountService {
                 ru = CommonConstant.DEFAULT_INDEX_URL;
             }
             activeUrl += "&ru=" + Coder.encodeUTF8(ru);
+            activeUrl += "&rtp=" + rtp;
             String cacheKey = buildCacheKey(username);
             Map<String, String> mapParam = new HashMap<>();
             //设置连接失效时间
@@ -391,8 +431,13 @@ public class AccountServiceImpl implements AccountService {
             map.put("activeUrl", activeUrl);
             map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             activeEmail.setMap(map);
-            activeEmail.setTemplateFile("activemail.vm");
-            activeEmail.setSubject("激活您的搜狗通行证帐户");
+            if(StringUtils.equalsIgnoreCase(lang, "en")) {
+                activeEmail.setTemplateFile("activemail-en.vm");
+                activeEmail.setSubject("activate your sogou account");
+            } else {
+                activeEmail.setTemplateFile("activemail.vm");
+                activeEmail.setSubject("激活您的搜狗通行证帐户");
+            }
             activeEmail.setCategory("register");
             activeEmail.setToEmail(username);
             mailUtils.sendEmail(activeEmail);
@@ -533,6 +578,23 @@ public class AccountServiceImpl implements AccountService {
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
+
+    @Override
+    public boolean modifyMobile(Account account, String newMobile) throws ServiceException {
+        try {
+            String passportId = account.getPassportId();
+            int row = accountDAO.updateMobile(newMobile, passportId);
+            if (row != 0) {
+                String cacheKey = buildAccountKey(passportId);
+                account.setMobile(newMobile);
+                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
     }
 
     @Override
@@ -684,19 +746,13 @@ public class AccountServiceImpl implements AccountService {
                     String cacheKey = buildAccountKey(passportId);
                     account.setUniqname(uniqname);
                     dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-
-                    //第一次直接插入
-                    if (Strings.isNullOrEmpty(oldUniqName)) {
-                        //更新新的映射表
-                        boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
-                        if (!isInsert) return false;
-                    } else {
-                        //移除原来映射表
-                        if (uniqNamePassportMappingService.removeUniqName(oldUniqName)) {
-                            //更新新的映射表
-                            boolean isInsert = uniqNamePassportMappingService.insertUniqName(passportId, uniqname);
-                            if (!isInsert) return false;
-                        }
+                    //新昵称写入映射表
+                    if (!uniqNamePassportMappingService.insertUniqName(passportId, uniqname)) {
+                        return false;
+                    }
+                    //旧昵称在映射表里有记录则删除
+                    if (!Strings.isNullOrEmpty(uniqNamePassportMappingService.checkUniqName(uniqname))) {
+                        uniqNamePassportMappingService.removeUniqName(oldUniqName);
                     }
                     return true;
                 }
@@ -726,6 +782,24 @@ public class AccountServiceImpl implements AccountService {
             throw new ServiceException(e);
         }
         return false;
+    }
+
+    //输入法泄露数据处理，修改密码后解除限制
+    public void removeLeakUser(Account account, String passportId) {
+        String leakKey = null;
+        try {
+            String cacheKey = buildAccountKey(passportId);
+            leakKey = CacheConstant.CACHE_PREFIX_USER_LEAKLIST + account.getPassportId();
+            if (account.getFlag() == AccountStatusEnum.LEAKED.getValue()) {
+                dbShardRedisUtils.delete(cacheKey);
+                accountDAO.updateState(AccountStatusEnum.REGULAR.getValue(), passportId);
+            }
+            if (redisUtils.checkKeyIsExist(leakKey)) {
+                redisUtils.delete(leakKey);
+            }
+        } catch (Exception e) {
+            logger.error("sogou leak passportid reset passport handle error : " + passportId);
+        }
     }
 
 }

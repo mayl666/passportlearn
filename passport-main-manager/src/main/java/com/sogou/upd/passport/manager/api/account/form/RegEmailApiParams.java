@@ -21,6 +21,9 @@ public class RegEmailApiParams extends BaseRegUserApiParams {
     @Ru
     @URL
     private String ru; //注册成功后需回调到应用的url
+    private boolean rtp = true;  // redirect to passport 是否跳转到 passport，若否则直接跳回 ru
+    /** 语言 英文为 en */
+    private String lang;
 
     public RegEmailApiParams(){}
 
@@ -30,6 +33,15 @@ public class RegEmailApiParams extends BaseRegUserApiParams {
         this.createip = createip;
         setClient_id(client_id);
         this.ru=ru;
+    }
+
+    public RegEmailApiParams(String userid, String password, String createip, int client_id,String ru, String lang) {
+        this.userid = userid;
+        this.password = password;
+        this.createip = createip;
+        setClient_id(client_id);
+        this.ru=ru;
+        this.lang=lang;
     }
 
     public String getPassword() {
@@ -62,5 +74,21 @@ public class RegEmailApiParams extends BaseRegUserApiParams {
 
     public void setRu(String ru) {
         this.ru = ru;
+    }
+  
+    public boolean isRtp() {
+        return rtp;
+    }
+    
+    public void setRtp(boolean rtp) {
+        this.rtp = rtp;
+    }
+  
+  public String getLang() {
+        return lang;
+    }
+    
+    public void setLang(String lang) {
+        this.lang = lang;
     }
 }

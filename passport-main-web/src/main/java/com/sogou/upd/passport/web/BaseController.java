@@ -1,29 +1,28 @@
 package com.sogou.upd.passport.web;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
+import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ServletUtil;
-import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.Map;
 
 public class BaseController {
-
-    public static final
-    String
-            INTERNAL_HOST =
-            "api.id.sogou.com.z.sogou-op.org;dev01.id.sogou.com;test01.id.sogou.com";
 
     protected static Logger logger = LoggerFactory.getLogger(BaseController.class);
 
@@ -31,41 +30,11 @@ public class BaseController {
     private AppConfigService appConfigService;
 
     /**
-     * 判断是否是服务端签名
+     * 获取用户的源ip
+     *
+     * @param request
+     * @return
      */
-    protected boolean isServerSig(String client_signature, String signature) {
-        if (StringUtils.isEmpty(signature)) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 验证参数是否有空参数
-     */
-    protected boolean hasEmpty(String... args) {
-
-        if (args == null) {
-            return false;
-        }
-
-        Object[] argArray = getArguments(args);
-        for (Object obj : argArray) {
-            if (obj instanceof String && StringUtils.isEmpty((String) obj)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Object[] getArguments(Object[] varArgs) {
-        if (varArgs.length == 1 && varArgs[0] instanceof Object[]) {
-            return (Object[]) varArgs[0];
-        } else {
-            return varArgs;
-        }
-    }
-
     protected static String getIp(HttpServletRequest request) {
         String sff = request.getHeader("X-Forwarded-For");// 根据nginx的配置，获取相应的ip
         if (Strings.isNullOrEmpty(sff)) {
@@ -79,16 +48,21 @@ public class BaseController {
         return realip;
     }
 
-    protected boolean isInternalRequest(HttpServletRequest request) {
-
-        String host = request.getServerName();
-        String[] hosts = INTERNAL_HOST.split(";");
-        int i = Arrays.binarySearch(hosts, host);
-        if (i >= 0) {
-            return true;
+    /**
+     * 获取是http或https协议
+     *
+     * @param req
+     * @return
+     */
+    protected String getProtocol(HttpServletRequest req) {
+        String httpsHeader = req.getHeader(CommonConstant.HTTPS_HEADER);
+        String httpOrHttps = CommonConstant.HTTP;
+        if (!org.apache.commons.lang.StringUtils.isBlank(httpsHeader) && httpsHeader.equals(CommonConstant.HTTPS_VALUE)) {
+            httpOrHttps = CommonConstant.HTTPS;
         }
-        return false;
+        return httpOrHttps;
     }
+
 
     public boolean isAccessAccept(int clientId, HttpServletRequest request) {
         String apiName = request.getRequestURI();
@@ -124,9 +98,19 @@ public class BaseController {
      * @throws Exception
      */
     public void returnErrMsg(HttpServletResponse response, String ru, String errorCode, String errorMsg) throws Exception {
-        if (Strings.isNullOrEmpty(ru) || "域名不正确".equals(errorMsg)) {
+//        if (Strings.isNullOrEmpty(ru) || "域名不正确".equals(errorMsg)) {
+//            ru = CommonConstant.DEFAULT_INDEX_URL;
+//        }
+
+        //fix invalid ru redirect 安全漏洞
+        if (Strings.isNullOrEmpty(ru)) {
             ru = CommonConstant.DEFAULT_INDEX_URL;
         }
+
+        if (StringUtils.contains(errorMsg, CommonConstant.DOMAIN_ERROR) || CommonConstant.DOMAIN_ERROR.equals(errorMsg)) {
+            ru = CommonConstant.DEFAULT_INDEX_URL;
+        }
+
         Map paramMap = Maps.newHashMap();
         paramMap.put("errorCode", errorCode);
         paramMap.put("errorMsg", errorMsg);
@@ -135,27 +119,74 @@ public class BaseController {
         return;
     }
 
-
-    /**
-     * 构建 CookieApiParams
-     *
-     * @param userid
-     * @param client_id
-     * @param ru
-     * @param ip
-     * @param maxAge
-     * @return
+    /*
+     * jsonp的cb参数相关方法
      */
-    public CookieApiParams buildCookieApiParams(String userid, int client_id, String ru, String ip, int maxAge) {
-        CookieApiParams cookieApiParams = new CookieApiParams();
-        cookieApiParams.setUserid(userid);
-        cookieApiParams.setClient_id(client_id);
-        cookieApiParams.setRu(ru);
-        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-        cookieApiParams.setPersistentcookie(String.valueOf(1));
-        cookieApiParams.setIp(ip);
-        cookieApiParams.setMaxAge(maxAge);
-        return cookieApiParams;
+    protected boolean isCleanString(String cb) {
+        if (Strings.isNullOrEmpty(cb)) {
+            return true;
+        }
+        String cleanValue = Jsoup.clean(cb, Whitelist.none());
+        return cleanValue.equals(cb);
     }
 
+    /**
+     * 获取request header的输入法的UA标识，如果包含sogou_ime，则代表是输入法，否则返回空
+     *
+     * @param request
+     * @return
+     */
+    protected String getHeaderUserAgent(HttpServletRequest request) {
+        String ua = request.getHeader(CommonConstant.USER_AGENT);
+        ua = !Strings.isNullOrEmpty(ua) && ua.contains(CommonConstant.SOGOU_IME_UA) ? ua : ""; //输入法的标识
+        return ua;
+    }
+
+    /**
+     * 获取浏览器 User-agent
+     *
+     * @param request
+     * @return
+     */
+    protected String getUserAgent(HttpServletRequest request) {
+        String user_agent = request.getHeader(CommonConstant.USER_AGENT);
+        return Strings.isNullOrEmpty(user_agent) ? StringUtils.EMPTY : user_agent;
+    }
+
+
+    /**
+     * 模糊处理邮箱和手机
+     */
+    protected void processSecureMailMobile(Result result) {
+        AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
+        String sec_email = (String) result.getModels().get("sec_email");
+        String sec_mobile = (String) result.getModels().get("sec_mobile");
+        if (accountSecureInfoVO != null) {
+            if (!Strings.isNullOrEmpty(sec_email)) {
+                result.setDefaultModel("sec_email", accountSecureInfoVO.getSec_email());
+            }
+            if (!Strings.isNullOrEmpty(sec_mobile)) {
+                result.setDefaultModel("sec_mobile", accountSecureInfoVO.getSec_mobile());
+            }
+
+        }
+    }
+
+    /**
+     * 获取cookie
+     *
+     * @param request
+     * @return
+     */
+    protected String getCookies(HttpServletRequest request) {
+        Map<String, String> cookieMap = Maps.newLinkedHashMap();
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                cookieMap.put(cookie.getName(), cookie.getValue());
+            }
+        }
+        Joiner.MapJoiner joiner = Joiner.on(CommonConstant.JOINER_SEPARATOR).withKeyValueSeparator(CommonConstant.KEY_VALUE_SEPARATOR);
+        return joiner.join(cookieMap);
+    }
 }

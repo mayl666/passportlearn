@@ -32,6 +32,14 @@ public interface MobileCodeSenderService {
     public boolean deleteSmsCache(final String mobile, final int clientId);
 
     /**
+     * 校验完成后清除sms缓存信息
+     * @param mobile
+     * @param module
+     * @return
+     */
+    public boolean deleteSmsCache(final String mobile, final AccountModuleEnum module);
+
+    /**
      * 发送短信验证码
      *
      * @param mobile
@@ -52,11 +60,6 @@ public interface MobileCodeSenderService {
      * @return 不超过失败次数，返回true；超过，返回false
      */
     public boolean checkLimitForSmsFail(String account, int clientId, AccountModuleEnum module);
-
-    /**
-     * 根据key获取对应的cacheMap
-     */
-    public Map<String, String> getCacheMapByKey(String cacheKey);
 
     /**
      * 根据手机号检查验证码是否正确，正确则删除验证码

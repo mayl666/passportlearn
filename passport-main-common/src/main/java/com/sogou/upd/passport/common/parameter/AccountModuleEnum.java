@@ -37,6 +37,12 @@ public enum AccountModuleEnum {
 
         return subjects;
     }
+    
+    public static Map<AccountModuleEnum, String> buildEnEmailSubjects() {
+        Map<AccountModuleEnum, String> subjects = new HashMap<>();
+        subjects.put(AccountModuleEnum.RESETPWD, "Sogou Pass find password service");
+        return subjects;
+    }
 
     public int getValue() {
         return value;

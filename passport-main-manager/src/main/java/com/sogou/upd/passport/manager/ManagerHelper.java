@@ -30,16 +30,6 @@ public class ManagerHelper {
     }
 
     /**
-     * 是否使用sohu提供的getcookiinfo接口；返回true代表调用getcookieinfo接口，false代表调用之前的从location拿的接口，为回滚做准备
-     *
-     * @return
-     */
-    public static boolean isUsedSohuProxyApiToGetCookie() {
-        return true;
-//        return false;
-    }
-
-    /**
      * 内部接口方法签名生成
      *
      * @param firstStr code算法第一个字符串，可能为userid、mobile、userid+mobile
@@ -58,6 +48,11 @@ public class ManagerHelper {
         return code;
     }
 
+    public static void main(String args[]){
+        long a = System.currentTimeMillis();
+        System.out.println(a);
+         System.out.print(generatorCode("6F54B0CA1B0198C6FB33D35B2A635A58@qq.sohu.com",2010,"<6Cxph3Un'BaWsL7g'U.VLd|s?tZC)",a));
+    }
 
     /**
      * 内部接口方法签名生成
@@ -86,17 +81,5 @@ public class ManagerHelper {
         result.setDefaultModel("sid", accountToken.getPassportId());
         result.setDefaultModel("logintype", loginType);
         return result;
-    }
-
-    public static boolean isMillCtValid(long ct) {
-        long currentTime = System.currentTimeMillis();
-        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM_IN_MILLI;
-        return timeRight;
-    }
-
-    public static boolean isSecCtValid(long ct) {
-        long currentTime = System.currentTimeMillis() / 1000;
-        boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
-        return timeRight;
     }
 }

@@ -7,15 +7,18 @@
 <meta name="MobileOptimized" content="320"/>
 <meta name="format-detection" content="telephone=no"/>
 <title>找回密码-搜狗通行证</title>
-<link rel="stylesheet" href="/./static/css/wap/main.css?t=443027"/>
+<link rel="stylesheet" href="/./static/css/wap/main.css?t=805864"/>
 </head>
 <body>
 
+
+#if($display != "native")
 <nav class="f-f f-vc">
-    <a href="#" class="backlink f-f f-hc f-vc">〈</a>
-    <div class="f-1 f-f f-hc f-vc">找回密码</div>
+    <a href="#" class="backlink f-f f-hc f-vc"></a>
+    <div class="f-1 f-f f-hc f-vc f-title">找回密码</div>
     <a href="/wap/reg" class="f-f f-vc f-hc reglink">注册</a>
 </nav>
+#end
 
 
 <form action="＃" method="post" class="block findpwd">
@@ -34,7 +37,7 @@
         <div class="row f-f f-vc" id="captcha-wrapper">
             <label for="captcha" class="h-fil f-f f-hr f-vc">验证码：</label>
             <input type="text" name="captcha" id="captcha" class="block h-fil f-1" placeholder="请输入验证码" autocomplete="off" tabindex="3"/>
-            <img src="about:blank" id="captcha-img" border="0" class="captcha-img block"/>
+            <img id="captcha-img" border="0" class="captcha-img block"/>
             <a href="#" class="block indicator hide"></a>
         </div>
     </div>
@@ -80,7 +83,7 @@
 
 </body>
 <script src="/static/js/lib/mursa.js?t=140248"></script>
-<script src="/./static/js/wap.js?t=039091" charset="utf-8"></script>
+<script src="/./static/js/wap.js?t=674249" charset="utf-8"></script>
 <script>
     require.config({
     baseUrl:"/./static/js"

@@ -21,24 +21,43 @@ import java.util.UUID;
 @Ignore
 @ContextConfiguration(locations = {"classpath:spring-config-image.xml"})
 public class ImgTest extends AbstractJUnit4SpringContextTests {
-    private static final String TEST_KEY = "TEST_REDIS_KEY";
-    private static final String TEST_SUB_KEY = "TEST_REDIS_SUB_KEY";
 
     @Inject
     private PhotoUtils photoUtils;
 
     @Test
     public void test() {
-            File file=new File("d:/1.jpg");
+            File file=new File("d:\\1.png");
             try {
                 boolean flag=photoUtils.uploadImg(UUID.randomUUID().toString(), IOUtils.toByteArray(new FileInputStream(file)),"http://a2.itc.cn/passport/avatar/9/4c/4/ece78d5a416548es_1378111902014_130_130.jpg","1");
                 System.out.println(flag);
             } catch (Exception e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-//       Result result = photoUtils.obtainPhoto("%s/app/a/%s/AlEuwHSqD0avxVpM_1385619153085", "30,50,180");
-//        System.out.println(result.getModels().get("img_30"));
-//       System.out.println(result.toString());
+    }
+
+    @Test
+    public void testUploadDefaultAvatar() {
+        File file=new File("C:\\Users\\xieyilun\\Desktop\\a.jpg");
+        try {
+            String imgName = "default_avatar";
+            boolean flag = photoUtils.uploadImg(imgName, IOUtils.toByteArray(new FileInputStream(file)), null, "0");
+            String imgURL = photoUtils.accessURLTemplate(imgName);
+            System.out.println("imgURL:" + imgURL);
+            Result getPhotoResult = photoUtils.obtainPhoto(imgURL, "30,50,180");
+            String large_avatar = (String) getPhotoResult.getModels().get("img_180");
+            String mid_avatar = (String) getPhotoResult.getModels().get("img_50");
+            String tiny_avatar = (String) getPhotoResult.getModels().get("img_30");
+
+            System.out.println("large_avatar:" + large_avatar);
+            System.out.println("mid_avatar:" + mid_avatar);
+            System.out.println("tiny_avatar:" + tiny_avatar);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+//        private static final String BROWSER_DEFAULT_LARGE_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140008/default_avatar";
+//        private static final String BROWSER_DEFAULT_MID_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140007/default_avatar";
+//        private static final String BROWSER_DEFAULT_TINY_AVATAR_URL = "http://img01.sogoucdn.com/app/a/100140006/default_avatar";
     }
 
 }

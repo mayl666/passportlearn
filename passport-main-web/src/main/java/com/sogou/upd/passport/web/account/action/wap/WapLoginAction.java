@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.SSOScanAccountType;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -17,6 +18,7 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.WapLoginManager;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.manager.form.WapLoginParams;
 import com.sogou.upd.passport.manager.form.WapLogoutParams;
@@ -59,6 +61,8 @@ public class WapLoginAction extends BaseController {
     private WapLoginManager wapLoginManager;
     @Autowired
     private AccountInfoManager accountInfoManager;
+    @Autowired
+    private SessionServerManager sessionServerManager;
 
     private static final Logger logger = LoggerFactory.getLogger(WapLoginAction.class);
     private static final String SECRETKEY = "afE0WZf345@werdm";
@@ -73,7 +77,11 @@ public class WapLoginAction extends BaseController {
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
-            response.sendRedirect(getIndexErrorReturnStr(wapIndexParams.getRu(), result.getMessage()));
+            String ru = wapIndexParams.getRu();
+            if (validateResult.contains("域名不正确")) {  // TODO 最好是在RuValidator统一修改
+                ru = CommonConstant.DEFAULT_WAP_URL;
+            }
+            response.sendRedirect(getIndexErrorReturnStr(ru, result.getMessage()));
             return "empty";
         }
 
@@ -82,6 +90,11 @@ public class WapLoginAction extends BaseController {
         model.addAttribute("client_id", wapIndexParams.getClient_id());
         model.addAttribute("errorMsg", wapIndexParams.getErrorMsg());
         model.addAttribute("isNeedCaptcha", wapIndexParams.getNeedCaptcha());
+        model.addAttribute("skin", wapIndexParams.getSkin());
+        if(!Strings.isNullOrEmpty(wapIndexParams.getType())){
+            model.addAttribute("type",wapIndexParams.getType());//type=phone时，页面显示手机号登录
+        }
+
         //生成token
         String token = RandomStringUtils.randomAlphanumeric(48);
         model.addAttribute("token", token);
@@ -92,44 +105,67 @@ public class WapLoginAction extends BaseController {
         } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
             return "wap/index_touch";
         } else {
-            return "wap/index_color";
+            if (!Strings.isNullOrEmpty(wapIndexParams.getErrorMsg())) {
+                model.addAttribute("hasError", true);
+            } else {
+                model.addAttribute("hasError", false);
+            }
+            model.addAttribute("ru", Strings.isNullOrEmpty(wapIndexParams.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(wapIndexParams.getRu()));
+            if (wapIndexParams.getNeedCaptcha() == 1) {
+                model.addAttribute("isNeedCaptcha", 1);
+                model.addAttribute("captchaUrl", CommonConstant.DEFAULT_WAP_INDEX_URL + "/captcha?token=" + token);
+            }
+            model.addAttribute("username", wapIndexParams.getUsername());
+            return "wap/login_wap";
         }
     }
 
     private String getIndexErrorReturnStr(String ru, String errorMsg) {
         if (!Strings.isNullOrEmpty(ru)) {
-            return (ru + "?errorMsg=" + errorMsg);
+            return (ru + "?errorMsg=" + Coder.encodeUTF8(errorMsg));
         }
-        return WapConstant.WAP_INDEX + "?errorMsg=" + errorMsg;
+        return WapConstant.WAP_INDEX + "?errorMsg=" + Coder.encodeUTF8(errorMsg);
     }
 
-
+    /**
+     * H5页面登录、SDK登录接口、wap1.0页面登录，V=0、1、5
+     * TODO 后续V=1应该放在/wap2/login里
+     *
+     * @param request
+     * @param response
+     * @param loginParams
+     * @param model
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/wap/login", method = RequestMethod.POST)
-    public String login(HttpServletRequest request, HttpServletResponse response, WapLoginParams loginParams)
+    public String login(HttpServletRequest request, HttpServletResponse response, WapLoginParams loginParams, Model model)
             throws Exception {
         Result result = new APIResultSupport(false);
         String ip = getIp(request);
+        loginParams.setRu(Coder.decodeUTF8(loginParams.getRu()));
         //参数验证
         String validateResult = ControllerHelper.validateParams(loginParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
             result.setMessage(validateResult);
+            if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
+                writeResultToResponse(response, result);
+                return "empty";
+            }
             return getErrorReturnStr(loginParams, validateResult, 0);
         }
-
         result = wapLoginManager.accountLogin(loginParams, ip);  //wap端ip做安全限制
         //用户登录log
         UserOperationLog userOperationLog = new UserOperationLog(loginParams.getUsername(), request.getRequestURI(), loginParams.getClient_id(), result.getCode(), ip);
         String referer = request.getHeader("referer");
         userOperationLog.putOtherMessage("ref", referer);
         UserOperationLogUtil.log(userOperationLog);
-
+        //如果校验用户名和密码成功，则生成登录态sgid
         if (result.isSuccess()) {
             String userId = (String) result.getModels().get("userid");
             String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
-
             WapRegAction.setSgidCookie(response, sgid);
-
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
                 //在返回的数据中导入 json格式，用来给客户端用。
                 //第三方获取个人资料
@@ -137,49 +173,49 @@ public class WapLoginAction extends BaseController {
                 ObtainAccountInfoParams accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), userId, fields);
                 result = accountInfoManager.getUserInfo(accountInfoParams);
                 result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                String ssoScanAcountType= SSOScanAccountType.getSSOScanAccountType(userId);
+                result.getModels().put(LoginConstant.SSO_ACCOUNT_TYPE,ssoScanAcountType);
                 writeResultToResponse(response, result);
-                wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
+                loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
                 return "empty";
             }
-            wapLoginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
+            loginManager.doAfterLoginSuccess(loginParams.getUsername(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
             response.sendRedirect(getSuccessReturnStr(loginParams.getRu(), sgid));
             return "empty";
         } else {
+            //如果校验用户名和密码失败，且是因为需要验证码，则置验证码为1，即需要验证码
             int isNeedCaptcha = 0;
             loginManager.doAfterLoginFailed(loginParams.getUsername(), ip, result.getCode());
             //校验是否需要验证码
             if (result.getCode() == ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE) {
-//                writeResultToResponse(response, result);
-//                return "empty";
                 isNeedCaptcha = 1;
+                if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
+                    writeResultToResponse(response, result);
+                    return "empty";
+                }
                 return getErrorReturnStr(loginParams, result.getMessage(), isNeedCaptcha);
             }
+            //否则，还需要校验是否需要弹出验证码
             boolean needCaptcha = wapLoginManager.needCaptchaCheck(loginParams.getClient_id(), loginParams.getUsername(), getIp(request));
             if (needCaptcha) {
                 isNeedCaptcha = 1;
             }
+            String defaultMessage = result.getMessage();
+            //不直接返回直接的文案告诉用户中了安全限制
             if (result.getCode().equals(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_IP_INBLACKLIST)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR);
                 result.setMessage("您登陆过于频繁，请稍后再试。");
+                defaultMessage = "您登陆过于频繁，请稍后再试。";
             }
-
             if (WapConstant.WAP_JSON.equals(loginParams.getV())) {
-
-                if (needCaptcha) {
-                    if (result.getCode() != ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR) {
-                        result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
-                        result.setMessage("验证码错误或已过期");
-                    }
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                    result.setMessage("用户名或者密码错误");
+                if (needCaptcha && result.getCode() != ErrorUtil.ERR_CODE_ACCOUNT_USERNAME_PWD_ERROR) {
+                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED);
+                    result.setMessage("验证码错误或已过期");
                 }
                 writeResultToResponse(response, result);
                 return "empty";
             }
-
-            return getErrorReturnStr(loginParams, "用户名或者密码错误", isNeedCaptcha);
-
+            return getErrorReturnStr(loginParams, defaultMessage, isNeedCaptcha);
         }
     }
 
@@ -205,7 +241,7 @@ public class WapLoginAction extends BaseController {
             // 校验参数
             ru = req.getParameter(CommonConstant.RESPONSE_RU);
             try {
-                ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+                ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
                 String validateResult = ControllerHelper.validateParams(params);
                 if (!Strings.isNullOrEmpty(validateResult)) {
                     ru = buildErrorRu(ru, ErrorUtil.ERR_CODE_COM_REQURIE, validateResult);
@@ -214,13 +250,13 @@ public class WapLoginAction extends BaseController {
                 }
             } catch (UnsupportedEncodingException e) {
                 logger.error("Url decode Exception! ru:" + ru);
-                ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+                ru = CommonConstant.DEFAULT_INDEX_URL;
             }
 
             data = params.getData();
             //获取QQ回跳参数
             byte[] buf = Hex.decodeHex(data.toCharArray());
-            String decryptedValue = new String(AES.decrypt(buf, SECRETKEY), CommonConstant.DEFAULT_CONTENT_CHARSET);
+            String decryptedValue = new String(AES.decrypt(buf, SECRETKEY), CommonConstant.DEFAULT_CHARSET);
 
             QQPassthroughParam param = JacksonJsonMapperUtil.getMapper().readValue(decryptedValue, QQPassthroughParam.class);
             accessToken = param.getAccess_token();
@@ -265,7 +301,7 @@ public class WapLoginAction extends BaseController {
     private String buildSuccessRu(String ru, String sgid) {
         Map params = Maps.newHashMap();
         try {
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (Exception e) {
             logger.error("Url decode Exception! ru:" + ru);
             ru = CommonConstant.DEFAULT_WAP_URL;
@@ -306,7 +342,7 @@ public class WapLoginAction extends BaseController {
                 ru = CommonConstant.DEFAULT_WAP_URL;
             }
             //session server中清除cookie
-            Result result = wapLoginManager.removeSession(sgid);
+            Result result = sessionServerManager.removeSession(sgid);
             if (result.isSuccess()) {
                 //清除cookie
                 ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGID);
@@ -352,7 +388,7 @@ public class WapLoginAction extends BaseController {
     protected String buildErrorRu(String ru, String errorCode, String errorText) {
         try {
             if (Strings.isNullOrEmpty(ru)) {
-                ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
+                ru = CommonConstant.DEFAULT_WAP_URL;
             }
             if (!Strings.isNullOrEmpty(errorCode)) {
                 Map params = Maps.newHashMap();
@@ -384,7 +420,11 @@ public class WapLoginAction extends BaseController {
             returnStr.append("v=" + loginParams.getV());
         }
         if (!Strings.isNullOrEmpty(loginParams.getRu())) {
-            returnStr.append("&ru=" + loginParams.getRu());
+            if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
+                returnStr.append("&ru=" + Coder.encodeUTF8(loginParams.getRu()));
+            } else {
+                returnStr.append("&ru=" + loginParams.getRu());
+            }
         }
         if (!Strings.isNullOrEmpty(loginParams.getClient_id())) {
             returnStr.append("&client_id=" + loginParams.getClient_id());
@@ -393,6 +433,9 @@ public class WapLoginAction extends BaseController {
             returnStr.append("&errorMsg=" + Coder.encodeUTF8(errorMsg));
         }
         returnStr.append("&needCaptcha=" + isNeedCaptcha);
+        if (WapConstant.WAP_COLOR.equals(loginParams.getV())) {
+            returnStr.append("&username=" + loginParams.getUsername());
+        }
         return returnStr.toString();
     }
 }

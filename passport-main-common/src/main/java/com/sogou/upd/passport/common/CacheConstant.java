@@ -20,21 +20,16 @@ public class CacheConstant {
 
     public static final String CACHE_PREFIX_PASSPORTID_ACTIVEMAILTOKEN = "SP.PASSPORTID:ACTIVEMAILTOKEN_"; //passportId 与第三方邮件注册token有效期验证
     public static final String CACHE_PREFIX_NICKNAME_PASSPORTID = "SP.NICKNAME:PASSPORTID_"; //昵称与passportId映射
-    public static final String CACHE_PREFIX_PASSPORTID_UPDATE_PWD_OR_BIND = "SP.UPDATE:PASSPORTID_"; //passportId与该用户是否修改了密码或绑定手机映射
 
-    // public static final String CACHE_PREFIX_PASSPORTID_RESETPWDEMAILTOKEN = "SP.PASSPORTID:RESETPWDEMAILTOKEN_"; //passportId与邮件重置密码token有效期验证
     public static final String CACHE_PREFIX_PASSPORTID_ACCOUNTINFO = "SP.PASSPORTID:ACCOUNTINFO_"; // passportId与accountInfo映射
     public static final String CACHE_PREFIX_MOBILE_CHECKSMSFAIL = "SP.MOBILE:CHECKSMSFAIL_"; // mobile与smscode错误检测次数映射
     public static final String CACHE_PREFIX_UUID_CAPTCHA = "SP.UUID:CAPTCHA_"; // 注册UUID与验证码映射
     public static final String CACHE_PREFIX_PASSPORTID_RESETPWDNUM = "SP.PASSPORTID:RESETPWDNUM_"; // passportId与当日修改密码次数映射
     public static final String CACHE_PREFIX_PASSPORTID_CHECKPWDFAIL = "SP.PASSPORTID:CHECKPWDFAIL_"; // passportId与当日验证密码失败次数映射
     // public static final String CACHE_PREFIX_PASSPORTID_RESETPWDSENDEMAILNUM = "SP.PASSPORTID:RESETPWDSENDEMAILNUM_"; // passportId与当日重置密码邮件次数
-    public static final String CACHE_PREFIX_USERNAME_LOGINFAILEDNUM = "SP.USERNAME:LOGINFAILEDNUM_"; //username连续登陆失败的次数
-    public static final String CACHE_PREFIX_IP_LOGINFAILEDNUM = "SP.IP:LOGINFAILEDNUM_"; //IP连续登陆失败的次数
-    public static final String CACHE_PREFIX_USERNAME_LOGINSUCCESSNUM = "SP.USERNAME:LOGINNUM_"; //username登陆成功的次数
-    public static final String CACHE_PREFIX_IP_LOGINSUCCESSNUM = "SP.IP:LOGINNUM_"; //IP登陆成功的次数
     // public static final String CACHE_PREFIX_PASSPORTID_BINDEMAILTOKEN = "SP.PASSPORTID:BINDEMAILTOKEN_MAP_"; // passportId与绑定邮件token映射
     // public static final String CACHE_PREFIX_PASSPORTID_BINDEMAILSENDNUM = "SP.PASSPORTID:BINDEMAILSENDNUM_"; // passportId与绑定邮件发送次数映射
+    public static final String CACHE_PREFIX_PASSPORTID_PASSPORTID_SECURECODE = "SP.PASSPORTID:SECURESCODE_"; // passportId与安全校验码映射
     public static final String CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE = "SP.PASSPORTID:RESETPWDSECURECODE_"; // passportId与重置密码secureCode映射
     public static final String CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE = "SP.PASSPORTID:MODSECINFOSECURECODE"; // passportId与修改密保内容secureCode映射
     public static final String CACHE_PREFIX_PASSPORTID_EMAILSCODE = "SP.PASSPORTID:EMAILSCODE_"; // passportId与email中scode的映射
@@ -72,13 +67,15 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_GETPAIRTOKEN__IP_BLACK_ = "SP.GETPAIRTOKEN.IP:BLACK_";
     //IP网段黑名单
     public static final String CACHE_PREFIX_IP_SUBIPBLACKLIST = "SP.IP:SUBIPBLACKLIST_KEY";
-    public static final String CACHE_PREFIX_PASSPORTID_AVATARURL_MAPPING = "SP.PASSPORTID:IMAGE_HASH_"; //passportId与新旧头像映射
+    //检查是否在泄露账号列表中
+    public static final String CACHE_PREFIX_USER_LEAKLIST = "SP.PASSPORTID:SOGOULEAKLIST_";
 
     /*================绑定密保限制相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_BINDNUM = "SP.PASSPORTID:BINDNUM_"; // passportId与当日设置密保次数
 
     /*================CONNECT 相关缓存常量=====================*/
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTTOKEN = "SP.PASSPORTID:CONNECTTOKEN_"; //passportId+provider+appKey与ConnectToken映射
+    public static final String CACHE_PREFIX_PASSPORTID_ORIGINAL_CONNECTINFO = "SP.PASSPORTID:ORIGINAL_CONNECTINFO_"; //passportId+provider与OriginalConnectInfo映射
     public static final String CACHE_PREFIX_OPENID_CONNECTRELATION = "SP.OPENID:CONNECTRELATION_";  // openid+provider与ConnectRelation的映射
     public static final String CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO = "SP.PASSPORTID:CONNECTUSERINFO_"; //passportId与ConnectUserInfoVO映射
 
@@ -133,5 +130,37 @@ public class CacheConstant {
 
     /*==================Module相关=====================================*/
     public static final String CACHE_KEY_MODULE_APP_REPLACE = "SP.MODULE:APP_REPLACE";   //应用module 批次替换
+
+    /*=================黑名单列表===================================*/
+    public static final String CACHE_KEY_BLACKLIST = "BLACKLIST";
+    public static final int BLACKLIST_SET_SIZE = 128;
+    /*=================QQ好友链===================================*/
+    public static final String CACHE_KEY_QQ_FRIENDS = "SP.QQFRIENDS:RETURNVAL_";
+
+    /*=================guava本地缓存===================================*/
+    public static final int CACHE_REFRESH_INTERVAL = 10;     //guava cache 自动刷新时间间隔为10 min
+
+
+    /*=================风控系统===================================*/
+    //封禁IP key 前缀
+    public static final String CACHE_PREFIX_DENY_IP = "SP.DENY_IP:IP_";
+    //由mongo切换成redis后，风险IP key前缀
+    public static final String CACHE_PREFIX_RISK_IP = "SP.RISK_IP_HASH_";
+    //由mongo切换成redis后，国内出口IP key前缀
+    public static final String CACHE_PREFIX_SHARDED_EXIPORT = "SP.SHARED_EXPORT_IP_HASH_";
+
+
+    /*=================包签名相关缓存常量===================================*/
+    public static final String CACHE_PREFIX_PACKAGENAME_PACKAGEINFO = "SP.PACKAGENAME:PACKAGEINFO_";//包名与包签名信息映射
+    public static final String CACHE_PREFIX_SSO_TOKEN_KEY = "SP.SSOTOKEN:VALUE_";
+    public static final String CACHE_SSO_TOKEN_VALUE = "0";
+
+    /*=================短信登录相关===================================*/
+    public static final String CACHE_PREFIX_SMS_CODE_LOGIN = "SP.MOBILE:SMS_CODE_LOGIN_";//手机短信登录，mobile与sms code 映射
+    public static final String CACHE_PREFIX_SMS_CODE_GET_NUM = "SP.MOBILE:SMS_CODE_GET_NUM_";//手机短信登录，请求短信校验码次数,5次/天
+    public static final String CACHE_PREFIX_SMS_CODE_CHECK_FAIL_NUM = "SP.MOBILE:SMS_CODE_CHECK_FAIL_NUM_"; //手机短信登录，尝试短信校验码次数，10次/天
+    public static final String CACHE_PREFIX_SMS_CODE_LOGIN_NUM = "SP.MOBILE:SMS_CODE_LOGINNUM_HASH_";//手机短信登录，登录次数
+    public static final String CACHE_PREFIX_SMSLOGIN_CAPTCHA_LIMIT = "SP.MOBILE:SMSLOGIN_CAPTCHA_LIMIT_";//手机短验登录每天超过2次就出现图片验证码
+
 
 }

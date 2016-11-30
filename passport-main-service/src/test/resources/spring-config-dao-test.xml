@@ -12,15 +12,16 @@
     <bean id="masterDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
-            <!--<value>jdbc:mysql://passport03.upd.mysql.db.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
+            <!--<value>jdbc:mysql://passport01.upd.mysql.db:3306/sogou_passport?characterEncoding=utf-8</value>-->
             <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
-            <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
+            <value>jdbc:mysql://j01.ci.zw.ted:3306/sogou_passport?characterEncoding=utf-8</value>
+            <!--<value>jdbc:mysql://10.146.238.23:3306/sogou_passport?characterEncoding=utf-8</value>-->
         </property>
         <property name="user">
             <value>sogou_passport</value>
         </property>
         <property name="password">
-            <value>sogou_passport</value>
+            <value>714a878b7c0f801eb9676d</value>
         </property>
         <property name="driverClass">
             <value>c3p0</value>
@@ -32,10 +33,10 @@
             <value>5</value>
         </property>
         <property name="idleConnectionTestPeriod">
-            <value>30000</value>
+            <value>300</value>
         </property>
         <property name="checkoutTimeout">
-            <value>3000</value>
+            <value>500</value>
         </property>
         <property name="maxPoolSize">
             <value>80</value>
@@ -50,7 +51,7 @@
             <value>5</value>
         </property>
         <property name="maxIdleTime">
-            <value>300</value>
+            <value>1800</value>
         </property>
         <property name="numHelperThreads">
             <value>10</value>
@@ -61,15 +62,16 @@
     <bean id="slaveDataSource"
           class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="jdbcUrl">
-            <!--<value>jdbc:mysql://readpassport03.upd.mysql.db.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
+            <!--<value>jdbc:mysql://passport01.lvs.upd.mysql.db:3306/sogou_passport?characterEncoding=utf-8</value>-->
             <!--<value>jdbc:mysql://passport05.upd.mysql.zw.sogou-op.org:3306/sogou_passport?characterEncoding=utf-8</value>-->
-            <value>jdbc:mysql://10.11.211.18:3306/sogou_passport?characterEncoding=utf-8</value>
+            <value>jdbc:mysql://j01.ci.zw.ted:3306/sogou_passport?characterEncoding=utf-8</value>
+            <!--<value>jdbc:mysql://10.146.238.237:3306/sogou_passport?characterEncoding=utf-8</value>-->
         </property>
         <property name="user">
             <value>sogou_passport</value>
         </property>
         <property name="password">
-            <value>sogou_passport</value>
+            <value>714a878b7c0f801eb9676d</value>
         </property>
         <property name="driverClass">
             <value>c3p0</value>
@@ -81,10 +83,10 @@
             <value>5</value>
         </property>
         <property name="idleConnectionTestPeriod">
-            <value>30000</value>
+            <value>300</value>
         </property>
         <property name="checkoutTimeout">
-            <value>3000</value>
+            <value>500</value>
         </property>
         <property name="maxPoolSize">
             <value>80</value>
@@ -99,13 +101,23 @@
             <value>5</value>
         </property>
         <property name="maxIdleTime">
-            <value>300</value>
+            <value>1800</value>
         </property>
         <property name="numHelperThreads">
             <value>10</value>
         </property>
     </bean>
 
+    <!--<bean id="dbMonitor" class="com.sogou.upd.passport.zk.DBMonitor" destroy-method="destroy">-->
+    <!--<constructor-arg name="zks" value="10.136.24.136:2181"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="dbZkWitchMonitor" class="com.sogou.upd.passport.zk.DBZkSwitchMonitor" destroy-method="destroy">-->
+    <!--<constructor-arg name="dbMonitor" ref="dbMonitor"/>-->
+    <!--<constructor-arg name="dataSourceZkPath" value="/sogou_passport/datasource/properties"/>-->
+    <!--<constructor-arg name="masterDataSource" ref="masterDataSource"/>-->
+    <!--<constructor-arg name="slaveDataSource" ref="slaveDataSource"/>-->
+    <!--</bean>-->
 
     <bean id="jade.dataSourceFactory" class="net.paoding.rose.jade.dataaccess.datasource.MasterSlaveDataSourceFactory">
         <constructor-arg type="javax.sql.DataSource" ref="masterDataSource"/>
@@ -140,9 +152,8 @@
 
     <!-- 初始化数据表结构 与默认数据-->
     <jdbc:initialize-database data-source="masterDataSource" ignore-failures="ALL" enabled="true">
-        <jdbc:script location="classpath:sql/delete_data_account.sql" encoding="UTF-8"/>
-        <jdbc:script location="classpath:sql/import_data_account.sql" encoding="UTF-8"/>
+    <jdbc:script location="classpath:sql/delete_data_account.sql" encoding="UTF-8"/>
+    <jdbc:script location="classpath:sql/import_data_account.sql" encoding="UTF-8"/>
     </jdbc:initialize-database>
-
 
 </beans>

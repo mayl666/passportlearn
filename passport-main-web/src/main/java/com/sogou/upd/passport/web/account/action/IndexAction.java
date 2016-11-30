@@ -51,6 +51,10 @@ public class IndexAction extends BaseController {
                 result.setSuccess(true);
             } else {
                 result = secureManager.queryAccountSecureInfo(userId, clientId, true);
+                //index页面，密保邮箱、手机模糊处理
+                if (result.isSuccess()) {
+                    processSecureMailMobile(result);
+                }
             }
             result.setDefaultModel("uniqname", uniqname);
             if (domain == AccountDomainEnum.PHONE) {

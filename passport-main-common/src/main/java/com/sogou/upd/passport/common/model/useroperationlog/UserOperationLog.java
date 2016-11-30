@@ -30,6 +30,16 @@ public class UserOperationLog {
     //其它信息
     private Map<String,String> otherMessageMap;
 
+    private String udid;
+
+    public String getUdid() {
+        return udid;
+    }
+
+    public void setUdid(String udid) {
+        this.udid = udid;
+    }
+
     /**
      * 用户操作行为记录
      * @param passportId
@@ -59,6 +69,23 @@ public class UserOperationLog {
         this.ip = ip;
         this.resultCode=resultCode;
         otherMessageMap=new LinkedMap();
+    }
+
+    /**
+     * 构造用户行为记录的log
+     * @param passportId  用户id
+     * @param userOperation 用户执行的操作
+     * @param clientId    发起操作的appId
+     * @param resultCode  操作结果，具体参见{@link com.sogou.upd.passport.common.utils.ErrorUtil}
+     */
+    public UserOperationLog(String passportId,String userOperation,String clientId,String resultCode, String ip,String udid){
+        this.passportId=passportId;
+        this.userOperation=userOperation;
+        this.clientId=clientId;
+        this.ip = ip;
+        this.resultCode=resultCode;
+        otherMessageMap=new LinkedMap();
+        this.udid = udid;
     }
 
     public void putOtherMessage(String key,String value){
@@ -112,5 +139,7 @@ public class UserOperationLog {
     public void setIp(String ip) {
         this.ip = ip;
     }
+
+
 
 }

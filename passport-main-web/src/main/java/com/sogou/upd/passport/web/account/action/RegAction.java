@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -30,6 +31,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import com.sogou.upd.passport.web.account.form.RegUserNameParams;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +41,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.net.URLDecoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URLDecoder;
 
 /**
  * web注册 User: mayan Date: 13-6-7 Time: 下午5:48
@@ -57,7 +60,7 @@ public class RegAction extends BaseController {
     @Autowired
     private SecureManager secureManager;
     @Autowired
-    private RegisterApiManager sgRegisterApiManager;
+    private RegisterApiManager registerApiManager;
     @Autowired
     private CookieManager cookieManager;
     @Autowired
@@ -192,15 +195,10 @@ public class RegAction extends BaseController {
                 }
             }
             //用户注册log
-            //验证码信息先输出到warning，不记录到日志中，省得报警
-            if (ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED.equals(logCode)) {
-                logger.warn("ERR_CODE_ACCOUNT_CAPTCHA_CODE_FAILED, username:" + regParams.getUsername() + " clientId:" + regParams.getClient_id() + " ip:" + getIp(request) + " requestURI:" + request.getRequestURI());
-            } else {
-                UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id(), logCode, getIp(request));
-                String referer = request.getHeader("referer");
-                userOperationLog.putOtherMessage("ref", referer);
-                UserOperationLogUtil.log(userOperationLog);
-            }
+            UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id(), logCode, getIp(request));
+            String referer = request.getHeader("referer");
+            userOperationLog.putOtherMessage("ref", referer);
+            UserOperationLogUtil.log(userOperationLog);
         }
         return result.toString();
     }
@@ -271,7 +269,7 @@ public class RegAction extends BaseController {
                         break;
                 }
             } else {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
             }
         } catch (Exception e) {
             logger.error("method[resendActiveMail] send mobile sms error.{}", e);
@@ -296,14 +294,14 @@ public class RegAction extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(activeParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.ERR_CODE_COM_REQURIE);
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&client_id=" + activeParams.getClient_id());
             return;
         }
         //验证client_id
         int clientId = Integer.parseInt(activeParams.getClient_id());
         //检查client_id是否存在
         if (!configureManager.checkAppIsExist(clientId)) {
-            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.INVALID_CLIENTID);
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + ErrorUtil.INVALID_CLIENTID + "&client_id=" + activeParams.getClient_id());
             return;
         }
         String ip = getIp(request);
@@ -325,20 +323,31 @@ public class RegAction extends BaseController {
             cookieApiParams.setUniqname(StringUtils.EMPTY);
             cookieApiParams.setMaxAge(-1);
             cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
-
+    
             result = cookieManager.createCookie(response, cookieApiParams);
             if (result.isSuccess()) {
                 String ru = activeParams.getRu();
                 if (Strings.isNullOrEmpty(ru) || CommonConstant.EMAIL_REG_VERIFY_URL.equals(ru)) {
                     ru = CommonConstant.DEFAULT_INDEX_URL;
                 }
-                response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=0&ru=" + ru);
-                return;
+    
+                if(activeParams.isRtp()) { // 跳转到 passport 页面
+                    response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=0&ru=" + ru + "&client_id=" + clientId);
+                    return ;
+                } else {
+                    response.sendRedirect(activeParams.getRu() + "?code=0&client_id=" + clientId
+                                          + "&userId=" + activeParams.getPassport_id());
+                    return ;
+                }
             }
         }
-        response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode());
-        return;
-
+    
+        if(activeParams.isRtp()) { // 跳转到 passport 页面
+            response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode() + "&client_id=" + clientId);
+        } else {
+            response.sendRedirect(activeParams.getRu() + "?code=" + result.getCode() + "&client_id=" + clientId
+                                  + "&userId=" + activeParams.getPassport_id());
+        }
     }
 
     /**
@@ -355,7 +364,7 @@ public class RegAction extends BaseController {
         boolean canProcessGet = false;
         String cInfo;
         if ("GET".equalsIgnoreCase(request.getMethod())) {
-            cInfo = request.getHeader("cinfo");
+            cInfo = request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN);
             if (StringUtil.isNotEmpty(cInfo)) {
                 canProcessGet = true;
             }
@@ -382,14 +391,18 @@ public class RegAction extends BaseController {
                 return result.toString();
             }
             String mobile = reqParams.getMobile();
-            String userAgent = request.getHeader("User-Agent");
-            cInfo = request.getHeader("cinfo");
+            String userAgent = request.getHeader(CommonConstant.USER_AGENT);
+            cInfo = request.getHeader(CommonConstant.MAPP_REQUEST_HEADER_SIGN);
             boolean isNeedCaptcha = false;
             //只有客户端才会有此"cinfo"参数，web端和桌面端是没有的，故客户端和手机端还走第二次弹出验证码的流程
-            if (!Strings.isNullOrEmpty(cInfo) || (userAgent.toLowerCase().contains("android") || userAgent.toLowerCase().contains("iphone"))) {
-                result = commonManager.checkMobileSendSMSInBlackList(mobile, reqParams.getClient_id());
-                if (!result.isSuccess() && ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE.equals(result.getCode())) {
-                    isNeedCaptcha = true;
+            if (!Strings.isNullOrEmpty(cInfo) || (!Strings.isNullOrEmpty(userAgent) && (userAgent.toLowerCase().contains("android") || userAgent.toLowerCase().contains("iphone")))) {
+                if (Integer.parseInt(reqParams.getClient_id()) == 2003 && "GET".equalsIgnoreCase(request.getMethod())) {
+                    isNeedCaptcha = false;      // 输入法安卓版本使用passport老版本sdk，/sendsms仍是get方式，且不支持弹出图片验证码
+                } else {
+                    result = commonManager.checkMobileSendSMSInBlackList(mobile, reqParams.getClient_id());
+                    if (!result.isSuccess() && ErrorUtil.ERR_CODE_ACCOUNT_CAPTCHA_NEED_CODE.equals(result.getCode())) {
+                        isNeedCaptcha = true;
+                    }
                 }
             } else {
                 if (CommonConstant.PC_CLIENTID != Integer.parseInt(reqParams.getClient_id())) {
@@ -420,8 +433,7 @@ public class RegAction extends BaseController {
                 result.setMessage("发送短信失败");
                 return result.toString();
             }
-            BaseMoblieApiParams baseMobileApiParams = buildProxyApiParams(clientId, mobile);
-            result = sgRegisterApiManager.sendMobileRegCaptcha(baseMobileApiParams);
+            result = registerApiManager.sendMobileRegCaptcha(clientId, mobile);
         } catch (Exception e) {
             logger.error("method[sendMobileCode] send mobile sms error.{}", e);
         } finally {
@@ -464,7 +476,7 @@ public class RegAction extends BaseController {
             return result;
         }
         //检查用户名是否存在
-        result = regManager.isAccountNotExists(username, clientId);
+        result = registerApiManager.checkUser(username, clientId,false);
         return result;
     }
 

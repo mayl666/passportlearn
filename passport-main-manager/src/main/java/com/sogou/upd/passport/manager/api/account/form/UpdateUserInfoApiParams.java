@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.utils.ProvinceAndCityUtil;
 import com.sogou.upd.passport.common.utils.UniqNameUtil;
 import com.sogou.upd.passport.common.validation.constraints.IdCard;
+import com.sogou.upd.passport.common.validation.constraints.IllegalSensitive;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -24,24 +25,20 @@ public class UpdateUserInfoApiParams extends BaseUserApiParams {
     //用户生日
 //    @DateTimeFormat(iso=DateTimeFormat.ISO.DATE)
     private String birthday;
-
     //用户性别
     private String gender;
-
     //省份
     private String province;
-
     //省份
     private String city;
-
     //昵称
+    @IllegalSensitive
     private String uniqname;
-
     //搜狗姓名
+    @IllegalSensitive
     private String fullname;
     //搜狐姓名
     private String username;
-
 
     //身份证号
     @IdCard
@@ -49,7 +46,6 @@ public class UpdateUserInfoApiParams extends BaseUserApiParams {
 
     @AssertTrue(message = "用户昵称格式不正确!")
     private boolean isCheckUinqName() {
-
         if (Strings.isNullOrEmpty(uniqname)) {
             return true;
         } else {

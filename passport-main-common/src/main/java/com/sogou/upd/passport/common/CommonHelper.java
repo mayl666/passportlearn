@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.common;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,8 +13,6 @@ import org.slf4j.LoggerFactory;
  */
 public class CommonHelper {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommonHelper.class);
-
     /**
      * 生成第三方授权中的state参数cookie，防止CRSF攻击
      *
@@ -22,18 +21,6 @@ public class CommonHelper {
      */
     public static String constructStateCookieKey(String providerStr) {
         return providerStr + "_state";
-    }
-
-    /**
-     * 产品有自定义的第三方appkey
-     * 此方法构造自定义产品列表中的存储的key
-     *
-     * @param clientId
-     * @param provider
-     * @return
-     */
-    public static String constructSpecialConnectKey(int clientId, int provider) {
-        return clientId + CommonConstant.SEPARATOR_1 + provider;
     }
 
     /**
@@ -68,29 +55,12 @@ public class CommonHelper {
     }
 
     /**
-     * 是否调用代理Api，返回ture调用ProxyXXXApiManager，false调用SGXXXApiManager
-     * @param passportId passport内部传输的用户id
-     * @return
-     */
-    public static boolean isInvokeProxyApi(String passportId){
-        return true;
-//        return  !AccountDomainEnum.SOGOU.equals(AccountDomainEnum.getAccountDomain(passportId));
-    }
-
-    /**
-     * 是否生成搜狗新cookie
-     * @return
-     */
-    public static boolean isBuildNewCookie(){
-        return false;
-    }
-
-    /**
      * 判断时间戳（毫秒）是否有效
+     *
      * @param ct
      * @return
      */
-    public static boolean isMillCtValid(long ct){
+    public static boolean isMillCtValid(long ct) {
         long currentTime = System.currentTimeMillis();
         boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM_IN_MILLI;
         return timeRight;
@@ -98,12 +68,53 @@ public class CommonHelper {
 
     /**
      * 判断时间戳（秒）是否有效
+     *
      * @param ct
      * @return
      */
-    public static boolean isSecCtValid(long ct){
-        long currentTime = System.currentTimeMillis()/1000;
+    public static boolean isSecCtValid(long ct) {
+        long currentTime = System.currentTimeMillis() / 1000;
         boolean timeRight = ct > currentTime - CommonConstant.COOKIE_REQUEST_VAILD_TERM;
         return timeRight;
+    }
+
+    /**
+     * 浏览器新版本采用新的UI设计，此方法判断是否为新UI的版本
+     * 分隔版本为：5.1.7.14966
+     *
+     * @param version
+     * @return
+     */
+    public static boolean isNewVersionSE(String version) {
+        try {
+            if (!Strings.isNullOrEmpty(version)) {
+                String[] versionArray = version.split("\\.");
+                if (versionArray.length != 4) {
+                    return false;
+                }
+                if (Integer.parseInt(versionArray[0]) > 5) {
+                    return true;
+                } else if (Integer.parseInt(versionArray[0]) < 5) {
+                    return false;
+                }
+                if (Integer.parseInt(versionArray[1]) > 1) {
+                    return true;
+                } else if (Integer.parseInt(versionArray[1]) < 1) {
+                    return false;
+                }
+                if (Integer.parseInt(versionArray[2]) > 7) {
+                    return true;
+                } else if (Integer.parseInt(versionArray[2]) < 7) {
+                    return false;
+                }
+                if (Integer.parseInt(versionArray[3]) > 14966) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+        }
+        return false;
     }
 }

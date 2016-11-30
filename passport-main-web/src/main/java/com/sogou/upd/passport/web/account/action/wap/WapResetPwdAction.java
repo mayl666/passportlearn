@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action.wap;
 
 import com.google.common.base.Strings;
+import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -14,6 +15,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.*;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.service.account.dataobject.ActiveEmailDO;
 import com.sogou.upd.passport.service.account.dataobject.WapActiveEmailDO;
 import com.sogou.upd.passport.web.BaseController;
@@ -52,7 +54,7 @@ public class WapResetPwdAction extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(WapResetPwdAction.class);
 
     @Autowired
-    private RegManager regManager;
+    private RegisterApiManager registerApiManager;
     @Autowired
     private SecureManager secureManager;
     @Autowired
@@ -64,28 +66,47 @@ public class WapResetPwdAction extends BaseController {
     @Autowired
     private CheckManager checkManager;
 
-
     /**
      * 找回密码
      *
      * @param model
      * @param redirectAttributes
+     * @param display            默认不填，如果为native则隐藏上面的title
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd", method = RequestMethod.GET)
-    public String findPwdView(Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams) throws Exception {
+    public String findPwdView(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes, WapIndexParams wapIndexParams, String display) throws Exception {
         String ru = Strings.isNullOrEmpty(wapIndexParams.getRu()) ? CommonConstant.DEFAULT_WAP_URL : wapIndexParams.getRu();
-        if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
-            Result result = new APIResultSupport(false);
-            String client_id = Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : wapIndexParams.getClient_id();
-            result.setDefaultModel("ru", ru);
-            result.setDefaultModel("client_id", client_id);
+        String v = Strings.isNullOrEmpty(wapIndexParams.getV()) ? WapConstant.WAP_TOUCH : wapIndexParams.getV();
+        Result result = new APIResultSupport(false);
+        String client_id = Strings.isNullOrEmpty(wapIndexParams.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : wapIndexParams.getClient_id();
+        result.setDefaultModel("ru", ru);
+        result.setDefaultModel("client_id", client_id);
+        result.setDefaultModel("v", v);
+        if (WapConstant.WAP_COLOR.equals(wapIndexParams.getV())) {
+            model.addAttribute("v", v);
+            model.addAttribute("client_id", client_id);
+            model.addAttribute("ru", Coder.encodeUTF8(ru));
+            model.addAttribute("mobile", wapIndexParams.getUsername());
+            model.addAttribute("username", wapIndexParams.getUsername());
+            model.addAttribute("skin", wapIndexParams.getSkin());
+            if (wapIndexParams.getNeedCaptcha() == 1) {
+                String token = RandomStringUtils.randomAlphanumeric(48);
+                model.addAttribute("token", token);
+                model.addAttribute("needCaptcha", true);
+                model.addAttribute("captchaUrl", getProtocolAndServerName(request) + "/captcha?token=" + token);
+            }
+            return "wap/findpwd_wap";
+        } else if (WapConstant.WAP_TOUCH.equals(wapIndexParams.getV())) {
+            if (!Strings.isNullOrEmpty(display)) {
+                model.addAttribute("display", display);
+            }
             model.addAttribute("data", result.toString());
             return "wap/findpwd_touch";
         }
         redirectAttributes.addAttribute("ru", ru);
-        return "redirect:" + SHPPUrlConstant.SOHU_WAP_FINDPWD_URL + "?ru={ru}";
+        return "redirect:" + ru;
     }
 
     /**
@@ -96,17 +117,19 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/email", method = RequestMethod.GET)
-    public String findPwdOtherView(Model model, BaseWebRuParams params) throws Exception {
+    public String findPwdOtherView(Model model, BaseWebRuParams params, String display) throws Exception {
         Result result = new APIResultSupport(false);
         String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
         model.addAttribute("token", RandomStringUtils.randomAlphanumeric(48));
+        if (!Strings.isNullOrEmpty(display)) {
+            model.addAttribute("display", display);
+        }
         model.addAttribute("data", result.toString());
         return "/wap/findpwd_other_touch";
     }
-
 
     /**
      * 其它方式找回时跳转到其它页面
@@ -116,12 +139,15 @@ public class WapResetPwdAction extends BaseController {
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/customer", method = RequestMethod.GET)
-    public String findPwdKefuView(Model model, BaseWebRuParams params) throws Exception {
+    public String findPwdKefuView(Model model, BaseWebRuParams params, String display) throws Exception {
         Result result = new APIResultSupport(false);
         String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         result.setDefaultModel("ru", ru);
         result.setDefaultModel("client_id", client_id);
+        if (!Strings.isNullOrEmpty(display)) {
+            model.addAttribute("display", display);
+        }
         model.addAttribute("data", result.toString());
         return "/wap/findpwd_contact_touch";
     }
@@ -162,7 +188,7 @@ public class WapResetPwdAction extends BaseController {
      */
     @RequestMapping(value = "/findpwd/checksms", method = RequestMethod.POST)
     @ResponseBody
-    public Object checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params) throws Exception {
+    public Object checkSmsSecMobile(HttpServletRequest request, FindPwdCheckSmscodeParams params, String display) throws Exception {
         Result result = new APIResultSupport(false);
         try {
             String validateResult = ControllerHelper.validateParams(params);
@@ -173,12 +199,12 @@ public class WapResetPwdAction extends BaseController {
                 return result.toString();
             }
             int clientId = Integer.parseInt(params.getClient_id());
-            result = wapRestPwdManager.checkMobileCodeResetPwd(params.getMobile(), clientId, params.getSmscode());
+            result = wapRestPwdManager.checkMobileCodeResetPwd(params.getMobile(), clientId, params.getSmscode(), true);
             if (result.isSuccess()) {
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 result.setDefaultModel("skin", params.getSkin());
-                String param = buildRedirectUrl(result);
-                String url = CommonConstant.DEFAULT_WAP_INDEX_URL + param;
+                String param = buildRedirectUrl(result, display);
+                String url = getProtocolAndServerName(request) + param;  //该接口域名是什么，下一个页面域名也是什么
                 result.setDefaultModel("url", url);
                 return result.toString();
             }
@@ -192,7 +218,7 @@ public class WapResetPwdAction extends BaseController {
     }
 
     //手机与短信验证码验证成功后，给前端生成下一步跳转的url
-    private String buildRedirectUrl(Result result) {
+    private String buildRedirectUrl(Result result, String display) {
         StringBuilder urlStr = new StringBuilder();
         urlStr.append("/wap/findpwd/page/reset?");
         String userid = (String) result.getModels().get("userid");
@@ -202,12 +228,15 @@ public class WapResetPwdAction extends BaseController {
         String client_id = (String) result.getModels().get("client_id");
         urlStr.append("&client_id=" + client_id);
         String ru = (String) result.getModels().get("ru");
-        urlStr.append("&ru=" + Coder.encodeUTF8(ru));
+        urlStr.append("&ru=" + ru);
         urlStr.append("&code=" + result.getCode());
         urlStr.append("&message=" + result.getMessage());
         urlStr.append("&v=" + WapConstant.WAP_TOUCH);
         String skin = (String) result.getModels().get("skin");
         urlStr.append("&skin=" + skin);
+        if (!Strings.isNullOrEmpty(display)) {
+            urlStr.append("&display=").append(display);
+        }
         return urlStr.toString();
     }
 
@@ -242,14 +271,14 @@ public class WapResetPwdAction extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result.toString();
             }
-            //主账号是搜狐域用户跳转到sohu的wap页面
-            if (AccountDomainEnum.SOHU.equals(domain)) {
-                result.setSuccess(true);
-                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
-                String url = SHPPUrlConstant.SOHU_WAP_FINDPWD_URL + "?client_id=" + result.getModels().get("client_id") + "&ru=" + result.getModels().get("ru");
-                result.setDefaultModel("url", url);
-                return result.toString();
-            }
+//            //主账号是搜狐域用户跳转到sohu的wap页面
+//            if (AccountDomainEnum.SOHU.equals(domain)) {
+//                result.setSuccess(true);
+//                result = setRuAndClientId(result, params.getRu(), params.getClient_id());
+//                String url = SHPPUrlConstant.SOHU_WAP_FINDPWD_URL + "?client_id=" + result.getModels().get("client_id") + "&ru=" + result.getModels().get("ru");
+//                result.setDefaultModel("url", url);
+//                return result.toString();
+//            }
             //校验验证码
             if (!checkManager.checkCaptcha(params.getCaptcha(), params.getToken())) {
                 result.setDefaultModel("userid", passportId);
@@ -266,10 +295,10 @@ public class WapResetPwdAction extends BaseController {
                 return result.toString();
             }
             int client_id = Integer.parseInt(params.getClient_id());
-            result = regManager.isAccountNotExists(passportId, client_id);
+            result = registerApiManager.checkUser(passportId, client_id,true);
             if (result.isSuccess()) {  //用户不存在
                 result = new APIResultSupport(false);
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 result = setRuAndClientId(result, params.getRu(), params.getClient_id());
                 return result.toString();
             }
@@ -282,6 +311,7 @@ public class WapResetPwdAction extends BaseController {
                     return result.toString();    //跳转至其它方式找回首页
                 case OTHER:
                 case SOGOU:
+                case SOHU:
                 case INDIVID: //主账号是外域/搜狗域/个性账号，则查询它的密保邮箱/手机返回，有则返回；无则返回通过客服找回
                     result = getSecureInfo(passportId, client_id); //返回密保邮箱或手机及模糊处理过的
                     result = setRuAndClientId(result, params.getRu(), params.getClient_id());
@@ -301,7 +331,7 @@ public class WapResetPwdAction extends BaseController {
                             //主账号是外域，则返回注册邮箱 ;主账号非外域，则返回密保邮箱
                             result.setDefaultModel("sec_email", AccountDomainEnum.OTHER.equals(domain) ? passportId : sec_email);
                             result.setDefaultModel("sec_process_email", AccountDomainEnum.OTHER.equals(domain) ? StringUtil.processEmail(passportId) : StringUtil.processEmail(sec_email));
-                            result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, client_id));      //安全验证码
+                            result.setDefaultModel("scode", commonManager.getSecureCode(passportId, client_id, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));      //安全验证码
                         }
                     }
             }
@@ -339,7 +369,7 @@ public class WapResetPwdAction extends BaseController {
             String ru = Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu();
             ActiveEmailDO activeEmailDO = new WapActiveEmailDO(passportId, clientId, ru, AccountModuleEnum.RESETPWD, params.getEmail(), false, params.getSkin(), params.getV());
             result = resetPwdManager.sendEmailResetPwd(activeEmailDO, params.getScode());
-            result.setDefaultModel("scode", commonManager.getSecureCodeResetPwd(passportId, clientId));
+            result.setDefaultModel("scode", commonManager.getSecureCode(passportId, clientId, CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
             result.setDefaultModel("userid", passportId);
             result = setRuAndClientId(result, params.getRu(), params.getClient_id());
         } catch (Exception e) {
@@ -364,7 +394,7 @@ public class WapResetPwdAction extends BaseController {
         try {
             String validateResult = ControllerHelper.validateParams(params);
             if (!Strings.isNullOrEmpty(validateResult)) {
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + "/wap/findpwd/page/reset?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&message=" + Coder.encodeUTF8(validateResult));
+                response.sendRedirect(getProtocolAndServerName(request) + "/wap/findpwd/page/reset?code=" + ErrorUtil.ERR_CODE_COM_REQURIE + "&message=" + Coder.encodeUTF8(validateResult));
                 return;
             }
             String passportId = params.getUsername();
@@ -374,7 +404,7 @@ public class WapResetPwdAction extends BaseController {
             if (result.isSuccess()) {
                 String scode = (String) result.getModels().get("scode");
                 url = url + "&scode=" + scode + "&code=0";
-                response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + url);
+                response.sendRedirect(getProtocolAndServerName(request) + url);
                 return;
             }
         } catch (Exception e) {
@@ -383,13 +413,13 @@ public class WapResetPwdAction extends BaseController {
             log(request, params.getUsername(), result.getCode());
         }
         url += "&code=" + result.getCode();
-        response.sendRedirect(CommonConstant.DEFAULT_WAP_INDEX_URL + url);
+        response.sendRedirect(getProtocolAndServerName(request) + url);
         return;
     }
 
     //验证完邮件跳转至页面提示重置密码页
     private String buildSendRedirectUrl(WapCheckEmailParams params) throws UnsupportedEncodingException {
-        String ru = Strings.isNullOrEmpty(params.getRu()) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(params.getRu());
+        String ru = Coder.encodeUTF8(Strings.isNullOrEmpty(params.getRu()) ? CommonConstant.DEFAULT_WAP_URL : params.getRu());
         String client_id = Strings.isNullOrEmpty(params.getClient_id()) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : params.getClient_id();
         StringBuilder urlStr = new StringBuilder();
         urlStr.append("/wap/findpwd/page/reset?");
@@ -405,12 +435,13 @@ public class WapResetPwdAction extends BaseController {
      * 通过接口跳转到reset页面
      *
      * @param ru
+     * @param display 默认不填，如果为native则隐藏上面的title
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/findpwd/page/reset", method = RequestMethod.GET)
     public String findResetView(String ru, Model model, String client_id, String scode, String username, String
-            code, String skin) throws Exception {
+            code, String skin, String display) throws Exception {
         Result result = new APIResultSupport(false);
         ru = Strings.isNullOrEmpty(ru) ? Coder.encodeUTF8(CommonConstant.DEFAULT_WAP_URL) : Coder.encodeUTF8(ru);
         client_id = Strings.isNullOrEmpty(client_id) ? String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID) : client_id;
@@ -421,7 +452,10 @@ public class WapResetPwdAction extends BaseController {
         result.setDefaultModel("userid", username);
         result.setDefaultModel("scode", scode);
         result.setDefaultModel("v", WapConstant.WAP_TOUCH);
-        result.setDefaultModel("skin", skin);
+        result.setDefaultModel("skin", Strings.isNullOrEmpty(skin) ? WapConstant.WAP_SKIN_GREEN : skin);
+        if (!Strings.isNullOrEmpty(display)) {
+            model.addAttribute("display", display);
+        }
         model.addAttribute("data", result.toString());
         return "/wap/resetpwd_touch";
     }
@@ -511,6 +545,21 @@ public class WapResetPwdAction extends BaseController {
         UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID), resultCode, getIp(request));
         userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
         UserOperationLogUtil.log(userOperationLog);
+    }
+
+    /**
+     * 获取https://域名，或http://域名
+     *
+     * @param request
+     * @return
+     */
+    private String getProtocolAndServerName(HttpServletRequest request) {
+        String protocol = getProtocol(request);
+        if(protocol.equals(CommonConstant.HTTPS)) {
+            return CommonConstant.DEFAULT_INDEX_URL;
+        }else {
+            return CommonConstant.DEFAULT_WAP_INDEX_URL;
+        }
     }
 
 }

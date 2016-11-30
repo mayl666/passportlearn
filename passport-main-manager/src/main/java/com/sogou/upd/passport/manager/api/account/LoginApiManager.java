@@ -1,7 +1,9 @@
 package com.sogou.upd.passport.manager.api.account;
 
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 
 /**
  * 登录相关
@@ -25,10 +27,10 @@ public interface LoginApiManager {
      * 会通过302重定向的方式将token带给产品的服务器端，
      * 产品的服务器端通过传入passportid和token验证用户的合法性，且token具有较长的有效期。
      *
-     * @param appAuthTokenApiParams
+     * @param token
      * @return
      */
-    public Result appAuthToken(AppAuthTokenApiParams appAuthTokenApiParams);
+    public Result appAuthToken(String token);
 
     /**
      * 构造sohu生成并设置cookie的url
@@ -39,16 +41,6 @@ public interface LoginApiManager {
     public Result buildCreateCookieUrl(CreateCookieUrlApiParams createCookieUrlApiParams, boolean isRuEncode, boolean isHttps);
 
     /**
-     * 获取cookie值，包括ppinf、pprdig、passport
-     * 并且返回种搜狗域cookie的重定向url
-     * 只有浏览器老版本PC端才会用到passport
-     *
-     * @param createCookieUrlApiParams
-     * @return
-     */
-    public Result getCookieInfoWithRedirectUrl(CreateCookieUrlApiParams createCookieUrlApiParams);
-
-    /**
      * 生成的cookie值
      * sohu的是通过搜狐内部接口getcookieinfo获取ppinf和pprdig
      * sogou的是自己生成sginf和sgrdig
@@ -57,7 +49,6 @@ public interface LoginApiManager {
      * @return
      */
     public Result getCookieInfo(CookieApiParams cookieApiParams);
-
 
     /**
      * 生成cookie的值

@@ -1,14 +1,11 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
 import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.CommonConstant;
+
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
-import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.common.utils.LogUtil;
 import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
@@ -21,6 +18,7 @@ import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +42,6 @@ import java.util.Date;
 public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserInfoApiManager {
 
     private static Logger logger = LoggerFactory.getLogger(SGUserInfoApiManagerImpl.class);
-    private static Logger profileErrorLogger = LoggerFactory.getLogger("profileErrorLogger");
 
     @Autowired
     private AccountService accountService;
@@ -111,13 +108,41 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                 result.setDefaultModel("avatarurl", accountResult.getModels().get("avatarurl"));
                                 paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "avatarurl"));
                             }
+
+                            //大头像，中头像，小头像
+                            String imageSize = infoApiparams.getImagesize();
+                            String large_avatar = (String) accountResult.getModels().get("img_180");
+                            String mid_avatar = (String) accountResult.getModels().get("img_50");
+                            String tiny_avatar = (String) accountResult.getModels().get("img_30");
+                            if (StringUtils.contains(imageSize, "30")) {
+                                result.setDefaultModel("tiny_avatar", Strings.isNullOrEmpty(tiny_avatar) ? "" : tiny_avatar);
+                            }
+                            if (StringUtils.contains(imageSize, "50")) {
+                                result.setDefaultModel("mid_avatar", Strings.isNullOrEmpty(mid_avatar) ? "" : mid_avatar);
+                            }
+                            if (StringUtils.contains(imageSize, "180")) {
+                                result.setDefaultModel("large_avatar", Strings.isNullOrEmpty(large_avatar) ? "" : large_avatar);
+                            }
+                            //处理第三方gender信息
+                            if ((domain == AccountDomainEnum.THIRD) && (StringUtils.contains(fields, "gender"))) {
+                                result.setDefaultModel("gender", accountResult.getModels().get("gender"));
+                            }
+    
+                            // 注册时间
+                            if (ArrayUtils.contains(paramArray, "regTime")) {
+                                Date regTime = account.getRegTime();
+                                String regTimeStr = (regTime == null) ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(regTime);
+                                result.setDefaultModel("regTime", regTimeStr);
+                                paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "regTime"));
+                            }
+
                             result.setDefaultModel("userid", passportId);
                         } else if (domain == AccountDomainEnum.SOHU) {
                             //如果为"搜狐域"账号，则根据请求参数构建值为 "" 的result
                             return buildSoHuEmptyResult(result, fields, passportId);
                         } else {
                             //若 account 为空，并且账号域类型不是"搜狐域"账号，错误码返回:账号不存在、并且返回
-                            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                            result.setCode(ErrorUtil.INVALID_ACCOUNT);
                             return result;
                         }
                     } else {
@@ -161,7 +186,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                     }
                                     if ("gender".equals(paramArray[i])) {
                                         String value = BeanUtils.getProperty(accountInfo, paramArray[i]);
-                                        result.setDefaultModel("gender", value);
+                                        result.setDefaultModel("gender", Strings.isNullOrEmpty(value) ? 0 : value);
                                         continue;
                                     }
                                     if ("personalid".equals(paramArray[i])) {
@@ -280,24 +305,23 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                     //更新用户昵称信息
                     result = updateAccountNickName(account, params.getUniqname());
                 }
-            } else if (accountDomain == AccountDomainEnum.SOHU) {
-                //如果是搜狐矩阵账号，则插入到account表一条无密码的记录,插入成功、涉及到用户信息更改的话，在继续执行更新操作
-                Account insertSoHuAccount = accountService.initialAccount(params.getUserid(), null, false, params.getModifyip(), AccountTypeEnum.SOHU.getValue());
-                if (insertSoHuAccount == null) {
-                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
-                    return result;
-                } else {
-                    //更新用户非昵称信息，性别、所在地、生日、真实姓名、身份证
-                    result = updateAccountInfo(params);
-                    if (!Strings.isNullOrEmpty(params.getUniqname())) {
-                        //更新用户昵称信息
-                        result = updateAccountNickName(insertSoHuAccount, params.getUniqname());
-                    }
-                }
+//            } else if (accountDomain == AccountDomainEnum.SOHU) {
+//                //如果是搜狐矩阵账号，则插入到account表一条无密码的记录,插入成功、涉及到用户信息更改的话，在继续执行更新操作
+//                Account insertSoHuAccount = accountService.initialAccount(params.getUserid(), null, false, params.getModifyip(), AccountTypeEnum.SOHU.getValue());
+//                if (insertSoHuAccount == null) {
+//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
+//                    return result;
+//                } else {
+//                    //更新用户非昵称信息，性别、所在地、生日、真实姓名、身份证
+//                    result = updateAccountInfo(params);
+//                    if (!Strings.isNullOrEmpty(params.getUniqname())) {
+//                        //更新用户昵称信息
+//                        result = updateAccountNickName(insertSoHuAccount, params.getUniqname());
+//                    }
+//                }
             } else {
                 //记录Log 跟踪数据同步延时情况
-                LogUtil.buildErrorLog(profileErrorLogger, AccountModuleEnum.USERINFO, "updateUserInfo", CommonConstant.SG_NOT_EXIST, passportId, passportId, result.toString());
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTHASACCOUNT);
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
             }
         } catch (Exception e) {
             logger.error("updateUserInfo Fail,passportId:" + passportIdLog, e);
@@ -434,6 +458,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
         }
         return result;
     }
+
 
 }
 

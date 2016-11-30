@@ -20,9 +20,10 @@ public class ProxyFriendsOpenApiManagerImpl extends BaseProxyManager implements 
 
     @Override
     public Result getUserFriends(BaseApiParams baseApiParams) {
-        RequestModelJSON requestModelJSON = new RequestModelJSON(SHPPUrlConstant.GET_CONNECT_FRIENDS_INFO);
-        requestModelJSON.addParams(baseApiParams);
-        return executeResult(requestModelJSON);
+//        RequestModelJSON requestModelJSON = new RequestModelJSON(SHPPUrlConstant.GET_CONNECT_FRIENDS_INFO);
+//        requestModelJSON.addParams(baseApiParams);
+//        return executeResult(requestModelJSON);
+        return null;
     }
 
 }

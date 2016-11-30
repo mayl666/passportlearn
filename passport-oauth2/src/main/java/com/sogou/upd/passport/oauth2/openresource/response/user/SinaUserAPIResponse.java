@@ -11,6 +11,7 @@ import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.parameters.SinaOAuth;
 import com.sogou.upd.passport.oauth2.openresource.validator.impl.SinaAPIValidator;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -77,30 +78,35 @@ public class SinaUserAPIResponse extends UserAPIResponse {
     private String formCity(Integer provinceID, String cityID) {
         List<Map<String, String>> cityList = sinaCityCache.get(provinceID);
         String city = "未知";
-        for (Map<String, String> map : cityList) {
-            city = map.get(cityID);
-            if (!Strings.isNullOrEmpty(city)) {
-                city = StringUtil.exchangeToUf8(city);
-                break;
+        if (!CollectionUtils.isEmpty(cityList)) {
+            for (Map<String, String> map : cityList) {
+                city = map.get(cityID);
+                if (!Strings.isNullOrEmpty(city)) {
+                    city = StringUtil.exchangeToUf8(city);
+                    break;
+                }
             }
         }
         return city;
     }
 
     private static void obtainSinaProvinces() {
-        String url = SinaOAuth.SINA_PROVINCES_FORMAT_URL;
-        RequestModel requestModel = new RequestModel(url);
-        Map provincesMap = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
-        List<Map> provincesList = (List<Map>) provincesMap.get("provinces");
-        // 省份map，{11=北京}
-        for (Map province : provincesList) {
-            Integer id = (Integer) province.get("id");
-            String name = (String) province.get("name");
-            name = StringUtil.exchangeToUf8(name);
-            sinaProvinceCache.putIfAbsent(id, name);
-            // 城市map，{11={1=海淀}}
-            List<Map<String, String>> cityList = (List<Map<String, String>>) province.get("citys");
-            sinaCityCache.putIfAbsent(id, cityList);
+        try {
+            String url = SinaOAuth.SINA_PROVINCES_FORMAT_URL;
+            RequestModel requestModel = new RequestModel(url);
+            Map provincesMap = SGHttpClient.executeBean(requestModel, HttpTransformat.json, Map.class);
+            List<Map> provincesList = (List<Map>) provincesMap.get("provinces");
+            // 省份map，{11=北京}
+            for (Map province : provincesList) {
+                Integer id = (Integer) province.get("id");
+                String name = (String) province.get("name");
+                name = StringUtil.exchangeToUf8(name);
+                sinaProvinceCache.putIfAbsent(id, name);
+                // 城市map，{11={1=海淀}}
+                List<Map<String, String>> cityList = (List<Map<String, String>>) province.get("citys");
+                sinaCityCache.putIfAbsent(id, cityList);
+            }
+        } catch (Exception e) {
         }
     }
 

@@ -7,8 +7,8 @@ import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
-import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
+import com.sogou.upd.passport.manager.api.account.RegisterApiManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.BaseWebParams;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -19,6 +19,7 @@ import com.sogou.upd.passport.web.account.form.security.WebModifyMobileParams;
 import com.sogou.upd.passport.web.account.form.security.WebSmsParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,7 +44,7 @@ public class MobileSecureAction extends BaseController {
     @Autowired
     private HostHolder hostHolder;
     @Autowired
-    private RegManager regManager;
+    private RegisterApiManager registerApiManager;
 
     /*
      * 修改绑定手机，发送短信验证码至原绑定手机
@@ -100,7 +101,7 @@ public class MobileSecureAction extends BaseController {
                 return result.toString();
             }
             //双读，检查新手机是否允许绑定
-            result = regManager.isAccountNotExists(newMobile, clientId);
+            result = registerApiManager.checkUser(newMobile, clientId,false);
             if (!result.isSuccess()) {
                 result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_BINDED);
@@ -228,9 +229,9 @@ public class MobileSecureAction extends BaseController {
             case PHONE:
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
                 return result;
-            case SOHU:
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
-                return result;
+//            case SOHU:
+//                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_NOTALLOWED);
+//                return result;
             case THIRD:
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result;

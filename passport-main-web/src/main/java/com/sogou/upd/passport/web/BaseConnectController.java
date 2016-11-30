@@ -4,18 +4,15 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
-import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.oauth2.common.parameters.QueryParameterApplier;
 import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
-import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Map;
 
@@ -46,10 +43,10 @@ public class BaseConnectController extends BaseController {
     protected String buildMappSuccessRu(String ru, String userid, String token, String nickname) {
         Map params = Maps.newHashMap();
         try {
-            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CONTENT_CHARSET);
+            ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (UnsupportedEncodingException e) {
             logger.error("Url decode Exception! ru:" + ru);
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+            ru = CommonConstant.DEFAULT_INDEX_URL;
         }
         params.put("userid", userid);
         params.put("token", token);
@@ -73,11 +70,21 @@ public class BaseConnectController extends BaseController {
         try {
             if (Strings.isNullOrEmpty(ru)) {
                 if (ConnectTypeEnum.isMobileApp(type)) {
-                    ru = CommonConstant.DEFAULT_WAP_CONNECT_REDIRECT_URL;
+                    ru = CommonConstant.DEFAULT_WAP_URL;
                 } else {
-                    ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+                    ru = CommonConstant.DEFAULT_INDEX_URL;
                 }
             }
+
+            //fix invalid ru redirect 安全漏洞
+            if (StringUtils.contains(errorText, CommonConstant.DOMAIN_ERROR) || CommonConstant.DOMAIN_ERROR.equals(errorText)) {
+                if (ConnectTypeEnum.isMobileApp(type)) {
+                    ru = CommonConstant.DEFAULT_WAP_URL;
+                } else {
+                    ru = CommonConstant.DEFAULT_INDEX_URL;
+                }
+            }
+
             if (Strings.isNullOrEmpty(provider)) {
                 //provide为空跳转到 ru
                 if (Strings.isNullOrEmpty(ru)) {
@@ -104,14 +111,4 @@ public class BaseConnectController extends BaseController {
         }
         return ru;
     }
-
-    protected String getProtocol(HttpServletRequest req) {
-        String httpsHeader = req.getHeader(CommonConstant.HTTPS_HEADER);
-        String httpOrHttps = "http";
-        if (!StringUtils.isBlank(httpsHeader) && httpsHeader.equals(CommonConstant.HTTPS_VALUE)) {
-            httpOrHttps = "https";
-        }
-        return httpOrHttps;
-    }
-
 }

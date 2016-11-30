@@ -36,11 +36,6 @@ public interface WapLoginManager {
      * @return
      */
     public Result passThroughQQ(int client_id,String sgid,String accessToken,String openId,String ip,String expires_in);
-    /**
-     * QQ wap透传
-     * @return
-     */
-    public Result removeSession(String sgid);
 
     /**
      * 判断wap端应用是否需要输入验证码
@@ -51,12 +46,4 @@ public interface WapLoginManager {
      */
     public boolean needCaptchaCheck(String client_id, String username, String ip);
 
-    /**
-     * wap用户登录后操作
-     * @param username
-     * @param ip
-     * @param passportId
-     * @param clientId
-     */
-    public void doAfterLoginSuccess(final String username, final String ip, final String passportId, final int clientId);
 }

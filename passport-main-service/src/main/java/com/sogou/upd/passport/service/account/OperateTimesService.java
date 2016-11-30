@@ -25,8 +25,6 @@ public interface OperateTimesService {
 
     public boolean checkTimesByKey(String cacheKey, final int max) throws ServiceException;
 
-    public boolean checkTimesByKeyList(List<String> keyList, List<Integer> maxList) throws ServiceException;
-
     /**
      * 通过hget查询次数是否超出限制
      *
@@ -47,6 +45,17 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public void incLoginTimes(final String username, final String ip, final boolean isSuccess) throws ServiceException;
+
+
+    /**
+     * 记录短信登录，成功或者失败次数
+     *
+     * @param mobile
+     * @param ip
+     * @param isSuccess
+     * @throws ServiceException
+     */
+    public void incSmsCodeLoginTimes(final String mobile, final String ip, final boolean isSuccess) throws ServiceException;
 
     /**
      * 记录一天内修改密码的次数
@@ -144,6 +153,17 @@ public interface OperateTimesService {
      * @throws ServiceException
      */
     public boolean loginFailedTimesNeedCaptcha(String username, String ip) throws ServiceException;
+
+
+    /**
+     * 手机短信登录，登录失败次数超过限制，需要输入验证码
+     *
+     * @param mobile
+     * @param ip
+     * @return
+     * @throws ServiceException
+     */
+    public boolean smsCodeLoginFailedNeedCaptcha(String mobile, String ip) throws ServiceException;
 
     /**
      * 记录提及反馈次数
@@ -353,4 +373,52 @@ public interface OperateTimesService {
      * @param cookie
      */
     public void incCheckNickNameExistTimes(final String ip, final String cookie);
+
+
+    /**
+     * 密码修改成功后，把账号设置到module blacklist 列表中
+     *
+     * @param passportId
+     * @param seconds
+     */
+    public void updatePwdSuccessSetModuleBlack(String passportId, long seconds);
+
+
+    /**
+     * 手机短信登录，校验请求短信校验码次数是否超限制
+     *
+     * @param mobile
+     * @return
+     */
+    public boolean checkGetSmsCodeNumIfBeyond(final String mobile, final int clientId);
+
+    /**
+     * 手机短信登录，检查尝试短信校验码次数是否超限制
+     *
+     * @param mobile
+     * @return
+     */
+    public boolean checkTrySmsCodeNumIfBeyond(final String mobile, final int clientId);
+
+    /**
+     * 手机短信登录，记录用户尝试短信校验码失败次数
+     *
+     * @param mobile
+     */
+    public void incTrySmsCodeFailTimes(final String mobile, final int clientId);
+
+    /**
+     * 手机短信登录，记录用户获取短信校验码次数
+     *
+     * @param mobile
+     */
+
+    public void incGetSmsCodeTimes(final String mobile, final int clientId);
+    /**
+     * 手机短验登录，判断是否需要出现图片验证码
+     * @param mobile
+     * @param clientId
+     * @return
+     */
+    public boolean checkSMSnNeedCaptcha(final String mobile, final int clientId);
 }

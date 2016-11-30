@@ -33,6 +33,11 @@ define(['./interface', './utils', './local', './dialog', '../utils', './skin'], 
 					this.$captchaImg.click(function() {
 						self.refreshCaptcha();
 					});
+					this.opt.$container.on('click,touchstart',function(e){
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					});
 				},
 				onBeforeOk: function() {
 					return /^\w+$/.test(this.$input.val());

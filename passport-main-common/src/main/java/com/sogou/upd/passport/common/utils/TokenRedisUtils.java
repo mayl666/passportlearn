@@ -27,8 +27,6 @@ public class TokenRedisUtils {
 
     private RedisTemplate redisTemplate;
 
-    private static final String ALL_REQUEST_TIMER = "REDIES_ALL_REQUEST";
-
     /*
     * 设置缓存内容
     */

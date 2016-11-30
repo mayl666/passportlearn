@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -24,9 +25,8 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.PcAccountWebParams;
+
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +37,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Calendar;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Calendar;
+
+import static com.sogou.upd.passport.common.parameter.AccountDomainEnum.THIRD;
 
 /**
  * 桌面端登录流程Controller
@@ -124,10 +127,14 @@ public class PCAccountController extends BaseController {
             return "1";
         }
         String userId = pcGetTokenParams.getUserid();
-        //不允许第三方格式的账号登录
-        if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(userId))) {
+        
+        // 用户名的所属域
+        AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(userId);
+        if(THIRD.equals(accountDomainEnum) && !userId.matches(".+@qq\\.sohu\\.com$")) {   // 第三方登陆
+            // 非 QQ 第三方账号不允许此操作
             return "1";
         }
+        
         String ip = getIp(request);
         String appId = pcGetTokenParams.getAppid();
         String ts = pcGetTokenParams.getTs();
@@ -168,10 +175,14 @@ public class PCAccountController extends BaseController {
             return getReturnStr(cb, "1");
         }
         String userId = reqParams.getUserid();
-        //不允许第三方格式的账号登录
-        if (AccountDomainEnum.THIRD.equals(AccountDomainEnum.getAccountDomain(userId))) {
+    
+        // 用户名的所属域
+        AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(userId);
+        if(THIRD.equals(accountDomainEnum) && !userId.matches(".+@qq\\.sohu\\.com$")) {   // 第三方登陆
+            // 非 QQ 第三方账号不允许此操作
             return "1";
         }
+        
         //getpairtoken允许个性账号、手机号登陆；gettoken不允许
         userId = loginManager.getIndividPassportIdByUsername(userId);
         reqParams.setUserid(userId);
@@ -248,8 +259,9 @@ public class PCAccountController extends BaseController {
         //参数验证
         String validateResult = ControllerHelper.validateParams(authPcTokenParams);
         String ru = authPcTokenParams.getRu();
+        String ua = getHeaderUserAgent(request);
         if (!Strings.isNullOrEmpty(validateResult)) {
-            if (!Strings.isNullOrEmpty(ru)) {
+            if (!Strings.isNullOrEmpty(ru)&&!validateResult.contains("域名不正确")) {
                 response.sendRedirect(buildRedirectUrl(ru, 1)); //status=1表示参数错误
                 return;
             }
@@ -271,38 +283,22 @@ public class PCAccountController extends BaseController {
                 return;
             }
         }
-
         userId = AccountDomainEnum.getAuthtokenCase(userId);
         authPcTokenParams.setUserid(userId);
         Result authTokenResult = pcAccountManager.authToken(authPcTokenParams);
-
         //用户log
         String resultCode = StringUtil.defaultIfEmpty(authTokenResult.getCode(), "0");
         UserOperationLog userOperationLog = new UserOperationLog(userId, request.getRequestURI(), authPcTokenParams.getAppid(), resultCode, getIp(request));
-        userOperationLog.putOtherMessage("accesstoken", authPcTokenParams.getToken());
+        userOperationLog.putOtherMessage(CommonConstant.USER_AGENT, ua);
         UserOperationLogUtil.log(userOperationLog);
-
         //重定向生成cookie
         if (authTokenResult.isSuccess()) {
-
-//            CreateCookieUrlApiParams createCookieUrlApiParams = new CreateCookieUrlApiParams();
-//            createCookieUrlApiParams.setUserid(userId);
-//            createCookieUrlApiParams.setRu(ru);
-//            createCookieUrlApiParams.setClientId(authPcTokenParams.getAppid());
-//            if (!"0".equals(authPcTokenParams.getLivetime())) {
-//                createCookieUrlApiParams.setPersistentcookie(1);
-//            }
-//            createCookieUrlApiParams.setDomain("sogou.com");
-            //TODO sogou域账号迁移后cookie生成问题 最初版本
-//            Result getCookieValueResult = proxyLoginApiManager.getCookieInfoWithRedirectUrl(createCookieUrlApiParams);
-
             CookieApiParams cookieApiParams = new CookieApiParams();
             cookieApiParams.setUserid(userId);
             cookieApiParams.setClient_id(Integer.parseInt(authPcTokenParams.getAppid()));
             cookieApiParams.setRu(ru);
             cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
             cookieApiParams.setIp(getIp(request));
-
             if (!Strings.isNullOrEmpty(userId)) {
                 if (StringUtils.contains(userId, "@")) {
                     cookieApiParams.setUniqname(StringUtils.substring(userId, 0, userId.indexOf("@")));
@@ -310,16 +306,12 @@ public class PCAccountController extends BaseController {
                     cookieApiParams.setUniqname(userId);
                 }
             }
-
             cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_NOT_SET);
-
             if (!"0".equals(authPcTokenParams.getLivetime())) {
                 cookieApiParams.setPersistentcookie("1");
             }
             cookieApiParams.setDomain("sogou.com");
             Result getCookieValueResult = cookieManager.createCookie(response, cookieApiParams);
-
-
             if (getCookieValueResult.isSuccess()) {
                 String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
                 String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
@@ -328,7 +320,6 @@ public class PCAccountController extends BaseController {
                 ServletUtil.setHttpOnlyCookie(response, "pprdig", pprdig, CommonConstant.SOGOU_ROOT_DOMAIN);
                 ServletUtil.setHttpOnlyCookie(response, "passport", passport, CommonConstant.SOGOU_ROOT_DOMAIN);
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");     // 输入法Mac版需要此字段
-
                 String redirectUrl = (String) getCookieValueResult.getModels().get("redirectUrl");
                 response.sendRedirect(redirectUrl);
                 return;  //如果重定向url不是固定的，不可使用springmvc的RedirectView，因为会缓存url
@@ -339,18 +330,32 @@ public class PCAccountController extends BaseController {
         return;
     }
 
+    @RequestMapping(value = "/act/swap_refreshtoken")
+    @ResponseBody
+    public Object swapRefreshToken(HttpServletRequest request, PcRefreshTokenParams reqParams) throws Exception {
+        Result result = new APIResultSupport(false);
+        String passportId = reqParams.getUserid();
+        String instanceId = reqParams.getTs();
+        String refreshToken = reqParams.getRefresh_token();
+        String ip = getIp(request);
+        int clientId = Integer.parseInt(reqParams.getAppid());
+        String validateResult = ControllerHelper.validateParams(reqParams);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+
+        result = pcAccountManager.swapRefreshToken(passportId, clientId, instanceId, refreshToken);
+        UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), reqParams.getAppid(), result.getCode(), ip);
+        UserOperationLogUtil.log(userOperationLog);
+        return result.toString();
+    }
+
     @RequestMapping(value = "/act/errorMsg")
     @ResponseBody
     public Object errorMsg(@RequestParam("msg") String msg) throws Exception {
         return msg;
-    }
-
-    private boolean isCleanString(String cb) {
-        if (Strings.isNullOrEmpty(cb)) {
-            return true;
-        }
-        String cleanValue = Jsoup.clean(cb, Whitelist.none());
-        return cleanValue.equals(cb);
     }
 
     private String getReturnStr(String cb, String resStr) {
@@ -406,7 +411,7 @@ public class PCAccountController extends BaseController {
 
     private String buildRedirectUrl(String ru, int status) {
         if (Strings.isNullOrEmpty(ru)) {
-            ru = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+            ru = CommonConstant.DEFAULT_INDEX_URL;
         }
         if (ru.contains("?")) {
             return ru + "&status=" + status;

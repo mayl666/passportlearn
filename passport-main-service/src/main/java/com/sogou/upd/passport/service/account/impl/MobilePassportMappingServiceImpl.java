@@ -48,6 +48,17 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
         return passportId;
     }
 
+    @Override
+    public String queryPassportIdByUsername(String username) throws ServiceException {
+        String passportId;
+        if (PhoneUtil.verifyPhoneNumberFormat(username)) {
+            passportId = queryPassportIdByMobile(username);
+        } else {
+            passportId = username;
+        }
+        return passportId;
+    }
+
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_initMobileMapping", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean initialMobilePassportMapping(String mobile, String passportId) throws ServiceException {
@@ -83,17 +94,4 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
         }
         return false;
     }
-
-    @Override
-    public boolean deleteMobilePassportMappingCache(String mobile) throws ServiceException {
-        try {
-            String cacheKey = buildMobilePassportMappingKey(mobile);
-            dbShardRedisUtils.delete(cacheKey);
-            return true;
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-
 }

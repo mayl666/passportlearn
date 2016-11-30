@@ -2,7 +2,6 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.CacheConstant;
-import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.utils.CoreKvUtils;
@@ -39,56 +38,25 @@ public class AccountSecureServiceImpl implements AccountSecureService {
     private TaskExecutor discardTaskExecutor;
 
     @Override
-    public boolean getUpdateSuccessFlag(String passportId) throws ServiceException {
-        String cacheKey = buildCacheKey(passportId);
-        try {
-            String flag = redisUtils.get(cacheKey);
-            if (CommonConstant.HAVE_UPDATE.equals(flag)) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-
-    @Override
-    public boolean updateSuccessFlag(String passportId) throws ServiceException {
-        try {
-            String cachePassportIdKey = buildCacheKey(passportId); //主账号
-            redisUtils.setWithinSeconds(cachePassportIdKey, CommonConstant.HAVE_UPDATE, DateAndNumTimesConstant.ONE_HOUR_INSECONDS);
-            return true;
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    private String buildCacheKey(String passportId) {
-        return CacheConstant.CACHE_PREFIX_PASSPORTID_UPDATE_PWD_OR_BIND + passportId;
+    public String getSecureCode(String passportId, int clientId,String cacheKey) throws ServiceException {
+        return getCommonSecureCode(passportId, clientId, cacheKey);
     }
 
     @Override
-    public String getSecureCodeResetPwd(String passportId, int clientId) throws ServiceException {
-        return getSecureCode(passportId, clientId, CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
-    }
-
-    @Override
-    public boolean checkSecureCodeResetPwd(String passportId, int clientId, String secureCode)
+    public boolean checkSecureCode(String passportId, int clientId, String secureCode,String cacheKey)
             throws ServiceException {
-        return checkSecureCode(passportId, clientId, secureCode, CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE);
+        return checkCommonSecureCode(passportId, clientId, secureCode, cacheKey);
     }
 
     @Override
     public String getSecureCodeModSecInfo(String passportId, int clientId) throws ServiceException {
-        return getSecureCode(passportId, clientId, CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE);
+        return getCommonSecureCode(passportId, clientId, CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE);
     }
 
     @Override
     public boolean checkSecureCodeModSecInfo(String passportId, int clientId, String secureCode)
             throws ServiceException {
-        return checkSecureCode(passportId, clientId, secureCode, CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE);
+        return checkCommonSecureCode(passportId, clientId, secureCode, CACHE_PREFIX_PASSPORTID_MODSECINFOSECURECODE);
     }
 
     @Override
@@ -119,21 +87,6 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         }
     }
 
-    @Override
-    public void setActionRecord(final String userId, final int clientId, final AccountModuleEnum action,
-                                final String ip, final String note) {
-        discardTaskExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                // 获取实际需要存储的参数类，节省存储空间
-                ActionStoreRecordDO storeRecordDO = new ActionStoreRecordDO(clientId, System.currentTimeMillis(), ip);
-                //保存用户行为记录到核心kv
-                String coreKvKey = buildCoreKvKeyForActionRecord(userId, action);
-                coreKvStoreRecord(coreKvKey, storeRecordDO, DateAndNumTimesConstant.ACTIONRECORD_NUM);
-            }
-        });
-
-    }
 
     @Override
     public void setActionRecord(final ActionRecord actionRecord) {
@@ -175,7 +128,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         return records;
     }
 
-    private String getSecureCode(String passportId, int clientId, String prefix)
+    private String getCommonSecureCode(String passportId, int clientId, String prefix)
             throws ServiceException {
         String cacheKey = prefix + passportId + "_" + clientId;
         try {
@@ -188,7 +141,7 @@ public class AccountSecureServiceImpl implements AccountSecureService {
         }
     }
 
-    private boolean checkSecureCode(String passportId, int clientId, String secureCode, String prefix)
+    private boolean checkCommonSecureCode(String passportId, int clientId, String secureCode, String prefix)
             throws ServiceException {
         try {
             String cacheKey = prefix + passportId + "_" + clientId;

@@ -3,7 +3,6 @@ package com.sogou.upd.passport.web.internal.account;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CommonConstant;
-import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -12,7 +11,10 @@ import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.account.PCAccountManager;
 import com.sogou.upd.passport.manager.api.account.LoginApiManager;
-import com.sogou.upd.passport.manager.api.account.form.*;
+import com.sogou.upd.passport.manager.api.account.form.AppAuthTokenApiParams;
+import com.sogou.upd.passport.manager.api.account.form.AuthUserApiParams;
+import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.api.account.form.ReNewCookieApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -41,24 +43,16 @@ import java.util.Map;
 @RequestMapping("/internal")
 public class LoginApiController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(LoginApiController.class);
-    private static final Logger authEmailUserLogger = LoggerFactory.getLogger("authEmailUserLogger");
     @Autowired
     private PCAccountManager pcAccountManager;
-    @Autowired
-    private LoginApiManager proxyLoginApiManager;
-    @Autowired
-    private LoginApiManager sgLoginApiManager;
     @Autowired
     private LoginManager loginManager;
     @Autowired
     private LoginApiManager loginApiManager;
     @Autowired
     private ConfigureManager configureManager;
-
     @Autowired
     private CookieManager cookieManager;
-
-    private static final String LOGIN_INDEX_URL = "https://account.sogou.com";
 
     /**
      * 续种cookie
@@ -89,7 +83,7 @@ public class LoginApiController extends BaseController {
         //设置来源
         String ru = params.getRu();
         if (Strings.isNullOrEmpty(ru)) {
-            ru = LOGIN_INDEX_URL;
+            ru = CommonConstant.DEFAULT_INDEX_URL;
         }
         String passportId = params.getUserid();
         String ip = getIp(request);
@@ -170,7 +164,7 @@ public class LoginApiController extends BaseController {
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(userid, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
             userOperationLog.putOtherMessage("createip", createip);
-            UserOperationLogUtil.log(userOperationLog, authEmailUserLogger);
+            UserOperationLogUtil.log(userOperationLog);
             return result.toString();
         }
     }
@@ -247,11 +241,10 @@ public class LoginApiController extends BaseController {
             return result.toString();
         }
         // 调用内部接口
-        result = sgLoginApiManager.appAuthToken(params);
+        result = loginApiManager.appAuthToken(params.getToken());
         String userId = (String) result.getModels().get("userid");
         //记录log
         UserOperationLog userOperationLog = new UserOperationLog(StringUtils.defaultIfEmpty(userId, "third"), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
-        userOperationLog.putOtherMessage("token", params.getToken());
         UserOperationLogUtil.log(userOperationLog);
 
         return result.toString();

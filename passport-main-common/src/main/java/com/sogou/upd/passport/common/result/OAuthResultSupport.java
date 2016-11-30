@@ -19,7 +19,7 @@ public class OAuthResultSupport extends ResultSupport {
 
     private Logger log = LoggerFactory.getLogger(OAuthResultSupport.class);
 
-    private String errorUri = CommonConstant.DEFAULT_CONNECT_REDIRECT_URL;
+    private String errorUri = CommonConstant.DEFAULT_INDEX_URL;
 
     /**
      * 创建一个result。

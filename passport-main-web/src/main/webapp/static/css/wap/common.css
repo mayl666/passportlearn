@@ -26,6 +26,7 @@ a,input,button{
 .f-hl { -webkit-box-pack:start; -moz-box-pack:start;   -webkit-justify-content:flex-start;  -moz-justify-content:flex-start; box-pack:start; justify-content:flex-start; }
 .f-j{ -webkit-box-pack: justify; -moz-box-pack: justify;  -webkit-justify-content: space-between;  -moz-justify-content: space-between; box-pack: justify; justify-content: space-between;}
 .f-1 { -webkit-box-flex: 1.0;  -moz-box-flex: 1.0;  -webkit-flex:1; -moz-flex:1; flex:1;   }
+.f-title{font-size:16px;}
 
 .p24{font-size: 24px;}
 .p19{font-size: 19px;}

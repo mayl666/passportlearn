@@ -28,15 +28,15 @@ public class ManagerHelperTest extends TestCase {
         long ct = System.currentTimeMillis();
         System.out.println("ct:" + ct);
 //        String ct =  "1381915491000";
-        String code = ManagerHelper.generatorCodeGBK("01DE6CF46470427B891AE7F88050412E@qq.sohu.com", clientId, serverSecret, ct);
+        String code = ManagerHelper.generatorCodeGBK("shipengzhi1986@sogou.com", 1120, "4xoG%9>2Z67iL5]OdtBq$l#>DfW@TY", ct);
         System.out.println("code:" + code);
 
-//        try {
-//            String pwdMD5 = Coder.encryptMD5("459811");
-//            System.out.println("pwdMD5:" + pwdMD5);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            String pwdMD5 = Coder.encryptMD5("spz1986411");
+            System.out.println("pwdMD5:" + pwdMD5);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

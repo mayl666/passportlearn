@@ -14,13 +14,23 @@ import javax.servlet.http.HttpServletResponse;
 public interface AccountRoamManager {
 
     /**
-     * 漫游起始端解析登录态
+     * 漫游起始端生成已登录标识
      *
      * @param sLoginPassportId 漫游起始端解析出来的登录userid
      * @return
      * @throws ServiceException
      */
-    Result roamGo(String sLoginPassportId);
+    Result createRoamKey(String sLoginPassportId);
+
+    /**
+     * 验证桌面端登录态，并生成已登录标识
+     *
+     * @param type 登录态类型
+     * @param cipherText  登录态加密字符串
+     * @return
+     * @throws ServiceException
+     */
+    Result pcRoamGo(String type, String cipherText, String ip);
 
     /**
      * 支持：搜狗域、搜狐域、第三方账号 3类账号漫游
@@ -49,4 +59,25 @@ public interface AccountRoamManager {
      * @throws ServiceException
      */
     Result webRoam(HttpServletResponse response,String sgLgUserId, String r_key, String ru, String createIp, int clientId) throws ServiceException;
+
+    /**
+     * 解析输入法桌面端加密串，返回userid
+     * @param cipherText
+     * @return 解析成功返回userId，解析失败返回null
+     */
+    public String getUserIdByPinyinRoamToken(String cipherText);
+
+    /**
+     * 解析输入法桌面端Token加密串，返回userid
+     * @param cipherText
+     * @return 解析成功返回userId，解析失败返回null
+     */
+    public String getUserIdByBrowerRoamToken(String cipherText);
+
+    /**
+     * 解析输入法桌面端Cookie加密串，返回userid
+     * @param cipherText
+     * @return 解析成功返回userId，解析失败返回null
+     */
+    public String getUserIdByBrowerRoamCookie(String cipherText);
 }
