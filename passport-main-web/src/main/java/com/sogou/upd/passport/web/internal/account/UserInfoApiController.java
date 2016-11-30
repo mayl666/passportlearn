@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.internal.account;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
@@ -15,6 +16,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import com.sogou.upd.passport.web.converters.CustomDateEditor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -23,8 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * User: ligang201716@sogou-inc.com
@@ -63,6 +66,8 @@ public class UserInfoApiController extends BaseController {
             return result.toString();
         }
         result = sgUserInfoApiManager.getUserInfo(params);
+        processAvatarUrl(request, result);
+        
         UserOperationLog userOperationLog = new UserOperationLog(params.getUserid(), String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
         userOperationLog.putOtherMessage("fields", params.getFields());
         userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));

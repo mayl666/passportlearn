@@ -3,6 +3,7 @@ package com.sogou.upd.passport.web;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.Result;
@@ -10,6 +11,7 @@ import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.vo.AccountSecureInfoVO;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
@@ -17,10 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Map;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 public class BaseController {
 
@@ -188,5 +191,38 @@ public class BaseController {
         }
         Joiner.MapJoiner joiner = Joiner.on(CommonConstant.JOINER_SEPARATOR).withKeyValueSeparator(CommonConstant.KEY_VALUE_SEPARATOR);
         return joiner.join(cookieMap);
+    }
+    
+    /**
+     * 对头像地址进行 http / https 协议转换
+     * @param request
+     * @param result
+     */
+    protected void processAvatarUrl(HttpServletRequest request, Result result) {
+        if(result == null) {
+            return ;
+        }
+        
+        String protocol = getProtocol(request);
+    
+        processUrl(result, "avatarurl", protocol);
+        processUrl(result, "tiny_avatar", protocol);
+        processUrl(result, "mid_avatar", protocol);
+        processUrl(result, "large_avatar", protocol);
+    }
+    
+    /**
+     * 对 url 进行协议转换。将 url 中协议转换为参数 protocol 的协议。
+     * @param result
+     * @param key
+     * @param protocol http https
+     */
+    protected void processUrl(Result result, String key, String protocol) {
+        if(result.getModels().containsKey(key)) {
+            String url = (String) result.getModels().get(key);
+            url = StringUtils.equals(CommonConstant.HTTPS, protocol) ?
+                        StringUtil.replaceHttpToHttps(url) : StringUtil.replaceHttpsToHttp(url);
+            result.setDefaultModel(key, url);
+        }
     }
 }

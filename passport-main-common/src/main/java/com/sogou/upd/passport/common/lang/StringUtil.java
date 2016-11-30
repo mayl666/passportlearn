@@ -458,4 +458,8 @@ public class StringUtil {
     public static String replaceHttpToHttps(String url) {
         return StringUtils.replace(url, "http:", "https:");
     }
+    
+    public static String replaceHttpsToHttp(String url) {
+        return StringUtils.replace(url, "https:", "http:");
+    }
 }

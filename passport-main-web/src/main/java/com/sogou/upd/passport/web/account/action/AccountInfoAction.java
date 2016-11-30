@@ -128,7 +128,9 @@ public class AccountInfoAction extends BaseController {
             result = accountInfoManager.getUserInfo(params);
 
             result.getModels().put("uniqname", accountInfoManager.getUniqName(params.getUsername(), clientId, true));
-
+    
+            processAvatarUrl(request, result);
+            
             //用于记录log
             UserOperationLog userOperationLog = new UserOperationLog(userId, params.getClient_id(), result.getCode(), getIp(request));
             UserOperationLogUtil.log(userOperationLog);
