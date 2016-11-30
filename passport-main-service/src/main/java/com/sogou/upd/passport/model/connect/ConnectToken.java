@@ -1,7 +1,5 @@
 package com.sogou.upd.passport.model.connect;
 
-import com.sogou.upd.passport.common.lang.StringUtil;
-
 import java.util.Date;
 
 /**
@@ -116,7 +114,7 @@ public class ConnectToken {
     }
 
     public String getAvatarSmall() {
-        return StringUtil.replaceHttpToHttps(avatarSmall);
+        return avatarSmall;
     }
 
     public void setAvatarSmall(String avatarSmall) {
@@ -124,7 +122,7 @@ public class ConnectToken {
     }
 
     public String getAvatarMiddle() {
-        return StringUtil.replaceHttpToHttps(avatarMiddle);
+        return avatarMiddle;
     }
 
     public void setAvatarMiddle(String avatarMiddle) {
@@ -132,7 +130,7 @@ public class ConnectToken {
     }
 
     public String getAvatarLarge() {
-        return StringUtil.replaceHttpToHttps(avatarLarge);
+        return avatarLarge;
     }
 
     public void setAvatarLarge(String avatarLarge) {
