@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -15,11 +16,15 @@ import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
 import com.sogou.upd.passport.manager.account.SmsCodeLoginManager;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
-import com.sogou.upd.passport.manager.form.SmsCodeLoginParams;
 import com.sogou.upd.passport.manager.form.WapSmsCodeLoginParams;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
-import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.account.AccountInfoService;
+import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.OperateTimesService;
+import com.sogou.upd.passport.service.account.SmsCodeLoginService;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +106,7 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
             }
 
             //生成校验码
-            result = smsCodeLoginService.createSmsCode(mobile, client_id);
+            result = secureManager.sendMobileCode(mobile, client_id, AccountModuleEnum.LOGIN);
 
         } catch (Exception e) {
             LOGGER.error("SmsCodeLoginManagerImpl sendSmsCode error,message:{}", e.getMessage());
