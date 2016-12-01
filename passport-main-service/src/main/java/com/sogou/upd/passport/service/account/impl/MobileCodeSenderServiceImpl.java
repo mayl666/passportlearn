@@ -26,6 +26,8 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.Map;
 
+import static com.sogou.upd.passport.common.CacheConstant.CACHE_PREFIX_SMS_CODE_LOGIN;
+
 /**
  * User: mayan
  * Date: 13-6-18 Time: 上午10:22 To change this template
@@ -291,7 +293,7 @@ public class MobileCodeSenderServiceImpl implements MobileCodeSenderService {
 
     private String buildCacheKeyForSmsCode(String mobile, AccountModuleEnum module) {
         //key中不能包含clientId，解决别的应用跳转过来产生的问题
-        return CACHE_PREFIX_ACCOUNT_SMSCODE + module + "_" + mobile;
+        return CACHE_PREFIX_SMS_CODE_LOGIN + module + "_" + mobile;
     }
 
     private String buildCacheKeyForSmsFailLimit(String mobile, int clientId, AccountModuleEnum module) {
