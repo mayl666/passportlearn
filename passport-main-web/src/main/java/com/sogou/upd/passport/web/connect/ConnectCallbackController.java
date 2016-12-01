@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.connect;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
@@ -21,6 +22,7 @@ import com.sogou.upd.passport.oauth2.common.types.ConnectTypeEnum;
 import com.sogou.upd.passport.web.BaseConnectController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,11 +30,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 第三方账号授权回调接口
@@ -174,6 +177,9 @@ public class ConnectCallbackController extends BaseConnectController {
 
         result = oAuthAuthLoginManager.handleConnectAfterauth(params, providerStr, getIp(req));
         if (result.isSuccess()) {
+    
+            processAvatarUrl(req, result);
+            
             int clientId = params.getClient_id();
             String clientIdStr = String.valueOf(clientId);
             String passportId = (String) result.getModels().get("userid");
