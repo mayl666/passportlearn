@@ -3,8 +3,6 @@ package com.sogou.upd.passport.service.account;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
 import com.sogou.upd.passport.common.result.Result;
 
-import java.util.Map;
-
 /**
  * Created with IntelliJ IDEA. User: shipengzhi Date: 13-4-21 Time: 下午5:56 To change this template
  * use File | Settings | File Templates.
@@ -37,7 +35,7 @@ public interface MobileCodeSenderService {
      * @param module
      * @return
      */
-    public boolean deleteSmsCache(final String mobile, final AccountModuleEnum module);
+    public boolean deleteSmsCache(final String mobile,final int clientId, final AccountModuleEnum module);
 
     /**
      * 发送短信验证码

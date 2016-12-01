@@ -1,8 +1,10 @@
 package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
+import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
@@ -11,11 +13,15 @@ import com.sogou.upd.passport.common.utils.SMSUtil;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.account.SmsCodeLoginService;
 import com.sogou.upd.passport.service.app.AppConfigService;
+
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * 短信验证码登录
@@ -98,26 +104,27 @@ public class SmsCodeLoginServiceImpl implements SmsCodeLoginService {
 
             //校验验证码是否过期
             String smsCodeCacheKey = CacheConstant.CACHE_PREFIX_SMS_CODE_LOGIN + mobile + "_" + clientId;
-            String smsCodeCacheVal = redisUtils.get(smsCodeCacheKey);
-            if (Strings.isNullOrEmpty(smsCodeCacheVal)) {
+            Map<String, String> cacheMap = redisUtils.hGetAll(smsCodeCacheKey);
+            
+            if (MapUtils.isEmpty(cacheMap) || !StringUtil.checkIsDigit(cacheMap.get("sendTime"))) {
                 result.setCode(ErrorUtil.ERROR_CODE_SMS_CODE_OVER_DUE);
                 result.setMessage(CommonConstant.SMS_CODE_OVER_DUE);
                 return result;
+            } else {
+                String randomCode = cacheMap.get("smsCode");
+                //校验验证码是否正确
+                if (!Strings.isNullOrEmpty(smsCode) && !smsCode.equalsIgnoreCase(randomCode)) {
+                    //记录尝试失败次数
+                    operateTimesService.incTrySmsCodeFailTimes(mobile, clientId);
+                    result.setCode(ErrorUtil.ERROR_CODE_SMS_CODE_ERROR);
+                    result.setMessage(CommonConstant.SMS_CODE_CHECK_FAIL);
+                    return result;
+                }
             }
-
-            //校验验证码是否正确
-            if (!Strings.isNullOrEmpty(smsCode) && !smsCode.equalsIgnoreCase(smsCodeCacheVal)) {
-                //记录尝试失败次数
-                operateTimesService.incTrySmsCodeFailTimes(mobile, clientId);
-                result.setCode(ErrorUtil.ERROR_CODE_SMS_CODE_ERROR);
-                result.setMessage(CommonConstant.SMS_CODE_CHECK_FAIL);
-                return result;
-            }
-
             //验证成功，清除缓存
             delCache(mobile, clientId);
-
             result.setSuccess(true);
+            
         } catch (Exception e) {
             LOGGER.error("SmsCodeLoginService checkSmsCode error. message:{}", e.getMessage());
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
