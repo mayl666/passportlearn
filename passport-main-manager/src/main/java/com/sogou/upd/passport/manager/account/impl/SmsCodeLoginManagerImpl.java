@@ -11,6 +11,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.common.utils.ToolUUIDUtil;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.account.RegManager;
 import com.sogou.upd.passport.manager.account.SecureManager;
@@ -64,7 +65,10 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
 
     @Autowired
     private OperateTimesService operateTimesService;
-
+    
+    @Autowired
+    private AccountInfoManager accountInfoManager;
+    
     /**
      * 下发短信校验码
      *
@@ -170,13 +174,17 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
                             return result;
                         }
                     }
-
+                    
                     //3、写session 数据库
                     Result sessionResult = sessionServerManager.createSession(passportId);
                     String sgid = null;
                     if (sessionResult.isSuccess()) {
                         sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                         result.getModels().put(CommonConstant.USERID, passportId);
+
+                        String uniqname = accountInfoManager.getUniqName(passportId, clientId, true);
+                        
+                        result.getModels().put("uniqname", uniqname);
                         if (!Strings.isNullOrEmpty(sgid)) {
                             result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                         }
