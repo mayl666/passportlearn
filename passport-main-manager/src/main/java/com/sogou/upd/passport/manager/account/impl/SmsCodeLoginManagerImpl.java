@@ -181,10 +181,6 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
                     if (sessionResult.isSuccess()) {
                         sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                         result.getModels().put(CommonConstant.USERID, passportId);
-
-                        String uniqname = accountInfoManager.getUniqName(passportId, clientId, true);
-                        
-                        result.getModels().put("uniqname", uniqname);
                         if (!Strings.isNullOrEmpty(sgid)) {
                             result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                         }
