@@ -21,7 +21,7 @@ define(['./interface','../lib/tpl' , './local','../lib/emitter','./utils','./ski
     var passParamsStr = Utils.getPassThroughParams();
     var params = Utils.getUrlParams(),
         isPhone = /phone|tel|/i.test(params.type || ''),
-        duanxinRedirectUrl = 'http://m.account.sogou.com/wap/smsCodeLogin/index?' + passParamsStr;
+        duanxinRedirectUrl = 'https://m.account.sogou.com/wap/smsCodeLogin/index?' + passParamsStr;
 
     //This class operate list of history.
     var LoginHistory = {

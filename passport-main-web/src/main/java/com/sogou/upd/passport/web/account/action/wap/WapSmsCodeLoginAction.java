@@ -1,20 +1,25 @@
 package com.sogou.upd.passport.web.account.action.wap;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
+import com.sogou.upd.passport.common.parameter.SSOScanAccountType;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.account.AccountInfoManager;
 import com.sogou.upd.passport.manager.account.SmsCodeLoginManager;
+import com.sogou.upd.passport.manager.form.ObtainAccountInfoParams;
 import com.sogou.upd.passport.manager.form.WapSmsCodeLoginParams;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.MoblieCodeParams;
 import com.sogou.upd.passport.web.account.form.WapIndexParams;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +30,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * 短信登录
@@ -43,6 +49,8 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
 
     @Autowired
     private SmsCodeLoginManager smsCodeLoginManager;
+    @Autowired
+    private AccountInfoManager accountInfoManager;
 
     @RequestMapping(value = "/smsCodeLogin/index")
     public String smsCodeLoginIndex(HttpServletRequest request, HttpServletResponse response, Model model, WapIndexParams wapIndexParams) throws Exception {
@@ -114,10 +122,23 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
 
             //如果校验用户名和短信验证码成功，则生成登录态sgid
             if (result.isSuccess()) {
+                //在返回的数据中导入 json格式，用来给客户端用。
+    
                 String userId = (String) result.getModels().get(CommonConstant.USERID);
                 String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
                 WapRegAction.setSgidCookie(response, sgid);
-
+    
+                //第三方获取个人资料
+                String fields = "uniqname,avatarurl,gender";
+                ObtainAccountInfoParams
+                        accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), userId, fields);
+                result = accountInfoManager.getUserInfo(accountInfoParams);
+                
+                String ssoScanAcountType= SSOScanAccountType.getSSOScanAccountType(userId);
+                result.getModels().put(LoginConstant.SSO_ACCOUNT_TYPE,ssoScanAcountType);
+    
+                processAvatarUrl(request, result);
+                
                 writeResultToResponse(response, result);
                 smsCodeLoginManager.doAfterLoginSuccess(loginParams.getMobile(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
                 return "empty";
