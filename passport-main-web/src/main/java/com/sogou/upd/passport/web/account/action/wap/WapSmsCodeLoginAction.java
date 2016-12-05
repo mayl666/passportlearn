@@ -134,6 +134,8 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                         accountInfoParams = new ObtainAccountInfoParams(loginParams.getClient_id(), userId, fields);
                 result = accountInfoManager.getUserInfo(accountInfoParams);
                 
+                result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                
                 String ssoScanAcountType= SSOScanAccountType.getSSOScanAccountType(userId);
                 result.getModels().put(LoginConstant.SSO_ACCOUNT_TYPE,ssoScanAcountType);
     
