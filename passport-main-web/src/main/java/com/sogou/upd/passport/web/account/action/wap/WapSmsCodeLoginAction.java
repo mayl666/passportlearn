@@ -136,6 +136,8 @@ public class WapSmsCodeLoginAction extends WapV2BaseController {
                 
                 String ssoScanAcountType= SSOScanAccountType.getSSOScanAccountType(userId);
                 result.getModels().put(LoginConstant.SSO_ACCOUNT_TYPE,ssoScanAcountType);
+    
+                processAvatarUrl(request, result);
                 
                 writeResultToResponse(response, result);
                 smsCodeLoginManager.doAfterLoginSuccess(loginParams.getMobile(), ip, userId, Integer.parseInt(loginParams.getClient_id()));
