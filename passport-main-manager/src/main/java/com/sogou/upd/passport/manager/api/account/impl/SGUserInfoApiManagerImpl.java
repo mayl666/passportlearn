@@ -11,8 +11,10 @@ import com.sogou.upd.passport.manager.account.CommonManager;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoBySgidApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
 import com.sogou.upd.passport.service.account.AccountInfoService;
@@ -53,8 +55,35 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     private CommonManager commonManager;
     @Autowired
     private UniqNamePassportMappingService uniqNamePassportMappingService;
+    @Autowired
+    private SessionServerManager sessionServerManager;
+    
+    @Override
+    public Result getUserInfoBySgid(GetUserInfoBySgidApiparams infoApiparams, String ip) {
+        Result result = new APIResultSupport(false);
+        
+        // 通过 sgid 获取 passportId
+        String passportId = "";
+        Result verifySidResult = sessionServerManager.getPassportIdBySgid(infoApiparams.getSgid(), ip);
+        if (verifySidResult.isSuccess()) {
+            passportId = (String) verifySidResult.getModels().get("passport_id");
+        } else {
+            result.setCode(ErrorUtil.ERR_CODE_SSO_APP_NOT_LOGIN);
+            return result;
+        }
+    
+        // 通过 passportId 查询用户信息
+        GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
+        getUserInfoApiparams.setClient_id(infoApiparams.getClient_id());
+        getUserInfoApiparams.setCt(infoApiparams.getCt());
+        getUserInfoApiparams.setCode(infoApiparams.getCode());
+        getUserInfoApiparams.setUserid(passportId);
+        getUserInfoApiparams.setImagesize(infoApiparams.getImagesize());
+        getUserInfoApiparams.setFields(infoApiparams.getFields());
 
-
+        return getUserInfo(getUserInfoApiparams);
+    }
+    
     /**
      * 获取用户信息
      * <p/>

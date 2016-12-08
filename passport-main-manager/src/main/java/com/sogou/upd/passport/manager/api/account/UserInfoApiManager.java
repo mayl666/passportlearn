@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.api.account;
 
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoBySgidApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 
@@ -20,6 +21,15 @@ public interface UserInfoApiManager {
      * @return
      */
     Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams);
+
+    /**
+     * 用于通过 sgid 获取用户基本信息的接口
+     *
+     * @param getUserInfoBySgidApiparams
+     * @param ip
+     * @return
+     */
+    Result getUserInfoBySgid(GetUserInfoBySgidApiparams getUserInfoBySgidApiparams, String ip);
 
     /**
      * @param updateUserInfoApiParams

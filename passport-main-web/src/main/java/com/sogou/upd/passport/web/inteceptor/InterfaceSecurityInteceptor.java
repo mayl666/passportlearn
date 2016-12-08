@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.inteceptor;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.HttpConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -12,6 +13,7 @@ import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 import com.sogou.upd.passport.web.annotation.InterfaceSecurity;
 import com.sogou.upd.passport.web.annotation.ResponseResultType;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +22,10 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 /**
  * 拦截所有内部接口带有@InterfaceSecurity注解，
@@ -133,6 +136,7 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
         String token = request.getParameter("token");
         String uniqName = request.getParameter("uniqname");
         String key = request.getParameter("key");
+        String sgid = request.getParameter("sgid");
         StringBuffer firstStr = new StringBuffer();
         if (!Strings.isNullOrEmpty(userid)) {
             firstStr.append(userid);
@@ -142,6 +146,8 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
             firstStr.append(token);
         } else if (!Strings.isNullOrEmpty(uniqName)) {
             firstStr.append(uniqName);
+        } else if(!Strings.isNullOrEmpty(sgid)) {
+            firstStr.append(sgid);
         }
         //适配debug接口，只有一个key参数的签名校验
         if (firstStr.length() == 0 && !Strings.isNullOrEmpty(key)) {

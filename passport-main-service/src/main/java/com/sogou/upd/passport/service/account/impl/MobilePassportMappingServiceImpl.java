@@ -9,6 +9,8 @@ import com.sogou.upd.passport.dao.account.MobilePassportMappingDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
 import org.perf4j.aop.Profiled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +23,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class MobilePassportMappingServiceImpl implements MobilePassportMappingService {
-
+    
+    private static final Logger logger = LoggerFactory.getLogger(MobilePassportMappingServiceImpl.class);
+    
     private static final String CACHE_PREFIX_MOBILE_PASSPORT = CacheConstant.CACHE_PREFIX_MOBILE_PASSPORTID;
 
     @Autowired
@@ -64,6 +68,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
     public boolean initialMobilePassportMapping(String mobile, String passportId) throws ServiceException {
         try {
             long id = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
+            logger.warn("insertMobilePassportMapping mobile:" + mobile + ", passportId:" + passportId + ", id:" + id);
             if (id != 0) {
                 String cacheKey = buildMobilePassportMappingKey(mobile);
                 dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
