@@ -154,6 +154,7 @@ public class SecureApiController extends BaseController {
 
             result = sessionServerManager.getPassportIdBySgid(sgid, ip);
             if (!result.isSuccess()) {
+                result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
                 return result.toString();
             }
@@ -162,11 +163,13 @@ public class SecureApiController extends BaseController {
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             if (domain == AccountDomainEnum.PHONE) {
+                result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
                 return result.toString();
             }
 
             if (domain == THIRD) {
+                result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result.toString();
             }
