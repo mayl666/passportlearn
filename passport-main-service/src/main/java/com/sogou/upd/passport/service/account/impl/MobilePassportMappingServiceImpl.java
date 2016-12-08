@@ -68,7 +68,7 @@ public class MobilePassportMappingServiceImpl implements MobilePassportMappingSe
     public boolean initialMobilePassportMapping(String mobile, String passportId) throws ServiceException {
         try {
             long id = mobilePassportMappingDAO.insertMobilePassportMapping(mobile, passportId);
-            logger.info("insertMobilePassportMapping mobile:" + mobile + ", passportId:" + passportId + ", id:" + id);
+            logger.warn("insertMobilePassportMapping mobile:" + mobile + ", passportId:" + passportId + ", id:" + id);
             if (id != 0) {
                 String cacheKey = buildMobilePassportMappingKey(mobile);
                 dbShardRedisUtils.setStringWithinSeconds(cacheKey, passportId, DateAndNumTimesConstant.ONE_MONTH);
