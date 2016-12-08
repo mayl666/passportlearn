@@ -123,9 +123,11 @@ public class AccountServiceImpl implements AccountService {
             long id;
             if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider)) { //第三方或sohu域账号使用插入或更新，之前第三方迁移出过一次bug，修复的
                 id = accountDAO.insertOrUpdateAccount(passportId, account);
+                logger.info("insertOrUpdateAccount passportId:" + passportId + ", id:" + id);
             } else {
                 //正式注册到account表中
                 id = accountDAO.insertAccount(passportId, account);
+                logger.info("insertAccount passportId:" + passportId + ", id:" + id);
                 if (id != 0) {
                     //手机注册时，写mobile与passportId映射表
                     if (PhoneUtil.verifyPhoneNumberFormat(passportId.substring(0, passportId.indexOf("@")))) {
