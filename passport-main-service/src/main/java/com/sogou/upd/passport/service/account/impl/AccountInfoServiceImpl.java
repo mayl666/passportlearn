@@ -123,6 +123,7 @@ public class AccountInfoServiceImpl implements AccountInfoService {
             String passportId = accountInfo.getPassportId();
             accountInfo.setGender(Strings.isNullOrEmpty(accountInfo.getGender()) ? "0" : accountInfo.getGender());  //性别默认值为0
             int row = accountInfoDAO.saveInfoOrInsert(passportId, accountInfo);
+            logger.warn("saveInfoOrInsert passportId:" + passportId + ", row:" + row);
             if (row != 0) {
                 // 检查缓存中是否存在：存在则取缓存修改再更新缓存，不存在则查询数据库再设置缓存
                 String cacheKey = buildAccountInfoKey(passportId);

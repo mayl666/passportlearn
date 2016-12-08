@@ -9,6 +9,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoBySgidApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
 import com.sogou.upd.passport.web.BaseController;
@@ -72,6 +73,40 @@ public class UserInfoApiController extends BaseController {
         userOperationLog.putOtherMessage("fields", params.getFields());
         userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
         UserOperationLogUtil.log(userOperationLog);
+        return result.toString();
+    }
+
+    /**
+     * 通过 sgid 获取用户基本信息
+     *
+     * @param params
+     * @return
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/userinfoBySgid", method = RequestMethod.POST)
+    @ResponseBody
+    public Object getUserInfoBySgid(HttpServletRequest request, GetUserInfoBySgidApiparams params) {
+        Result result = new APIResultSupport(false);
+        // 参数校验
+        String validateResult = ControllerHelper.validateParams(params);
+        if (!Strings.isNullOrEmpty(validateResult)) {
+            result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+            result.setMessage(validateResult);
+            return result.toString();
+        }
+    
+        String ip = getIp(request);
+        
+        result = sgUserInfoApiManager.getUserInfoBySgid(params, ip);
+        if(result.isSuccess()) {
+            processAvatarUrl(request, result);
+    
+            String userid = (String) result.getModels().get("userid");
+            UserOperationLog userOperationLog = new UserOperationLog(userid, String.valueOf(params.getClient_id()), result.getCode(), getIp(request));
+            userOperationLog.putOtherMessage("fields", params.getFields());
+            userOperationLog.putOtherMessage("param", ServletUtil.getParameterString(request));
+            UserOperationLogUtil.log(userOperationLog);
+        }
         return result.toString();
     }
 

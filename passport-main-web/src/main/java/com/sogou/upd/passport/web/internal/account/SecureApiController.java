@@ -43,7 +43,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -155,6 +154,7 @@ public class SecureApiController extends BaseController {
 
             result = sessionServerManager.getPassportIdBySgid(sgid, ip);
             if (!result.isSuccess()) {
+                result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
                 return result.toString();
             }
@@ -163,13 +163,15 @@ public class SecureApiController extends BaseController {
 
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             if (domain == AccountDomainEnum.PHONE) {
+                result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_MOBILEUSER_NOTALLOWED);
-                return result;
+                return result.toString();
             }
 
             if (domain == THIRD) {
+                result.setSuccess(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
-                return result;
+                return result.toString();
             }
             //双读，检查新手机是否允许绑定
             result = registerApiManager.checkUser(mobile, clientId, false);

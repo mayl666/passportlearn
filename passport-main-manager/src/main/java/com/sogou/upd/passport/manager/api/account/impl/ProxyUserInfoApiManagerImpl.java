@@ -1,20 +1,16 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
-import com.google.common.base.Strings;
-import com.sogou.upd.passport.common.lang.StringUtil;
-import com.sogou.upd.passport.common.model.httpclient.RequestModelXml;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.PhoneUtil;
 import com.sogou.upd.passport.manager.api.BaseProxyManager;
-import com.sogou.upd.passport.manager.api.SHPPUrlConstant;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
 import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoBySgidApiparams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserInfoApiParams;
 import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiParams;
+
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -47,7 +43,13 @@ public class ProxyUserInfoApiManagerImpl extends BaseProxyManager implements Use
         SUPPORT_FIELDS_MAP.add("email");//todo 兼容搜狗流程获取安全信息的参数，密保邮箱
         SUPPORT_FIELDS_MAP.add("question");//todo 兼容搜狗流程获取安全信息的参数，密保问题
     }
-
+    
+    
+    @Override
+    public Result getUserInfoBySgid(GetUserInfoBySgidApiparams infoApiparams, String ip) {
+        return null;
+    }
+    
     @Override
     public Result getUserInfo(GetUserInfoApiparams getUserInfoApiparams) {
 //        Result result = null;
