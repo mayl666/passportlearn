@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
 import com.sogou.upd.passport.common.parameter.AccountModuleEnum;
@@ -19,7 +20,7 @@ import com.sogou.upd.passport.web.account.form.security.WebModifyMobileParams;
 import com.sogou.upd.passport.web.account.form.security.WebSmsParams;
 import com.sogou.upd.passport.web.annotation.LoginRequired;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
-import org.apache.commons.codec.digest.DigestUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,7 +69,9 @@ public class MobileSecureAction extends BaseController {
             if (!result.isSuccess()) {
                 return result.toString();
             }
-            result = secureManager.sendMobileCodeOld(passportId, clientId);
+    
+            // 为解决前端取 client id 错误，这里 client Id 传 1120
+            result = secureManager.sendMobileCodeOld(passportId, 1120);
             return result.toString();
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), params.getClient_id(), result.getCode(), ip);
@@ -108,7 +111,8 @@ public class MobileSecureAction extends BaseController {
                 result.setMessage("手机号已绑定其他账号");
                 return result.toString();
             }
-            result = secureManager.sendMobileCode(newMobile, clientId, AccountModuleEnum.SECURE);
+            // 为解决前端取 client id 错误，这里 client Id 传 1120
+            result = secureManager.sendMobileCode(newMobile, 1120, AccountModuleEnum.SECURE);
             return result.toString();
         } finally {
             //web页面手机注册时，发送手机验证码
@@ -141,7 +145,9 @@ public class MobileSecureAction extends BaseController {
             if (!result.isSuccess()) {
                 return result.toString();
             }
-            result = secureManager.checkMobileCodeOldForBinding(passportId, clientId, smsCode);
+            
+            // 为解决前端取 client id 错误，这里 client Id 传 1120
+            result = secureManager.checkMobileCodeOldForBinding(passportId, 1120, smsCode);
             return result.toString();
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
@@ -176,7 +182,8 @@ public class MobileSecureAction extends BaseController {
             if (!result.isSuccess()) {
                 return result.toString();
             }
-            result = secureManager.bindMobileByPassportId(passportId, clientId, newMobile, smsCode, password, modifyIp);
+            // 为解决前端取 client id 错误，这里 client Id 传 1120
+            result = secureManager.bindMobileByPassportId(passportId, 1120, newMobile, smsCode, password, modifyIp);
             return result.toString();
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), params.getClient_id(), result.getCode(), getIp(request));
@@ -211,7 +218,8 @@ public class MobileSecureAction extends BaseController {
             if (!result.isSuccess()) {
                 return result.toString();
             }
-            result = secureManager.modifyMobileByPassportId(passportId, clientId, newMobile, smsCode, scode, ip);
+            // 为解决前端取 client id 错误，这里 client Id 传 1120
+            result = secureManager.modifyMobileByPassportId(passportId, 1120, newMobile, smsCode, scode, ip);
             return result.toString();
         } finally {
             UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(), params.getClient_id(), result.getCode(), ip);
