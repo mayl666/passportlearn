@@ -68,6 +68,9 @@ public class RenrenUserAPIResponse extends UserAPIResponse {
 
     private int getGender() {
         Map basicInfo = (Map) this.parameters.get(RenrenOAuth.BASIC_INFORMATION);
+        if(basicInfo == null) {
+            return 0;
+        }
         String sex = (String) basicInfo.get(RenrenOAuth.SEX);
         int gender = 0;
         if (!Strings.isNullOrEmpty(sex) && sex.equals("MALE")) {
@@ -78,6 +81,9 @@ public class RenrenUserAPIResponse extends UserAPIResponse {
 
     private String getProvince() {
         Map basicInfo = (Map) this.parameters.get(RenrenOAuth.BASIC_INFORMATION);
+        if(basicInfo == null) {
+            return "";
+        }
         Map homeTown = (Map) basicInfo.get(RenrenOAuth.HOME_TOWN);
         String province = "";
         if (MapUtils.isNotEmpty(homeTown)) {
@@ -88,6 +94,9 @@ public class RenrenUserAPIResponse extends UserAPIResponse {
 
     private String getCity() {
         Map basicInfo = (Map) this.parameters.get(RenrenOAuth.BASIC_INFORMATION);
+        if(basicInfo == null) {
+            return "";
+        }
         Map homeTown = (Map) basicInfo.get(RenrenOAuth.HOME_TOWN);
         String city = "";
         if (MapUtils.isNotEmpty(homeTown)) {
