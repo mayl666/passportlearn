@@ -76,7 +76,7 @@ public interface AppConfigDAO {
 
     @SQL("update" +
             TABLE_NAME +
-            "client_name=:client_name " +
+            "set client_name=:client_name " +
             "where client_id=:client_id")
     public int updateAppConfigName(@SQLParam("client_id") int client_id,
                                    @SQLParam("client_name") String client_name) throws DataAccessException;
