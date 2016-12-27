@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * Date: 13-8-6
  * Time: 下午3:37
  */
-@Component("accountInfoManager")
+@Component
 public class SyncManagerImpl implements SyncManager {
     private static final Logger logger = LoggerFactory.getLogger(SyncManagerImpl.class);
     
