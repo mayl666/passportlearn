@@ -2,6 +2,7 @@ package com.sogou.upd.passport.service.app;
 
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.app.AppConfig;
+
 import org.springframework.dao.DataAccessException;
 
 import java.util.List;
@@ -38,8 +39,21 @@ public interface AppConfigService {
      * @return
      * @throws ServiceException
      */
+    @Deprecated
     public boolean insertAppConfig(String sms_text, int access_token_expiresin,
                                    int refresh_token_expiresin, String client_name) throws ServiceException;
+
+    /**
+     * 添加appConfig
+     * @param clientId
+     * @param clientName
+     * @param serverSecret
+     * @param clientSecret
+     * @return
+     * @throws ServiceException
+     */
+    public boolean insertAppConfig(int clientId, String clientName, String serverSecret,
+                                   String clientSecret) throws ServiceException;
 
     /**
      * 修改appConfig
@@ -53,6 +67,15 @@ public interface AppConfigService {
      */
     public boolean updateAppConfig(int client_id, String sms_text, int access_token_expiresin,
                                int refresh_token_expiresin, String client_name) throws ServiceException;
+
+    /**
+     * 修改appConfig 名字
+     * @param client_id
+     * @param client_name
+     * @return
+     * @throws ServiceException
+     */
+    public boolean updateAppConfigName(int client_id, String client_name) throws ServiceException;
 
     /**
      * 删除AppConfig

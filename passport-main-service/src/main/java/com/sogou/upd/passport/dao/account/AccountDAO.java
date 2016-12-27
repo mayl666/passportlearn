@@ -1,13 +1,13 @@
 package com.sogou.upd.passport.dao.account;
 
 import com.sogou.upd.passport.model.account.Account;
+
 import net.paoding.rose.jade.annotation.DAO;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
 import net.paoding.rose.jade.annotation.ShardBy;
-import org.springframework.dao.DataAccessException;
 
-import java.util.Date;
+import org.springframework.dao.DataAccessException;
 
 /**
  * Account表的DAO操作
@@ -67,7 +67,7 @@ public interface AccountDAO {
     public int updateMobile(@SQLParam("mobile") String mobile,
                             @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
-
+ 
     /**
      * 修改昵称
      */

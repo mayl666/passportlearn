@@ -74,6 +74,13 @@ public interface AppConfigDAO {
                                    @SQLParam("refresh_token_expiresin") int refresh_token_expiresin,
                                    @SQLParam("client_name") String client_name) throws DataAccessException;
 
+    @SQL("update" +
+            TABLE_NAME +
+            "client_name=:client_name " +
+            "where client_id=:client_id")
+    public int updateAppConfigName(@SQLParam("client_id") int client_id,
+                                   @SQLParam("client_name") String client_name) throws DataAccessException;
+
     @SQL("delete from" + TABLE_NAME  + "where client_id=:client_id")
     public int deleteAppConfig(@SQLParam("client_id") int client_id) throws DataAccessException;
 }

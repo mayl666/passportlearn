@@ -19,6 +19,7 @@ public class CommonConstant {
     public static final int TEEMO_CLIENTID = 2020; //teemo client_id
     public static final int MAIL_CLIENTID = 1014;//mail client_id
     public static final String SGPP_DEFAULT_CLIENTID_STR = "1120";
+    public static final int OPEN_CLIENTID = 2068; // 开放平台 client_id
 
     public static final int PWD_TYPE_EXPRESS = 0; //密码类型为明文
     public static final int PWD_TYPE_CIPHER = 1; //密码类型为密文
