@@ -4,9 +4,7 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.config.form.AppSyncApiParams;
 
 /**
- * User: mayan
- * Date: 13-8-6
- * Time: 下午3:37
+ * 同步 manager
  */
 public interface SyncManager {
     /**

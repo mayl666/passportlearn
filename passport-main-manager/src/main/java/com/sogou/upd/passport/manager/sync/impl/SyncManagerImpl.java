@@ -14,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * User: mayan
- * Date: 13-8-6
- * Time: 下午3:37
+ * 同步 manager 实现类
  */
 @Component
 public class SyncManagerImpl implements SyncManager {
