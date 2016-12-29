@@ -104,11 +104,9 @@ public class SyncApiController extends BaseController {
     public Object deleteApp(HttpServletRequest request, HttpServletResponse response, AppSyncApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
-        String validateResult = ControllerHelper.validateParams(params);
-        if (!Strings.isNullOrEmpty(validateResult)) {
+        if(params.getAppId() < 10000) {  // 判断相当信息是否正确
             result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-            result.setMessage(validateResult);
-            return result.toString();
+            return result;
         }
         
         //验证client_id是否存在

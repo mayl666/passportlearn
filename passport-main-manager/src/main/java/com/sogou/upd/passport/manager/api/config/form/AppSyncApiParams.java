@@ -9,16 +9,16 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.Min;
 
 /**
- * 续种cookie
- * User: mayan
- * Date: 13-10-10
- * Time: 上午11:36
+ * 同步应用参数
  */
 public class AppSyncApiParams extends BaseApiParams {
-    @Min(0)
+    @Min(value = 10000, message = "应用 id 错误")
     private int appId;
+    @NotBlank(message = "应用名称不允许为空")
     private String appName;
+    @NotBlank(message = "服务端密钥不允许为空")
     private String serverSecret;
+    @NotBlank(message = "客户端密钥不允许为空")
     private String clientSecret;
     
     public int getAppId() {
