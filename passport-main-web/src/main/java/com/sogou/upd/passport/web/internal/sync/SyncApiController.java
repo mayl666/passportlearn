@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +40,7 @@ public class SyncApiController extends BaseController {
      * 同步添加 app
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/add_app")
+    @RequestMapping(value = "/add_app", method = RequestMethod.POST)
     @ResponseBody
     public Object addApp(HttpServletRequest request, HttpServletResponse response, AppSyncApiParams params) {
         Result result = new APIResultSupport(false);
@@ -69,7 +70,7 @@ public class SyncApiController extends BaseController {
      * 同步修改 app
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/update_app")
+    @RequestMapping(value = "/update_app", method = RequestMethod.POST)
     @ResponseBody
     public Object updateApp(HttpServletRequest request, HttpServletResponse response, AppSyncApiParams params) {
         Result result = new APIResultSupport(false);
@@ -99,7 +100,7 @@ public class SyncApiController extends BaseController {
      * 同步删除 app
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/del_app")
+    @RequestMapping(value = "/del_app", method = RequestMethod.POST)
     @ResponseBody
     public Object deleteApp(HttpServletRequest request, HttpServletResponse response, AppSyncApiParams params) {
         Result result = new APIResultSupport(false);
