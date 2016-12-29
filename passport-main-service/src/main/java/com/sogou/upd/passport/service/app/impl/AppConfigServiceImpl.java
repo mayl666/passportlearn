@@ -1,10 +1,8 @@
 package com.sogou.upd.passport.service.app.impl;
 
-import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Maps;
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
@@ -21,8 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -122,6 +120,26 @@ public class AppConfigServiceImpl implements AppConfigService {
         }
         return false;
     }
+    
+    private final String SMS_TEXT = "您的“搜狗通行证”验证码为：%s，30分钟内有效。若非本人操作请忽略";
+    
+    private final int ACCESS_TOKEN_EXPIRESIN = 604800;
+    private final int REFRESH_TOKEN_EXPIRESIN = 15552000;
+    
+    @Override
+    public boolean insertAppConfig(int clientId, String clientName, String serverSecret,
+                                   String clientSecret) throws ServiceException {
+        try {
+            int row = appConfigDAO.insertAppConfig(clientId, SMS_TEXT, ACCESS_TOKEN_EXPIRESIN,
+                                                   REFRESH_TOKEN_EXPIRESIN, serverSecret, clientSecret, clientName);
+            if (row > 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
 
     @Override
     public boolean updateAppConfig(int client_id, String sms_text, int access_token_expiresin,
@@ -129,6 +147,21 @@ public class AppConfigServiceImpl implements AppConfigService {
         try {
             int row = appConfigDAO.updateAppConfig(client_id, sms_text, access_token_expiresin,
                     refresh_token_expiresin, client_name);
+            if (row > 0) {
+                String cacheKey = buildAppConfigCacheKey(client_id);
+                redisUtils.delete(cacheKey);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateAppConfigName(int client_id, String client_name) throws ServiceException {
+        try {
+            int row = appConfigDAO.updateAppConfigName(client_id, client_name);
             if (row > 0) {
                 String cacheKey = buildAppConfigCacheKey(client_id);
                 redisUtils.delete(cacheKey);

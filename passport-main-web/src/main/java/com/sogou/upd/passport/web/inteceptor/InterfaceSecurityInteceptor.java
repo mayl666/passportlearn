@@ -62,8 +62,15 @@ public class InterfaceSecurityInteceptor extends HandlerInterceptorAdapter {
             String c_t = ServletRequestUtils.getRequiredStringParameter(request, CommonConstant.RESQUEST_CT);
             long ct = Long.parseLong(StringUtils.trim(c_t));
             String originalCode = request.getParameter(CommonConstant.RESQUEST_CODE);
-
-            String firstStr = buildFirstSignString(request);
+    
+            String firstStr;
+            
+            if(clientId == CommonConstant.OPEN_CLIENTID) {  // 开放平台
+                firstStr = request.getParameter("appId");
+            } else {    // 其他请求
+                firstStr = buildFirstSignString(request);
+            }
+            
             if (!Strings.isNullOrEmpty(firstStr)) {
                 AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
                 if (appConfig != null) {

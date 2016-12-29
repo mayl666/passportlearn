@@ -372,8 +372,20 @@ public class ErrorUtil {
 
     //解除绑定邮箱失败 错误码定义需要有一些跨度 方便扩展！！！
     public static final String ERR_CODE_EMAIL_UNBIND_FAIL = "40001";
-
-
+    
+    /* ============================================================================ */
+    /*  同步相关错误代码                                                              */
+    /* ============================================================================ */
+    // 应用已存在
+    public static final String ERR_CODE_SYNC_APP_EXISTS = "22001";
+    // 应用不存在
+    public static final String ERR_CODE_SYNC_APP_NOT_EXISTS = "22002";
+    // 同步新增应用失败
+    public static final String ERR_CODE_SYNC_APP_ADD_FAILED = "22003";
+    // 同步修改应用失败
+    public static final String ERR_CODE_SYNC_APP_UPDATE_FAILED = "22004";
+    // 同步删除应用失败
+    public static final String ERR_CODE_SYNC_APP_DELETE_FAILED = "22005";
 
 
     public ErrorUtil() {
@@ -562,6 +574,14 @@ public class ErrorUtil {
 
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_EMAIL_UNBIND_FAIL, "解除密保邮箱失败");
+    
+        // 同步相关错误代码
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_APP_EXISTS, "应用已存在");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_APP_NOT_EXISTS, "应用不存在");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_APP_ADD_FAILED, "同步新增应用失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_APP_UPDATE_FAILED, "同步修改应用失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_APP_DELETE_FAILED, "同步删除应用失败");
+    
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {
