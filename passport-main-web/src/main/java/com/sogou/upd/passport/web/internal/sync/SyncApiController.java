@@ -5,6 +5,7 @@ import com.google.common.base.Strings;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.manager.api.config.form.AppDeleteSyncApiParams;
 import com.sogou.upd.passport.manager.api.config.form.AppSyncApiParams;
 import com.sogou.upd.passport.manager.app.ConfigureManager;
 import com.sogou.upd.passport.manager.sync.SyncManager;
@@ -102,7 +103,7 @@ public class SyncApiController extends BaseController {
     @InterfaceSecurity
     @RequestMapping(value = "/del_app", method = RequestMethod.POST)
     @ResponseBody
-    public Object deleteApp(HttpServletRequest request, HttpServletResponse response, AppSyncApiParams params) {
+    public Object deleteApp(HttpServletRequest request, HttpServletResponse response, AppDeleteSyncApiParams params) {
         Result result = new APIResultSupport(false);
         // 参数校验
         if(params.getAppId() < 10000) {  // 判断相当信息是否正确
