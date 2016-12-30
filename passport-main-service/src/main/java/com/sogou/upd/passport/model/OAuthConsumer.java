@@ -16,6 +16,7 @@ public class OAuthConsumer {
     private String tokenInfo; //sina支持
 
     private String wapUserAuthzUrl;  //qq wap支持
+    private String unionIdUrl; // qq支持，获取 qq unionId
 
     //======================第三方开放API=========================
     private String userInfo;
@@ -78,5 +79,13 @@ public class OAuthConsumer {
 
     public void setTokenInfo(String tokenInfo) {
         this.tokenInfo = tokenInfo;
+    }
+    
+    public String getUnionIdUrl() {
+        return unionIdUrl;
+    }
+    
+    public void setUnionIdUrl(String unionIdUrl) {
+        this.unionIdUrl = unionIdUrl;
     }
 }

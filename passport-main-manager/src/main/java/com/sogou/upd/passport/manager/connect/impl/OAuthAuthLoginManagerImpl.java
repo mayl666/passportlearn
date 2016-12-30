@@ -54,6 +54,7 @@ import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -220,6 +221,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             ConnectUserInfoVO connectUserInfoVO;
             if (provider == AccountTypeEnum.QQ.getValue()) {    // QQ根据code获取access_token时，已经取到了个人资料
                 connectUserInfoVO = ((QQJSONAccessTokenResponse) oauthResponse).getUserInfo();
+                // 获取 unionId
+                connectUserInfoVO = connectAuthService.getUnionId(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), connectUserInfoVO, oAuthConsumer);
             } else {
                 connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), oAuthConsumer);
                 if (provider == AccountTypeEnum.BAIDU.getValue()) {     // 百度 oauth2.0授权的openid需要从用户信息接口获取
@@ -368,7 +371,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 avatarSmall = connectUserInfoVO.getAvatarSmall();
                 sex = String.valueOf(connectUserInfoVO.getGender());
             }
-            ru = buildWapUserInfoSuccessRu(ru, sgid, uniqname, sex, avatarLarge, avatarMiddle, avatarSmall, userId);
+            ru = buildWapUserInfoSuccessRu(ru, sgid, uniqname, sex, avatarLarge, avatarMiddle, avatarSmall, userId, connectUserInfoVO.getUnionid());
         }
         result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
         return result;
@@ -721,7 +724,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
     }
 
     private String buildWapSuccessRu(String ru, String sgid, String userid) {
-        Map params = Maps.newHashMap();
+        Map<String, Object> params = Maps.newHashMap();
         String accountType = SSOScanAccountType.getSSOScanAccountType(userid);
         String accountTypeEncode = null;
         try {
@@ -737,9 +740,9 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }
-
-    private String buildWapUserInfoSuccessRu(String ru, String sgid, String uniqname, String sex, String avatarLarge, String avatarMiddle, String avatarSmall, String userId) {
-        Map params = Maps.newHashMap();
+    
+    private String buildWapUserInfoSuccessRu(String ru, String sgid, String uniqname, String sex, String avatarLarge, String avatarMiddle, String avatarSmall, String userId, String uid) {
+        Map<String, Object> params = Maps.newHashMap();
         try {
             ru = URLDecoder.decode(ru, CommonConstant.DEFAULT_CHARSET);
         } catch (Exception e) {
@@ -754,6 +757,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         params.put("avatarMiddle", avatarMiddle);
         params.put("avatarSmall", avatarSmall);
         params.put("userid", userId);
+        
+        // QQ 返回 uid
+        AccountTypeEnum accountType = AccountTypeEnum.getAccountType(userId);
+        if (accountType == AccountTypeEnum.QQ && StringUtils.isNotBlank(uid)) {
+            params.put("uid", userId);
+        }
+        
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }

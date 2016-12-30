@@ -82,4 +82,17 @@ public interface ConnectAuthService {
      */
     public ConnectUserInfoVO getConnectUserInfo(int provider, String appKey, ConnectToken connectToken) throws IOException, OAuthProblemException;
 
+    /**
+     * 调用第三方api获取用户个人资料
+     *
+     * @param provider
+     * @param accessToken
+     * @param connectUserInfoVO
+     * @return
+     * @throws IOException
+     * @throws OAuthProblemException
+     */
+    public ConnectUserInfoVO getUnionId(int provider, ConnectConfig connectConfig, String openId, String accessToken,
+                                        ConnectUserInfoVO connectUserInfoVO, OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException;
+
 }

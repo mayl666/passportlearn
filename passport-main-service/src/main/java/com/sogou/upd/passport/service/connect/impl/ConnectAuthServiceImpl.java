@@ -26,6 +26,8 @@ import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
 import com.sogou.upd.passport.service.connect.ConnectTokenService;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,7 @@ import java.io.IOException;
 @Service
 public class ConnectAuthServiceImpl implements ConnectAuthService {
     private Logger logger = LoggerFactory.getLogger(ConnectAuthServiceImpl.class);
+    private static Logger uIdLogger = LoggerFactory.getLogger("uIdLogger");
     private static final String CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO = CacheConstant.CACHE_PREFIX_PASSPORTID_CONNECTUSERINFO;
 
     @Autowired
@@ -166,6 +169,12 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         }
         if (response != null) {
             userProfileFromConnect = response.toUserInfo();
+    
+            if (provider == AccountTypeEnum.QQ.getValue()) {
+                // 获取 unionId
+                userProfileFromConnect = getUnionId(provider, connectConfig, openid, accessToken, userProfileFromConnect, oAuthConsumer);
+            }
+            
             initialOrUpdateConnectUserInfo(provider, openid, userProfileFromConnect);
         }
         return userProfileFromConnect;
@@ -239,6 +248,48 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
             logger.error("[ConnectToken] service method obtainCachedConnectUserInfo error.passportId:" + passportId, e);
             return null;
         }
+    }
+
+    @Override
+    public ConnectUserInfoVO getUnionId(int provider, ConnectConfig connectConfig, String openId, String accessToken, ConnectUserInfoVO connectUserInfoVO,
+                                        OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException {
+        String unionIdUrl = oAuthConsumer.getUnionIdUrl();
+        
+        OAuthClientRequest request;
+        UserAPIResponse response;
+        
+        if (provider == AccountTypeEnum.QQ.getValue()) {
+            // 调用QQ接口，通过 accessToken 获取 unionId
+            request = QQUserAPIRequest.apiLocation(unionIdUrl, QQUserAPIRequest.QQUserAPIBuilder.class)
+                    .setOpenid(openId).setAccessToken(accessToken)
+                    .buildQueryMessage(QQUserAPIRequest.class);
+            response = OAuthHttpClient.execute(request, QQUserAPIResponse.class);
+        } else {
+            throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
+        }
+        
+        if (response != null) {
+            ConnectUserInfoVO unionIdInfo = response.toUserInfo();
+            String unionId = unionIdInfo.getUnionid();
+            if(StringUtils.isNotBlank(unionId)) {   // 成功获取 unionId
+                unionId = unionId.replaceFirst("UID_", "");
+                
+                // 设置 unionId
+                connectUserInfoVO.setUnionid(unionId);
+                
+                int clientId = connectConfig.getClientId();
+                String appKey = connectConfig.getAppKey();
+    
+                // 记录 openId - unionId
+                String logMsg = new StringBuilder()
+                        .append(openId).append("\t")
+                        .append(unionId).append("\t")
+                        .append(clientId).append("\t")
+                        .append(appKey).toString();
+                uIdLogger.info(logMsg);
+            }
+        }
+        return connectUserInfoVO;
     }
 
     private String buildConnectUserInfoCacheKey(String passportId) {

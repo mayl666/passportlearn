@@ -22,7 +22,7 @@ public class ConnectUserInfoVO {
     private String province; // 省
     private String city; // 市
     private String region; // 区
-    private String unionid; // 用户唯一标识  微信开平用到
+    private String unionid; // 用户唯一标识  微信、QQ用到
     private String weixinOpenId; // 用户唯一标识  微信开平用到
 
 
