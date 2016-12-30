@@ -20,6 +20,7 @@ import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.user.*;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
+import com.sogou.upd.passport.oauth2.openresource.response.unionid.QQUnionIdResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.user.*;
 import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.oauth2.openresource.vo.OAuthTokenVO;
@@ -256,21 +257,24 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         String unionIdUrl = oAuthConsumer.getUnionIdUrl();
         
         OAuthClientRequest request;
-        UserAPIResponse response;
+        QQUnionIdResponse response = null;
         
         if (provider == AccountTypeEnum.QQ.getValue()) {
-            // 调用QQ接口，通过 accessToken 获取 unionId
-            request = QQUserAPIRequest.apiLocation(unionIdUrl, QQUserAPIRequest.QQUserAPIBuilder.class)
-                    .setOpenid(openId).setAccessToken(accessToken)
-                    .buildQueryMessage(QQUserAPIRequest.class);
-            response = OAuthHttpClient.execute(request, QQUserAPIResponse.class);
+            try {
+                // 调用QQ接口，通过 accessToken 获取 unionId
+                request = QQUserAPIRequest.apiLocation(unionIdUrl, QQUserAPIRequest.QQUserAPIBuilder.class)
+                        .setOpenid(openId).setAccessToken(accessToken)
+                        .buildQueryMessage(QQUserAPIRequest.class);
+                response = OAuthHttpClient.execute(request, QQUnionIdResponse.class);
+            } catch (Exception e) {
+                logger.error("[qq unionid] service method getUnionId error.openId:" + openId, e);
+            }
         } else {
-            throw new OAuthProblemException(ErrorUtil.ERR_CODE_CONNECT_UNSUPPORT_THIRDPARTY);
+            logger.error("[qq unionid] service method getUnionId error.openId:" + openId);
         }
         
         if (response != null) {
-            ConnectUserInfoVO unionIdInfo = response.toUserInfo();
-            String unionId = unionIdInfo.getUnionid();
+            String unionId = response.getUnionId();
             if(StringUtils.isNotBlank(unionId)) {   // 成功获取 unionId
                 unionId = unionId.replaceFirst("UID_", "");
                 

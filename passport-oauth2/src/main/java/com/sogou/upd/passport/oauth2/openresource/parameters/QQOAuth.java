@@ -6,6 +6,7 @@ public class QQOAuth {
     public static final String OAUTH_CONSUMER_KEY = "oauth_consumer_key"; // QQ分配给passport的appKey
     public static final String USER_INFO = "userinfo"; // 用户信息
     public static final String OPENID = "openid"; // QQ用户id
+    public static final String UNIONID = "unionid"; // QQ unionid
     public static final String FORMAT = "format"; // 定义API返回的数据格式
     public static final String MOBILE_DISPLAY = "mobile"; // 对应display=mobile
     public static final String WML_DISPLAY = "wml"; // 对应的g_ut=1
