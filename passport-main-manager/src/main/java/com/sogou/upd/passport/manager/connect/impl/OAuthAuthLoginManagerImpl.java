@@ -491,7 +491,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result.getModels().put("uniqname", Strings.isNullOrEmpty(uniqname) ? "" : uniqname);
                         result.getModels().put("gender", Strings.isNullOrEmpty(gender) ? 0 : Integer.parseInt(gender));
     
-                        if (provider == AccountTypeEnum.QQ.getValue()) {    // qq 登陆返回 unionId
+                        if (provider == AccountTypeEnum.QQ.getValue() && StringUtils.isNotBlank(connectUserInfoVO.getUnionid())) {    // qq 登陆返回 unionId
                             result.getModels().put("uid", connectUserInfoVO.getUnionid());
                         }
                     } else {
@@ -508,7 +508,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result.getModels().put("uniqname", connectUserInfoVO.getNickname());
                         result.getModels().put("gender", connectUserInfoVO.getGender());
                         
-                        if (provider == AccountTypeEnum.QQ.getValue()) {    // qq 登陆返回 unionId
+                        if (provider == AccountTypeEnum.QQ.getValue() && StringUtils.isNotBlank(connectUserInfoVO.getUnionid())) {    // qq 登陆返回 unionId
                             result.getModels().put("uid", connectUserInfoVO.getUnionid());
                         }
                     }
