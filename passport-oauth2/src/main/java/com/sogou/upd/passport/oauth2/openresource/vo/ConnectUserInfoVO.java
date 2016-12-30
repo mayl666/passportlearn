@@ -22,10 +22,10 @@ public class ConnectUserInfoVO {
     private String province; // 省
     private String city; // 市
     private String region; // 区
-    private String unionid; // 用户唯一标识  微信、QQ用到
+    private String unionid; // 用户唯一标识  微信用到
     private String weixinOpenId; // 用户唯一标识  微信开平用到
-
-
+    private String uid; // QQ 用到
+    
     private Map<String, Object> original;//第三方返回的原始json串
 
     public String getNickname() {
@@ -122,5 +122,13 @@ public class ConnectUserInfoVO {
 
     public void setWeixinOpenId(String weixinOpenId) {
         this.weixinOpenId = weixinOpenId;
+    }
+    
+    public String getUid() {
+        return uid;
+    }
+    
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

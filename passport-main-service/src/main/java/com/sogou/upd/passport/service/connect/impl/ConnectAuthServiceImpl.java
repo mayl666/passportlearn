@@ -174,7 +174,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     
             if (provider == AccountTypeEnum.QQ.getValue()) {
                 // 获取 unionId
-                userProfileFromConnect = getUnionId(provider, connectConfig, openid, accessToken, userProfileFromConnect, oAuthConsumer);
+                userProfileFromConnect = getUid(provider, connectConfig, openid, accessToken, userProfileFromConnect, oAuthConsumer);
             }
             
             initialOrUpdateConnectUserInfo(provider, openid, userProfileFromConnect);
@@ -253,7 +253,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
     }
 
     @Override
-    public ConnectUserInfoVO getUnionId(int provider, ConnectConfig connectConfig, String openId, String accessToken, ConnectUserInfoVO connectUserInfoVO,
+    public ConnectUserInfoVO getUid(int provider, ConnectConfig connectConfig, String openId, String accessToken, ConnectUserInfoVO connectUserInfoVO,
                                         OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException {
         String unionIdUrl = oAuthConsumer.getUnionIdUrl();
         
@@ -280,7 +280,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                 unionId = unionId.replaceFirst("UID_", "");
                 
                 // 设置 unionId
-                connectUserInfoVO.setUnionid(unionId);
+                connectUserInfoVO.setUid(unionId);
                 
                 int clientId = connectConfig.getClientId();
                 String appKey = connectConfig.getAppKey();

@@ -221,8 +221,8 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             ConnectUserInfoVO connectUserInfoVO;
             if (provider == AccountTypeEnum.QQ.getValue()) {    // QQ根据code获取access_token时，已经取到了个人资料
                 connectUserInfoVO = ((QQJSONAccessTokenResponse) oauthResponse).getUserInfo();
-                // 获取 unionId
-                connectUserInfoVO = connectAuthService.getUnionId(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), connectUserInfoVO, oAuthConsumer);
+                // 获取 uid
+                connectUserInfoVO = connectAuthService.getUid(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), connectUserInfoVO, oAuthConsumer);
             } else {
                 connectUserInfoVO = connectAuthService.obtainConnectUserInfo(provider, connectConfig, openId, oAuthTokenVO.getAccessToken(), oAuthConsumer);
                 if (provider == AccountTypeEnum.BAIDU.getValue()) {     // 百度 oauth2.0授权的openid需要从用户信息接口获取
@@ -371,7 +371,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 avatarSmall = connectUserInfoVO.getAvatarSmall();
                 sex = String.valueOf(connectUserInfoVO.getGender());
             }
-            ru = buildWapUserInfoSuccessRu(ru, sgid, uniqname, sex, avatarLarge, avatarMiddle, avatarSmall, userId, connectUserInfoVO.getUnionid());
+            ru = buildWapUserInfoSuccessRu(ru, sgid, uniqname, sex, avatarLarge, avatarMiddle, avatarSmall, userId, connectUserInfoVO.getUid());
         }
         result.setDefaultModel(CommonConstant.RESPONSE_RU, ru);
         return result;
@@ -492,7 +492,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result.getModels().put("gender", Strings.isNullOrEmpty(gender) ? 0 : Integer.parseInt(gender));
     
                         if (provider == AccountTypeEnum.QQ.getValue() && StringUtils.isNotBlank(connectUserInfoVO.getUnionid())) {    // qq 登陆返回 unionId
-                            result.getModels().put("uid", connectUserInfoVO.getUnionid());
+                            result.getModels().put("uid", connectUserInfoVO.getUid());
                         }
                     } else {
                         isConnectUserInfo = true;
@@ -509,7 +509,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result.getModels().put("gender", connectUserInfoVO.getGender());
                         
                         if (provider == AccountTypeEnum.QQ.getValue() && StringUtils.isNotBlank(connectUserInfoVO.getUnionid())) {    // qq 登陆返回 unionId
-                            result.getModels().put("uid", connectUserInfoVO.getUnionid());
+                            result.getModels().put("uid", connectUserInfoVO.getUid());
                         }
                     }
                 }

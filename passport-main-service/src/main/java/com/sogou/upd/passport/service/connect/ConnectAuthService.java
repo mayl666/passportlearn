@@ -92,7 +92,7 @@ public interface ConnectAuthService {
      * @throws IOException
      * @throws OAuthProblemException
      */
-    public ConnectUserInfoVO getUnionId(int provider, ConnectConfig connectConfig, String openId, String accessToken,
+    public ConnectUserInfoVO getUid(int provider, ConnectConfig connectConfig, String openId, String accessToken,
                                         ConnectUserInfoVO connectUserInfoVO, OAuthConsumer oAuthConsumer) throws IOException, OAuthProblemException;
 
 }
