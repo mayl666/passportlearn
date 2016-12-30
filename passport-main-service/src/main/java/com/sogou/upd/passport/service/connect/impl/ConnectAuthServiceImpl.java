@@ -17,6 +17,7 @@ import com.sogou.upd.passport.oauth2.common.types.GrantTypeEnum;
 import com.sogou.upd.passport.oauth2.openresource.http.OAuthHttpClient;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthAuthzClientRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.OAuthClientRequest;
+import com.sogou.upd.passport.oauth2.openresource.request.QQUnionIdRequest;
 import com.sogou.upd.passport.oauth2.openresource.request.user.*;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthClientResponse;
 import com.sogou.upd.passport.oauth2.openresource.response.accesstoken.*;
@@ -262,7 +263,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
         if (provider == AccountTypeEnum.QQ.getValue()) {
             try {
                 // 调用QQ接口，通过 accessToken 获取 unionId
-                request = QQUserAPIRequest.apiLocation(unionIdUrl, QQUserAPIRequest.QQUserAPIBuilder.class)
+                request = QQUserAPIRequest.apiLocation(unionIdUrl, QQUnionIdRequest.QQUnionIdBuilder.class)
                         .setOpenid(openId).setAccessToken(accessToken)
                         .buildQueryMessage(QQUserAPIRequest.class);
                 response = OAuthHttpClient.execute(request, QQUnionIdResponse.class);
