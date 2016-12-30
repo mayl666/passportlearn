@@ -7,7 +7,6 @@ import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.oauth2.common.exception.OAuthProblemException;
 import com.sogou.upd.passport.oauth2.openresource.parameters.QQOAuth;
 import com.sogou.upd.passport.oauth2.openresource.response.OAuthClientResponse;
-import com.sogou.upd.passport.oauth2.openresource.validator.impl.TokenValidator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -22,8 +21,6 @@ public class QQUnionIdResponse extends OAuthClientResponse {
 
     protected static final Logger logger = LoggerFactory.getLogger(QQUnionIdResponse.class);
 
-    private String unionId;
-    
     @Override
     public void setBody(String body) throws OAuthProblemException {
         if(StringUtils.isBlank(body)) {
@@ -50,7 +47,10 @@ public class QQUnionIdResponse extends OAuthClientResponse {
 
     @Override
     public void init(String body, String contentType, int responseCode) throws OAuthProblemException {
-        validator = new TokenValidator();
         super.init(body, contentType, responseCode);
+    }
+    
+    @Override
+    protected void validate() throws OAuthProblemException {
     }
 }
