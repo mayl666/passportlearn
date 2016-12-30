@@ -490,6 +490,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result.getModels().put("tiny_avatar", Strings.isNullOrEmpty(img30) ? "" : img30);
                         result.getModels().put("uniqname", Strings.isNullOrEmpty(uniqname) ? "" : uniqname);
                         result.getModels().put("gender", Strings.isNullOrEmpty(gender) ? 0 : Integer.parseInt(gender));
+    
+                        if (provider == AccountTypeEnum.QQ.getValue()) {    // qq 登陆返回 unionId
+                            result.getModels().put("uid", connectUserInfoVO.getUnionid());
+                        }
                     } else {
                         isConnectUserInfo = true;
                     }
@@ -503,6 +507,10 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result.getModels().put("tiny_avatar", connectUserInfoVO.getAvatarSmall());
                         result.getModels().put("uniqname", connectUserInfoVO.getNickname());
                         result.getModels().put("gender", connectUserInfoVO.getGender());
+                        
+                        if (provider == AccountTypeEnum.QQ.getValue()) {    // qq 登陆返回 unionId
+                            result.getModels().put("uid", connectUserInfoVO.getUnionid());
+                        }
                     }
                 }
                 //4.写session 数据库
