@@ -59,7 +59,7 @@ public class OAuthConsumerFactory {
         oAuthConsumer.setWapUserAuthzUrl(getURL("wap_userAuthzUrl", providerStr));
         
         // QQ 获取 unionId 字段
-        oAuthConsumer.setWapUserAuthzUrl(getURL("unionIdUrl", providerStr));
+        oAuthConsumer.setUnionIdUrl(getURL("unionIdUrl", providerStr));
         return oAuthConsumer;
     }
 
