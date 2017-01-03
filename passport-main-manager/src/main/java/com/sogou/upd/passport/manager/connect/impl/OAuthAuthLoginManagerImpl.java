@@ -769,7 +769,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         // QQ 返回 uid
         AccountTypeEnum accountType = AccountTypeEnum.getAccountType(userId);
         if (accountType == AccountTypeEnum.QQ && StringUtils.isNotBlank(uid)) {
-            params.put("uid", userId);
+            params.put("uid", uid);
         }
         
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
