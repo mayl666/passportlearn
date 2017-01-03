@@ -112,7 +112,7 @@ public class MappUserinfoAction extends BaseController {
     private GetUserInfoApiparams buildMappGetUserInfoApiparams(MappGetUserinfoParams params,String passportId) {
         GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
         //设置默认fields
-        String defaultFields="uniqname,gender,avatarurl";
+        String defaultFields="uniqname,gender,avatarurl,uid";
         String fields = (Strings.isNullOrEmpty(params.getFields())) ? (defaultFields):(defaultFields+","+params.getFields());
         infoApiparams.setFields(fields);
         infoApiparams.setImagesize("30,50,180");
