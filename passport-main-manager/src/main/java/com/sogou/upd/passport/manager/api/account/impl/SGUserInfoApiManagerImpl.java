@@ -17,9 +17,11 @@ import com.sogou.upd.passport.manager.api.account.form.UpdateUserUniqnameApiPara
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
+import com.sogou.upd.passport.oauth2.openresource.vo.ConnectUserInfoVO;
 import com.sogou.upd.passport.service.account.AccountInfoService;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
+import com.sogou.upd.passport.service.connect.ConnectAuthService;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -57,6 +59,8 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     private UniqNamePassportMappingService uniqNamePassportMappingService;
     @Autowired
     private SessionServerManager sessionServerManager;
+    @Autowired
+    private ConnectAuthService connectAuthService;
     
     @Override
     public Result getUserInfoBySgid(GetUserInfoBySgidApiparams infoApiparams, String ip) {
@@ -163,6 +167,15 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                 String regTimeStr = (regTime == null) ? "" : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(regTime);
                                 result.setDefaultModel("regTime", regTimeStr);
                                 paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "regTime"));
+                            }
+    
+                            // uid
+                            if (ArrayUtils.contains(paramArray, "uid")) {
+                                ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId);
+                                if(connectUserInfoVO != null && StringUtils.isNotBlank(connectUserInfoVO.getUid())) {
+                                    result.setDefaultModel("uid", connectUserInfoVO.getUid());
+                                    paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "uid"));
+                                }
                             }
 
                             result.setDefaultModel("userid", passportId);

@@ -2,12 +2,14 @@ package com.sogou.upd.passport.model;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
-import jodd.props.Props;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ConcurrentMap;
+
+import jodd.props.Props;
 
 /**
  * Created with IntelliJ IDEA.
@@ -55,6 +57,9 @@ public class OAuthConsumerFactory {
         oAuthConsumer.setTokenInfo(getURL("tokenInfo", providerStr));
 
         oAuthConsumer.setWapUserAuthzUrl(getURL("wap_userAuthzUrl", providerStr));
+        
+        // QQ 获取 unionId 字段
+        oAuthConsumer.setUnionIdUrl(getURL("unionIdUrl", providerStr));
         return oAuthConsumer;
     }
 
