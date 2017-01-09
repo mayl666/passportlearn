@@ -286,12 +286,7 @@ public class ConnectAuthServiceImpl implements ConnectAuthService {
                 String appKey = connectConfig.getAppKey();
     
                 // 记录 openId - unionId
-                String logMsg = new StringBuilder()
-                        .append(openId).append("\t")
-                        .append(unionId).append("\t")
-                        .append(clientId).append("\t")
-                        .append(appKey).toString();
-                uIdLogger.info(logMsg);
+                uIdLogger.info(openId + "\t" + unionId + "\t" + clientId + "\t" + appKey);
             }
         }
         return connectUserInfoVO;
