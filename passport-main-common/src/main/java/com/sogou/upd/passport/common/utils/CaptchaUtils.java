@@ -13,7 +13,6 @@ import org.patchca.font.FontFactory;
 import org.patchca.service.Captcha;
 import org.patchca.service.ConfigurableCaptchaService;
 import org.patchca.text.renderer.BestFitTextRenderer;
-import org.patchca.text.renderer.RandomYBestFitTextRenderer;
 import org.patchca.text.renderer.TextCharacter;
 import org.patchca.text.renderer.TextRenderer;
 import org.patchca.text.renderer.TextString;
@@ -40,7 +39,7 @@ public class CaptchaUtils {
     private static HintCaptchaService captchaService = new HintCaptchaService();
     private static OperationWordFactory wordFactory = new OperationWordFactory();
     private static CurvesRippleFilterFactory filterFactory = new CurvesRippleFilterFactory();
-    private static RandomYBestFitTextRenderer contextTextRenderer = new RandomYBestFitTextRenderer();
+    private static BestFitTextRenderer contextTextRenderer = new BestFitTextRenderer();
     private static HintTextRenderer hintTextRenderer = new HintTextRenderer();
     private static ContextFontFactory contextFontFactory = new ContextFontFactory();
     private static HintFontFactory hintFontFactory = new HintFontFactory();
@@ -56,7 +55,7 @@ public class CaptchaUtils {
         filterFactory.setStrokeMin(5);
 
         // 正文距顶部距离
-        contextTextRenderer.setTopMargin(0);
+        contextTextRenderer.setTopMargin(22);
 
         captchaService.setWordFactory(wordFactory);
         captchaService.setColorFactory(contextColorFactory);
@@ -240,7 +239,7 @@ public class CaptchaUtils {
             try {
                 is = CaptchaUtils.class.getClassLoader().getResourceAsStream("simsun.ttc");
                 Font tempFont = Font.createFont(Font.TRUETYPE_FONT, is);
-                font = tempFont.deriveFont(Font.BOLD, 14F);
+                font = tempFont.deriveFont(Font.BOLD, 20F);
             } catch (Exception e) {
                 throw new RuntimeException("load font error.", e);
             } finally {
@@ -266,7 +265,7 @@ public class CaptchaUtils {
             try {
                 is = CaptchaUtils.class.getClassLoader().getResourceAsStream("msyh.ttc");
                 Font tempFont = Font.createFont(Font.TRUETYPE_FONT, is);
-                font = tempFont.deriveFont(Font.BOLD, 38F);
+                font = tempFont.deriveFont(Font.BOLD, 34F);
             } catch (Exception e) {
                 throw new RuntimeException("load font error.", e);
             } finally {
