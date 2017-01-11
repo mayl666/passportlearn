@@ -80,6 +80,7 @@ public class CaptchaUtils {
         Captcha captcha = captchaService.getCaptcha();
         BufferedImage image = captcha.getImage();
         String captchaCode = captcha.getChallenge();
+
         Map<String, Object> mapResult = Maps.newHashMap();
         mapResult.put("image", image);
         mapResult.put("captcha", captchaCode);
@@ -94,10 +95,6 @@ public class CaptchaUtils {
         private HintFontFactory hintFontFactory;
         private ColorFactory hintColorFactory;
         private TextRenderer hintTextRenderer;
-
-        private HintCaptchaService() {
-            super();
-        }
 
         @Override
         public Captcha getCaptcha() {
@@ -132,9 +129,17 @@ public class CaptchaUtils {
     }
 
     /**
-     * 文字渲染器
+     * 提示文字渲染器
      */
     private static class HintTextRenderer extends BestFitTextRenderer {
+
+        /**
+         * 绘制提示文字
+         * @param text
+         * @param canvas
+         * @param fontFactory
+         * @param colorFactory
+         */
         @Override
         public void draw(String text, BufferedImage canvas, FontFactory fontFactory, ColorFactory colorFactory) {
             Graphics2D graphics = (Graphics2D)canvas.getGraphics();
@@ -154,6 +159,10 @@ public class CaptchaUtils {
             }
         }
 
+        /**
+         * 设置文字位置
+         * @param textString
+         */
         private void arrangeHintCharacters(TextString textString) {
             double x = 0;
             TextCharacter textCharacter;
@@ -177,7 +186,6 @@ public class CaptchaUtils {
         @Override
         public String getNextWord() {
             Random rnd = new Random();
-            StringBuilder wordSb = new StringBuilder();
 
             // 第一项
             int firstIndex = rnd.nextInt(numberArr.length);
@@ -203,8 +211,7 @@ public class CaptchaUtils {
                 result = (firstIndex + 1) - (secondIndex + 1);
             }
 
-            return result + "|" +
-                   numberArr[firstIndex] + operArr[operArrIndex] + numberArr[secondIndex];
+            return result + "|" + numberArr[firstIndex] + operArr[operArrIndex] + numberArr[secondIndex];
         }
     }
 
