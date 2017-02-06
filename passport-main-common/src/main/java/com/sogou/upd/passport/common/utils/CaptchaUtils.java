@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.patchca.background.SingleColorBackgroundFactory;
@@ -18,6 +19,8 @@ import org.patchca.text.renderer.TextCharacter;
 import org.patchca.text.renderer.TextRenderer;
 import org.patchca.text.renderer.TextString;
 import org.patchca.word.WordFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -32,6 +35,8 @@ import java.util.Random;
  * 验证码工具类
  */
 public class CaptchaUtils {
+    private static final Logger logger = LoggerFactory.getLogger(CaptchaUtils.class);
+
     /** 提示文字颜色 */
     private static final Color hintColor = new Color(255, 255, 255);
     /** 背景颜色 */
@@ -289,15 +294,25 @@ public class CaptchaUtils {
         static {
             InputStream is = null;
 
-            URL url = CaptchaUtils.class.getClassLoader().getResource("font/微软雅黑.ttc");
-            File fontFolderFile = new File(url.getPath()).getParentFile();
+            URL url = CaptchaUtils.class.getClassLoader().getResource("font");
+            logger.info("font folder url path : " + url);
+            if(url == null) {
+                throw new RuntimeException("font folder url path is null.");
+            }
 
+            File fontFolderFile = new File(url.getPath());
             File[] fileArr = fontFolderFile.listFiles();
+
+            if(ArrayUtils.isEmpty(fileArr)) {
+                throw new RuntimeException("no font resource.");
+            }
+            logger.info("find " + fileArr.length + " font resource.");
 
             fontArr = new Font[fileArr.length];
 
             for (int i = 0; i < fileArr.length; i++) {
                 File fontFile = fileArr[i];
+                logger.info("load font : " + fontFile.getName());
                 try {
                     is = FileUtils.openInputStream(fontFile);
                     fontArr[i] = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.BOLD, 46F);
