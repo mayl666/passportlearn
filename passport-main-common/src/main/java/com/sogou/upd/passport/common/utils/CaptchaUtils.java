@@ -2,6 +2,7 @@ package com.sogou.upd.passport.common.utils;
 
 import com.google.common.collect.Maps;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +21,9 @@ import org.patchca.word.WordFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
@@ -102,7 +105,7 @@ public class CaptchaUtils {
             BufferedImage bufImage = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
             // 设置背景色
             this.backgroundFactory.fillBackground(bufImage);
-            // 获取下一个永嘉
+            // 获取下一个验证码
             String word = this.wordFactory.getNextWord();
             // 格式：“值|文字”，如“2|五减三”
             String[] wordArr = StringUtils.split(word, "|");
@@ -179,39 +182,54 @@ public class CaptchaUtils {
      * 运算字符生成工厂
      */
     private static class OperationWordFactory implements WordFactory {
-        private static String[] numberArr = {"一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
+        private static String[] numberArr = {"零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
 
-        private static String[] operArr = {"加", "减"};
+        private static String[] operArr = {"加", "乘"};
+
+        private static int MIN = 4;
+        private static int MAX = 10;
 
         @Override
         public String getNextWord() {
             Random rnd = new Random();
 
-            // 第一项
-            int firstIndex = rnd.nextInt(numberArr.length);
             // 运算符
             int operArrIndex = rnd.nextInt(operArr.length);
 
+            // 第一项
+            int first = rnd.nextInt(MAX - MIN) + MIN;
             // 第二项
-            int secondIndex;
-            if(operArrIndex == 1) { // 减法
-                if(firstIndex == 0) {
-                    secondIndex = 0;
-                } else {
-                    secondIndex = rnd.nextInt(firstIndex);
-                }
-            } else {    // 加法
-                secondIndex = rnd.nextInt(numberArr.length);
-            }
+            int second = rnd.nextInt(MAX - MIN) + MIN;
 
+            // 运算结果
             int result;
+
             if(operArrIndex == 0) { // 加法
-                result = (firstIndex + 1) + (secondIndex + 1);
-            } else {    // 减法
-                result = (firstIndex + 1) - (secondIndex + 1);
+                result = first + second;
+            } else { // 乘法
+                result = first * second;
             }
 
-            return result + "|" + numberArr[firstIndex] + operArr[operArrIndex] + numberArr[secondIndex];
+            // 验证码文字
+            StringBuilder captchaSb = new StringBuilder();
+            captchaSb.append(result).append("|");
+
+            // 第一项字符
+            String firstStr = String.valueOf(first);
+            for (int i = 0; i < firstStr.length(); i++) {
+                char c = firstStr.charAt(i);
+                captchaSb.append(numberArr[Integer.parseInt(String.valueOf(c))]);
+            }
+            // 操作符
+            captchaSb.append(operArr[operArrIndex]);
+            // 第二项字符
+            String secondStr = String.valueOf(second);
+            for (int i = 0; i < secondStr.length(); i++) {
+                char c = secondStr.charAt(i);
+                captchaSb.append(numberArr[Integer.parseInt(String.valueOf(c))]);
+            }
+
+            return captchaSb.toString();
         }
     }
 
@@ -244,7 +262,7 @@ public class CaptchaUtils {
         static {
             InputStream is = null;
             try {
-                is = CaptchaUtils.class.getClassLoader().getResourceAsStream("simsun.ttc");
+                is = CaptchaUtils.class.getClassLoader().getResourceAsStream("font/宋体.ttc");
                 Font tempFont = Font.createFont(Font.TRUETYPE_FONT, is);
                 font = tempFont.deriveFont(Font.BOLD, 20F);
             } catch (Exception e) {
@@ -264,25 +282,36 @@ public class CaptchaUtils {
      * 内容字体工厂
      */
     private static class ContextFontFactory implements FontFactory {
+
         /** 定义验证码中字体 */
-        private static final Font font;
+        private static final Font[] fontArr;
 
         static {
             InputStream is = null;
-            try {
-                is = CaptchaUtils.class.getClassLoader().getResourceAsStream("msyh.ttc");
-                Font tempFont = Font.createFont(Font.TRUETYPE_FONT, is);
-                font = tempFont.deriveFont(Font.BOLD, 34F);
-            } catch (Exception e) {
-                throw new RuntimeException("load font error.", e);
-            } finally {
-                IOUtils.closeQuietly(is);
+
+            URL url = CaptchaUtils.class.getClassLoader().getResource("font/微软雅黑.ttc");
+            File fontFolderFile = new File(url.getPath()).getParentFile();
+
+            File[] fileArr = fontFolderFile.listFiles();
+
+            fontArr = new Font[fileArr.length];
+
+            for (int i = 0; i < fileArr.length; i++) {
+                File fontFile = fileArr[i];
+                try {
+                    is = FileUtils.openInputStream(fontFile);
+                    fontArr[i] = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.BOLD, 46F);
+                } catch (Exception e) {
+                    throw new RuntimeException("load font error.", e);
+                } finally {
+                    IOUtils.closeQuietly(is);
+                }
             }
         }
 
         @Override
         public Font getFont(int i) {
-            return font;
+            return fontArr[RandomUtils.nextInt(fontArr.length)];
         }
     }
 }
