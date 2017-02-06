@@ -295,12 +295,12 @@ public class CaptchaUtils {
             InputStream is = null;
 
             URL url = CaptchaUtils.class.getClassLoader().getResource("font");
-            logger.warn("font folder url path : " + url);
+            logger.warn("font folder url path : " + url.getFile());
             if(url == null) {
                 throw new RuntimeException("font folder url path is null.");
             }
 
-            File fontFolderFile = new File(url.getPath());
+            File fontFolderFile = new File(url.getFile());
             File[] fileArr = fontFolderFile.listFiles();
 
             if(ArrayUtils.isEmpty(fileArr)) {
