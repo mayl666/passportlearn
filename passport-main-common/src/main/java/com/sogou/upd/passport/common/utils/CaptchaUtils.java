@@ -2,9 +2,7 @@ package com.sogou.upd.passport.common.utils;
 
 import com.google.common.collect.Maps;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.patchca.background.SingleColorBackgroundFactory;
@@ -24,9 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
@@ -289,32 +285,23 @@ public class CaptchaUtils {
     private static class ContextFontFactory implements FontFactory {
 
         /** 定义验证码中字体 */
-        private static final Font[] fontArr;
+        private static final Font[] fontArr = new Font[4];
 
         static {
-            InputStream is = null;
+            loadFont("卡通简.ttf", "微软雅黑.ttc", "流行体简.ttf", "稚艺简.ttf");
+        }
 
-            URL url = CaptchaUtils.class.getClassLoader().getResource("font");
-            if(url == null) {
-                throw new RuntimeException("font folder url path is null.");
-            }
-            logger.warn("font folder url path : " + url.getFile());
+        @Override
+        public Font getFont(int i) {
+            return fontArr[RandomUtils.nextInt(fontArr.length)];
+        }
 
-            File fontFolderFile = new File(url.getFile());
-            File[] fileArr = fontFolderFile.listFiles();
-
-            if(ArrayUtils.isEmpty(fileArr)) {
-                throw new RuntimeException("no font resource.");
-            }
-            logger.warn("find " + fileArr.length + " font resource.");
-
-            fontArr = new Font[fileArr.length];
-
-            for (int i = 0; i < fileArr.length; i++) {
-                File fontFile = fileArr[i];
-                logger.warn("load font : " + fontFile.getName());
+        private static void loadFont(String ... fontNames) {
+            for (int i = 0; i < fontNames.length; i++) {
+                String fontName = fontNames[i];
+                InputStream is = null;
                 try {
-                    is = FileUtils.openInputStream(fontFile);
+                    is = CaptchaUtils.class.getClassLoader().getResourceAsStream("font/" + fontName);
                     fontArr[i] = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.BOLD, 46F);
                 } catch (Exception e) {
                     throw new RuntimeException("load font error.", e);
@@ -322,11 +309,6 @@ public class CaptchaUtils {
                     IOUtils.closeQuietly(is);
                 }
             }
-        }
-
-        @Override
-        public Font getFont(int i) {
-            return fontArr[RandomUtils.nextInt(fontArr.length)];
         }
     }
 }
