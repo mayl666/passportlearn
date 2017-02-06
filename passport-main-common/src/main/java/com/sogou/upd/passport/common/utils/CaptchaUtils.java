@@ -295,7 +295,7 @@ public class CaptchaUtils {
             InputStream is = null;
 
             URL url = CaptchaUtils.class.getClassLoader().getResource("font");
-            logger.info("font folder url path : " + url);
+            logger.warn("font folder url path : " + url);
             if(url == null) {
                 throw new RuntimeException("font folder url path is null.");
             }
@@ -306,13 +306,13 @@ public class CaptchaUtils {
             if(ArrayUtils.isEmpty(fileArr)) {
                 throw new RuntimeException("no font resource.");
             }
-            logger.info("find " + fileArr.length + " font resource.");
+            logger.warn("find " + fileArr.length + " font resource.");
 
             fontArr = new Font[fileArr.length];
 
             for (int i = 0; i < fileArr.length; i++) {
                 File fontFile = fileArr[i];
-                logger.info("load font : " + fontFile.getName());
+                logger.warn("load font : " + fontFile.getName());
                 try {
                     is = FileUtils.openInputStream(fontFile);
                     fontArr[i] = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.BOLD, 46F);
