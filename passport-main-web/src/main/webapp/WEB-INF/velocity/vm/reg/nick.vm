@@ -18,20 +18,20 @@
         </ul>
     </div>
 </div>
-        
+
         <div class="wrapper">
-            
+
 
 
 
 <div class="banner">
     <div class="inner reg">
         <ul>
-            
+
             <li ><a href="/">登录</a></li>
-            
+
             <li class="current"><a href="/web/reg/nick">搜狗通行证注册</a></li>
-            
+
         </ul>
     </div>
     <span class="underline"></span>
@@ -39,21 +39,21 @@
 
 <div class="main-content two-col-r">
     <div class="col-l">
-        
+
         <ul class="nav">
-    
+
     <li style="border:none;" class="email   ">
         <a href="/web/reg/email">邮箱注册</a>
     </li>
-    
+
     <li  class="tel   ">
         <a href="/web/reg/mobile">手机注册</a>
     </li>
-    
-    <li  class="nick current  ">
+
+    #*<li  class="nick current  ">
         <a href="/web/reg/nick">个性帐号</a>
-    </li>
-    
+    </li>*#
+
 </ul>
     </div>
     <div class="col-r">
@@ -64,7 +64,7 @@
             </div>
             <div  class="form">
                 <form method="post" id="" action="/web/reguser">
-                    
+
                    <div class="form-item">
                        <label for="UsernameIpt">通行证：</label>
                        <span class="form-el form-el-s">
@@ -111,7 +111,7 @@
 
 
         </div>
-        
+
         <div class="footer">
     <div class="inner">
         <a href="/web/problem/addProblem">意见反馈</a>&nbsp;&nbsp;Copyright &copy;&nbsp;2017 Sogou.com.&nbsp;All Rights Reserved.&nbsp;<a href="http://www.miibeian.gov.cn/" target="_blank" id="ft_icp">京ICP证050897号</a>
@@ -120,7 +120,7 @@
     </body>
     <script type="text/javascript" src="/./static/js/lib/ursa.js?t=140248"></script>
     <script type="text/javascript" src="/./static/js/reg.js?t=2016010439"></script>
-    
+
     <script type="text/javascript">var _server_data = '${data}';</script>
     <script type="text/javascript">
 
@@ -138,7 +138,7 @@ var spb_vars = {
 
 //Prevent syntax error leads to undefined.
 var server_data = (typeof _server_data==='undefined')?'{"status":"10001"}':_server_data;
-        
+
 require.config({
     baseUrl:"/./static/js",
     shim:{
