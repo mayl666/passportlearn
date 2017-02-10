@@ -1,91 +1,90 @@
 package com.sogou.upd.passport.common.utils;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.patchca.background.SingleColorBackgroundFactory;
-import org.patchca.color.DefaultColorFactory;
-import org.patchca.filter.predefined.DefaultRippleFilterFactory;
-import org.patchca.font.RandomFontFactory;
+import org.patchca.color.ColorFactory;
+import org.patchca.color.SingleColorFactory;
+import org.patchca.filter.predefined.CurvesRippleFilterFactory;
+import org.patchca.font.FontFactory;
 import org.patchca.service.Captcha;
 import org.patchca.service.ConfigurableCaptchaService;
 import org.patchca.text.renderer.BestFitTextRenderer;
-import org.patchca.word.DefaultRandomWordFactory;
+import org.patchca.text.renderer.TextCharacter;
+import org.patchca.text.renderer.TextRenderer;
+import org.patchca.text.renderer.TextString;
+import org.patchca.word.WordFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.List;
+import java.io.InputStream;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
 /**
- * User: mayan Date: 13-5-8 Time: 下午2:20 To change this template use File | Settings | File Templates.
+ * 验证码工具类
  */
 public class CaptchaUtils {
+    private static final Logger logger = LoggerFactory.getLogger(CaptchaUtils.class);
 
-    private Random random = new Random();
-    private String randString = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZ";//随机产生的字符串
-    private int width = 80;//图片宽
-    private int height = 26;//图片高
-    private int lineSize = 40;//干扰线数量
-    private int stringNum = 5;//随机产生字符数量
-  /* * 获得字体     */
+    /** 提示文字颜色 */
+    private static final Color hintColor = new Color(255, 255, 255);
+    /** 背景颜色 */
+    private static final Color backgroundColor = new Color(14, 131, 230);
+    /** 干扰线颜色 */
+    private static final Color filterColor = new Color(0, 71, 167);
 
-    private static List<String> fontList = Lists.newLinkedList();
+    private static HintCaptchaService captchaService = new HintCaptchaService();
+    private static OperationWordFactory wordFactory = new OperationWordFactory();
+    private static CurvesRippleFilterFactory filterFactory = new CurvesRippleFilterFactory();
+    private static BestFitTextRenderer contextTextRenderer = new BestFitTextRenderer();
+    private static HintTextRenderer hintTextRenderer = new HintTextRenderer();
+    private static ContextFontFactory contextFontFactory = new ContextFontFactory();
+    private static HintFontFactory hintFontFactory = new HintFontFactory();
+    private static SingleColorBackgroundFactory backgroundFactory = new SingleColorBackgroundFactory(backgroundColor);
+    private static SingleColorFactory hintColorFactory = new SingleColorFactory(hintColor);
+    private static IllegibilityFactory contextColorFactory = new IllegibilityFactory();
+    private static SingleColorFactory filterColorFactory = new SingleColorFactory(filterColor);
 
-    private static ConfigurableCaptchaService captchaService = new ConfigurableCaptchaService();
-    private static DefaultRandomWordFactory wordFactory = new DefaultRandomWordFactory("123456789ABCDEFGHJKLMNPQRSTUVWXYZ", 5);
-    private static DefaultRippleFilterFactory filterFactory = new DefaultRippleFilterFactory();
-    private static BestFitTextRenderer textRenderer = new BestFitTextRenderer();
-    private static RandomFontFactory fontFactory = new RandomFontFactory();
-    private static SingleColorBackgroundFactory backgroundFactory = new SingleColorBackgroundFactory();
-    private static DefaultColorFactory colorFactory = new DefaultColorFactory();
+
     static {
-        filterFactory.setLineNum(0);
-//        fontFactory.setRandomStyle(true);
-//        fontFactory.setMinSize(28);
-//        fontFactory.setMaxSize(28);
-//        fontFactory.setBoldStyle(true);
-        fontFactory.setMinSize(48);
-        fontFactory.setMaxSize(48);
+        // 最少5条干扰线
+        filterFactory.setColorFactory(filterColorFactory);
+        filterFactory.setStrokeMin(5);
+
+        // 正文距顶部距离
+        contextTextRenderer.setTopMargin(22);
+
         captchaService.setWordFactory(wordFactory);
-        captchaService.setColorFactory(colorFactory);
+        captchaService.setColorFactory(contextColorFactory);
         captchaService.setBackgroundFactory(backgroundFactory);
-        captchaService.setFontFactory(fontFactory);
-        captchaService.setTextRenderer(textRenderer);
+        captchaService.setFontFactory(contextFontFactory);
+        captchaService.setTextRenderer(contextTextRenderer);
         captchaService.setFilterFactory(filterFactory);
+        captchaService.setHintColorFactory(hintColorFactory);
+        captchaService.setHintFontFactory(hintFontFactory);
+        captchaService.setHintTextRenderer(hintTextRenderer);
+
+        // 验证码尺寸
         captchaService.setWidth(160);
         captchaService.setHeight(56);
-
-        fontList.add("Verdana");
-        fontList.add("Tahoma");
-        fontList.add("Arial");
-        fontList.add("Courier New");
-        // fontList.add("sans-serif");
-        // fontList.add("cursive");
     }
 
-    private Font getFont() {
-        return new Font(fontList.get(random.nextInt(fontList.size())), random.nextInt(2) == 1 ? Font.ITALIC : Font.CENTER_BASELINE, 24);
-        // return new Font("Fixedsys", Font.CENTER_BASELINE, 24);
-    }    /*     * 获得颜色     */
-
-    private Color getRandColor(int fc, int bc) {
-        if (fc > 255) {
-            fc = 255;
-        }
-        if (bc > 255) {
-            bc = 255;
-        }
-        int r = fc + random.nextInt(bc - fc - 16);
-        int g = fc + random.nextInt(bc - fc - 14);
-        int b = fc + random.nextInt(bc - fc - 18);
-        return new Color(r, g, b);
-    }
-
+    /**
+     * 获取验证码
+     * @return 返回 map。image：图片；captcha：验证码内容
+     */
     public Map<String, Object> getRandCode() {
         Captcha captcha = captchaService.getCaptcha();
         BufferedImage image = captcha.getImage();
         String captchaCode = captcha.getChallenge();
+
         Map<String, Object> mapResult = Maps.newHashMap();
         mapResult.put("image", image);
         mapResult.put("captcha", captchaCode);
@@ -94,59 +93,222 @@ public class CaptchaUtils {
     }
 
     /**
-     * 生成随机图片
+     * 带提示文字的验证码服务类
      */
-    public Map<String, Object> getRandcode() {
-        //BufferedImage类是具有缓冲区的Image类,Image类是用于描述图像信息的类
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
-        Graphics g = image.getGraphics();//产生Image对象的Graphics对象,改对象可以在图像上进行各种绘制操作
-        g.fillRect(0, 0, width, height);
-        g.setFont(new Font("Times New Roman", Font.ROMAN_BASELINE, 18));
-        g.setColor(getRandColor(110, 133));        //绘制干扰线
-        for (int i = 0; i <= lineSize; i++) {
-            drowLine(g);
+    private static class HintCaptchaService extends ConfigurableCaptchaService {
+        private HintFontFactory hintFontFactory;
+        private ColorFactory hintColorFactory;
+        private TextRenderer hintTextRenderer;
+
+        @Override
+        public Captcha getCaptcha() {
+            // 新建图片
+            BufferedImage bufImage = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
+            // 设置背景色
+            this.backgroundFactory.fillBackground(bufImage);
+            // 获取下一个验证码
+            String word = this.wordFactory.getNextWord();
+            // 格式：“值|文字”，如“2|五减三”
+            String[] wordArr = StringUtils.split(word, "|");
+            // 渲染文字
+            this.textRenderer.draw(wordArr[1], bufImage, this.fontFactory, this.colorFactory);
+            // 干扰
+            bufImage = this.filterFactory.applyFilters(bufImage);
+            // 在干扰后的图片上添加提示文字，保证提示文字不被干扰
+            hintTextRenderer.draw("请输入以下结果", bufImage, hintFontFactory, hintColorFactory);
+            return new Captcha(wordArr[0], bufImage);
         }
-//        drawRect(g);
-        //绘制随机字符
-        String randomString = "";
-        for (int i = 1; i <= stringNum; i++) {
-            randomString = drowString(g, randomString, i);
+
+        private void setHintFontFactory(HintFontFactory hintFontFactory) {
+            this.hintFontFactory = hintFontFactory;
         }
-        g.dispose();
-        Map<String, Object> mapResult = Maps.newHashMap();
-        mapResult.put("image", image);
-        mapResult.put("captcha", randomString);
 
-        return mapResult;
-    }    /*     * 绘制字符串     */
+        private void setHintColorFactory(ColorFactory hintColorFactory) {
+            this.hintColorFactory = hintColorFactory;
+        }
 
-    private String drowString(Graphics g, String randomString, int i) {
-        g.setFont(getFont());
-        g.setColor(new Color(random.nextInt(101), random.nextInt(111), random.nextInt(121)));
-        String rand = String.valueOf(getRandomString(random.nextInt(randString.length())));
-        randomString += rand;
-        g.translate(random.nextInt(3), random.nextInt(3));
-        g.drawString(rand, 11 * i - (i % 2 == 0 ? 0 : random.nextInt(2)), 16 + (i % 2) * random.nextInt(3)) ;
-        return randomString;
-    }    /*     * 绘制干扰线     */
-
-    private void drowLine(Graphics g) {
-        int x = random.nextInt(width);
-        int y = random.nextInt(height);
-        int xl = random.nextInt(13);
-        int yl = random.nextInt(15);
-        g.drawLine(x, y, x + xl, y + yl);
-    }    /*     * 获取随机的字符     */
-
-    private void drawRect(Graphics g) {
-        for (int i=0; i<4; i++) {
-            g.setColor(new Color(0, 0, 0));
-            g.setXORMode(new Color(255, 255, 255));
-            g.fillRect(random.nextInt(20) + i * 40, random.nextInt(20) + i*5, random.nextInt(20) + 30, random.nextInt(20) + 30);
+        private void setHintTextRenderer(TextRenderer hintTextRenderer) {
+            this.hintTextRenderer = hintTextRenderer;
         }
     }
 
-    public String getRandomString(int num) {
-        return String.valueOf(randString.charAt(num));
+    /**
+     * 提示文字渲染器
+     */
+    private static class HintTextRenderer extends BestFitTextRenderer {
+
+        /**
+         * 绘制提示文字
+         * @param text
+         * @param canvas
+         * @param fontFactory
+         * @param colorFactory
+         */
+        @Override
+        public void draw(String text, BufferedImage canvas, FontFactory fontFactory, ColorFactory colorFactory) {
+            Graphics2D graphics = (Graphics2D)canvas.getGraphics();
+
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+            graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            int step = 0;
+
+            // 渲染提示
+            TextString hintTextString = this.convertToCharacters(text, graphics, fontFactory, colorFactory);
+            this.arrangeHintCharacters(hintTextString);
+            for(Iterator i$ = hintTextString.getCharacters().iterator(); i$.hasNext(); step ^= 1) {
+                TextCharacter hintTextCharacter = (TextCharacter)i$.next();
+                graphics.setColor(hintTextCharacter.getColor());
+                graphics.drawString(hintTextCharacter.iterator(), (float)hintTextCharacter.getX() - step, (float)hintTextCharacter.getY());
+            }
+        }
+
+        /**
+         * 设置文字位置
+         * @param textString
+         */
+        private void arrangeHintCharacters(TextString textString) {
+            double x = 0;
+            TextCharacter textCharacter;
+            for(Iterator i$ = textString.getCharacters().iterator(); i$.hasNext(); x += textCharacter.getWidth()) {
+                textCharacter = (TextCharacter)i$.next();
+                textCharacter.setX(x);
+                double y = textCharacter.getAscent();
+                textCharacter.setY(y);
+            }
+        }
+    }
+
+    /**
+     * 运算字符生成工厂
+     */
+    private static class OperationWordFactory implements WordFactory {
+        private static String[] numberArr = {"零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
+
+        private static String[] operArr = {"加", "乘"};
+
+        private static int MIN = 4;
+        private static int MAX = 10;
+
+        @Override
+        public String getNextWord() {
+            Random rnd = new Random();
+
+            // 运算符
+            int operArrIndex = rnd.nextInt(operArr.length);
+
+            // 第一项
+            int first = rnd.nextInt(MAX - MIN) + MIN;
+            // 第二项
+            int second = rnd.nextInt(MAX - MIN) + MIN;
+
+            // 运算结果
+            int result;
+
+            if(operArrIndex == 0) { // 加法
+                result = first + second;
+            } else { // 乘法
+                result = first * second;
+            }
+
+            // 验证码文字
+            StringBuilder captchaSb = new StringBuilder();
+            captchaSb.append(result).append("|");
+
+            // 第一项字符
+            String firstStr = String.valueOf(first);
+            for (int i = 0; i < firstStr.length(); i++) {
+                char c = firstStr.charAt(i);
+                captchaSb.append(numberArr[Integer.parseInt(String.valueOf(c))]);
+            }
+            // 操作符
+            captchaSb.append(operArr[operArrIndex]);
+            // 第二项字符
+            String secondStr = String.valueOf(second);
+            for (int i = 0; i < secondStr.length(); i++) {
+                char c = secondStr.charAt(i);
+                captchaSb.append(numberArr[Integer.parseInt(String.valueOf(c))]);
+            }
+
+            return captchaSb.toString();
+        }
+    }
+
+    /**
+     * 不可识别颜色 生成工厂
+     */
+    private static class IllegibilityFactory implements ColorFactory {
+        private static final Color[] colorArr = {
+                // 这个颜色灰度值差异稍大，暂且保留
+//                 new Color(0, 71, 167),
+                new Color(40, 205, 102),
+                new Color(53, 195, 190),
+                new Color(190, 53, 69),
+                new Color(224, 197, 18)
+        };
+
+        @Override
+        public Color getColor(int i) {
+            return colorArr[RandomUtils.nextInt(colorArr.length)];
+        }
+    }
+
+    /**
+     * 提示字体工厂
+     */
+    private static class HintFontFactory implements FontFactory {
+        /** 定义验证码中字体 */
+        private static final Font font;
+
+        static {
+            InputStream is = null;
+            try {
+                is = CaptchaUtils.class.getClassLoader().getResourceAsStream("font/宋体.ttc");
+                Font tempFont = Font.createFont(Font.TRUETYPE_FONT, is);
+                font = tempFont.deriveFont(Font.BOLD, 20F);
+            } catch (Exception e) {
+                throw new RuntimeException("load font error.", e);
+            } finally {
+                IOUtils.closeQuietly(is);
+            }
+        }
+
+        @Override
+        public Font getFont(int i) {
+            return font;
+        }
+    }
+
+    /**
+     * 内容字体工厂
+     */
+    private static class ContextFontFactory implements FontFactory {
+
+        /** 定义验证码中字体 */
+        private static final Font[] fontArr = new Font[4];
+
+        static {
+            loadFont("卡通简.ttf", "微软雅黑.ttc", "流行体简.ttf", "稚艺简.ttf");
+        }
+
+        @Override
+        public Font getFont(int i) {
+            return fontArr[RandomUtils.nextInt(fontArr.length)];
+        }
+
+        private static void loadFont(String ... fontNames) {
+            for (int i = 0; i < fontNames.length; i++) {
+                String fontName = fontNames[i];
+                InputStream is = null;
+                try {
+                    is = CaptchaUtils.class.getClassLoader().getResourceAsStream("font/" + fontName);
+                    fontArr[i] = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.BOLD, 46F);
+                } catch (Exception e) {
+                    throw new RuntimeException("load font error.", e);
+                } finally {
+                    IOUtils.closeQuietly(is);
+                }
+            }
+        }
     }
 }

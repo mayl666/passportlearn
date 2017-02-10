@@ -19,6 +19,7 @@ import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -170,7 +171,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
     @Override
     public Result getPassportIdBySgid(String sgid, String ip) {
         Result result = new APIResultSupport(false);
-    
+
         Result verifyResult = verifySid(sgid, ip);
         if(verifyResult.isSuccess()) {
             String passportId = (String) verifyResult.getModels().get("passport_id");
@@ -179,7 +180,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
                 result.getModels().put("passport_id", passportId);
             }
         }
-        
+
         return result;
     }
 
@@ -187,7 +188,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
     public Result verifySid(String sgid, String ip) {
         Map<String, String> params = buildHttpSessionParam(sgid);
         params.put("user_ip", ip);
-    
+
         return verifySid(params);
     }
 
@@ -195,7 +196,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
     public Result verifySid(String sgid, int clientId, String ip) {
         Map<String, String> params = buildHttpSessionParam(sgid, clientId);
         params.put("user_ip", ip);
-    
+
         return verifySid(params);
     }
 
@@ -216,14 +217,17 @@ public class SessionServerManagerImpl implements SessionServerManager {
                 Map mapResult = jsonMapper.readValue(resultRequest, Map.class);
                 String status = (String) mapResult.get("status");
                 String statusText = (String) mapResult.get("statusText");
-                
+
                 result.setCode(status);
                 if(StringUtils.equals(status, "0")) {
                     result.setSuccess(true);
                 }
                 result.setMessage(statusText);
-                result.setModels((Map) mapResult.get("data"));
-                
+                Map<?, ?> models = (Map) mapResult.get("data");
+                if(MapUtils.isNotEmpty(models)) {
+                    result.setModels(models);
+                }
+
                 return result;
             }
         } catch (Exception e) {
@@ -233,7 +237,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
         }
         return result;
     }
-    
+
 }
 
 class SessionResult {
