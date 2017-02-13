@@ -83,6 +83,8 @@ public class MappSSOAction extends BaseController {
 
         } catch (Exception e) {
             logger.error("mapp check SSO APP error," + "udid:" + udid);
+            result.setSuccess(false);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } finally {
             //记录useroperation
             UserOperationLog userOperationLog = new UserOperationLog(udid, String.valueOf(clientId), result.getCode(), ip);
@@ -163,6 +165,8 @@ public class MappSSOAction extends BaseController {
 
         } catch (Exception e) {
             logger.error("mapp SSO swap sgid error," + "udid:" + udid);
+            result.setSuccess(false);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         } finally {
             //记录useroperation
             UserOperationLog userOperationLog = new UserOperationLog(udid, String.valueOf(clientId), result.getCode(), ip);
