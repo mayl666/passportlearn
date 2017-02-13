@@ -61,11 +61,11 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
     private SessionServerManager sessionServerManager;
     @Autowired
     private ConnectAuthService connectAuthService;
-    
+
     @Override
     public Result getUserInfoBySgid(GetUserInfoBySgidApiparams infoApiparams, String ip) {
         Result result = new APIResultSupport(false);
-        
+
         // 通过 sgid 获取 passportId
         String passportId = "";
         Result verifySidResult = sessionServerManager.getPassportIdBySgid(infoApiparams.getSgid(), ip);
@@ -75,7 +75,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
             result.setCode(ErrorUtil.ERR_CODE_SSO_APP_NOT_LOGIN);
             return result;
         }
-    
+
         // 通过 passportId 查询用户信息
         GetUserInfoApiparams getUserInfoApiparams = new GetUserInfoApiparams();
         getUserInfoApiparams.setClient_id(infoApiparams.getClient_id());
@@ -87,7 +87,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
 
         return getUserInfo(getUserInfoApiparams);
     }
-    
+
     /**
      * 获取用户信息
      * <p/>
@@ -160,7 +160,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                             if ((domain == AccountDomainEnum.THIRD) && (StringUtils.contains(fields, "gender"))) {
                                 result.setDefaultModel("gender", accountResult.getModels().get("gender"));
                             }
-    
+
                             // 注册时间
                             if (ArrayUtils.contains(paramArray, "regTime")) {
                                 Date regTime = account.getRegTime();
@@ -168,7 +168,7 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                                 result.setDefaultModel("regTime", regTimeStr);
                                 paramArray = ArrayUtils.remove(paramArray, ArrayUtils.indexOf(paramArray, "regTime"));
                             }
-    
+
                             // uid
                             if (ArrayUtils.contains(paramArray, "uid")) {
                                 ConnectUserInfoVO connectUserInfoVO = connectAuthService.obtainCachedConnectUserInfo(passportId);
@@ -179,9 +179,6 @@ public class SGUserInfoApiManagerImpl extends BaseProxyManager implements UserIn
                             }
 
                             result.setDefaultModel("userid", passportId);
-                        } else if (domain == AccountDomainEnum.SOHU) {
-                            //如果为"搜狐域"账号，则根据请求参数构建值为 "" 的result
-                            return buildSoHuEmptyResult(result, fields, passportId);
                         } else {
                             //若 account 为空，并且账号域类型不是"搜狐域"账号，错误码返回:账号不存在、并且返回
                             result.setCode(ErrorUtil.INVALID_ACCOUNT);
