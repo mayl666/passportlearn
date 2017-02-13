@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action.mapp;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.AES;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
@@ -10,6 +11,7 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.manager.account.CheckManager;
 import com.sogou.upd.passport.manager.account.MappSSOManager;
 import com.sogou.upd.passport.manager.api.account.UserInfoApiManager;
+import com.sogou.upd.passport.manager.api.account.form.GetUserInfoApiparams;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.mobileoperation.TerminalAttribute;
 import com.sogou.upd.passport.web.BaseController;
@@ -17,6 +19,7 @@ import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.mapp.MappCheckSSOAppParams;
 import com.sogou.upd.passport.web.account.form.mapp.MappSSOSwapSidParams;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,6 +146,14 @@ public class MappSSOAction extends BaseController {
                 return createSidResult.toString();
             }
 
+            //查询用户信息
+            if(Strings.isNullOrEmpty(passportId)) {
+                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_CHECKLOGIN_FAILED);
+                return result.toString();
+            }
+            GetUserInfoApiparams getUserinfoParams = buildGetUserInfoApiparams(params, passportId);
+            result = sgUserInfoApiManager.getUserInfo(getUserinfoParams);
+
             String newSgid = (String) createSidResult.getModels().get(LoginConstant.COOKIE_SGID);
             String newSgidEncryped = AES.encryptSSO(newSgid, token);
             result.setDefaultModel(LoginConstant.SSO_NEW_SID, newSgidEncryped);
@@ -159,8 +170,17 @@ public class MappSSOAction extends BaseController {
         }
 
         return result.toString();
-
     }
 
+    private GetUserInfoApiparams buildGetUserInfoApiparams(MappSSOSwapSidParams params, String passportId) {
+        GetUserInfoApiparams infoApiparams = new GetUserInfoApiparams();
+        //设置默认fields
+        String defaultFields="uniqname,gender,avatarurl,uid";
+        infoApiparams.setFields(defaultFields);
+        infoApiparams.setImagesize("30,50,180");
+        infoApiparams.setUserid(passportId);
+        infoApiparams.setClient_id(params.getClient_id());
 
+        return infoApiparams;
+    }
 }
