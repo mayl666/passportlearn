@@ -43,7 +43,7 @@ public class RuValidator implements ConstraintValidator<Ru, String> {
         }
         try {
             // typany.com 为输入法海外版域名
-            Pattern p = Pattern.compile("(^(https?:\\/\\/)?[\\w\\-.]+\\.(sogou\\.com|sohu\\.com|qq\\.com|soso\\.com|go2map\\.com|pinyin\\.cn|teemo\\.cn|typany\\.com|joygame8\\.com)"
+            Pattern p = Pattern.compile("(^(https?:\\/\\/)?[\\w\\-.]+\\.(sogou\\.com|sohu\\.com|qq\\.com|soso\\.com|go2map\\.com|pinyin\\.cn|teemo\\.cn|typany\\.com|joygame8\\.com|59youwan.com)"
                                         + "($|\\?|\\/|\\\\|:[\\d]))|(^(https?:\\/\\/)?+(2288wxy\\.com\\.cn|8888you\\.cn|pr\\.vaf\\.cn)($|\\?|\\/|\\\\|:[\\d]))", Pattern.CASE_INSENSITIVE);
             Matcher matcher = p.matcher(value);
             return matcher.find();
