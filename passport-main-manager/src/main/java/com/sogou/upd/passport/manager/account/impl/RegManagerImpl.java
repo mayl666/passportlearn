@@ -120,8 +120,6 @@ public class RegManagerImpl implements RegManager {
         }
         if (result.isSuccess()) {
             result.getModels().put("username", username);            //判断是否是外域邮箱注册 外域邮箱激活以后种cookie
-        } else {
-            result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGISTER_FAILED);
         }
         return result;
     }

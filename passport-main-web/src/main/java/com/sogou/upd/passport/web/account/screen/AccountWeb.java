@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.screen;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -12,16 +13,19 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.AccountWebParams;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * User: mayan
@@ -88,8 +92,9 @@ public class AccountWeb extends BaseController {
      web个性账号注册
    */
     @RequestMapping(value = "/reg/nick", method = RequestMethod.GET)
-    public String register(HttpServletRequest request, HttpServletResponse response, AccountWebParams webParams, Model model)
+    public String register(HttpServletRequest request, HttpServletResponse response, AccountWebParams webParams, RedirectAttributes redirectAttributes, Model model)
             throws Exception {
+        /*
         webCookieProcess(request, response);
 
         Result result = new APIResultSupport(false);
@@ -106,6 +111,12 @@ public class AccountWeb extends BaseController {
             return "/reg/nick";
         }
         return "/404";
+        */
+
+        redirectAttributes.addAttribute("client_id", webParams.getClient_id());
+        redirectAttributes.addAttribute("ru", webParams.getRu());
+        redirectAttributes.addAttribute("email", webParams.getEmail());
+        return "redirect:/web/reg/email";
     }
 
     /*
