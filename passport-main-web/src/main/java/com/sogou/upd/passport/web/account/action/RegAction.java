@@ -122,6 +122,7 @@ public class RegAction extends BaseController {
         String ip = null;
         String uuidName = null;
         String finalCode = null;
+        String actualClientId = null;
         try {
             //参数验证
             String validateResult = ControllerHelper.validateParams(regParams);
@@ -145,6 +146,7 @@ public class RegAction extends BaseController {
 
             // TODO 为解决其他业务线跳转到 passport 页面注册时，sendsms 使用的 1120，但注册使用其他 client id 导致手机验证码不匹配，用户注册失败
             // 暂时将注册时的 client id 手动设置为 1120，使用户可以正常注册。待前端 js 修复后将此处改回
+            actualClientId = regParams.getClient_id();
             regParams.setClient_id("1120");
 
             int clientId = Integer.valueOf(regParams.getClient_id());
@@ -195,12 +197,12 @@ public class RegAction extends BaseController {
             if (!Strings.isNullOrEmpty(userId) && AccountDomainEnum.getAccountDomain(userId) != AccountDomainEnum.OTHER) {
                 if (result.isSuccess()) {
                     // 非外域邮箱用户不用验证，直接注册成功后记录登录记录
-                    int clientId = Integer.parseInt(regParams.getClient_id());
+                    int clientId = Integer.parseInt(actualClientId);
                     secureManager.logActionRecord(userId, clientId, AccountModuleEnum.LOGIN, ip, null);
                 }
             }
             //用户注册log
-            UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), regParams.getClient_id(), logCode, getIp(request));
+            UserOperationLog userOperationLog = new UserOperationLog(regParams.getUsername(), request.getRequestURI(), actualClientId, logCode, getIp(request));
             String referer = request.getHeader("referer");
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
