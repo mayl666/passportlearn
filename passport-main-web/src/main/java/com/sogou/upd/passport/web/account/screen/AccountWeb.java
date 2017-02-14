@@ -116,7 +116,7 @@ public class AccountWeb extends BaseController {
         redirectAttributes.addAttribute("client_id", webParams.getClient_id());
         redirectAttributes.addAttribute("ru", webParams.getRu());
         redirectAttributes.addAttribute("email", webParams.getEmail());
-        return "redirect:/reg/email";
+        return "redirect:/web/reg/email";
     }
 
     /*
