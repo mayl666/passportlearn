@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
 import java.util.UUID;
@@ -91,9 +92,10 @@ public class AccountWeb extends BaseController {
      web个性账号注册
    */
     @RequestMapping(value = "/reg/nick", method = RequestMethod.GET)
-    public String register(HttpServletRequest request, HttpServletResponse response, AccountWebParams webParams, Model model)
+    public String register(HttpServletRequest request, HttpServletResponse response, AccountWebParams webParams, RedirectAttributes redirectAttributes, Model model)
             throws Exception {
-        /*webCookieProcess(request, response);
+        /*
+        webCookieProcess(request, response);
 
         Result result = new APIResultSupport(false);
         //跳转ru client_id
@@ -108,9 +110,13 @@ public class AccountWeb extends BaseController {
             model.addAttribute("data", result.toString());
             return "/reg/nick";
         }
-        return "/404";*/
+        return "/404";
+        */
 
-        return "/reg/email";
+        redirectAttributes.addAttribute("client_id", webParams.getClient_id());
+        redirectAttributes.addAttribute("ru", webParams.getRu());
+        redirectAttributes.addAttribute("email", webParams.getEmail());
+        return "redirect:/reg/email";
     }
 
     /*
