@@ -142,6 +142,11 @@ public class RegAction extends BaseController {
                 }
                 return result.toString();
             }
+
+            // TODO 为解决其他业务线跳转到 passport 页面注册时，sendsms 使用的 1120，但注册使用其他 client id 导致手机验证码不匹配，用户注册失败
+            // 暂时将注册时的 client id 手动设置为 1120，使用户可以正常注册。待前端 js 修复后将此处改回
+            regParams.setClient_id("1120");
+
             int clientId = Integer.valueOf(regParams.getClient_id());
             //todo 防止邮箱注册攻击，临时增加接口频次限制
             if (isSnapBlackList(clientId)) {
@@ -323,14 +328,14 @@ public class RegAction extends BaseController {
             cookieApiParams.setUniqname(StringUtils.EMPTY);
             cookieApiParams.setMaxAge(-1);
             cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
-    
+
             result = cookieManager.createCookie(response, cookieApiParams);
             if (result.isSuccess()) {
                 String ru = activeParams.getRu();
                 if (Strings.isNullOrEmpty(ru) || CommonConstant.EMAIL_REG_VERIFY_URL.equals(ru)) {
                     ru = CommonConstant.DEFAULT_INDEX_URL;
                 }
-    
+
                 if(activeParams.isRtp()) { // 跳转到 passport 页面
                     response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=0&ru=" + ru + "&client_id=" + clientId);
                     return ;
@@ -341,7 +346,7 @@ public class RegAction extends BaseController {
                 }
             }
         }
-    
+
         if(activeParams.isRtp()) { // 跳转到 passport 页面
             response.sendRedirect(CommonConstant.EMAIL_REG_VERIFY_URL + "?code=" + result.getCode() + "&client_id=" + clientId);
         } else {
