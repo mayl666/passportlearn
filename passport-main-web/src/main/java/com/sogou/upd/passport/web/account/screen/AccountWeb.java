@@ -2,6 +2,7 @@ package com.sogou.upd.passport.web.account.screen;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -12,16 +13,18 @@ import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.account.form.AccountWebParams;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * User: mayan
@@ -90,7 +93,7 @@ public class AccountWeb extends BaseController {
     @RequestMapping(value = "/reg/nick", method = RequestMethod.GET)
     public String register(HttpServletRequest request, HttpServletResponse response, AccountWebParams webParams, Model model)
             throws Exception {
-        webCookieProcess(request, response);
+        /*webCookieProcess(request, response);
 
         Result result = new APIResultSupport(false);
         //跳转ru client_id
@@ -105,7 +108,9 @@ public class AccountWeb extends BaseController {
             model.addAttribute("data", result.toString());
             return "/reg/nick";
         }
-        return "/404";
+        return "/404";*/
+
+        return "/reg/email";
     }
 
     /*
