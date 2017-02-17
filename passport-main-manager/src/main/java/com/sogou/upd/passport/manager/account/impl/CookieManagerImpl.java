@@ -2,6 +2,7 @@ package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.CommonHelper;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
@@ -22,6 +23,7 @@ import com.sogou.upd.passport.manager.api.account.LoginApiManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.form.PPCookieParams;
 import com.sogou.upd.passport.manager.form.SSOCookieParams;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -30,11 +32,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created with IntelliJ IDEA.
@@ -220,6 +223,7 @@ public class CookieManagerImpl implements CookieManager {
             if (cookieApiParams.getCreateAndSet() == CREATE_COOKIE_AND_SET) {
                 ServletUtil.setCookie(response, "ppinf", ppinf, cookieApiParams.getMaxAge(), CommonConstant.SOGOU_ROOT_DOMAIN);
                 ServletUtil.setCookie(response, "pprdig", pprdig, cookieApiParams.getMaxAge(), CommonConstant.SOGOU_ROOT_DOMAIN);
+                ServletUtil.setCookie(response, "sgid", cookieApiParams.getSgid(), cookieApiParams.getMaxAge(), CommonConstant.SOGOU_ROOT_DOMAIN);
                 response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
                 //response 回去的时候设置一个p3p的header,用来定义IE的跨域问题,解决IE下iframe里无法种cookie的bug。
                 response.setHeader("P3P", "CP=CAO PSA OUR");

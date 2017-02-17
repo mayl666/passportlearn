@@ -1,7 +1,8 @@
 package com.sogou.upd.passport.manager.api.account.impl;
 
-import com.alibaba.dubbo.common.utils.StringUtils;
 import com.google.common.collect.Maps;
+
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.LoginConstant;
@@ -22,6 +23,7 @@ import com.sogou.upd.passport.manager.api.account.form.CreateCookieUrlApiParams;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,17 +92,16 @@ public class SGLoginApiManagerImpl extends BaseProxyManager implements LoginApiM
             }
             Result verifyUserResult = accountService.verifyUserPwdVaild(userId, authUserApiParams.getPassword(), false, SohuPasswordType.MD5);
             if (verifyUserResult.isSuccess()) {
-                if (authUserApiParams.getNeedsgid() == 1) {
-                    Result sessionResult = sessionServerManager.createSession(userId);
-                    if (sessionResult.isSuccess()) {
-                        String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
-                        result.setDefaultModel("sgid", sgid);
-                    }
-                    else {
-                        result.setCode(sessionResult.getCode());
-                        return result;
-                    }
+                // if (authUserApiParams.getNeedsgid() == 1) {
+                Result sessionResult = sessionServerManager.createSession(userId);
+                if (sessionResult.isSuccess()) {
+                    String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+                    result.setDefaultModel("sgid", sgid);
+                } else {
+                    result.setCode(sessionResult.getCode());
+                    return result;
                 }
+                // }
                 result.setSuccess(true);
                 result.setMessage("登录成功");
                 result.setDefaultModel("userid", userId);

@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
@@ -20,6 +21,7 @@ import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.annotation.RiskControlSecurity;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +35,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.net.URLDecoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URLDecoder;
 
 /**
  * User: mayan
@@ -130,6 +133,7 @@ public class LoginAction extends BaseController {
                 if (Strings.isNullOrEmpty(sogouRu)) {
                     sogouRu = CommonConstant.DEFAULT_INDEX_URL;
                 }
+                String sgid = result.getModels().get("sgid").toString();
                 //最初版本
 //            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
                 //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie  module 替换
@@ -143,6 +147,7 @@ public class LoginAction extends BaseController {
                 cookieApiParams.setIp(ip);
                 cookieApiParams.setUniqname(uniqName);
                 cookieApiParams.setMaxAge(sogouMaxAge);
+                cookieApiParams.setSgid(sgid);
                 cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
                 result = cookieManager.createCookie(response, cookieApiParams);
                 if (result.isSuccess()) {
