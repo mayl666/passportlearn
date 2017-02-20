@@ -27,7 +27,7 @@ public interface AccountDAO {
      */
     String
             ALL_FIELD =
-            " passport_id, password, mobile, reg_time, reg_ip, flag, passwordtype, account_type ,uniqname, avatar ";
+            " id, passport_id, password, mobile, reg_time, reg_ip, flag, passwordtype, account_type ,uniqname, avatar ";
 
     /**
      * 值列表
@@ -67,7 +67,7 @@ public interface AccountDAO {
     public int updateMobile(@SQLParam("mobile") String mobile,
                             @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
- 
+
     /**
      * 修改昵称
      */
