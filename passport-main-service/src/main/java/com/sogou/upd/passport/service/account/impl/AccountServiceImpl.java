@@ -140,7 +140,6 @@ public class AccountServiceImpl implements AccountService {
             }
             if (id != 0) {
                 String cacheKey = buildAccountKey(passportId);
-                account.setId(id);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return account;
             }
@@ -199,7 +198,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             String cacheKey = buildAccountKey(passportId);
             account = dbShardRedisUtils.getObject(cacheKey, Account.class);
-            if (account == null || account.getId() <= 0) {
+            if (account == null) {
                 account = accountDAO.getAccountByPassportId(passportId);
                 if (account != null) {
                     dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
@@ -232,6 +231,7 @@ public class AccountServiceImpl implements AccountService {
                 }
             }
         }
+
 
         return account;
     }
@@ -399,12 +399,12 @@ public class AccountServiceImpl implements AccountService {
         }
         return false;
     }
-
+    
     @Override
     public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException {
         return sendActiveEmail(username, passpord, clientId, ip, ru, true, null);
     }
-
+    
     @Override
     public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru, boolean rtp, String lang) throws ServiceException {
         boolean flag = true;
