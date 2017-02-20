@@ -26,6 +26,13 @@ public interface AccountDAO {
      * 所有字段列表
      */
     String
+            ALL_FIELD_WITH_ID =
+            " id, passport_id, password, mobile, reg_time, reg_ip, flag, passwordtype, account_type ,uniqname, avatar ";
+
+    /**
+     * 所有字段列表
+     */
+    String
             ALL_FIELD =
             " passport_id, password, mobile, reg_time, reg_ip, flag, passwordtype, account_type ,uniqname, avatar ";
 
@@ -41,7 +48,7 @@ public interface AccountDAO {
      * 根据passportId获取Account
      */
     @SQL("select" +
-            ALL_FIELD +
+            ALL_FIELD_WITH_ID +
             "from" +
             TABLE_NAME +
             " where passport_id=:passport_id")
@@ -67,7 +74,7 @@ public interface AccountDAO {
     public int updateMobile(@SQLParam("mobile") String mobile,
                             @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
- 
+
     /**
      * 修改昵称
      */
