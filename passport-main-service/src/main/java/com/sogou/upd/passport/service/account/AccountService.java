@@ -45,7 +45,6 @@ public interface AccountService {
      */
     public boolean initSOHUAccount(String passportId, String ip) throws ServiceException;
 
-
     /**
      * 根据passportId获取Account
      */
