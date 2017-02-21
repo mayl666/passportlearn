@@ -121,23 +121,16 @@ public class AccountServiceImpl implements AccountService {
                 mobile = username;
             }
             account.setMobile(mobile);
-            long id;
-            if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider)) { //第三方或sohu域账号使用插入或更新，之前第三方迁移出过一次bug，修复的
-                id = accountDAO.insertOrUpdateAccount(passportId, account);
-            } else {
                 //正式注册到account表中
-                id = accountDAO.insertAccount(passportId, account);
-                if (id > 0) {
-                    //手机注册时，写mobile与passportId映射表
-                    if (PhoneUtil.verifyPhoneNumberFormat(passportId.substring(0, passportId.indexOf("@")))) {
-                        boolean row = mobilePassportMappingService.initialMobilePassportMapping(mobile, passportId);
-                        if (!row) {
-                            return null;
-                        }
+            long id = accountDAO.insertAccount(passportId, account);
+            if (id > 0) {
+                //手机注册时，写mobile与passportId映射表
+                if (PhoneUtil.verifyPhoneNumberFormat(passportId.substring(0, passportId.indexOf("@")))) {
+                    boolean row = mobilePassportMappingService.initialMobilePassportMapping(mobile, passportId);
+                    if (!row) {
+                        return null;
                     }
                 }
-            }
-            if (id > 0) {
                 account.setId(id);
                 String cacheKey = buildAccountKey(passportId);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
@@ -154,7 +147,7 @@ public class AccountServiceImpl implements AccountService {
     public boolean initAccount(Account account) throws ServiceException {
         boolean initSuccess = false;
         try {
-            long id = accountDAO.insertOrUpdateAccount(account.getPassportId(), account);
+            long id = accountDAO.insertAccount(account.getPassportId(), account);
             if (id > 0) {
                 initSuccess = true;
                 account.setId(id);
