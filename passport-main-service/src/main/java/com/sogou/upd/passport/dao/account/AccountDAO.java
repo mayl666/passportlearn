@@ -3,6 +3,7 @@ package com.sogou.upd.passport.dao.account;
 import com.sogou.upd.passport.model.account.Account;
 
 import net.paoding.rose.jade.annotation.DAO;
+import net.paoding.rose.jade.annotation.ReturnGeneratedKeys;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
 import net.paoding.rose.jade.annotation.ShardBy;
@@ -110,6 +111,7 @@ public interface AccountDAO {
             "insert into " +
                     TABLE_NAME +
                     "(" + ALL_FIELD + ") " + "values (" + VALUE_FIELD + ")")
+    @ReturnGeneratedKeys
     public int insertAccount(@ShardBy @SQLParam("passport_id") String passport_id,
                              @SQLParam("account") Account account) throws DataAccessException;
 
@@ -130,6 +132,7 @@ public interface AccountDAO {
                     + "#if(:account.uniqname != null){uniqname=:account.uniqname,} "
                     + "#if(:account.avatar != null){avatar=:account.avatar,} "
                     + "#if(:account.passwordtype >= 0){passwordtype=:account.passwordtype} ")
+    @ReturnGeneratedKeys
     public int insertOrUpdateAccount(@ShardBy @SQLParam("passport_id") String passport_id,
                                      @SQLParam("account") Account account) throws DataAccessException;
 

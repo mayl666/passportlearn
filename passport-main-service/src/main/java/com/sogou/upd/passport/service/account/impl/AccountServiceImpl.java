@@ -75,7 +75,8 @@ public class AccountServiceImpl implements AccountService {
             if (account != null) {
                 account.setFlag(AccountStatusEnum.REGULAR.getValue());
                 long id = accountDAO.insertAccount(username, account);
-                if (id != 0) {
+                if (id > 0) {
+                    account.setId(id);
                     //更新缓存，成为正式账户
                     dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                     return account;
@@ -120,25 +121,17 @@ public class AccountServiceImpl implements AccountService {
                 mobile = username;
             }
             account.setMobile(mobile);
-            long id;
-            if (AccountTypeEnum.isConnect(provider) || AccountTypeEnum.isSOHU(provider)) { //第三方或sohu域账号使用插入或更新，之前第三方迁移出过一次bug，修复的
-                id = accountDAO.insertOrUpdateAccount(passportId, account);
-                logger.warn("insertOrUpdateAccount passportId:" + passportId + ", id:" + id);
-            } else {
                 //正式注册到account表中
-                id = accountDAO.insertAccount(passportId, account);
-                logger.warn("insertAccount passportId:" + passportId + ", id:" + id);
-                if (id != 0) {
-                    //手机注册时，写mobile与passportId映射表
-                    if (PhoneUtil.verifyPhoneNumberFormat(passportId.substring(0, passportId.indexOf("@")))) {
-                        boolean row = mobilePassportMappingService.initialMobilePassportMapping(mobile, passportId);
-                        if (!row) {
-                            return null;
-                        }
+            long id = accountDAO.insertAccount(passportId, account);
+            if (id > 0) {
+                //手机注册时，写mobile与passportId映射表
+                if (PhoneUtil.verifyPhoneNumberFormat(passportId.substring(0, passportId.indexOf("@")))) {
+                    boolean row = mobilePassportMappingService.initialMobilePassportMapping(mobile, passportId);
+                    if (!row) {
+                        return null;
                     }
                 }
-            }
-            if (id != 0) {
+                account.setId(id);
                 String cacheKey = buildAccountKey(passportId);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return account;
@@ -154,9 +147,10 @@ public class AccountServiceImpl implements AccountService {
     public boolean initAccount(Account account) throws ServiceException {
         boolean initSuccess = false;
         try {
-            long id = accountDAO.insertOrUpdateAccount(account.getPassportId(), account);
-            if (id != 0) {
+            long id = accountDAO.insertAccount(account.getPassportId(), account);
+            if (id > 0) {
                 initSuccess = true;
+                account.setId(id);
                 String cacheKey = buildAccountKey(account.getPassportId());
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return initSuccess;
@@ -399,12 +393,12 @@ public class AccountServiceImpl implements AccountService {
         }
         return false;
     }
-    
+
     @Override
     public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru) throws ServiceException {
         return sendActiveEmail(username, passpord, clientId, ip, ru, true, null);
     }
-    
+
     @Override
     public boolean sendActiveEmail(String username, String passpord, int clientId, String ip, String ru, boolean rtp, String lang) throws ServiceException {
         boolean flag = true;
