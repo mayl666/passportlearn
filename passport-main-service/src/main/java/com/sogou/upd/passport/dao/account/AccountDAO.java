@@ -121,7 +121,7 @@ public interface AccountDAO {
     @SQL(
             "insert into " +
                     TABLE_NAME +
-                    "(" + ALL_FIELD + ") " + "values (" + VALUE_FIELD+ ") on duplicate key "
+                    "(" + ALL_FIELD + ") " + "values (" + VALUE_FIELD + ") on duplicate key "
                     + "update "
                     + "#if(:account.password != null){password=:account.password,} "
                     + "#if(:account.mobile != null){mobile=:account.mobile,} "
