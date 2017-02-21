@@ -3,6 +3,7 @@ package com.sogou.upd.passport.dao.account;
 import com.sogou.upd.passport.model.account.Account;
 
 import net.paoding.rose.jade.annotation.DAO;
+import net.paoding.rose.jade.annotation.ReturnGeneratedKeys;
 import net.paoding.rose.jade.annotation.SQL;
 import net.paoding.rose.jade.annotation.SQLParam;
 import net.paoding.rose.jade.annotation.ShardBy;
@@ -26,6 +27,13 @@ public interface AccountDAO {
      * 所有字段列表
      */
     String
+            ALL_FIELD_WITH_ID =
+            " id, passport_id, password, mobile, reg_time, reg_ip, flag, passwordtype, account_type ,uniqname, avatar ";
+
+    /**
+     * 所有字段列表
+     */
+    String
             ALL_FIELD =
             " passport_id, password, mobile, reg_time, reg_ip, flag, passwordtype, account_type ,uniqname, avatar ";
 
@@ -41,7 +49,7 @@ public interface AccountDAO {
      * 根据passportId获取Account
      */
     @SQL("select" +
-            ALL_FIELD +
+            ALL_FIELD_WITH_ID +
             "from" +
             TABLE_NAME +
             " where passport_id=:passport_id")
@@ -67,7 +75,7 @@ public interface AccountDAO {
     public int updateMobile(@SQLParam("mobile") String mobile,
                             @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
- 
+
     /**
      * 修改昵称
      */
@@ -103,6 +111,7 @@ public interface AccountDAO {
             "insert into " +
                     TABLE_NAME +
                     "(" + ALL_FIELD + ") " + "values (" + VALUE_FIELD + ")")
+    @ReturnGeneratedKeys
     public int insertAccount(@ShardBy @SQLParam("passport_id") String passport_id,
                              @SQLParam("account") Account account) throws DataAccessException;
 
@@ -123,6 +132,7 @@ public interface AccountDAO {
                     + "#if(:account.uniqname != null){uniqname=:account.uniqname,} "
                     + "#if(:account.avatar != null){avatar=:account.avatar,} "
                     + "#if(:account.passwordtype >= 0){passwordtype=:account.passwordtype} ")
+    @ReturnGeneratedKeys
     public int insertOrUpdateAccount(@ShardBy @SQLParam("passport_id") String passport_id,
                                      @SQLParam("account") Account account) throws DataAccessException;
 
