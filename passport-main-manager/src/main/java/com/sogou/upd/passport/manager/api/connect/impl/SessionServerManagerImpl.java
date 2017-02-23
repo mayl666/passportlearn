@@ -50,14 +50,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
     @Autowired
     private AppConfigService appConfigService;
     @Autowired
-    private SGRoutingConfigurator sgRoutingConfigurator;
-    @Autowired
     private AccountService accountService;
-
-    /**
-     * 分表路由
-     */
-    private static Router router;
 
     private Map<String, String> buildHttpSessionParam(String sgid) {
 
@@ -107,15 +100,8 @@ public class SessionServerManagerImpl implements SessionServerManager {
         String sgid = null;
         SessionResult sessionResult = null;
         try {
-            // 计算分表
-            String routeResult = getRouter().doRoute(passportId);
-            int index = routeResult.lastIndexOf('_') + 1;
-            routeResult = routeResult.substring(index);
-
-            // 获取账号信息
-            Account account = accountService.queryAccountByPassportId(passportId);
-
-            sgid = routeResult + "-" + account.getId() + "-";
+            // 获取账号前缀
+            sgid = accountService.getAccountPrefix(passportId) + "-";
 
             // 创建 sgid
             // sgid 规则：分表索引-账号自增id-旧sgid
@@ -159,37 +145,6 @@ public class SessionServerManagerImpl implements SessionServerManager {
         logger.warn("createSession error! passportId:" + passportId + ",sid:" + sgid + ",sessionResult:" + sessionResult);
         result.setCode(ErrorUtil.ERR_CODE_CREATE_SGID_FAILED);
         return result;
-    }
-
-    /**
-     * 获取路由
-     * @return
-     */
-    public Router getRouter() {
-        if(router == null) {
-            router = createRouter();
-        }
-        return router;
-    }
-
-    /**
-     * 创建分表路由
-     * @return
-     */
-    private Router createRouter() {
-        // 获取数据库分表策略
-        String partition = sgRoutingConfigurator.getPartitions().get(0);
-        String[] conf = partition.split(":");
-        if (SGRoutingConfigurator.SG_STRING_HASH.equalsIgnoreCase(conf[0])) {
-            SGRoutingConfigurator.RouterFactory factory = new SGRoutingConfigurator.RouterFactory(SGRoutingConfigurator.SG_STRING_HASH) {
-                @Override
-                public Router onCreateRouter(String column, String pattern, int partitions) {
-                    return new SGStringHashRouter(column, pattern, partitions);
-                }
-            };
-            return factory.setColumn(conf[2]).setPattern(conf[3]).setPartition(conf[4]).createRouter();
-        }
-        return null;
     }
 
     @Override
