@@ -334,7 +334,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         Result sessionResult;
         if(isNeedWeixinOpenId) { // 需要保存微信 openId
             String weixinOpenId = connectUserInfoVO.getWeixinOpenId();
-            sessionResult = sessionServerManager.createSession(userId, weixinOpenId);
+            sessionResult = sessionServerManager.createSession(userId, weixinOpenId, true);
         } else { // 不需要保存微信 openId
             sessionResult = sessionServerManager.createSession(userId);
         }
@@ -490,7 +490,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result.getModels().put("tiny_avatar", Strings.isNullOrEmpty(img30) ? "" : img30);
                         result.getModels().put("uniqname", Strings.isNullOrEmpty(uniqname) ? "" : uniqname);
                         result.getModels().put("gender", Strings.isNullOrEmpty(gender) ? 0 : Integer.parseInt(gender));
-    
+
                         if (provider == AccountTypeEnum.QQ.getValue() && StringUtils.isNotBlank(connectUserInfoVO.getUid())) {    // qq 登陆返回 unionId
                             result.getModels().put("uid", connectUserInfoVO.getUid());
                         }
@@ -507,7 +507,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                         result.getModels().put("tiny_avatar", connectUserInfoVO.getAvatarSmall());
                         result.getModels().put("uniqname", connectUserInfoVO.getNickname());
                         result.getModels().put("gender", connectUserInfoVO.getGender());
-                        
+
                         if (provider == AccountTypeEnum.QQ.getValue() && StringUtils.isNotBlank(connectUserInfoVO.getUid())) {    // qq 登陆返回 uid
                             result.getModels().put("uid", connectUserInfoVO.getUid());
                         }
@@ -748,7 +748,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }
-    
+
     private String buildWapUserInfoSuccessRu(String ru, String sgid, String uniqname, String sex, String avatarLarge, String avatarMiddle, String avatarSmall, String userId, String uid) {
         Map<String, Object> params = Maps.newHashMap();
         try {
@@ -765,13 +765,13 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
         params.put("avatarMiddle", avatarMiddle);
         params.put("avatarSmall", avatarSmall);
         params.put("userid", userId);
-        
+
         // QQ 返回 uid
         AccountTypeEnum accountType = AccountTypeEnum.getAccountType(userId);
         if (accountType == AccountTypeEnum.QQ && StringUtils.isNotBlank(uid)) {
             params.put("uid", uid);
         }
-        
+
         ru = QueryParameterApplier.applyOAuthParametersString(ru, params);
         return ru;
     }

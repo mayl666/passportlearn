@@ -71,7 +71,7 @@ public class WapLoginManagerImpl implements WapLoginManager {
             if (!result.isSuccess()) {
                 return result;
             }
-            result = loginManager.authUser(username, ip, password);
+            result = loginManager.authUser(username, ip, password, true);
             if (result.isSuccess()) {
                 //写session 数据库
                 passportId = (String) result.getModels().get("userid");

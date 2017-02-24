@@ -69,9 +69,10 @@ public interface LoginManager {
      * @param username
      * @param ip
      * @param pwdMD5
+     * @param isWap 是否是 wap 登录
      * @return
      */
-    public Result authUser(String username, String ip, String pwdMD5);
+    public Result authUser(String username, String ip, String pwdMD5, boolean isWap);
 
     /**
      * 快速登录验证方式
@@ -81,5 +82,4 @@ public interface LoginManager {
      * @return
      */
     public Result quickAuthUser(String key, String ip);
-
 }

@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -14,6 +15,7 @@ import com.sogou.upd.passport.common.validation.constraints.RuValidator;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -57,6 +59,8 @@ public class LoginAction extends BaseController {
     private CookieManager cookieManager;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private SessionServerManager sessionServerManager;
 
     /**
      * 用户登录检查是否显示验证码
@@ -197,6 +201,12 @@ public class LoginAction extends BaseController {
         cookieManager.clearCookie(response);
         String userId = hostHolder.getPassportId();
 
+        // 登出，清除登录态
+        String sgid = ServletUtil.getCookie(request, LoginConstant.COOKIE_SGID);
+        if (Strings.isNullOrEmpty(sgid)) {
+            sessionServerManager.removeSession(sgid);
+        }
+
         //用于记录log
         UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request));
         String referer = request.getHeader("referer");
@@ -212,8 +222,15 @@ public class LoginAction extends BaseController {
     public ModelAndView logoutWithRu(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "ru", required = false) String ru, @RequestParam(value = "client_id", required = false) String client_id)
             throws Exception {
 
-        cookieManager.clearCookie(response);
         String userId = hostHolder.getPassportId();
+
+        // 登出，清除登录态
+        String sgid = ServletUtil.getCookie(request, LoginConstant.COOKIE_SGID);
+        if (Strings.isNullOrEmpty(sgid)) {
+            sessionServerManager.removeSession(sgid);
+        }
+
+        cookieManager.clearCookie(response);
 
         //用于记录log
         UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request));

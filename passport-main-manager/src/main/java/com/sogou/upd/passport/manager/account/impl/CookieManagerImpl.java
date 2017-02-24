@@ -502,6 +502,7 @@ public class CookieManagerImpl implements CookieManager {
 
     @Override
     public void clearCookie(HttpServletResponse response) {
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGID);
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPINF);
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_PPRDIG);
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_PASSPORT);

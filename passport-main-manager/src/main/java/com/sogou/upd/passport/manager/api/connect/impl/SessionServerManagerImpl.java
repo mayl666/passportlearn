@@ -13,16 +13,12 @@ import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
 import com.sogou.upd.passport.common.utils.SessionServerUtil;
-import com.sogou.upd.passport.dao.dal.routing.SGRoutingConfigurator;
-import com.sogou.upd.passport.dao.dal.routing.SGStringHashRouter;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.SessionServerUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
-import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.app.AppConfig;
 import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.app.AppConfigService;
-import com.xiaomi.common.service.dal.routing.Router;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -91,10 +87,11 @@ public class SessionServerManagerImpl implements SessionServerManager {
 
     @Override
     public Result createSession(String passportId) {
-        return createSession(passportId, null);
+        return createSession(passportId, null, false);
     }
 
-    public Result createSession(String passportId, String weixinOpenId) {
+    @Override
+    public Result createSession(String passportId, String weixinOpenId, boolean isWap) {
         Result result = new APIResultSupport(false);
 
         String sgid = null;
@@ -116,6 +113,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
             }
 
             params.put("user_info", jsonMapper.writeValueAsString(map));
+            params.put("isWap", Boolean.toString(isWap));
 
             RequestModel requestModel = new RequestModel(SessionServerUrlConstant.CREATE_SESSION);
 
