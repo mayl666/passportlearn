@@ -113,7 +113,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
             }
 
             params.put("user_info", jsonMapper.writeValueAsString(map));
-            params.put("isWap", Boolean.toString(isWap));
+            params.put("wap", Boolean.toString(isWap));
 
             RequestModel requestModel = new RequestModel(SessionServerUrlConstant.CREATE_SESSION);
 
