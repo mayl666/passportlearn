@@ -203,7 +203,7 @@ public class LoginAction extends BaseController {
 
         // 登出，清除登录态
         String sgid = ServletUtil.getCookie(request, LoginConstant.COOKIE_SGID);
-        if (Strings.isNullOrEmpty(sgid)) {
+        if (StringUtils.isNotBlank(sgid)) {
             sessionServerManager.removeSession(sgid);
         }
 
@@ -226,7 +226,7 @@ public class LoginAction extends BaseController {
 
         // 登出，清除登录态
         String sgid = ServletUtil.getCookie(request, LoginConstant.COOKIE_SGID);
-        if (Strings.isNullOrEmpty(sgid)) {
+        if (StringUtils.isNotBlank(sgid)) {
             sessionServerManager.removeSession(sgid);
         }
 
