@@ -88,6 +88,6 @@ public class AuthUserApiParams extends BaseUserApiParams {
     }
 
     public void setWap(boolean wap) {
-        wap = wap;
+        this.wap = wap;
     }
 }
