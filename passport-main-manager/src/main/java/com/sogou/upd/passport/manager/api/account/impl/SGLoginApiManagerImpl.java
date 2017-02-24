@@ -97,7 +97,7 @@ public class SGLoginApiManagerImpl extends BaseProxyManager implements LoginApiM
                 Result sessionResult = sessionServerManager.createSession(userId, null, authUserApiParams.isWap());
                 if (sessionResult.isSuccess()) {
                     String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
-                    result.setDefaultModel("sgid", sgid);
+                    result.setDefaultModel(LoginConstant.COOKIE_SGID, sgid);
                 } else {
                     result.setCode(sessionResult.getCode());
                     return result;
