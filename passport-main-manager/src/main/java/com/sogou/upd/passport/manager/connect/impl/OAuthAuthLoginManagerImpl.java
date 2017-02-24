@@ -336,7 +336,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
             String weixinOpenId = connectUserInfoVO.getWeixinOpenId();
             sessionResult = sessionServerManager.createSession(userId, weixinOpenId, true);
         } else { // 不需要保存微信 openId
-            sessionResult = sessionServerManager.createSession(userId);
+            sessionResult = sessionServerManager.createSession(userId, null, true);
         }
         if (!sessionResult.isSuccess()) {
             result = buildErrorResult(type, ru, ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION, "create session fail:" + userId, v);
@@ -515,7 +515,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 }
                 //4.写session 数据库
                 if (ConnectTypeEnum.WAP.toString().equals(type)) {
-                    Result sessionResult = sessionServerManager.createSession(passportId);
+                    Result sessionResult = sessionServerManager.createSession(passportId, null, true);
                     if (sessionResult.isSuccess()) {
                         String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                         if (!Strings.isNullOrEmpty(sgid)) {
@@ -603,7 +603,7 @@ public class OAuthAuthLoginManagerImpl implements OAuthAuthLoginManager {
                 String passportId = connectToken.getPassportId();
                 //写session 数据库
                 if (ConnectTypeEnum.WAP.toString().equals(params.getType())) {
-                    Result sessionResult = sessionServerManager.createSession(passportId);
+                    Result sessionResult = sessionServerManager.createSession(passportId, null, true);
                     if (sessionResult.isSuccess()) {
                         String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                         if (!Strings.isNullOrEmpty(sgid)) {
