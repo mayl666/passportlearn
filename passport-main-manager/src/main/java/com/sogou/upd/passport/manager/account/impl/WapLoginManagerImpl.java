@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.manager.account.impl;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.WapConstant;
 import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
@@ -21,6 +22,7 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.app.ConnectConfigService;
 import com.sogou.upd.passport.service.connect.ConnectAuthService;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,18 +73,14 @@ public class WapLoginManagerImpl implements WapLoginManager {
             if (!result.isSuccess()) {
                 return result;
             }
-            result = loginManager.authUser(username, ip, password);
+            result = loginManager.authUser(username, ip, password, true);
             if (result.isSuccess()) {
                 //写session 数据库
                 passportId = (String) result.getModels().get("userid");
-                Result sessionResult = sessionServerManager.createSession(passportId);
-                String sgid = null;
-                if (sessionResult.isSuccess()) {
-                    sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
-                    result.getModels().put("userid", result.getModels().get("userid").toString());
-                    if (!Strings.isNullOrEmpty(sgid)) {
-                        result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
-                    }
+                String sgid = (String) result.getModels().get(LoginConstant.COOKIE_SGID);
+                result.getModels().put("userid", passportId);
+                if (!Strings.isNullOrEmpty(sgid)) {
+                    result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
                 }
             }
         } catch (Exception e) {

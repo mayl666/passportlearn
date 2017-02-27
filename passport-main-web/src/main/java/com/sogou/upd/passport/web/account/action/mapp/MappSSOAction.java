@@ -143,7 +143,7 @@ public class MappSSOAction extends BaseController {
             }
 
             //生成、加密新的sgid
-            Result createSidResult = sessionServerManager.createSession(passportId);
+            Result createSidResult = sessionServerManager.createSession(passportId, null, true);
             if (!createSidResult.isSuccess()) {
                 return createSidResult.toString();
             }

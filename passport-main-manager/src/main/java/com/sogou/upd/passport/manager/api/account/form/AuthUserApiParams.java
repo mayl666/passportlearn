@@ -24,6 +24,7 @@ public class AuthUserApiParams extends BaseUserApiParams {
     @Min(0)
     @Max(1)
     private int needsgid = 0;
+    private boolean wap = false;
 
     public int getNeedsgid() {
         return needsgid;
@@ -80,5 +81,13 @@ public class AuthUserApiParams extends BaseUserApiParams {
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public boolean isWap() {
+        return wap;
+    }
+
+    public void setWap(boolean wap) {
+        this.wap = wap;
     }
 }

@@ -65,10 +65,10 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
 
     @Autowired
     private OperateTimesService operateTimesService;
-    
+
     @Autowired
     private AccountInfoManager accountInfoManager;
-    
+
     /**
      * 下发短信校验码
      *
@@ -174,9 +174,9 @@ public class SmsCodeLoginManagerImpl implements SmsCodeLoginManager {
                             return result;
                         }
                     }
-                    
+
                     //3、写session 数据库
-                    Result sessionResult = sessionServerManager.createSession(passportId);
+                    Result sessionResult = sessionServerManager.createSession(passportId, null, true);
                     String sgid = null;
                     if (sessionResult.isSuccess()) {
                         sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);

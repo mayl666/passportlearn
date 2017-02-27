@@ -140,5 +140,9 @@ public class RuValidatorTest {
         result = ru.isValid(url, null);
         Assert.assertEquals(true, result);
 
+        url = "https://game.59youwan.com/";
+        result = ru.isValid(url, null);
+        Assert.assertEquals(true, result);
+
     }
 }

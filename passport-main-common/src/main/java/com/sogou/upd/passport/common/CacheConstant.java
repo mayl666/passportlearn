@@ -162,5 +162,6 @@ public class CacheConstant {
     public static final String CACHE_PREFIX_SMS_CODE_LOGIN_NUM = "SP.MOBILE:SMS_CODE_LOGINNUM_HASH_";//手机短信登录，登录次数
     public static final String CACHE_PREFIX_SMSLOGIN_CAPTCHA_LIMIT = "SP.MOBILE:SMSLOGIN_CAPTCHA_LIMIT_";//手机短验登录每天超过2次就出现图片验证码
 
-
+    /*=================session 相关===================================*/
+    public static final String CACHE_PREFIX_SESSION = "sessionid_";
 }

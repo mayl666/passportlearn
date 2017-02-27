@@ -208,8 +208,8 @@ public class RegManagerImpl implements RegManager {
         RegMobileApiParams regApiParams = new RegMobileApiParams(username, password, clientId);
         result = registerApiManager.regMobileUser(regApiParams);
         if (result.isSuccess()) {
-            if (!Strings.isNullOrEmpty(type)) {
-                if (ConnectTypeEnum.WAP.toString().equals(type)) {
+//            if (!Strings.isNullOrEmpty(type)) {
+//                if (ConnectTypeEnum.WAP.toString().equals(type)) {
                     String sgid;
                     String passportId = PassportIDGenerator.generator(username, AccountTypeEnum.PHONE.getValue());
                     Result sessionResult = sessionServerManager.createSession(passportId);
@@ -220,12 +220,12 @@ public class RegManagerImpl implements RegManager {
                     sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
                     result.setSuccess(true);
                     result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
-                } else {
-                    result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
-                    result.setMessage("type参数有误！");
-                    return result;
-                }
-            }
+//                } else {
+//                    result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+//                    result.setMessage("type参数有误！");
+//                    return result;
+//                }
+//            }
         }
         return result;
     }
@@ -247,6 +247,17 @@ public class RegManagerImpl implements RegManager {
                 Account account = accountService.initialEmailAccount(username, ip);
                 if (account != null) {
                     result = insertAccountInfo(account, result, ip);
+                    if(result.isSuccess()) {
+                        Result sessionResult = sessionServerManager.createSession(account.getPassportId(), null, false);
+                        if (sessionResult.isSuccess()) {
+                            String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+                            result.setDefaultModel(LoginConstant.COOKIE_SGID, sgid);
+                        } else {
+                            result.setSuccess(false);
+                            result.setCode(sessionResult.getCode());
+                            return result;
+                        }
+                    }
                     return result;
                 } else {
                     result.setCode(ErrorUtil.INVALID_ACCOUNT);
