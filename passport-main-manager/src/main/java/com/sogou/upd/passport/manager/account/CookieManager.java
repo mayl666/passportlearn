@@ -4,7 +4,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.form.PPCookieParams;
 import com.sogou.upd.passport.manager.form.SSOCookieParams;
-import com.sogou.upd.passport.model.app.AppConfig;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,17 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 public interface CookieManager {
 
     /**
-     * 种sogou域cookie接口
-     *
-     * @param response
-     * @param cookieApiParams  获取cookie值必须传递的参数
-     * @param persistentcookie //是否自动登录（0：否 1：是）或是否使用持久cookie 0:session级别的cookie 1:长时间有效的cookie，目前是两天
-     * @return
-     */
-    public Result setCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int persistentcookie);
-
-
-    /**
      * 种sg域cookie
      *
      * @param response
@@ -39,33 +27,6 @@ public interface CookieManager {
      */
     public Result setSGCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int maxAge);
 
-    /**
-     * 通过参数种cookie;
-     *
-     * @param response
-     * @param passportId
-     * @param client_id
-     * @param ip
-     * @param ru
-     * @param maxAge
-     * @return
-     */
-    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge);
-
-
-    /**
-     * 兼容种新老cookie
-     *
-     * @param response
-     * @param passportId
-     * @param client_id
-     * @param ip
-     * @param ru
-     * @param maxAge
-     * @param uniqname
-     * @return
-     */
-    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge, String uniqname);
 
 
     /**

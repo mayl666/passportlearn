@@ -24,7 +24,6 @@ import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
 import com.sogou.upd.passport.manager.form.PPCookieParams;
 import com.sogou.upd.passport.manager.form.SSOCookieParams;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -83,30 +82,8 @@ public class CookieManagerImpl implements CookieManager {
 
     @Autowired
     private CommonManager commonManager;
-    //    @Autowired
-//    private LoginApiManager proxyLoginApiManager;
     @Autowired
     private LoginApiManager sgLoginApiManager;
-//    @Autowired
-//    private RedisUtils redisUtils;
-
-    @Override
-    public Result setCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int maxAge) {
-//        Result result = new APIResultSupport(false);
-//        Result getCookieValueResult = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-//        if (getCookieValueResult.isSuccess()) {
-//            String ppinf = (String) getCookieValueResult.getModels().get("ppinf");
-//            String pprdig = (String) getCookieValueResult.getModels().get("pprdig");
-//            ServletUtil.setCookie(response, "ppinf", ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-//            ServletUtil.setCookie(response, "pprdig", pprdig, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
-//            response.addHeader("Sohupp-Cookie", "ppinf,pprdig");
-//            //response 回去的时候设置一个p3p的header,用来定义IE的跨域问题,解决IE下iframe里无法种cookie的bug。
-//            response.setHeader("P3P", "CP=CAO PSA OUR");
-//            result.setSuccess(true);
-//        }
-//        return result;
-        return null;
-    }
 
     @Override
     public Result setSGCookie(HttpServletResponse response, CookieApiParams cookieApiParams, int maxAge) {
@@ -142,47 +119,6 @@ public class CookieManagerImpl implements CookieManager {
         return result;
     }
 
-
-    @Override
-    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge) {
-//        CookieApiParams cookieApiParams = new CookieApiParams();
-//        cookieApiParams.setUserid(passportId);
-//        cookieApiParams.setClient_id(client_id);
-//        cookieApiParams.setRu(ru);
-//        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-//        cookieApiParams.setPersistentcookie(String.valueOf(1));
-//        cookieApiParams.setIp(ip);
-//        Result result = setCookie(response, cookieApiParams, maxAge);
-//        return result;
-        return null;
-    }
-
-    @Override
-    public Result setCookie(HttpServletResponse response, String passportId, int client_id, String ip, String ru, int maxAge, String uniqname) {
-//        CookieApiParams cookieApiParams = new CookieApiParams();
-//        cookieApiParams.setUserid(passportId);
-//        cookieApiParams.setClient_id(client_id);
-//        cookieApiParams.setRu(ru);
-//        cookieApiParams.setTrust(CookieApiParams.IS_ACTIVE);
-//        cookieApiParams.setPersistentcookie(String.valueOf(1));
-//        cookieApiParams.setIp(ip);
-//        cookieApiParams.setUniqname(uniqname);
-//        Result result = null;
-//        Boolean setNewCookie = Boolean.TRUE;
-//        if (client_id == 1100 || client_id == 1120) {
-//            if (setNewCookie) {
-//                //种ver=5的新cookie
-//                result = setSGCookie(response, cookieApiParams, maxAge);
-//            }
-//        } else {
-//            //仍然通过调用搜狗获取cookie信息接口
-//            result = setCookie(response, cookieApiParams, maxAge);
-//        }
-//        return result;
-        return null;
-
-    }
-
     @Override
     public Result createCookie(HttpServletResponse response, CookieApiParams cookieApiParams) {
         Result result = new APIResultSupport(false);
@@ -195,29 +131,11 @@ public class CookieManagerImpl implements CookieManager {
         boolean setNewCookie = false;
         try {
             //搜狗邮箱登录已经不再支持，全部走搜狗cookie
-//            if (CommonConstant.MAIL_CLIENTID != cookieApiParams.getClient_id()) {
             result = createSGCookie(cookieApiParams);
             if (result.isSuccess()) {
                 ppinf = (String) result.getModels().get("ppinf");
                 pprdig = (String) result.getModels().get("pprdig");
             }
-//            } else {
-//                if(ManagerHelper.authUserBySOHUSwitcher()){
-//                    result = proxyLoginApiManager.getCookieInfo(cookieApiParams);
-//                    if (result.isSuccess()) {
-//                        ppinf = (String) result.getModels().get("ppinf");
-//                        pprdig = (String) result.getModels().get("pprdig");
-//                    } else {
-//                        result.setCode(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED);
-//                        result.setMessage(ErrorUtil.ERR_CODE_MSG_MAP.get(ErrorUtil.ERR_CODE_CREATE_COOKIE_FAILED));
-//                        return result;
-//                    }
-//                }else{
-//                    result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_SOHU_API_FAILED);
-//                    return result;
-//                }
-//
-//            }
 
             //web端生成cookie后、种下cookie 、桌面端不同
             if (cookieApiParams.getCreateAndSet() == CREATE_COOKIE_AND_SET) {
@@ -237,26 +155,6 @@ public class CookieManagerImpl implements CookieManager {
             LOGGER.error("createCookie error. userid:{},client_id:{},setNewCookie:{}", new Object[]{cookieApiParams.getUserid(), cookieApiParams.getClient_id(), setNewCookie}, e);
         }
         return result;
-    }
-
-    /**
-     * 是否中新cookie
-     *
-     * @param userid
-     * @param shardCount
-     * @param aimCount
-     * @return
-     */
-    private Boolean isSetNewCookie(String userid, int shardCount, int aimCount) {
-        String useridHash = DigestUtils.md5Hex(userid);
-        if (Strings.isNullOrEmpty(useridHash)) {
-            return false;
-        }
-        int tempInt = Integer.parseInt(useridHash.substring(0, 2), 16);
-        if (tempInt % shardCount == aimCount) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -484,7 +382,6 @@ public class CookieManagerImpl implements CookieManager {
         if (!"0".equals(ppCookieParams.getLivetime())) {
             int maxAge = (int) DateAndNumTimesConstant.TWO_WEEKS;
             long expire = DateUtil.generatorVaildTime(maxAge) / 1000;
-//            ServletUtil.setCookie(response, LoginConstant.COOKIE_PPINF, ppinf, maxAge, CommonConstant.SOGOU_ROOT_DOMAIN);
             ServletUtil.setExpireCookie(response, LoginConstant.COOKIE_PPINF, ppinf, CommonConstant.SOGOU_ROOT_DOMAIN, expire);
             ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PPRDIG, pprdig, CommonConstant.SOGOU_ROOT_DOMAIN, expire);
             ServletUtil.setHttpOnlyCookie(response, LoginConstant.COOKIE_PASSPORT, passport, CommonConstant.SOGOU_ROOT_DOMAIN, expire);
