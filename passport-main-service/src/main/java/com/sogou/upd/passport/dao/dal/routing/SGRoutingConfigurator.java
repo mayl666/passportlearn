@@ -87,7 +87,7 @@ public class SGRoutingConfigurator extends RoutingConfigurator {
         return null;
     }
 
-    private static abstract class RouterFactory {
+    public static abstract class RouterFactory {
         private String name;
         private Map<String, String> values = new HashMap<String, String>();
 

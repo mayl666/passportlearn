@@ -160,7 +160,7 @@ public class LoginManagerImpl implements LoginManager {
                         return result;
                     }
                 }
-                result = authUser(username, ip, pwdMD5);
+                result = authUser(username, ip, pwdMD5, false);
             } catch (Exception e) {
                 logger.error("accountLogin fail,passportId:" + passportId, e);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
@@ -172,7 +172,7 @@ public class LoginManagerImpl implements LoginManager {
 
 
     @Override
-    public Result authUser(String username, String ip, String pwdMD5) {
+    public Result authUser(String username, String ip, String pwdMD5, boolean isWap) {
         Result result = new APIResultSupport(false);
         String passportId = getIndividPassportIdByUsername(username);
 
@@ -188,6 +188,7 @@ public class LoginManagerImpl implements LoginManager {
         authUserApiParams.setIp(ip);
         authUserApiParams.setPassword(pwdMD5);
         authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
+        authUserApiParams.setWap(isWap);
         result = loginApiManager.webAuthUser(authUserApiParams);
         return result;
     }

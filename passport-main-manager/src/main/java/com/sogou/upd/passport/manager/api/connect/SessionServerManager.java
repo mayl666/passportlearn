@@ -9,7 +9,7 @@ import com.sogou.upd.passport.common.result.Result;
  */
 public interface SessionServerManager {
      public Result createSession(String userId);
-     public Result createSession(String passportId, String weixinOpenId);
+     public Result createSession(String passportId, String weixinOpenId, boolean isWap);
      public Result removeSession(String sgid);
      public Result getPassportIdBySgid(String sgid,String ip);
      public Result verifySid(String sgid,String ip);

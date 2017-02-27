@@ -2,23 +2,43 @@ package com.sogou.upd.passport.service.account.impl;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import com.sogou.upd.passport.common.CacheConstant;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
 import com.sogou.upd.passport.common.math.Coder;
 import com.sogou.upd.passport.common.model.ActiveEmail;
-import com.sogou.upd.passport.common.parameter.*;
+import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
+import com.sogou.upd.passport.common.parameter.AccountStatusEnum;
+import com.sogou.upd.passport.common.parameter.AccountTypeEnum;
+import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
+import com.sogou.upd.passport.common.parameter.SohuPasswordType;
 import com.sogou.upd.passport.common.result.APIResultSupport;
 import com.sogou.upd.passport.common.result.Result;
-import com.sogou.upd.passport.common.utils.*;
+import com.sogou.upd.passport.common.utils.CaptchaUtils;
+import com.sogou.upd.passport.common.utils.DBShardRedisUtils;
+import com.sogou.upd.passport.common.utils.DateUtil;
+import com.sogou.upd.passport.common.utils.ErrorUtil;
+import com.sogou.upd.passport.common.utils.MailUtils;
+import com.sogou.upd.passport.common.utils.PhoneUtil;
+import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.account.AccountDAO;
+import com.sogou.upd.passport.dao.dal.routing.SGRoutingConfigurator;
+import com.sogou.upd.passport.dao.dal.routing.SGStringHashRouter;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.account.Account;
 import com.sogou.upd.passport.model.account.AccountInfo;
-import com.sogou.upd.passport.service.account.*;
+import com.sogou.upd.passport.service.account.AccountHelper;
+import com.sogou.upd.passport.service.account.AccountInfoService;
+import com.sogou.upd.passport.service.account.AccountService;
+import com.sogou.upd.passport.service.account.MobilePassportMappingService;
+import com.sogou.upd.passport.service.account.PCAccountTokenService;
+import com.sogou.upd.passport.service.account.UniqNamePassportMappingService;
 import com.sogou.upd.passport.service.account.generator.PassportIDGenerator;
 import com.sogou.upd.passport.service.account.generator.PwdGenerator;
 import com.sogou.upd.passport.service.account.generator.SecureCodeGenerator;
+import com.xiaomi.common.service.dal.routing.Router;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.perf4j.aop.Profiled;
@@ -64,6 +84,13 @@ public class AccountServiceImpl implements AccountService {
     private PCAccountTokenService pcAccountTokenService;
     @Autowired
     private AccountInfoService accountInfoService;
+    @Autowired
+    private SGRoutingConfigurator sgRoutingConfigurator;
+
+    /**
+     * 分表路由
+     */
+    private static Router router;
 
     @Override
     public Account initialEmailAccount(String username, String ip) throws ServiceException {
@@ -192,7 +219,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             String cacheKey = buildAccountKey(passportId);
             account = dbShardRedisUtils.getObject(cacheKey, Account.class);
-            if (account == null) {
+            if (account == null || account.getId() == 0) {
                 account = accountDAO.getAccountByPassportId(passportId);
                 if (account != null) {
                     dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
@@ -313,6 +340,10 @@ public class AccountServiceImpl implements AccountService {
                 String cacheKey = buildAccountKey(passportId);
                 account.setPassword(passwdSign);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+
+                // 将此用户的所有登录态删除
+                deleteSgid(account);
+
                 return true;
             }
         } catch (Exception e) {
@@ -357,6 +388,10 @@ public class AccountServiceImpl implements AccountService {
         try {
             int row = accountDAO.deleteAccountByPassportId(passportId);
             if (row != 0) {
+
+                // 将此用户的所有登录态删除
+                deleteSgid(passportId);
+
                 String cacheKey = buildAccountKey(passportId);
                 long redisRow = dbShardRedisUtils.delete(cacheKey);
                 return redisRow == 1;
@@ -386,12 +421,93 @@ public class AccountServiceImpl implements AccountService {
                 //输入法泄露数据处理，修改密码后解除限制
                 removeLeakUser(account, passportId);
 
+                // 将此用户的所有登录态删除
+                deleteSgid(account);
+
                 return true;
             }
         } catch (Exception e) {
             throw new ServiceException(e);
         }
         return false;
+    }
+
+    /**
+     * 删除登录态
+     * @param passportId
+     */
+    public void deleteSgid(String passportId) throws ServiceException {
+        Account account = new Account();
+        account.setPassportId(passportId);
+        deleteSgid(account);
+    }
+
+    /**
+     * 删除登录态
+     * @param account
+     */
+    public void deleteSgid(Account account) throws ServiceException {
+        String prefix = getAccountPrefix(account);
+        String cacheKey = buildSessionKey(prefix);
+
+        dbShardRedisUtils.delete(cacheKey);
+    }
+
+    public String getAccountPrefix(String passportId) throws ServiceException {
+        Account account = new Account();
+        account.setPassportId(passportId);
+        return getAccountPrefix(account);
+    }
+    public String getAccountPrefix(Account account) throws ServiceException {
+        if(account == null || StringUtils.isBlank(account.getPassportId())) {
+            throw new ServiceException("账号信息错误");
+        }
+
+        if(account.getId() == 0) {
+            account = queryAccountByPassportId(account.getPassportId());
+        }
+
+        // 计算分表索引
+        String routeResult = getRouter().doRoute(account.getPassportId());
+        int index = routeResult.lastIndexOf('_') + 1;
+        routeResult = routeResult.substring(index);
+
+        return routeResult + "-" + account.getId();
+    }
+
+    private String buildSessionKey(String prefix) {
+        return CacheConstant.CACHE_PREFIX_SESSION + prefix;
+    }
+
+    /**
+     * 获取路由
+     * @return
+     */
+    private Router getRouter() {
+        if(router == null) {
+            router = createRouter();
+        }
+        return router;
+    }
+
+    /**
+     * 创建分表路由
+     * @return
+     */
+    private Router createRouter() {
+        // 获取数据库分表策略
+        String partition = sgRoutingConfigurator.getPartitions().get(0);
+        String[] conf = partition.split(":");
+        if (SGRoutingConfigurator.SG_STRING_HASH.equalsIgnoreCase(conf[0])) {
+            SGRoutingConfigurator.RouterFactory factory = new SGRoutingConfigurator.RouterFactory(SGRoutingConfigurator.SG_STRING_HASH) {
+                @Override
+                public Router onCreateRouter(String column, String pattern, int partitions) {
+                    return new SGStringHashRouter(column, pattern, partitions);
+                }
+            };
+            return factory.setColumn(conf[2]).setPattern(conf[3]).setPartition(conf[4]).createRouter();
+        }
+        return null;
     }
 
     @Override

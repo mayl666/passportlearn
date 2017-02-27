@@ -38,6 +38,8 @@ public class CookieApiParams extends BaseApiParams {
     //是否生成之后就种cookie，0:生成后就种、1:生成后不种
     private int createAndSet;
 
+    private String sgid;
+
     public CookieApiParams() {
     }
 
@@ -146,5 +148,13 @@ public class CookieApiParams extends BaseApiParams {
 
     public void setCreateAndSet(int createAndSet) {
         this.createAndSet = createAndSet;
+    }
+
+    public String getSgid() {
+        return sgid;
+    }
+
+    public void setSgid(String sgid) {
+        this.sgid = sgid;
     }
 }

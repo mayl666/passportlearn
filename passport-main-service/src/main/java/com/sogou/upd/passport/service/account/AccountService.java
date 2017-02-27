@@ -79,6 +79,34 @@ public interface AccountService {
     public boolean resetPassword(String sohuPassportId,Account account, String password, boolean needMD5) throws ServiceException;
 
     /**
+     * 删除登录态
+     * @param passportId
+     */
+    public void deleteSgid(String passportId) throws ServiceException;
+
+    /**
+     * 删除登录态
+     * @param account
+     */
+    public void deleteSgid(Account account) throws ServiceException;
+
+    /**
+     * 获取账号前缀。前缀：分表索引-自增 id
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public String getAccountPrefix(String passportId) throws ServiceException;
+
+    /**
+     * 获取账号前缀。前缀：分表索引-自增 id
+     * @param account
+     * @return
+     * @throws ServiceException
+     */
+    public String getAccountPrefix(Account account) throws ServiceException;
+
+    /**
      * 激活验证邮件
      *
      * @return Result格式的返回值, 成功或失败，返回提示信息

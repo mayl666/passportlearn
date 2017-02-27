@@ -98,7 +98,7 @@ public class WapRegAction extends BaseController {
                 GetUserInfoApiparams userInfoApiparams = new GetUserInfoApiparams(userid, "uniqname,avatarurl,gender");
                 result = sgUserInfoApiManager.getUserInfo(userInfoApiparams);
                 logger.info("wap reg userinfo result:" + result);
-                Result sessionResult = sessionServerManager.createSession(userid);
+                Result sessionResult = sessionServerManager.createSession(userid, null, true);
                 String sgid;
                 if (sessionResult.isSuccess()) {
                     sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);

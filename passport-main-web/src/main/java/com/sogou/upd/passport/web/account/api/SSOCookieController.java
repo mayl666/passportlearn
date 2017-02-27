@@ -1,6 +1,7 @@
 package com.sogou.upd.passport.web.account.api;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.math.Coder;
@@ -10,12 +11,14 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.ServletUtil;
 import com.sogou.upd.passport.manager.account.CookieManager;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.form.PPCookieParams;
 import com.sogou.upd.passport.manager.form.SSOCookieParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
 import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.SSOClearCookieParams;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,6 +40,8 @@ import javax.servlet.http.HttpServletResponse;
 public class SSOCookieController extends BaseController {
     @Autowired
     private CookieManager cookieManager;
+    @Autowired
+    private SessionServerManager sessionServerManager;
 
     /*
      * 非搜狗域下种跨域cookie接口，目前使用产品：导航daohang.qq.com/hao.qq.com、输入法pinyin.qq.com、teemo.cn
@@ -100,7 +105,15 @@ public class SSOCookieController extends BaseController {
             returnErrMsg(response, ssoClearCookieParams.getRu(), result.getCode(), result.getMessage());
             return;
         }
+
+        // 登出，清除登录态
+        String sgid = ServletUtil.getCookie(request, LoginConstant.COOKIE_SGID);
+        if (StringUtils.isNotBlank(sgid)) {
+            sessionServerManager.removeSession(sgid);
+        }
+
         String domain = ssoClearCookieParams.getDomain();
+        ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGID, domain);
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGINF, domain);
         ServletUtil.clearCookie(response, LoginConstant.COOKIE_SGRDIG, domain);
 

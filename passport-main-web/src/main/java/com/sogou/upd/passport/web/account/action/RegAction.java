@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.parameter.AccountDomainEnum;
@@ -172,6 +173,10 @@ public class RegAction extends BaseController {
 //                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1);
                     //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie module替换
 //                    result = cookieManager.setCookie(response, passportId, clientId, ip, ru, -1, StringUtils.EMPTY);
+                    String sgid = "";
+                    if (result.getModels().get(LoginConstant.COOKIE_SGID) != null) {
+                        sgid = result.getModels().get(LoginConstant.COOKIE_SGID).toString();
+                    }
 
                     CookieApiParams cookieApiParams = new CookieApiParams();
                     cookieApiParams.setUserid(passportId);
@@ -182,6 +187,7 @@ public class RegAction extends BaseController {
                     cookieApiParams.setIp(ip);
                     cookieApiParams.setUniqname(StringUtils.EMPTY);
                     cookieApiParams.setMaxAge(-1);
+                    cookieApiParams.setSgid(sgid);
                     cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
 
                     result = cookieManager.createCookie(response, cookieApiParams);
@@ -320,6 +326,11 @@ public class RegAction extends BaseController {
             //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie module 替换
 //            result = cookieManager.setCookie(response, activeParams.getPassport_id(), clientId, ip, activeParams.getRu(), -1, StringUtils.EMPTY);
 
+            String sgid = "";
+            if (result.getModels().get(LoginConstant.COOKIE_SGID) != null) {
+                sgid = result.getModels().get(LoginConstant.COOKIE_SGID).toString();
+            }
+
             CookieApiParams cookieApiParams = new CookieApiParams();
             cookieApiParams.setUserid(activeParams.getPassport_id());
             cookieApiParams.setClient_id(clientId);
@@ -329,6 +340,7 @@ public class RegAction extends BaseController {
             cookieApiParams.setIp(ip);
             cookieApiParams.setUniqname(StringUtils.EMPTY);
             cookieApiParams.setMaxAge(-1);
+            cookieApiParams.setSgid(sgid);
             cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
 
             result = cookieManager.createCookie(response, cookieApiParams);

@@ -17,6 +17,7 @@ import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.SessionServerUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.app.AppConfigService;
 
 import org.apache.commons.collections.MapUtils;
@@ -41,8 +42,11 @@ public class SessionServerManagerImpl implements SessionServerManager {
     private static ObjectMapper jsonMapper = JacksonJsonMapperUtil.getMapper();
 
     private static final Logger logger = LoggerFactory.getLogger(SessionServerManagerImpl.class);
+
     @Autowired
     private AppConfigService appConfigService;
+    @Autowired
+    private AccountService accountService;
 
     private Map<String, String> buildHttpSessionParam(String sgid) {
 
@@ -83,17 +87,22 @@ public class SessionServerManagerImpl implements SessionServerManager {
 
     @Override
     public Result createSession(String passportId) {
-        return createSession(passportId, null);
+        return createSession(passportId, null, false);
     }
 
-    public Result createSession(String passportId, String weixinOpenId) {
+    @Override
+    public Result createSession(String passportId, String weixinOpenId, boolean isWap) {
         Result result = new APIResultSupport(false);
 
         String sgid = null;
         SessionResult sessionResult = null;
         try {
-            //创建sgid
-            sgid = SessionServerUtil.createSessionSid(passportId);
+            // 获取账号前缀
+            sgid = accountService.getAccountPrefix(passportId) + "-";
+
+            // 创建 sgid
+            // sgid 规则：分表索引-账号自增id-旧sgid
+            sgid += SessionServerUtil.createSessionSid(passportId);
 
             Map<String, String> params = buildHttpSessionParam(sgid);
 
@@ -104,6 +113,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
             }
 
             params.put("user_info", jsonMapper.writeValueAsString(map));
+            params.put("wap", Boolean.toString(isWap));
 
             RequestModel requestModel = new RequestModel(SessionServerUrlConstant.CREATE_SESSION);
 

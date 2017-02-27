@@ -1,8 +1,10 @@
 package com.sogou.upd.passport.web.account.action;
 
 import com.google.common.base.Strings;
+
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.DateAndNumTimesConstant;
+import com.sogou.upd.passport.common.LoginConstant;
 import com.sogou.upd.passport.common.lang.StringUtil;
 import com.sogou.upd.passport.common.model.useroperationlog.UserOperationLog;
 import com.sogou.upd.passport.common.result.APIResultSupport;
@@ -13,6 +15,7 @@ import com.sogou.upd.passport.common.validation.constraints.RuValidator;
 import com.sogou.upd.passport.manager.account.CookieManager;
 import com.sogou.upd.passport.manager.account.LoginManager;
 import com.sogou.upd.passport.manager.api.account.form.CookieApiParams;
+import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
 import com.sogou.upd.passport.manager.form.WebLoginParams;
 import com.sogou.upd.passport.web.BaseController;
 import com.sogou.upd.passport.web.ControllerHelper;
@@ -20,6 +23,7 @@ import com.sogou.upd.passport.web.UserOperationLogUtil;
 import com.sogou.upd.passport.web.account.form.CheckUserNameExistParameters;
 import com.sogou.upd.passport.web.annotation.RiskControlSecurity;
 import com.sogou.upd.passport.web.inteceptor.HostHolder;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +37,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.net.URLDecoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URLDecoder;
 
 /**
  * User: mayan
@@ -54,6 +59,8 @@ public class LoginAction extends BaseController {
     private CookieManager cookieManager;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private SessionServerManager sessionServerManager;
 
     /**
      * 用户登录检查是否显示验证码
@@ -130,6 +137,10 @@ public class LoginAction extends BaseController {
                 if (Strings.isNullOrEmpty(sogouRu)) {
                     sogouRu = CommonConstant.DEFAULT_INDEX_URL;
                 }
+                String sgid = "";
+                if (result.getModels().get(LoginConstant.COOKIE_SGID) != null) {
+                    sgid = result.getModels().get(LoginConstant.COOKIE_SGID).toString();
+                }
                 //最初版本
 //            result = cookieManager.setCookie(response, userId, clientId, ip, sogouRu, sogouMaxAge);
                 //新重载的方法、增加昵称参数、以及判断种老cookie还是新cookie  module 替换
@@ -143,6 +154,7 @@ public class LoginAction extends BaseController {
                 cookieApiParams.setIp(ip);
                 cookieApiParams.setUniqname(uniqName);
                 cookieApiParams.setMaxAge(sogouMaxAge);
+                cookieApiParams.setSgid(sgid);
                 cookieApiParams.setCreateAndSet(CommonConstant.CREATE_COOKIE_AND_SET);
                 result = cookieManager.createCookie(response, cookieApiParams);
                 if (result.isSuccess()) {
@@ -192,6 +204,12 @@ public class LoginAction extends BaseController {
         cookieManager.clearCookie(response);
         String userId = hostHolder.getPassportId();
 
+        // 登出，清除登录态
+        String sgid = ServletUtil.getCookie(request, LoginConstant.COOKIE_SGID);
+        if (StringUtils.isNotBlank(sgid)) {
+            sessionServerManager.removeSession(sgid);
+        }
+
         //用于记录log
         UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request));
         String referer = request.getHeader("referer");
@@ -207,8 +225,15 @@ public class LoginAction extends BaseController {
     public ModelAndView logoutWithRu(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "ru", required = false) String ru, @RequestParam(value = "client_id", required = false) String client_id)
             throws Exception {
 
-        cookieManager.clearCookie(response);
         String userId = hostHolder.getPassportId();
+
+        // 登出，清除登录态
+        String sgid = ServletUtil.getCookie(request, LoginConstant.COOKIE_SGID);
+        if (StringUtils.isNotBlank(sgid)) {
+            sessionServerManager.removeSession(sgid);
+        }
+
+        cookieManager.clearCookie(response);
 
         //用于记录log
         UserOperationLog userOperationLog = new UserOperationLog(userId, client_id, "0", getIp(request));
