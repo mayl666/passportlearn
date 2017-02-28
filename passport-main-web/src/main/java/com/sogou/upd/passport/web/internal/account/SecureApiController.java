@@ -480,7 +480,7 @@ public class SecureApiController extends BaseController {
 
             passportId = commonManager.getPassportIdByUsername(passportId);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
-            if (domain.equals(AccountDomainEnum.UNKNOWN) || domain.equals(AccountDomainEnum.THIRD)) {
+            if (domain.equals(AccountDomainEnum.UNKNOWN)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
                 return result.toString();
             }
