@@ -487,6 +487,7 @@ public class SecureApiController extends BaseController {
             }
 
             result = secureManager.queryActionRecords(passportId, clientId, AccountModuleEnum.LOGIN);
+            result.setDefaultModel("userid", passportId);
         } catch (Exception e) {
             result.setSuccess(false);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
