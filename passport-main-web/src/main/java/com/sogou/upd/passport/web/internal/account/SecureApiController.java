@@ -463,6 +463,7 @@ public class SecureApiController extends BaseController {
      * @return
      * @throws Exception
      */
+    @InterfaceSecurity
     @RequestMapping(value = "/history", method = RequestMethod.POST)
     @ResponseBody
     public String queryHistory(HttpServletRequest request, BaseUserApiParams params) throws Exception {
