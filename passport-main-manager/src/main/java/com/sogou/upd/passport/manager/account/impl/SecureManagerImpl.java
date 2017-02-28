@@ -775,7 +775,7 @@ public class SecureManagerImpl implements SecureManager {
         List<ActionRecordVO> recordsVO = Lists.newLinkedList();
         List<ActionStoreRecordDO>
                 storeRecords = accountSecureService.getActionStoreRecords(userId, clientId, module);
-        if (!CollectionUtils.isEmpty(storeRecords)) {
+        if (CollectionUtils.isNotEmpty(storeRecords)) {
             for (ActionStoreRecordDO actionDO : storeRecords) {
                 ActionRecordVO actionVO = new ActionRecordVO(actionDO);
                 if (actionDO != null) {
