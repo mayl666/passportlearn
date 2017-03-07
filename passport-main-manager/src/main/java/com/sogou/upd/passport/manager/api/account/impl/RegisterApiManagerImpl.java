@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  * 注册
@@ -44,6 +45,10 @@ import java.util.Date;
 @Component("registerApiManager")
 public class RegisterApiManagerImpl extends BaseProxyManager implements RegisterApiManager {
     private static Logger logger = LoggerFactory.getLogger(RegisterApiManagerImpl.class);
+
+    /** 密码正则 */
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z-_!@#%&*|?+\\[\\]\\{\\},.;:]{6,16}$");
+
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -93,6 +98,12 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
             if (!result.isSuccess()) {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                return result;
+            }
+            // 密码强度校验
+            if(!PASSWORD_PATTERN.matcher(password).matches()) {
+                result = new APIResultSupport(false);
+                result.setCode(ErrorUtil.ERR_C0DE_PASSWORD_STRENGTH_WEAK);
                 return result;
             }
             switch (emailType) {
@@ -213,7 +224,7 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                 }
             } else {
                 Account account;
-              
+
                 AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(username);
                 if (AccountDomainEnum.SOHU.equals(domain) || (AccountDomainEnum.THIRD.equals(domain))) {
                     if(!username.matches(".+@qq\\.sohu\\.com$")) {  // 非QQ
@@ -313,6 +324,12 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                 String passportId = mobilePassportMappingService.queryPassportIdByMobile(mobile);
                 if (!Strings.isNullOrEmpty(passportId)) {
                     result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_REGED);
+                    return result;
+                }
+                // 密码强度校验
+                if(!PASSWORD_PATTERN.matcher(password).matches()) {
+                    result = new APIResultSupport(false);
+                    result.setCode(ErrorUtil.ERR_C0DE_PASSWORD_STRENGTH_WEAK);
                     return result;
                 }
                 Account account = accountService.initialAccount(mobile, password, true, null, AccountTypeEnum.PHONE.getValue());

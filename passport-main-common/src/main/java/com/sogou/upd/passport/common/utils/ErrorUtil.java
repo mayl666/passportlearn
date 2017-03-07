@@ -179,6 +179,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_SSO_TOKEN_INVALID = "20266";
     //SSO参数解析错误
     public static final String ERR_CODE_SSO_PARAM_INVALID = "20267";
+    // 密码强度弱，密码为6-16位，不允许纯数字或纯字母
+    public static final String ERR_C0DE_PASSWORD_STRENGTH_WEAK = "20268";
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -372,7 +374,7 @@ public class ErrorUtil {
 
     //解除绑定邮箱失败 错误码定义需要有一些跨度 方便扩展！！！
     public static final String ERR_CODE_EMAIL_UNBIND_FAIL = "40001";
-    
+
     /* ============================================================================ */
     /*  同步相关错误代码                                                              */
     /* ============================================================================ */
@@ -477,6 +479,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_FAILED, "快速登录失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_TOKEN_INVALID, "快速登录令牌无效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_PARAM_INVALID, "快速登录参数解析失败");
+        ERR_CODE_MSG_MAP.put(ERR_C0DE_PASSWORD_STRENGTH_WEAK, "密码强度弱，密码为6-16位，不允许纯数字或纯字母");
 
         // acount secure info
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_HAVA_BIND_MOBILE, "您的帐号已绑定手机，请使用手机找回或联系客服");
@@ -574,14 +577,14 @@ public class ErrorUtil {
 
 
         ERR_CODE_MSG_MAP.put(ERR_CODE_EMAIL_UNBIND_FAIL, "解除密保邮箱失败");
-    
+
         // 同步相关错误代码
         ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_APP_EXISTS, "应用已存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_APP_NOT_EXISTS, "应用不存在");
         ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_APP_ADD_FAILED, "同步新增应用失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_APP_UPDATE_FAILED, "同步修改应用失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_APP_DELETE_FAILED, "同步删除应用失败");
-    
+
     }
 
     public static Map<String, String> getERR_CODE_MSG_MAP() {
