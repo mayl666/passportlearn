@@ -481,8 +481,7 @@ public class SecureApiController extends BaseController {
 
             // 查找真实 passport 账号
             passportId = commonManager.getPassportIdByUsername(passportId);
-            AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
-            if (domain.equals(AccountDomainEnum.UNKNOWN)) { // 若账号在系统中不存在返回提示
+            if (Strings.isNullOrEmpty(passportId)) { // 账号在系统中不存在
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result.toString();
             }
