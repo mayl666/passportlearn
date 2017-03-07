@@ -52,6 +52,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * User: mayan Date: 13-3-22 Time: 下午3:38 To change this template use File | Settings | File Templates.
@@ -64,6 +65,9 @@ public class AccountServiceImpl implements AccountService {
     private static final String PASSPORT_ACTIVE_EMAIL_URL = "http://account.sogou.com/web/activemail?";
     private static final String POSTFIX_PINYIN_MIGRATE = "_pinyinPP_";   //SOGOU输入法昵称迁移，为保证昵称唯一性加的后缀
     private String POSTFIX_PINYIN_FORMAT = "(.+)" + POSTFIX_PINYIN_MIGRATE + "[0-9][0-9][0-9][0-9]$"; //加后缀的昵称，虽然在redis和数据库中存有后缀，返回给接口时要去掉
+
+    /** 密码正则 */
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z-_!@#%&*|?+\\[\\]\\{\\},.;:]{6,16}$");
 
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     @Autowired
@@ -334,6 +338,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public boolean updatePwd(String passportId,Account account, String password, boolean needMd5) throws ServiceException {
         try {
+            // 密码强度校验
+            if(!isPasswordStrengthStrong(password)) {
+                return false;
+            }
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMd5);
             int row = accountDAO.updatePassword(passwdSign, passportId);
             if (row != 0) {
@@ -430,6 +438,10 @@ public class AccountServiceImpl implements AccountService {
             throw new ServiceException(e);
         }
         return false;
+    }
+
+    public boolean isPasswordStrengthStrong(String password) {
+        return PASSWORD_PATTERN.matcher(password).matches();
     }
 
     /**

@@ -126,7 +126,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             throws Exception {
         return sendEmailResetPwdByPassportId(passportId, clientId, useRegEmail, ru, scode, true, null);
     }
-    
+
     /*
      * 重置密码（邮件方式）——1.发送重置密码申请验证邮件
      */
@@ -281,6 +281,11 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
             Account account = accountService.queryNormalAccount(passportId);
             if (account == null) {
                 result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                return result;
+            }
+            // 密码强度校验
+            if(!accountService.isPasswordStrengthStrong(password)) {
+                result.setCode(ErrorUtil.ERR_CODE_PASSWORD_STRENGTH_WEAK);
                 return result;
             }
             if (!accountService.resetPassword(passportId,account, password, true)) {

@@ -304,8 +304,8 @@ public class SecureApiController extends BaseController {
             UserOperationLogUtil.log(userOperationLog);
         }
     }
-    
-    
+
+
     /**
      * 找回密码时获取用户安全信息
      * 返回的信息包含密保手机、密保邮箱、及密保问题（找回密码不会用到此返回结果）
@@ -328,10 +328,10 @@ public class SecureApiController extends BaseController {
                 result.setMessage(validateResult);
                 return result.toString();
             }
-            
+
             //默认是sogou.com
             AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(passportId);
-            
+
             if (AccountDomainEnum.INDIVID.equals(accountDomainEnum)) {
                 passportId = passportId + CommonConstant.SOGOU_SUFFIX;
             }
@@ -365,7 +365,7 @@ public class SecureApiController extends BaseController {
             AccountSecureInfoVO accountSecureInfoVO = (AccountSecureInfoVO) result.getDefaultModel();
             //记录找回密码次数
             resetPwdManager.incFindPwdTimes(passportId);
-            
+
             // 转换安全信息
           // 如果用户的密保手机和密保邮箱存在，则返回模糊处理的手机号/密保邮箱及完整手机号/邮箱加密后的md5串
           if (accountSecureInfoVO != null) {
@@ -388,7 +388,7 @@ public class SecureApiController extends BaseController {
               result.getModels().remove("sec_email"); //为了账号安全，不返回完整的密保邮箱
             }
           }
-            
+
             result.setDefaultModel("scode", commonManager.getSecureCode(passportId, clientId,CacheConstant.CACHE_PREFIX_PASSPORTID_RESETPWDSECURECODE));
         } catch (Exception e) {
             result.setSuccess(false);
@@ -403,7 +403,7 @@ public class SecureApiController extends BaseController {
         }
         return result.toString();
     }
-    
+
     /**
      * 修改密码
      *
@@ -415,7 +415,7 @@ public class SecureApiController extends BaseController {
     public Object updatePwd(HttpServletRequest request, UpdatePswParams updateParams)
       throws Exception {
         Result result = new APIResultSupport(false);
-    
+
         // 参数校验
         String validateResult = ControllerHelper.validateParams(updateParams);
         if (!Strings.isNullOrEmpty(validateResult)) {
@@ -423,13 +423,13 @@ public class SecureApiController extends BaseController {
             result.setMessage(validateResult);
             return result.toString();
         }
-    
+
         String passportId = updateParams.getUserid();
         String clientId = String.valueOf(updateParams.getClient_id());
         String password = updateParams.getPassword();
         String newPwd = updateParams.getNewpwd();
         String ip = updateParams.getIp();
-        
+
         try {
             // 用户名的所属域
             AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(passportId);
@@ -438,14 +438,14 @@ public class SecureApiController extends BaseController {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
                 return result.toString();
             }
-    
+
             UpdatePwdParameters updatePwdParameters = new UpdatePwdParameters();
             updatePwdParameters.setClient_id(clientId);
             updatePwdParameters.setPassport_id(passportId);
             updatePwdParameters.setPassword(password);
             updatePwdParameters.setNewpwd(newPwd);
             updatePwdParameters.setIp(ip);
-            
+
             result = secureManager.updateWebPwd(updatePwdParameters);
             return result.toString();
         } finally {
@@ -454,5 +454,51 @@ public class SecureApiController extends BaseController {
             userOperationLog.putOtherMessage("ref", referer);
             UserOperationLogUtil.log(userOperationLog);
         }
+    }
+
+    /**
+     * 查询用户登录记录
+     * @param request
+     * @param params
+     * @return
+     * @throws Exception
+     */
+    @InterfaceSecurity
+    @RequestMapping(value = "/history", method = RequestMethod.POST)
+    @ResponseBody
+    public String queryHistory(HttpServletRequest request, BaseUserApiParams params) throws Exception {
+        Result result = new APIResultSupport(false);
+        //用户输入的账号
+        String passportId = params.getUserid();
+        int clientId = params.getClient_id();
+        try {
+            String validateResult = ControllerHelper.validateParams(params);
+            if (!Strings.isNullOrEmpty(validateResult)) {
+                result.setCode(ErrorUtil.ERR_CODE_COM_REQURIE);
+                result.setMessage(validateResult);
+                return result.toString();
+            }
+
+            // 查找真实 passport 账号
+            passportId = commonManager.getPassportIdByUsername(passportId);
+            if (Strings.isNullOrEmpty(passportId)) { // 账号在系统中不存在
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
+                return result.toString();
+            }
+
+            result = secureManager.queryActionRecords(passportId, clientId, AccountModuleEnum.LOGIN);
+            result.setDefaultModel("userid", passportId);
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
+            logger.error("queryHistory Failed,Username is " + passportId, e);
+        } finally {
+            //用户登录log
+            UserOperationLog userOperationLog = new UserOperationLog(passportId, request.getRequestURI(),
+                                                                     String.valueOf(CommonConstant.SGPP_DEFAULT_CLIENTID), result.getCode(), getIp(request));
+            userOperationLog.putOtherMessage("ref", request.getHeader("referer"));
+            UserOperationLogUtil.log(userOperationLog);
+        }
+        return result.toString();
     }
 }
