@@ -179,8 +179,8 @@ public class ErrorUtil {
     public static final String ERR_CODE_SSO_TOKEN_INVALID = "20266";
     //SSO参数解析错误
     public static final String ERR_CODE_SSO_PARAM_INVALID = "20267";
-    // 密码强度弱，密码为6-16位，不允许纯数字或纯字母
-    public static final String ERR_C0DE_PASSWORD_STRENGTH_WEAK = "20268";
+    // 密码为6-16位，不允许纯数字或纯字母
+    public static final String ERR_CODE_PASSWORD_STRENGTH_WEAK = "20268";
 
     /* ============================================================================ */
     /*  account secure 服务的错误代码                                                */
@@ -479,7 +479,7 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_FAILED, "快速登录失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_TOKEN_INVALID, "快速登录令牌无效");
         ERR_CODE_MSG_MAP.put(ERR_CODE_SSO_PARAM_INVALID, "快速登录参数解析失败");
-        ERR_CODE_MSG_MAP.put(ERR_C0DE_PASSWORD_STRENGTH_WEAK, "密码为6-16位，不允许纯数字或纯字母");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_PASSWORD_STRENGTH_WEAK, "密码为6-16位，不允许纯数字或纯字母");
 
         // acount secure info
         ERR_CODE_MSG_MAP.put(ERR_CODE_USER_HAVA_BIND_MOBILE, "您的帐号已绑定手机，请使用手机找回或联系客服");

@@ -387,6 +387,11 @@ public class SecureManagerImpl implements SecureManager {
                                         //校验account是否存在
                                         Account account = accountService.queryNormalAccount(passportId);
                                         if (account != null) {
+                                            // 密码强度校验
+                                            if(!accountService.isPasswordStrengthStrong(newPwd)) {
+                                                result.setCode(ErrorUtil.ERR_CODE_PASSWORD_STRENGTH_WEAK);
+                                                return result;
+                                            }
                                             if (accountService.resetPassword(passportId,account, newPwd, true)) {
                                                 operateTimesService.incLimitResetPwd(passportId, clientId);
                                                 smsText = smsText + "重置密码成功，请使用新密码登录。";

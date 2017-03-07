@@ -419,10 +419,6 @@ public class AccountServiceImpl implements AccountService {
             if(accountDomain==AccountDomainEnum.SOHU){
                 passportId=sohuPassportId;//sohu 账号区分大小写
             }
-            // 密码强度校验
-            if(!PASSWORD_PATTERN.matcher(password).matches()) {
-                return false;
-            }
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMD5);
             int row = accountDAO.updatePassword(passwdSign, passportId);
             pcAccountTokenService.batchRemoveAccountToken(passportId, true);
@@ -442,6 +438,10 @@ public class AccountServiceImpl implements AccountService {
             throw new ServiceException(e);
         }
         return false;
+    }
+
+    public boolean isPasswordStrengthStrong(String password) {
+        return PASSWORD_PATTERN.matcher(password).matches();
     }
 
     /**

@@ -101,9 +101,9 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                 return result;
             }
             // 密码强度校验
-            if(!PASSWORD_PATTERN.matcher(password).matches()) {
+            if(!accountService.isPasswordStrengthStrong(password)) {
                 result = new APIResultSupport(false);
-                result.setCode(ErrorUtil.ERR_C0DE_PASSWORD_STRENGTH_WEAK);
+                result.setCode(ErrorUtil.ERR_CODE_PASSWORD_STRENGTH_WEAK);
                 return result;
             }
             switch (emailType) {
@@ -327,9 +327,8 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                     return result;
                 }
                 // 密码强度校验
-                if(!PASSWORD_PATTERN.matcher(password).matches()) {
-                    result = new APIResultSupport(false);
-                    result.setCode(ErrorUtil.ERR_C0DE_PASSWORD_STRENGTH_WEAK);
+                if(!accountService.isPasswordStrengthStrong(password)) {
+                    result.setCode(ErrorUtil.ERR_CODE_PASSWORD_STRENGTH_WEAK);
                     return result;
                 }
                 Account account = accountService.initialAccount(mobile, password, true, null, AccountTypeEnum.PHONE.getValue());
