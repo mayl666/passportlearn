@@ -339,7 +339,7 @@ public class AccountServiceImpl implements AccountService {
     public boolean updatePwd(String passportId,Account account, String password, boolean needMd5) throws ServiceException {
         try {
             // 密码强度校验
-            if(!PASSWORD_PATTERN.matcher(password).matches()) {
+            if(!isPasswordStrengthStrong(password)) {
                 return false;
             }
             String passwdSign = PwdGenerator.generatorStoredPwd(password, needMd5);

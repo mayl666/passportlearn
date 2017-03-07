@@ -46,9 +46,6 @@ import java.util.regex.Pattern;
 public class RegisterApiManagerImpl extends BaseProxyManager implements RegisterApiManager {
     private static Logger logger = LoggerFactory.getLogger(RegisterApiManagerImpl.class);
 
-    /** 密码正则 */
-    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z-_!@#%&*|?+\\[\\]\\{\\},.;:]{6,16}$");
-
     @Autowired
     private AccountService accountService;
     @Autowired

@@ -479,10 +479,11 @@ public class SecureApiController extends BaseController {
                 return result.toString();
             }
 
+            // 查找真实 passport 账号
             passportId = commonManager.getPassportIdByUsername(passportId);
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
-            if (domain.equals(AccountDomainEnum.UNKNOWN)) {
-                result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_NOTALLOWED);
+            if (domain.equals(AccountDomainEnum.UNKNOWN)) { // 若账号在系统中不存在返回提示
+                result.setCode(ErrorUtil.INVALID_ACCOUNT);
                 return result.toString();
             }
 
