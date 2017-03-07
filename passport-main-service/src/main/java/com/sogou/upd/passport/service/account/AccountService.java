@@ -259,4 +259,11 @@ public interface AccountService {
      * @throws ServiceException
      */
     public boolean updatePwd(String passportId,Account account,String password,boolean needMd5) throws ServiceException;
+
+    /**
+     * 校验密码是否强壮
+     * @param password
+     * @return
+     */
+    public boolean isPasswordStrengthStrong(String password);
 }

@@ -63,7 +63,7 @@ public class SecureApiManagerImpl implements SecureApiManager {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_KILLED);
                 return result;
             }
-    
+
             result.setSuccess(true);
             result.setMessage("操作成功");
             result.setDefaultModel("userid", account.getPassportId());
@@ -77,9 +77,16 @@ public class SecureApiManagerImpl implements SecureApiManager {
             }
             account = (Account) result.getDefaultModel();
         }
-        
+        // 密码强度校验
+        if(!accountService.isPasswordStrengthStrong(newPwd)) {
+            result = new APIResultSupport(false);
+            result.setCode(ErrorUtil.ERR_CODE_PASSWORD_STRENGTH_WEAK);
+            return result;
+        }
+
         result.setModels(Maps.newHashMap());
         if (!accountService.resetPassword(passportId,account, newPwd, true)) {
+            result = new APIResultSupport(false);
             result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_RESETPASSWORD_FAILED);
             result.setSuccess(false);
         }
