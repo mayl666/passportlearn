@@ -388,7 +388,7 @@ public class SecureManagerImpl implements SecureManager {
                                         Account account = accountService.queryNormalAccount(passportId);
                                         if (account != null) {
                                             // 密码强度校验
-                                            if(!accountService.isPasswordStrengthStrong(newPwd)) {
+                                            if(!accountService.isPasswordStrengthStrong(clientId, newPwd)) {
                                                 result.setCode(ErrorUtil.ERR_CODE_PASSWORD_STRENGTH_WEAK);
                                                 return result;
                                             }
