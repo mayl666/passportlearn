@@ -52,7 +52,7 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
         Result result = new APIResultSupport(false);
         try {
             String userId = authUserApiParams.getUserid();
-            
+
             // 用户名的所属域
             AccountDomainEnum accountDomainEnum = AccountDomainEnum.getAccountDomain(userId);
             if(THIRD.equals(accountDomainEnum) && !userId.matches(".+@qq\\.sohu\\.com$")) {   // 第三方登陆
@@ -60,7 +60,7 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_THIRD_NOTALLOWED);
                 return result;
             }
-            
+
             String passportId = commonManager.getPassportIdByUsername(userId);
             if (Strings.isNullOrEmpty(passportId)) {
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_PHONE_NOBIND);
@@ -69,32 +69,6 @@ public class LoginApiManagerImpl extends BaseProxyManager implements LoginApiMan
             AccountDomainEnum domain = AccountDomainEnum.getAccountDomain(passportId);
             //搜狐账号也在搜狗校验
             result = sgLoginApiManager.webAuthUser(authUserApiParams);
-//            if(result.isSuccess()){
-//                return result;
-//            }
-
-            //停止去搜狐校验
-//            if((!result.isSuccess())&&(AccountDomainEnum.SOHU.equals(domain))) {
-//                //停止新的搜狐账号登录,若存在，去搜狐校验，若不存在直接返回10009
-//                Account account = accountService.queryAccountByPassportId(passportId);
-//                if (null == account) {
-//                    result.setCode(ErrorUtil.INVALID_ACCOUNT);
-//                    return result;
-//                }
-//
-//                String passwordStored=account.getPassword();
-//                if(Strings.isNullOrEmpty(passwordStored) && ManagerHelper.authUserBySOHUSwitcher()){
-//                    result = proxyLoginApiManager.webAuthUser(authUserApiParams);
-//                    String pwdParam = authUserApiParams.getPassword();
-//                    if(result.isSuccess()){
-//                        accountService.updatePwd(passportId,account, pwdParam, false);
-//                        sohuSpecialLogger.warn(passportId+"\t"+pwdParam);
-//                    }
-//                }
-//
-//            }
-
-
         } catch (Exception e) {
             logger.error("bothAuthUser Exception", e);
             result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
