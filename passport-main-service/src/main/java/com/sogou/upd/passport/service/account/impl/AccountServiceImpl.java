@@ -326,41 +326,6 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    /**
-     * 只更新db和redis中的用户密码，不清除pc端token
-     * @param account
-     * @param password
-     * @param needMd5
-     * @return
-     * @throws ServiceException
-     */
-    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updatePassword", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
-    @Override
-    public boolean updatePwd(String passportId,Account account, String password, boolean needMd5) throws ServiceException {
-        try {
-            // 密码强度校验
-            if(!isPasswordStrengthStrong(password)) {
-                return false;
-            }
-            String passwdSign = PwdGenerator.generatorStoredPwd(password, needMd5);
-            int row = accountDAO.updatePassword(passwdSign, passportId);
-            if (row != 0) {
-                String cacheKey = buildAccountKey(passportId);
-                account.setPassword(passwdSign);
-                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
-
-                // 将此用户的所有登录态删除
-                deleteSgid(account);
-
-                return true;
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-        return false;
-    }
-
-
     private boolean verifyPwdWithOriginal(String password, String storedPwd) {
         if (storedPwd.equals(password)) {
             return true;
@@ -440,8 +405,11 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
-    public boolean isPasswordStrengthStrong(String password) {
-        return PASSWORD_PATTERN.matcher(password).matches();
+    public boolean isPasswordStrengthStrong(int clientId, String password) {
+        if (clientId == 2011 || clientId == 2020 || clientId == 10069) { // 对糖猫进行特殊处理
+            return PASSWORD_PATTERN.matcher(password).matches();
+        }
+        return true;
     }
 
     /**

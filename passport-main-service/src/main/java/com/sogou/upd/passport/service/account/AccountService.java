@@ -249,21 +249,10 @@ public interface AccountService {
      */
     public Result verifyUserPwdValidByPasswordType(Account account, String password, Boolean needMD5,SohuPasswordType sohuPwdType) throws ServiceException;
 
-
-    /**
-     * 只更新db和redis中的用户密码，不清除pc端token
-     * @param account
-     * @param password
-     * @param needMd5
-     * @return
-     * @throws ServiceException
-     */
-    public boolean updatePwd(String passportId,Account account,String password,boolean needMd5) throws ServiceException;
-
     /**
      * 校验密码是否强壮
      * @param password
      * @return
      */
-    public boolean isPasswordStrengthStrong(String password);
+    public boolean isPasswordStrengthStrong(int clientId, String password);
 }

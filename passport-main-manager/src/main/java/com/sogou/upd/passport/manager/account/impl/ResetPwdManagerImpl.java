@@ -284,7 +284,7 @@ public class ResetPwdManagerImpl implements ResetPwdManager {
                 return result;
             }
             // 密码强度校验
-            if(!accountService.isPasswordStrengthStrong(password)) {
+            if(!accountService.isPasswordStrengthStrong(clientId, password)) {
                 result.setCode(ErrorUtil.ERR_CODE_PASSWORD_STRENGTH_WEAK);
                 return result;
             }

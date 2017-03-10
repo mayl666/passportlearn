@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.regex.Pattern;
 
 /**
  * 注册
@@ -98,7 +97,7 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                 return result;
             }
             // 密码强度校验
-            if(!accountService.isPasswordStrengthStrong(password)) {
+            if(!accountService.isPasswordStrengthStrong(clientId, password)) {
                 result = new APIResultSupport(false);
                 result.setCode(ErrorUtil.ERR_CODE_PASSWORD_STRENGTH_WEAK);
                 return result;
@@ -324,7 +323,7 @@ public class RegisterApiManagerImpl extends BaseProxyManager implements Register
                     return result;
                 }
                 // 密码强度校验
-                if(!accountService.isPasswordStrengthStrong(password)) {
+                if(!accountService.isPasswordStrengthStrong(clientId, password)) {
                     result.setCode(ErrorUtil.ERR_CODE_PASSWORD_STRENGTH_WEAK);
                     return result;
                 }
