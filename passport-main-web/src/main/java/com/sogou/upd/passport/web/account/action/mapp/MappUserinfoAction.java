@@ -45,7 +45,7 @@ public class MappUserinfoAction extends BaseController {
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
 
-    @RequestMapping(value = "/getuserinfo", method = RequestMethod.POST)
+    @RequestMapping(value = "/getuserinfo", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public String getRealtimeUserinfo(HttpServletRequest request, MappGetUserinfoParams params)throws Exception{
 
