@@ -104,6 +104,10 @@ public class CommonManagerImpl implements CommonManager {
         return accountService.queryAccountByPassportId(passportId);  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public Account queryAccountByPassportIdInCache(String passportId) throws ServiceException {
+        return accountService.queryAccountByPassportIdInCache(passportId);
+    }
 
     @Override
     public boolean isAccessAccept(int clientId, String requestIp, String apiName) {

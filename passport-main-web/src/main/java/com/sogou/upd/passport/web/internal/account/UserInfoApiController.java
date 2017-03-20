@@ -55,7 +55,7 @@ public class UserInfoApiController extends BaseController {
      * @return
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/userinfo", method = RequestMethod.POST)
+    @RequestMapping(value = "/userinfo", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public Object getUserInfo(HttpServletRequest request, GetUserInfoApiparams params) {
         Result result = new APIResultSupport(false);

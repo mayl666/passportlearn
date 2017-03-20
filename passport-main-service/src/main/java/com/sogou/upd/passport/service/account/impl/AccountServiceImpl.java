@@ -216,6 +216,20 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
+    @Override
+    public Account queryAccountByPassportIdInCache(String passportId) throws ServiceException {
+        Account account;
+        try {
+            String cacheKey = buildCacheKey(passportId);
+            // just for the email register process if the customer want to resend the active email
+            account = dbShardRedisUtils.getObject(cacheKey, Account.class);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+
+        return account;
+    }
+
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public Account queryAccountByPassportId(String passportId) throws ServiceException {
