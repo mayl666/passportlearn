@@ -220,7 +220,7 @@ public class AccountServiceImpl implements AccountService {
     public Account queryAccountByPassportIdInCache(String passportId) throws ServiceException {
         Account account;
         try {
-            String cacheKey = buildCacheKey(passportId);
+            String cacheKey = buildAccountKey(passportId);
             // just for the email register process if the customer want to resend the active email
             account = dbShardRedisUtils.getObject(cacheKey, Account.class);
         } catch (Exception e) {
