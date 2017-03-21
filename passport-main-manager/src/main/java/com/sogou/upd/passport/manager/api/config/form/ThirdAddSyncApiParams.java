@@ -12,7 +12,6 @@ import javax.validation.constraints.Min;
 public class ThirdAddSyncApiParams extends BaseApiParams {
     @Min(0)
     private int appId;
-    @NotBlank(message = "第三方平台提供者不允许为空")
     @Min(1)
     private int provider;
     @NotBlank(message = "第三方 app key 不允许为空")
