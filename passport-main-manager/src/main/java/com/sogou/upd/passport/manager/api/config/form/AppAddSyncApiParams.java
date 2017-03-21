@@ -12,7 +12,7 @@ import javax.validation.constraints.Min;
  * 同步应用参数
  */
 public class AppAddSyncApiParams extends BaseApiParams {
-    @Min(value = 10000, message = "应用 id 错误")
+    @Min(10000)
     private int appId;
     @NotBlank(message = "应用名称不允许为空")
     private String appName;

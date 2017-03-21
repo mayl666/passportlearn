@@ -10,7 +10,7 @@ import javax.validation.constraints.Min;
  * 同步应用参数
  */
 public class ThirdAddSyncApiParams extends BaseApiParams {
-    @Min(value = 10000, message = "应用 id 错误")
+    @Min(0)
     private int appId;
     @NotBlank(message = "第三方平台提供者不允许为空")
     @Min(1)
