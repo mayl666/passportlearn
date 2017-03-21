@@ -891,7 +891,7 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
-    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updateAvatar", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updatePasswordType", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public boolean updatePasswordType(Account account, PasswordTypeEnum passwordType) {
         try {
