@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.parameter.SohuPasswordType;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -235,6 +236,15 @@ public interface AccountService {
      * @return
      */
     public boolean updateUniqName(Account account, String nickname);
+
+    /**
+     * 更新PassportType
+     *
+     * @param account
+     * @param passwordType
+     * @return
+     */
+    public boolean updatePasswordType(Account account, PasswordTypeEnum passwordType);
 
     /**
      * 更新头像
