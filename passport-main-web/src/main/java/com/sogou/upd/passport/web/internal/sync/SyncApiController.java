@@ -70,7 +70,7 @@ public class SyncApiController extends BaseController {
      * 同步修改 app
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/update_app", method = RequestMethod.PUT)
+    @RequestMapping(value = "/update_app", method = RequestMethod.POST)
     @ResponseBody
     public Object updateApp(AppUpdateSyncApiParams params) {
         Result result = new APIResultSupport(false);
@@ -100,7 +100,7 @@ public class SyncApiController extends BaseController {
      * 同步删除 app
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/del_app", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/del_app", method = RequestMethod.POST)
     @ResponseBody
     public Object deleteApp(AppUpdateSyncApiParams params) {
         Result result = new APIResultSupport(false);
@@ -158,7 +158,7 @@ public class SyncApiController extends BaseController {
      * 同步删除第三方
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/del_third", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/del_third", method = RequestMethod.POST)
     @ResponseBody
     public Object deleteApp(ThirdUpdateSyncApiParams params) {
         Result result = new APIResultSupport(false);
