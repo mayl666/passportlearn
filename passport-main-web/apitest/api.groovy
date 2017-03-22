@@ -1,44 +1,96 @@
 /**
  * Created by rongbin on 2017/3/21.
  */
-import static lib.BDD.*;
+@GrabConfig(systemClassLoader = true)
+@Grab('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1')
 
-import javax.annotation.PostConstruct;
+import static lib.BDD.*;
+import org.apache.http.Header
 
 CONFIG(
-	server:"http://127.0.0.1"
+//	server:"http://127.0.0.1"
+	server:"http://account.sogou"
 )
 
 def random = new Random()
 def now = System.currentTimeMillis()
 
-def udid, token, rc;
-def client_id = "1120"
+// login the sogou account as normal /web/login
+def web_client_id = "1120"
+def username = "codetest1"
+def password = "111111"
+def autologin = "1"
+def login_token = "a4e7d404214dc43bce5a1edaddf41a13"
+def fresh_sgid = ""
+def fresh_ppinf = ""
+def fresh_pprdig = ""
+def header_setCookies = "Set-Cookie"
+def name_pprdig = "pprdig"
+def name_sgid = "sgid"
+def name_ppinf = "ppinf"
+
+// login the web page with different account
+def login_query = [token:login_token,username:username, password:password, autoLogin:autologin, client_id:web_client_id]
+POST ("/web/login") {
+	r.server = "http://account.sogou.com"
+    r.query = login_query
+}
+
+//println("PRINT_RESPONSE COOKIES")
+def resp_header = bdd.resp.getAllHeaders()
+//println(resp_header.size())
+
+// Get the temp token for every time login
+resp_header.each{it->
+  if (it instanceof Header) {
+  	if (it.name == header_setCookies) {
+  		def tmp = it.value.split(";")[0].split("=")
+  		if (tmp[0] == name_ppinf) {
+  			fresh_ppinf = tmp[1]
+  		}
+  		if (tmp[0] == name_sgid) {
+  			fresh_sgid = tmp[1]
+  		}
+  		if (tmp[0] == name_pprdig) {
+  			fresh_pprdig = tmp[1]
+  		}
+  	}
+  }
+}
+
+println("PPINF  : ${fresh_ppinf}")
+println("SGID   : ${fresh_sgid}")
+println("PPRDIG : ${fresh_pprdig}")
+
+def token, rc;
+def client_id = web_client_id
+def app_securty = "4xoG%9>2Z67iL5]OdtBq\$l#>DfW@TY"
 def ct = "1484623418453"
-def code = "596109892be8a20eb3f0ede8284649ad"
+def tmp = username + client_id + app_securty + ct
+def code = MD5_HEX(tmp)
+println(code)
 def userid = "BA61FF202EDBFC5F8AB11E8052815AE7@qq.sohu.com"
 def fields = "birthday,uid,avatarurl"
 def original = "1"
+
+// user/info
+def info_code = "596109892be8a20eb3f0ede8284649ad"
+def info_fields = "birthday,uid"
 // for userinfoBySgid
-def sgid = "AViasFURibev2sxZBUp8pAr48"
+def sgid_sgid = "AViasFURibev2sxZBUp8pAr48"
 def code_sgid = "fe5b5f9b057b43684aadacdaeff56b9f"
 def ct_sgid = "1487672679460"
 def fields_sgid = "uid,uniqname,avatarurl"
-// for getuserinfo
-def getuserinfo_sgid = "AVhiaOlic9M7YzGmqk0giayXyM"
-def getuserinfo_ct = "1483424311656"
-def getuserinfo_code = "21bea33747813a7d96d4a308bc6486f0"
-def getuserinfo_fields = "uid"
 
-for (i in 0 .. 4) {
+// verify the interface
+for (i in 0 .. 0) {
 	//query parameters /internal/account/userinfo
-	def userinfo_query = [client_id:client_id, ct:ct, code:code, userid:userid, fields:fields]
+	def userinfo_query = [client_id:client_id, ct:ct, code:code, userid:username, fields:fields]
 	//query parameters /internal/account/connect/users/info
-	def info_query = [original:original,client_id:client_id, ct:ct, code:code, userid:userid, fields:fields]
+	//must use the third part account
+	def info_query = [original:original,client_id:client_id, ct:ct, code:info_code, userid:userid, fields:info_fields]
     //query parameters /internal/account/userinfoBySgid
-    def sgid_query = [client_id:client_id, ct:ct_sgid, code: code_sgid, sgid:sgid, fields: fields_sgid]
-    //query parameters /mapp/userinfo/getuserinfo
-    def getuserinfo_query = [sgid:getuserinfo_sgid, client_id:client_id, ct:getuserinfo_ct, code:getuserinfo_code, fields:getuserinfo_fields]
+    def sgid_query = [client_id:client_id, ct:ct, code: code, userid:username, sgid:fresh_sgid, fields: fields_sgid]
 
     POST("/internal/account/userinfo") {
     	r.query = userinfo_query
@@ -70,27 +122,12 @@ for (i in 0 .. 4) {
     	r.query = sgid_query
     }
     EXPECT {
-    	json.status = "20263"
+    	json.status = "0"
     }
     GET("/internal/account/userinfoBySgid") {
     	r.query = sgid_query
     }
     EXPECT {
-    	json.status = "20263"
-    }
-
-    POST("/mapp/userinfo/getuserinfo") {
-//    	r.server = "http://m.account.sogou.com"
-    	r.query = getuserinfo_query
-    }
-    EXPECT {
-    	json.status = null
-    }
-    GET("/mapp/userinfo/getuserinfo") {
-//    	r.server = "http://m.account.sogou.com"
-    	r.query = getuserinfo_query
-    }
-    EXPECT {
-    	json.status = null
+    	json.status = "0"
     }
 }
