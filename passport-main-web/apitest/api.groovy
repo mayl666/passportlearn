@@ -3,8 +3,10 @@
  */
 import static lib.BDD.*;
 
+import javax.annotation.PostConstruct;
+
 CONFIG(
-	server:"http://account.sogou"
+	server:"http://127.0.0.1"
 )
 
 def random = new Random()
@@ -27,7 +29,6 @@ def getuserinfo_sgid = "AVhiaOlic9M7YzGmqk0giayXyM"
 def getuserinfo_ct = "1483424311656"
 def getuserinfo_code = "21bea33747813a7d96d4a308bc6486f0"
 def getuserinfo_fields = "uid"
-
 
 for (i in 0 .. 4) {
 	//query parameters /internal/account/userinfo
@@ -79,14 +80,14 @@ for (i in 0 .. 4) {
     }
 
     POST("/mapp/userinfo/getuserinfo") {
-    	r.server = "http://m.account.sogou.com"
+//    	r.server = "http://m.account.sogou.com"
     	r.query = getuserinfo_query
     }
     EXPECT {
     	json.status = null
     }
     GET("/mapp/userinfo/getuserinfo") {
-    	r.server = "http://m.account.sogou.com"
+//    	r.server = "http://m.account.sogou.com"
     	r.query = getuserinfo_query
     }
     EXPECT {
