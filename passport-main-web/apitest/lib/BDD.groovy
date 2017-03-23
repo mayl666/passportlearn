@@ -21,10 +21,17 @@ import static groovyx.net.http.Method.DELETE
 import static groovyx.net.http.ContentType.TEXT
 import static groovyx.net.http.ContentType.URLENC
 import static groovyx.net.http.ContentType.JSON
+
 import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.entity.mime.HttpMultipartMode
 import org.apache.http.entity.ContentType
 import org.apache.http.conn.EofSensorInputStream
+
+import java.security.KeyStore
+import java.security.MessageDigest
+import org.apache.http.conn.scheme.Scheme
+import org.apache.http.conn.ssl.SSLSocketFactory
+
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
 
@@ -58,7 +65,7 @@ class BDD {
   def r = null
 
   // response
-  def resp, respBody
+  def resp, respBody, headers, resp_cookies
 
   // expect
   def http, json, string
@@ -101,6 +108,97 @@ class BDD {
 
   def coverAddAssert() {
     cover[coverKey].assert++;
+  }
+
+  def getRes() {
+    return this.respBody
+  }
+
+  def https(method, url, config) {
+    coverKey = coverKey(method, url)
+    reset()
+
+    if (config) {
+      config.delegate = this
+      config.call()
+    }
+
+    def http = new HTTPBuilder(r.server)
+    http.ignoreSSLIssues()
+    http.headers = [*:g.headers, *:r.headers]
+
+    if (!http.headers.cookie) {
+      cookie.each {key, value ->
+        http.headers["cookie"] = key + "=" + value
+      }
+    }
+
+    URIBuilder reqUri = new URIBuilder(url)
+    reqUri.query = r.query
+
+    if (r.body instanceof String ||
+        r.body instanceof GString ||
+        r.body instanceof byte[]) {
+      r.requestContentType = 'application/octet-stream'
+    } else if (r.body && reqUri.query) {
+      reqUri.query << r.body
+    }
+
+    stat.req++;
+    coverAddReq();
+
+    if (r.debug) {
+      println "DEBUG_S REQUEST: $method ${reqUri}"
+      if (reqUri.query) println "DEBUG_S REQUEST QUERY: ${reqUri.query}"
+      if (r.body && r.requestContentType != 'application/octet-stream') {
+        println "DEBUG_S REQUEST BODY: ${r.body}"
+      }
+      println "DEBUG_S REQUEST COOKIE: ${http.headers.cookie}"
+    }
+
+    http.request(method) { req ->
+      uri.path = url
+      uri.query = r.query
+
+      if (method == POST || method == PUT) {
+        if (r.multi) {
+          def builder = MultipartEntityBuilder.create();
+          builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+          r.multi.each {k, v ->
+            if (v instanceof Map) {
+              builder.addBinaryBody(k, v.file, ContentType.DEFAULT_BINARY, v.filename)
+            } else {
+              builder.addTextBody(k, v);
+            }
+          }
+          req.setEntity(builder.build());
+          requestContentType = "multipart/form-data"
+        } else if (r.requestContentType == "JSON") {
+          body = groovy.json.JsonOutput.toJson(r.body);
+          requestContentType = JSON;
+        } else {
+          body = r.body
+          requestContentType = r.requestContentType
+        }
+      }
+
+      response.success = { resp, body ->
+        this.resp = resp
+        if (body instanceof Reader) {
+          this.respBody = body.text
+        } else if (body instanceof EofSensorInputStream) {
+          this.respBody = null
+        } else {
+          this.respBody = body
+        }
+      }
+
+      response.failure = { resp ->
+        this.resp = resp
+        this.respBody = null
+      }
+    }
+    if (r.debug) println("DEBUG RESPONSE: ${respBody}")
   }
 
   def http(method, url, config) {
@@ -269,8 +367,15 @@ class BDD {
     bdd.http(GET, url, config)
   }
 
+  static GETS(url, config = null) {
+    bdd.https(GET, url, config)
+  }
   static POST(url, config = null) {
     bdd.http(POST, url, config)
+  }
+
+  static POSTS(url, config = null) {
+    bdd.https(POST, url, config)
   }
 
   static PUT(url, config = null) {
@@ -310,6 +415,12 @@ class BDD {
     return properties
   }
 
+  static MD5_HEX(def str) {
+    MessageDigest md = MessageDigest.getInstance("MD5")
+    md.update(str.getBytes())
+    BigInteger hash = new BigInteger(1, md.digest())
+    return hash.toString(16)
+  }
   static SQL_CFG = DEVCFG();
   static SQLCONFIG(def map) {
     map.each {key, value ->
