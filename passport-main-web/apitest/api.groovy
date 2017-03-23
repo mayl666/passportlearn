@@ -1,5 +1,7 @@
 /**
  * Created by rongbin on 2017/3/21.
+ *
+ * test code for internal
  */
 @GrabConfig(systemClassLoader = true)
 @Grab('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1')
@@ -84,13 +86,6 @@ def code_sgid = "fe5b5f9b057b43684aadacdaeff56b9f"
 def ct_sgid = "1487672679460"
 def fields_sgid = "uid,uniqname,avatarurl"
 
-// for wapp /mapp/userinfo/getuserinfo
-def mapp_sgid = 'AVhiaOlic9M7YzGmqk0giayXyM'
-def mapp_client_id = '1120'
-def mapp_ct = '1483424311656'
-def mapp_code = '21bea33747813a7d96d4a308bc6486f0'
-def mapp_fields = 'uid'
-
 // verify the interface
 for (i in 0 .. 0) {
 	//query parameters /internal/account/userinfo
@@ -100,8 +95,6 @@ for (i in 0 .. 0) {
 	def info_query = [original:original,client_id:client_id, ct:ct, code:info_code, userid:userid, fields:info_fields]
     //query parameters /internal/account/userinfoBySgid
     def sgid_query = [client_id:client_id, ct:ct, code: code, userid:username, sgid:fresh_sgid, fields: fields_sgid]
-    // query parameters /mapp/userinfo/getuserinfo
-    def mapp_getuserinfo_query = [sgid:mapp_sgid, client_id: mapp_client_id, ct:mapp_ct, code: mapp_code, fields: mapp_fields]
 
     POST("/internal/account/userinfo") {
     	r.query = userinfo_query
@@ -149,24 +142,4 @@ for (i in 0 .. 0) {
         json.'data' = NotEmpty
         json.'data.userid' = username.concat('@sogou.com')
     }
-    /**
-     * The test code for wap is not ready
-     * 1. we need to know how to use the udid
-     * 2. we need to generate a new sgid for this wap test process
-     * 3. we need to figure out how to generate the code for wap validation
-     */
-//    POSTS("/mapp/userinfo/getuserinfo") {
-//        r.server = 'https://m.account.sogou.com'
-//        r.query = mapp_getuserinfo_query
-//    }
-//    EXPECT {
-//        json.status = "0"
-//    }
-//    GETS("/mapp/userinfo/getuserinfo") {
-//        r.server = 'https://m.account.sogou.com'
-//        r.query = mapp_getuserinfo_query
-//    }
-//    EXPECT {
-//        json.status = "0"
-//    }
 }
