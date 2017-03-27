@@ -11,7 +11,7 @@ import org.apache.http.Header
 
 CONFIG(
 	server:"http://127.0.0.1"
-//	server:"http://account.sogou"
+//	server:"http://10.152.70.143"
 )
 
 def random = new Random()
@@ -34,9 +34,10 @@ def name_ppinf = "ppinf"
 // login the web page with different account
 def login_query = [token:login_token,username:username, password:password, autoLogin:autologin, client_id:web_client_id]
 POST ("/web/login") {
-//	r.server = "http://account.sogou.com"
+//   	r.server = "http://10.152.70.143"
     r.server = "http://127.0.0.1"
     r.query = login_query
+    r.headers = [host: "account.sogou.com"]
 }
 
 //println("PRINT_RESPONSE COOKIES")
@@ -93,53 +94,59 @@ for (i in 0 .. 0) {
 	//query parameters /internal/account/connect/users/info
 	//must use the third part account
 	def info_query = [original:original,client_id:client_id, ct:ct, code:info_code, userid:userid, fields:info_fields]
-    //query parameters /internal/account/userinfoBySgid
-    def sgid_query = [client_id:client_id, ct:ct, code: code, userid:username, sgid:fresh_sgid, fields: fields_sgid]
+  //query parameters /internal/account/userinfoBySgid
+  def sgid_query = [client_id:client_id, ct:ct, code: code, userid:username, sgid:fresh_sgid, fields: fields_sgid]
+  def host_headers = [host: "account.sogou"]
+  POST("/internal/account/userinfo") {
+  	r.query = userinfo_query
+    r.headers = host_headers
+  }
+  EXPECT {
+  	json.status = "0"
+    json.'data' = NotEmpty
+    json.'data.userid' = username.concat('@sogou.com')
+  }
+  GET("/internal/account/userinfo") {
+    r.query = userinfo_query
+    r.headers = host_headers
+  }
+  EXPECT {
+    json.status = "0"
+    json.'data' = NotEmpty
+    json.'data.userid' = username.concat('@sogou.com')
+  }
 
-    POST("/internal/account/userinfo") {
-    	r.query = userinfo_query
-    }
-    EXPECT {
-    	json.status = "0"
-        json.'data' = NotEmpty
-        json.'data.userid' = username.concat('@sogou.com')
-    }
-    GET("/internal/account/userinfo") {
-    	r.query = userinfo_query
-    }
-    EXPECT {
-    	json.status = "0"
-        json.'data' = NotEmpty
-        json.'data.userid' = username.concat('@sogou.com')
-    }
+  POST("/internal/connect/users/info") {
+    r.query = info_query
+    r.headers = host_headers
+  }
+  EXPECT {
+    json.status = "30021"
+  }
+  GET("/internal/connect/users/info") {
+    r.query = info_query
+    r.headers = host_headers
+  }
+  EXPECT {
+    json.status = "30021"
+  }
 
-    POST("/internal/connect/users/info") {
-    	r.query = info_query
-    }
-    EXPECT {
-    	json.status = "30021"
-    }
-    GET("/internal/connect/users/info") {
-    	r.query = info_query
-    }
-    EXPECT {
-    	json.status = "30021"
-    }
-
-    POST("/internal/account/userinfoBySgid") {
-    	r.query = sgid_query
-    }
-    EXPECT {
-    	json.status = "0"
-        json.'data' = NotEmpty
-        json.'data.userid' = username.concat('@sogou.com')
-    }
-    GET("/internal/account/userinfoBySgid") {
-    	r.query = sgid_query
-    }
-    EXPECT {
-    	json.status = "0"
-        json.'data' = NotEmpty
-        json.'data.userid' = username.concat('@sogou.com')
-    }
+  POST("/internal/account/userinfoBySgid") {
+  	r.query = sgid_query
+    r.headers = host_headers
+  }
+  EXPECT {
+    json.status = "0"
+    json.'data' = NotEmpty
+    json.'data.userid' = username.concat('@sogou.com')
+  }
+  GET("/internal/account/userinfoBySgid") {
+  	r.query = sgid_query
+    r.headers = host_headers
+  }
+  EXPECT {
+    json.status = "0"
+    json.'data' = NotEmpty
+    json.'data.userid' = username.concat('@sogou.com')
+  }
 }

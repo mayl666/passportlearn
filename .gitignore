@@ -3,3 +3,8 @@
 target
 .DS_Store
 ._.DS_Store
+.settings/
+bin/
+.project
+*/.classpath
+*/.project

@@ -11,7 +11,7 @@ import org.apache.http.Header
 
 CONFIG(
     server:"http://127.0.0.1"
-//    server:"http://m.account.sogou.com"
+//    server:"http://10.152.70.143"
 )
 
 def random = new Random()
@@ -32,8 +32,9 @@ def fresh_sgid = ''
 def login_query = [token:login_token,username:username, password:password, client_id:client_id, v:'1']
 POST ('/wap/login') {
     r.server = 'http://127.0.0.1'
-//    r.server = 'http://account.sogou.com'
+//    r.server = 'http://10.152.70.143'
     r.query = login_query
+    r.headers = [host: "account.sogou.com"]
 }
 
 def resp_header = bdd.resp.getAllHeaders()
@@ -67,7 +68,7 @@ def getuserinfo_code = MD5_HEX(tmp)
 for(i in 0 .. 0) {
     // https://m.account.sogou.com/mapp/userinfo/getuserinfo
     def getuserinfo_query = [sgid: getuserinfo_sgid, client_id: getuserinfo_client, ct: getuserinfo_ct, code: getuserinfo_code, fields: getuserinfo_fields]
-    def getuserinfo_headers = ['cinfo': getuserinfo_cinfo]
+    def getuserinfo_headers = [cinfo: getuserinfo_cinfo, host: "m.account.sogou.com"]
     POST ('/mapp/userinfo/getuserinfo') {
         r.query = getuserinfo_query
         r.headers = getuserinfo_headers
