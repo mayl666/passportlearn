@@ -3,3 +3,16 @@
 target
 .DS_Store
 ._.DS_Store
+.settings/
+bin/
+.project
+passport-main-common/.classpath
+passport-main-common/.project
+passport-main-manager/.classpath
+passport-main-manager/.project
+passport-main-service/.classpath
+passport-main-service/.project
+passport-main-web/.classpath
+passport-main-web/.project
+passport-oauth2/.classpath
+passport-oauth2/.project
