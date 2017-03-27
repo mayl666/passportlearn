@@ -55,7 +55,7 @@ public class UserInfoApiController extends BaseController {
      * @return
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/userinfo", method = RequestMethod.POST)
+    @RequestMapping(value = "/userinfo", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public Object getUserInfo(HttpServletRequest request, GetUserInfoApiparams params) {
         Result result = new APIResultSupport(false);
@@ -83,7 +83,7 @@ public class UserInfoApiController extends BaseController {
      * @return
      */
     @InterfaceSecurity
-    @RequestMapping(value = "/userinfoBySgid", method = RequestMethod.POST)
+    @RequestMapping(value = "/userinfoBySgid", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public Object getUserInfoBySgid(HttpServletRequest request, GetUserInfoBySgidApiparams params) {
         Result result = new APIResultSupport(false);

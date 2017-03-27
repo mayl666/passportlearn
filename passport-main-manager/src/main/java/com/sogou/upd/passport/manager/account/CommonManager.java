@@ -79,6 +79,16 @@ public interface CommonManager {
     public Account queryAccountByPassportId(String passportId) throws ServiceException;
 
     /**
+     * 根据passportId 获取Account
+     * 1. 只查询Redies中账号信息
+     * 2. 用于账号注册激活邮件重新发送
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public Account queryAccountByPassportIdInCache(String passportId) throws ServiceException;
+
+    /**
      * 应用是否有此API访问权限
      * 1.应用服务器在appconfig配置里的server_ip白名单里；
      * 2.APIName在appconfig配置里的scope里；
