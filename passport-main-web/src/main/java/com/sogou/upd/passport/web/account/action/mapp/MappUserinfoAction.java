@@ -45,7 +45,7 @@ public class MappUserinfoAction extends BaseController {
     @Autowired
     private UserInfoApiManager sgUserInfoApiManager;
 
-    @RequestMapping(value = "/getuserinfo", method = RequestMethod.POST)
+    @RequestMapping(value = "/getuserinfo", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public String getRealtimeUserinfo(HttpServletRequest request, MappGetUserinfoParams params)throws Exception{
 
@@ -97,6 +97,8 @@ public class MappUserinfoAction extends BaseController {
 
         }catch (Exception e){
             logger.error("mapp get realtime userinfo eror," + "udid:" + udid);
+            result.setSuccess(false);
+            result.setCode(ErrorUtil.SYSTEM_UNKNOWN_EXCEPTION);
         }finally {
             //记录useroperation
             UserOperationLog userOperationLog = new UserOperationLog(udid, String.valueOf(clientId), result.getCode(), ip);

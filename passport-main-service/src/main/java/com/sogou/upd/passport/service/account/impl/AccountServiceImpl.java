@@ -216,6 +216,20 @@ public class AccountServiceImpl implements AccountService {
         return false;
     }
 
+    @Override
+    public Account queryAccountByPassportIdInCache(String passportId) throws ServiceException {
+        Account account;
+        try {
+            String cacheKey = buildAccountKey(passportId);
+            // just for the email register process if the customer want to resend the active email
+            account = dbShardRedisUtils.getObject(cacheKey, Account.class);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+
+        return account;
+    }
+
     @Profiled(el = true, logger = "dbTimingLogger", tag = "service_queryAccount", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
     @Override
     public Account queryAccountByPassportId(String passportId) throws ServiceException {
@@ -252,6 +266,7 @@ public class AccountServiceImpl implements AccountService {
                 int pwdType=account.getPasswordtype();
                 if(pwdType!=5){
                     account.setPasswordtype(5);
+                    updatePasswordType(account, PasswordTypeEnum.SOHUCRYPT);
                     logger.warn("SOHU DIRTY DATA:"+passportId);
                 }
             }
@@ -867,6 +882,26 @@ public class AccountServiceImpl implements AccountService {
             if (row > 0) {
                 String cacheKey = buildAccountKey(passportId);
                 account.setAvatar(avatar);
+                dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
+                return true;
+            }
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+        return false;
+    }
+
+    @Profiled(el = true, logger = "dbTimingLogger", tag = "service_updatePasswordType", timeThreshold = 20, normalAndSlowSuffixesEnabled = true)
+    @Override
+    public boolean updatePasswordType(Account account, PasswordTypeEnum passwordType) {
+        try {
+            String passportId = account.getPassportId();
+            int pwdType = passwordType.getValue();
+            //更新数据库
+            int row = accountDAO.updatePasswordType(pwdType, passportId);
+            if (row > 0) {
+                String cacheKey = buildAccountKey(passportId);
+                account.setPasswordtype(pwdType);
                 dbShardRedisUtils.setObjectWithinSeconds(cacheKey, account, DateAndNumTimesConstant.ONE_MONTH);
                 return true;
             }

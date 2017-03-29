@@ -85,6 +85,16 @@ public interface AccountDAO {
     public int updateUniqName(@SQLParam("uniqname") String uniqname,
                               @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
 
+
+    /**
+     * 修改密码类型
+     */
+    @SQL("update " +
+            TABLE_NAME +
+            " set passwordtype=:passwordtype where passport_id=:passport_id")
+    public int updatePasswordType(@SQLParam("passwordtype") int passwordtype,
+                                  @ShardBy @SQLParam("passport_id") String passport_id) throws DataAccessException;
+
     /**
      * 修改头像
      */

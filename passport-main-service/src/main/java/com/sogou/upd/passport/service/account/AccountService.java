@@ -1,5 +1,6 @@
 package com.sogou.upd.passport.service.account;
 
+import com.sogou.upd.passport.common.parameter.PasswordTypeEnum;
 import com.sogou.upd.passport.common.parameter.SohuPasswordType;
 import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.exception.ServiceException;
@@ -47,9 +48,21 @@ public interface AccountService {
 
     /**
      * 根据passportId获取Account
+     * 1. 从Redies 获取Account信息
+     * 2. 如果Account == null 或 id==0，则查询数据库
      */
     public Account queryAccountByPassportId(String passportId) throws ServiceException;
 
+    /**
+     * 根据passportId 获取Account
+     * 1. 只查询Redies中账号信息
+     * 2. 用于账号注册激活邮件重新发送
+     *
+     * @param passportId
+     * @return
+     * @throws ServiceException
+     */
+    public Account queryAccountByPassportIdInCache(String passportId) throws ServiceException;
     /**
      * 验证账号的有效性，返回正常用户
      *
@@ -223,6 +236,15 @@ public interface AccountService {
      * @return
      */
     public boolean updateUniqName(Account account, String nickname);
+
+    /**
+     * 更新PassportType
+     *
+     * @param account
+     * @param passwordType
+     * @return
+     */
+    public boolean updatePasswordType(Account account, PasswordTypeEnum passwordType);
 
     /**
      * 更新头像
