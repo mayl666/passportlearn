@@ -92,17 +92,17 @@ public class SGLoginApiManagerImpl extends BaseProxyManager implements LoginApiM
             }
             Result verifyUserResult = accountService.verifyUserPwdVaild(userId, authUserApiParams.getPassword(), false, SohuPasswordType.MD5);
             if (verifyUserResult.isSuccess()) {
-                // if (authUserApiParams.getNeedsgid() == 1) {
-                // web 登录都生成 sgid
-                Result sessionResult = sessionServerManager.createSession(userId, null, authUserApiParams.isWap());
-                if (sessionResult.isSuccess()) {
-                    String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
-                    result.setDefaultModel(LoginConstant.COOKIE_SGID, sgid);
-                } else {
-                    result.setCode(sessionResult.getCode());
-                    return result;
+                if (authUserApiParams.getNeedsgid() == 1) {
+                    // web 登录都生成 sgid
+                    Result sessionResult = sessionServerManager.createSession(userId, null, authUserApiParams.isWap());
+                    if (sessionResult.isSuccess()) {
+                        String sgid = (String) sessionResult.getModels().get(LoginConstant.COOKIE_SGID);
+                        result.setDefaultModel(LoginConstant.COOKIE_SGID, sgid);
+                    } else {
+                        result.setCode(sessionResult.getCode());
+                        return result;
+                    }
                 }
-                // }
                 result.setSuccess(true);
                 result.setMessage("登录成功");
                 result.setDefaultModel("userid", userId);

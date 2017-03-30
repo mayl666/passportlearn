@@ -388,6 +388,10 @@ public class ErrorUtil {
     public static final String ERR_CODE_SYNC_APP_UPDATE_FAILED = "22004";
     // 同步删除应用失败
     public static final String ERR_CODE_SYNC_APP_DELETE_FAILED = "22005";
+    // 同步新增第三方失败
+    public static final String ERR_CODE_SYNC_THIRD_ADD_FAILED = "22006";
+    // 同步删除第三方失败
+    public static final String ERR_CODE_SYNC_THIRD_DELETE_FAILED = "22007";
 
 
     public ErrorUtil() {
@@ -584,6 +588,8 @@ public class ErrorUtil {
         ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_APP_ADD_FAILED, "同步新增应用失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_APP_UPDATE_FAILED, "同步修改应用失败");
         ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_APP_DELETE_FAILED, "同步删除应用失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_THIRD_ADD_FAILED, "同步新增第三方失败");
+        ERR_CODE_MSG_MAP.put(ERR_CODE_SYNC_THIRD_DELETE_FAILED, "同步删除第三方失败");
 
     }
 

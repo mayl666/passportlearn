@@ -72,7 +72,7 @@ public interface LoginManager {
      * @param isWap 是否是 wap 登录
      * @return
      */
-    public Result authUser(String username, String ip, String pwdMD5, boolean isWap);
+    public Result authUser(String username, String ip, String pwdMD5, boolean needsgid, boolean isWap);
 
     /**
      * 快速登录验证方式
