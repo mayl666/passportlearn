@@ -24,6 +24,7 @@ import com.sogou.upd.passport.service.account.AccountService;
 import com.sogou.upd.passport.service.account.OperateTimesService;
 import com.sogou.upd.passport.service.account.TokenService;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,7 +161,8 @@ public class LoginManagerImpl implements LoginManager {
                         return result;
                     }
                 }
-                result = authUser(username, ip, pwdMD5, false);
+                int needsgid = loginParameters.getNeedsgid();
+                result = authUser(username, ip, pwdMD5, BooleanUtils.toBoolean(needsgid), false);
             } catch (Exception e) {
                 logger.error("accountLogin fail,passportId:" + passportId, e);
                 result.setCode(ErrorUtil.ERR_CODE_ACCOUNT_LOGIN_FAILED);
@@ -172,7 +174,7 @@ public class LoginManagerImpl implements LoginManager {
 
 
     @Override
-    public Result authUser(String username, String ip, String pwdMD5, boolean isWap) {
+    public Result authUser(String username, String ip, String pwdMD5, boolean needsgid, boolean isWap) {
         Result result = new APIResultSupport(false);
         String passportId = getIndividPassportIdByUsername(username);
 
@@ -189,6 +191,8 @@ public class LoginManagerImpl implements LoginManager {
         authUserApiParams.setPassword(pwdMD5);
         authUserApiParams.setClient_id(SHPPUrlConstant.APP_ID);
         authUserApiParams.setWap(isWap);
+
+        authUserApiParams.setNeedsgid(BooleanUtils.toInteger(needsgid));
         result = loginApiManager.webAuthUser(authUserApiParams);
         return result;
     }

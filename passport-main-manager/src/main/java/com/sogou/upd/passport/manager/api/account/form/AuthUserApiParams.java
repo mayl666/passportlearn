@@ -23,7 +23,7 @@ public class AuthUserApiParams extends BaseUserApiParams {
     private String ip;  //登陆用户真实IP
     @Min(0)
     @Max(1)
-    private int needsgid = 0;
+    private int needsgid = 1;
     private boolean wap = false;
 
     public int getNeedsgid() {

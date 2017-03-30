@@ -10,7 +10,11 @@ import com.sogou.upd.passport.common.utils.RedisUtils;
 import com.sogou.upd.passport.dao.app.AppConfigDAO;
 import com.sogou.upd.passport.exception.ServiceException;
 import com.sogou.upd.passport.model.app.AppConfig;
+import com.sogou.upd.passport.model.app.ConnectConfig;
 import com.sogou.upd.passport.service.app.AppConfigService;
+import com.sogou.upd.passport.service.app.ConnectConfigService;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,6 +43,8 @@ public class AppConfigServiceImpl implements AppConfigService {
 
     @Autowired
     private AppConfigDAO appConfigDAO;
+    @Autowired
+    private ConnectConfigService connectConfigService;
     @Inject
     private RedisUtils redisUtils;
 
@@ -120,12 +126,12 @@ public class AppConfigServiceImpl implements AppConfigService {
         }
         return false;
     }
-    
+
     private final String SMS_TEXT = "您的“搜狗通行证”验证码为：%s，30分钟内有效。若非本人操作请忽略";
-    
+
     private final int ACCESS_TOKEN_EXPIRESIN = 604800;
     private final int REFRESH_TOKEN_EXPIRESIN = 15552000;
-    
+
     @Override
     public boolean insertAppConfig(int clientId, String clientName, String serverSecret,
                                    String clientSecret) throws ServiceException {
@@ -176,6 +182,14 @@ public class AppConfigServiceImpl implements AppConfigService {
     @Override
     public boolean deleteAppConfig(int client_id) throws ServiceException {
         try {
+            // 先删除第三方配置
+            List<ConnectConfig> connectConfigList = connectConfigService.ListConnectConfigByClientId(client_id);
+            if(CollectionUtils.isNotEmpty(connectConfigList)) {
+                for (ConnectConfig connectConfig : connectConfigList) {
+                    connectConfigService.deleteConnectConfig(connectConfig.getClientId(), connectConfig.getProvider(), connectConfig.getAppKey());
+                }
+            }
+
             int row = appConfigDAO.deleteAppConfig(client_id);
             if (row > 0) {
                 String cacheKey = buildAppConfigCacheKey(client_id);

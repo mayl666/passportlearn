@@ -68,6 +68,7 @@ public class PCAccountManagerImpl implements PCAccountManager {
             }
             if (!Strings.isNullOrEmpty(password)) {   //校验用户名和密码
                 AuthUserApiParams authUserApiParams = new AuthUserApiParams(clientId, passportId, password);
+                authUserApiParams.setNeedsgid(0);
                 //根据域名判断是否代理，一期全部走代理
                 Result result = new APIResultSupport(false);
                 if (isLoginUserInBlackList(clientId, passportId, ip)) {
