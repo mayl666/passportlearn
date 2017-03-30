@@ -3,7 +3,11 @@ package com.sogou.upd.passport.manager.form;
 import com.sogou.upd.passport.common.CommonConstant;
 import com.sogou.upd.passport.common.validation.constraints.Domain;
 import com.sogou.upd.passport.common.validation.constraints.Ru;
+
 import org.hibernate.validator.constraints.URL;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 /**
  * 用于web端的登陆的参数
@@ -30,6 +34,10 @@ public class WebLoginParams extends BaseLoginParams {
     private String key; //其他登录类型（非密码型）需验证的登录标识
     @Domain
     private String domain;  // 非sogou.com域名的业务线使用，登录成功后种非sogou.com域的cookie
+
+    @Min(0)
+    @Max(1)
+    private int needsgid = 1; //是否需要 sgid
 
     public int getAutoLogin() {
         return autoLogin;
@@ -85,5 +93,13 @@ public class WebLoginParams extends BaseLoginParams {
 
     public void setDomain(String domain) {
         this.domain = domain;
+    }
+
+    public int getNeedsgid() {
+        return needsgid;
+    }
+
+    public void setNeedsgid(int needsgid) {
+        this.needsgid = needsgid;
     }
 }

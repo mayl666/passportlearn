@@ -66,6 +66,7 @@ public class PCOAuth2LoginManagerImpl implements PCOAuth2LoginManager {
         webLoginParams.setCaptcha(loginParams.getCaptcha());
         webLoginParams.setToken(loginParams.getToken());
         webLoginParams.setClient_id(String.valueOf(getClientId(loginParams.getClient_id())));
+        webLoginParams.setNeedsgid(0);
         Result result = loginManager.accountLogin(webLoginParams, ip, scheme);
         return result;
     }
