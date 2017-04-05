@@ -120,8 +120,10 @@ public class SessionServerManagerImpl implements SessionServerManager {
 
             Map<String, String> params = buildHttpSessionParam(prefix, passportId);
 
-            params.put("weixinOpenId", weixinOpenId);
             params.put("wap", Boolean.toString(isWap));
+            if(StringUtils.isNotBlank(weixinOpenId)) {
+                params.put("weixinOpenId", weixinOpenId);
+            }
 
             RequestModel requestModel = new RequestModel(SessionServerUrlConstant.CREATE_SESSION);
 
