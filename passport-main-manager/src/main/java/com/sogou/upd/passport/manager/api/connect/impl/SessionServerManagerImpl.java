@@ -12,7 +12,6 @@ import com.sogou.upd.passport.common.result.Result;
 import com.sogou.upd.passport.common.utils.ErrorUtil;
 import com.sogou.upd.passport.common.utils.JacksonJsonMapperUtil;
 import com.sogou.upd.passport.common.utils.SGHttpClient;
-import com.sogou.upd.passport.common.utils.SessionServerUtil;
 import com.sogou.upd.passport.manager.ManagerHelper;
 import com.sogou.upd.passport.manager.api.SessionServerUrlConstant;
 import com.sogou.upd.passport.manager.api.connect.SessionServerManager;
@@ -67,6 +66,26 @@ public class SessionServerManagerImpl implements SessionServerManager {
         return params;
     }
 
+    private Map<String, String> buildHttpSessionParam(String prefix, String passportId) {
+
+        AppConfig appConfig = appConfigService.queryAppConfigByClientId(CommonConstant.SGPP_DEFAULT_CLIENTID);
+
+        int clientId = appConfig.getClientId();
+        String serverSecret = appConfig.getServerSecret();
+        long ct = System.currentTimeMillis();
+
+        String code = ManagerHelper.generatorCode(passportId, clientId, serverSecret, ct);
+
+        Map<String, String> params = Maps.newHashMap();
+
+        params.put("client_id", String.valueOf(clientId));
+        params.put("code", code);
+        params.put("ct", String.valueOf(ct));
+        params.put("prefix", prefix);
+        params.put("passportId", passportId);
+        return params;
+    }
+
     private Map<String, String> buildHttpSessionParam(String sgid, int clientId) {
 
         AppConfig appConfig = appConfigService.queryAppConfigByClientId(clientId);
@@ -94,32 +113,20 @@ public class SessionServerManagerImpl implements SessionServerManager {
     public Result createSession(String passportId, String weixinOpenId, boolean isWap) {
         Result result = new APIResultSupport(false);
 
-        String sgid = null;
         SessionResult sessionResult = null;
         try {
             // 获取账号前缀
-            sgid = accountService.getAccountPrefix(passportId) + "-";
+            String prefix = accountService.getAccountPrefix(passportId);
 
-            // 创建 sgid
-            // sgid 规则：分表索引-账号自增id-旧sgid
-            sgid += SessionServerUtil.createSessionSid(passportId);
+            Map<String, String> params = buildHttpSessionParam(prefix, passportId);
 
-            Map<String, String> params = buildHttpSessionParam(sgid);
-
-            Map<String, String> map = Maps.newHashMap();
-            map.put("passport_id", passportId);
-            if(StringUtils.isNotBlank(weixinOpenId)) {
-              map.put("weixin_openid", weixinOpenId);
-            }
-
-            params.put("user_info", jsonMapper.writeValueAsString(map));
+            params.put("weixinOpenId", weixinOpenId);
             params.put("wap", Boolean.toString(isWap));
 
             RequestModel requestModel = new RequestModel(SessionServerUrlConstant.CREATE_SESSION);
 
-            Set<Map.Entry<String, String>> set = params.entrySet();
-            for (Iterator<Map.Entry<String, String>> it = set.iterator(); it.hasNext(); ) {
-                Map.Entry<String, String> entry = it.next();
+            Set<Map.Entry<String, String>> paramsEntrySet = params.entrySet();
+            for (Map.Entry<String, String> entry : paramsEntrySet) {
                 requestModel.addParam(entry.getKey(), entry.getValue());
             }
 
@@ -130,17 +137,16 @@ public class SessionServerManagerImpl implements SessionServerManager {
                 sessionResult = jsonMapper.readValue(resultRequest, SessionResult.class);
                 if ("0".equals(sessionResult.getStatus())) {
                     result.setSuccess(true);
-                    result.getModels().put(LoginConstant.COOKIE_SGID, sgid);
+                    String sgid = (String) sessionResult.getData().get(LoginConstant.COOKIE_SGID);
+                    result.setDefaultModel(LoginConstant.COOKIE_SGID, sgid);
                     return result;
                 }
             }
         } catch (Exception e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("createSessionSid " + "passportId:" + passportId + ",sid:" + sgid);
-            }
-            logger.error("createSession error! passportId:" + passportId + ",sid:" + sgid + ",sessionResult:" + sessionResult, e);
+            logger.error("createSession error! passportId:" + passportId + ",sessionResult:" + sessionResult, e);
         }
-        logger.warn("createSession error! passportId:" + passportId + ",sid:" + sgid + ",sessionResult:" + sessionResult);
+        logger.warn("createSession error! passportId:{} ,sessionResult:{}", passportId, sessionResult);
+        result.setSuccess(false);
         result.setCode(ErrorUtil.ERR_CODE_CREATE_SGID_FAILED);
         return result;
     }
@@ -253,6 +259,7 @@ public class SessionServerManagerImpl implements SessionServerManager {
 class SessionResult {
     private String status;
     private String statusText;
+    private Map<String, Object> data = Maps.newHashMap();
 
     public String getStatus() {
         return status;
@@ -268,5 +275,13 @@ class SessionResult {
 
     public void setStatusText(String statusText) {
         this.statusText = statusText;
+    }
+
+    public Map<String, Object> getData() {
+        return data;
+    }
+
+    public void setData(Map<String, Object> data) {
+        this.data = data;
     }
 }
