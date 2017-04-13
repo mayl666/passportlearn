@@ -23,25 +23,25 @@ nav{
     color: #fff;
     font-size: 20px;
 }
-.skin_cp nav, .skin_cp .sendsms {
+.skin_cp nav {
     background: #dc2515;
 }
-.skin_orange nav, .skin_orange .sendsms {
+.skin_orange nav {
     background: #ff6600;
 }
 
-.skin_sh nav, .skin_sh .sendsms {
+.skin_sh nav {
     background:#ff6949;
 }
 
-.skin_read nav, .skin_read .sendsms{
+.skin_read nav {
     background:#ee5048;
 }
 
-.skin_x1 nav, .skin_x1 .sendsms {
+.skin_x1 nav {
     background: #39c6f3;
 }
-.skin_se nav, .skin_se .sendsms{
+.skin_se nav {
     background: #5094f6;
 }
 .sprite {
@@ -215,6 +215,19 @@ input#sms{width:50%;}
 input#captcha{width:50%;}
 .sendsms{padding: 0 0.5em;height: 25px;line-height: 25px;color: #fff;font-size: 12px;background: #4bab29;border-radius: 4px;margin-right: 9px;min-width: 60px;}
 .sendsms.disabled,.sendsms:active{background: #8ccf75}
+
+.skin_cp .sendsms{background: #ad1103}
+.skin_cp .sendsms.disabled,.sendsms:active{background: #cf1707}
+.skin_x1 .sendsms{background: #4bab29}
+.skin_x1 .sendsms.disabled,.sendsms:active{background: #8ccf75}
+.skin_se .sendsms{background: #347de7}
+.skin_se .sendsms.disabled,.sendsms:active{background: #5094f6}
+.skin_sh .sendsms{background: #ff6949}
+.skin_sh .sendsms.disabled,.sendsms:active{background: #ff6949}
+.skin_read .sendsms{background: #ee5048}
+.skin_read .sendsms.disabled,.sendsms:active{background: #ee5048}
+.skin_orange .sendsms{background: #ff6600}
+.skin_orange .sendsms.disabled,.sendsms:active{background: #ff6600}
 
 .mask{background: rgba(0,0,0,0.4);position: fixed;left: 0;top:0;width: 100%;height: 100%;}
 .dialog{width: 270px;background: #fff;border-radius: 10px;font-size: 18px;position: fixed;left: 50%;top:50%;margin-left: -135px;margin-top: -160px; z-index: 5;}
