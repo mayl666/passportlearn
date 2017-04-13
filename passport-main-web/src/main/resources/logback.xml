@@ -379,7 +379,6 @@
     </logger>
     <!--end:web服务器性能log-->
 
-
     <!-- start qq openId 与 unionId log -->
     <appender name="uIdAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -393,6 +392,26 @@
         <appender-ref ref="uIdAppender"/>
     </logger>
     <!-- end qq openId 与 unionId log -->
+
+    <!--start:邮件性能log-->
+    <appender name="mailPerfFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mail/perfStats.log.%d{yyyy-MM-dd}</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="mailCoalescingStatistics" class="org.perf4j.logback.AsyncCoalescingStatisticsAppender">
+        <!--每分钟分析一次log，做出性能测试-->
+        <param name="TimeSlice" value="60000"/>
+        <appender-ref ref="mailPerfFileAppender"/>
+    </appender>
+    <logger name="mailTimingLogger" level="info" additivity="false">
+        <appender-ref ref="mailCoalescingStatistics"/>
+    </logger>
+    <!--end:邮件性能log-->
 
     <root level="warn">
         <appender-ref ref="Console"/>
