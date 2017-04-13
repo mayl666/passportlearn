@@ -121,6 +121,7 @@ form{font-size: 14px;color: #333;padding: 0 10px;margin-bottom: 20px;}
     border: 0;/*1px solid #2b0401;*/
     background: -webkit-gradient(linear,left top,left bottom,from(#a8d554),to(#7dc000));
     background: -moz-linear-gradient(left,#a8d554,#7dc000);
+    -webkit-appearance: none;
 }
 .skin_cp .submit{
     background: -webkit-gradient(linear,left top,left bottom,from(#e81604),to(#c31001));
