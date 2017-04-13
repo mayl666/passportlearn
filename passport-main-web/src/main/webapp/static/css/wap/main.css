@@ -23,25 +23,25 @@ nav{
     color: #fff;
     font-size: 20px;
 }
-.skin_cp .sendsms,nav{
+.skin_cp nav, .skin_cp .sendsms {
     background: #dc2515;
 }
-.skin_orange .sendsms,nav{
+.skin_orange nav, .skin_orange .sendsms {
     background: #ff6600;
 }
 
-.skin_sh .sendsms,nav {
+.skin_sh nav, .skin_sh .sendsms {
     background:#ff6949;
 }
 
-.skin_read .sendsms,nav {
+.skin_read nav, .skin_read .sendsms{
     background:#ee5048;
 }
 
-.skin_x1 .sendsms,nav{
+.skin_x1 nav, .skin_x1 .sendsms {
     background: #39c6f3;
 }
-.skin_se .sendsms,nav{
+.skin_se nav, .skin_se .sendsms{
     background: #5094f6;
 }
 .sprite {
