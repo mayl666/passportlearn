@@ -47,7 +47,7 @@ public class MailUtils {
     private static SendCloud sendCloud;
     private static Properties props = null;
 
-    private ThreadPoolTaskExecutor mailExecutor;
+    private ThreadPoolTaskExecutor batchOperateExecutor;
 
     public static Properties getProps() {
         if (props == null) {
@@ -83,7 +83,7 @@ public class MailUtils {
 
             message.setXsmtpapiJsonStr(smtpApiHeader.toString());
 
-            mailExecutor.execute(new Runnable() {
+            batchOperateExecutor.execute(new Runnable() {
                 @Override
                 public void run() {//性能分析
                     StopWatch stopWatch = new Slf4JStopWatch(prefLogger);
@@ -151,7 +151,7 @@ public class MailUtils {
         MailUtils.sendCloud = sendCloud;
     }
 
-    public void setMailExecutor(ThreadPoolTaskExecutor mailExecutor) {
-        this.mailExecutor = mailExecutor;
+    public void setBatchOperateExecutor(ThreadPoolTaskExecutor batchOperateExecutor) {
+        this.batchOperateExecutor = batchOperateExecutor;
     }
 }

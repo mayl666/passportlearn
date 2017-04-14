@@ -14,6 +14,6 @@
 
     <bean id="mailUtils" class="com.sogou.upd.passport.common.utils.MailUtils">
         <property name="sendCloud" ref="sendCloud" />
-        <property name="mailExecutor" ref="mailExecutor" />
+        <property name="batchOperateExecutor" ref="batchOperateExecutor" />
     </bean>
 </beans>
